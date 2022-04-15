@@ -1,9 +1,8 @@
+﻿using Dalamud;
 using Dalamud.Game;
-using FFXIVClientStructs.FFXIV.Client.UI;
 
 namespace HaselTweaks.Tweaks;
 
-// TODO: use the actual sorting function rather than the command?
 public unsafe class AutoSortArmouryChest : BaseTweak
 {
     public override string Name => "Auto Sort Armoury Chest";
@@ -25,22 +24,26 @@ public unsafe class AutoSortArmouryChest : BaseTweak
 
     private void Run()
     {
-        var uiModulePtr = (UIModule*)Service.GameGui.GetUIModule();
-        if (uiModulePtr == null) return;
+        var definition = "/isort condition armoury ilv des";
+        var execute = "/isort execute armoury";
 
-        var raptureShellModulePtr = uiModulePtr->GetRaptureShellModule();
-        if (raptureShellModulePtr == null) return;
-
-        var raptureMacroModulePtr = uiModulePtr->GetRaptureMacroModule();
-        if (raptureMacroModulePtr == null) return;
-
-        if (raptureShellModulePtr->MacroCurrentLine >= 0)
+        if (Service.ClientState.ClientLanguage == ClientLanguage.German)
         {
-            Service.Chat.PrintError("Can't sort armoury chest while macros are running.");
+            definition = "/sort def arsenal ggstufe abs";
+            execute = "/sort los arsenal";
+        }
+        else if (Service.ClientState.ClientLanguage == ClientLanguage.French)
+        {
+            definition = "/triobjet condition arsenal niveauobjet décroissant";
+            execute = "/triobjet exécuter arsenal";
+        }
+        else if (Service.ClientState.ClientLanguage == ClientLanguage.Japanese)
+        {
+            // i'm sorry, but i can't decipher the description
             return;
         }
 
-        // runs shared macro in 3rd slot
-        raptureShellModulePtr->ExecuteMacro(raptureMacroModulePtr->Shared[2]);
+        Plugin.XivCommon.Functions.Chat.SendMessage(definition);
+        Plugin.XivCommon.Functions.Chat.SendMessage(execute);
     }
 }
