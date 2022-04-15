@@ -1,4 +1,4 @@
-﻿using Dalamud.Game;
+using Dalamud.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 
 namespace HaselTweaks.Tweaks;
@@ -13,7 +13,7 @@ public unsafe class AutoSortArmouryChest : BaseTweak
     public override void OnFrameworkUpdate(Framework framework)
     {
         var unitBase = Utils.GetUnitBase("ArmouryBoard");
-        if (unitBase == null) return;
+        if (unitBase == null || unitBase->RootNode == null) return;
 
         var isVisible = unitBase->RootNode->IsVisible;
 
