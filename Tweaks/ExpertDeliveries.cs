@@ -19,7 +19,7 @@ public unsafe class ExpertDeliveries : BaseTweak
         var unitBase = (AtkUnitBase*)Service.GameGui.GetAddonByName("GrandCompanySupplyList", 1);
         if (unitBase == null || !unitBase->IsVisible)
         {
-            switched = false;
+            if (switched) switched = false;
             return;
         }
 
