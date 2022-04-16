@@ -101,44 +101,25 @@ public unsafe class CharacterClassSwitcher : BaseTweak
         if (itemSheet == null) return;
 
         // loop through all gearsets and find the one matching classJobId with the highest avg itemlevel
-        var selectedGearset = (GearsetIndex: 0, AvgItemLevel: 0u);
+        var selectedGearset = (Index: 0, ItemLevel: 0u);
         for (var i = 0; i < GearsetArray.Length; i++)
         {
             var gearset = gearsetModule->Gearsets[i];
             if (!gearset->Flags.HasFlag(GearsetFlag.Exists)) continue;
             if (gearset->ClassJob != classJobId) continue;
 
-            var avgItemLevel = 0u;
-            var itemCount = 0u;
-
-            for (var j = 0; j < GearsetItemArray.Length; j++)
-            {
-                var item = gearset->Items[j];
-                if (item->ItemID > 0)
-                {
-                    var itemRow = itemSheet.GetRow(item->ItemID);
-                    if (itemRow != null)
-                    {
-                        avgItemLevel += itemRow.LevelItem.Row;
-                        itemCount++;
-                    }
-                }
-            }
-
-            avgItemLevel /= itemCount;
-
-            if (selectedGearset.AvgItemLevel < avgItemLevel)
-                selectedGearset = (i + 1, avgItemLevel);
+            if (selectedGearset.ItemLevel < gearset->ItemLevel)
+                selectedGearset = (i + 1, gearset->ItemLevel);
         }
 
-        if (selectedGearset.AvgItemLevel == 0)
+        if (selectedGearset.ItemLevel == 0)
         {
             // TODO: localize
             Service.Chat.PrintError($"Couldn't find a suitable gearset.");
             return;
         }
 
-        Plugin.XivCommon.Functions.Chat.SendMessage("/gs change " + selectedGearset.GearsetIndex);
+        Plugin.XivCommon.Functions.Chat.SendMessage("/gs change " + selectedGearset.Index);
     }
 
     private IntPtr OnSetup(AddonCharacterClass* addon, int a2)

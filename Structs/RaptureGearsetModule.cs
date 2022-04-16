@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HaselTweaks.Structs;
 
-[StructLayout(LayoutKind.Explicit, Size = 0xB148)]
+[StructLayout(LayoutKind.Explicit, Size = 0xB348)]
 public unsafe struct RaptureGearsetModule
 {
     public static RaptureGearsetModule* Instance() => (RaptureGearsetModule*)Framework.Instance()->GetUiModule()->GetRaptureGearsetModule();
@@ -48,29 +48,36 @@ public unsafe struct RaptureGearsetModule
         Unknown7 = 1 << 7,
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 0x1BC)]
+    [StructLayout(LayoutKind.Explicit, Size = 0x1C0)]
     public struct Gearset
     {
+        internal const int StructSize = 0x1C0;
+
         [FieldOffset(0x00)] public byte ID;
         [FieldOffset(0x01)] public fixed byte RawName[0x2F];
         [FieldOffset(0x31)] public byte ClassJob;
         [FieldOffset(0x32)] public byte GlamourSetLink;
-        [FieldOffset(0x33)] public GearsetFlag Flags;
-        [FieldOffset(0x34)] public GearsetItemArray Items;
-        [FieldOffset(0x34)] public GearsetItem MainHand;
-        [FieldOffset(0x50)] public GearsetItem OffHand;
-        [FieldOffset(0x6C)] public GearsetItem Head;
-        [FieldOffset(0x88)] public GearsetItem Body;
-        [FieldOffset(0xA4)] public GearsetItem Hands;
-        [FieldOffset(0xC0)] public GearsetItem Belt;
-        [FieldOffset(0xDC)] public GearsetItem Legs;
-        [FieldOffset(0xF8)] public GearsetItem Feet;
-        [FieldOffset(0x114)] public GearsetItem Ears;
-        [FieldOffset(0x130)] public GearsetItem Neck;
-        [FieldOffset(0x14C)] public GearsetItem Wrists;
-        [FieldOffset(0x168)] public GearsetItem RingRight;
-        [FieldOffset(0x184)] public GearsetItem RightLeft;
-        [FieldOffset(0x1A0)] public GearsetItem SoulStone;
+        [FieldOffset(0x33)] public byte Unknown1;
+        [FieldOffset(0x34)] public ushort ItemLevel;
+        [FieldOffset(0x36)] public byte InstantPortraitID;
+        [FieldOffset(0x37)] public GearsetFlag Flags;
+
+        private const int ItemDataOffset = 0x38;
+        [FieldOffset(ItemDataOffset)] public GearsetItemArray Items;
+        [FieldOffset(ItemDataOffset + GearsetItem.StructSize * 00)] public GearsetItem MainHand;
+        [FieldOffset(ItemDataOffset + GearsetItem.StructSize * 01)] public GearsetItem OffHand;
+        [FieldOffset(ItemDataOffset + GearsetItem.StructSize * 02)] public GearsetItem Head;
+        [FieldOffset(ItemDataOffset + GearsetItem.StructSize * 03)] public GearsetItem Body;
+        [FieldOffset(ItemDataOffset + GearsetItem.StructSize * 04)] public GearsetItem Hands;
+        [FieldOffset(ItemDataOffset + GearsetItem.StructSize * 05)] public GearsetItem Belt;
+        [FieldOffset(ItemDataOffset + GearsetItem.StructSize * 06)] public GearsetItem Legs;
+        [FieldOffset(ItemDataOffset + GearsetItem.StructSize * 07)] public GearsetItem Feet;
+        [FieldOffset(ItemDataOffset + GearsetItem.StructSize * 08)] public GearsetItem Ears;
+        [FieldOffset(ItemDataOffset + GearsetItem.StructSize * 09)] public GearsetItem Neck;
+        [FieldOffset(ItemDataOffset + GearsetItem.StructSize * 10)] public GearsetItem Wrists;
+        [FieldOffset(ItemDataOffset + GearsetItem.StructSize * 11)] public GearsetItem RingRight;
+        [FieldOffset(ItemDataOffset + GearsetItem.StructSize * 12)] public GearsetItem RightLeft;
+        [FieldOffset(ItemDataOffset + GearsetItem.StructSize * 13)] public GearsetItem SoulStone;
 
         public string Name
         {
@@ -89,7 +96,7 @@ public unsafe struct RaptureGearsetModule
     {
         public const int Length = 101;
 
-        private fixed byte data[Length * 0x1BC];
+        private fixed byte data[Length * Gearset.StructSize];
 
         public Gearset* this[int i]
         {
@@ -137,6 +144,8 @@ public unsafe struct RaptureGearsetModule
     [StructLayout(LayoutKind.Explicit, Size = 0x1C)]
     public struct GearsetItem
     {
+        internal const int StructSize = 0x1C;
+
         [FieldOffset(0x00)] public uint ItemID;
         [FieldOffset(0x04)] public uint GlamourItemID;
         [FieldOffset(0x08)] public ushort Stain;
@@ -149,7 +158,7 @@ public unsafe struct RaptureGearsetModule
     {
         public const int Length = 14;
 
-        private fixed byte data[Length * 0x1C];
+        private fixed byte data[Length * GearsetItem.StructSize];
 
         public GearsetItem* this[int i]
         {
