@@ -97,9 +97,6 @@ public unsafe class CharacterClassSwitcher : BaseTweak
         var gearsetModule = RaptureGearsetModule.Instance();
         if (gearsetModule == null) return;
 
-        var itemSheet = Service.Data.GetExcelSheet<Item>()!;
-        if (itemSheet == null) return;
-
         // loop through all gearsets and find the one matching classJobId with the highest avg itemlevel
         var selectedGearset = (Index: 0, ItemLevel: 0u);
         for (var i = 0; i < GearsetArray.Length; i++)
