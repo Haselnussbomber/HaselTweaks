@@ -11,7 +11,6 @@ namespace HaselTweaks.Tweaks;
 public unsafe class WondrousTailsDutySelector : BaseTweak
 {
     public override string Name => "Wondrous Tails Duty Selector";
-    public override bool CanLoad => false; // TODO: fix it first
 
     [Signature("66 83 FA 19 75 25 53 48 83 EC 20 49 8B D9 45 85 C0 75 13 E8", DetourName = nameof(DutySlot_ReceiveEvent))]
     private readonly Hook<DutySlotReceiveEventDelegate>? Hook = null;
@@ -37,20 +36,14 @@ public unsafe class WondrousTailsDutySelector : BaseTweak
 
     private void DutySlot_ReceiveEvent(void* a1, short a2, int a3, void* a4)
     {
-        PluginLog.Log("before original hook");
         Hook!.Original(a1, a2, a3, a4);
-        PluginLog.Log("after original hook");
 
         if ((AtkEventType)a2 == AtkEventType.ButtonClick)
         {
-            PluginLog.Log("Button Click");
-            var node = (DutySlot*)a1;
-            PluginLog.Log("is a DutySlot");
-            var addon = (AddonWeeklyBingo*)node->Addon;
-            PluginLog.Log("is a AddonWeeklyBingo");
-            if (!addon->InDutySlotResetMode && node->Status != DutySlotStatus.Claimable)
+            var slot = (DutySlot*)a1;
+            var addon = (AddonWeeklyBingo*)slot->Addon;
+            if (!addon->InDutySlotResetMode && slot->Status != DutySlotStatus.Claimable)
             {
-                PluginLog.Log("should be handled");
                 HandleClick((DutySlot*)a1);
             }
         }
@@ -80,6 +73,17 @@ public unsafe class WondrousTailsDutySelector : BaseTweak
                 break;
 
             case 1: // Max Level Dungeons
+                var expertRoulette = Service.Data.GetExcelSheet<ContentRoulette>()?.GetRow(5);
+
+                if (expertRoulette != null &&
+                    Service.ClientState.LocalPlayer != null &&
+                    expertRoulette.RequiredLevel == entry.Data &&
+                    expertRoulette.RequiredLevel == Service.ClientState.LocalPlayer?.Level)
+                {
+                    Plugin.XivCommon.Functions.DutyFinder.OpenRoulette(5); // Duty Roulette: Expert
+                    return;
+                }
+
                 contentFinderCondition = GetFirstDungeonByLevel((byte)entry.Data);
                 if (contentFinderCondition == null) return;
                 Plugin.XivCommon.Functions.DutyFinder.OpenDuty(contentFinderCondition);
@@ -92,8 +96,8 @@ public unsafe class WondrousTailsDutySelector : BaseTweak
             case 3: // PvP
                 switch (entry.Data)
                 {
-                    case 5: // The Feast
-                        Plugin.XivCommon.Functions.DutyFinder.OpenDuty(478); // The Feast (Ranked)
+                    case 5: // Crystalline Conflict
+                        Plugin.XivCommon.Functions.DutyFinder.OpenRoulette(40); // Crystalline Conflict (Casual Match)
                         break;
 
                     case 6: // Frontline
@@ -101,6 +105,40 @@ public unsafe class WondrousTailsDutySelector : BaseTweak
                         break;
 
                         //case 11: unsupported // Rival Wings - 277: Astragalos, 599 Hidden Gorge
+                }
+                break;
+
+            case 4: // Raids
+                // TODO: not sure how to resolve this via Excel
+                switch (entry.Data)
+                {
+                    case 2: // Binding Coil of Bahamut
+                        Plugin.XivCommon.Functions.DutyFinder.OpenDuty(93); // the Binding Coil of Bahamut - Turn 1
+                        break;
+                    case 3: // Second Coil of Bahamut
+                        Plugin.XivCommon.Functions.DutyFinder.OpenDuty(98); // the Second Coil of Bahamut - Turn 1
+                        break;
+                    case 4: // Final Coil of Bahamut
+                        Plugin.XivCommon.Functions.DutyFinder.OpenDuty(107); // the Final Coil of Bahamut - Turn 1
+                        break;
+                    case 5: // Alexander: Gordias
+                        Plugin.XivCommon.Functions.DutyFinder.OpenDuty(112); // Alexander - The Fist of the Father
+                        break;
+                    case 6: // Alexander: Midas
+                        Plugin.XivCommon.Functions.DutyFinder.OpenDuty(136); // Alexander - The Fist of the Son
+                        break;
+                    case 7: // Alexander: The Creator
+                        Plugin.XivCommon.Functions.DutyFinder.OpenDuty(186); // Alexander - The Eyes of the Creator
+                        break;
+                    case 8: // Omega: Deltascape
+                        Plugin.XivCommon.Functions.DutyFinder.OpenDuty(252); // Deltascape V1.0
+                        break;
+                    case 9: // Omega: Sigmascape
+                        Plugin.XivCommon.Functions.DutyFinder.OpenDuty(286); // Sigmascape V1.0
+                        break;
+                    case 10: // Omega: Alphascape
+                        Plugin.XivCommon.Functions.DutyFinder.OpenDuty(587); // Alphascape V1.0
+                        break;
                 }
                 break;
 
