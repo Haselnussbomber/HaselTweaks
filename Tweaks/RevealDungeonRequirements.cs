@@ -17,7 +17,7 @@ public unsafe class RevealDungeonRequirements : BaseTweak
     private byte[]? OriginalBytes = null;
 
     private readonly int Offset = 14;
-    private readonly int Length = 16;
+    private readonly int Length = 2;
 
     public override void Setup(HaselTweaks plugin)
     {
@@ -35,8 +35,6 @@ public unsafe class RevealDungeonRequirements : BaseTweak
     {
         base.Enable();
 
-        if (Address == IntPtr.Zero) return;
-
         OriginalBytes = MemoryHelper.ReadRaw(Address + Offset, Length);
 
         MemoryHelper.ChangePermission(Address + Offset, Length, MemoryProtection.ExecuteReadWrite);
@@ -46,8 +44,6 @@ public unsafe class RevealDungeonRequirements : BaseTweak
     public override void Disable()
     {
         base.Disable();
-
-        if (Address == IntPtr.Zero) return;
 
         MemoryHelper.ChangePermission(Address + Offset, Length, MemoryProtection.ExecuteReadWrite);
         MemoryHelper.WriteRaw(Address + Offset, OriginalBytes!);
