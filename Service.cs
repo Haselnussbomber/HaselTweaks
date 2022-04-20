@@ -22,11 +22,5 @@ public class Service
     [PluginService] public static Framework Framework { get; private set; } = null!;
     [PluginService] public static GameGui GameGui { get; private set; } = null!;
     [PluginService] public static GameNetwork GameNetwork { get; private set; } = null!;
-    //[PluginService] public static KeyState KeyState { get; private set; } = null!;
-    //[PluginService] public static LibcFunction LibcFunction { get; private set; } = null!;
-    //[PluginService] public static ObjectTable Objects { get; private set; } = null!;
-    [PluginService] public static SigScanner SigScanner { get; private set; } = null!;
-    //[PluginService] public static TargetManager Targets { get; private set; } = null!;
-    //[PluginService] public static ToastGui Toasts { get; private set; } = null!;
     [PluginService] public static DtrBar DtrBar { get; private set; } = null!;
 }
