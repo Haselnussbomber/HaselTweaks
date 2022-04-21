@@ -1,6 +1,7 @@
 using ImGuiNET;
 using System;
 using System.Numerics;
+using System.Reflection;
 
 namespace HaselTweaks
 {
@@ -76,15 +77,43 @@ namespace HaselTweaks
                     }
 
                     ImGui.SameLine();
-                    ImGui.Text(tweak.Name);
 
-                    // TODO: tweak config
-                    /*
-                    if (ImGui.TreeNodeEx($"{tweak.Name}"))
+                    var config = Plugin.Config.Tweaks.GetType().GetProperty(tweak.InternalName)?.GetValue(Plugin.Config.Tweaks);
+                    if (config != null)
                     {
-                        ImGui.TreePop();
+                        if (ImGui.TreeNodeEx(tweak.Name))
+                        {
+                            foreach (var field in config.GetType().GetFields())
+                            {
+                                var key = $"###{tweak.InternalName}#{field.Name}";
+
+                                var attr = (ConfigFieldAttribute?)Attribute.GetCustomAttribute(field, typeof(ConfigFieldAttribute));
+
+                                var label = field.Name;
+                                if (attr != null && !string.IsNullOrEmpty(attr.Label))
+                                    label = attr.Label;
+
+                                var value = field.GetValue(config);
+                                switch (field.FieldType.Name)
+                                {
+                                    case "String": DrawString(key, label, config, field, value); break;
+                                }
+
+                                if (attr != null && !string.IsNullOrEmpty(attr.Description))
+                                    ImGui.Text(attr.Description);
+                            }
+
+                            ImGui.TreePop();
+                        }
                     }
-                    */
+                    else
+                    {
+                        ImGui.PushStyleColor(ImGuiCol.HeaderHovered, 0x0);
+                        ImGui.PushStyleColor(ImGuiCol.HeaderActive, 0x0);
+                        ImGui.TreeNodeEx(tweak.Name, ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen);
+                        ImGui.PopStyleColor();
+                        ImGui.PopStyleColor();
+                    }
 
                     if (tweak != Plugin.Tweaks[^1])
                         ImGui.Separator();
@@ -94,6 +123,18 @@ namespace HaselTweaks
             }
 
             ImGui.End();
+        }
+
+        private void DrawString(string key, string label, object config, FieldInfo field, object? value)
+        {
+            var str = "";
+            if (value != null) str = (string)value;
+
+            ImGui.Text(label);
+            ImGui.SameLine();
+
+            if (ImGui.InputText(key, ref str, 50))
+                field.SetValue(config, str);
         }
     }
 }

@@ -10,6 +10,12 @@ public unsafe class ChatTimestampFixer : Tweak
 {
     public override string Name => "Chat Timestamp Fixer";
 
+    public class Configuration
+    {
+        [ConfigField(Description = "This gets passed to C#'s DateTime.ToString() function.")]
+        public string Format = "[HH:mm] ";
+    }
+
     [Signature("E8 ?? ?? ?? ?? 48 8B D0 48 8B CB E8 ?? ?? ?? ?? 4C 8D 87", DetourName = nameof(Detour))]
     private Hook<DetourDelegate>? Hook { get; init; }
     private delegate byte* DetourDelegate(IntPtr a1, ulong addonRowId, ulong value, IntPtr a4);
@@ -31,10 +37,11 @@ public unsafe class ChatTimestampFixer : Tweak
         {
             var str = (Utf8String*)(a1 + 0x9C0);
             var time = DateTime.UnixEpoch.AddSeconds(value).ToLocalTime();
+            var formatted = time.ToString(Plugin.Config.Tweaks.ChatTimestampFixer.Format);
 
-            MemoryHelper.WriteString((IntPtr)str->StringPtr, $"[{time:HH:mm}] \0");
-            str->BufUsed = 9;
-            str->StringLength = 8;
+            MemoryHelper.WriteString((IntPtr)str->StringPtr, formatted + "\0");
+            str->BufUsed = formatted.Length + 1;
+            str->StringLength = formatted.Length;
 
             return str->StringPtr;
         }

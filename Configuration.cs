@@ -1,4 +1,5 @@
 ﻿using Dalamud.Configuration;
+using HaselTweaks.Tweaks;
 using System;
 using System.Collections.Generic;
 
@@ -9,6 +10,11 @@ namespace HaselTweaks
     {
         public int Version { get; set; } = 1;
         public List<string> EnabledTweaks { get; init; } = new();
-        //public Dictionary<string, object> TweakConfigs { get; init; } = new();
+        public TweakConfigs Tweaks { get; init; } = new();
+    }
+
+    public class TweakConfigs
+    {
+        public ChatTimestampFixer.Configuration ChatTimestampFixer { get; init; } = new();
     }
 }
