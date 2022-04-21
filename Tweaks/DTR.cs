@@ -25,24 +25,15 @@ public unsafe class DTR : BaseTweak
     public DtrBarEntry DtrFPS = null!;
     public DtrBarEntry DtrBusy = null!;
 
-    public override void Setup(HaselTweaks plugin)
+    public override void Setup()
     {
-        base.Setup(plugin);
-
         DtrInstance = Service.DtrBar.Get("[HaselTweaks] Instance");
         DtrFPS = Service.DtrBar.Get("[HaselTweaks] FPS");
         DtrBusy = Service.DtrBar.Get("[HaselTweaks] Busy");
     }
 
-    public override void Enable()
-    {
-        base.Enable();
-    }
-
     public override void Disable()
     {
-        base.Disable();
-
         DtrInstance.Shown = false;
         DtrFPS.Shown = false;
         DtrBusy.Shown = false;
@@ -50,8 +41,6 @@ public unsafe class DTR : BaseTweak
 
     public override void Dispose()
     {
-        base.Dispose();
-
         DtrInstance.Dispose();
         DtrFPS.Dispose();
         DtrBusy.Dispose();

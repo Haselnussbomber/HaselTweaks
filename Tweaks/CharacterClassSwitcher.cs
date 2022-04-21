@@ -2,12 +2,10 @@
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
-using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Text.RegularExpressions;
 using GearsetArray = HaselTweaks.Structs.RaptureGearsetModule.GearsetArray;
 using GearsetFlag = HaselTweaks.Structs.RaptureGearsetModule.GearsetFlag;
-using GearsetItemArray = HaselTweaks.Structs.RaptureGearsetModule.GearsetItemArray;
 
 namespace HaselTweaks.Tweaks;
 
@@ -22,12 +20,6 @@ public unsafe class CharacterClassSwitcher : BaseTweak
     [Signature("48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC ?? ?? ?? ?? 0F 29 70 C8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 17 F3 0F 10 35 ?? ?? ?? ?? 45 33 C9 45 33 C0 F3 0F 11 74 24 ?? 0F 57 C9 48 8B F9 E8", DetourName = nameof(OnSetup))]
     private Hook<OnSetupDelegate>? SetupHook { get; init; }
     private delegate IntPtr OnSetupDelegate(AddonCharacterClass* addon, int a2);
-
-    public override void Setup(HaselTweaks plugin)
-    {
-        base.Setup(plugin);
-        SignatureHelper.Initialise(this);
-    }
 
     public override void Enable()
     {

@@ -13,24 +13,21 @@ public unsafe class WondrousTailsDutySelector : BaseTweak
     public override string Name => "Wondrous Tails Duty Selector";
 
     [Signature("66 83 FA 19 75 25 53 48 83 EC 20 49 8B D9 45 85 C0 75 13 E8", DetourName = nameof(DutySlot_ReceiveEvent))]
-    private readonly Hook<DutySlotReceiveEventDelegate>? Hook = null;
+    private Hook<DutySlotReceiveEventDelegate>? Hook { get; init; }
     private delegate void DutySlotReceiveEventDelegate(void* a1, short a2, int a3, void* a4);
 
     public override void Enable()
     {
-        base.Enable();
         Hook?.Enable();
     }
 
     public override void Disable()
     {
-        base.Disable();
         Hook?.Disable();
     }
 
     public override void Dispose()
     {
-        base.Dispose();
         Hook?.Dispose();
     }
 

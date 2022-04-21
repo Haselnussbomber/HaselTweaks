@@ -21,15 +21,13 @@ public unsafe class HideMSQComplete : BaseTweak
 
     private string msqCompleteText = "";
 
-    public override void Setup(HaselTweaks plugin)
+    public override void Setup()
     {
-        base.Setup(plugin);
         msqCompleteText = Service.Data.GetExcelSheet<Addon>()?.GetRow(5672)?.Text ?? "Main Scenario Quests Complete";
     }
 
     public override void Disable()
     {
-        base.Disable();
         UpdateVisibility(true);
     }
 

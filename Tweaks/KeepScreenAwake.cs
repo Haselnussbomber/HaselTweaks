@@ -22,9 +22,8 @@ public unsafe class KeepScreenAwake : BaseTweak
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
 
-    public override void Setup(HaselTweaks plugin)
+    public override void Setup()
     {
-        base.Setup(plugin);
         timer = new Timer();
         timer.Elapsed += Timer_Elapsed;
         timer.Interval = 10000; // every 10 seconds
@@ -32,20 +31,17 @@ public unsafe class KeepScreenAwake : BaseTweak
 
     public override void Enable()
     {
-        base.Enable();
         timer.Start();
     }
 
     public override void Disable()
     {
-        base.Disable();
         SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
         timer.Stop();
     }
 
     public override void Dispose()
     {
-        base.Dispose();
         timer.Dispose();
     }
 

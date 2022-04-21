@@ -5,7 +5,7 @@ namespace HaselTweaks;
 
 public abstract class BaseTweak
 {
-    protected HaselTweaks Plugin;
+    protected HaselTweaks Plugin = null!;
 
     public abstract string Name { get; }
 
@@ -13,27 +13,35 @@ public abstract class BaseTweak
     public virtual bool Ready { get; protected set; }
     public virtual bool Enabled { get; protected set; }
 
-    public virtual void Setup(HaselTweaks plugin)
+    internal virtual void SetupInternal(HaselTweaks plugin)
     {
         this.Plugin = plugin;
         SignatureHelper.Initialise(this);
         Ready = true;
+        Setup();
     }
 
-    public virtual void Enable()
+    internal virtual void EnableInternal()
     {
         Enabled = true;
+        Enable();
     }
 
-    public virtual void Disable()
+    internal virtual void DisableInternal()
     {
         Enabled = false;
+        Disable();
     }
 
-    public virtual void Dispose()
+    internal virtual void DisposeInternal()
     {
         Ready = false;
+        Dispose();
     }
 
+    public virtual void Setup() { }
+    public virtual void Enable() { }
+    public virtual void Disable() { }
+    public virtual void Dispose() { }
     public virtual void OnFrameworkUpdate(Framework framework) { }
 }

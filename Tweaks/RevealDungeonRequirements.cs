@@ -1,5 +1,4 @@
-﻿using Dalamud.Logging;
-using Dalamud.Memory;
+﻿using Dalamud.Memory;
 using Dalamud.Utility.Signatures;
 using System;
 
@@ -17,20 +16,8 @@ public unsafe class RevealDungeonRequirements : BaseTweak
     private readonly int Offset = 14;
     private readonly int Length = 2;
 
-    public override void Setup(HaselTweaks plugin)
-    {
-        base.Setup(plugin);
-
-        if (CanLoad)
-            PluginLog.Debug($"[RevealDungeonRequirements] Address found: {Address:X}");
-        else
-            PluginLog.Error("[RevealDungeonRequirements] Address not found");
-    }
-
     public override void Enable()
     {
-        base.Enable();
-
         OriginalBytes = MemoryHelper.ReadRaw(Address + Offset, Length);
 
         MemoryHelper.ChangePermission(Address + Offset, Length, MemoryProtection.ExecuteReadWrite);
@@ -39,8 +26,6 @@ public unsafe class RevealDungeonRequirements : BaseTweak
 
     public override void Disable()
     {
-        base.Disable();
-
         MemoryHelper.ChangePermission(Address + Offset, Length, MemoryProtection.ExecuteReadWrite);
         MemoryHelper.WriteRaw(Address + Offset, OriginalBytes!);
     }

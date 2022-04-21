@@ -26,13 +26,11 @@ public unsafe class NaviMapOpacity : BaseTweak
 
     public override void Enable()
     {
-        base.Enable();
         Hook?.Enable();
     }
 
     public override void Disable()
     {
-        base.Disable();
         Hook?.Disable();
 
         var addon = Utils.GetUnitBase("_NaviMap");
@@ -48,7 +46,6 @@ public unsafe class NaviMapOpacity : BaseTweak
 
     public override void Dispose()
     {
-        base.Dispose();
         Hook?.Dispose();
     }
 

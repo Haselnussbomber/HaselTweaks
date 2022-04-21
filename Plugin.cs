@@ -30,10 +30,10 @@ public unsafe partial class HaselTweaks : IDalamudPlugin
             {
                 var tweak = (BaseTweak)Activator.CreateInstance(t)!;
                 Tweaks.Add(tweak);
-                tweak.Setup(this);
+                tweak.SetupInternal(this);
 
                 if (tweak.CanLoad)
-                    tweak.Enable();
+                    tweak.EnableInternal();
             }
             catch (Exception ex)
             {
@@ -82,10 +82,17 @@ public sealed partial class HaselTweaks : IDisposable
 
             foreach (var tweak in Tweaks)
             {
-                if (tweak.CanLoad)
-                    tweak.Disable();
+                try
+                {
+                    if (tweak.CanLoad)
+                        tweak.DisableInternal();
 
-                tweak.Dispose();
+                    tweak.DisposeInternal();
+                }
+                catch (Exception ex)
+                {
+                    PluginLog.Error(ex, $"Failed unloading tweak '{tweak.Name}'.");
+                }
             }
 
             Tweaks.Clear();
