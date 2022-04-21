@@ -9,11 +9,9 @@ public unsafe class RevealDungeonRequirements : BaseTweak
 {
     public override string Name => "Reveal Dungeon Requirements";
 
-    private bool canLoad = true;
-    public override bool CanLoad { get { return canLoad; } }
-
     [Signature("48 8B C8 48 8B D8 48 8B 10 FF 52 68 84 C0 74 1B")]
     private IntPtr Address { get; init; }
+    public override bool CanLoad => Address != IntPtr.Zero;
     private byte[]? OriginalBytes = null;
 
     private readonly int Offset = 14;
@@ -22,8 +20,6 @@ public unsafe class RevealDungeonRequirements : BaseTweak
     public override void Setup(HaselTweaks plugin)
     {
         base.Setup(plugin);
-
-        canLoad = Address != IntPtr.Zero;
 
         if (CanLoad)
             PluginLog.Debug($"[RevealDungeonRequirements] Address found: {Address:X}");

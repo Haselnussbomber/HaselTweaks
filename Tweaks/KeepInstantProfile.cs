@@ -9,18 +9,14 @@ public unsafe class KeepInstantProfile : BaseTweak
 {
     public override string Name => "Keep Instant Profile";
 
-    private bool canLoad = true;
-    public override bool CanLoad { get { return canLoad; } }
-
     [Signature("8B D5 49 8B CE E8 ?? ?? ?? ?? 84 C0 0F 84 ?? ?? ?? ?? 0F B6 4E 37")]
     private IntPtr Address { get; init; } = IntPtr.Zero;
+    public override bool CanLoad => Address != IntPtr.Zero;
     private byte[]? OriginalBytes = null;
 
     public override void Setup(HaselTweaks plugin)
     {
         base.Setup(plugin);
-
-        canLoad = Address != IntPtr.Zero;
 
         if (CanLoad)
             PluginLog.Debug($"[KeepInstantProfile] Address found: {Address:X}");
