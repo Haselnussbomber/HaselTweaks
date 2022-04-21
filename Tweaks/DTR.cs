@@ -13,7 +13,7 @@ using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class DTR : BaseTweak
+public unsafe class DTR : Tweak
 {
     public override string Name => "DTR";
 

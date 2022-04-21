@@ -10,29 +10,38 @@ using XivCommon;
 
 namespace HaselTweaks;
 
-public unsafe partial class HaselTweaks : IDalamudPlugin
+public unsafe partial class Plugin : IDalamudPlugin
 {
     public string Name => "HaselTweaks";
 
-    public List<BaseTweak> Tweaks = new();
-    public XivCommonBase XivCommon;
+    internal DalamudPluginInterface PluginInterface;
+    internal XivCommonBase XivCommon;
+    internal Configuration Config;
+    internal PluginUi Ui;
 
-    public HaselTweaks(DalamudPluginInterface pluginInterface)
+    internal List<Tweak> Tweaks = new();
+
+    public Plugin(DalamudPluginInterface pluginInterface)
     {
+        PluginInterface = pluginInterface;
+
         pluginInterface.Create<Service>();
         Resolver.Initialize();
-        XivCommon = new XivCommonBase();
+        XivCommon = new();
 
-        foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(BaseTweak)) && !t.IsAbstract))
+        Config = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+        Ui = new(this);
+
+        foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(Tweak)) && !t.IsAbstract))
         {
             PluginLog.Debug("Initalizing Tweak: {0}", t.Name);
             try
             {
-                var tweak = (BaseTweak)Activator.CreateInstance(t)!;
+                var tweak = (Tweak)Activator.CreateInstance(t)!;
                 Tweaks.Add(tweak);
                 tweak.SetupInternal(this);
 
-                if (tweak.CanLoad)
+                if (tweak.CanLoad && (tweak.ForceLoad || Config.EnabledTweaks.Contains(tweak.InternalName)))
                     tweak.EnableInternal();
             }
             catch (Exception ex)
@@ -42,6 +51,11 @@ public unsafe partial class HaselTweaks : IDalamudPlugin
         }
 
         Service.Framework.Update += OnFrameworkUpdate;
+    }
+
+    internal void SaveConfig()
+    {
+        PluginInterface.SavePluginConfig(Config);
     }
 
     private void OnFrameworkUpdate(Framework framework)
@@ -56,11 +70,11 @@ public unsafe partial class HaselTweaks : IDalamudPlugin
     }
 }
 
-public sealed partial class HaselTweaks : IDisposable
+public sealed partial class Plugin : IDisposable
 {
     private bool isDisposed;
 
-    ~HaselTweaks()
+    ~Plugin()
     {
         this.Dispose(false);
     }

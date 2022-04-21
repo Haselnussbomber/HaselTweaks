@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class RefreshMaterialList : BaseTweak
+public unsafe class RefreshMaterialList : Tweak
 {
     public override string Name => "Refresh Material List";
 

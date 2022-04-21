@@ -3,17 +3,19 @@ using Dalamud.Utility.Signatures;
 
 namespace HaselTweaks;
 
-public abstract class BaseTweak
+public abstract class Tweak
 {
-    protected HaselTweaks Plugin = null!;
+    protected Plugin Plugin = null!;
 
+    public string InternalName => GetType().Name;
     public abstract string Name { get; }
 
     public virtual bool CanLoad => true;
+    public virtual bool ForceLoad => false;
     public virtual bool Ready { get; protected set; }
     public virtual bool Enabled { get; protected set; }
 
-    internal virtual void SetupInternal(HaselTweaks plugin)
+    internal virtual void SetupInternal(Plugin plugin)
     {
         this.Plugin = plugin;
         SignatureHelper.Initialise(this);

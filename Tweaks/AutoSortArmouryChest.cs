@@ -3,7 +3,7 @@ using Dalamud.Game;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class AutoSortArmouryChest : BaseTweak
+public unsafe class AutoSortArmouryChest : Tweak
 {
     public override string Name => "Auto Sort Armoury Chest";
 

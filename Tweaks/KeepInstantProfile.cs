@@ -4,7 +4,7 @@ using System;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class KeepInstantProfile : BaseTweak
+public unsafe class KeepInstantProfile : Tweak
 {
     public override string Name => "Keep Instant Profile";
 

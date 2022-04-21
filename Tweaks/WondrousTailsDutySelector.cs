@@ -8,7 +8,7 @@ using static HaselTweaks.Structs.AddonWeeklyBingo;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class WondrousTailsDutySelector : BaseTweak
+public unsafe class WondrousTailsDutySelector : Tweak
 {
     public override string Name => "Wondrous Tails Duty Selector";
 

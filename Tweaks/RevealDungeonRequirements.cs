@@ -4,7 +4,7 @@ using System;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class RevealDungeonRequirements : BaseTweak
+public unsafe class RevealDungeonRequirements : Tweak
 {
     public override string Name => "Reveal Dungeon Requirements";
 

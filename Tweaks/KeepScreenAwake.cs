@@ -4,7 +4,7 @@ using System.Timers;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class KeepScreenAwake : BaseTweak
+public unsafe class KeepScreenAwake : Tweak
 {
     public override string Name => "Keep Screen Awake";
 

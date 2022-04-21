@@ -6,7 +6,7 @@ using System;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class ChatTimestampFixer : BaseTweak
+public unsafe class ChatTimestampFixer : Tweak
 {
     public override string Name => "Chat Timestamp Fixer";
 

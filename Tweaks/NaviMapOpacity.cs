@@ -5,7 +5,7 @@ using System;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class NaviMapOpacity : BaseTweak
+public unsafe class NaviMapOpacity : Tweak
 {
     public override string Name => "Navi Map Opacity";
 

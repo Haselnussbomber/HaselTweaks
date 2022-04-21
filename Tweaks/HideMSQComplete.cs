@@ -4,7 +4,7 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class HideMSQComplete : BaseTweak
+public unsafe class HideMSQComplete : Tweak
 {
     public override string Name => "Hide MSQ Complete";
 

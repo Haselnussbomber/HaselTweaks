@@ -9,7 +9,7 @@ using GearsetFlag = HaselTweaks.Structs.RaptureGearsetModule.GearsetFlag;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class CharacterClassSwitcher : BaseTweak
+public unsafe class CharacterClassSwitcher : Tweak
 {
     public override string Name => "Character Class Switcher";
 

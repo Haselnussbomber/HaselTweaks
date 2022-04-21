@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class ExpertDeliveries : BaseTweak
+public unsafe class ExpertDeliveries : Tweak
 {
     public override string Name => "Expert Deliveries";
 
