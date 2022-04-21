@@ -1,25 +1,34 @@
 ﻿using Dalamud.Hooking;
 using Dalamud.Logging;
+using Dalamud.Memory;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using System;
-using System.Text;
 
 namespace HaselTweaks.Tweaks;
 
 public unsafe class ChatTimestampFixer : BaseTweak
 {
     public override string Name => "Chat Timestamp Fixer";
-    public override bool CanLoad => false; // TODO: fix it first
 
-    [Signature("E8 ?? ?? ?? ?? 4C 63 6C 24 ??", DetourName = nameof(StringFormatDetour))]
-    private Hook<FunctionDelegate>? Hook { get; init; }
-    private delegate IntPtr FunctionDelegate(IntPtr a1, int addonRowId, int numberArg);
+    [Signature("E8 ?? ?? ?? ?? 48 8B D0 48 8B CB E8 ?? ?? ?? ?? 4C 8D 87", DetourName = nameof(Detour))]
+    private Hook<DetourDelegate>? Hook = null;
+    private delegate byte* DetourDelegate(IntPtr a1, ulong addonRowId, ulong value, IntPtr a4);
+    public override bool CanLoad => Hook?.Address != IntPtr.Zero;
+
+    public override void Setup(HaselTweaks plugin)
+    {
+        base.Setup(plugin);
+
+        if (CanLoad)
+            PluginLog.Debug($"[ChatTimestampFixer] Address found: {Hook?.Address:X}");
+        else
+            PluginLog.Error("[ChatTimestampFixer] Address not found");
+    }
 
     public override void Enable()
     {
         base.Enable();
-        PluginLog.Debug($"[ChatTimestampFixer] Hook.Address: {Hook?.Address:X}");
         Hook?.Enable();
     }
 
@@ -29,27 +38,20 @@ public unsafe class ChatTimestampFixer : BaseTweak
         Hook?.Disable();
     }
 
-    public override void Dispose()
+    private byte* Detour(IntPtr a1, ulong addonRowId, ulong value, IntPtr a4)
     {
-        base.Dispose();
-        Hook?.Dispose();
-    }
-
-    private IntPtr StringFormatDetour(IntPtr a1, int addonRowId, int numberArg)
-    {
-        // completely replace output for Addon#7840
         if (addonRowId == 7840)
         {
-            var time = DateTime.UnixEpoch.AddSeconds(numberArg).ToLocalTime();
-            var str = $"[{time:HH:mm}] ";
-            //MemoryHelper.WriteString(result, str);
+            var str = (Utf8String*)(a1 + 0x9C0);
+            var time = DateTime.UnixEpoch.AddSeconds(value).ToLocalTime();
 
-            var ptr = a1 + 0x9C0;
-            fixed (byte* @string = Encoding.UTF8.GetBytes(str + "\0"))
-                ((Utf8String*)ptr)->SetString(@string);
-            return ptr;
+            MemoryHelper.WriteString((IntPtr)str->StringPtr, $"[{time:HH:mm}] \0");
+            str->BufUsed = 9;
+            str->StringLength = 8;
+
+            return str->StringPtr;
         }
 
-        return Hook!.Original(a1, addonRowId, numberArg);
+        return Hook!.Original(a1, addonRowId, value, a4);
     }
 }
