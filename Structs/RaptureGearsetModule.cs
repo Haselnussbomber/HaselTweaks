@@ -17,33 +17,63 @@ public unsafe struct RaptureGearsetModule
     [Flags]
     public enum GearsetFlag : byte
     {
-        /// <summary>
+        /// <remarks>
         /// Set when this gearset entry has been created.
-        /// </summary>
+        /// </remarks>
         Exists = 1 << 0,
 
         Unknown1 = 1 << 1,
 
-        /// <summary>
+        /// <remarks>
         /// Shows a red exclamation mark with message "The specified main arm was missing from your Armoury Chest."
-        /// </summary>
+        /// </remarks>
         MainHandMissing = 1 << 2,
 
-        /// <summary>
+        /// <remarks>
         /// Set when "Display Headgear" is ticked.
-        /// </summary>
+        /// </remarks>
         DisplayHeadgear = 1 << 3,
 
-        /// <summary>
+        /// <remarks>
         /// Set when "Display Sheathed Arms" is ticked.
-        /// </summary>
+        /// </remarks>
         DisplaySheathedArms = 1 << 4,
 
-        /// <summary>
+        /// <remarks>
         /// Set when "Manually adjust visor (select gear only)." is ticked.
-        /// </summary>
+        /// </remarks>
         ManuallyAdjustVisor = 1 << 5,
 
+        Unknown6 = 1 << 6,
+        Unknown7 = 1 << 7,
+    }
+
+    [Flags]
+    public enum GearsetItemFlag : byte
+    {
+        /// <remarks>
+        /// Shows a yellow exclamation mark with message "One or more items were missing from your Armoury Chest."
+        /// </remarks>
+        MissingItem = 1 << 0,
+
+        Unknown1 = 1 << 1,
+
+        /// <remarks>
+        /// Shows a gray exclamation mark with message "One or more items were not the specified color."
+        /// </remarks>
+        DifferentColor = 1 << 2,
+
+        /// <remarks>
+        /// Shows a gray exclamation mark with message "One or more items were not melded with the specified materia."
+        /// </remarks>
+        DifferentMateria = 1 << 3,
+
+        /// <remarks>
+        /// Shows a gray exclamation mark with message "One or more items did not have the specified appearance."
+        /// </remarks>
+        DifferentAppearance = 1 << 4,
+
+        Unknown5 = 1 << 5,
         Unknown6 = 1 << 6,
         Unknown7 = 1 << 7,
     }
@@ -55,11 +85,17 @@ public unsafe struct RaptureGearsetModule
 
         [FieldOffset(0x00)] public byte ID;
         [FieldOffset(0x01)] public fixed byte RawName[0x2F];
+
+        /// <remarks>Row ID of ClassJob sheet</remarks>
         [FieldOffset(0x31)] public byte ClassJob;
-        [FieldOffset(0x32)] public byte GlamourSetLink;
-        [FieldOffset(0x33)] public byte Unknown1;
+
+        [FieldOffset(0x32)] public byte GlamourPlate;
+
         [FieldOffset(0x34)] public ushort ItemLevel;
-        [FieldOffset(0x36)] public byte InstantPortraitID;
+
+        /// <remarks>Internal Portrait ID (not the sorting order)</remarks>
+        [FieldOffset(0x36)] public byte InstantPortrait;
+
         [FieldOffset(0x37)] public GearsetFlag Flags;
 
         private const int ItemDataOffset = 0x38;
@@ -91,6 +127,29 @@ public unsafe struct RaptureGearsetModule
         }
     }
 
+    [StructLayout(LayoutKind.Explicit, Size = 0x1C)]
+    public struct GearsetItem
+    {
+        internal const int StructSize = 0x1C;
+
+        /// <remarks>Row ID of Item sheet</remarks>
+        [FieldOffset(0x00)] public uint ItemID;
+
+        /// <remarks>Row ID of Item sheet</remarks>
+        [FieldOffset(0x04)] public uint GlamourItemID;
+
+        /// <remarks>Row ID of Stain sheet</remarks>
+        [FieldOffset(0x08)] public byte Stain;
+
+        /// <remarks>Row ID of Materia sheet</remarks>
+        [FieldOffset(0x0A)] public fixed ushort Materia[5];
+
+        /// <remarks>Index for Item column of Materia sheet</remarks>
+        [FieldOffset(0x14)] public fixed byte MateriaItem[5];
+
+        [FieldOffset(0x19)] public GearsetItemFlag Flags;
+    }
+
     [StructLayout(LayoutKind.Sequential, Size = 0xAF2C)]
     public struct GearsetArray
     {
@@ -109,48 +168,6 @@ public unsafe struct RaptureGearsetModule
                 }
             }
         }
-    }
-
-    [Flags]
-    public enum GearsetItemFlag : byte
-    {
-        /// <summary>
-        /// Shows a yellow exclamation mark with message "One or more items were missing from your Armoury Chest."
-        /// </summary>
-        MissingItem = 1 << 0,
-
-        Unknown1 = 1 << 1,
-
-        /// <summary>
-        /// Shows a gray exclamation mark with message "One or more items were not the specified color."
-        /// </summary>
-        DifferentColor = 1 << 2,
-
-        /// <summary>
-        /// Shows a gray exclamation mark with message "One or more items were not melded with the specified materia."
-        /// </summary>
-        DifferentMateria = 1 << 3,
-
-        /// <summary>
-        /// Shows a gray exclamation mark with message "One or more items did not have the specified appearance."
-        /// </summary>
-        DifferentAppearance = 1 << 4,
-
-        Unknown5 = 1 << 5,
-        Unknown6 = 1 << 6,
-        Unknown7 = 1 << 7,
-    }
-
-    [StructLayout(LayoutKind.Explicit, Size = 0x1C)]
-    public struct GearsetItem
-    {
-        internal const int StructSize = 0x1C;
-
-        [FieldOffset(0x00)] public uint ItemID;
-        [FieldOffset(0x04)] public uint GlamourItemID;
-        [FieldOffset(0x08)] public ushort Stain;
-
-        [FieldOffset(0x17)] public GearsetItemFlag Flags;
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 0x188)]
