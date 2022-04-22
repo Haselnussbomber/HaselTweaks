@@ -76,12 +76,7 @@ public sealed partial class Plugin : IDisposable
 {
     private bool isDisposed;
 
-    ~Plugin()
-    {
-        Dispose(false);
-    }
-
-    void IDisposable.Dispose()
+    public void Dispose()
     {
         GC.SuppressFinalize(this);
         Dispose(true);
@@ -113,6 +108,7 @@ public sealed partial class Plugin : IDisposable
 
             Tweaks.Clear();
 
+            Ui.Dispose();
             XivCommon?.Dispose();
         }
 

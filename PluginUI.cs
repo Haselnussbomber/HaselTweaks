@@ -191,12 +191,7 @@ public sealed partial class PluginUi : IDisposable
 {
     private bool isDisposed;
 
-    ~PluginUi()
-    {
-        Dispose(false);
-    }
-
-    void IDisposable.Dispose()
+    public void Dispose()
     {
         GC.SuppressFinalize(this);
         Dispose(true);
