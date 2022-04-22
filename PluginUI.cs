@@ -177,10 +177,7 @@ public partial class PluginUi
 
     private void DrawString(string key, string label, object config, FieldInfo field, string value)
     {
-        ImGui.Text(label);
-        ImGui.SameLine();
-
-        if (ImGui.InputText(key, ref value, 50))
+        if (ImGui.InputText(label + key, ref value, 50))
         {
             field.SetValue(config, value);
             Plugin.SaveConfig();
