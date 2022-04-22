@@ -11,7 +11,7 @@ public partial class PluginUi
 {
     private Plugin Plugin { get; }
 
-    private bool _show;
+    private bool _show = false;
 
     internal bool Show
     {
@@ -26,7 +26,7 @@ public partial class PluginUi
         Plugin.PluginInterface.UiBuilder.Draw += Draw;
         Plugin.PluginInterface.UiBuilder.OpenConfigUi += OpenConfig;
 
-        Service.Commands.AddHandler("/haseltweaks", new(delegate { _show = !_show; })
+        Service.Commands.AddHandler("/haseltweaks", new(delegate { Show = !Show; })
         {
             HelpMessage = "Show Configuration"
         });
