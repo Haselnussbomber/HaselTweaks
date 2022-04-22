@@ -12,11 +12,8 @@ jobs:
         with:
           submodules: 'true'
 
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1.0.6
-
       - name: Restore NuGet Packages
-        run: nuget restore HaselTweaks.sln
+        run: dotnet restore HaselTweaks.sln
 
       - name: Download Dalamud
         if: "!contains(github.event.head_commit.message, '[stg]')"
