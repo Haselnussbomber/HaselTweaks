@@ -12,7 +12,6 @@
     <OutputPath>bin\</OutputPath>
     <AllowedReferenceRelatedFileExtensions>.pdb</AllowedReferenceRelatedFileExtensions>
     <PackagerTargetFile>$(SolutionDir)DalamudPackager.targets</PackagerTargetFile>
-    <ILRepackTargetsFile>$(SolutionDir)ILRepack.targets</ILRepackTargetsFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
