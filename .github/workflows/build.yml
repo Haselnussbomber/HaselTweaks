@@ -12,14 +12,6 @@ jobs:
         with:
           submodules: 'true'
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.1
-        with:
-          vs-prerelease: true
-
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1.0.5
-
       - name: Restore NuGet Packages
         run: nuget restore HaselTweaks.sln
 
