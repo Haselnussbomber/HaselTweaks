@@ -35,17 +35,18 @@ jobs:
       - name: Build
         run: dotnet build -c Release -p:IsCI=true
 
-      - name: Extract Publish
-        run: |
-          unzip ./bin/HaselTweaks/latest.zip ./Artifact
-
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
-          path: ./Artifact/*
+          path: bin/*
+
+      - name: Zip
+        uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r HaselTweaks.zip bin/
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ./bin/HaselTweaks/latest.zip 
+          files: HaselTweaks.zip
