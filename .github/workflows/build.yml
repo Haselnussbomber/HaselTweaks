@@ -1,0 +1,55 @@
+name: Build HaselTweaks
+
+on:
+  push:
+    branches:
+    - main
+    tags:
+      - v*
+
+jobs:
+  build:
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip-ci]')"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Download Dalamud
+        if: "!contains(github.event.head_commit.message, '[stg]')"
+        run: |
+          curl -o latest.zip https://goatcorp.github.io/dalamud-distrib/latest.zip
+          unzip latest.zip -d ~/dalamud/
+
+      - name: Download Dalamud staging
+        if: "contains(github.event.head_commit.message, '[stg]')"
+        run: |
+            curl -o latest.zip https://goatcorp.github.io/dalamud-distrib/stg/latest.zip
+            unzip latest.zip -d ~/dalamud/
+
+      - name: Build
+        run: dotnet build -c Release -p:IsCI=true
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: bin/*
+
+      - name: Zip
+        run: cd bin && zip -qq -r ../HaselTweaks.zip ./
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          files: HaselTweaks.zip
