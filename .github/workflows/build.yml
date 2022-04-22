@@ -1,7 +1,9 @@
 name: Build HaselTweaks
+
 on:
   push:
     branches: 'main'
+
 jobs:
   build:
     if: "! contains(toJSON(github.event.commits.*.message), '[skip-ci]')"
@@ -47,6 +49,6 @@ jobs:
 
       - name: Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/v')
         with:
           files: HaselTweaks.zip
