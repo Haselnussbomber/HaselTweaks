@@ -6,10 +6,10 @@ using FFXIVClientStructs.FFXIV.Client.System.String;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class ChatTimestampFixer : Tweak
+public unsafe class CustomChatTimestamp : Tweak
 {
-    public override string Name => "Chat Timestamp Fixer";
-    public Configuration Config => Plugin.Config.Tweaks.ChatTimestampFixer;
+    public override string Name => "Custom Chat Timestamp";
+    public Configuration Config => Plugin.Config.Tweaks.CustomChatTimestamp;
 
     public class Configuration
     {

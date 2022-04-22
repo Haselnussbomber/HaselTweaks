@@ -16,5 +16,5 @@ internal class Configuration : IPluginConfiguration
 public class TweakConfigs
 {
     public AutoSortArmouryChest.Configuration AutoSortArmouryChest { get; init; } = new();
-    public ChatTimestampFixer.Configuration ChatTimestampFixer { get; init; } = new();
+    public CustomChatTimestamp.Configuration CustomChatTimestamp { get; init; } = new();
 }
