@@ -25,6 +25,11 @@ public partial class PluginUi
 
         Plugin.PluginInterface.UiBuilder.Draw += Draw;
         Plugin.PluginInterface.UiBuilder.OpenConfigUi += OpenConfig;
+
+        Service.Commands.AddHandler("/haseltweaks", new(delegate { _show = !_show; })
+        {
+            HelpMessage = "Show Configuration"
+        });
     }
 
     private void OpenConfig()
@@ -206,6 +211,8 @@ public sealed partial class PluginUi : IDisposable
         {
             Plugin.PluginInterface.UiBuilder.OpenConfigUi -= OpenConfig;
             Plugin.PluginInterface.UiBuilder.Draw -= Draw;
+
+            Service.Commands.RemoveHandler("/haseltweaks");
         }
 
         isDisposed = true;
