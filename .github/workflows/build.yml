@@ -46,7 +46,7 @@ jobs:
           path: bin/*
 
       - name: Zip
-        run: zip -qq -r HaselTweaks.zip bin/
+        run: cd bin && zip -qq -r ../HaselTweaks.zip ./
 
       - name: Release
         uses: softprops/action-gh-release@v1
