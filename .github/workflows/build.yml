@@ -18,21 +18,21 @@ jobs:
       - name: Download Dalamud
         if: "!contains(github.event.head_commit.message, '[stg]')"
         run: |
-          Invoke-WebRequest -Uri https://goatcorp.github.io/dalamud-distrib/latest.zip -OutFile latest.zip
-          Expand-Archive -Force latest.zip "$env:AppData\XIVLauncher\addon\Hooks\dev"
+          curl -O latest.zip https://goatcorp.github.io/dalamud-distrib/latest.zip
+          unzip latest.zip -d ${AppData}\XIVLauncher\addon\Hooks\dev
 
       - name: Download Dalamud staging
         if: "contains(github.event.head_commit.message, '[stg]')"
         run: |
-            Invoke-WebRequest -Uri https://goatcorp.github.io/dalamud-distrib/stg/latest.zip -OutFile latest.zip
-            Expand-Archive -Force latest.zip "$env:AppData\XIVLauncher\addon\Hooks\dev"
+            curl -O latest.zip https://goatcorp.github.io/dalamud-distrib/stg/latest.zip
+            unzip latest.zip -d ${AppData}\XIVLauncher\addon\Hooks\dev
 
       - name: Build
-        run: msbuild HaselTweaks.sln /p:Configuration=Release
+        run: dotnet build HaselTweaks.sln /p:Configuration=Release
 
       - name: Extract Publish
         run: |
-          Expand-Archive -Force ./bin/HaselTweaks/latest.zip ./Artifact
+          unzip ./bin/HaselTweaks/latest.zip ./Artifact
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
