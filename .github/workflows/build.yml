@@ -24,16 +24,16 @@ jobs:
         if: "!contains(github.event.head_commit.message, '[stg]')"
         run: |
           curl -o latest.zip https://goatcorp.github.io/dalamud-distrib/latest.zip
-          unzip latest.zip -d ${AppData}\XIVLauncher\addon\Hooks\dev
+          unzip latest.zip -d ~/dalamud/
 
       - name: Download Dalamud staging
         if: "contains(github.event.head_commit.message, '[stg]')"
         run: |
             curl -o latest.zip https://goatcorp.github.io/dalamud-distrib/stg/latest.zip
-            unzip latest.zip -d ${AppData}\XIVLauncher\addon\Hooks\dev
+            unzip latest.zip -d ~/dalamud/
 
       - name: Build
-        run: dotnet build HaselTweaks.sln /p:Configuration=Release
+        run: dotnet build -c Release -p:IsCI=true
 
       - name: Extract Publish
         run: |
