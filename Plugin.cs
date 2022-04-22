@@ -1,11 +1,11 @@
-using Dalamud.Game;
-using Dalamud.Logging;
-using Dalamud.Plugin;
-using FFXIVClientStructs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Dalamud.Game;
+using Dalamud.Logging;
+using Dalamud.Plugin;
+using FFXIVClientStructs;
 using XivCommon;
 
 namespace HaselTweaks;
@@ -78,18 +78,18 @@ public sealed partial class Plugin : IDisposable
 
     ~Plugin()
     {
-        this.Dispose(false);
+        Dispose(false);
     }
 
     void IDisposable.Dispose()
     {
         GC.SuppressFinalize(this);
-        this.Dispose(true);
+        Dispose(true);
     }
 
     private void Dispose(bool disposing)
     {
-        if (this.isDisposed)
+        if (isDisposed)
             return;
 
         if (disposing)
@@ -116,6 +116,6 @@ public sealed partial class Plugin : IDisposable
             XivCommon?.Dispose();
         }
 
-        this.isDisposed = true;
+        isDisposed = true;
     }
 }

@@ -17,7 +17,7 @@ public abstract class Tweak
 
     internal virtual void SetupInternal(Plugin plugin)
     {
-        this.Plugin = plugin;
+        Plugin = plugin;
         SignatureHelper.Initialise(this);
         Ready = true;
         Setup();

@@ -1,7 +1,7 @@
-﻿using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 
 namespace HaselTweaks.Structs;
 

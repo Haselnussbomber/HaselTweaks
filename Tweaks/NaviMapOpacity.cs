@@ -1,7 +1,7 @@
-﻿using Dalamud.Game;
+using System;
+using Dalamud.Game;
 using Dalamud.Hooking;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using System;
 
 namespace HaselTweaks.Tweaks;
 

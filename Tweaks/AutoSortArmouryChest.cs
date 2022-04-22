@@ -1,7 +1,7 @@
-﻿using Dalamud;
+using System.Collections.Generic;
+using Dalamud;
 using Dalamud.Game;
 using Dalamud.Logging;
-using System.Collections.Generic;
 
 namespace HaselTweaks.Tweaks;
 

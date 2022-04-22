@@ -1,19 +1,18 @@
-﻿using System;
+using System;
 
-namespace HaselTweaks
+namespace HaselTweaks;
+
+public enum ConfigFieldTypes
 {
-    public enum ConfigFieldTypes
-    {
-        Auto,
-        SingleSelect
-    }
+    Auto,
+    SingleSelect
+}
 
-    [AttributeUsage(AttributeTargets.Field)]
-    public class ConfigFieldAttribute : Attribute
-    {
-        public ConfigFieldTypes Type = ConfigFieldTypes.Auto;
-        public string Options;
-        public string Label;
-        public string Description;
-    }
+[AttributeUsage(AttributeTargets.Field)]
+public class ConfigFieldAttribute : Attribute
+{
+    public ConfigFieldTypes Type = ConfigFieldTypes.Auto;
+    public string Options = "";
+    public string Label = "";
+    public string Description = "";
 }

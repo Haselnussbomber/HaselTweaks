@@ -1,4 +1,6 @@
-﻿using Dalamud.Game;
+using System;
+using System.Runtime.InteropServices;
+using Dalamud.Game;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
@@ -7,8 +9,6 @@ using Dalamud.Memory;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using Lumina.Excel.GeneratedSheets;
-using System;
-using System.Runtime.InteropServices;
 using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 
 namespace HaselTweaks.Tweaks;

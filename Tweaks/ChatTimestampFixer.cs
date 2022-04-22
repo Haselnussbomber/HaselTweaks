@@ -1,8 +1,8 @@
-﻿using Dalamud.Hooking;
+using System;
+using Dalamud.Hooking;
 using Dalamud.Memory;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.System.String;
-using System;
 
 namespace HaselTweaks.Tweaks;
 

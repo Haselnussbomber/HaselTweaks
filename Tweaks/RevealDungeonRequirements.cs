@@ -1,6 +1,6 @@
-﻿using Dalamud.Memory;
-using Dalamud.Utility.Signatures;
 using System;
+using Dalamud.Memory;
+using Dalamud.Utility.Signatures;
 
 namespace HaselTweaks.Tweaks;
 

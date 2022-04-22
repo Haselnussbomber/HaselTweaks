@@ -1,9 +1,9 @@
-﻿using Dalamud.Hooking;
+using System;
+using System.Text.RegularExpressions;
+using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
-using System;
-using System.Text.RegularExpressions;
 using GearsetArray = HaselTweaks.Structs.RaptureGearsetModule.GearsetArray;
 using GearsetFlag = HaselTweaks.Structs.RaptureGearsetModule.GearsetFlag;
 
@@ -80,7 +80,7 @@ public unsafe class CharacterClassSwitcher : Tweak
         if (!match.Success) return;
 
         // parse icon id into uint
-        uint.TryParse(match.Groups[1].Value.TrimStart('0'), out uint iconId);
+        if (!uint.TryParse(match.Groups[1].Value.TrimStart('0'), out uint iconId)) return;
         if (iconId <= 62100) return;
 
         // yes, you see correctly. the iconId is 62100 + ClassJob RowId
