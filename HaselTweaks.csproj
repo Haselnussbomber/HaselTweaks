@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Dalamud>$(AppData)\XIVLauncher\addon\Hooks\dev\</Dalamud>
+    <Dalamud>$(AppData)\XIVLauncher\addon\Hooks\dev</Dalamud>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(IsCI)' == 'true'">
@@ -56,8 +56,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ILRepack" Version="2.0.18" />
-    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18.2" />
     <PackageReference Include="DalamudLinter" Version="1.0.3" />
     <PackageReference Include="DalamudPackager" Version="2.1.6" />
     <PackageReference Include="XivCommon" Version="5.0.1-alpha.1" />
