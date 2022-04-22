@@ -9,6 +9,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class ChatTimestampFixer : Tweak
 {
     public override string Name => "Chat Timestamp Fixer";
+    public Configuration Config => Plugin.Config.Tweaks.ChatTimestampFixer;
 
     public class Configuration
     {
@@ -37,7 +38,7 @@ public unsafe class ChatTimestampFixer : Tweak
         {
             var str = (Utf8String*)(a1 + 0x9C0);
             var time = DateTime.UnixEpoch.AddSeconds(value).ToLocalTime();
-            var formatted = time.ToString(Plugin.Config.Tweaks.ChatTimestampFixer.Format);
+            var formatted = time.ToString(Config.Format);
 
             MemoryHelper.WriteString((IntPtr)str->StringPtr, formatted + "\0");
             str->BufUsed = formatted.Length + 1;

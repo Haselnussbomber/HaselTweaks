@@ -50,6 +50,8 @@ public unsafe partial class Plugin : IDalamudPlugin
             }
         }
 
+        SaveConfig();
+
         Service.Framework.Update += OnFrameworkUpdate;
     }
 

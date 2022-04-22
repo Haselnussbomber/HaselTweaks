@@ -1,5 +1,7 @@
+using Dalamud;
 using ImGuiNET;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection;
 
@@ -94,9 +96,31 @@ namespace HaselTweaks
                                     label = attr.Label;
 
                                 var value = field.GetValue(config);
-                                switch (field.FieldType.Name)
+
+                                if (attr == null || attr.Type == ConfigFieldTypes.Auto)
                                 {
-                                    case "String": DrawString(key, label, config, field, value); break;
+                                    switch (field.FieldType.Name)
+                                    {
+                                        case "String": DrawString(key, label, config, field, (string)value!); break;
+                                        default: DrawNoDrawingFunctionError(field.Name); break;
+                                    }
+                                }
+                                else if (attr.Type == ConfigFieldTypes.SingleSelect)
+                                {
+                                    var options = tweak.GetType().GetField(attr.Options)?.GetValue(tweak);
+                                    if (options is Dictionary<ClientLanguage, List<string>>)
+                                    {
+                                        var list = ((Dictionary<ClientLanguage, List<string>>)options)[Service.ClientState.ClientLanguage];
+                                        DrawSingleSelect(key, label, config, field, (string)value!, list);
+                                    }
+                                    else
+                                    {
+                                        DrawNoDrawingFunctionError(field.Name);
+                                    }
+                                }
+                                else
+                                {
+                                    DrawNoDrawingFunctionError(field.Name);
                                 }
 
                                 if (attr != null && !string.IsNullOrEmpty(attr.Description))
@@ -125,16 +149,42 @@ namespace HaselTweaks
             ImGui.End();
         }
 
-        private void DrawString(string key, string label, object config, FieldInfo field, object? value)
+        private void DrawNoDrawingFunctionError(string fieldName)
         {
-            var str = "";
-            if (value != null) str = (string)value;
+            ImGui.PushStyleColor(ImGuiCol.Text, 0xFF0000FF);
+            ImGui.Text($"Could not find suitable drawing function for field \"{fieldName}\".");
+            ImGui.PopStyleColor();
+        }
 
+        private void DrawSingleSelect(string key, string label, object config, FieldInfo field, string value, List<string> options)
+        {
+            if (ImGui.BeginCombo(label + key, value))
+            {
+                foreach (var item in options)
+                {
+                    if (ImGui.Selectable(item, value == item))
+                    {
+                        field.SetValue(config, item);
+                        Plugin.SaveConfig();
+                    }
+
+                    if (value == item)
+                        ImGui.SetItemDefaultFocus();
+                }
+                
+                ImGui.EndCombo();
+            }
+        }
+
+        private void DrawString(string key, string label, object config, FieldInfo field, string value)
+        {
             ImGui.Text(label);
             ImGui.SameLine();
 
-            if (ImGui.InputText(key, ref str, 50))
-                field.SetValue(config, str);
+            if (ImGui.InputText(key, ref value, 50)) {
+                field.SetValue(config, value);
+                Plugin.SaveConfig();
+            }
         }
     }
 }

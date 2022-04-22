@@ -15,6 +15,7 @@ namespace HaselTweaks
 
     public class TweakConfigs
     {
+        public AutoSortArmouryChest.Configuration AutoSortArmouryChest { get; init; } = new();
         public ChatTimestampFixer.Configuration ChatTimestampFixer { get; init; } = new();
     }
 }
