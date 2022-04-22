@@ -3,6 +3,8 @@ name: Build HaselTweaks
 on:
   push:
     branches: 'main'
+  tags:
+    - v*
 
 jobs:
   build:
@@ -43,9 +45,7 @@ jobs:
           path: bin/*
 
       - name: Zip
-        uses: montudor/action-zip@v1
-        with:
-          args: zip -qq -r HaselTweaks.zip bin/
+        run: zip -qq -r HaselTweaks.zip bin/
 
       - name: Release
         uses: softprops/action-gh-release@v1
