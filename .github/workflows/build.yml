@@ -46,8 +46,16 @@ jobs:
           path: bin/*
 
       - name: Release
-        uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
         with:
           name: HaselTweaks ${{ github.ref_name }}
           files: bin/HaselTweaks/latest.zip
+
+      - name: Trigger Repo Update
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.PAT }}
+          repository: Haselnussbomber/DalamudPlugins
+          event-type: new-release
