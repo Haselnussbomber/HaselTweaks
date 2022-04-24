@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection;
 using Dalamud;
-using Dalamud.Logging;
 using ImGuiNET;
 
 namespace HaselTweaks;
@@ -109,16 +108,6 @@ public partial class PluginUi
                                 label = attr.Label;
 
                             var value = field.GetValue(config);
-
-                            Action? onChange = null!;
-                            if (attr != null && !string.IsNullOrEmpty(attr.OnChange))
-                            {
-                                var method = tweak.GetType().GetMethod(attr.OnChange, BindingFlags.Instance | BindingFlags.NonPublic);
-                                if (method != null)
-                                {
-                                    onChange = () => { PluginLog.Log("onChange called"); method.Invoke(tweak, null); };
-                                }
-                            }
 
                             if (attr == null || attr.Type == ConfigFieldTypes.Auto)
                             {
