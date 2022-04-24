@@ -115,13 +115,13 @@ public partial class PluginUi
                                 var configDrawDataType = typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType });
                                 var data = Activator.CreateInstance(configDrawDataType)!;
 
-                                data.GetType().GetProperty("Plugin")?.SetValue(data, Plugin);
-                                data.GetType().GetProperty("Tweak")?.SetValue(data, tweak);
-                                data.GetType().GetProperty("Key")?.SetValue(data, key);
-                                data.GetType().GetProperty("Label")?.SetValue(data, label);
-                                data.GetType().GetProperty("Config")?.SetValue(data, config);
-                                data.GetType().GetProperty("Field")?.SetValue(data, field);
-                                data.GetType().GetProperty("Attr")?.SetValue(data, attr);
+                                data.GetType().GetProperty("Plugin")!.SetValue(data, Plugin);
+                                data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
+                                data.GetType().GetProperty("Key")!.SetValue(data, key);
+                                data.GetType().GetProperty("Label")!.SetValue(data, label);
+                                data.GetType().GetProperty("Config")!.SetValue(data, config);
+                                data.GetType().GetProperty("Field")!.SetValue(data, field);
+                                data.GetType().GetProperty("Attr")!.SetValue(data, attr);
 
                                 switch (field.FieldType.Name)
                                 {
@@ -137,8 +137,18 @@ public partial class PluginUi
                                 var options = tweak.GetType().GetField(attr.Options)?.GetValue(tweak);
                                 if (options is Dictionary<ClientLanguage, List<string>> opts)
                                 {
+                                    var data = new ConfigDrawData<string>()
+                                    {
+                                        Plugin = Plugin,
+                                        Tweak = tweak,
+                                        Key = key,
+                                        Label = label,
+                                        Config = config,
+                                        Field = field,
+                                        Attr = attr,
+                                    };
                                     var list = opts[Service.ClientState.ClientLanguage];
-                                    DrawSingleSelect(key, label, config, field, (string)value!, list);
+                                    DrawSingleSelect(data, list);
                                 }
                                 else
                                 {
@@ -185,19 +195,18 @@ public partial class PluginUi
         ImGui.PopStyleColor();
     }
 
-    private void DrawSingleSelect(string key, string label, object config, FieldInfo field, string value, List<string> options)
+    private void DrawSingleSelect(ConfigDrawData<string> data, List<string> options)
     {
-        if (ImGui.BeginCombo(label + key, value))
+        if (ImGui.BeginCombo(data.Label + data.Key, data.Value))
         {
             foreach (var item in options)
             {
-                if (ImGui.Selectable(item, value == item))
+                if (ImGui.Selectable(item, data.Value == item))
                 {
-                    field.SetValue(config, item);
-                    Plugin.SaveConfig();
+                    data.Value = item;
                 }
 
-                if (value == item)
+                if (data.Value == item)
                     ImGui.SetItemDefaultFocus();
             }
 
