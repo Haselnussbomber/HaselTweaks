@@ -20,7 +20,6 @@ public unsafe class DTR : Tweak
 
     [Signature("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 3C 01 75 0C 48 8D 0D ?? ?? ?? ?? E8", ScanType = ScanType.StaticAddress)]
     private IntPtr InstanceIdAddress { get; init; }
-    private byte InstanceId => Marshal.ReadByte(InstanceIdAddress + 0x20);
 
     public DtrBarEntry DtrInstance = null!;
     public DtrBarEntry DtrFPS = null!;
@@ -56,13 +55,21 @@ public unsafe class DTR : Tweak
 
     private void UpdateInstance()
     {
-        if (InstanceId <= 0 || InstanceId >= 10)
+        if (InstanceIdAddress == IntPtr.Zero)
         {
             if (DtrInstance.Shown) DtrInstance.Shown = false;
             return;
         }
 
-        var instanceIcon = (char)(SeIconChar.Instance1 + (InstanceId - 1));
+        var instanceId = Marshal.ReadByte(InstanceIdAddress + 0x20);
+
+        if (instanceId <= 0 || instanceId >= 10)
+        {
+            if (DtrInstance.Shown) DtrInstance.Shown = false;
+            return;
+        }
+
+        var instanceIcon = (char)(SeIconChar.Instance1 + (instanceId - 1));
         DtrInstance.Text = instanceIcon.ToString();
         if (!DtrInstance.Shown) DtrInstance.Shown = true;
     }

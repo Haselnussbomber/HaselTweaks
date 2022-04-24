@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Logging;
@@ -17,7 +18,8 @@ public unsafe class ForcedCutsceneMusic : Tweak
     private delegate IntPtr SetValueByIndexDelegate(IntPtr baseAddress, ulong kind, ulong value, ulong unk1, ulong triggerUpdate, ulong unk3);
 
     [Signature("4C 8D 0D ?? ?? ?? ?? 44 0F B7 43", ScanType = ScanType.StaticAddress)]
-    private int* CurrentCutsceneId { get; init; }
+    private IntPtr CurrentCutsceneIdAddress { get; init; }
+    public override bool CanLoad => CurrentCutsceneIdAddress != IntPtr.Zero;
 
     private ConfigModule* ConfigModule
     {
@@ -83,7 +85,7 @@ public unsafe class ForcedCutsceneMusic : Tweak
             wasBgmMuted = isBgmMuted;
             wasInCutscene = true;
 
-            if (isBgmMuted && *CurrentCutsceneId != 3) // disable for bed cutscene on login/logout
+            if (isBgmMuted && Marshal.ReadInt32(CurrentCutsceneIdAddress) != 3) // disable for bed cutscene on login/logout
                 IsBgmMuted = false;
         }
         else if (wasInCutscene && !isInCutscene)
