@@ -13,8 +13,8 @@ public unsafe class ForcedCutsceneMusic : Tweak
     public override string Description => "Auto-unmutes background music for cutscenes.";
 
     [Signature("89 54 24 10 53 55 57 41 54 41 55 41 56 48 83 EC 48 8B C2 45 8B E0 44 8B D2 45 32 F6 44 8B C2 45 32 ED")]
-    private SetOptionDelegate SetValueByIndex { get; init; } = null!;
-    private delegate IntPtr SetOptionDelegate(IntPtr baseAddress, ulong kind, ulong value, ulong unk1, ulong triggerUpdate, ulong unk3);
+    private SetValueByIndexDelegate SetValueByIndex { get; init; } = null!;
+    private delegate IntPtr SetValueByIndexDelegate(IntPtr baseAddress, ulong kind, ulong value, ulong unk1, ulong triggerUpdate, ulong unk3);
 
     private ConfigModule* ConfigModule
     {
