@@ -57,5 +57,5 @@ jobs:
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.PAT }}
-          repository: Haselnussbomber/DalamudPlugins
+          repository: Haselnussbomber/MyDalamudPlugins
           event-type: new-release
