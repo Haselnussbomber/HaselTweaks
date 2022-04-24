@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using Dalamud;
@@ -48,7 +49,7 @@ public partial class PluginUi
 
         if (ImGui.Begin(Plugin.Name, ref _show))
         {
-            foreach (var tweak in Plugin.Tweaks)
+            foreach (var tweak in Plugin.Tweaks.OrderBy(t => t.Name))
             {
                 if (tweak.ForceLoad) continue;
 
