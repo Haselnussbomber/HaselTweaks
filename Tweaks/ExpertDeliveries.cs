@@ -9,6 +9,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class ExpertDeliveries : Tweak
 {
     public override string Name => "Expert Deliveries";
+    public override string Description => "Opens the Grand Company Delivery Missions window on the third tab (Expert Delivery).";
 
     private delegate void* ReceiveEventDelegate(IntPtr addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr resNode);
 

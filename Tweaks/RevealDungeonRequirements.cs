@@ -7,6 +7,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class RevealDungeonRequirements : Tweak
 {
     public override string Name => "Reveal Dungeon Requirements";
+    public override string Description => "Reveals dungeon names in duty finder. Useful for unlocking Mentor roulette.";
 
     [Signature("48 8B C8 48 8B D8 48 8B 10 FF 52 68 84 C0 74 1B")]
     private IntPtr Address { get; init; }

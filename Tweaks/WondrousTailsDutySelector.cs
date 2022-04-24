@@ -11,6 +11,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class WondrousTailsDutySelector : Tweak
 {
     public override string Name => "Wondrous Tails Duty Selector";
+    public override string Description => "Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.";
 
     [Signature("66 83 FA 19 75 25 53 48 83 EC 20 49 8B D9 45 85 C0 75 13 E8", DetourName = nameof(DutySlot_ReceiveEvent))]
     private Hook<DutySlotReceiveEventDelegate>? Hook { get; init; }
@@ -48,7 +49,6 @@ public unsafe class WondrousTailsDutySelector : Tweak
 
     private void HandleClick(DutySlot* dutySlot)
     {
-        PluginLog.Log("HandleClick!");
         var UIState = FFXIVClientStructs.FFXIV.Client.Game.UI.UIState.Instance();
         if (UIState == null) return;
 

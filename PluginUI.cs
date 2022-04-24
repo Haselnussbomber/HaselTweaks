@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection;
 using Dalamud;
+using Dalamud.Logging;
 using ImGuiNET;
 
 namespace HaselTweaks;
@@ -79,10 +80,23 @@ public partial class PluginUi
 
                 ImGui.SameLine();
 
+                var drawDescription = () =>
+                {
+                    if (!string.IsNullOrEmpty(tweak.Description) && ImGui.IsItemHovered())
+                    {
+                        ImGui.SetTooltip(tweak.Description);
+                    }
+                };
+
                 var config = Plugin.Config.Tweaks.GetType().GetProperty(tweak.InternalName)?.GetValue(Plugin.Config.Tweaks);
+
                 if (config != null)
                 {
-                    if (ImGui.TreeNodeEx(tweak.Name))
+                    var isOpen = ImGui.TreeNodeEx(tweak.Name);
+
+                    drawDescription();
+
+                    if (isOpen)
                     {
                         foreach (var field in config.GetType().GetFields())
                         {
@@ -96,11 +110,36 @@ public partial class PluginUi
 
                             var value = field.GetValue(config);
 
+                            Action? onChange = null!;
+                            if (attr != null && !string.IsNullOrEmpty(attr.OnChange))
+                            {
+                                var method = tweak.GetType().GetMethod(attr.OnChange, BindingFlags.Instance | BindingFlags.NonPublic);
+                                if (method != null)
+                                {
+                                    onChange = () => { PluginLog.Log("onChange called"); method.Invoke(tweak, null); };
+                                }
+                            }
+
                             if (attr == null || attr.Type == ConfigFieldTypes.Auto)
                             {
+                                var type = field.FieldType;
+                                var configDrawDataType = typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType });
+                                var data = Activator.CreateInstance(configDrawDataType)!;
+
+                                data.GetType().GetProperty("Plugin")?.SetValue(data, Plugin);
+                                data.GetType().GetProperty("Tweak")?.SetValue(data, tweak);
+                                data.GetType().GetProperty("Key")?.SetValue(data, key);
+                                data.GetType().GetProperty("Label")?.SetValue(data, label);
+                                data.GetType().GetProperty("Config")?.SetValue(data, config);
+                                data.GetType().GetProperty("Field")?.SetValue(data, field);
+                                data.GetType().GetProperty("Attr")?.SetValue(data, attr);
+
                                 switch (field.FieldType.Name)
                                 {
-                                    case "String": DrawString(key, label, config, field, (string)value!); break;
+                                    case nameof(String): DrawString((ConfigDrawData<string>)data); break;
+                                    case nameof(Single): DrawFloat((ConfigDrawData<float>)data); break;
+                                    case nameof(Boolean): DrawBool((ConfigDrawData<bool>)data); break;
+
                                     default: DrawNoDrawingFunctionError(field.Name); break;
                                 }
                             }
@@ -122,8 +161,8 @@ public partial class PluginUi
                                 DrawNoDrawingFunctionError(field.Name);
                             }
 
-                            if (attr != null && !string.IsNullOrEmpty(attr.Description))
-                                ImGui.Text(attr.Description);
+                            if (attr != null && !string.IsNullOrEmpty(attr.Description) && ImGui.IsItemHovered())
+                                ImGui.SetTooltip(attr.Description);
                         }
 
                         ImGui.TreePop();
@@ -136,6 +175,8 @@ public partial class PluginUi
                     ImGui.TreeNodeEx(tweak.Name, ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen);
                     ImGui.PopStyleColor();
                     ImGui.PopStyleColor();
+
+                    drawDescription();
                 }
 
                 if (tweak != Plugin.Tweaks[^1])
@@ -175,15 +216,37 @@ public partial class PluginUi
         }
     }
 
-    private void DrawString(string key, string label, object config, FieldInfo field, string value)
+    private static void DrawString(ConfigDrawData<string> data)
     {
-        if (ImGui.InputText(label + key, ref value, 50))
+        var value = data.Value;
+        if (ImGui.InputText(data.Label + data.Key, ref value, 50))
         {
-            field.SetValue(config, value);
-            Plugin.SaveConfig();
+            data.Value = value;
+        }
+    }
+
+    private static void DrawFloat(ConfigDrawData<float> data)
+    {
+        var min = data.Attr != null ? data.Attr.Min : 0f;
+        var max = data.Attr != null ? data.Attr.Max : 100f;
+
+        var value = data.Value;
+        if (ImGui.SliderFloat(data.Label + data.Key, ref value, min, max))
+        {
+            data.Value = value;
+        }
+    }
+
+    private static void DrawBool(ConfigDrawData<bool> data)
+    {
+        var value = data.Value;
+        if (ImGui.Checkbox(data.Label + data.Key, ref value))
+        {
+            data.Value = value;
         }
     }
 }
+
 public sealed partial class PluginUi : IDisposable
 {
     private bool isDisposed;

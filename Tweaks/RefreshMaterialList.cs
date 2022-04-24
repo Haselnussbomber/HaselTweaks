@@ -9,6 +9,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class RefreshMaterialList : Tweak
 {
     public override string Name => "Refresh Material List";
+    public override string Description => "Refreshes the material list and recipe tree when you've crafted or gathered an item.";
 
     private delegate void* ReceiveEventDelegate(IntPtr addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr resNode);
 

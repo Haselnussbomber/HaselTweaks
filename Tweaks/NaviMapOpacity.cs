@@ -9,6 +9,26 @@ public unsafe class NaviMapOpacity : Tweak
 {
     public override string Name => "Navi Map Opacity";
 
+    public Configuration Config => Plugin.Config.Tweaks.NaviMapOpacity;
+
+    public class Configuration
+    {
+        [ConfigField(Description = "Changes collision box to square instead of round.", OnChange = nameof(OnChangeCollision))]
+        public bool Square = false;
+
+        [ConfigField(Max = 1)]
+        public float DefaultOpacity = 0.8f;
+
+        [ConfigField(Max = 1)]
+        public float HoverOpacity = 1f;
+
+        [ConfigField(OnChange = nameof(OnChangeVisibility))]
+        public bool HideCoords = true;
+
+        [ConfigField(OnChange = nameof(OnChangeVisibility))]
+        public bool HideWeather = true;
+    }
+
     private enum NodeId : uint
     {
         Collision = 19,
@@ -37,11 +57,10 @@ public unsafe class NaviMapOpacity : Tweak
         if (addon == null) return;
 
         // reset visibility
-        UpdateVisibility(addon, true);
+        SetVisibility(addon, true);
 
         // add back circular collision flag
-        var collisionNode = Utils.GetNode(addon, (uint)NodeId.Collision);
-        collisionNode->Flags_2 &= 1 << 23;
+        SetCollision(addon, false);
     }
 
     public override void Dispose()
@@ -65,17 +84,12 @@ public unsafe class NaviMapOpacity : Tweak
                 Hook?.Enable();
             }
 
-            // remove circular collision flag
-            var collisionNode = Utils.GetNode(addon, (uint)NodeId.Collision);
-            if (collisionNode != null)
-            {
-                collisionNode->Flags_2 &= ~(uint)(1 << 23);
-            }
+            SetCollision(addon, Config.Square);
 
             setupComplete = true;
         }
 
-        UpdateVisibility(addon, isHovering);
+        SetVisibility(addon, isHovering);
     }
 
     private void* OnEvent(AtkUnitBase* addon, AtkEventType eventType, int eventParam, AtkEventListener* listener, AtkResNode* nodeParam)
@@ -92,10 +106,42 @@ public unsafe class NaviMapOpacity : Tweak
         return Hook!.Original(addon, eventType, eventParam, listener, nodeParam);
     }
 
-    private static void UpdateVisibility(AtkUnitBase* addon, bool visible)
+    private void OnChangeCollision()
     {
-        Utils.SetVisibility(addon, (uint)NodeId.Coords, visible);
-        Utils.SetVisibility(addon, (uint)NodeId.Weather, visible);
-        Utils.SetAlpha(addon, (uint)NodeId.Map, visible ? 1f : 0.8f);
+        var addon = Utils.GetUnitBase("_NaviMap");
+        if (addon == null) return;
+        SetCollision(addon, Config.Square);
+    }
+
+    private void OnChangeVisibility()
+    {
+        var addon = Utils.GetUnitBase("_NaviMap");
+        if (addon == null) return;
+        Utils.SetVisibility(addon, (uint)NodeId.Coords, !Config.HideCoords);
+        Utils.SetVisibility(addon, (uint)NodeId.Weather, !Config.HideWeather);
+    }
+
+    private void SetVisibility(AtkUnitBase* addon, bool hovered)
+    {
+        if (Config.HideCoords) Utils.SetVisibility(addon, (uint)NodeId.Coords, hovered);
+        if (Config.HideWeather) Utils.SetVisibility(addon, (uint)NodeId.Weather, hovered);
+        Utils.SetAlpha(addon, (uint)NodeId.Map, hovered ? Config.HoverOpacity : Config.DefaultOpacity);
+    }
+
+    private void SetCollision(AtkUnitBase* addon, bool square)
+    {
+        var collisionNode = Utils.GetNode(addon, (uint)NodeId.Collision);
+        if (collisionNode == null) return;
+
+        if (square)
+        {
+            // remove circular collision flag
+            collisionNode->Flags_2 &= ~(uint)(1 << 23);
+        }
+        else
+        {
+            // add circular collision flag
+            collisionNode->Flags_2 |= 1 << 23;
+        }
     }
 }

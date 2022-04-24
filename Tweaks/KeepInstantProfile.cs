@@ -7,6 +7,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class KeepInstantProfile : Tweak
 {
     public override string Name => "Keep Instant Profile";
+    public override string Description => "Prevents Instant Profile from being reset upon saving/updating the current Gearset.";
 
     [Signature("8B D5 49 8B CE E8 ?? ?? ?? ?? 84 C0 0F 84 ?? ?? ?? ?? 0F B6 4E 37")]
     private IntPtr Address { get; init; }

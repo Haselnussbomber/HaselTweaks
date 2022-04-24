@@ -12,6 +12,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class CharacterClassSwitcher : Tweak
 {
     public override string Name => "Character Class Switcher";
+    public override string Description => "Allow clicking on classes to switch to Gearsets. Same functionality as from SimpleTweaks, but written differently. Also equips the Gearset with the highest ItemLevel.";
 
     [Signature("48 89 5C 24 ?? 57 48 83 EC 20 48 8B D9 4D 8B D1 0F B7 CA 41 8B F8 83 E9 06 74 7F", DetourName = nameof(OnEvent))]
     private Hook<OnEventDelegate>? OnEventHook { get; init; }

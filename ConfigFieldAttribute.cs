@@ -15,4 +15,7 @@ public class ConfigFieldAttribute : Attribute
     public string Options = "";
     public string Label = "";
     public string Description = "";
+    public float Min = 0;
+    public float Max = 100;
+    public string OnChange = "";
 }

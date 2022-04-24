@@ -9,6 +9,7 @@ public abstract class Tweak
 
     public string InternalName => GetType().Name;
     public abstract string Name { get; }
+    public virtual string Description { get; } = string.Empty;
 
     public virtual bool CanLoad => true;
     public virtual bool ForceLoad => false;
