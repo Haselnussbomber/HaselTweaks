@@ -16,6 +16,9 @@ public unsafe class ForcedCutsceneMusic : Tweak
     private SetValueByIndexDelegate SetValueByIndex { get; init; } = null!;
     private delegate IntPtr SetValueByIndexDelegate(IntPtr baseAddress, ulong kind, ulong value, ulong unk1, ulong triggerUpdate, ulong unk3);
 
+    [Signature("4C 8D 0D ?? ?? ?? ?? 44 0F B7 43", ScanType = ScanType.StaticAddress)]
+    private int* CurrentCutsceneId { get; init; }
+
     private ConfigModule* ConfigModule
     {
         get
@@ -80,7 +83,7 @@ public unsafe class ForcedCutsceneMusic : Tweak
             wasBgmMuted = isBgmMuted;
             wasInCutscene = true;
 
-            if (isBgmMuted)
+            if (isBgmMuted && *CurrentCutsceneId != 3) // disable for bed cutscene on login/logout
                 IsBgmMuted = false;
         }
         else if (wasInCutscene && !isInCutscene)
