@@ -5,27 +5,27 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class NaviMapOpacity : Tweak
+public unsafe class MinimapAdjustments : Tweak
 {
-    public override string Name => "Navi Map Opacity";
+    public override string Name => "Minimap Adjustments";
 
-    public Configuration Config => Plugin.Config.Tweaks.NaviMapOpacity;
+    public Configuration Config => Plugin.Config.Tweaks.MinimapAdjustments;
 
     public class Configuration
     {
-        [ConfigField(Description = "Changes collision box to square instead of round.", OnChange = nameof(OnChangeCollision))]
+        [ConfigField(Label = "Square Collision", Description = "Changes collision box to from round to square.", OnChange = nameof(OnChangeCollision))]
         public bool Square = false;
 
-        [ConfigField(Max = 1)]
+        [ConfigField(Label = "Default Opacity", Max = 1)]
         public float DefaultOpacity = 0.8f;
 
-        [ConfigField(Max = 1)]
+        [ConfigField(Label = "Hover Opacity", Max = 1)]
         public float HoverOpacity = 1f;
 
-        [ConfigField(OnChange = nameof(OnChangeVisibility))]
+        [ConfigField(Label = "Hide Coordinates", OnChange = nameof(OnChangeVisibility))]
         public bool HideCoords = true;
 
-        [ConfigField(OnChange = nameof(OnChangeVisibility))]
+        [ConfigField(Label = "Hide Weather", OnChange = nameof(OnChangeVisibility))]
         public bool HideWeather = true;
     }
 
