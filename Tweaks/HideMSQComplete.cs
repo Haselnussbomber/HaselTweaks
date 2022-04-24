@@ -7,7 +7,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class HideMSQComplete : Tweak
 {
     public override string Name => "Hide MSQ Complete";
-    public override string Description => "Hides the Main Scenario Guide when you've completed it. Job quests are still being displayed.";
+    public override string Description => "Hides the Main Scenario Guide when you've completed the MSQ. Job quests are still being displayed.";
 
     private enum NodeId : uint
     {
