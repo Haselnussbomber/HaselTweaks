@@ -21,7 +21,7 @@ public unsafe class ForcedCutsceneMusic : Tweak
 
     [Signature("89 54 24 10 53 55 57 41 54 41 55 41 56 48 83 EC 48 8B C2 45 8B E0 44 8B D2 45 32 F6 44 8B C2 45 32 ED")]
     private SetValueByIndexDelegate SetValueByIndex { get; init; } = null!;
-    private delegate IntPtr SetValueByIndexDelegate(ConfigModule* self, ulong kind, ulong value, ulong unk1, ulong triggerUpdate, ulong unk3);
+    private delegate IntPtr SetValueByIndexDelegate(ConfigModule* self, ulong kind, ulong value, ulong a4, ulong triggerUpdate, ulong a6);
 
     [Signature("E8 ?? ?? ?? ?? 48 8B F0 48 89 45 0F", DetourName = nameof(CutsceneStateCtorDetour))]
     private Hook<CutsceneStateCtorDelegate> CutsceneStateCtorHook { get; init; } = null!;
@@ -45,23 +45,18 @@ public unsafe class ForcedCutsceneMusic : Tweak
         }
     }
 
-    private bool GetBoolConfigValue(uint optionId)
-    {
-        var configModule = ConfigModule;
-        if (configModule == null) return false;
-
-        var value = configModule->GetValue(optionId);
-        if (value == null) return false;
-
-        return value->Byte == 0x01;
-    }
-
     private bool IsBgmMuted
     {
         get
         {
+            var configModule = ConfigModule;
+            if (configModule == null) return false;
+
             // BgmMuted from https://github.com/karashiiro/SoundSetter/blob/master/SoundSetter/OptionInternals/OptionKind.cs
-            return GetBoolConfigValue(35);
+            var value = configModule->GetValue(35);
+            if (value == null) return false;
+
+            return value->Byte == 0x01;
         }
         set
         {
@@ -78,8 +73,6 @@ public unsafe class ForcedCutsceneMusic : Tweak
 
     public override void Enable()
     {
-        // initial state
-        wasBgmMuted = IsBgmMuted;
         CutsceneStateCtorHook?.Enable();
         CutsceneStateDtorHook?.Enable();
     }

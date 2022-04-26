@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Reflection;
 using Dalamud;
 using ImGuiNET;
 
@@ -100,26 +99,14 @@ public partial class PluginUi
                     {
                         foreach (var field in config.GetType().GetFields())
                         {
-                            var key = $"###{tweak.InternalName}#{field.Name}";
-
                             var attr = (ConfigFieldAttribute?)Attribute.GetCustomAttribute(field, typeof(ConfigFieldAttribute));
-
-                            var label = field.Name;
-                            if (attr != null && !string.IsNullOrEmpty(attr.Label))
-                                label = attr.Label;
-
-                            var value = field.GetValue(config);
 
                             if (attr == null || attr.Type == ConfigFieldTypes.Auto)
                             {
-                                var type = field.FieldType;
-                                var configDrawDataType = typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType });
-                                var data = Activator.CreateInstance(configDrawDataType)!;
+                                var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType }))!;
 
                                 data.GetType().GetProperty("Plugin")!.SetValue(data, Plugin);
                                 data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
-                                data.GetType().GetProperty("Key")!.SetValue(data, key);
-                                data.GetType().GetProperty("Label")!.SetValue(data, label);
                                 data.GetType().GetProperty("Config")!.SetValue(data, config);
                                 data.GetType().GetProperty("Field")!.SetValue(data, field);
                                 data.GetType().GetProperty("Attr")!.SetValue(data, attr);
@@ -142,8 +129,6 @@ public partial class PluginUi
                                     {
                                         Plugin = Plugin,
                                         Tweak = tweak,
-                                        Key = key,
-                                        Label = label,
                                         Config = config,
                                         Field = field,
                                         Attr = attr,
@@ -170,8 +155,8 @@ public partial class PluginUi
                 }
                 else
                 {
-                    ImGui.PushStyleColor(ImGuiCol.HeaderHovered, 0x0);
-                    ImGui.PushStyleColor(ImGuiCol.HeaderActive, 0x0);
+                    ImGui.PushStyleColor(ImGuiCol.HeaderHovered, 0);
+                    ImGui.PushStyleColor(ImGuiCol.HeaderActive, 0);
                     ImGui.TreeNodeEx(tweak.Name, ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen);
                     ImGui.PopStyleColor();
                     ImGui.PopStyleColor();
@@ -196,16 +181,14 @@ public partial class PluginUi
         ImGui.PopStyleColor();
     }
 
-    private void DrawSingleSelect(ConfigDrawData<string> data, List<string> options)
+    private static void DrawSingleSelect(ConfigDrawData<string> data, List<string> options)
     {
         if (ImGui.BeginCombo(data.Label + data.Key, data.Value))
         {
             foreach (var item in options)
             {
                 if (ImGui.Selectable(item, data.Value == item))
-                {
                     data.Value = item;
-                }
 
                 if (data.Value == item)
                     ImGui.SetItemDefaultFocus();
@@ -219,9 +202,7 @@ public partial class PluginUi
     {
         var value = data.Value;
         if (ImGui.InputText(data.Label + data.Key, ref value, 50))
-        {
             data.Value = value;
-        }
     }
 
     private static void DrawFloat(ConfigDrawData<float> data)
@@ -231,18 +212,14 @@ public partial class PluginUi
 
         var value = data.Value;
         if (ImGui.SliderFloat(data.Label + data.Key, ref value, min, max))
-        {
             data.Value = value;
-        }
     }
 
     private static void DrawBool(ConfigDrawData<bool> data)
     {
         var value = data.Value;
         if (ImGui.Checkbox(data.Label + data.Key, ref value))
-        {
             data.Value = value;
-        }
     }
 }
 
@@ -263,6 +240,8 @@ public sealed partial class PluginUi : IDisposable
 
         if (disposing)
         {
+            Show = false;
+
             Plugin.PluginInterface.UiBuilder.OpenConfigUi -= OpenConfig;
             Plugin.PluginInterface.UiBuilder.Draw -= Draw;
 

@@ -12,10 +12,14 @@ public enum ConfigFieldTypes
 public class ConfigFieldAttribute : Attribute
 {
     public ConfigFieldTypes Type = ConfigFieldTypes.Auto;
-    public string Options = "";
     public string Label = "";
     public string Description = "";
+    public string OnChange = "";
+
+    // SingleSelect
+    public string Options = "";
+    
+    // float
     public float Min = 0;
     public float Max = 100;
-    public string OnChange = "";
 }

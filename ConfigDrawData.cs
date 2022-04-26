@@ -7,11 +7,12 @@ internal class ConfigDrawData<T>
     public Plugin Plugin { get; init; } = null!;
     public Tweak Tweak { get; init; } = null!;
 
-    public string Key { get; init; } = null!;
-    public string Label { get; init; } = null!;
     public object Config { get; init; } = null!;
     public FieldInfo Field { get; init; } = null!;
     public ConfigFieldAttribute? Attr { get; init; }
+
+    public string Key => $"###{Tweak.InternalName}#{Field.Name}";
+    public string Label => Attr != null && !string.IsNullOrEmpty(Attr.Label) ? Attr.Label : Field.Name;
 
     public T? Value
     {

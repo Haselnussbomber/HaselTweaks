@@ -18,11 +18,10 @@ public unsafe class KeepInstantPortrait : Tweak
     {
         OriginalBytes = MemoryHelper.ReadRaw(Address, 5); // 5 = jmpBytes length
 
-        var jzPos = MemoryHelper.Read<uint>(Address + 0x0E);
-        jzPos += 0x0D; // position compensation
-
         var jmpBytes = new byte[] { 0xE9, 0x00, 0x00, 0x00, 0x00 }; // JMP rel32
-        BitConverter.GetBytes(jzPos).CopyTo(jmpBytes, 1);
+
+        var pos = MemoryHelper.Read<uint>(Address + 0x0E) + 0x0D;
+        BitConverter.GetBytes(pos).CopyTo(jmpBytes, 1);
 
         MemoryHelper.ChangePermission(Address, 5, MemoryProtection.ExecuteReadWrite);
         MemoryHelper.WriteRaw(Address, jmpBytes);
