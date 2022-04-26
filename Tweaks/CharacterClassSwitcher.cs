@@ -28,6 +28,12 @@ public unsafe class CharacterClassSwitcher : Tweak
         SetupHook?.Enable();
     }
 
+    public override void Disable()
+    {
+        OnEventHook?.Disable();
+        SetupHook?.Disable();
+    }
+
     public override void Dispose()
     {
         OnEventHook?.Dispose();

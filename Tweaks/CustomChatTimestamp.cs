@@ -32,6 +32,11 @@ public unsafe class CustomChatTimestamp : Tweak
         Hook?.Disable();
     }
 
+    public override void Dispose()
+    {
+        Hook?.Dispose();
+    }
+
     private byte* Detour(IntPtr a1, ulong addonRowId, ulong value, IntPtr a4)
     {
         if (addonRowId == 7840)
