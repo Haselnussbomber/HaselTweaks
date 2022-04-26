@@ -63,7 +63,7 @@ public unsafe class ForcedCutsceneMusic : Tweak
             var configModule = ConfigModule;
             if (configModule == null) return;
 
-            PluginLog.Log($"[ForcedCutsceneMusic] setting IsBgmMuted to {value}");
+            Log($"setting IsBgmMuted to {value}");
 
             SetValueByIndex(configModule, 35, value ? 1u : 0u, 0, 1, 0);
         }
@@ -93,9 +93,7 @@ public unsafe class ForcedCutsceneMusic : Tweak
     {
         var ret = CutsceneStateCtorHook.Original(self, cutsceneId, a3, a4, a5, a6, a7);
 
-        PluginLog.Information($"[ForcedCutsceneMusic] Cutscene {cutsceneId} started");
-
-        PluginLog.Debug($"CutsceneStateCtorDetour({(IntPtr)self:X}, {cutsceneId}, {a3}, {a4}, {a5}, {a6}, {a7}) = {(IntPtr)ret:X}");
+        Log($"Cutscene {cutsceneId} started");
 
         var isBgmMuted = IsBgmMuted;
 
@@ -109,11 +107,9 @@ public unsafe class ForcedCutsceneMusic : Tweak
 
     public CutsceneState* CutsceneStateDtor_Detour(CutsceneState* self, IntPtr a2, IntPtr a3, IntPtr a4)
     {
-        PluginLog.Information($"[ForcedCutsceneMusic] Cutscene {self->Id} ended");
+        Log($"Cutscene {self->Id} ended");
 
         var ret = CutsceneStateDtorHook.Original(self, a2, a3, a4);
-
-        PluginLog.Debug($"CutsceneStateDtor_Detour({(IntPtr)self:X}, {a2:X}, {a3:X}, {a4:X}) = {(IntPtr)ret:X}");
 
         if (wasBgmMuted && Config.Restore)
             IsBgmMuted = true;

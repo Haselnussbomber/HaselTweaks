@@ -122,10 +122,10 @@ public unsafe class AutoSortArmouryChest : Tweak
             execute = "/itemsort execute アーマリーチェスト";
         }
 
-        PluginLog.Log($"[AutoSortArmouryChest] Executing {definition}");
+        Log($"Executing {definition}");
         Plugin.XivCommon.Functions.Chat.SendMessage(definition);
 
-        PluginLog.Log($"[AutoSortArmouryChest] Executing {execute}");
+        Log($"Executing {execute}");
         Plugin.XivCommon.Functions.Chat.SendMessage(execute);
     }
 }

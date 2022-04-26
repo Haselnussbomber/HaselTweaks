@@ -140,7 +140,7 @@ public unsafe class WondrousTailsDutySelector : Tweak
                 break;
 
             default:
-                PluginLog.Verbose($"click registered: id {id}, unknown type {entry.Type}, {entry.Text.Value?.Description}");
+                Debug($"unhandled click registered: id {id}, unknown type {entry.Type}, {entry.Text.Value?.Description}");
                 break;
         }
     }

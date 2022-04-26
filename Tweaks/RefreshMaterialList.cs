@@ -39,14 +39,14 @@ public unsafe class RefreshMaterialList : Tweak
 
         if (recipeMaterialList != null)
         {
-            PluginLog.Verbose("[RefreshMaterialList] Refreshing RecipeMaterialList");
+            Log("Refreshing RecipeMaterialList");
             var receiveEvent = Marshal.GetDelegateForFunctionPointer<ReceiveEventDelegate>((IntPtr)recipeMaterialList->AtkEventListener.vfunc[2]);
             receiveEvent((IntPtr)recipeMaterialList, AtkEventType.ButtonClick, 1, recipeMaterialList->RootNode->AtkEventManager.Event, (IntPtr)recipeMaterialList->RootNode);
         }
 
         if (recipeTree != null)
         {
-            PluginLog.Verbose("[RefreshMaterialList] Refreshing RecipeTree");
+            Log("Refreshing RecipeTree");
             var receiveEvent = Marshal.GetDelegateForFunctionPointer<ReceiveEventDelegate>((IntPtr)recipeTree->AtkEventListener.vfunc[2]);
             receiveEvent((IntPtr)recipeTree, AtkEventType.ButtonClick, 0, recipeTree->RootNode->AtkEventManager.Event, (IntPtr)recipeTree->RootNode);
         }
@@ -67,7 +67,7 @@ public unsafe class RefreshMaterialList : Tweak
             if (changed)
             {
                 var changestr = state.OnOpen ? "opened" : "closed";
-                PluginLog.Verbose($"[RefreshMaterialList] {state.Addon} {changestr}");
+                Debug($"{state.Addon} {changestr}");
             }
             ret = ret || changed;
         }

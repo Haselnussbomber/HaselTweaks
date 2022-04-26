@@ -1,4 +1,6 @@
+using System;
 using Dalamud.Game;
+using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 
 namespace HaselTweaks;
@@ -47,4 +49,50 @@ public abstract class Tweak
     public virtual void Disable() { }
     public virtual void Dispose() { }
     public virtual void OnFrameworkUpdate(Framework framework) { }
+
+    #region Logging methods
+
+    protected void Log(string messageTemplate, params object[] values)
+        => Information(messageTemplate, values);
+
+    protected void Log(Exception exception, string messageTemplate, params object[] values)
+        => Information(exception, messageTemplate, values);
+
+    protected void Verbose(string messageTemplate, params object[] values)
+        => PluginLog.Verbose($"[{Name}] {messageTemplate}", values);
+
+    protected void Verbose(Exception exception, string messageTemplate, params object[] values)
+        => PluginLog.Verbose(exception, $"[{Name}] {messageTemplate}", values);
+
+    protected void Debug(string messageTemplate, params object[] values)
+        => PluginLog.Debug($"[{Name}] {messageTemplate}", values);
+
+    protected void Debug(Exception exception, string messageTemplate, params object[] values)
+        => PluginLog.Debug(exception, $"[{Name}] {messageTemplate}", values);
+
+    protected void Information(string messageTemplate, params object[] values)
+        => PluginLog.Information($"[{Name}] {messageTemplate}", values);
+
+    protected void Information(Exception exception, string messageTemplate, params object[] values)
+        => PluginLog.Information(exception, $"[{Name}] {messageTemplate}", values);
+
+    protected void Warning(string messageTemplate, params object[] values)
+        => PluginLog.Warning($"[{Name}] {messageTemplate}", values);
+
+    protected void Warning(Exception exception, string messageTemplate, params object[] values)
+        => PluginLog.Warning(exception, $"[{Name}] {messageTemplate}", values);
+
+    protected void Error(string messageTemplate, params object[] values)
+        => PluginLog.Error($"[{Name}] {messageTemplate}", values);
+
+    protected void Error(Exception exception, string messageTemplate, params object[] values)
+        => PluginLog.Error(exception, $"[{Name}] {messageTemplate}", values);
+
+    protected void Fatal(string messageTemplate, params object[] values)
+        => PluginLog.Fatal($"[{Name}] {messageTemplate}", values);
+
+    protected void Fatal(Exception exception, string messageTemplate, params object[] values)
+        => PluginLog.Fatal(exception, $"[{Name}] {messageTemplate}", values);
+
+    #endregion
 }
