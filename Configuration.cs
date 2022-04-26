@@ -18,4 +18,5 @@ public class TweakConfigs
     public AutoSortArmouryChest.Configuration AutoSortArmouryChest { get; init; } = new();
     public CustomChatTimestamp.Configuration CustomChatTimestamp { get; init; } = new();
     public MinimapAdjustments.Configuration MinimapAdjustments { get; init; } = new();
+    public ForcedCutsceneMusic.Configuration ForcedCutsceneMusic { get; init; } = new();
 }

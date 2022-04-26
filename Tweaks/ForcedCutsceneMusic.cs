@@ -1,10 +1,9 @@
 using System;
-using System.Runtime.InteropServices;
-using Dalamud.Game;
-using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
@@ -12,14 +11,25 @@ public unsafe class ForcedCutsceneMusic : Tweak
 {
     public override string Name => "Forced Cutscene Music";
     public override string Description => "Auto-unmutes background music for cutscenes.";
+    public Configuration Config => Plugin.Config.Tweaks.ForcedCutsceneMusic;
+
+    public class Configuration
+    {
+        [ConfigField(Label = "Restore mute state after cutscene")]
+        public bool Restore = true;
+    }
 
     [Signature("89 54 24 10 53 55 57 41 54 41 55 41 56 48 83 EC 48 8B C2 45 8B E0 44 8B D2 45 32 F6 44 8B C2 45 32 ED")]
     private SetValueByIndexDelegate SetValueByIndex { get; init; } = null!;
-    private delegate IntPtr SetValueByIndexDelegate(IntPtr baseAddress, ulong kind, ulong value, ulong unk1, ulong triggerUpdate, ulong unk3);
+    private delegate IntPtr SetValueByIndexDelegate(ConfigModule* self, ulong kind, ulong value, ulong unk1, ulong triggerUpdate, ulong unk3);
 
-    [Signature("4C 8D 0D ?? ?? ?? ?? 44 0F B7 43", ScanType = ScanType.StaticAddress)]
-    private IntPtr CurrentCutsceneIdAddress { get; init; }
-    public override bool CanLoad => CurrentCutsceneIdAddress != IntPtr.Zero;
+    [Signature("E8 ?? ?? ?? ?? 48 8B F0 48 89 45 0F", DetourName = nameof(CutsceneStateCtorDetour))]
+    private Hook<CutsceneStateCtorDelegate> CutsceneStateCtorHook { get; init; } = null!;
+    private delegate CutsceneState* CutsceneStateCtorDelegate(CutsceneState* self, uint cutsceneId, byte a3, int a4, int a5, int a6, int a7);
+
+    [Signature("48 89 5C 24 ?? 57 48 83 EC 20 48 8D 05 ?? ?? ?? ?? 48 8B F9 48 89 01 8B DA 48 83 C1 10 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 48 89 07 F6 C3 01 74 0D BA ?? ?? ?? ?? 48 8B CF E8 ?? ?? ?? ?? 48 8B C7 48 8B 5C 24 ?? 48 83 C4 20 5F C3 CC CC CC CC 40 53 48 83 EC 20 48 8D 05 ?? ?? ?? ?? 48 8B D9 48 89 01 F6 C2 01 74 0A BA ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B C3 48 83 C4 20 5B C3 CC CC CC CC CC 40 53", DetourName = nameof(CutsceneStateDtor_Detour))]
+    private Hook<CutsceneStateDtor_Delegate> CutsceneStateDtorHook { get; init; } = null!;
+    private delegate CutsceneState* CutsceneStateDtor_Delegate(CutsceneState* self, IntPtr a2, IntPtr a3, IntPtr a4);
 
     private ConfigModule* ConfigModule
     {
@@ -35,18 +45,23 @@ public unsafe class ForcedCutsceneMusic : Tweak
         }
     }
 
+    private bool GetBoolConfigValue(uint optionId)
+    {
+        var configModule = ConfigModule;
+        if (configModule == null) return false;
+
+        var value = configModule->GetValue(optionId);
+        if (value == null) return false;
+
+        return value->Byte == 0x01;
+    }
+
     private bool IsBgmMuted
     {
         get
         {
-            var configModule = ConfigModule;
-            if (configModule == null) return false;
-
             // BgmMuted from https://github.com/karashiiro/SoundSetter/blob/master/SoundSetter/OptionInternals/OptionKind.cs
-            var value = configModule->GetValue(35);
-            if (value == null) return false;
-
-            return value->Byte == 0x01;
+            return GetBoolConfigValue(35);
         }
         set
         {
@@ -55,45 +70,61 @@ public unsafe class ForcedCutsceneMusic : Tweak
 
             PluginLog.Log($"[ForcedCutsceneMusic] setting IsBgmMuted to {value}");
 
-            SetValueByIndex((IntPtr)configModule, 35, value ? 1u : 0u, 0, 1, 0);
+            SetValueByIndex(configModule, 35, value ? 1u : 0u, 0, 1, 0);
         }
     }
 
-    private static bool IsInCutscene =>
-        Service.Condition[ConditionFlag.OccupiedInCutSceneEvent] ||
-        Service.Condition[ConditionFlag.WatchingCutscene] ||
-        Service.Condition[ConditionFlag.WatchingCutscene78];
-
-    private bool wasInCutscene = false;
     private bool wasBgmMuted = false;
 
     public override void Enable()
     {
         // initial state
         wasBgmMuted = IsBgmMuted;
-        wasInCutscene = IsInCutscene;
+        CutsceneStateCtorHook?.Enable();
+        CutsceneStateDtorHook?.Enable();
     }
 
-    public override void OnFrameworkUpdate(Framework framework)
+    public override void Disable()
     {
-        var isInCutscene = IsInCutscene;
+        CutsceneStateCtorHook?.Disable();
+        CutsceneStateDtorHook?.Disable();
+    }
 
-        if (!wasInCutscene && isInCutscene)
-        {
-            var isBgmMuted = IsBgmMuted;
+    public override void Dispose()
+    {
+        CutsceneStateCtorHook?.Dispose();
+        CutsceneStateDtorHook?.Dispose();
+    }
 
-            wasBgmMuted = isBgmMuted;
-            wasInCutscene = true;
+    public CutsceneState* CutsceneStateCtorDetour(CutsceneState* self, uint cutsceneId, byte a3, int a4, int a5, int a6, int a7)
+    {
+        var ret = CutsceneStateCtorHook.Original(self, cutsceneId, a3, a4, a5, a6, a7);
 
-            if (isBgmMuted && Marshal.ReadInt32(CurrentCutsceneIdAddress) != 3) // disable for bed cutscene on login/logout
-                IsBgmMuted = false;
-        }
-        else if (wasInCutscene && !isInCutscene)
-        {
-            wasInCutscene = false;
+        PluginLog.Information($"[ForcedCutsceneMusic] Cutscene {cutsceneId} started");
 
-            if (wasBgmMuted)
-                IsBgmMuted = true;
-        }
+        PluginLog.Debug($"CutsceneStateCtorDetour({(IntPtr)self:X}, {cutsceneId}, {a3}, {a4}, {a5}, {a6}, {a7}) = {(IntPtr)ret:X}");
+
+        var isBgmMuted = IsBgmMuted;
+
+        wasBgmMuted = isBgmMuted;
+
+        if (isBgmMuted)
+            IsBgmMuted = false;
+
+        return ret;
+    }
+
+    public CutsceneState* CutsceneStateDtor_Detour(CutsceneState* self, IntPtr a2, IntPtr a3, IntPtr a4)
+    {
+        PluginLog.Information($"[ForcedCutsceneMusic] Cutscene {self->Id} ended");
+
+        var ret = CutsceneStateDtorHook.Original(self, a2, a3, a4);
+
+        PluginLog.Debug($"CutsceneStateDtor_Detour({(IntPtr)self:X}, {a2:X}, {a3:X}, {a4:X}) = {(IntPtr)ret:X}");
+
+        if (wasBgmMuted && Config.Restore)
+            IsBgmMuted = true;
+
+        return ret;
     }
 }
