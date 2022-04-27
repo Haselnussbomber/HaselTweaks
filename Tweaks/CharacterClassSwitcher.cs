@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
@@ -12,32 +13,57 @@ namespace HaselTweaks.Tweaks;
 public unsafe class CharacterClassSwitcher : Tweak
 {
     public override string Name => "Character Class Switcher";
-    public override string Description => "Allow clicking on classes to switch to Gearsets. Same functionality as from SimpleTweaks, but written differently. Also equips the Gearset with the highest ItemLevel.";
-
-    [Signature("48 89 5C 24 ?? 57 48 83 EC 20 48 8B D9 4D 8B D1 0F B7 CA 41 8B F8 83 E9 06 74 7F", DetourName = nameof(OnEvent))]
-    private Hook<OnEventDelegate>? OnEventHook { get; init; }
-    private delegate IntPtr OnEventDelegate(AddonCharacterClass* addon, short eventType, int eventParam, AtkEvent* atkEvent, IntPtr a5);
+    public override string Description => "Allow clicking on classes to switch to Gearsets. Equips the Gearset with the highest ItemLevel. Hold shift to open desynthesis windows for crafters.";
 
     [Signature("48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC ?? ?? ?? ?? 0F 29 70 C8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 17 F3 0F 10 35 ?? ?? ?? ?? 45 33 C9 45 33 C0 F3 0F 11 74 24 ?? 0F 57 C9 48 8B F9 E8", DetourName = nameof(OnSetup))]
     private Hook<OnSetupDelegate>? SetupHook { get; init; }
     private delegate IntPtr OnSetupDelegate(AddonCharacterClass* addon, int a2);
 
+    [Signature("48 89 5C 24 ?? 57 48 83 EC 20 48 8B D9 4D 8B D1", DetourName = nameof(OnEvent))]
+    private Hook<OnEventDelegate>? OnEventHook { get; init; }
+    private delegate IntPtr OnEventDelegate(AddonCharacterClass* addon, short eventType, int eventParam, AtkEvent* atkEvent, IntPtr a5);
+
+    [DllImport("user32.dll")]
+    public static extern short GetKeyState(int nVirtKey);
+    public const int VK_SHIFT = 0x10;
+
     public override void Enable()
     {
-        OnEventHook?.Enable();
         SetupHook?.Enable();
+        OnEventHook?.Enable();
     }
 
     public override void Disable()
     {
-        OnEventHook?.Disable();
         SetupHook?.Disable();
+        OnEventHook?.Disable();
     }
 
     public override void Dispose()
     {
-        OnEventHook?.Dispose();
         SetupHook?.Dispose();
+        OnEventHook?.Dispose();
+    }
+
+    private IntPtr OnSetup(AddonCharacterClass* addon, int a2)
+    {
+        var result = SetupHook!.Original(addon, a2);
+
+        for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
+        {
+            // skip crafters as they already have ButtonClick events
+            if (i > 19 && i < 28) continue;
+
+            var node = addon->BaseComponentNodes[i];
+            if (node == null) continue;
+
+            var rootNode = node->UldManager.RootNode; // seems to be a CollisionNode
+            if (rootNode == null) continue;
+
+            rootNode->AddEvent(AtkEventType.MouseClick, (uint)i + 2, &addon->AtkUnitBase.AtkEventListener, rootNode, false);
+        }
+
+        return result;
     }
 
     private IntPtr OnEvent(AddonCharacterClass* addon, short eventType, int eventParam, AtkEvent* atkEvent, IntPtr a5)
@@ -48,19 +74,30 @@ public unsafe class CharacterClassSwitcher : Tweak
             return IntPtr.Zero;
         }
 
+        // eventParam:
+        // 1 is the tabs
+        // 22 - 29 crafters
+        if (eventType == (short)AtkEventType.ButtonClick && eventParam >= 22 && eventParam <= 29)
+        {
+            var keyState = GetKeyState(VK_SHIFT);
+
+            // "If the high-order bit is 1, the key is down; otherwise, it is up."
+            if ((keyState & 0x8000) != 0x8000)
+            {
+                SwitchClassJob(8 + (uint)eventParam - 22);
+                return IntPtr.Zero;
+            }
+        }
+
         return OnEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
     }
 
     private void HandleClick(AddonCharacterClass* addon, int eventParam)
     {
+        if (eventParam >= 22 && eventParam <= 29) return;
+
         // this happens in the original event listener too
         var index = eventParam - 2;
-
-        // end where crafters start, because those open desynthesis level window
-        if (index < 0 || index > 19) return;
-
-        // this is a super bad way, but i didn't find any ClassJob rowId anywhere, so here we go...
-        // thanks to SimpleTweaks for the texture path code
 
         var baseComponentNode = addon->BaseComponentNodes[index];
         if (baseComponentNode == null) return;
@@ -93,6 +130,11 @@ public unsafe class CharacterClassSwitcher : Tweak
         // yes, you see correctly. the iconId is 62100 + ClassJob RowId
         var classJobId = iconId - 62100;
 
+        SwitchClassJob(classJobId);
+    }
+
+    private void SwitchClassJob(uint classJobId)
+    {
         var gearsetModule = RaptureGearsetModule.Instance();
         if (gearsetModule == null) return;
 
@@ -116,24 +158,5 @@ public unsafe class CharacterClassSwitcher : Tweak
         }
 
         Plugin.XivCommon.Functions.Chat.SendMessage("/gs change " + selectedGearset.Index);
-    }
-
-    private IntPtr OnSetup(AddonCharacterClass* addon, int a2)
-    {
-        var result = SetupHook!.Original(addon, a2);
-
-        // end where crafters start, because those open desynthesis level window
-        for (var i = 0; i < 20; i++)
-        {
-            var node = addon->BaseComponentNodes[i];
-            if (node == null) continue;
-
-            var rootNode = node->UldManager.RootNode; // seems to be a CollisionNode
-            if (rootNode == null) continue;
-
-            rootNode->AddEvent(AtkEventType.MouseClick, (uint)i + 2, &addon->AtkUnitBase.AtkEventListener, rootNode, false);
-        }
-
-        return result;
     }
 }
