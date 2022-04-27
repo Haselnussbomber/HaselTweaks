@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Dalamud;
 using Dalamud.Game;
-using Dalamud.Logging;
 
 namespace HaselTweaks.Tweaks;
 

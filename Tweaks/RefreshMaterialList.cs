@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
 using Dalamud.Game;
-using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;

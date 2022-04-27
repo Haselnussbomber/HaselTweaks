@@ -18,7 +18,7 @@ public class ConfigFieldAttribute : Attribute
 
     // SingleSelect
     public string Options = "";
-    
+
     // float
     public float Min = 0;
     public float Max = 100;

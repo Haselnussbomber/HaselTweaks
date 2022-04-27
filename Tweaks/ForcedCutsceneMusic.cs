@@ -1,6 +1,5 @@
 using System;
 using Dalamud.Hooking;
-using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselTweaks.Structs;
