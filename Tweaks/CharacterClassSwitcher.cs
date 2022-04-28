@@ -132,28 +132,12 @@ public unsafe class CharacterClassSwitcher : Tweak
         if (imageNode == null || imageNode->PartsList == null) return;
 
         var textureInfo = imageNode->PartsList->Parts[imageNode->PartId].UldAsset;
-        if (textureInfo == null) return;
+        if (textureInfo == null || textureInfo->AtkTexture.Resource == null) return;
 
-        var texType = textureInfo->AtkTexture.TextureType;
-        if (texType != TextureType.Resource) return;
-
-        var texResource = textureInfo->AtkTexture.Resource;
-        if (texResource == null || texResource->TexFileResourceHandle == null) return;
-
-        var texFileNamePtr = texResource->TexFileResourceHandle->ResourceHandle.FileName;
-
-        var texString = texFileNamePtr.ToString();
-        if (string.IsNullOrWhiteSpace(texString)) return;
-
-        // grab icon id
-        var match = Regex.Match(texString, @"^ui\/icon\/\d+\/(\d+)(?:_hr1)?\.tex$");
-        if (!match.Success) return;
-
-        // parse icon id into uint
-        if (!uint.TryParse(match.Groups[1].Value.TrimStart('0'), out uint iconId)) return;
+        var iconId = textureInfo->AtkTexture.Resource->Unk_1;
         if (iconId <= 62100) return;
 
-        // yes, you see correctly. the iconId is 62100 + ClassJob RowId
+        // yes, you see correctly. the iconId is 62100 + ClassJob RowId :)
         var classJobId = iconId - 62100;
 
         SwitchClassJob(classJobId);
