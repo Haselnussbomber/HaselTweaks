@@ -24,8 +24,8 @@ public unsafe class CharacterClassSwitcher : Tweak
     private delegate IntPtr OnEventDelegate(AddonCharacterClass* addon, short eventType, int eventParam, AtkEvent* atkEvent, IntPtr a5);
 
     [DllImport("user32.dll")]
-    public static extern short GetKeyState(int nVirtKey);
-    public const int VK_SHIFT = 0x10;
+    private static extern short GetKeyState(int nVirtKey);
+    private const int VK_SHIFT = 0x10;
 
     public override void Enable()
     {
@@ -72,13 +72,12 @@ public unsafe class CharacterClassSwitcher : Tweak
     {
         var isCrafter = eventParam >= 22 && eventParam <= 29;
 
-        if (eventType == (short)AtkEventType.MouseClick)
+        if (!isCrafter && eventType == (short)AtkEventType.MouseClick)
         {
             HandleClick(addon, eventParam);
             return IntPtr.Zero;
         }
-
-        if (!isCrafter && eventType == (short)AtkEventType.MouseOver)
+        else if (!isCrafter && eventType == (short)AtkEventType.MouseOver)
         {
             var node = addon->BaseComponentNodes[eventParam - 2];
             if (node == null) return IntPtr.Zero;
@@ -92,8 +91,7 @@ public unsafe class CharacterClassSwitcher : Tweak
 
             // fallthrough for tooltips
         }
-
-        if (!isCrafter && eventType == (short)AtkEventType.MouseOut)
+        else if (!isCrafter && eventType == (short)AtkEventType.MouseOut)
         {
             var node = addon->BaseComponentNodes[eventParam - 2];
             if (node == null) return IntPtr.Zero;
@@ -107,12 +105,11 @@ public unsafe class CharacterClassSwitcher : Tweak
 
             // fallthrough for tooltips
         }
-
-        if (isCrafter && eventType == (short)AtkEventType.ButtonClick)
+        else if (isCrafter && eventType == (short)AtkEventType.ButtonClick)
         {
             var keyState = GetKeyState(VK_SHIFT);
 
-            // "If the high-order bit is 1, the key is down; otherwise, it is up."
+            // if shift is not pressed, overwrite behaviour
             if ((keyState & 0x8000) != 0x8000)
             {
                 SwitchClassJob(8 + (uint)eventParam - 22);
@@ -125,8 +122,6 @@ public unsafe class CharacterClassSwitcher : Tweak
 
     private void HandleClick(AddonCharacterClass* addon, int eventParam)
     {
-        if (eventParam >= 22 && eventParam <= 29) return;
-
         // this happens in the original event listener too
         var index = eventParam - 2;
 
@@ -177,7 +172,7 @@ public unsafe class CharacterClassSwitcher : Tweak
             if (!gearset->Flags.HasFlag(GearsetFlag.Exists)) continue;
             if (gearset->ClassJob != classJobId) continue;
 
-            if (selectedGearset.ItemLevel < gearset->ItemLevel || selectedGearset.Index == -1)
+            if (selectedGearset.ItemLevel < gearset->ItemLevel)
                 selectedGearset = (i + 1, gearset->ItemLevel);
         }
 
