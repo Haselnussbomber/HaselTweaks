@@ -13,7 +13,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class CharacterClassSwitcher : Tweak
 {
     public override string Name => "Character Class Switcher";
-    public override string Description => "Allow clicking on classes to switch to Gearsets. Equips the Gearset with the highest ItemLevel. Hold shift to open desynthesis windows for crafters.";
+    public override string Description => "Clicking on a class/job in the character window finds the gearset with the highest item level and equips it. Hold shift to open a crafters desynthesis window.";
 
     [Signature("48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC ?? ?? ?? ?? 0F 29 70 C8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 17 F3 0F 10 35 ?? ?? ?? ?? 45 33 C9 45 33 C0 F3 0F 11 74 24 ?? 0F 57 C9 48 8B F9 E8", DetourName = nameof(OnSetup))]
     private Hook<OnSetupDelegate>? SetupHook { get; init; }
@@ -139,18 +139,18 @@ public unsafe class CharacterClassSwitcher : Tweak
         if (gearsetModule == null) return;
 
         // loop through all gearsets and find the one matching classJobId with the highest avg itemlevel
-        var selectedGearset = (Index: 0, ItemLevel: 0u);
+        var selectedGearset = (Index: -1, ItemLevel: -1);
         for (var i = 0; i < GearsetArray.Length; i++)
         {
             var gearset = gearsetModule->Gearsets[i];
             if (!gearset->Flags.HasFlag(GearsetFlag.Exists)) continue;
             if (gearset->ClassJob != classJobId) continue;
 
-            if (selectedGearset.ItemLevel < gearset->ItemLevel)
+            if (selectedGearset.ItemLevel < gearset->ItemLevel || selectedGearset.Index == -1)
                 selectedGearset = (i + 1, gearset->ItemLevel);
         }
 
-        if (selectedGearset.ItemLevel == 0)
+        if (selectedGearset.Index == -1)
         {
             // TODO: localize
             Service.Chat.PrintError($"Couldn't find a suitable gearset.");
