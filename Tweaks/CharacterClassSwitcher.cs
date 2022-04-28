@@ -60,6 +60,8 @@ public unsafe class CharacterClassSwitcher : Tweak
             var rootNode = node->UldManager.RootNode; // seems to be a CollisionNode
             if (rootNode == null) continue;
 
+            rootNode->Flags_2 |= 0x100000; // add Cursor Pointer flag
+
             rootNode->AddEvent(AtkEventType.MouseClick, (uint)i + 2, &addon->AtkUnitBase.AtkEventListener, rootNode, false);
         }
 
@@ -68,16 +70,45 @@ public unsafe class CharacterClassSwitcher : Tweak
 
     private IntPtr OnEvent(AddonCharacterClass* addon, short eventType, int eventParam, AtkEvent* atkEvent, IntPtr a5)
     {
+        var isCrafter = eventParam >= 22 && eventParam <= 29;
+
         if (eventType == (short)AtkEventType.MouseClick)
         {
             HandleClick(addon, eventParam);
             return IntPtr.Zero;
         }
 
-        // eventParam:
-        // 1 is the tabs
-        // 22 - 29 crafters
-        if (eventType == (short)AtkEventType.ButtonClick && eventParam >= 22 && eventParam <= 29)
+        if (!isCrafter && eventType == (short)AtkEventType.MouseOver)
+        {
+            var node = addon->BaseComponentNodes[eventParam - 2];
+            if (node == null) return IntPtr.Zero;
+
+            var ownerNode = node->OwnerNode;
+            if (ownerNode == null) return IntPtr.Zero;
+
+            ownerNode->AtkResNode.AddBlue = 16;
+            ownerNode->AtkResNode.AddGreen = 16;
+            ownerNode->AtkResNode.AddRed = 16;
+
+            // fallthrough for tooltips
+        }
+
+        if (!isCrafter && eventType == (short)AtkEventType.MouseOut)
+        {
+            var node = addon->BaseComponentNodes[eventParam - 2];
+            if (node == null) return IntPtr.Zero;
+
+            var ownerNode = node->OwnerNode;
+            if (ownerNode == null) return IntPtr.Zero;
+
+            ownerNode->AtkResNode.AddBlue = 0;
+            ownerNode->AtkResNode.AddGreen = 0;
+            ownerNode->AtkResNode.AddRed = 0;
+
+            // fallthrough for tooltips
+        }
+
+        if (isCrafter && eventType == (short)AtkEventType.ButtonClick)
         {
             var keyState = GetKeyState(VK_SHIFT);
 
