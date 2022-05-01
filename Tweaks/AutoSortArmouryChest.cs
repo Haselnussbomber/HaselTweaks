@@ -7,7 +7,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class AutoSortArmouryChest : Tweak
 {
     public override string Name => "Auto Sort Armoury Chest";
-    public override string Description => "Sorts item inside the Armoury Chest upon opening it.";
+    public override string Description => "Sorts items inside the Armoury Chest upon opening it.";
     public Configuration Config => Plugin.Config.Tweaks.AutoSortArmouryChest;
 
     public static readonly Dictionary<ClientLanguage, List<string>> ConditionSet = new()
