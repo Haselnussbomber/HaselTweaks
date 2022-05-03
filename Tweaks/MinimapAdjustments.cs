@@ -1,6 +1,6 @@
-using System;
 using Dalamud.Game;
 using Dalamud.Hooking;
+using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;
@@ -13,7 +13,7 @@ public unsafe class MinimapAdjustments : Tweak
 
     public class Configuration
     {
-        [ConfigField(Label = "Square Collision", Description = "Changes collision box to from round to square.", OnChange = nameof(OnChangeCollision))]
+        [ConfigField(Label = "Square Collision", Description = "Changes collision box to from round to square.", OnChange = nameof(UpdateCollision))]
         public bool Square = false;
 
         [ConfigField(Label = "Default Opacity", Max = 1)]
@@ -22,10 +22,10 @@ public unsafe class MinimapAdjustments : Tweak
         [ConfigField(Label = "Hover Opacity", Max = 1)]
         public float HoverOpacity = 1f;
 
-        [ConfigField(Label = "Hide Coordinates", OnChange = nameof(OnChangeVisibility))]
+        [ConfigField(Label = "Hide Coordinates", OnChange = nameof(UpdateVisibility))]
         public bool HideCoords = true;
 
-        [ConfigField(Label = "Hide Weather", OnChange = nameof(OnChangeVisibility))]
+        [ConfigField(Label = "Hide Weather", OnChange = nameof(UpdateVisibility))]
         public bool HideWeather = true;
     }
 
@@ -38,15 +38,18 @@ public unsafe class MinimapAdjustments : Tweak
         Map = 17,
     }
 
-    private Hook<OnAtkEventDelegate>? Hook = null;
+    // AddonNaviMap_ReceiveEvent
+    [Signature("48 89 5C 24 ?? 57 48 83 EC 30 0F B7 C2 49 8B F9 83 C0 FB", DetourName = nameof(OnEvent))]
+    private Hook<OnAtkEventDelegate>? Hook { get; init; } = null!;
     private delegate void* OnAtkEventDelegate(AtkUnitBase* addon, AtkEventType eventType, int eventParam, AtkEventListener* listener, AtkResNode* nodeParam);
 
-    private bool setupComplete = false;
     private bool isHovering = false;
 
     public override void Enable()
     {
         Hook?.Enable();
+
+        UpdateCollision();
     }
 
     public override void Disable()
@@ -72,23 +75,6 @@ public unsafe class MinimapAdjustments : Tweak
     {
         var addon = Utils.GetUnitBase("_NaviMap");
         if (addon == null) return;
-
-        if (!setupComplete)
-        {
-            if (Hook == null)
-            {
-                // https://github.com/daemitus/ClickIt/blob/ee39b1a2/ClickIt/Clicks/ClickBase.cs#L62-L63
-                var vtbl = (void**)addon->AtkEventListener.vtbl;
-                var receiveEventAddress = new IntPtr(vtbl[2]);
-                Hook = new Hook<OnAtkEventDelegate>(receiveEventAddress, OnEvent);
-                Hook?.Enable();
-            }
-
-            SetCollision(addon, Config.Square);
-
-            setupComplete = true;
-        }
-
         SetVisibility(addon, isHovering);
     }
 
@@ -106,14 +92,14 @@ public unsafe class MinimapAdjustments : Tweak
         return Hook!.Original(addon, eventType, eventParam, listener, nodeParam);
     }
 
-    private void OnChangeCollision()
+    private void UpdateCollision()
     {
         var addon = Utils.GetUnitBase("_NaviMap");
         if (addon == null) return;
         SetCollision(addon, Config.Square);
     }
 
-    private void OnChangeVisibility()
+    private void UpdateVisibility()
     {
         var addon = Utils.GetUnitBase("_NaviMap");
         if (addon == null) return;
@@ -134,14 +120,8 @@ public unsafe class MinimapAdjustments : Tweak
         if (collisionNode == null) return;
 
         if (square)
-        {
-            // remove circular collision flag
-            collisionNode->Flags_2 &= ~(uint)(1 << 23);
-        }
+            collisionNode->Flags_2 &= ~(uint)(1 << 23); // remove circular collision flag
         else
-        {
-            // add circular collision flag
-            collisionNode->Flags_2 |= 1 << 23;
-        }
+            collisionNode->Flags_2 |= 1 << 23; // add circular collision flag
     }
 }

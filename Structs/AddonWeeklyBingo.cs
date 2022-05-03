@@ -4,13 +4,11 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Structs;
 
-// Component::GUI::AddonWeeklyBingo
-//   Component::GUI::AtkUnitBase
-//     Component::GUI::AtkEventListener
+// ctor 48 89 5C 24 ?? 57 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 48 8D 8B ?? ?? ?? ?? 48 89 03 E8 ?? ?? ?? ?? 33 FF C6 83
 [StructLayout(LayoutKind.Explicit, Size = 0x23C8)]
 public unsafe struct AddonWeeklyBingo
 {
-    [FieldOffset(0x0)] public AtkUnitBase AtkUnitBase;
+    [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
     [FieldOffset(0x220)] public DutySlotList DutySlots;
     [FieldOffset(0x18E8)] public StateDisplayManager StateDisplay;
     [FieldOffset(0x1938)] public StickerList Stickers;

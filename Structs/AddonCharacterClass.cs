@@ -4,12 +4,13 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Structs;
 
+// ctor 40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 33 D2 48 8D 05 ?? ?? ?? ?? 48 89 03 48 8D 83 ?? ?? ?? ?? 48 89 90
 [StructLayout(LayoutKind.Explicit, Size = 0x830)]
 public unsafe struct AddonCharacterClass
 {
     public const int NUM_CLASSES = 31;
 
-    [FieldOffset(0x00)] public AtkUnitBase AtkUnitBase;
+    [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
     [FieldOffset(0x220)] public BaseComponentNodesArray BaseComponentNodes;
     [FieldOffset(0x318)] public AtkComponentButton* TabsNode;
     [FieldOffset(0x320)] public AtkTextNode* CurrentXPTextNode;

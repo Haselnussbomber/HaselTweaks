@@ -14,14 +14,17 @@ public unsafe class CharacterClassSwitcher : Tweak
     public override string Name => "Character Class Switcher";
     public override string Description => "Clicking on a class/job in the character window finds the gearset with the highest item level and equips it. Hold shift to open the desynthesis window.";
 
+    // AddonCharacterClass_OnSetup (vf46)
     [Signature("48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC ?? ?? ?? ?? 0F 29 70 C8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 17 F3 0F 10 35 ?? ?? ?? ?? 45 33 C9 45 33 C0 F3 0F 11 74 24 ?? 0F 57 C9 48 8B F9 E8", DetourName = nameof(OnSetup))]
-    private Hook<OnSetupDelegate>? SetupHook { get; init; } = null!;
+    private Hook<OnSetupDelegate>? OnSetupHook { get; init; } = null!;
     private delegate IntPtr OnSetupDelegate(AddonCharacterClass* addon, int a2);
 
+    // AddonCharacterClass_ReceiveEvent (vf2)
     [Signature("48 89 5C 24 ?? 57 48 83 EC 20 48 8B D9 4D 8B D1", DetourName = nameof(OnEvent))]
-    private Hook<OnEventDelegate>? OnEventHook { get; init; } = null!;
-    private delegate IntPtr OnEventDelegate(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr a5);
+    private Hook<ReceiveEventDelegate>? ReceiveEventHook { get; init; } = null!;
+    private delegate IntPtr ReceiveEventDelegate(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr a5);
 
+    // AddonCharacterClass_OnUpdate (vf49)
     [Signature("4C 8B DC 53 55 56 57 41 55 41 56", DetourName = nameof(OnUpdate))]
     private Hook<OnUpdateDelegate>? OnUpdateHook { get; init; } = null!;
     private delegate void OnUpdateDelegate(AddonCharacterClass* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData);
@@ -29,11 +32,11 @@ public unsafe class CharacterClassSwitcher : Tweak
     [Signature("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 74 08 48 8B CB E8 ?? ?? ?? ?? 48 8B B4 24 ?? ?? ?? ??", ScanType = ScanType.StaticAddress)]
     private IntPtr g_InputManager { get; init; }
 
-    [Signature("E8 ?? ?? ?? ?? 88 44 24 28 44 0F B6 CE", DetourName = nameof(OnEvent))]
+    [Signature("E8 ?? ?? ?? ?? 88 44 24 28 44 0F B6 CE")]
     private InputManager_GetInputStatus_Delegate InputManager_GetInputStatus { get; init; } = null!;
     private delegate bool InputManager_GetInputStatus_Delegate(IntPtr inputManager, int a2);
 
-    [Signature("E8 ?? ?? ?? ?? 0F BF 94 1F ?? ?? ?? ??")]
+    [Signature("E8 ?? ?? ?? ?? 0F BF 94 1F")]
     private PlaySoundEffectDelegate PlaySoundEffect { get; init; } = null!;
     private delegate void PlaySoundEffectDelegate(int id, IntPtr a2, IntPtr a3, byte a4);
 
@@ -44,22 +47,22 @@ public unsafe class CharacterClassSwitcher : Tweak
 
     public override void Enable()
     {
-        SetupHook?.Enable();
-        OnEventHook?.Enable();
+        OnSetupHook?.Enable();
+        ReceiveEventHook?.Enable();
         OnUpdateHook?.Enable();
     }
 
     public override void Disable()
     {
-        SetupHook?.Disable();
-        OnEventHook?.Disable();
+        OnSetupHook?.Disable();
+        ReceiveEventHook?.Disable();
         OnUpdateHook?.Disable();
     }
 
     public override void Dispose()
     {
-        SetupHook?.Dispose();
-        OnEventHook?.Dispose();
+        OnSetupHook?.Dispose();
+        ReceiveEventHook?.Dispose();
         OnUpdateHook?.Dispose();
     }
 
@@ -70,7 +73,7 @@ public unsafe class CharacterClassSwitcher : Tweak
 
     private IntPtr OnSetup(AddonCharacterClass* addon, int a2)
     {
-        var result = SetupHook!.Original(addon, a2);
+        var result = OnSetupHook!.Original(addon, a2);
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
         {
@@ -109,19 +112,12 @@ public unsafe class CharacterClassSwitcher : Tweak
             if (imageNode == null) continue;
 
             // if job is unlocked, it has full alpha
-            var isEnabled = imageNode->AtkResNode.Color.A == 255;
+            var isUnlocked = imageNode->AtkResNode.Color.A == 255;
 
-            if (isEnabled)
-            {
-                collisionNode->AtkResNode.Flags_2 |= 0x100000; // add Cursor Pointer flag
-            }
+            if (isUnlocked)
+                collisionNode->AtkResNode.Flags_2 |= 1 << 20; // add Cursor Pointer flag
             else
-            {
-                if ((collisionNode->AtkResNode.Flags_2 & 0x100000) == 0x100000)
-                {
-                    collisionNode->AtkResNode.Flags_2 ^= 0x100000; // toggle Cursor Pointer flag off
-                }
-            }
+                collisionNode->AtkResNode.Flags_2 &= ~(uint)(1 << 20); // remove Cursor Pointer flag
         }
     }
 
@@ -129,24 +125,24 @@ public unsafe class CharacterClassSwitcher : Tweak
     {
         // skip events for tabs
         if (eventParam < 2)
-            return OnEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+            return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
 
         var node = addon->BaseComponentNodes[eventParam - 2];
         if (node == null)
-            return OnEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+            return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
 
         var ownerNode = node->OwnerNode;
         if (ownerNode == null)
-            return OnEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+            return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
 
         var imageNode = (AtkImageNode*)node->UldManager.SearchNodeById(4);
         if (imageNode == null)
-            return OnEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+            return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
 
         // if job is unlocked, it has full alpha
         var isUnlocked = imageNode->AtkResNode.Color.A == 255;
         if (!isUnlocked)
-            return OnEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+            return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
 
         var isClick =
             (eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick) ||
@@ -170,11 +166,11 @@ public unsafe class CharacterClassSwitcher : Tweak
             {
                 var textureInfo = imageNode->PartsList->Parts[imageNode->PartId].UldAsset;
                 if (textureInfo == null || textureInfo->AtkTexture.Resource == null)
-                    return OnEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+                    return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
 
                 var iconId = textureInfo->AtkTexture.Resource->Unk_1;
                 if (iconId <= 62100)
-                    return OnEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+                    return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
 
                 // yes, you see correctly. the iconId is 62100 + ClassJob RowId :)
                 var classJobId = iconId - 62100;
@@ -201,7 +197,7 @@ public unsafe class CharacterClassSwitcher : Tweak
             }
         }
 
-        return OnEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+        return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
     }
 
     private void SwitchClassJob(uint classJobId)
