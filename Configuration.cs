@@ -11,14 +11,26 @@ using Newtonsoft.Json.Linq;
 namespace HaselTweaks;
 
 [Serializable]
-internal class Configuration : IPluginConfiguration
+internal partial class Configuration : IPluginConfiguration
 {
-    [JsonIgnore]
-    public Plugin? Plugin { get; set; } = null!;
-
     public int Version { get; set; } = 1;
     public HashSet<string> EnabledTweaks { get; private set; } = new();
     public TweakConfigs Tweaks { get; init; } = new();
+}
+
+public class TweakConfigs
+{
+    public AutoSortArmouryChest.Configuration AutoSortArmouryChest { get; init; } = new();
+    public CustomChatTimestamp.Configuration CustomChatTimestamp { get; init; } = new();
+    public MinimapAdjustments.Configuration MinimapAdjustments { get; init; } = new();
+    public ForcedCutsceneMusic.Configuration ForcedCutsceneMusic { get; init; } = new();
+    public ScrollableTabs.Configuration ScrollableTabs { get; init; } = new();
+}
+
+internal partial class Configuration
+{
+    [JsonIgnore]
+    public Plugin? Plugin { get; set; } = null!;
 
     internal static Configuration Load(Plugin plugin)
     {
@@ -96,13 +108,4 @@ internal class Configuration : IPluginConfiguration
     {
         Plugin?.PluginInterface.SavePluginConfig(this);
     }
-}
-
-public class TweakConfigs
-{
-    public AutoSortArmouryChest.Configuration AutoSortArmouryChest { get; init; } = new();
-    public CustomChatTimestamp.Configuration CustomChatTimestamp { get; init; } = new();
-    public MinimapAdjustments.Configuration MinimapAdjustments { get; init; } = new();
-    public ForcedCutsceneMusic.Configuration ForcedCutsceneMusic { get; init; } = new();
-    public ScrollableTabs.Configuration ScrollableTabs { get; init; } = new();
 }
