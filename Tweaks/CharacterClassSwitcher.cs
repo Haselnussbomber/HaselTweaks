@@ -15,17 +15,17 @@ public unsafe class CharacterClassSwitcher : Tweak
     public override string Description => "Clicking on a class/job in the character window finds the gearset with the highest item level and equips it. Hold shift to open the desynthesis window.";
 
     // AddonCharacterClass_OnSetup (vf46)
-    [Signature("48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC ?? ?? ?? ?? 0F 29 70 C8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 17 F3 0F 10 35 ?? ?? ?? ?? 45 33 C9 45 33 C0 F3 0F 11 74 24 ?? 0F 57 C9 48 8B F9 E8", DetourName = nameof(OnSetup))]
+    [AutoHook, Signature("48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC ?? ?? ?? ?? 0F 29 70 C8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 17 F3 0F 10 35 ?? ?? ?? ?? 45 33 C9 45 33 C0 F3 0F 11 74 24 ?? 0F 57 C9 48 8B F9 E8", DetourName = nameof(OnSetup))]
     private Hook<OnSetupDelegate>? OnSetupHook { get; init; } = null!;
     private delegate IntPtr OnSetupDelegate(AddonCharacterClass* addon, int a2);
 
     // AddonCharacterClass_ReceiveEvent (vf2)
-    [Signature("48 89 5C 24 ?? 57 48 83 EC 20 48 8B D9 4D 8B D1", DetourName = nameof(OnEvent))]
+    [AutoHook, Signature("48 89 5C 24 ?? 57 48 83 EC 20 48 8B D9 4D 8B D1", DetourName = nameof(OnEvent))]
     private Hook<ReceiveEventDelegate>? ReceiveEventHook { get; init; } = null!;
     private delegate IntPtr ReceiveEventDelegate(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr a5);
 
     // AddonCharacterClass_OnUpdate (vf49)
-    [Signature("4C 8B DC 53 55 56 57 41 55 41 56", DetourName = nameof(OnUpdate))]
+    [AutoHook, Signature("4C 8B DC 53 55 56 57 41 55 41 56", DetourName = nameof(OnUpdate))]
     private Hook<OnUpdateDelegate>? OnUpdateHook { get; init; } = null!;
     private delegate void OnUpdateDelegate(AddonCharacterClass* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData);
 
@@ -44,27 +44,6 @@ public unsafe class CharacterClassSwitcher : Tweak
     private static extern short GetKeyState(int nVirtKey);
     private const int VK_SHIFT = 0x10;
     private static bool IsShiftDown => (GetKeyState(VK_SHIFT) & 0x8000) == 0x8000;
-
-    public override void Enable()
-    {
-        OnSetupHook?.Enable();
-        ReceiveEventHook?.Enable();
-        OnUpdateHook?.Enable();
-    }
-
-    public override void Disable()
-    {
-        OnSetupHook?.Disable();
-        ReceiveEventHook?.Disable();
-        OnUpdateHook?.Disable();
-    }
-
-    public override void Dispose()
-    {
-        OnSetupHook?.Dispose();
-        ReceiveEventHook?.Dispose();
-        OnUpdateHook?.Dispose();
-    }
 
     private static bool IsCrafter(int id)
     {

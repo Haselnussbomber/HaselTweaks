@@ -17,25 +17,10 @@ public unsafe class CustomChatTimestamp : Tweak
         public string Format = "[HH:mm] ";
     }
 
-    [Signature("E8 ?? ?? ?? ?? 48 8B D0 48 8B CB E8 ?? ?? ?? ?? 4C 8D 87", DetourName = nameof(Detour))]
+    [AutoHook, Signature("E8 ?? ?? ?? ?? 48 8B D0 48 8B CB E8 ?? ?? ?? ?? 4C 8D 87", DetourName = nameof(Detour))]
     private Hook<DetourDelegate>? Hook { get; init; }
     private delegate byte* DetourDelegate(IntPtr a1, ulong addonRowId, ulong value);
     public override bool CanLoad => Hook?.Address != IntPtr.Zero;
-
-    public override void Enable()
-    {
-        Hook?.Enable();
-    }
-
-    public override void Disable()
-    {
-        Hook?.Disable();
-    }
-
-    public override void Dispose()
-    {
-        Hook?.Dispose();
-    }
 
     private byte* Detour(IntPtr a1, ulong addonRowId, ulong value)
     {

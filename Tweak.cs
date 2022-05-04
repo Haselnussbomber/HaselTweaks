@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Dalamud.Game;
+using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 
@@ -18,6 +22,35 @@ public abstract class Tweak
     public virtual bool Ready { get; protected set; }
     public virtual bool Enabled { get; protected set; }
 
+    protected IEnumerable<PropertyInfo> Hooks => this.GetType()
+        .GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)
+        .Where(field =>
+            field.PropertyType.IsGenericType &&
+            field.PropertyType.GetGenericTypeDefinition() == typeof(Hook<>) &&
+            field.CustomAttributes.Any(ca => ca.AttributeType == typeof(AutoHookAttribute))
+        );
+
+    protected void CallHooks(string methodName)
+    {
+        foreach (var property in Hooks)
+        {
+            var hook = property.GetValue(this);
+            if (hook == null) continue;
+
+            var methodInfo = typeof(Hook<>)
+                .MakeGenericType(property.PropertyType.GetGenericArguments().First())
+                .GetMethod(methodName);
+
+            if (methodInfo == null)
+            {
+                PluginLog.Error($"Method \"{methodName}\" in Hook<> not found");
+                continue;
+            }
+
+            methodInfo.Invoke(hook, null);
+        }
+    }
+
     internal virtual void SetupInternal(Plugin plugin)
     {
         Plugin = plugin;
@@ -29,18 +62,21 @@ public abstract class Tweak
     internal virtual void EnableInternal()
     {
         Enabled = true;
+        CallHooks("Enable");
         Enable();
     }
 
     internal virtual void DisableInternal()
     {
         Enabled = false;
+        CallHooks("Disable");
         Disable();
     }
 
     internal virtual void DisposeInternal()
     {
         Ready = false;
+        CallHooks("Dispose");
         Dispose();
     }
 

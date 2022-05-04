@@ -39,7 +39,7 @@ public unsafe class MinimapAdjustments : Tweak
     }
 
     // AddonNaviMap_ReceiveEvent
-    [Signature("48 89 5C 24 ?? 57 48 83 EC 30 0F B7 C2 49 8B F9 83 C0 FB", DetourName = nameof(OnEvent))]
+    [AutoHook, Signature("48 89 5C 24 ?? 57 48 83 EC 30 0F B7 C2 49 8B F9 83 C0 FB", DetourName = nameof(OnEvent))]
     private Hook<OnAtkEventDelegate>? Hook { get; init; } = null!;
     private delegate void* OnAtkEventDelegate(AtkUnitBase* addon, AtkEventType eventType, int eventParam, AtkEventListener* listener, AtkResNode* nodeParam);
 
@@ -47,15 +47,11 @@ public unsafe class MinimapAdjustments : Tweak
 
     public override void Enable()
     {
-        Hook?.Enable();
-
         UpdateCollision();
     }
 
     public override void Disable()
     {
-        Hook?.Disable();
-
         var addon = Utils.GetUnitBase("_NaviMap");
         if (addon == null) return;
 
@@ -64,11 +60,6 @@ public unsafe class MinimapAdjustments : Tweak
 
         // add back circular collision flag
         SetCollision(addon, false);
-    }
-
-    public override void Dispose()
-    {
-        Hook?.Dispose();
     }
 
     public override void OnFrameworkUpdate(Framework framework)

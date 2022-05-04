@@ -114,7 +114,7 @@ public unsafe class ScrollableTabs : Tweak
     private RadioButtonSetActiveDelegate RadioButtonSetActive { get; init; } = null!;
     private delegate void RadioButtonSetActiveDelegate(IntPtr button, bool active);
 
-    [Signature("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 49 8B F8 C6 05", DetourName = nameof(WindowProcHandlerDetour))]
+    [AutoHook, Signature("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 49 8B F8 C6 05", DetourName = nameof(WindowProcHandlerDetour))]
     private Hook<WindowProcHandlerDelegate> WindowProcHandlerHook { get; init; } = null!;
     private delegate ulong WindowProcHandlerDelegate(IntPtr hWnd, int uMsg, int wParam);
 
@@ -122,21 +122,6 @@ public unsafe class ScrollableTabs : Tweak
     private const uint WHEEL_DELTA = 120;
 
     private short wheelState = 0;
-
-    public override void Enable()
-    {
-        WindowProcHandlerHook?.Enable();
-    }
-
-    public override void Disable()
-    {
-        WindowProcHandlerHook?.Disable();
-    }
-
-    public override void Dispose()
-    {
-        WindowProcHandlerHook?.Dispose();
-    }
 
     private ulong WindowProcHandlerDetour(IntPtr hwnd, int uMsg, int wParam)
     {
