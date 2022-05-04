@@ -16,7 +16,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class DTR : Tweak
 {
     public override string Name => "DTR";
-    public override string Description => "Shows Instance, FPS and Busy status in DTR bar. To enable/disable/change order go into Dalamud Settings.";
+    public override string Description => "Shows Instance, FPS and Busy status in DTR bar. Use Dalamud Settings to enable/disable or to change order.";
 
     [Signature("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 3C 01 75 0C 48 8D 0D ?? ?? ?? ?? E8", ScanType = ScanType.StaticAddress)]
     private IntPtr InstanceIdAddress { get; init; }

@@ -22,10 +22,10 @@ public unsafe class MinimapAdjustments : Tweak
         [ConfigField(Label = "Hover Opacity", Max = 1)]
         public float HoverOpacity = 1f;
 
-        [ConfigField(Label = "Hide Coordinates", OnChange = nameof(UpdateVisibility))]
+        [ConfigField(Label = "Hide Coordinates", Description = "Visible on hover.", OnChange = nameof(UpdateVisibility))]
         public bool HideCoords = true;
 
-        [ConfigField(Label = "Hide Weather", OnChange = nameof(UpdateVisibility))]
+        [ConfigField(Label = "Hide Weather", Description = "Visible on hover.", OnChange = nameof(UpdateVisibility))]
         public bool HideWeather = true;
     }
 

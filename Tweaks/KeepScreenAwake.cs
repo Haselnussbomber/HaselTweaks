@@ -7,7 +7,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class KeepScreenAwake : Tweak
 {
     public override string Name => "Keep Screen Awake";
-    public override string Description => "Prevents the screen going into standby.";
+    public override string Description => "Prevents the screen from going into standby.";
 
     private Timer timer = null!;
 

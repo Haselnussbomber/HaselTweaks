@@ -30,7 +30,7 @@ Shows Instance, FPS and Busy status in DTR bar. Use Dalamud Settings to enable/d
 
 ### Expert Deliveries [[src](Tweaks/ExpertDeliveries.cs)]
 
-Opens the Grand Company Delivery Missions window on the third tab (Expert Delivery).
+Always opens the Grand Company Delivery Missions window on the third tab (Expert Delivery).
 
 ### Forced Cutscene Music [[src](Tweaks/ForcedCutsceneMusic.cs)]
 
@@ -46,7 +46,7 @@ Prevents Instant Portrait from being reset upon saving/updating the current gear
 
 ### Keep Screen Awake [[src](Tweaks/KeepScreenAwake.cs)]
 
-Prevents the screen going into standby.
+Prevents the screen from going into standby.
 
 ### Minimap Adjustments [[src](Tweaks/MinimapAdjustments.cs)]
 
@@ -62,9 +62,9 @@ Configuration options:
 
 Refreshes the material list and recipe tree when you've crafted or gathered an item.
 
-### Reveal Dungeon Requirements [[src](Tweaks/RevealDungeonRequirements.cs)]
+### Reveal Duty Requirements [[src](Tweaks/RevealDutyRequirements.cs)]
 
-Reveals dungeon names in duty finder. Useful for unlocking Mentor roulette.
+Reveals duty names in duty finder. Useful for unlocking Mentor roulette.
 
 ### Scrollable Tabs [[src](Tweaks/ScrollableTabs.cs)]
 
