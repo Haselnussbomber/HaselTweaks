@@ -18,7 +18,6 @@ public abstract class Tweak
     public virtual string Description { get; } = string.Empty;
 
     public virtual bool CanLoad => true;
-    public virtual bool ForceLoad => false;
     public virtual bool Ready { get; protected set; }
     public virtual bool Enabled { get; protected set; }
 

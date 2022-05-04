@@ -50,7 +50,7 @@ public partial class PluginUi
         {
             foreach (var tweak in Plugin.Tweaks.OrderBy(t => t.Name))
             {
-                if (tweak.ForceLoad) continue;
+                if (!tweak.Ready) continue;
 
                 var enabled = tweak.Enabled;
                 if (ImGui.Checkbox($"##Enabled_{tweak.Name}", ref enabled))

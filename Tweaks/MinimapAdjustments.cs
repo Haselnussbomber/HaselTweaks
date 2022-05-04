@@ -40,7 +40,7 @@ public unsafe class MinimapAdjustments : Tweak
 
     // AddonNaviMap_ReceiveEvent
     [AutoHook, Signature("48 89 5C 24 ?? 57 48 83 EC 30 0F B7 C2 49 8B F9 83 C0 FB", DetourName = nameof(OnEvent))]
-    private Hook<OnAtkEventDelegate>? Hook { get; init; } = null!;
+    private Hook<OnAtkEventDelegate> Hook { get; init; } = null!;
     private delegate void* OnAtkEventDelegate(AtkUnitBase* addon, AtkEventType eventType, int eventParam, AtkEventListener* listener, AtkResNode* nodeParam);
 
     private bool isHovering = false;

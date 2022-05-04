@@ -11,7 +11,6 @@ public unsafe class KeepInstantPortrait : Tweak
 
     [Signature("8B D5 49 8B CE E8 ?? ?? ?? ?? 84 C0 0F 84 ?? ?? ?? ?? 0F B6 4E 37")]
     private IntPtr Address { get; init; }
-    public override bool CanLoad => Address != IntPtr.Zero;
     private byte[]? OriginalBytes = null;
 
     public override void Enable()

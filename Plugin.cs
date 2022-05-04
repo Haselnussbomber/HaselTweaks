@@ -51,7 +51,7 @@ public unsafe partial class Plugin : IDalamudPlugin
             {
                 tweak.SetupInternal(this);
 
-                if (tweak.Ready && tweak.CanLoad && (tweak.ForceLoad || Config.EnabledTweaks.Contains(tweak.InternalName)))
+                if (tweak.Ready && tweak.CanLoad && Config.EnabledTweaks.Contains(tweak.InternalName))
                     tweak.EnableInternal();
             }
             catch (Exception ex)
