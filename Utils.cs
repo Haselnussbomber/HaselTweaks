@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using ImGuiNET;
 
 namespace HaselTweaks;
 
@@ -38,5 +42,34 @@ public static unsafe class Utils
     {
         if (node == null || (visible && node->IsVisible) || (!visible && !node->IsVisible)) return;
         node->ToggleVisibility(visible);
+    }
+
+    public static AtkUnitBase* GetHighestAtkUnitBaseAtPosition(List<string>? allowList = null, List<string>? ignoreList = null)
+    {
+        var position = ImGui.GetMousePos() - ImGuiHelpers.MainViewport.Pos;
+
+        var getName = delegate (byte* ptr) { return Marshal.PtrToStringAnsi((IntPtr)ptr); };
+
+        var stage = AtkStage.GetSingleton();
+        var unitManagers = &stage->RaptureAtkUnitManager->AtkUnitManager.DepthLayerOneList;
+        var unitManager = &unitManagers[4];
+        var unitBaseArray = &unitManager->AtkUnitEntries;
+
+        for (var j = 0; j < unitManager->Count; j++)
+        {
+            var unitBase = unitBaseArray[j];
+            if (unitBase->RootNode == null) continue;
+            if (!(unitBase->IsVisible && unitBase->RootNode->IsVisible)) continue;
+
+            if (unitBase->X > position.X || unitBase->Y > position.Y) continue;
+            if (unitBase->X + unitBase->RootNode->Width < position.X) continue;
+            if (unitBase->Y + unitBase->RootNode->Height < position.Y) continue;
+            if (allowList != null && !allowList.Contains(getName(unitBase->Name))) continue;
+            if (ignoreList != null && ignoreList.Contains(getName(unitBase->Name))) continue;
+
+            return unitBase;
+        }
+
+        return null;
     }
 }

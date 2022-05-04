@@ -19,4 +19,5 @@ public class TweakConfigs
     public CustomChatTimestamp.Configuration CustomChatTimestamp { get; init; } = new();
     public MinimapAdjustments.Configuration MinimapAdjustments { get; init; } = new();
     public ForcedCutsceneMusic.Configuration ForcedCutsceneMusic { get; init; } = new();
+    public ScrollableTabs.Configuration ScrollableTabs { get; init; } = new();
 }

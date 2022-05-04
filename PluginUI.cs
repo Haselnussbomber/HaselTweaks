@@ -146,8 +146,14 @@ public partial class PluginUi
                                 DrawNoDrawingFunctionError(field.Name);
                             }
 
-                            if (attr != null && !string.IsNullOrEmpty(attr.Description) && ImGui.IsItemHovered())
-                                ImGui.SetTooltip(attr.Description);
+                            if (attr != null)
+                            {
+                                if (!string.IsNullOrEmpty(attr.Description) && ImGui.IsItemHovered())
+                                    ImGui.SetTooltip(attr.Description);
+
+                                if (attr.SeparatorAfter)
+                                    ImGui.Separator();
+                            }
                         }
 
                         ImGui.TreePop();

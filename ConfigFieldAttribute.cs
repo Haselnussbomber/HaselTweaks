@@ -15,6 +15,7 @@ public class ConfigFieldAttribute : Attribute
     public string Label = "";
     public string Description = "";
     public string OnChange = "";
+    public bool SeparatorAfter = false;
 
     // SingleSelect
     public string Options = "";
