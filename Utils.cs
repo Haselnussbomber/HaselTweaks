@@ -48,8 +48,6 @@ public static unsafe class Utils
     {
         var position = ImGui.GetMousePos() - ImGuiHelpers.MainViewport.Pos;
 
-        var getName = delegate (byte* ptr) { return Marshal.PtrToStringAnsi((IntPtr)ptr); };
-
         var stage = AtkStage.GetSingleton();
         var unitManagers = &stage->RaptureAtkUnitManager->AtkUnitManager.DepthLayerOneList;
         var unitManager = &unitManagers[4];
@@ -64,8 +62,10 @@ public static unsafe class Utils
             if (unitBase->X > position.X || unitBase->Y > position.Y) continue;
             if (unitBase->X + unitBase->RootNode->Width < position.X) continue;
             if (unitBase->Y + unitBase->RootNode->Height < position.Y) continue;
-            if (allowList != null && !allowList.Contains(getName(unitBase->Name))) continue;
-            if (ignoreList != null && ignoreList.Contains(getName(unitBase->Name))) continue;
+            var name = Marshal.PtrToStringAnsi((IntPtr)unitBase->Name);
+            if (name == null) continue;
+            if (allowList != null && !allowList.Contains(name)) continue;
+            if (ignoreList != null && ignoreList.Contains(name)) continue;
 
             return unitBase;
         }
