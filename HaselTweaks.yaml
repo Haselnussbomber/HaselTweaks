@@ -1,4 +1,19 @@
 name: HaselTweaks
 author: Haselnussbomber
 punchline: Some FFXIV tweaks.
-description: Some FFXIV tweaks.
+description: |
+  Included Tweaks:
+
+  - Auto Sort Armoury Chest
+  - Character Class Switcher
+  - Custom Chat Timestamp
+  - DTR
+  - Expert Deliveries
+  - Forced Cutscene Music
+  - Hide MSQ Complete
+  - Keep Instant Portrait
+  - Keep Screen Awake
+  - Minimap Adjustments
+  - Refresh Material List
+  - Reveal Duty Requirements
+  - Scrollable Tabs
