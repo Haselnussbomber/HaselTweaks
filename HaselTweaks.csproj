@@ -51,6 +51,10 @@
       <HintPath>$(Dalamud)\ImGui.NET.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(Dalamud)\Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

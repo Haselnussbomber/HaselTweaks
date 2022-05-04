@@ -20,7 +20,7 @@ internal class ConfigDrawData<T>
         set
         {
             Field.SetValue(Config, value);
-            Plugin.SaveConfig();
+            Plugin.Config.Save();
             OnChange();
         }
     }

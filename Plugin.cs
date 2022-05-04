@@ -29,42 +29,47 @@ public unsafe partial class Plugin : IDalamudPlugin
         Resolver.Initialize();
         XivCommon = new();
 
-        Config = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Ui = new(this);
 
         foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(Tweak)) && !t.IsAbstract))
         {
-            PluginLog.Debug("Initalizing Tweak: {0}", t.Name);
             try
             {
-                var tweak = (Tweak)Activator.CreateInstance(t)!;
-                Tweaks.Add(tweak);
+                Tweaks.Add((Tweak)Activator.CreateInstance(t)!);
+            }
+            catch (Exception ex)
+            {
+                PluginLog.Error(ex, $"Failed initializing tweak '{t.Name}'.");
+            }
+        }
+
+        Config = Configuration.Load(this);
+
+        foreach (var tweak in Tweaks)
+        {
+            try
+            {
                 tweak.SetupInternal(this);
 
-                if (tweak.CanLoad && (tweak.ForceLoad || Config.EnabledTweaks.Contains(tweak.InternalName)))
+                if (tweak.Ready && tweak.CanLoad && (tweak.ForceLoad || Config.EnabledTweaks.Contains(tweak.InternalName)))
                     tweak.EnableInternal();
             }
             catch (Exception ex)
             {
-                PluginLog.Error(ex, $"Failed loading tweak '{t.Name}'.");
+                PluginLog.Error(ex, $"Failed enabling tweak '{tweak.InternalName}'.");
             }
         }
 
-        SaveConfig();
+        Config.Save();
 
         Service.Framework.Update += OnFrameworkUpdate;
-    }
-
-    internal void SaveConfig()
-    {
-        PluginInterface.SavePluginConfig(Config);
     }
 
     private void OnFrameworkUpdate(Framework framework)
     {
         foreach (var tweak in Tweaks)
         {
-            if (tweak.Ready && tweak.Enabled)
+            if (tweak.Enabled)
             {
                 tweak.OnFrameworkUpdate(framework);
             }

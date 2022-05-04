@@ -62,7 +62,7 @@ public partial class PluginUi
                         if (Plugin.Config.EnabledTweaks.Contains(tweak.InternalName))
                         {
                             Plugin.Config.EnabledTweaks.Remove(tweak.InternalName);
-                            Plugin.SaveConfig();
+                            Plugin.Config.Save();
                         }
                     }
                     else
@@ -72,7 +72,7 @@ public partial class PluginUi
                         if (!Plugin.Config.EnabledTweaks.Contains(tweak.InternalName))
                         {
                             Plugin.Config.EnabledTweaks.Add(tweak.InternalName);
-                            Plugin.SaveConfig();
+                            Plugin.Config.Save();
                         }
                     }
                 }
