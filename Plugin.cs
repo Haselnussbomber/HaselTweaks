@@ -100,7 +100,7 @@ public sealed partial class Plugin : IDisposable
             {
                 try
                 {
-                    if (tweak.CanLoad)
+                    if (tweak.Enabled)
                         tweak.DisableInternal();
 
                     tweak.DisposeInternal();
