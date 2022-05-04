@@ -27,7 +27,8 @@ public abstract class Tweak
         .Where(field =>
             field.PropertyType.IsGenericType &&
             field.PropertyType.GetGenericTypeDefinition() == typeof(Hook<>) &&
-            field.CustomAttributes.Any(ca => ca.AttributeType == typeof(AutoHookAttribute))
+            field.CustomAttributes.Any(ca => ca.AttributeType == typeof(AutoHookAttribute)) &&
+            field.CustomAttributes.Any(ca => ca.AttributeType == typeof(SignatureAttribute))
         );
 
     protected void CallHooks(string methodName)
