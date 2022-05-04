@@ -84,7 +84,3 @@ Enables mouse wheel to switch tabs (like with LB/RB on controllers) in the follo
 - Retainer Inventory
 - Shared FATE
 - Sightseeing Log
-
-### Wondrous Tails Duty Selector [[src](Tweaks/WondrousTailsDutySelector.cs)]
-
-Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
