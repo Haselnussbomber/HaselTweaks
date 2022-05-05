@@ -72,7 +72,6 @@ internal partial class Configuration
                 var newTweakName = renamedTweaks[tweakName];
 
                 PluginLog.Log($"Renamed Tweak: {tweakName} => {newTweakName}");
-                newEnabledTweaks.Add(newTweakName);
 
                 // copy renamed tweak config
                 var tweakConfig = (JObject?)tweakConfigs[tweakName];
@@ -86,6 +85,8 @@ internal partial class Configuration
                     tweakConfigs[newTweakName] = tweakConfig;
                     tweakConfigs.Remove(tweakName);
                 }
+
+                tweakName = newTweakName;
             }
 
             // only copy valid ones
@@ -99,13 +100,11 @@ internal partial class Configuration
         if (configuration == null)
             return new Configuration();
 
-        configuration.Plugin = plugin;
-
         return configuration;
     }
 
     internal void Save()
     {
-        Plugin?.PluginInterface.SavePluginConfig(this);
+        Plugin!.PluginInterface.SavePluginConfig(this);
     }
 }

@@ -44,6 +44,7 @@ public unsafe partial class Plugin : IDalamudPlugin
         }
 
         Config = Configuration.Load(this);
+        Config.Plugin = this;
 
         foreach (var tweak in Tweaks)
         {
