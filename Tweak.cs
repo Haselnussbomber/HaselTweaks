@@ -23,11 +23,11 @@ public abstract class Tweak
 
     protected IEnumerable<PropertyInfo> Hooks => this.GetType()
         .GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)
-        .Where(field =>
-            field.PropertyType.IsGenericType &&
-            field.PropertyType.GetGenericTypeDefinition() == typeof(Hook<>) &&
-            field.CustomAttributes.Any(ca => ca.AttributeType == typeof(AutoHookAttribute)) &&
-            field.CustomAttributes.Any(ca => ca.AttributeType == typeof(SignatureAttribute))
+        .Where(prop =>
+            prop.PropertyType.IsGenericType &&
+            prop.PropertyType.GetGenericTypeDefinition() == typeof(Hook<>) &&
+            prop.CustomAttributes.Any(ca => ca.AttributeType == typeof(AutoHookAttribute)) &&
+            prop.CustomAttributes.Any(ca => ca.AttributeType == typeof(SignatureAttribute))
         );
 
     protected void CallHooks(string methodName)
@@ -37,17 +37,10 @@ public abstract class Tweak
             var hook = property.GetValue(this);
             if (hook == null) continue;
 
-            var methodInfo = typeof(Hook<>)
+            typeof(Hook<>)
                 .MakeGenericType(property.PropertyType.GetGenericArguments().First())
-                .GetMethod(methodName);
-
-            if (methodInfo == null)
-            {
-                PluginLog.Error($"Method \"{methodName}\" in Hook<> not found");
-                continue;
-            }
-
-            methodInfo.Invoke(hook, null);
+                .GetMethod(methodName)?
+                .Invoke(hook, null);
         }
     }
 

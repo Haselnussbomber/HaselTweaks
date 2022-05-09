@@ -21,11 +21,11 @@ public unsafe class DTR : Tweak
     [Signature("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 3C 01 75 0C 48 8D 0D ?? ?? ?? ?? E8", ScanType = ScanType.StaticAddress)]
     private IntPtr InstanceIdAddress { get; init; }
 
-    public DtrBarEntry DtrInstance = null!;
-    public DtrBarEntry DtrFPS = null!;
-    public DtrBarEntry DtrBusy = null!;
+    public DtrBarEntry? DtrInstance = null;
+    public DtrBarEntry? DtrFPS = null;
+    public DtrBarEntry? DtrBusy = null;
 
-    public override void Setup()
+    public override void Enable()
     {
         DtrInstance = Service.DtrBar.Get("[HaselTweaks] Instance");
         DtrFPS = Service.DtrBar.Get("[HaselTweaks] FPS");
@@ -34,16 +34,21 @@ public unsafe class DTR : Tweak
 
     public override void Disable()
     {
-        DtrInstance.Shown = false;
-        DtrFPS.Shown = false;
-        DtrBusy.Shown = false;
+        DtrInstance?.Remove();
+        DtrInstance = null;
+
+        DtrFPS?.Remove();
+        DtrFPS = null;
+
+        DtrBusy?.Remove();
+        DtrBusy = null;
     }
 
     public override void Dispose()
     {
-        DtrInstance.Dispose();
-        DtrFPS.Dispose();
-        DtrBusy.Dispose();
+        DtrInstance?.Dispose();
+        DtrFPS?.Dispose();
+        DtrBusy?.Dispose();
     }
 
     public override void OnFrameworkUpdate(Framework framework)
@@ -55,6 +60,8 @@ public unsafe class DTR : Tweak
 
     private void UpdateInstance()
     {
+        if (DtrInstance == null) return;
+
         if (InstanceIdAddress == IntPtr.Zero)
         {
             if (DtrInstance.Shown) DtrInstance.Shown = false;
@@ -76,6 +83,8 @@ public unsafe class DTR : Tweak
 
     private void UpdateBusy()
     {
+        if (DtrBusy == null) return;
+
         var addr = Service.ClientState.LocalPlayer?.Address;
         if (addr == null || addr == IntPtr.Zero)
         {
@@ -109,6 +118,8 @@ public unsafe class DTR : Tweak
 
     private void UpdateFPS()
     {
+        if (DtrFPS == null) return;
+
         var fw = GameFramework.Instance();
         DtrFPS.Shown = fw != null;
         if (fw == null) return;

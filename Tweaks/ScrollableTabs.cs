@@ -246,7 +246,7 @@ public unsafe class ScrollableTabs : Tweak
             if (name == "InventoryRetainer")
                 UpdateInventoryRetainer((AddonInventoryRetainer*)unitBase);
 
-            if (name == "InventoryRetainerLarge")
+            else if (name == "InventoryRetainerLarge")
                 UpdateInventoryRetainerLarge((AddonInventoryRetainerLarge*)unitBase);
         }
         else if ((Config.HandleMinionNoteBook && name == "MinionNoteBook") || (Config.HandleMountNoteBook && name == "MountNoteBook"))

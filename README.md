@@ -1,8 +1,8 @@
 # HaselTweaks
 
-Some tweaks I wrote for myself, but you may use them too. :)
+Just some tweaks I wrote. :)
 
-My repo for auto-updates:
+Repo for auto-updates:
 
 https://raw.githubusercontent.com/Haselnussbomber/MyDalamudPlugins/main/repo.json
 
