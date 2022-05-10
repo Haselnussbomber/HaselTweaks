@@ -50,7 +50,88 @@ public partial class PluginUi
         {
             foreach (var tweak in Plugin.Tweaks.OrderBy(t => t.Name))
             {
-                if (!tweak.Ready) continue;
+                void drawTooltip()
+                {
+                    if (ImGui.IsItemHovered())
+                    {
+                        ImGui.BeginTooltip();
+                        ImGui.PushTextWrapPos(ImGui.GetFontSize() * 20.0f);
+
+                        ImGui.Text(tweak.Name);
+
+                        var status = "???";
+                        var color = 0xFF999999; // gray
+
+                        if (tweak.Outdated)
+                        {
+                            status = "Outdated";
+                            color = 0xFF0000FF; // red
+                        }
+                        else if (!tweak.Ready)
+                        {
+                            status = "Not ready";
+                            color = 0xFF0000FF; // red
+                        }
+                        else if (tweak.Enabled)
+                        {
+                            status = "Enabled";
+                            color = 0xFF00FF00; // green
+                        }
+                        else if (!tweak.Enabled)
+                        {
+                            status = "Disabled";
+                        }
+
+                        if (status != "")
+                        {
+                            var posX = ImGui.GetCursorPosX();
+                            var windowX = ImGui.GetFontSize() * 20.0f; //ImGui.GetWindowSize().X;
+                            var textSize = ImGui.CalcTextSize(status);
+
+                            ImGui.SameLine(windowX - textSize.X);
+
+                            ImGui.PushStyleColor(ImGuiCol.Text, color);
+                            ImGui.Text(status);
+                            ImGui.PopStyleColor();
+                        }
+
+                        if (!string.IsNullOrEmpty(tweak.Description))
+                        {
+                            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().FramePadding.Y);
+                            ImGui.Separator();
+
+                            ImGui.PushStyleColor(ImGuiCol.Text, 0xFFBBBBBB);
+                            ImGui.TextWrapped(tweak.Description);
+                            ImGui.PopStyleColor();
+                        }
+
+                        ImGui.PopTextWrapPos();
+                        ImGui.EndTooltip();
+                    }
+                };
+
+                if (!tweak.Ready)
+                {
+                    // padding left
+                    ImGui.SetCursorPosX(ImGui.GetFrameHeight() + ImGui.GetStyle().FramePadding.X * 10 + 1);
+
+                    // padding top
+                    ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().FramePadding.Y);
+
+                    ImGui.PushStyleColor(ImGuiCol.Text, 0xFF0000FF);
+                    ImGui.Text(tweak.Name);
+                    ImGui.PopStyleColor();
+
+                    // padding bottom
+                    ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().FramePadding.Y);
+
+                    drawTooltip();
+
+                    if (tweak != Plugin.Tweaks[^1])
+                        ImGui.Separator();
+
+                    continue;
+                }
 
                 var enabled = tweak.Enabled;
                 if (ImGui.Checkbox($"##Enabled_{tweak.Name}", ref enabled))
@@ -79,21 +160,13 @@ public partial class PluginUi
 
                 ImGui.SameLine();
 
-                var drawDescription = () =>
-                {
-                    if (!string.IsNullOrEmpty(tweak.Description) && ImGui.IsItemHovered())
-                    {
-                        ImGui.SetTooltip(tweak.Description);
-                    }
-                };
-
                 var config = Plugin.Config.Tweaks.GetType().GetProperty(tweak.InternalName)?.GetValue(Plugin.Config.Tweaks);
 
                 if (config != null)
                 {
                     var isOpen = ImGui.TreeNodeEx(tweak.Name);
 
-                    drawDescription();
+                    drawTooltip();
 
                     if (isOpen)
                     {
@@ -167,7 +240,7 @@ public partial class PluginUi
                     ImGui.PopStyleColor();
                     ImGui.PopStyleColor();
 
-                    drawDescription();
+                    drawTooltip();
                 }
 
                 if (tweak != Plugin.Tweaks[^1])

@@ -18,6 +18,7 @@ public abstract class Tweak
     public virtual string Description { get; } = string.Empty;
 
     public virtual bool CanLoad => true;
+    public virtual bool Outdated { get; protected set; } = false;
     public virtual bool Ready { get; protected set; }
     public virtual bool Enabled { get; protected set; }
 
@@ -47,7 +48,16 @@ public abstract class Tweak
     internal virtual void SetupInternal(Plugin plugin)
     {
         Plugin = plugin;
-        SignatureHelper.Initialise(this);
+        try
+        {
+            SignatureHelper.Initialise(this);
+        }
+        catch (SignatureException ex)
+        {
+            Error(ex, $"SignatureException, flagging tweak '{InternalName}' as outdated");
+            Outdated = true;
+            return;
+        }
         Ready = true;
         Setup();
     }
