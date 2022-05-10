@@ -8,6 +8,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class MinimapAdjustments : Tweak
 {
     public override string Name => "Minimap Adjustments";
+    public override string Description => "Mini changes for the Minimap. :)";
 
     public Configuration Config => Plugin.Config.Tweaks.MinimapAdjustments;
 
