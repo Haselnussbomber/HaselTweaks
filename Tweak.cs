@@ -17,7 +17,6 @@ public abstract class Tweak
     public abstract string Name { get; }
     public virtual string Description { get; } = string.Empty;
 
-    public virtual bool CanLoad => true;
     public virtual bool Outdated { get; protected set; } = false;
     public virtual bool Ready { get; protected set; }
     public virtual bool Enabled { get; protected set; }
@@ -58,29 +57,29 @@ public abstract class Tweak
             Outdated = true;
             return;
         }
-        Ready = true;
         Setup();
+        Ready = true;
     }
 
     internal virtual void EnableInternal()
     {
-        Enabled = true;
         CallHooks("Enable");
         Enable();
+        Enabled = true;
     }
 
     internal virtual void DisableInternal()
     {
-        Enabled = false;
         CallHooks("Disable");
         Disable();
+        Enabled = false;
     }
 
     internal virtual void DisposeInternal()
     {
-        Ready = false;
         CallHooks("Dispose");
         Dispose();
+        Ready = false;
     }
 
     public virtual void Setup() { }
