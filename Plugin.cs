@@ -95,6 +95,8 @@ public sealed partial class Plugin : IDisposable
 
         if (disposing)
         {
+            Ui.Show = false;
+
             Service.Framework.Update -= OnFrameworkUpdate;
 
             foreach (var tweak in Tweaks)
