@@ -51,13 +51,22 @@ public unsafe partial class Plugin : IDalamudPlugin
             try
             {
                 tweak.SetupInternal(this);
-
-                if (tweak.Ready && tweak.CanLoad && Config.EnabledTweaks.Contains(tweak.InternalName))
-                    tweak.EnableInternal();
             }
             catch (Exception ex)
             {
-                PluginLog.Error(ex, $"Failed enabling tweak '{tweak.InternalName}'.");
+                PluginLog.Error(ex, $"Failed setting up tweak '{tweak.InternalName}'.");
+            }
+
+            if (tweak.Ready && Config.EnabledTweaks.Contains(tweak.InternalName))
+            {
+                try
+                {
+                    tweak.EnableInternal();
+                }
+                catch (Exception ex)
+                {
+                    PluginLog.Error(ex, $"Failed enabling tweak '{tweak.InternalName}'.");
+                }
             }
         }
 
