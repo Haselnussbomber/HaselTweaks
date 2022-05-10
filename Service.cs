@@ -18,4 +18,6 @@ public class Service
     [PluginService] public static Framework Framework { get; private set; } = null!;
     [PluginService] public static GameGui GameGui { get; private set; } = null!;
     [PluginService] public static DtrBar DtrBar { get; private set; } = null!;
+    [PluginService] public static TargetManager TargetManager { get; private set; } = null!;
+    [PluginService] public static ObjectTable ObjectTable { get; private set; } = null!;
 }

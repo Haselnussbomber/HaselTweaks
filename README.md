@@ -20,6 +20,17 @@ Clicking on a class/job in the character window finds the gearset with the highe
 
 Basic controller support - only tested with a Xbox 360 Controller.
 
+### Commands [[src](Tweaks/Commands.cs)]
+
+A variety of useful chat commands. Each command is separately toggleable.
+
+Available Commands:
+
+- `/itemlink <id>`  
+  Prints an item link for the given item id in chat.
+- `/whatmount`  
+  Target a player and execute the command to see what mount your target is riding and which item learnes this mount.
+
 ### Custom Chat Timestamp [[src](Tweaks/CustomChatTimestamp.cs)]
 
 As it says, configurable chat timestamp format. Uses C#'s <a href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings" target="_blank" rel="noreferrer noopener">`DateTime.ToString()`</a> to format.

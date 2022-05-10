@@ -25,6 +25,7 @@ public class TweakConfigs
     public MinimapAdjustments.Configuration MinimapAdjustments { get; init; } = new();
     public ForcedCutsceneMusic.Configuration ForcedCutsceneMusic { get; init; } = new();
     public ScrollableTabs.Configuration ScrollableTabs { get; init; } = new();
+    public Commands.Configuration Commands { get; init; } = new();
 }
 
 internal partial class Configuration
