@@ -29,7 +29,7 @@ Available Commands:
 - `/itemlink <id>`  
   Prints an item link for the given item id in chat.
 - `/whatmount`  
-  Target a player and execute the command to see what mount your target is riding and which item learnes this mount.
+  Target a player and execute the command to see what mount your target is riding and which item teaches this mount.
 
 ### Custom Chat Timestamp [[src](Tweaks/CustomChatTimestamp.cs)]
 

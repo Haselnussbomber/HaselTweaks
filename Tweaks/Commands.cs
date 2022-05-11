@@ -24,7 +24,7 @@ public unsafe class Commands : Tweak
         [ConfigField(Label = ItemLinkCommand, Description = $"Prints an item link for the given item id in chat.\nUsage: {ItemLinkCommand} <id>", OnChange = nameof(OnConfigChange))]
         public bool EnableItemLinkCommand = true;
 
-        [ConfigField(Label = WhatMountCommand, Description = $"Target a player and execute the command to see what mount\nyour target is riding and which item learnes this mount.", OnChange = nameof(OnConfigChange))]
+        [ConfigField(Label = WhatMountCommand, Description = $"Target a player and execute the command to see what mount\nyour target is riding and which item teaches this mount.", OnChange = nameof(OnConfigChange))]
         public bool EnableWhatMountCommand = true;
     }
 
