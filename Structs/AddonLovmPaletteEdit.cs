@@ -9,5 +9,5 @@ public unsafe partial struct AddonLovmPaletteEdit
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x840)] public TabSwitcherClass TabSwitcher;
+    [FieldOffset(0x840)] public TabSwitcher TabSwitcher;
 }

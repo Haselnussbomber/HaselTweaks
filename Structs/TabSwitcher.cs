@@ -5,7 +5,7 @@ namespace HaselTweaks.Structs;
 
 // ctor E8 ?? ?? ?? ?? BF ?? ?? ?? ?? 48 8D AB
 [StructLayout(LayoutKind.Explicit, Size = 0xA0)]
-public unsafe partial struct TabSwitcherClass
+public unsafe partial struct TabSwitcher
 {
     [FieldOffset(0x78)] public int CurrentTabIndex;
     [FieldOffset(0x7C)] public int NumTabs;

@@ -9,5 +9,5 @@ public unsafe partial struct AddonGoldSaucerCardList
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x298)] public TabSwitcherClass TabSwitcher;
+    [FieldOffset(0x298)] public TabSwitcher TabSwitcher;
 }

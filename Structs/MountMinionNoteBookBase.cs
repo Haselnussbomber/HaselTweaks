@@ -17,7 +17,7 @@ public unsafe partial struct MountMinionNoteBookBase
 
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x298)] public TabSwitcherClass TabSwitcher;
+    [FieldOffset(0x298)] public TabSwitcher TabSwitcher;
 
     [FieldOffset(0x7A8)] public ViewType CurrentView;
 }

@@ -9,5 +9,5 @@ public unsafe partial struct AddonAdventureNoteBook
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x570)] public TabSwitcherClass TabSwitcher;
+    [FieldOffset(0x570)] public TabSwitcher TabSwitcher;
 }

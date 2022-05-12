@@ -352,7 +352,7 @@ public unsafe class ScrollableTabs : Tweak
         RetainerInventoryLargeSetTab(addon, tabIndex);
     }
 
-    private void UpdateTabSwitcher(IntPtr addon, TabSwitcherClass tabSwitcher)
+    private void UpdateTabSwitcher(IntPtr addon, TabSwitcher tabSwitcher)
     {
         var tabIndex = GetTabIndex(tabSwitcher.CurrentTabIndex, tabSwitcher.NumTabs);
         if (tabSwitcher.CurrentTabIndex == tabIndex) return;
@@ -360,7 +360,7 @@ public unsafe class ScrollableTabs : Tweak
         var callbackAddress = (IntPtr)tabSwitcher.Callback;
         if (callbackAddress == IntPtr.Zero) return;
 
-        Marshal.GetDelegateForFunctionPointer<TabSwitcherClass.CallbackDelegate>(callbackAddress)(tabIndex, addon);
+        Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(tabIndex, addon);
     }
 
     private void UpdateAOZNotebook(AddonAOZNotebook* addon)
