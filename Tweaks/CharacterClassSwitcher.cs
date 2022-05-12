@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Dalamud.Hooking;
+using Dalamud.Memory;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
@@ -13,6 +14,55 @@ public unsafe class CharacterClassSwitcher : Tweak
 {
     public override string Name => "Character Class Switcher";
     public override string Description => "Clicking on a class/job in the character window finds the gearset with the highest item level and equips it.\nHold shift on crafters to open the original desynthesis window.";
+    public Configuration Config => Plugin.Config.Tweaks.CharacterClassSwitcher;
+
+    public class Configuration
+    {
+        [ConfigField(Label = "Disable Tooltips", OnChange = nameof(OnTooltipConfigChange))]
+        public bool DisableTooltips = false;
+    }
+
+    /*
+        83 FD 14         cmp     ebp, 14h
+        48 8B 6C 24 ??   mov     rbp, [rsp+68h+arg_8]
+        7D 69            jge     short loc_140EB06A1     <- replacing this with a jmp rel8
+    
+        completely skips the whole if () {...} block, by jumping regardless of cmp result
+     */
+    [Signature("83 FD 14 48 8B 6C 24 ?? 7D 69")]
+    private IntPtr Address { get; init; }
+    private bool TooltipPatchApplied = false;
+
+    public override void Enable()
+    {
+        ApplyTooltipPatch(Config.DisableTooltips);
+    }
+
+    public override void Disable()
+    {
+        ApplyTooltipPatch(false);
+    }
+
+    private void OnTooltipConfigChange()
+    {
+        ApplyTooltipPatch(Config.DisableTooltips);
+    }
+
+    private void ApplyTooltipPatch(bool enable)
+    {
+        if (enable && !TooltipPatchApplied)
+        {
+            Utils.MemoryWriteRaw(Address + 8, new byte[] { 0xEB }); // jmp rel8
+
+            TooltipPatchApplied = true;
+        }
+        else if (!enable && TooltipPatchApplied)
+        {
+            Utils.MemoryWriteRaw(Address + 8, new byte[] { 0x7D }); // jge rel8
+
+            TooltipPatchApplied = false;
+        }
+    }
 
     // AddonCharacterClass_OnSetup (vf46)
     [AutoHook, Signature("48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC ?? ?? ?? ?? 0F 29 70 C8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 17 F3 0F 10 35 ?? ?? ?? ?? 45 33 C9 45 33 C0 F3 0F 11 74 24 ?? 0F 57 C9 48 8B F9 E8", DetourName = nameof(OnSetup))]
@@ -163,16 +213,12 @@ public unsafe class CharacterClassSwitcher : Tweak
                 ownerNode->AtkResNode.AddBlue = 16;
                 ownerNode->AtkResNode.AddGreen = 16;
                 ownerNode->AtkResNode.AddRed = 16;
-
-                // fallthrough for tooltips
             }
             else if (eventType == AtkEventType.MouseOut)
             {
                 ownerNode->AtkResNode.AddBlue = 0;
                 ownerNode->AtkResNode.AddGreen = 0;
                 ownerNode->AtkResNode.AddRed = 0;
-
-                // fallthrough for tooltips
             }
         }
 

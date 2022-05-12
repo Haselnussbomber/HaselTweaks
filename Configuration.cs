@@ -26,6 +26,7 @@ public class TweakConfigs
     public ForcedCutsceneMusic.Configuration ForcedCutsceneMusic { get; init; } = new();
     public ScrollableTabs.Configuration ScrollableTabs { get; init; } = new();
     public Commands.Configuration Commands { get; init; } = new();
+    public CharacterClassSwitcher.Configuration CharacterClassSwitcher { get; init; } = new();
 }
 
 internal partial class Configuration
