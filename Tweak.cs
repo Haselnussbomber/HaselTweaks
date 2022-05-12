@@ -53,7 +53,7 @@ public abstract class Tweak
         }
         catch (SignatureException ex)
         {
-            Error(ex, $"SignatureException, flagging tweak '{InternalName}' as outdated");
+            Warning(ex, $"SignatureException, flagging tweak '{InternalName}' as outdated");
             Outdated = true;
             return;
         }
