@@ -22,21 +22,19 @@ public unsafe class KeepInstantPortrait : Tweak
     private IntPtr Address { get; init; }
     private byte[]? OriginalBytes = null;
 
+    private readonly int Offset = 8;
+
     public override void Enable()
     {
-        OriginalBytes = MemoryHelper.ReadRaw(Address, 5); // backup original bytes
-
         var jmpBytes = new byte[] { 0xE9, 0x00, 0x00, 0x00, 0x00 }; // the jmp rel32
         var pos = MemoryHelper.Read<uint>(Address + 14) + 13; // address of jz adjusted to new position
         BitConverter.GetBytes(pos).CopyTo(jmpBytes, 1);
 
-        MemoryHelper.ChangePermission(Address, 5, MemoryProtection.ExecuteReadWrite);
-        MemoryHelper.WriteRaw(Address, jmpBytes);
+        OriginalBytes = Utils.MemoryWriteRaw(Address + Offset, jmpBytes);
     }
 
     public override void Disable()
     {
-        MemoryHelper.ChangePermission(Address, 5, MemoryProtection.ExecuteReadWrite);
-        MemoryHelper.WriteRaw(Address, OriginalBytes!);
+        Utils.MemoryWriteRaw(Address + Offset, OriginalBytes!);
     }
 }

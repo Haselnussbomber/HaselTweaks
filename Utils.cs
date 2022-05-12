@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Dalamud.Interface;
+using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
 
@@ -71,5 +72,16 @@ public static unsafe class Utils
         }
 
         return null;
+    }
+
+    public static byte[] MemoryWriteRaw(IntPtr address, byte[] data)
+    {
+        var originalBytes = MemoryHelper.ReadRaw(address, data.Length);
+
+        var oldProtection = MemoryHelper.ChangePermission(address, data.Length, MemoryProtection.ExecuteReadWrite);
+        MemoryHelper.WriteRaw(address, data);
+        MemoryHelper.ChangePermission(address, data.Length, oldProtection);
+
+        return originalBytes;
     }
 }
