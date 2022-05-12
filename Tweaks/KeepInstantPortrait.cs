@@ -9,17 +9,25 @@ public unsafe class KeepInstantPortrait : Tweak
     public override string Name => "Keep Instant Portrait";
     public override string Description => "Prevents Instant Portrait from being reset upon saving/updating the current Gearset.";
 
+    /*
+        8B D5               mov     edx, ebp
+        49 8B CE            mov     rcx, r14
+        E8 ?? ?? ?? ??      call    sub_1406664D0
+        84 C0               test    al, al
+        0F 84 ?? ?? ?? ??   jz      loc_140665E44     <- moving this to the start of the signature, but using a jmp rel32 instead
+
+        completely skips the whole if () {...} block
+     */
     [Signature("8B D5 49 8B CE E8 ?? ?? ?? ?? 84 C0 0F 84 ?? ?? ?? ?? 0F B6 4E 37")]
     private IntPtr Address { get; init; }
     private byte[]? OriginalBytes = null;
 
     public override void Enable()
     {
-        OriginalBytes = MemoryHelper.ReadRaw(Address, 5); // 5 = jmpBytes length
+        OriginalBytes = MemoryHelper.ReadRaw(Address, 5); // backup original bytes
 
-        var jmpBytes = new byte[] { 0xE9, 0x00, 0x00, 0x00, 0x00 }; // JMP rel32
-
-        var pos = MemoryHelper.Read<uint>(Address + 0x0E) + 0x0D;
+        var jmpBytes = new byte[] { 0xE9, 0x00, 0x00, 0x00, 0x00 }; // the jmp rel32
+        var pos = MemoryHelper.Read<uint>(Address + 14) + 13; // address of jz adjusted to new position
         BitConverter.GetBytes(pos).CopyTo(jmpBytes, 1);
 
         MemoryHelper.ChangePermission(Address, 5, MemoryProtection.ExecuteReadWrite);
