@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
 using Dalamud.Hooking;
-using Dalamud.Memory;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
