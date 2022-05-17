@@ -55,11 +55,11 @@ Hides the Main Scenario Guide when you've completed the MSQ. Job quests are stil
 
 Prevents Instant Portrait from being reset upon saving/updating the current gearset.
 
-This is for everyone who extracts materia from their fully spiritbound items and have the urge to click the update gearset button, because it lights up. Updating the gearset unfortunately removes the instant portrait link from it, which is pretty annoying.
+This is for everyone who extracts materia from their fully spiritbond items and has the urge to click the update gearset button, because it is clickable after that.  
+Updating the gearset unfortunately removes the instant portrait link from it, regardless of whether the gear has actually changed or not, which is pretty annoying.  
+This tweak simply completely skips the code which removes the link.
 
-This tweak simply completely skips the code to remove the link, which however might have some unintended side-effects when actually changing the gearset.
-
-Obviously the real fix would be to prevent the update gearset button from activating after extracting.  
+The real solution would probably be that the gearset won't be marked as changed when spiritbond of an item is reset. That way the update gearset button wouldn't even activate.  
 Hopefully this is fixed in a future game update.
 
 ### Keep Screen Awake [[src](Tweaks/KeepScreenAwake.cs)]
@@ -82,7 +82,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 ### Reveal Duty Requirements [[src](Tweaks/RevealDutyRequirements.cs)]
 
-Reveals duty names in duty finder, which were shown as "???". Useful for unlocking Mentor roulette.
+Reveals duty names in duty finder, which were shown as "???" to prevent spoilers. Useful for unlocking Mentor roulette.
 
 ### Scrollable Tabs [[src](Tweaks/ScrollableTabs.cs)]
 
