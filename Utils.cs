@@ -74,7 +74,7 @@ public static unsafe class Utils
         return null;
     }
 
-    public static byte[] MemoryWriteRaw(IntPtr address, byte[] data)
+    public static byte[] MemoryReplaceRaw(IntPtr address, byte[] data)
     {
         var originalBytes = MemoryHelper.ReadRaw(address, data.Length);
 

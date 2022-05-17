@@ -51,13 +51,13 @@ public unsafe class CharacterClassSwitcher : Tweak
     {
         if (enable && !TooltipPatchApplied)
         {
-            Utils.MemoryWriteRaw(Address + 8, new byte[] { 0xEB }); // jmp rel8
+            Utils.MemoryReplaceRaw(Address + 8, new byte[] { 0xEB }); // jmp rel8
 
             TooltipPatchApplied = true;
         }
         else if (!enable && TooltipPatchApplied)
         {
-            Utils.MemoryWriteRaw(Address + 8, new byte[] { 0x7D }); // jge rel8
+            Utils.MemoryReplaceRaw(Address + 8, new byte[] { 0x7D }); // jge rel8
 
             TooltipPatchApplied = false;
         }

@@ -7,7 +7,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class KeepInstantPortrait : Tweak
 {
     public override string Name => "Keep Instant Portrait";
-    public override string Description => "Prevents Instant Portrait from being reset upon saving/updating the current Gearset.";
+    public override string Description => "Prevents Instant Portrait from being reset upon saving/updating the current gearset.";
 
     /*
         8B D5               mov     edx, ebp
@@ -28,11 +28,11 @@ public unsafe class KeepInstantPortrait : Tweak
         var pos = MemoryHelper.Read<uint>(Address + 14) + 13; // address of jz adjusted to new position
         BitConverter.GetBytes(pos).CopyTo(jmpBytes, 1);
 
-        OriginalBytes = Utils.MemoryWriteRaw(Address, jmpBytes);
+        OriginalBytes = Utils.MemoryReplaceRaw(Address, jmpBytes);
     }
 
     public override void Disable()
     {
-        Utils.MemoryWriteRaw(Address, OriginalBytes!);
+        Utils.MemoryReplaceRaw(Address, OriginalBytes!);
     }
 }
