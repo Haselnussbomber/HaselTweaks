@@ -14,7 +14,7 @@ public unsafe class MinimapAdjustments : Tweak
 
     public class Configuration
     {
-        [ConfigField(Label = "Square Collision", Description = "Changes collision box to from round to square.", OnChange = nameof(UpdateCollision))]
+        [ConfigField(Label = "Square Collision", Description = "Changes collision box to from round to square.")]
         public bool Square = false;
 
         [ConfigField(Label = "Default Opacity", Max = 1)]
@@ -46,11 +46,6 @@ public unsafe class MinimapAdjustments : Tweak
 
     private bool isHovering = false;
 
-    public override void Enable()
-    {
-        UpdateCollision();
-    }
-
     public override void Disable()
     {
         var addon = Utils.GetUnitBase("_NaviMap");
@@ -68,6 +63,7 @@ public unsafe class MinimapAdjustments : Tweak
         var addon = Utils.GetUnitBase("_NaviMap");
         if (addon == null) return;
         SetVisibility(addon, isHovering);
+        SetCollision(addon, Config.Square);
     }
 
     private void* OnEvent(AtkUnitBase* addon, AtkEventType eventType, int eventParam, AtkEventListener* listener, AtkResNode* nodeParam)
@@ -82,13 +78,6 @@ public unsafe class MinimapAdjustments : Tweak
         }
 
         return Hook!.Original(addon, eventType, eventParam, listener, nodeParam);
-    }
-
-    private void UpdateCollision()
-    {
-        var addon = Utils.GetUnitBase("_NaviMap");
-        if (addon == null) return;
-        SetCollision(addon, Config.Square);
     }
 
     private void UpdateVisibility()
@@ -110,10 +99,11 @@ public unsafe class MinimapAdjustments : Tweak
     {
         var collisionNode = Utils.GetNode(addon, (uint)NodeId.Collision);
         if (collisionNode == null) return;
+        var hasCircularCollisionFlag = (collisionNode->Flags_2 & (1 << 23)) != 0;
 
-        if (square)
+        if (square && hasCircularCollisionFlag)
             collisionNode->Flags_2 &= ~(uint)(1 << 23); // remove circular collision flag
-        else
+        else if (!square && !hasCircularCollisionFlag)
             collisionNode->Flags_2 |= 1 << 23; // add circular collision flag
     }
 }
