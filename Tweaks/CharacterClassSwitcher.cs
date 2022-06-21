@@ -196,7 +196,7 @@ public unsafe class CharacterClassSwitcher : Tweak
                 if (textureInfo == null || textureInfo->AtkTexture.Resource == null)
                     return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
 
-                var iconId = textureInfo->AtkTexture.Resource->Unk_1;
+                var iconId = (uint)textureInfo->AtkTexture.Resource->IconID;
                 if (iconId <= 62100)
                     return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
 
