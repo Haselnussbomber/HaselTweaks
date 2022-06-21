@@ -5,7 +5,6 @@ using System.Reflection;
 using Dalamud.Game;
 using Dalamud.Logging;
 using Dalamud.Plugin;
-using FFXIVClientStructs;
 using XivCommon;
 
 namespace HaselTweaks;
@@ -26,7 +25,6 @@ public unsafe partial class Plugin : IDalamudPlugin
         PluginInterface = pluginInterface;
 
         pluginInterface.Create<Service>();
-        Resolver.Initialize();
         XivCommon = new();
 
         Ui = new(this);
