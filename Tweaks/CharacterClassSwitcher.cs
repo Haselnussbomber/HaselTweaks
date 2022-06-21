@@ -196,14 +196,14 @@ public unsafe class CharacterClassSwitcher : Tweak
                 if (textureInfo == null || textureInfo->AtkTexture.Resource == null)
                     return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
 
-                var iconId = (uint)textureInfo->AtkTexture.Resource->IconID;
+                var iconId = textureInfo->AtkTexture.Resource->IconID;
                 if (iconId <= 62100)
                     return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
 
                 // yes, you see correctly. the iconId is 62100 + ClassJob RowId :)
                 var classJobId = iconId - 62100;
 
-                SwitchClassJob(classJobId);
+                SwitchClassJob((uint)classJobId);
 
                 return IntPtr.Zero; // handled
             }
