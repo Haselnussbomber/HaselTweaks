@@ -18,55 +18,31 @@ public unsafe class ForcedCutsceneMusic : Tweak
         public bool Restore = true;
     }
 
-    [Signature("89 54 24 10 53 55 57 41 54 41 55 41 56 48 83 EC 48 8B C2 45 8B E0 44 8B D2 45 32 F6 44 8B C2 45 32 ED")]
-    private SetValueByIndexDelegate SetValueByIndex { get; init; } = null!;
-    private delegate IntPtr SetValueByIndexDelegate(ConfigModule* self, ulong kind, ulong value, ulong a4, ulong triggerUpdate, ulong a6);
-
     [AutoHook, Signature("E8 ?? ?? ?? ?? 48 8B F0 48 89 45 0F", DetourName = nameof(CutsceneStateCtorDetour))]
     private Hook<CutsceneStateCtorDelegate> CutsceneStateCtorHook { get; init; } = null!;
     private delegate CutsceneState* CutsceneStateCtorDelegate(CutsceneState* self, uint cutsceneId, byte a3, int a4, int a5, int a6, int a7);
 
     [AutoHook, Signature("48 89 5C 24 ?? 57 48 83 EC 20 48 8D 05 ?? ?? ?? ?? 48 8B F9 48 89 01 8B DA 48 83 C1 10 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 48 89 07 F6 C3 01 74 0D BA ?? ?? ?? ?? 48 8B CF E8 ?? ?? ?? ?? 48 8B C7 48 8B 5C 24 ?? 48 83 C4 20 5F C3 CC CC CC CC 40 53 48 83 EC 20 48 8D 05 ?? ?? ?? ?? 48 8B D9 48 89 01 F6 C2 01 74 0A BA ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B C3 48 83 C4 20 5B C3 CC CC CC CC CC 40 53", DetourName = nameof(CutsceneStateDtor_Detour))]
-    private Hook<CutsceneStateDtor_Delegate> CutsceneStateDtorHook { get; init; } = null!;
-    private delegate CutsceneState* CutsceneStateDtor_Delegate(CutsceneState* self, IntPtr a2, IntPtr a3, IntPtr a4);
+    private Hook<CutsceneStateDtorDelegate> CutsceneStateDtorHook { get; init; } = null!;
+    private delegate CutsceneState* CutsceneStateDtorDelegate(CutsceneState* self, IntPtr a2, IntPtr a3, IntPtr a4);
 
     private bool wasBgmMuted = false;
-
-    private ConfigModule* ConfigModule
-    {
-        get
-        {
-            var framework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance();
-            if (framework == null) return null;
-
-            var uiModule = framework->GetUiModule();
-            if (uiModule == null) return null;
-
-            return uiModule->GetConfigModule();
-        }
-    }
 
     private bool IsBgmMuted
     {
         get
         {
-            var configModule = ConfigModule;
-            if (configModule == null) return false;
-
-            // BgmMuted from https://github.com/karashiiro/SoundSetter/blob/master/SoundSetter/OptionInternals/OptionKind.cs
-            var value = configModule->GetValue(35);
-            if (value == null) return false;
-
-            return value->Byte == 0x01;
+            var configModule = ConfigModule.Instance();
+            return configModule != null && configModule->GetIntValue(ConfigOption.IsSndBgm) == 1;
         }
         set
         {
-            var configModule = ConfigModule;
+            var configModule = ConfigModule.Instance();
             if (configModule == null) return;
 
             Log($"setting IsBgmMuted to {value}");
 
-            SetValueByIndex(configModule, 35, value ? 1u : 0u, 0, 1, 0);
+            configModule->SetOption(ConfigOption.IsSndBgm, value ? 1 : 0);
         }
     }
 
