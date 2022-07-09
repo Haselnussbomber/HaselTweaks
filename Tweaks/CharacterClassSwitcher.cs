@@ -13,7 +13,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class CharacterClassSwitcher : Tweak
 {
     public override string Name => "Character Class Switcher";
-    public override string Description => "Clicking on a class/job in the character window finds the gearset with the highest item level and equips it.\nHold shift on crafters to open the original desynthesis window.";
+    public override string Description => "Clicking on a class/job in the character window finds the matching gearset and equips it.\nHold shift on crafters to open the original desynthesis window.";
     public Configuration Config => Plugin.Config.Tweaks.CharacterClassSwitcher;
 
     public class Configuration
@@ -164,6 +164,12 @@ public unsafe class CharacterClassSwitcher : Tweak
         var isClick =
             (eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick) ||
             (eventType == AtkEventType.InputReceived && GamepadUtils.IsPressed(GamepadUtils.GamepadBinding.Accept));
+
+        if (eventType == AtkEventType.InputReceived)
+        {
+            Log($"Accept = {GamepadUtils.IsPressed(GamepadUtils.GamepadBinding.Accept)}");
+            Log($"HUD_Select = {GamepadUtils.IsPressed(GamepadUtils.GamepadBinding.HUD_Select)}");
+        }
 
         if (IsCrafter(eventParam - 2))
         {

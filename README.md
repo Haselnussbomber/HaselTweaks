@@ -16,9 +16,21 @@ Uses the <a href="https://eu.finalfantasyxiv.com/lodestone/playguide/db/text_com
 
 ### Character Class Switcher [[src](Tweaks/CharacterClassSwitcher.cs)]
 
-Clicking on a class/job in the character window finds the gearset with the highest item level and equips it. Hold shift on crafters to open the original desynthesis window.
+Clicking on a class/job in the character window finds the matching gearset and equips it.
 
-Basic controller support - only tested with a Xbox 360 Controller.
+Features:
+
+- Always equips the matching gearset with the highest average item level
+- Supports crafter jobs
+  - Hold shift to open the original desynthesis window if needed
+- Supports controller input
+  - Checks the controller button with "Select Target/Confirm" binding
+  - Technical limitation: desynthesis window still only opens when holding shift on a keyboard
+- Adds hover effect for non-crafters
+- Option to disable Tooltips
+
+> **Note**
+> This tweak is interfering with Simple Tweaks "Character Window Job Switcher". Make sure to disable it there.
 
 ### Commands [[src](Tweaks/Commands.cs)]
 
@@ -55,12 +67,9 @@ Hides the Main Scenario Guide when you've completed the MSQ. Job quests are stil
 
 Prevents Instant Portrait from being reset upon saving/updating the current gearset.
 
-This is for everyone who extracts materia from their fully spiritbond items and has the urge to click the update gearset button, because it is clickable after that.  
+This is for everyone who extracts materia from their fully spiritbond items and has the urge to click the now clickable update gearset button.  
 Updating the gearset unfortunately removes the instant portrait link from it, regardless of whether the gear has actually changed or not, which is pretty annoying.  
 This tweak simply completely skips the code which removes the link.
-
-The real solution would probably be that the gearset won't be marked as changed when spiritbond of an item is reset. That way the update gearset button wouldn't even activate.  
-Hopefully this is fixed in a future game update.
 
 ### Keep Screen Awake [[src](Tweaks/KeepScreenAwake.cs)]
 
