@@ -127,7 +127,7 @@ public unsafe class CharacterClassSwitcher : Tweak
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
         {
-            // skip crafters as they already have ButtonClick events
+            // skip crafters as they already have Cursor Pointer flags
             if (IsCrafter(i)) continue;
 
             var node = addon->BaseComponentNodes[i];
@@ -153,33 +153,33 @@ public unsafe class CharacterClassSwitcher : Tweak
     {
         // skip events for tabs
         if (eventParam < 2)
-            return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+            goto OriginalCode;
 
         var node = addon->BaseComponentNodes[eventParam - 2];
         if (node == null)
-            return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+            goto OriginalCode;
 
         var ownerNode = node->OwnerNode;
         if (ownerNode == null)
-            return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+            goto OriginalCode;
 
         var imageNode = (AtkImageNode*)node->UldManager.SearchNodeById(4);
         if (imageNode == null)
-            return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+            goto OriginalCode;
 
         // if job is unlocked, it has full alpha
         var isUnlocked = imageNode->AtkResNode.Color.A == 255;
         if (!isUnlocked)
-            return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+            goto OriginalCode;
 
         var isClick =
             (eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick) ||
-            (eventType == AtkEventType.InputReceived && InputManager_GetInputStatus(g_InputManager, 12)); // A button on a Xbox 360 Controller
+            (eventType == AtkEventType.InputReceived && InputManager_GetInputStatus(g_InputManager, 12)); // 'A' button on a Xbox 360 Controller
 
         if (IsCrafter(eventParam - 2))
         {
-            // as far as i can see, any controller button other than A doesn't send InputReceived/ButtonClick events on button nodes,
-            // so i can't move this functionality to the X button. anyway, i don't think it's a big problem, because
+            // as far as i can see, any controller button other than 'A' doesn't send InputReceived/ButtonClick events on button nodes,
+            // so i can't move this functionality to the 'X' button. anyway, i don't think it's a big problem, because
             // desynthesis levels are shown at the bottom of the window, too.
 
             if (isClick && !IsShiftDown)
@@ -221,6 +221,7 @@ public unsafe class CharacterClassSwitcher : Tweak
             }
         }
 
+OriginalCode:
         return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
     }
 
