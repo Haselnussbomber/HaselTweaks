@@ -1,17 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Interface;
-using Dalamud.Memory;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
-using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
 
 namespace HaselTweaks;
 
-public static unsafe class Utils
+public static unsafe class AtkUtils
 {
     public static AtkUnitBase* GetUnitBase(string name, int index = 1)
     {
@@ -20,8 +16,7 @@ public static unsafe class Utils
 
     public static AtkResNode* GetNode(AtkUnitBase* addon, uint nodeId)
     {
-        if (addon == null) return null;
-        return addon->UldManager.SearchNodeById(nodeId);
+        return addon == null ? null : addon->UldManager.SearchNodeById(nodeId);
     }
 
     public static void SetAlpha(AtkUnitBase* addon, uint nodeId, float alpha)
@@ -75,47 +70,5 @@ public static unsafe class Utils
         }
 
         return null;
-    }
-
-    public static byte[] MemoryReplaceRaw(IntPtr address, byte[] data)
-    {
-        var originalBytes = MemoryHelper.ReadRaw(address, data.Length);
-
-        var oldProtection = MemoryHelper.ChangePermission(address, data.Length, MemoryProtection.ExecuteReadWrite);
-        MemoryHelper.WriteRaw(address, data);
-        MemoryHelper.ChangePermission(address, data.Length, oldProtection);
-
-        return originalBytes;
-    }
-
-    public static Dictionary<GamepadButtons, ConfigOption> ButtonConfigMapping = new()
-    {
-        [GamepadButtons.North] = ConfigOption.PadButton_Triangle,
-        [GamepadButtons.East] = ConfigOption.PadButton_Circle,
-        [GamepadButtons.South] = ConfigOption.PadButton_Cross,
-        [GamepadButtons.West] = ConfigOption.PadButton_Square,
-    };
-
-    public enum GamepadBinding
-    {
-        Jump,
-        Accept,
-        Cancel,
-        Map_Sub,
-        MainCommand,
-        HUD_Select
-    }
-
-    public static GamepadButtons GetGamepadButton(GamepadBinding binding)
-    {
-        var systemConfigBase = Framework.Instance()->SystemConfig.CommonSystemConfig.ConfigBase;
-        foreach (var kv in ButtonConfigMapping)
-        {
-            var entry = systemConfigBase.ConfigEntry[(int)kv.Value];
-            if (entry.Value.String != null && entry.Value.String->ToString() == binding.ToString()) {
-                return kv.Key;
-            }
-        }
-        return GamepadButtons.South; // Default
     }
 }

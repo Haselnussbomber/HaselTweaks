@@ -34,16 +34,16 @@ public unsafe class HideMSQComplete : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        var addon = Utils.GetUnitBase("ScenarioTree");
+        var addon = AtkUtils.GetUnitBase("ScenarioTree");
         if (addon == null) return;
 
-        msqCompleteTextNode = (AtkTextNode*)Utils.GetNode(addon, (uint)NodeId.Text);
+        msqCompleteTextNode = (AtkTextNode*)AtkUtils.GetNode(addon, (uint)NodeId.Text);
         if (msqCompleteTextNode == null) return;
 
-        msqCompleteNineGridNode = (AtkNineGridNode*)Utils.GetNode(addon, (uint)NodeId.NineGrid);
+        msqCompleteNineGridNode = (AtkNineGridNode*)AtkUtils.GetNode(addon, (uint)NodeId.NineGrid);
         if (msqCompleteNineGridNode == null) return;
 
-        buttonNode = Utils.GetNode(addon, (uint)NodeId.Button);
+        buttonNode = AtkUtils.GetNode(addon, (uint)NodeId.Button);
         if (buttonNode == null) return;
 
         var text = msqCompleteTextNode->NodeText.ToString();
@@ -54,8 +54,8 @@ public unsafe class HideMSQComplete : Tweak
 
     private void UpdateVisibility(bool visible)
     {
-        Utils.SetVisibility(&msqCompleteNineGridNode->AtkResNode, visible);
-        Utils.SetVisibility(&msqCompleteTextNode->AtkResNode, visible);
-        Utils.SetVisibility(buttonNode, visible);
+        AtkUtils.SetVisibility(&msqCompleteNineGridNode->AtkResNode, visible);
+        AtkUtils.SetVisibility(&msqCompleteTextNode->AtkResNode, visible);
+        AtkUtils.SetVisibility(buttonNode, visible);
     }
 }

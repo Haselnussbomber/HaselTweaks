@@ -28,11 +28,11 @@ public unsafe class KeepInstantPortrait : Tweak
         var pos = MemoryHelper.Read<uint>(Address + 14) + 13; // address of jz adjusted to new position
         BitConverter.GetBytes(pos).CopyTo(jmpBytes, 1);
 
-        OriginalBytes = Utils.MemoryReplaceRaw(Address, jmpBytes);
+        OriginalBytes = MemoryUtils.ReplaceRaw(Address, jmpBytes);
     }
 
     public override void Disable()
     {
-        Utils.MemoryReplaceRaw(Address, OriginalBytes!);
+        MemoryUtils.ReplaceRaw(Address, OriginalBytes!);
     }
 }

@@ -52,13 +52,13 @@ public unsafe class CharacterClassSwitcher : Tweak
     {
         if (enable && !TooltipPatchApplied)
         {
-            Utils.MemoryReplaceRaw(TooltipAddress + 8, new byte[] { 0xEB }); // jmp rel8
+            MemoryUtils.ReplaceRaw(TooltipAddress + 8, new byte[] { 0xEB }); // jmp rel8
 
             TooltipPatchApplied = true;
         }
         else if (!enable && TooltipPatchApplied)
         {
-            Utils.MemoryReplaceRaw(TooltipAddress + 8, new byte[] { 0x7D }); // jge rel8
+            MemoryUtils.ReplaceRaw(TooltipAddress + 8, new byte[] { 0x7D }); // jge rel8
 
             TooltipPatchApplied = false;
         }
@@ -163,7 +163,7 @@ public unsafe class CharacterClassSwitcher : Tweak
 
         var isClick =
             (eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick) ||
-            (eventType == AtkEventType.InputReceived && Service.GamepadState.Pressed(Utils.GetGamepadButton(Utils.GamepadBinding.Accept)) == 1);
+            (eventType == AtkEventType.InputReceived && Service.GamepadState.Pressed(GamepadUtils.GetButton(GamepadUtils.GamepadBinding.Accept)) == 1);
 
         if (IsCrafter(eventParam - 2))
         {

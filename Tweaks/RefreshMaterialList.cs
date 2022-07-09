@@ -30,8 +30,8 @@ public unsafe class RefreshMaterialList : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        var recipeMaterialList = Utils.GetUnitBase("RecipeMaterialList");
-        var recipeTree = Utils.GetUnitBase("RecipeTree");
+        var recipeMaterialList = AtkUtils.GetUnitBase("RecipeMaterialList");
+        var recipeTree = AtkUtils.GetUnitBase("RecipeTree");
         if (recipeMaterialList == null && recipeTree == null) return;
 
         if (!ShouldRefresh()) return;
@@ -58,7 +58,7 @@ public unsafe class RefreshMaterialList : Tweak
         // checks if any depending windows were open and are now closed
         foreach (var state in windowState)
         {
-            var unitBase = Utils.GetUnitBase(state.Addon);
+            var unitBase = AtkUtils.GetUnitBase(state.Addon);
             state.WasOpen = state.IsOpen;
             state.IsOpen = unitBase != null && unitBase->IsVisible;
 

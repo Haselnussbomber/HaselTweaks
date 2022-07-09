@@ -27,11 +27,11 @@ public unsafe class RevealDutyRequirements : Tweak
 
     public override void Enable()
     {
-        OriginalBytes = Utils.MemoryReplaceRaw(Address + Offset, new byte[] { 0x90, 0x90 }); // the two nop commands
+        OriginalBytes = MemoryUtils.ReplaceRaw(Address + Offset, new byte[] { 0x90, 0x90 }); // the two nop commands
     }
 
     public override void Disable()
     {
-        Utils.MemoryReplaceRaw(Address + Offset, OriginalBytes!);
+        MemoryUtils.ReplaceRaw(Address + Offset, OriginalBytes!);
     }
 }

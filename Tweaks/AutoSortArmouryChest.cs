@@ -89,7 +89,7 @@ public unsafe class AutoSortArmouryChest : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        var unitBase = Utils.GetUnitBase("ArmouryBoard");
+        var unitBase = AtkUtils.GetUnitBase("ArmouryBoard");
         if (unitBase == null || unitBase->RootNode == null) return;
 
         var isVisible = unitBase->RootNode->IsVisible;

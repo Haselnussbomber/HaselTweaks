@@ -135,7 +135,7 @@ public unsafe class ScrollableTabs : Tweak
     {
         if (wheelState == 0) return;
 
-        var hoveredUnitBase = Utils.GetHighestAtkUnitBaseAtPosition();
+        var hoveredUnitBase = AtkUtils.GetHighestAtkUnitBaseAtPosition();
         if (hoveredUnitBase == null) return;
 
         var name = Marshal.PtrToStringAnsi((IntPtr)hoveredUnitBase->Name);
@@ -173,7 +173,7 @@ public unsafe class ScrollableTabs : Tweak
             // used by InventoryLarge or InventoryExpansion
             case "InventoryCrystalGrid":
                 name = "InventoryLarge";
-                if (Utils.GetUnitBase(name) == null)
+                if (AtkUtils.GetUnitBase(name) == null)
                     name = "InventoryExpansion";
                 break;
 
@@ -219,7 +219,7 @@ public unsafe class ScrollableTabs : Tweak
                 return;
         }
 
-        var unitBase = Utils.GetUnitBase(name);
+        var unitBase = AtkUtils.GetUnitBase(name);
         if (unitBase == null)
         {
             wheelState = 0;

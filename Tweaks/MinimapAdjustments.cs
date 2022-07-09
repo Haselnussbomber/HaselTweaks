@@ -48,7 +48,7 @@ public unsafe class MinimapAdjustments : Tweak
 
     public override void Disable()
     {
-        var addon = Utils.GetUnitBase("_NaviMap");
+        var addon = AtkUtils.GetUnitBase("_NaviMap");
         if (addon == null) return;
 
         // reset visibility
@@ -60,7 +60,7 @@ public unsafe class MinimapAdjustments : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        var addon = Utils.GetUnitBase("_NaviMap");
+        var addon = AtkUtils.GetUnitBase("_NaviMap");
         if (addon == null) return;
         SetVisibility(addon, isHovering);
         SetCollision(addon, Config.Square);
@@ -82,22 +82,22 @@ public unsafe class MinimapAdjustments : Tweak
 
     private void UpdateVisibility()
     {
-        var addon = Utils.GetUnitBase("_NaviMap");
+        var addon = AtkUtils.GetUnitBase("_NaviMap");
         if (addon == null) return;
-        Utils.SetVisibility(addon, (uint)NodeId.Coords, !Config.HideCoords);
-        Utils.SetVisibility(addon, (uint)NodeId.Weather, !Config.HideWeather);
+        AtkUtils.SetVisibility(addon, (uint)NodeId.Coords, !Config.HideCoords);
+        AtkUtils.SetVisibility(addon, (uint)NodeId.Weather, !Config.HideWeather);
     }
 
     private void SetVisibility(AtkUnitBase* addon, bool hovered)
     {
-        if (Config.HideCoords) Utils.SetVisibility(addon, (uint)NodeId.Coords, hovered);
-        if (Config.HideWeather) Utils.SetVisibility(addon, (uint)NodeId.Weather, hovered);
-        Utils.SetAlpha(addon, (uint)NodeId.Map, hovered ? Config.HoverOpacity : Config.DefaultOpacity);
+        if (Config.HideCoords) AtkUtils.SetVisibility(addon, (uint)NodeId.Coords, hovered);
+        if (Config.HideWeather) AtkUtils.SetVisibility(addon, (uint)NodeId.Weather, hovered);
+        AtkUtils.SetAlpha(addon, (uint)NodeId.Map, hovered ? Config.HoverOpacity : Config.DefaultOpacity);
     }
 
     private void SetCollision(AtkUnitBase* addon, bool square)
     {
-        var collisionNode = Utils.GetNode(addon, (uint)NodeId.Collision);
+        var collisionNode = AtkUtils.GetNode(addon, (uint)NodeId.Collision);
         if (collisionNode == null) return;
         var hasCircularCollisionFlag = (collisionNode->Flags_2 & (1 << 23)) != 0;
 
