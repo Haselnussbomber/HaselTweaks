@@ -38,4 +38,9 @@ public static unsafe class GamepadUtils
         }
         return GamepadButtons.South; // Default
     }
+
+    public static bool IsPressed(GamepadBinding binding)
+    {
+        return Service.GamepadState.Pressed(GetButton(binding)) == 1;
+    }
 }

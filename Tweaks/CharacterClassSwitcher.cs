@@ -163,7 +163,7 @@ public unsafe class CharacterClassSwitcher : Tweak
 
         var isClick =
             (eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick) ||
-            (eventType == AtkEventType.InputReceived && Service.GamepadState.Pressed(GamepadUtils.GetButton(GamepadUtils.GamepadBinding.Accept)) == 1);
+            (eventType == AtkEventType.InputReceived && GamepadUtils.IsPressed(GamepadUtils.GamepadBinding.Accept));
 
         if (IsCrafter(eventParam - 2))
         {
