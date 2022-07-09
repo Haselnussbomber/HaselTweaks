@@ -1,5 +1,5 @@
 using System;
-using System.Runtime.InteropServices;
+using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
@@ -78,13 +78,6 @@ public unsafe class CharacterClassSwitcher : Tweak
     [AutoHook, Signature("4C 8B DC 53 55 56 57 41 55 41 56", DetourName = nameof(OnUpdate))]
     private Hook<OnUpdateDelegate> OnUpdateHook { get; init; } = null!;
     private delegate void OnUpdateDelegate(AddonCharacterClass* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData);
-
-    [Signature("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 74 08 48 8B CB E8 ?? ?? ?? ?? 48 8B B4 24 ?? ?? ?? ??", ScanType = ScanType.StaticAddress)]
-    private IntPtr g_InputManager { get; init; }
-
-    [Signature("E8 ?? ?? ?? ?? 88 44 24 28 44 0F B6 CE")]
-    private InputManager_GetInputStatus_Delegate InputManager_GetInputStatus { get; init; } = null!;
-    private delegate bool InputManager_GetInputStatus_Delegate(IntPtr inputManager, int a2);
 
     [Signature("E8 ?? ?? ?? ?? 0F BF 94 1F")]
     private PlaySoundEffectDelegate PlaySoundEffect { get; init; } = null!;
@@ -170,14 +163,10 @@ public unsafe class CharacterClassSwitcher : Tweak
 
         var isClick =
             (eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick) ||
-            (eventType == AtkEventType.InputReceived && InputManager_GetInputStatus(g_InputManager, 12)); // 'A' button on a Xbox 360 Controller
+            (eventType == AtkEventType.InputReceived && Service.GamepadState.Pressed(GamepadButtons.South) == 1); // TODO: read keybind for "Select Target/Confirm" (Addon#4877)
 
         if (IsCrafter(eventParam - 2))
         {
-            // as far as i can see, any controller button other than 'A' doesn't send InputReceived/ButtonClick events on button nodes,
-            // so i can't move this functionality to the 'X' button. anyway, i don't think it's a big problem, because
-            // desynthesis levels are shown at the bottom of the window, too.
-
             if (isClick && !Service.KeyState[VirtualKey.SHIFT])
             {
                 SwitchClassJob(8 + (uint)eventParam - 22);
