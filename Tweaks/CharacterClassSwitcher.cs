@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using Dalamud.Game.ClientState.Keys;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -89,11 +90,6 @@ public unsafe class CharacterClassSwitcher : Tweak
     private PlaySoundEffectDelegate PlaySoundEffect { get; init; } = null!;
     private delegate void PlaySoundEffectDelegate(int id, IntPtr a2, IntPtr a3, byte a4);
 
-    [DllImport("user32.dll")]
-    private static extern short GetKeyState(int nVirtKey);
-    private const int VK_SHIFT = 0x10;
-    private static bool IsShiftDown => (GetKeyState(VK_SHIFT) & 0x8000) == 0x8000;
-
     private static bool IsCrafter(int id)
     {
         return id >= 20 && id <= 27;
@@ -182,7 +178,7 @@ public unsafe class CharacterClassSwitcher : Tweak
             // so i can't move this functionality to the 'X' button. anyway, i don't think it's a big problem, because
             // desynthesis levels are shown at the bottom of the window, too.
 
-            if (isClick && !IsShiftDown)
+            if (isClick && !Service.KeyState[VirtualKey.SHIFT])
             {
                 SwitchClassJob(8 + (uint)eventParam - 22);
                 return IntPtr.Zero;

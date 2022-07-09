@@ -1,6 +1,7 @@
 using Dalamud.Data;
 using Dalamud.Game;
 using Dalamud.Game.ClientState;
+using Dalamud.Game.ClientState.Keys;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.Command;
 using Dalamud.Game.Gui;
@@ -20,4 +21,5 @@ public class Service
     [PluginService] public static DtrBar DtrBar { get; private set; } = null!;
     [PluginService] public static TargetManager TargetManager { get; private set; } = null!;
     [PluginService] public static ObjectTable ObjectTable { get; private set; } = null!;
+    [PluginService] public static KeyState KeyState { get; private set; } = null!;
 }
