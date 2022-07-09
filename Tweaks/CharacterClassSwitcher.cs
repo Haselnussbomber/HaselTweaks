@@ -29,7 +29,7 @@ public unsafe class CharacterClassSwitcher : Tweak
         completely skips the whole if () {...} block, by jumping regardless of cmp result
      */
     [Signature("83 FD 14 48 8B 6C 24 ?? 7D 69")]
-    private IntPtr Address { get; init; }
+    private IntPtr TooltipAddress { get; init; }
     private bool TooltipPatchApplied = false;
 
     public override void Enable()
@@ -51,13 +51,13 @@ public unsafe class CharacterClassSwitcher : Tweak
     {
         if (enable && !TooltipPatchApplied)
         {
-            Utils.MemoryReplaceRaw(Address + 8, new byte[] { 0xEB }); // jmp rel8
+            Utils.MemoryReplaceRaw(TooltipAddress + 8, new byte[] { 0xEB }); // jmp rel8
 
             TooltipPatchApplied = true;
         }
         else if (!enable && TooltipPatchApplied)
         {
-            Utils.MemoryReplaceRaw(Address + 8, new byte[] { 0x7D }); // jge rel8
+            Utils.MemoryReplaceRaw(TooltipAddress + 8, new byte[] { 0x7D }); // jge rel8
 
             TooltipPatchApplied = false;
         }
