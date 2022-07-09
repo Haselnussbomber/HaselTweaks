@@ -1,5 +1,4 @@
 using System;
-using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
@@ -7,6 +6,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using GearsetArray = HaselTweaks.Structs.RaptureGearsetModule.GearsetArray;
 using GearsetFlag = HaselTweaks.Structs.RaptureGearsetModule.GearsetFlag;
+using RaptureGearsetModule = HaselTweaks.Structs.RaptureGearsetModule;
 
 namespace HaselTweaks.Tweaks;
 
@@ -163,7 +163,7 @@ public unsafe class CharacterClassSwitcher : Tweak
 
         var isClick =
             (eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick) ||
-            (eventType == AtkEventType.InputReceived && Service.GamepadState.Pressed(GamepadButtons.South) == 1); // TODO: read keybind for "Select Target/Confirm" (Addon#4877)
+            (eventType == AtkEventType.InputReceived && Service.GamepadState.Pressed(Utils.GetGamepadButton(Utils.GamepadBinding.Accept)) == 1);
 
         if (IsCrafter(eventParam - 2))
         {

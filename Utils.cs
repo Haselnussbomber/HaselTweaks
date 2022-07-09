@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Interface;
 using Dalamud.Memory;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
 
@@ -83,5 +86,36 @@ public static unsafe class Utils
         MemoryHelper.ChangePermission(address, data.Length, oldProtection);
 
         return originalBytes;
+    }
+
+    public static Dictionary<GamepadButtons, ConfigOption> ButtonConfigMapping = new()
+    {
+        [GamepadButtons.North] = ConfigOption.PadButton_Triangle,
+        [GamepadButtons.East] = ConfigOption.PadButton_Circle,
+        [GamepadButtons.South] = ConfigOption.PadButton_Cross,
+        [GamepadButtons.West] = ConfigOption.PadButton_Square,
+    };
+
+    public enum GamepadBinding
+    {
+        Jump,
+        Accept,
+        Cancel,
+        Map_Sub,
+        MainCommand,
+        HUD_Select
+    }
+
+    public static GamepadButtons GetGamepadButton(GamepadBinding binding)
+    {
+        var systemConfigBase = Framework.Instance()->SystemConfig.CommonSystemConfig.ConfigBase;
+        foreach (var kv in ButtonConfigMapping)
+        {
+            var entry = systemConfigBase.ConfigEntry[(int)kv.Value];
+            if (entry.Value.String != null && entry.Value.String->ToString() == binding.ToString()) {
+                return kv.Key;
+            }
+        }
+        return GamepadButtons.South; // Default
     }
 }
