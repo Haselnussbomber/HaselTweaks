@@ -165,12 +165,6 @@ public unsafe class CharacterClassSwitcher : Tweak
             (eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick) ||
             (eventType == AtkEventType.InputReceived && GamepadUtils.IsPressed(GamepadUtils.GamepadBinding.Accept));
 
-        if (eventType == AtkEventType.InputReceived)
-        {
-            Log($"Accept = {GamepadUtils.IsPressed(GamepadUtils.GamepadBinding.Accept)}");
-            Log($"HUD_Select = {GamepadUtils.IsPressed(GamepadUtils.GamepadBinding.HUD_Select)}");
-        }
-
         if (IsCrafter(eventParam - 2))
         {
             if (isClick && !Service.KeyState[VirtualKey.SHIFT])
