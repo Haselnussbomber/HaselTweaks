@@ -26,6 +26,7 @@ Features:
 - Supports controller input
   - Checks the controller button with "Select Target/Confirm" binding
   - Technical limitation: desynthesis window still only opens when holding shift on a keyboard
+- Supports PvP Character window
 - Adds hover effect for non-crafters
 - Option to disable Tooltips
 
