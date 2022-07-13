@@ -173,20 +173,20 @@ public unsafe class CharacterClassSwitcher : Tweak
     {
         // skip events for tabs
         if (eventParam < 2)
-            goto OriginalReceiveEventHookCode;
+            goto OriginalReceiveEventCode;
 
         var node = addon->BaseComponentNodes[eventParam - 2];
         if (node == null || node->OwnerNode == null)
-            goto OriginalReceiveEventHookCode;
+            goto OriginalReceiveEventCode;
 
         var imageNode = (AtkImageNode*)node->UldManager.SearchNodeById(4);
         if (imageNode == null)
-            goto OriginalReceiveEventHookCode;
+            goto OriginalReceiveEventCode;
 
         // if job is unlocked, it has full alpha
         var isUnlocked = imageNode->AtkResNode.Color.A == 255;
         if (!isUnlocked)
-            goto OriginalReceiveEventHookCode;
+            goto OriginalReceiveEventCode;
 
         // special handling for crafters
         if (IsCrafter(eventParam - 2))
@@ -204,7 +204,7 @@ public unsafe class CharacterClassSwitcher : Tweak
         else if (ProcessEvents(node->OwnerNode, imageNode, eventType))
             return IntPtr.Zero;
 
-OriginalReceiveEventHookCode:
+OriginalReceiveEventCode:
         return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
     }
 
