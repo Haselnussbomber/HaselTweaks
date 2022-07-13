@@ -2,6 +2,7 @@ using System;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using GearsetArray = HaselTweaks.Structs.RaptureGearsetModule.GearsetArray;
@@ -108,10 +109,6 @@ public unsafe class CharacterClassSwitcher : Tweak
     [AutoHook, Signature("48 89 5C 24 ?? 57 48 83 EC 30 0F B7 C2 4D 8B D1 83 C0 FD", DetourName = nameof(OnPvPEvent))]
     private Hook<PvPReceiveEventDelegate> PvPReceiveEventHook { get; init; } = null!;
     private delegate IntPtr PvPReceiveEventDelegate(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr a5);
-
-    [Signature("E8 ?? ?? ?? ?? 0F BF 94 1F")]
-    private PlaySoundEffectDelegate PlaySoundEffect { get; init; } = null!;
-    private delegate void PlaySoundEffectDelegate(int id, IntPtr a2, IntPtr a3, byte a4);
 
     private static bool IsCrafter(int id)
     {
@@ -333,7 +330,7 @@ OriginalPvPReceiveEventCode:
                 selectedGearset = (i + 1, gearset->ItemLevel);
         }
 
-        PlaySoundEffect(8, IntPtr.Zero, IntPtr.Zero, 0);
+        UIModule.PlaySound(8, 0, 0, 0);
 
         if (selectedGearset.Index == -1)
         {
