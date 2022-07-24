@@ -7,6 +7,7 @@ using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.Command;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Gui.Dtr;
+using Dalamud.Game.Network;
 using Dalamud.IoC;
 
 namespace HaselTweaks;
@@ -24,4 +25,5 @@ public class Service
     [PluginService] public static ObjectTable ObjectTable { get; private set; } = null!;
     [PluginService] public static KeyState KeyState { get; private set; } = null!;
     [PluginService] public static GamepadState GamepadState { get; private set; } = null!;
+    [PluginService] public static GameNetwork GameNetwork { get; private set; } = null!;
 }
