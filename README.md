@@ -2,6 +2,8 @@
 
 Just some tweaks I wrote. :)
 
+Open config with `/haseltweaks`.
+
 Repo for auto-updates:
 
 https://raw.githubusercontent.com/Haselnussbomber/MyDalamudPlugins/main/repo.json
