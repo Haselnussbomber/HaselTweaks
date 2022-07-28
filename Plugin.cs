@@ -76,10 +76,6 @@ public class Plugin : IDalamudPlugin
         {
             HelpMessage = "Show Window"
         });
-
-#if DEBUG
-        this.windowSystem.GetWindow("HaselTweaks")?.Toggle();
-#endif
     }
 
     private void OnFrameworkUpdate(Framework framework)
