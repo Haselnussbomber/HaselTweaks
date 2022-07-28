@@ -4,7 +4,7 @@ using System.Timers;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class KeepScreenAwake : Tweak
+public class KeepScreenAwake : Tweak
 {
     public override string Name => "Keep Screen Awake";
     public override string Description => "Prevents the screen from going into standby.";
@@ -14,7 +14,6 @@ public unsafe class KeepScreenAwake : Tweak
     [Flags]
     public enum EXECUTION_STATE : uint
     {
-        ES_AWAYMODE_REQUIRED = 0x00000040,
         ES_CONTINUOUS = 0x80000000,
         ES_DISPLAY_REQUIRED = 0x00000002,
         ES_SYSTEM_REQUIRED = 0x00000001
@@ -46,7 +45,7 @@ public unsafe class KeepScreenAwake : Tweak
         timer.Dispose();
     }
 
-    private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+    private static void Timer_Elapsed(object sender, ElapsedEventArgs e)
     {
         SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS | EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_DISPLAY_REQUIRED);
     }

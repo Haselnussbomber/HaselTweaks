@@ -11,11 +11,11 @@ namespace HaselTweaks;
 
 public abstract class Tweak
 {
-    public string InternalName => GetType().Name;
+    public string InternalName => this.GetType().Name;
     public abstract string Name { get; }
-    public virtual string Description { get; } = string.Empty;
+    public virtual string Description => string.Empty;
 
-    public virtual bool Outdated { get; protected set; } = false;
+    public virtual bool Outdated { get; protected set; }
     public virtual bool Ready { get; protected set; }
     public virtual bool Enabled { get; protected set; }
 

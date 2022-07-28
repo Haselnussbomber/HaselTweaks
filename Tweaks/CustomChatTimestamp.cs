@@ -10,7 +10,7 @@ public unsafe class CustomChatTimestamp : Tweak
 {
     public override string Name => "Custom Chat Timestamp";
     public override string Description => "As it says, configurable chat timestamp format.";
-    public Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.CustomChatTimestamp;
+    public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.CustomChatTimestamp;
 
     public class Configuration
     {
@@ -24,19 +24,16 @@ public unsafe class CustomChatTimestamp : Tweak
 
     private byte* Detour(IntPtr a1, ulong addonRowId, ulong value)
     {
-        if (addonRowId == 7840)
-        {
-            var str = (Utf8String*)(a1 + 0x9C0);
-            var time = DateTime.UnixEpoch.AddSeconds(value).ToLocalTime();
-            var formatted = time.ToString(Config.Format);
+        if (addonRowId != 7840) return Hook.Original(a1, addonRowId, value);
 
-            MemoryHelper.WriteString((IntPtr)str->StringPtr, formatted + "\0");
-            str->BufUsed = formatted.Length + 1;
-            str->StringLength = formatted.Length;
+        var str = (Utf8String*)(a1 + 0x9C0);
+        var time = DateTime.UnixEpoch.AddSeconds(value).ToLocalTime();
+        var formatted = time.ToString(Config.Format);
 
-            return str->StringPtr;
-        }
+        MemoryHelper.WriteString((IntPtr)str->StringPtr, formatted + "\0");
+        str->BufUsed = formatted.Length + 1;
+        str->StringLength = formatted.Length;
 
-        return Hook!.Original(a1, addonRowId, value);
+        return str->StringPtr;
     }
 }

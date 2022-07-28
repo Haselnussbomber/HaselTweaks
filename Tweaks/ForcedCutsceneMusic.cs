@@ -10,7 +10,7 @@ public unsafe class ForcedCutsceneMusic : Tweak
 {
     public override string Name => "Forced Cutscene Music";
     public override string Description => "Auto-unmutes background music for cutscenes.";
-    public Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.ForcedCutsceneMusic;
+    public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.ForcedCutsceneMusic;
 
     public class Configuration
     {
@@ -24,9 +24,9 @@ public unsafe class ForcedCutsceneMusic : Tweak
 
     [AutoHook, Signature("48 89 5C 24 ?? 57 48 83 EC 20 48 8D 05 ?? ?? ?? ?? 48 8B F9 48 89 01 8B DA 48 83 C1 10 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 48 89 07 F6 C3 01 74 0D BA ?? ?? ?? ?? 48 8B CF E8 ?? ?? ?? ?? 48 8B C7 48 8B 5C 24 ?? 48 83 C4 20 5F C3 CC CC CC CC 40 53 48 83 EC 20 48 8D 05 ?? ?? ?? ?? 48 8B D9 48 89 01 F6 C2 01 74 0A BA ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B C3 48 83 C4 20 5B C3 CC CC CC CC CC 40 53", DetourName = nameof(CutsceneStateDtor_Detour))]
     private Hook<CutsceneStateDtorDelegate> CutsceneStateDtorHook { get; init; } = null!;
-    private delegate CutsceneState* CutsceneStateDtorDelegate(CutsceneState* self, IntPtr a2, IntPtr a3, IntPtr a4);
+    private delegate CutsceneState* CutsceneStateDtorDelegate(CutsceneState* self, bool a2);
 
-    private bool wasBgmMuted = false;
+    private bool wasBgmMuted;
 
     private bool IsBgmMuted
     {
@@ -62,11 +62,11 @@ public unsafe class ForcedCutsceneMusic : Tweak
         return ret;
     }
 
-    public CutsceneState* CutsceneStateDtor_Detour(CutsceneState* self, IntPtr a2, IntPtr a3, IntPtr a4)
+    public CutsceneState* CutsceneStateDtor_Detour(CutsceneState* self, bool a2)
     {
         Log($"Cutscene {self->Id} ended");
 
-        var ret = CutsceneStateDtorHook.Original(self, a2, a3, a4);
+        var ret = CutsceneStateDtorHook.Original(self, a2);
 
         if (wasBgmMuted && Config.Restore)
             IsBgmMuted = true;

@@ -1,10 +1,10 @@
 using System;
-using Dalamud.Memory;
 using Dalamud.Utility.Signatures;
+using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class RevealDutyRequirements : Tweak
+public class RevealDutyRequirements : Tweak
 {
     public override string Name => "Reveal Duty Requirements";
     public override string Description => "Reveals duty names in duty finder, which were shown as \"???\".\nUseful for unlocking Mentor roulette.";
@@ -21,9 +21,9 @@ public unsafe class RevealDutyRequirements : Tweak
      */
     [Signature("48 8B C8 48 8B D8 48 8B 10 FF 52 68 84 C0 74 1B")]
     private IntPtr Address { get; init; }
-    private byte[]? OriginalBytes = null;
+    private byte[]? OriginalBytes;
 
-    private readonly int Offset = 14;
+    private const int Offset = 14;
 
     public override void Enable()
     {

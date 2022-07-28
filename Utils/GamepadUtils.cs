@@ -3,7 +3,7 @@ using Dalamud.Game.ClientState.GamePad;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 
-namespace HaselTweaks;
+namespace HaselTweaks.Utils;
 
 public static unsafe class GamepadUtils
 {

@@ -1,7 +1,7 @@
 using System;
 using Dalamud.Memory;
 
-namespace HaselTweaks;
+namespace HaselTweaks.Utils;
 
 public static class MemoryUtils
 {

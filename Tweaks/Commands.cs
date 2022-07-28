@@ -10,11 +10,11 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class Commands : Tweak
+public class Commands : Tweak
 {
     public override string Name => "Commands";
     public override string Description => "A variety of useful chat commands.";
-    public Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.Commands;
+    public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.Commands;
 
     private const string ItemLinkCommand = "/itemlink";
     private const string WhatMountCommand = "/whatmount";
@@ -78,7 +78,7 @@ public unsafe class Commands : Tweak
         }
     }
 
-    public void OnItemLinkCommand(string command, string arguments)
+    public static void OnItemLinkCommand(string command, string arguments)
     {
         uint id;
         try
@@ -103,7 +103,7 @@ public unsafe class Commands : Tweak
 
         Service.Chat.PrintChat(new XivChatEntry
         {
-            Message = new SeString(new Payload[] {
+            Message = new SeString(
                 new TextPayload($"Item #{id}: "),
 
                 new UIForegroundPayload(fgColor),
@@ -124,12 +124,12 @@ public unsafe class Commands : Tweak
                 // SaintCoinach says 0x13 is named Color
                 // idk, but if this missing the game crashes after a couple lines
                 new RawPayload(new byte[] {0x02, 0x13, 0x02, 0xEC, 0x03})
-            }),
+            ),
             Type = XivChatType.Echo
         });
     }
 
-    private void OnWhatMountCommand(string command, string arguments)
+    private static unsafe void OnWhatMountCommand(string command, string arguments)
     {
         var target = Service.TargetManager.Target;
         if (target == null)
@@ -213,7 +213,7 @@ public unsafe class Commands : Tweak
 
         Service.Chat.PrintChat(new XivChatEntry
         {
-            Message = new SeString(new Payload[] {
+            Message = new SeString(
                 new TextPayload($"Mount {mountRow.Singular} learned by "),
 
                 new UIForegroundPayload(fgColor),
@@ -234,7 +234,7 @@ public unsafe class Commands : Tweak
                 // SaintCoinach says 0x13 is named Color
                 // idk, but if this missing the game crashes after a couple lines
                 new RawPayload(new byte[] {0x02, 0x13, 0x02, 0xEC, 0x03})
-            }),
+            ),
             Type = XivChatType.Echo
         });
     }

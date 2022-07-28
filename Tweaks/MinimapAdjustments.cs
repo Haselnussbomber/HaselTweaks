@@ -2,6 +2,7 @@ using Dalamud.Game;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
@@ -10,7 +11,7 @@ public unsafe class MinimapAdjustments : Tweak
     public override string Name => "Minimap Adjustments";
     public override string Description => "Mini changes for the Minimap. :)";
 
-    public Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.MinimapAdjustments;
+    public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.MinimapAdjustments;
 
     public class Configuration
     {
@@ -33,7 +34,6 @@ public unsafe class MinimapAdjustments : Tweak
     private enum NodeId : uint
     {
         Collision = 19,
-        Base = 18,
         Coords = 5,
         Weather = 14,
         Map = 17,
@@ -44,7 +44,7 @@ public unsafe class MinimapAdjustments : Tweak
     private Hook<OnAtkEventDelegate> Hook { get; init; } = null!;
     private delegate void* OnAtkEventDelegate(AtkUnitBase* addon, AtkEventType eventType, int eventParam, AtkEventListener* listener, AtkResNode* nodeParam);
 
-    private bool isHovering = false;
+    private bool isHovering;
 
     public override void Disable()
     {
@@ -77,10 +77,10 @@ public unsafe class MinimapAdjustments : Tweak
             isHovering = false;
         }
 
-        return Hook!.Original(addon, eventType, eventParam, listener, nodeParam);
+        return Hook.Original(addon, eventType, eventParam, listener, nodeParam);
     }
 
-    private void UpdateVisibility()
+    private static void UpdateVisibility()
     {
         var addon = AtkUtils.GetUnitBase("_NaviMap");
         if (addon == null) return;
@@ -88,14 +88,14 @@ public unsafe class MinimapAdjustments : Tweak
         AtkUtils.SetVisibility(addon, (uint)NodeId.Weather, !Config.HideWeather);
     }
 
-    private void SetVisibility(AtkUnitBase* addon, bool hovered)
+    private static void SetVisibility(AtkUnitBase* addon, bool hovered)
     {
         if (Config.HideCoords) AtkUtils.SetVisibility(addon, (uint)NodeId.Coords, hovered);
         if (Config.HideWeather) AtkUtils.SetVisibility(addon, (uint)NodeId.Weather, hovered);
         AtkUtils.SetAlpha(addon, (uint)NodeId.Map, hovered ? Config.HoverOpacity : Config.DefaultOpacity);
     }
 
-    private void SetCollision(AtkUnitBase* addon, bool square)
+    private static void SetCollision(AtkUnitBase* addon, bool square)
     {
         var collisionNode = AtkUtils.GetNode(addon, (uint)NodeId.Collision);
         if (collisionNode == null) return;

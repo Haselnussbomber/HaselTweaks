@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using Dalamud;
 using Dalamud.Game;
+using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class AutoSortArmouryChest : Tweak
+public class AutoSortArmouryChest : Tweak
 {
     public override string Name => "Auto Sort Armoury Chest";
     public override string Description => "Sorts items inside the Armoury Chest upon opening it.";
-    public Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.AutoSortArmouryChest;
+    public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.AutoSortArmouryChest;
 
     public static readonly Dictionary<ClientLanguage, List<string>> ConditionSet = new()
     {
@@ -60,7 +61,7 @@ public unsafe class AutoSortArmouryChest : Tweak
         public string Order = "";
     }
 
-    private bool wasVisible = false;
+    private bool wasVisible;
 
     public override void Setup()
     {
@@ -87,7 +88,7 @@ public unsafe class AutoSortArmouryChest : Tweak
         }
     }
 
-    public override void OnFrameworkUpdate(Framework framework)
+    public override unsafe void OnFrameworkUpdate(Framework framework)
     {
         var unitBase = AtkUtils.GetUnitBase("ArmouryBoard");
         if (unitBase == null || unitBase->RootNode == null) return;

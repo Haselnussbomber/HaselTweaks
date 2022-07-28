@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using HaselTweaks.Structs;
+using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
@@ -10,7 +11,7 @@ public unsafe class ScrollableTabs : Tweak
 {
     public override string Name => "Scrollable Tabs";
     public override string Description => "Enables mouse wheel to switch tabs (like with LB/RB on controllers).";
-    public Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.ScrollableTabs;
+    public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.ScrollableTabs;
 
     public class Configuration
     {
@@ -121,14 +122,14 @@ public unsafe class ScrollableTabs : Tweak
     private const uint WM_MOUSEWHEEL = 0x020A;
     private const uint WHEEL_DELTA = 120;
 
-    private short wheelState = 0;
+    private short wheelState;
 
     private ulong WindowProcHandlerDetour(IntPtr hwnd, int uMsg, int wParam)
     {
         if (uMsg == WM_MOUSEWHEEL)
             wheelState = (short)((wParam >> 16) / WHEEL_DELTA * (Config.Invert ? -1 : 1));
 
-        return WindowProcHandlerHook!.Original(hwnd, uMsg, wParam);
+        return WindowProcHandlerHook.Original(hwnd, uMsg, wParam);
     }
 
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
@@ -230,24 +231,32 @@ public unsafe class ScrollableTabs : Tweak
         {
             UpdateArmouryBoard((AddonArmouryBoard*)unitBase);
         }
-        else if (Config.HandleInventory && (name == "Inventory" || name == "InventoryLarge" || name == "InventoryExpansion"))
+        else if (Config.HandleInventory && name is "Inventory" or "InventoryLarge" or "InventoryExpansion")
         {
-            if (name == "Inventory")
-                UpdateInventory((AddonInventory*)unitBase);
-
-            else if (name == "InventoryLarge")
-                UpdateInventoryLarge((AddonInventoryLarge*)unitBase);
-
-            else if (name == "InventoryExpansion")
-                UpdateInventoryExpansion((AddonInventoryExpansion*)unitBase);
+            switch (name)
+            {
+                case "Inventory":
+                    UpdateInventory((AddonInventory*)unitBase);
+                    break;
+                case "InventoryLarge":
+                    UpdateInventoryLarge((AddonInventoryLarge*)unitBase);
+                    break;
+                case "InventoryExpansion":
+                    UpdateInventoryExpansion((AddonInventoryExpansion*)unitBase);
+                    break;
+            }
         }
-        else if (Config.HandleRetainer && (name == "InventoryRetainer" || name == "InventoryRetainerLarge"))
+        else if (Config.HandleRetainer && name is "InventoryRetainer" or "InventoryRetainerLarge")
         {
-            if (name == "InventoryRetainer")
-                UpdateInventoryRetainer((AddonInventoryRetainer*)unitBase);
-
-            else if (name == "InventoryRetainerLarge")
-                UpdateInventoryRetainerLarge((AddonInventoryRetainerLarge*)unitBase);
+            switch (name)
+            {
+                case "InventoryRetainer":
+                    UpdateInventoryRetainer((AddonInventoryRetainer*)unitBase);
+                    break;
+                case "InventoryRetainerLarge":
+                    UpdateInventoryRetainerLarge((AddonInventoryRetainerLarge*)unitBase);
+                    break;
+            }
         }
         else if ((Config.HandleMinionNoteBook && name == "MinionNoteBook") || (Config.HandleMountNoteBook && name == "MountNoteBook"))
         {

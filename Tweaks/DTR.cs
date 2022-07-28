@@ -13,7 +13,7 @@ using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class DTR : Tweak
+public class DTR : Tweak
 {
     public override string Name => "DTR";
     public override string Description => "Shows Instance, FPS and Busy status in DTR bar.\nUse Dalamud Settings to enable/disable or to change order.";
@@ -21,9 +21,9 @@ public unsafe class DTR : Tweak
     [Signature("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 3C 01 75 0C 48 8D 0D ?? ?? ?? ?? E8", ScanType = ScanType.StaticAddress)]
     private IntPtr InstanceIdAddress { get; init; }
 
-    public DtrBarEntry? DtrInstance = null;
-    public DtrBarEntry? DtrFPS = null;
-    public DtrBarEntry? DtrBusy = null;
+    public DtrBarEntry? DtrInstance;
+    public DtrBarEntry? DtrFPS;
+    public DtrBarEntry? DtrBusy;
 
     public override void Enable()
     {
@@ -81,7 +81,7 @@ public unsafe class DTR : Tweak
         if (!DtrInstance.Shown) DtrInstance.Shown = true;
     }
 
-    private void UpdateBusy()
+    private unsafe void UpdateBusy()
     {
         if (DtrBusy == null) return;
 
@@ -93,7 +93,7 @@ public unsafe class DTR : Tweak
         }
 
         var character = (Character*)addr;
-        if (character == null || character->OnlineStatus != 12) // 12 = Busy
+        if (character->OnlineStatus != 12) // 12 = Busy
         {
             if (DtrBusy.Shown) DtrBusy.Shown = false;
             return;
@@ -106,17 +106,18 @@ public unsafe class DTR : Tweak
             return;
         }
 
-        DtrBusy.Text = new SeString()
-            .Append(new UIForegroundPayload(1))
-            .Append(new UIGlowPayload(16))
-            .Append(statusText.Name.ToString())
-            .Append(UIGlowPayload.UIGlowOff)
-            .Append(UIForegroundPayload.UIForegroundOff);
+        DtrBusy.Text = new SeString(
+            new UIForegroundPayload(1),
+            new UIGlowPayload(16),
+            new RawPayload(statusText.Name.RawData.ToArray()),
+            UIGlowPayload.UIGlowOff,
+            UIForegroundPayload.UIForegroundOff
+        );
 
         if (!DtrBusy.Shown) DtrBusy.Shown = true;
     }
 
-    private void UpdateFPS()
+    private unsafe void UpdateFPS()
     {
         if (DtrFPS == null) return;
 

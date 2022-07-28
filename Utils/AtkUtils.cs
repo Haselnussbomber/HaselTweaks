@@ -5,7 +5,7 @@ using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
 
-namespace HaselTweaks;
+namespace HaselTweaks.Utils;
 
 public static unsafe class AtkUtils
 {
@@ -27,7 +27,7 @@ public static unsafe class AtkUtils
     public static void SetAlpha(AtkResNode* node, float alpha)
     {
         if (node == null) return;
-        var alphaByte = (byte)Math.Floor(alpha >= 1.0 ? 255 : alpha * 256.0);
+        var alphaByte = (byte)(alpha >= 1 ? 255 : Math.Floor(alpha * 255f));
         if (node->Color.A == alphaByte) return;
         node->Color.A = alphaByte;
     }

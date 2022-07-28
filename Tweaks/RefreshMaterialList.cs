@@ -2,6 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using Dalamud.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
@@ -15,17 +16,22 @@ public unsafe class RefreshMaterialList : Tweak
     private record WindowState
     {
         public string Addon = string.Empty;
-        public bool WasOpen = false;
-        public bool IsOpen = false;
-        public bool OnOpen = false;
+        public bool WasOpen;
+        public bool IsOpen;
+        public bool OnOpen;
+
+        public WindowState(string Addon, bool OnOpen = false)
+        {
+            this.Addon = Addon;
+            this.OnOpen = OnOpen;
+        }
     }
 
-    private readonly WindowState[] windowState = new[]
-    {
-        new WindowState { Addon = "Synthesis" },
-        new WindowState { Addon = "SynthesisSimple" },
-        new WindowState { Addon = "Gathering" },
-        new WindowState { Addon = "Catch", OnOpen = true }
+    private readonly WindowState[] windowState = {
+        new("Synthesis"),
+        new("SynthesisSimple"),
+        new("Gathering"),
+        new("Catch", true)
     };
 
     public override void OnFrameworkUpdate(Framework framework)

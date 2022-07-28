@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using Dalamud.Game;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
@@ -13,11 +14,11 @@ public unsafe class ExpertDeliveries : Tweak
 
     private delegate void* ReceiveEventDelegate(IntPtr addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr resNode);
 
-    private bool switched = false;
+    private bool switched;
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        var unitBase = (AtkUnitBase*)Service.GameGui.GetAddonByName("GrandCompanySupplyList", 1);
+        var unitBase = AtkUtils.GetUnitBase("GrandCompanySupplyList");
         if (unitBase == null || !unitBase->IsVisible)
         {
             if (switched) switched = false;
@@ -25,13 +26,12 @@ public unsafe class ExpertDeliveries : Tweak
         }
 
         var someLoadedStateMaybe = MemoryHelper.Read<byte>((IntPtr)unitBase + 0x188);
-        if (!switched && someLoadedStateMaybe == 0x14)
-        {
-            Log($"window opened, switching tab");
+        if (switched || someLoadedStateMaybe != 0x14) return;
 
-            var receiveEvent = Marshal.GetDelegateForFunctionPointer<ReceiveEventDelegate>((IntPtr)unitBase->AtkEventListener.vfunc[2]);
-            receiveEvent((IntPtr)unitBase, AtkEventType.ButtonClick, 4, unitBase->RootNode->AtkEventManager.Event, (IntPtr)unitBase->RootNode);
-            switched = true;
-        }
+        Log($"window opened, switching tab");
+
+        var receiveEvent = Marshal.GetDelegateForFunctionPointer<ReceiveEventDelegate>((IntPtr)unitBase->AtkEventListener.vfunc[2]);
+        receiveEvent((IntPtr)unitBase, AtkEventType.ButtonClick, 4, unitBase->RootNode->AtkEventManager.Event, (IntPtr)unitBase->RootNode);
+        switched = true;
     }
 }

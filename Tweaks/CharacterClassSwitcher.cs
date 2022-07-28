@@ -5,6 +5,7 @@ using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
+using HaselTweaks.Utils;
 using GearsetArray = HaselTweaks.Structs.RaptureGearsetModule.GearsetArray;
 using GearsetFlag = HaselTweaks.Structs.RaptureGearsetModule.GearsetFlag;
 using RaptureGearsetModule = HaselTweaks.Structs.RaptureGearsetModule;
@@ -15,7 +16,7 @@ public unsafe class CharacterClassSwitcher : Tweak
 {
     public override string Name => "Character Class Switcher";
     public override string Description => "Clicking on a class/job in the character window finds the matching gearset and equips it.\nHold shift on crafters to open the original desynthesis window.";
-    public Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.CharacterClassSwitcher;
+    public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.CharacterClassSwitcher;
 
     public class Configuration
     {
@@ -23,7 +24,7 @@ public unsafe class CharacterClassSwitcher : Tweak
         public bool DisableTooltips = false;
     }
 
-    private bool TooltipPatchApplied = false;
+    private bool TooltipPatchApplied;
 
     /* Address for AddonCharacterClass Tooltip Patch
 
@@ -117,7 +118,7 @@ public unsafe class CharacterClassSwitcher : Tweak
 
     private IntPtr OnSetup(AddonCharacterClass* addon, int a2)
     {
-        var result = OnSetupHook!.Original(addon, a2);
+        var result = OnSetupHook.Original(addon, a2);
         var eventListener = &addon->AtkUnitBase.AtkEventListener;
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
@@ -140,7 +141,7 @@ public unsafe class CharacterClassSwitcher : Tweak
 
     private void OnUpdate(AddonCharacterClass* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        OnUpdateHook!.Original(addon, numberArrayData, stringArrayData);
+        OnUpdateHook.Original(addon, numberArrayData, stringArrayData);
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
         {
@@ -202,12 +203,12 @@ public unsafe class CharacterClassSwitcher : Tweak
             return IntPtr.Zero;
 
 OriginalReceiveEventCode:
-        return ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+        return ReceiveEventHook.Original(addon, eventType, eventParam, atkEvent, a5);
     }
 
     private IntPtr OnPvPSetup(AddonPvPCharacter* addon)
     {
-        var result = OnPvPSetupHook!.Original(addon);
+        var result = OnPvPSetupHook.Original(addon);
         var eventListener = &addon->AtkUnitBase.AtkEventListener;
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
@@ -227,7 +228,7 @@ OriginalReceiveEventCode:
 
     private void OnPvPUpdate(AddonPvPCharacter* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        OnPvPUpdateHook!.Original(addon, numberArrayData, stringArrayData);
+        OnPvPUpdateHook.Original(addon, numberArrayData, stringArrayData);
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
@@ -270,11 +271,11 @@ OriginalReceiveEventCode:
             return IntPtr.Zero;
 
 OriginalPvPReceiveEventCode:
-        return PvPReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, a5);
+        return PvPReceiveEventHook.Original(addon, eventType, eventParam, atkEvent, a5);
     }
 
     /// <returns>Boolean whether original code should be skipped (true) or not (false)</returns>
-    private bool ProcessEvents(AtkComponentNode* componentNode, AtkImageNode* imageNode, AtkEventType eventType)
+    private static bool ProcessEvents(AtkComponentNode* componentNode, AtkImageNode* imageNode, AtkEventType eventType)
     {
         var isClick =
             eventType == AtkEventType.MouseClick ||
@@ -297,7 +298,8 @@ OriginalPvPReceiveEventCode:
 
             return true; // handled
         }
-        else if (eventType == AtkEventType.MouseOver)
+
+        if (eventType == AtkEventType.MouseOver)
         {
             componentNode->AtkResNode.AddBlue = 16;
             componentNode->AtkResNode.AddGreen = 16;
@@ -313,7 +315,7 @@ OriginalPvPReceiveEventCode:
         return false;
     }
 
-    private void SwitchClassJob(uint classJobId)
+    private static void SwitchClassJob(uint classJobId)
     {
         var gearsetModule = RaptureGearsetModule.Instance();
         if (gearsetModule == null) return;
@@ -325,9 +327,9 @@ OriginalPvPReceiveEventCode:
             var gearset = gearsetModule->Gearsets[i];
             if (!gearset->Flags.HasFlag(GearsetFlag.Exists)) continue;
             if (gearset->ClassJob != classJobId) continue;
+            if (selectedGearset.ItemLevel >= gearset->ItemLevel) continue;
 
-            if (selectedGearset.ItemLevel < gearset->ItemLevel)
-                selectedGearset = (i + 1, gearset->ItemLevel);
+            selectedGearset = (i + 1, gearset->ItemLevel);
         }
 
         UIModule.PlaySound(8, 0, 0, 0);
