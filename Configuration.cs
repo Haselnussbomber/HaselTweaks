@@ -5,7 +5,6 @@ using System.Linq;
 using Dalamud.Configuration;
 using Dalamud.Logging;
 using HaselTweaks.Tweaks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HaselTweaks;
@@ -29,31 +28,31 @@ public class TweakConfigs
     public CharacterClassSwitcher.Configuration CharacterClassSwitcher { get; init; } = new();
 }
 
-internal partial class Configuration
+internal partial class Configuration : IDisposable
 {
-    [JsonIgnore]
-    public Plugin? Plugin { get; set; } = null!;
+    public static Configuration Instance { get; private set; } = null!;
 
-    internal static Configuration Load(Plugin plugin)
+    internal static Configuration Load(string[] tweakNames)
     {
+        if (Instance != null)
+            return Instance;
+
         var configPath = Service.PluginInterface.ConfigFile.FullName;
 
         string? jsonData = File.Exists(configPath) ? File.ReadAllText(configPath) : null;
         if (string.IsNullOrEmpty(jsonData))
-            return new Configuration();
+            return Instance = new();
 
         var config = JObject.Parse(jsonData);
         if (config == null)
-            return new Configuration();
+            return Instance = new();
 
         var version = (int?)config[nameof(Version)];
         var enabledTweaks = (JArray?)config[nameof(EnabledTweaks)];
         var tweakConfigs = (JObject?)config[nameof(Tweaks)];
 
         if (version == null || enabledTweaks == null || tweakConfigs == null)
-            return new Configuration();
-
-        var tweakNames = plugin.Tweaks.Select(t => t.InternalName).ToList();
+            return Instance = new();
 
         var renamedTweaks = new Dictionary<string, string>()
         {
@@ -98,15 +97,16 @@ internal partial class Configuration
 
         config[nameof(EnabledTweaks)] = newEnabledTweaks;
 
-        var configuration = config.ToObject<Configuration>();
-        if (configuration == null)
-            return new Configuration();
-
-        return configuration;
+        return Instance = config.ToObject<Configuration>() ?? new();
     }
 
-    internal void Save()
+    internal static void Save()
     {
-        Service.PluginInterface.SavePluginConfig(this);
+        Service.PluginInterface.SavePluginConfig(Instance);
+    }
+
+    void IDisposable.Dispose()
+    {
+        Instance = null!;
     }
 }

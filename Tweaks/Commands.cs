@@ -14,7 +14,7 @@ public unsafe class Commands : Tweak
 {
     public override string Name => "Commands";
     public override string Description => "A variety of useful chat commands.";
-    public Configuration Config => Plugin.Config.Tweaks.Commands;
+    public Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.Commands;
 
     private const string ItemLinkCommand = "/itemlink";
     private const string WhatMountCommand = "/whatmount";

@@ -15,7 +15,7 @@ public unsafe class CharacterClassSwitcher : Tweak
 {
     public override string Name => "Character Class Switcher";
     public override string Description => "Clicking on a class/job in the character window finds the matching gearset and equips it.\nHold shift on crafters to open the original desynthesis window.";
-    public Configuration Config => Plugin.Config.Tweaks.CharacterClassSwitcher;
+    public Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.CharacterClassSwitcher;
 
     public class Configuration
     {

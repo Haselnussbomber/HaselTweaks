@@ -10,7 +10,7 @@ public unsafe class ScrollableTabs : Tweak
 {
     public override string Name => "Scrollable Tabs";
     public override string Description => "Enables mouse wheel to switch tabs (like with LB/RB on controllers).";
-    public Configuration Config => Plugin.Config.Tweaks.ScrollableTabs;
+    public Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.ScrollableTabs;
 
     public class Configuration
     {

@@ -8,7 +8,7 @@ public unsafe class AutoSortArmouryChest : Tweak
 {
     public override string Name => "Auto Sort Armoury Chest";
     public override string Description => "Sorts items inside the Armoury Chest upon opening it.";
-    public Configuration Config => Plugin.Config.Tweaks.AutoSortArmouryChest;
+    public Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.AutoSortArmouryChest;
 
     public static readonly Dictionary<ClientLanguage, List<string>> ConditionSet = new()
     {
@@ -105,20 +105,20 @@ public unsafe class AutoSortArmouryChest : Tweak
         var definition = $"/isort condition armoury {Config.Condition} {Config.Order}";
         var execute = "/isort execute armoury";
 
-        if (Service.ClientState.ClientLanguage == ClientLanguage.German)
+        switch (Service.ClientState.ClientLanguage)
         {
-            definition = $"/sort def arsenal {Config.Condition} {Config.Order}";
-            execute = "/sort los arsenal";
-        }
-        else if (Service.ClientState.ClientLanguage == ClientLanguage.French)
-        {
-            definition = $"/triobjet condition arsenal {Config.Condition} {Config.Order}";
-            execute = "/triobjet exécuter arsenal";
-        }
-        else if (Service.ClientState.ClientLanguage == ClientLanguage.Japanese)
-        {
-            definition = $"/itemsort condition アーマリーチェスト {Config.Condition} {Config.Order}";
-            execute = "/itemsort execute アーマリーチェスト";
+            case ClientLanguage.German:
+                definition = $"/sort def arsenal {Config.Condition} {Config.Order}";
+                execute = "/sort los arsenal";
+                break;
+            case ClientLanguage.French:
+                definition = $"/triobjet condition arsenal {Config.Condition} {Config.Order}";
+                execute = "/triobjet exécuter arsenal";
+                break;
+            case ClientLanguage.Japanese:
+                definition = $"/itemsort condition アーマリーチェスト {Config.Condition} {Config.Order}";
+                execute = "/itemsort execute アーマリーチェスト";
+                break;
         }
 
         Log($"Executing {definition}");

@@ -11,8 +11,6 @@ namespace HaselTweaks;
 
 public abstract class Tweak
 {
-    protected Plugin Plugin = null!;
-
     public string InternalName => GetType().Name;
     public abstract string Name { get; }
     public virtual string Description { get; } = string.Empty;
@@ -44,9 +42,8 @@ public abstract class Tweak
         }
     }
 
-    internal virtual void SetupInternal(Plugin plugin)
+    internal virtual void SetupInternal()
     {
-        Plugin = plugin;
         try
         {
             SignatureHelper.Initialise(this);

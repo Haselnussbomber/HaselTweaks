@@ -15,8 +15,7 @@ public class Plugin : IDalamudPlugin
 {
     public string Name => "HaselTweaks";
 
-    internal XivCommonBase XivCommon;
-    internal Configuration Config;
+    internal static XivCommonBase XivCommon = null!;
 
     private readonly WindowSystem windowSystem = new("HaselTweaks");
     private readonly PluginWindow pluginWindow;
@@ -43,21 +42,20 @@ public class Plugin : IDalamudPlugin
             }
         }
 
-        Config = Configuration.Load(this);
-        Config.Plugin = this;
+        Configuration.Load(Tweaks.Select(t => t.InternalName).ToArray());
 
         foreach (var tweak in Tweaks)
         {
             try
             {
-                tweak.SetupInternal(this);
+                tweak.SetupInternal();
             }
             catch (Exception ex)
             {
                 PluginLog.Error(ex, $"Failed setting up tweak '{tweak.InternalName}'.");
             }
 
-            if (tweak.Ready && Config.EnabledTweaks.Contains(tweak.InternalName))
+            if (tweak.Ready && Configuration.Instance.EnabledTweaks.Contains(tweak.InternalName))
             {
                 try
                 {
@@ -132,17 +130,28 @@ public class Plugin : IDalamudPlugin
             try
             {
                 tweak.DisableInternal();
-                tweak.DisposeInternal();
             }
             catch (Exception ex)
             {
                 PluginLog.Error(ex, $"Failed unloading tweak '{tweak.Name}'.");
             }
+
+            try
+            {
+                tweak.DisposeInternal();
+            }
+            catch (Exception ex)
+            {
+                PluginLog.Error(ex, $"Failed disposing tweak '{tweak.Name}'.");
+            }
         }
 
         Tweaks.Clear();
 
-        Config.Save();
+        Configuration.Save();
+        ((IDisposable)Configuration.Instance).Dispose();
+
         XivCommon?.Dispose();
+        XivCommon = null!;
     }
 }

@@ -10,7 +10,7 @@ public unsafe class ForcedCutsceneMusic : Tweak
 {
     public override string Name => "Forced Cutscene Music";
     public override string Description => "Auto-unmutes background music for cutscenes.";
-    public Configuration Config => Plugin.Config.Tweaks.ForcedCutsceneMusic;
+    public Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.ForcedCutsceneMusic;
 
     public class Configuration
     {

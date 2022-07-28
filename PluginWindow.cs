@@ -26,6 +26,8 @@ public class PluginWindow : Window
 
     public override void Draw()
     {
+        var Config = Configuration.Instance;
+
         foreach (var tweak in this.Plugin.Tweaks.OrderBy(t => t.Name))
         {
             void drawTooltip()
@@ -120,27 +122,27 @@ public class PluginWindow : Window
                 {
                     tweak.DisableInternal();
 
-                    if (this.Plugin.Config.EnabledTweaks.Contains(tweak.InternalName))
+                    if (Config.EnabledTweaks.Contains(tweak.InternalName))
                     {
-                        this.Plugin.Config.EnabledTweaks.Remove(tweak.InternalName);
-                        this.Plugin.Config.Save();
+                        Config.EnabledTweaks.Remove(tweak.InternalName);
+                        Configuration.Save();
                     }
                 }
                 else
                 {
                     tweak.EnableInternal();
 
-                    if (!this.Plugin.Config.EnabledTweaks.Contains(tweak.InternalName))
+                    if (!Config.EnabledTweaks.Contains(tweak.InternalName))
                     {
-                        this.Plugin.Config.EnabledTweaks.Add(tweak.InternalName);
-                        this.Plugin.Config.Save();
+                        Config.EnabledTweaks.Add(tweak.InternalName);
+                        Configuration.Save();
                     }
                 }
             }
 
             ImGui.SameLine();
 
-            var config = this.Plugin.Config.Tweaks.GetType().GetProperty(tweak.InternalName)?.GetValue(this.Plugin.Config.Tweaks);
+            var config = Config.Tweaks.GetType().GetProperty(tweak.InternalName)?.GetValue(Config.Tweaks);
 
             if (config != null)
             {
