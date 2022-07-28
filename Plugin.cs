@@ -3,31 +3,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dalamud.Game;
+using Dalamud.Game.Command;
+using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin;
 using XivCommon;
 
 namespace HaselTweaks;
 
-public unsafe partial class Plugin : IDalamudPlugin
+public class Plugin : IDalamudPlugin
 {
     public string Name => "HaselTweaks";
 
-    internal DalamudPluginInterface PluginInterface;
     internal XivCommonBase XivCommon;
     internal Configuration Config;
-    internal PluginUi Ui;
+
+    private readonly WindowSystem windowSystem = new("HaselTweaks");
+    private readonly PluginWindow pluginWindow;
 
     internal List<Tweak> Tweaks = new();
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
-        PluginInterface = pluginInterface;
-
         pluginInterface.Create<Service>();
         XivCommon = new();
 
-        Ui = new(this);
+        this.pluginWindow = new PluginWindow(this);
+        this.windowSystem.AddWindow(this.pluginWindow);
 
         foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(Tweak)) && !t.IsAbstract))
         {
@@ -68,9 +70,18 @@ public unsafe partial class Plugin : IDalamudPlugin
             }
         }
 
-        Config.Save();
+        Service.Framework.Update += this.OnFrameworkUpdate;
+        Service.PluginInterface.UiBuilder.Draw += this.OnDraw;
+        Service.PluginInterface.UiBuilder.OpenConfigUi += this.OnOpenConfigUi;
 
-        Service.Framework.Update += OnFrameworkUpdate;
+        Service.Commands.AddHandler("/haseltweaks", new CommandInfo(this.OnCommand)
+        {
+            HelpMessage = "Show Window"
+        });
+
+#if DEBUG
+        this.windowSystem.GetWindow("HaselTweaks")?.Toggle();
+#endif
     }
 
     private void OnFrameworkUpdate(Framework framework)
@@ -83,50 +94,55 @@ public unsafe partial class Plugin : IDalamudPlugin
             }
         }
     }
-}
 
-public sealed partial class Plugin : IDisposable
-{
-    private bool isDisposed;
-
-    public void Dispose()
+    private void OnDraw()
     {
-        GC.SuppressFinalize(this);
-        Dispose(true);
+        try
+        {
+            this.windowSystem.Draw();
+        }
+        catch (Exception ex)
+        {
+            PluginLog.Error(ex, "Unexpected exception in OnDraw");
+        }
     }
 
-    private void Dispose(bool disposing)
+    private void OnOpenConfigUi()
     {
-        if (isDisposed)
-            return;
+        this.pluginWindow.Toggle();
+    }
 
-        if (disposing)
+    private void OnCommand(string command, string args)
+    {
+        this.pluginWindow.Toggle();
+    }
+
+    void IDisposable.Dispose()
+    {
+        Service.Framework.Update -= this.OnFrameworkUpdate;
+        Service.PluginInterface.UiBuilder.Draw -= this.OnDraw;
+        Service.PluginInterface.UiBuilder.OpenConfigUi -= this.OnOpenConfigUi;
+
+        Service.Commands.RemoveHandler("/haseltweaks");
+
+        this.windowSystem.RemoveAllWindows();
+
+        foreach (var tweak in Tweaks)
         {
-            Ui.Show = false;
-
-            Service.Framework.Update -= OnFrameworkUpdate;
-
-            foreach (var tweak in Tweaks)
+            try
             {
-                try
-                {
-                    if (tweak.Enabled)
-                        tweak.DisableInternal();
-
-                    tweak.DisposeInternal();
-                }
-                catch (Exception ex)
-                {
-                    PluginLog.Error(ex, $"Failed unloading tweak '{tweak.Name}'.");
-                }
+                tweak.DisableInternal();
+                tweak.DisposeInternal();
             }
-
-            Tweaks.Clear();
-
-            Ui.Dispose();
-            XivCommon?.Dispose();
+            catch (Exception ex)
+            {
+                PluginLog.Error(ex, $"Failed unloading tweak '{tweak.Name}'.");
+            }
         }
 
-        isDisposed = true;
+        Tweaks.Clear();
+
+        Config.Save();
+        XivCommon?.Dispose();
     }
 }

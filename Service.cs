@@ -8,11 +8,13 @@ using Dalamud.Game.Command;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.IoC;
+using Dalamud.Plugin;
 
 namespace HaselTweaks;
 
 public class Service
 {
+    [PluginService] public static DalamudPluginInterface PluginInterface { get; private set; } = null!;
     [PluginService] public static ChatGui Chat { get; private set; } = null!;
     [PluginService] public static ClientState ClientState { get; private set; } = null!;
     [PluginService] public static CommandManager Commands { get; private set; } = null!;

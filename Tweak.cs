@@ -70,6 +70,7 @@ public abstract class Tweak
 
     internal virtual void DisableInternal()
     {
+        if (!Enabled) return;
         CallHooks("Disable");
         Disable();
         Enabled = false;
