@@ -61,5 +61,6 @@
     <PackageReference Include="DalamudLinter" Version="1.0.3" />
     <PackageReference Include="DalamudPackager" Version="2.1.7" />
     <PackageReference Include="XivCommon" Version="5.0.1-alpha.1" />
+    <PackageReference Include="Dalamud.ContextMenu" Version="1.1.1" />
   </ItemGroup>
 </Project>

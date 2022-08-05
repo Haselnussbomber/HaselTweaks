@@ -114,3 +114,7 @@ Enables mouse wheel to switch tabs (like with LB/RB on controllers) in the follo
 - Retainer Inventory
 - Shared FATE
 - Sightseeing Log
+
+### Search the markets [[src](Tweaks/SearchTheMarkets.cs)]
+
+Adds a context menu entry to items in Inventory, Crafting Log, Recipe Tree or Materials List to quickly search for it on the Market Board. Only visible when Market Board is open.
