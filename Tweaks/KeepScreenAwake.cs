@@ -20,7 +20,7 @@ public class KeepScreenAwake : Tweak
     }
 
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-    static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
+    private static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
 
     public override void Setup()
     {

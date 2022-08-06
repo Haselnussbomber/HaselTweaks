@@ -17,8 +17,8 @@ public class Plugin : IDalamudPlugin
 
     internal static XivCommonBase XivCommon = null!;
 
-    private readonly WindowSystem windowSystem = new("HaselTweaks");
-    private readonly PluginWindow pluginWindow;
+    private readonly WindowSystem WindowSystem = new("HaselTweaks");
+    private readonly PluginWindow PluginWindow;
 
     internal List<Tweak> Tweaks = new();
 
@@ -27,8 +27,8 @@ public class Plugin : IDalamudPlugin
         pluginInterface.Create<Service>();
         XivCommon = new();
 
-        this.pluginWindow = new PluginWindow(this);
-        this.windowSystem.AddWindow(this.pluginWindow);
+        PluginWindow = new PluginWindow(this);
+        WindowSystem.AddWindow(PluginWindow);
 
         foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(Tweak)) && !t.IsAbstract))
         {
@@ -68,11 +68,11 @@ public class Plugin : IDalamudPlugin
             }
         }
 
-        Service.Framework.Update += this.OnFrameworkUpdate;
-        Service.PluginInterface.UiBuilder.Draw += this.OnDraw;
-        Service.PluginInterface.UiBuilder.OpenConfigUi += this.OnOpenConfigUi;
+        Service.Framework.Update += OnFrameworkUpdate;
+        Service.PluginInterface.UiBuilder.Draw += OnDraw;
+        Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
 
-        Service.Commands.AddHandler("/haseltweaks", new CommandInfo(this.OnCommand)
+        Service.Commands.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
         {
             HelpMessage = "Show Window"
         });
@@ -93,7 +93,7 @@ public class Plugin : IDalamudPlugin
     {
         try
         {
-            this.windowSystem.Draw();
+            WindowSystem.Draw();
         }
         catch (Exception ex)
         {
@@ -103,23 +103,23 @@ public class Plugin : IDalamudPlugin
 
     private void OnOpenConfigUi()
     {
-        this.pluginWindow.Toggle();
+        PluginWindow.Toggle();
     }
 
     private void OnCommand(string command, string args)
     {
-        this.pluginWindow.Toggle();
+        PluginWindow.Toggle();
     }
 
     void IDisposable.Dispose()
     {
-        Service.Framework.Update -= this.OnFrameworkUpdate;
-        Service.PluginInterface.UiBuilder.Draw -= this.OnDraw;
-        Service.PluginInterface.UiBuilder.OpenConfigUi -= this.OnOpenConfigUi;
+        Service.Framework.Update -= OnFrameworkUpdate;
+        Service.PluginInterface.UiBuilder.Draw -= OnDraw;
+        Service.PluginInterface.UiBuilder.OpenConfigUi -= OnOpenConfigUi;
 
         Service.Commands.RemoveHandler("/haseltweaks");
 
-        this.windowSystem.RemoveAllWindows();
+        WindowSystem.RemoveAllWindows();
 
         foreach (var tweak in Tweaks)
         {

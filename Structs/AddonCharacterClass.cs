@@ -30,9 +30,8 @@ public unsafe struct AddonCharacterClass
                 if (i < 0 || i > NUM_CLASSES) return null;
                 fixed (byte* p = data)
                 {
-                    var ptr = (IntPtr*)(p + i * 8);
-                    if (ptr == null) return null;
-                    return (AtkComponentBase*)*ptr;
+                    var ptr = (AtkComponentBase**)(p + i * 8);
+                    return ptr == null ? null : *ptr;
                 }
             }
         }

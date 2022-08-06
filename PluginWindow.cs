@@ -14,7 +14,7 @@ public class PluginWindow : Window
 
     public PluginWindow(Plugin plugin) : base("HaselTweaks")
     {
-        this.Plugin = plugin;
+        Plugin = plugin;
 
         base.Size = new Vector2(420, 690);
 #if DEBUG
@@ -28,7 +28,7 @@ public class PluginWindow : Window
     {
         var Config = Configuration.Instance;
 
-        foreach (var tweak in this.Plugin.Tweaks.OrderBy(t => t.Name))
+        foreach (var tweak in Plugin.Tweaks.OrderBy(t => t.Name))
         {
             void drawTooltip()
             {
@@ -107,7 +107,7 @@ public class PluginWindow : Window
 
                 drawTooltip();
 
-                if (tweak != this.Plugin.Tweaks[^1])
+                if (tweak != Plugin.Tweaks[^1])
                 {
                     ImGui.Separator();
                 }
@@ -160,7 +160,7 @@ public class PluginWindow : Window
                         {
                             var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType }))!;
 
-                            data.GetType().GetProperty("Plugin")!.SetValue(data, this.Plugin);
+                            data.GetType().GetProperty("Plugin")!.SetValue(data, Plugin);
                             data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
                             data.GetType().GetProperty("Config")!.SetValue(data, config);
                             data.GetType().GetProperty("Field")!.SetValue(data, field);
@@ -182,7 +182,7 @@ public class PluginWindow : Window
                             {
                                 var data = new ConfigDrawData<string>()
                                 {
-                                    Plugin = this.Plugin,
+                                    Plugin = Plugin,
                                     Tweak = tweak,
                                     Config = config,
                                     Field = field,
@@ -229,7 +229,7 @@ public class PluginWindow : Window
                 drawTooltip();
             }
 
-            if (tweak != this.Plugin.Tweaks[^1])
+            if (tweak != Plugin.Tweaks[^1])
             {
                 ImGui.Separator();
             }

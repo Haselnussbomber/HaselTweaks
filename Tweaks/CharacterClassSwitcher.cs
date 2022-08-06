@@ -190,7 +190,7 @@ public unsafe class CharacterClassSwitcher : Tweak
         if (IsCrafter(eventParam - 2))
         {
             var isClick =
-                (eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick) ||
+                eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick ||
                 (eventType == AtkEventType.InputReceived && GamepadUtils.IsPressed(GamepadUtils.GamepadBinding.Accept));
 
             if (isClick && !Service.KeyState[VirtualKey.SHIFT])
@@ -200,9 +200,11 @@ public unsafe class CharacterClassSwitcher : Tweak
             }
         }
         else if (ProcessEvents(node->OwnerNode, imageNode, eventType))
+        {
             return IntPtr.Zero;
+        }
 
-OriginalReceiveEventCode:
+        OriginalReceiveEventCode:
         return ReceiveEventHook.Original(addon, eventType, eventParam, atkEvent, a5);
     }
 
@@ -270,7 +272,7 @@ OriginalReceiveEventCode:
         if (ProcessEvents(entry->Base->OwnerNode, entry->Icon, eventType))
             return IntPtr.Zero;
 
-OriginalPvPReceiveEventCode:
+        OriginalPvPReceiveEventCode:
         return PvPReceiveEventHook.Original(addon, eventType, eventParam, atkEvent, a5);
     }
 

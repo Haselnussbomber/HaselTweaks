@@ -98,7 +98,7 @@ public class Commands : Tweak
             return;
         }
 
-        var fgColor = (ushort)(549 + ((item.Rarity - 1) * 2));
+        var fgColor = (ushort)(549 + (item.Rarity - 1) * 2);
         var glowColor = (ushort)(fgColor + 1);
 
         Service.Chat.PrintChat(new XivChatEntry
@@ -117,13 +117,13 @@ public class Commands : Tweak
                 new UIForegroundPayload(0),
                 new UIGlowPayload(0),
                 new TextPayload(item.Name),
-            
+
                 // LinkTerminator
-                new RawPayload(new byte[] {0x02, 0x27, 0x07, 0xCF, 0x01, 0x01, 0x01, 0xFF, 0x01, 0x03}),
+                new RawPayload(new byte[] { 0x02, 0x27, 0x07, 0xCF, 0x01, 0x01, 0x01, 0xFF, 0x01, 0x03 }),
 
                 // SaintCoinach says 0x13 is named Color
                 // idk, but if this missing the game crashes after a couple lines
-                new RawPayload(new byte[] {0x02, 0x13, 0x02, 0xEC, 0x03})
+                new RawPayload(new byte[] { 0x02, 0x13, 0x02, 0xEC, 0x03 })
             ),
             Type = XivChatType.Echo
         });
@@ -208,7 +208,7 @@ public class Commands : Tweak
             return;
         }
 
-        var fgColor = (ushort)(549 + ((itemRow.Rarity - 1) * 2));
+        var fgColor = (ushort)(549 + (itemRow.Rarity - 1) * 2);
         var glowColor = (ushort)(fgColor + 1);
 
         Service.Chat.PrintChat(new XivChatEntry
@@ -227,13 +227,13 @@ public class Commands : Tweak
                 new UIForegroundPayload(0),
                 new UIGlowPayload(0),
                 new TextPayload(itemRow.Name),
-            
+
                 // LinkTerminator
-                new RawPayload(new byte[] {0x02, 0x27, 0x07, 0xCF, 0x01, 0x01, 0x01, 0xFF, 0x01, 0x03}),
+                new RawPayload(new byte[] { 0x02, 0x27, 0x07, 0xCF, 0x01, 0x01, 0x01, 0xFF, 0x01, 0x03 }),
 
                 // SaintCoinach says 0x13 is named Color
                 // idk, but if this missing the game crashes after a couple lines
-                new RawPayload(new byte[] {0x02, 0x13, 0x02, 0xEC, 0x03})
+                new RawPayload(new byte[] { 0x02, 0x13, 0x02, 0xEC, 0x03 })
             ),
             Type = XivChatType.Echo
         });

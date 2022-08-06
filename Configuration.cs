@@ -39,7 +39,7 @@ internal partial class Configuration : IDisposable
 
         var configPath = Service.PluginInterface.ConfigFile.FullName;
 
-        string? jsonData = File.Exists(configPath) ? File.ReadAllText(configPath) : null;
+        var jsonData = File.Exists(configPath) ? File.ReadAllText(configPath) : null;
         if (string.IsNullOrEmpty(jsonData))
             return Instance = new();
 

@@ -39,7 +39,7 @@ public unsafe class SearchTheMarkets : Tweak
 
     public SearchTheMarkets()
     {
-        this.ContextMenu = new();
+        ContextMenu = new();
 
         var text = new SeString(new TextPayload(Service.ClientState.ClientLanguage switch
         {
@@ -49,25 +49,25 @@ public unsafe class SearchTheMarkets : Tweak
             _ => "Search the markets"
         }));
 
-        this.ContextMenuItemGame = new(text, this.ActionGame, false);
-        this.ContextMenuItemInventory = new(text, this.ActionInventory, false);
+        ContextMenuItemGame = new(text, (_) => Search(), false);
+        ContextMenuItemInventory = new(text, (_) => Search(), false);
     }
 
     public override void Enable()
     {
-        this.ContextMenu.OnOpenGameObjectContextMenu += this.ContextMenu_OnOpenGameObjectContextMenu;
-        this.ContextMenu.OnOpenInventoryContextMenu += this.ContextMenu_OnOpenInventoryContextMenu;
+        ContextMenu.OnOpenGameObjectContextMenu += ContextMenu_OnOpenGameObjectContextMenu;
+        ContextMenu.OnOpenInventoryContextMenu += ContextMenu_OnOpenInventoryContextMenu;
     }
 
     public override void Disable()
     {
-        this.ContextMenu.OnOpenGameObjectContextMenu -= this.ContextMenu_OnOpenGameObjectContextMenu;
-        this.ContextMenu.OnOpenInventoryContextMenu -= this.ContextMenu_OnOpenInventoryContextMenu;
+        ContextMenu.OnOpenGameObjectContextMenu -= ContextMenu_OnOpenGameObjectContextMenu;
+        ContextMenu.OnOpenInventoryContextMenu -= ContextMenu_OnOpenInventoryContextMenu;
     }
 
     public override void Dispose()
     {
-        this.ContextMenu.Dispose();
+        ContextMenu.Dispose();
     }
 
     private unsafe void ContextMenu_OnOpenGameObjectContextMenu(GameObjectContextMenuOpenArgs args)
@@ -91,36 +91,26 @@ public unsafe class SearchTheMarkets : Tweak
             itemId = *(uint*)((IntPtr)agent + 0x28);
         }
 
-        this.Item = Service.Data.GetExcelSheet<Item>()?.GetRow(itemId);
+        Item = Service.Data.GetExcelSheet<Item>()?.GetRow(itemId);
 
         if (InvalidState())
         {
             return;
         }
 
-        args.AddCustomItem(this.ContextMenuItemGame);
+        args.AddCustomItem(ContextMenuItemGame);
     }
 
     private void ContextMenu_OnOpenInventoryContextMenu(InventoryContextMenuOpenArgs args)
     {
-        this.Item = Service.Data.GetExcelSheet<Item>()?.GetRow(args.ItemId);
+        Item = Service.Data.GetExcelSheet<Item>()?.GetRow(args.ItemId);
 
         if (InvalidState())
         {
             return;
-        
         }
-        args.AddCustomItem(this.ContextMenuItemInventory);
-    }
 
-    private void ActionGame(GameObjectContextMenuItemSelectedArgs args)
-    {
-        Search();
-    }
-
-    private void ActionInventory(InventoryContextMenuItemSelectedArgs args)
-    {
-        Search();
+        args.AddCustomItem(ContextMenuItemInventory);
     }
 
     private void Search()
@@ -132,7 +122,7 @@ public unsafe class SearchTheMarkets : Tweak
 
         var itemSearch = (AddonItemSearch*)AtkUtils.GetUnitBase("ItemSearch");
 
-        var itemName = this.Item!.Name.ToString();
+        var itemName = Item!.Name.ToString();
         if (itemName.Length > 40)
         {
             itemName = itemName[..40];
@@ -147,13 +137,13 @@ public unsafe class SearchTheMarkets : Tweak
             itemSearch->TextInput->UnkText2.SetString(ptr);
         }
 
-        this.SetModeFilter(itemSearch, AddonItemSearch.SearchMode.Normal, 0xFFFFFFFF);
-        this.TriggerRedraw(itemSearch->TextInput);
-        this.RunSearch(itemSearch, false);
+        SetModeFilter(itemSearch, AddonItemSearch.SearchMode.Normal, 0xFFFFFFFF);
+        TriggerRedraw(itemSearch->TextInput);
+        RunSearch(itemSearch, false);
     }
 
     private bool InvalidState()
     {
-        return this.Item == null || this.Item.IsUntradable || AtkUtils.GetUnitBase("ItemSearch") == null;
+        return Item == null || Item.IsUntradable || AtkUtils.GetUnitBase("ItemSearch") == null;
     }
 }

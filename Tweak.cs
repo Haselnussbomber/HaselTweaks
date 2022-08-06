@@ -11,7 +11,7 @@ namespace HaselTweaks;
 
 public abstract class Tweak
 {
-    public string InternalName => this.GetType().Name;
+    public string InternalName => GetType().Name;
     public abstract string Name { get; }
     public virtual string Description => string.Empty;
 
@@ -19,7 +19,7 @@ public abstract class Tweak
     public virtual bool Ready { get; protected set; }
     public virtual bool Enabled { get; protected set; }
 
-    protected IEnumerable<PropertyInfo> Hooks => this.GetType()
+    protected IEnumerable<PropertyInfo> Hooks => GetType()
         .GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)
         .Where(prop =>
             prop.PropertyType.IsGenericType &&
