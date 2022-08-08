@@ -24,6 +24,7 @@ public class DTR : Tweak
     public DtrBarEntry? DtrInstance;
     public DtrBarEntry? DtrFPS;
     public DtrBarEntry? DtrBusy;
+    private string BusyStatusText = string.Empty;
 
     public override void Enable()
     {
@@ -99,17 +100,22 @@ public class DTR : Tweak
             return;
         }
 
-        var statusText = Service.Data.Excel.GetSheet<OnlineStatus>()?.GetRow(12);
-        if (statusText == null)
+        if (string.IsNullOrEmpty(BusyStatusText))
         {
-            if (DtrBusy.Shown) DtrBusy.Shown = false;
-            return;
+            var nameBytes = Service.Data.Excel.GetSheet<OnlineStatus>()?.GetRow(12)?.Name.RawData.ToArray();
+            if (nameBytes == null)
+            {
+                if (DtrBusy.Shown) DtrBusy.Shown = false;
+                return;
+            }
+
+            BusyStatusText = SeString.Parse(nameBytes).ToString();
         }
 
         DtrBusy.Text = new SeString(
             new UIForegroundPayload(1),
             new UIGlowPayload(16),
-            new RawPayload(statusText.Name.RawData.ToArray()),
+            new TextPayload(BusyStatusText),
             UIGlowPayload.UIGlowOff,
             UIForegroundPayload.UIForegroundOff
         );
