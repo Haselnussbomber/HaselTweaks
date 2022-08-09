@@ -13,10 +13,6 @@
     <AllowedReferenceRelatedFileExtensions>.pdb</AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <OutputPath>$(AppData)\XIVLauncher\devPlugins\HaselTweaks\</OutputPath>
-  </PropertyGroup>
-
   <PropertyGroup>
     <Dalamud>$(AppData)\XIVLauncher\addon\Hooks\dev</Dalamud>
   </PropertyGroup>
