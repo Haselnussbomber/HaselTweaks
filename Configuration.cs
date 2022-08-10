@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Dalamud.Configuration;
+using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Logging;
 using HaselTweaks.Tweaks;
 using Newtonsoft.Json.Linq;
@@ -38,64 +39,88 @@ internal partial class Configuration : IDisposable
             return Instance;
 
         var configPath = Service.PluginInterface.ConfigFile.FullName;
+        JObject? config = null;
 
-        var jsonData = File.Exists(configPath) ? File.ReadAllText(configPath) : null;
-        if (string.IsNullOrEmpty(jsonData))
-            return Instance = new();
+        try
+        {
+            var jsonData = File.Exists(configPath) ? File.ReadAllText(configPath) : null;
+            if (string.IsNullOrEmpty(jsonData))
+                return Instance = new();
 
-        var config = JObject.Parse(jsonData);
+            config = JObject.Parse(jsonData);
+        }
+        catch (Exception e)
+        {
+            PluginLog.Error(e, "Could not load configuration, creating a new one");
+
+            Service.PluginInterface.UiBuilder.AddNotification(
+                "Could not load the configuration file. Creating a new one.",
+                "HaselTweaks",
+                NotificationType.Error,
+                5000
+            );
+        }
+
         if (config == null)
             return Instance = new();
 
-        var version = (int?)config[nameof(Version)];
-        var enabledTweaks = (JArray?)config[nameof(EnabledTweaks)];
-        var tweakConfigs = (JObject?)config[nameof(Tweaks)];
-
-        if (version == null || enabledTweaks == null || tweakConfigs == null)
-            return Instance = new();
-
-        var renamedTweaks = new Dictionary<string, string>()
+        try
         {
-            ["KeepInstantProfile"] = "KeepInstantPortrait", // commit 03553bef
-            ["RevealDungeonRequirements"] = "RevealDutyRequirements", // commit 7ce9b37b
-        };
+            var version = (int?)config[nameof(Version)];
+            var enabledTweaks = (JArray?)config[nameof(EnabledTweaks)];
+            var tweakConfigs = (JObject?)config[nameof(Tweaks)];
 
-        var newEnabledTweaks = new JArray();
+            if (version == null || enabledTweaks == null || tweakConfigs == null)
+                return Instance = new();
 
-        foreach (var tweakToken in enabledTweaks)
-        {
-            var tweakName = (string?)tweakToken;
-            if (string.IsNullOrEmpty(tweakName)) continue;
-
-            // re-enable renamed tweaks
-            if (renamedTweaks.ContainsKey(tweakName))
+            var renamedTweaks = new Dictionary<string, string>()
             {
-                var newTweakName = renamedTweaks[tweakName];
+                ["KeepInstantProfile"] = "KeepInstantPortrait", // commit 03553bef
+                ["RevealDungeonRequirements"] = "RevealDutyRequirements", // commit 7ce9b37b
+            };
 
-                PluginLog.Log($"Renamed Tweak: {tweakName} => {newTweakName}");
+            var newEnabledTweaks = new JArray();
 
-                // copy renamed tweak config
-                var tweakConfig = (JObject?)tweakConfigs[tweakName];
-                if (tweakConfig != null)
+            foreach (var tweakToken in enabledTweaks)
+            {
+                var tweakName = (string?)tweakToken;
+                if (string.IsNullOrEmpty(tweakName)) continue;
+
+                // re-enable renamed tweaks
+                if (renamedTweaks.ContainsKey(tweakName))
                 {
-                    // adjust $type
-                    var type = (string?)tweakConfig["type"];
-                    if (type != null)
-                        tweakConfig["type"] = type.Replace(tweakName, newTweakName);
+                    var newTweakName = renamedTweaks[tweakName];
 
-                    tweakConfigs[newTweakName] = tweakConfig;
-                    tweakConfigs.Remove(tweakName);
+                    PluginLog.Log($"Renamed Tweak: {tweakName} => {newTweakName}");
+
+                    // copy renamed tweak config
+                    var tweakConfig = (JObject?)tweakConfigs[tweakName];
+                    if (tweakConfig != null)
+                    {
+                        // adjust $type
+                        var type = (string?)tweakConfig["type"];
+                        if (type != null)
+                            tweakConfig["type"] = type.Replace(tweakName, newTweakName);
+
+                        tweakConfigs[newTweakName] = tweakConfig;
+                        tweakConfigs.Remove(tweakName);
+                    }
+
+                    tweakName = newTweakName;
                 }
 
-                tweakName = newTweakName;
+                // only copy valid ones
+                if (tweakNames.Contains(tweakName))
+                    newEnabledTweaks.Add(tweakName);
             }
 
-            // only copy valid ones
-            if (tweakNames.Contains(tweakName))
-                newEnabledTweaks.Add(tweakName);
+            config[nameof(EnabledTweaks)] = newEnabledTweaks;
         }
-
-        config[nameof(EnabledTweaks)] = newEnabledTweaks;
+        catch (Exception e)
+        {
+            PluginLog.Error(e, "Could not migrate configuration");
+            // continue, for now
+        }
 
         return Instance = config.ToObject<Configuration>() ?? new();
     }
