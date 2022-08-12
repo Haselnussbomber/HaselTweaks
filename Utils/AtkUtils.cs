@@ -48,11 +48,10 @@ public static unsafe class AtkUtils
         var position = ImGui.GetMousePos() - ImGuiHelpers.MainViewport.Pos;
 
         var stage = AtkStage.GetSingleton();
-        var unitManagers = &stage->RaptureAtkUnitManager->AtkUnitManager.DepthLayerOneList;
-        var unitManager = &unitManagers[4];
-        var unitBaseArray = &unitManager->AtkUnitEntries;
+        var atkUnitList = &stage->RaptureAtkUnitManager->AtkUnitManager.DepthLayerFiveList;
+        var unitBaseArray = &atkUnitList->AtkUnitEntries;
 
-        for (var j = 0; j < unitManager->Count; j++)
+        for (var j = 0; j < atkUnitList->Count; j++)
         {
             var unitBase = unitBaseArray[j];
             if (unitBase->RootNode == null) continue;
