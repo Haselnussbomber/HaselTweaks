@@ -127,7 +127,7 @@ public unsafe class ScrollableTabs : Tweak
     private ulong WindowProcHandlerDetour(IntPtr hwnd, int uMsg, int wParam)
     {
         if (uMsg == WM_MOUSEWHEEL)
-            wheelState = (short)((wParam >> 16) / WHEEL_DELTA * (Config.Invert ? -1 : 1));
+            wheelState = (short)Math.Clamp((wParam >> 16) / WHEEL_DELTA * (Config.Invert ? -1 : 1), -1, 1);
 
         return WindowProcHandlerHook.Original(hwnd, uMsg, wParam);
     }
