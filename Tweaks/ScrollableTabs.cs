@@ -79,6 +79,18 @@ public unsafe class ScrollableTabs : Tweak
     private InventorySetTabDelegate InventorySetTab { get; init; } = null!;
     private delegate void InventorySetTabDelegate(AddonInventory* addon, int tab);
 
+    [Signature("E9 ?? ?? ?? ?? CC CC CC CC CC CC CC CC CC CC 48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 44 88 44 24")]
+    private SwitchToInventoryEventDelegate SwitchToInventoryEvent { get; init; } = null!;
+    private delegate void SwitchToInventoryEventDelegate(AddonInventory* addon, byte a2);
+
+    [Signature("E8 ?? ?? ?? ?? B0 01 EB 02 32 C0 48 8B 5C 24 ?? 48 8B 6C 24 ?? 48 8B 74 24 ?? 48 83 C4 30 41 5F 41 5E 41 5D 41 5C 5F C3 CC CC CC CC CC CC CC")]
+    private SwitchToInventoryDelegate SwitchToInventory { get; init; } = null!;
+    private delegate void SwitchToInventoryDelegate(AddonInventoryEvent* addon, byte a2);
+
+    [Signature("E8 ?? ?? ?? ?? EB 09 83 FF 01")]
+    private InventoryEventSetTabDelegate InventoryEventSetTab { get; init; } = null!;
+    private delegate void InventoryEventSetTabDelegate(AddonInventoryEvent* addon, int tab);
+
     // called via InventoryLarge vf67
     [Signature("E9 ?? ?? ?? ?? 41 83 FF 46")]
     private InventoryLargeSetTabDelegate InventoryLargeSetTab { get; init; } = null!;
@@ -179,6 +191,11 @@ public unsafe class ScrollableTabs : Tweak
                 name = "Inventory";
                 break;
 
+            // Key Items (part of Inventory)
+            case "InventoryEventGrid":
+                name = "InventoryEvent";
+                break;
+
             // used by InventoryLarge or InventoryExpansion
             case "InventoryCrystalGrid":
                 name = "InventoryLarge";
@@ -239,12 +256,15 @@ public unsafe class ScrollableTabs : Tweak
         {
             UpdateArmouryBoard((AddonArmouryBoard*)unitBase);
         }
-        else if (Config.HandleInventory && name is "Inventory" or "InventoryLarge" or "InventoryExpansion")
+        else if (Config.HandleInventory && name is "Inventory" or "InventoryEvent" or "InventoryLarge" or "InventoryExpansion")
         {
             switch (name)
             {
                 case "Inventory":
                     UpdateInventory((AddonInventory*)unitBase);
+                    break;
+                case "InventoryEvent":
+                    UpdateInventoryEvent((AddonInventoryEvent*)unitBase);
                     break;
                 case "InventoryLarge":
                     UpdateInventoryLarge((AddonInventoryLarge*)unitBase);
@@ -329,12 +349,32 @@ public unsafe class ScrollableTabs : Tweak
 
     private void UpdateInventory(AddonInventory* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, AddonInventory.NUM_TABS);
-        if (addon->TabIndex == tabIndex) return;
+        if (addon->TabIndex == AddonInventory.NUM_TABS - 1 && wheelState > 0)
+        {
+            SwitchToInventoryEvent(addon, 0);
+        }
+        else
+        {
+            var tabIndex = GetTabIndex(addon->TabIndex, AddonInventory.NUM_TABS);
+            if (addon->TabIndex == tabIndex) return;
 
-        InventorySetTab(addon, tabIndex);
+            InventorySetTab(addon, tabIndex);
+        }
+    }
 
-        // TODO: scroll into InventoryEvent?
+    private void UpdateInventoryEvent(AddonInventoryEvent* addon)
+    {
+        if (addon->TabIndex == 0 && wheelState < 0)
+        {
+            SwitchToInventory(addon, 0);
+        }
+        else
+        {
+            var tabIndex = GetTabIndex(addon->TabIndex, addon->NumTabs);
+            if (addon->TabIndex == tabIndex) return;
+
+            InventoryEventSetTab(addon, tabIndex);
+        }
     }
 
     private void UpdateInventoryLarge(AddonInventoryLarge* addon)
