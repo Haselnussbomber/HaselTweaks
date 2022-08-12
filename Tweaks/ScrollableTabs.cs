@@ -122,6 +122,10 @@ public unsafe class ScrollableTabs : Tweak
     private Hook<WindowProcHandlerDelegate> WindowProcHandlerHook { get; init; } = null!;
     private delegate ulong WindowProcHandlerDelegate(IntPtr hWnd, int uMsg, int wParam);
 
+    [Signature("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 8D 42 DC")]
+    private MountMinionSwitchToFavoritesDelegate MountMinionSwitchToFavorites { get; init; } = null!;
+    private delegate void MountMinionSwitchToFavoritesDelegate(AtkUnitBase* addon);
+
     private const uint WM_MOUSEWHEEL = 0x020A;
     private const uint WHEEL_DELTA = 120;
 
@@ -264,11 +268,7 @@ public unsafe class ScrollableTabs : Tweak
         }
         else if ((Config.HandleMinionNoteBook && name == "MinionNoteBook") || (Config.HandleMountNoteBook && name == "MountNoteBook"))
         {
-            var addon = (MountMinionNoteBookBase*)unitBase;
-
-            if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Normal)
-                UpdateTabSwitcher((IntPtr)addon, addon->TabSwitcher);
-
+            UpdateMountMinion(unitBase);
         }
         else if (Config.HandleFishGuide && name == "FishGuide")
         {
@@ -450,5 +450,32 @@ public unsafe class ScrollableTabs : Tweak
         }
 
         IMemorySpace.Free(atkEvent);
+    }
+
+    private void UpdateMountMinion(AtkUnitBase* unitBase)
+    {
+        var addon = (MountMinionNoteBookBase*)unitBase;
+
+        if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Normal)
+        {
+            if (addon->TabSwitcher.CurrentTabIndex == 0 && wheelState < 0)
+            {
+                MountMinionSwitchToFavorites(unitBase);
+            }
+            else
+            {
+                UpdateTabSwitcher((IntPtr)addon, addon->TabSwitcher);
+            }
+        }
+        else if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Favorites && wheelState > 0)
+        {
+            var callbackAddress = (IntPtr)addon->TabSwitcher.Callback;
+            if (callbackAddress == IntPtr.Zero)
+            {
+                return;
+            }
+
+            Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(0, (IntPtr)unitBase);
+        }
     }
 }
