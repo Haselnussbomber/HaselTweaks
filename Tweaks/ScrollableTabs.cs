@@ -30,6 +30,9 @@ public unsafe class ScrollableTabs : Tweak
         [ConfigField(Label = "Enable in Fashion Accessories")]
         public bool HandleOrnamentNoteBook = true;
 
+        [ConfigField(Label = "Enable in Field Records")]
+        public bool HandleFieldRecord = true;
+
         [ConfigField(Label = "Enable in Fish Guide")]
         public bool HandleFishGuide = true;
 
@@ -150,6 +153,7 @@ public unsafe class ScrollableTabs : Tweak
             case "ArmouryBoard":           // Armoury Chest
             case "AOZNotebook":            // Blue Magic Spellbook
             case "OrnamentNoteBook":       // Fashion Accessories
+            case "MYCWarResultNotebook":   // Field Records
             case "FishGuide":              // Fish Guide
             case "GSInfoCardList":         // Gold Saucer -> Card List
             case "GSInfoEditDeck":         // Gold Saucer -> Decks -> Edit Deck
@@ -302,6 +306,10 @@ public unsafe class ScrollableTabs : Tweak
         {
             UpdateFateProgress((AddonFateProgress*)unitBase);
         }
+        else if (Config.HandleFieldRecord && name == "MYCWarResultNotebook")
+        {
+            UpdateFieldNotes((AddonMYCWarResultNotebook*)unitBase);
+        }
 
         wheelState = 0;
     }
@@ -407,5 +415,40 @@ public unsafe class ScrollableTabs : Tweak
         var atkEvent = Marshal.AllocHGlobal(30);
         FateProgressSetTab(addon, tabIndex, atkEvent);
         Marshal.FreeHGlobal(atkEvent);
+    }
+
+    private void UpdateFieldNotes(AddonMYCWarResultNotebook* addon)
+    {
+        if (AtkUtils.IsCursorIntersecting(addon->AtkUnitBase.UldManager, addon->DescriptionCollisionNode))
+        {
+            return;
+        }
+
+        var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
+        var eventParam = Math.Clamp(addon->CurrentNoteIndex % 10 + wheelState, -1, addon->MaxNoteIndex - 1);
+
+        if (eventParam == -1)
+        {
+            if (addon->CurrentPageIndex > 0)
+            {
+                var page = addon->CurrentPageIndex - 1;
+                addon->vtbl->ReceiveEvent(addon, AtkEventType.ButtonClick, page + 10, atkEvent);
+                addon->vtbl->ReceiveEvent(addon, AtkEventType.ButtonClick, 9, atkEvent);
+            }
+        }
+        else if (eventParam == 10)
+        {
+            if (addon->CurrentPageIndex < 4)
+            {
+                var page = addon->CurrentPageIndex + 1;
+                addon->vtbl->ReceiveEvent(addon, AtkEventType.ButtonClick, page + 10, atkEvent);
+            }
+        }
+        else
+        {
+            addon->vtbl->ReceiveEvent(addon, AtkEventType.ButtonClick, eventParam, atkEvent);
+        }
+
+        IMemorySpace.Free(atkEvent);
     }
 }
