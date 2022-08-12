@@ -45,8 +45,8 @@ public unsafe class ScrollableTabs : Tweak
         [ConfigField(Label = "Enable in Gold Saucer -> Lord of Verminion -> Minion Hotbar")]
         public bool HandleLovmPaletteEdit = true;
 
-        [ConfigField(Label = "Enable in Inventory")] // InventoryEvent currently not supported
-        public bool HandleInventory = false; // disabled by default because of InventoryExpansion having only 2 tabs
+        [ConfigField(Label = "Enable in Inventory")]
+        public bool HandleInventory = true;
 
         [ConfigField(Label = "Enable in Minions")]
         public bool HandleMinionNoteBook = true;
