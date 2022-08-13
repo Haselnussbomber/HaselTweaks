@@ -2,8 +2,6 @@
 
 ## [Unreleased]
 
-### HaselTweaks
-
 - **Added:** A proper changelog! :D
 
 ### Scrollable Tabs
@@ -16,21 +14,17 @@
 
 ## [0.3.2] (2022-08-10)
 
-### HaselTweaks
-
 - **Workaround:** When the config file can't be read or parsed, the plugin would crash on load. Now, the plugin will just create a new config (RIP your settings) and continue loading. It will show an dalamud error notification for 5 seconds in the corner of your screen whenever that happens.
 
 ## [0.3.1] (2022-08-08)
 
-### DTR
-
-- **Fixed:** Busy status text should now properly appear.
-
-### HaselTweaks
-
 - **Added:** The Dalamud Plugin Installer now has a button to visit the plugins GitHub repository.
 - **Added:** The repository now has a sponsor link to my [Ko-Fi](https://ko-fi.com/haselnussbomber) page for people with too much money. ;)
 - Changed: Custom code formatting rules.
+
+### DTR
+
+- **Fixed:** Busy status text should now properly appear.
 
 ## [0.3.0] (2022-08-05)
 
@@ -51,8 +45,6 @@ Adds a context menu entry to items in Inventory, Crafting Log, Recipe Tree or Ma
 - **Added:** Controller support now reads "Select Target/Confirm" button binding.
 
 ## [0.2.4] (2022-06-21)
-
-### HaselTweaks
 
 - **Fixed:** Adjusted code to accommodate FFXIVClientStructs breaking changes.
 
@@ -79,6 +71,9 @@ Adds a context menu entry to items in Inventory, Crafting Log, Recipe Tree or Ma
 
 ## [0.2.0] (2022-05-10)
 
+- **Added:** A tweak is now marked as outdated if the signature fails.
+- **Changed:** Tweak tooltip in the config window has been enhanced.
+
 ### New "Tweak": Commands
 
 A variety of useful chat commands.
@@ -90,28 +85,19 @@ Starting with:
 - `/whatmount`  
   Target a player and execute the command to see what mount your target is riding and which item teaches this mount.
 
-### HaselTweaks
-
-- **Added:** A tweak is now marked as outdated if the signature fails.
-- **Changed:** Tweak tooltip in the config window has been enhanced.
-
 ### DTR
 
 - **Changed:** Entries are now created on load (instead on setup) and removed on unload (instead on dispose).
 
 ## [0.1.2] (2022-05-05)
 
+- Under-the-hood changes featuring a new auto-hook system.
+
 ### Tweak removed: Wondrous Tails Duty Selector
 
 Use ezWondrousTails instead, as it does the same.
 
-### HaselTweaks
-
-- Under-the-hood changes featuring a new auto-hook system.
-
 ## [0.1.1] (2022-05-04)
-
-### HaselTweaks
 
 - **Added:** Auto-adjust renamed tweaks in config.
 - Renamed RevealDungeonRequirements to RevealDutyRequirements 🙄
@@ -162,14 +148,10 @@ Enables mouse wheel to switch tabs (like with LB/RB on controllers) in the follo
 
 ## [0.0.8] (2022-04-26)
 
-### HaselTweaks
-
 - Reworked Forced Cutscene Music.
 - Bugfixes.
 
 ## [0.0.7] (2022-04-25)
-
-### HaselTweaks
 
 - Renamed KeepInstantProfile to KeepInstantPortrait 🙄
 
@@ -187,20 +169,22 @@ Auto-unmutes background music for cutscenes.
 
 ## [0.0.4] (2022-04-24)
 
-### HaselTweaks
-
 - **Added:** Labels for configuration options.
 - Renamed NaviMapOpacity to MinimapAdjustments
 
 ## [0.0.3] (2022-04-24)
 
-### HaselTweaks
+### Navi Map Opacity
 
-- more configuration options
+- **Added:** Option to change collision box into a square.
+- **Added:** Option for default opacity.
+- **Added:** Option for mouseover opacity.
+- **Added:** Option to hide coordinations.
+- **Added:** Option to hide weather.
 
 ## [0.0.2] (2022-04-23)
 
-No plugin changes, just for ci to automatically push updates to [my dalamud plugins repo](https://raw.githubusercontent.com/Haselnussbomber/MyDalamudPlugins/main/repo.json). :)
+No plugin changes. Just added CI to automatically push updates to [my dalamud plugins repo](https://raw.githubusercontent.com/Haselnussbomber/MyDalamudPlugins/main/repo.json). :)
 
 ## [0.0.1] (2022-04-23)
 
