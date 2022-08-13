@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- **Added:** A proper changelog! :D
+- **Added:** A proper changelog! :D Releases will share the same format.
 
 ### Scrollable Tabs
 - **Added:** Support for the Bozjan Field Records window.
@@ -20,7 +20,6 @@
 
 - **Added:** The Dalamud Plugin Installer now has a button to visit the plugins GitHub repository.
 - **Added:** The repository now has a sponsor link to my [Ko-Fi](https://ko-fi.com/haselnussbomber) page for people with too much money. ;)
-- Changed: Custom code formatting rules.
 
 ### DTR
 
