@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Keep Instant Portrait
+
+- **Tweak Removed:** Obsolete due to changes to the portrait system in Patch 6.2.
+
 ## [0.3.3] (2022-08-13)
 
 - **Added:** A proper changelog! :D Releases will share the same format.

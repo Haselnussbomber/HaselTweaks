@@ -75,7 +75,6 @@ internal partial class Configuration : IDisposable
 
             var renamedTweaks = new Dictionary<string, string>()
             {
-                ["KeepInstantProfile"] = "KeepInstantPortrait", // commit 03553bef
                 ["RevealDungeonRequirements"] = "RevealDutyRequirements", // commit 7ce9b37b
             };
 
