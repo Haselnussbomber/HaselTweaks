@@ -45,12 +45,16 @@ jobs:
         with:
           path: bin/*
 
+      - run: mv bin/HaselTweaks/HaselTweaks.json bin/HaselTweaks/manifest.json
+
       - name: Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v1
         with:
           name: HaselTweaks ${{ github.ref_name }}
-          files: bin/HaselTweaks/latest.zip
+          files: |
+            bin/HaselTweaks/latest.zip
+            bin/HaselTweaks/manifest.json
 
       - name: Trigger Repo Update
         if: startsWith(github.ref, 'refs/tags/v')
