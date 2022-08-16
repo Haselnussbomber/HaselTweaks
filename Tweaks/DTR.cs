@@ -77,8 +77,8 @@ public class DTR : Tweak
             return;
         }
 
-        var instanceIcon = (char)(SeIconChar.Instance1 + (instanceId - 1));
-        DtrInstance.Text = instanceIcon.ToString();
+        var instanceIcon = SeIconChar.Instance1 + (instanceId - 1);
+        DtrInstance.Text = instanceIcon.ToIconString();
         if (!DtrInstance.Shown) DtrInstance.Shown = true;
     }
 

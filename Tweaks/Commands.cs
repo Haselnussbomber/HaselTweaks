@@ -112,7 +112,7 @@ public class Commands : Tweak
 
                 new UIForegroundPayload(500),
                 new UIGlowPayload(501),
-                new TextPayload($"{(char)SeIconChar.LinkMarker}"),
+                new TextPayload(SeIconChar.LinkMarker.ToIconString()),
 
                 new UIForegroundPayload(0),
                 new UIGlowPayload(0),
@@ -222,7 +222,7 @@ public class Commands : Tweak
 
                 new UIForegroundPayload(500),
                 new UIGlowPayload(501),
-                new TextPayload($"{(char)SeIconChar.LinkMarker}"),
+                new TextPayload(SeIconChar.LinkMarker.ToIconString()),
 
                 new UIForegroundPayload(0),
                 new UIGlowPayload(0),
