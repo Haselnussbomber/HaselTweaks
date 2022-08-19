@@ -14,7 +14,7 @@ https://raw.githubusercontent.com/Haselnussbomber/MyDalamudPlugins/main/repo.jso
 
 Sorts items inside the Armoury Chest upon opening it.
 
-Uses the <a href="https://eu.finalfantasyxiv.com/lodestone/playguide/db/text_command/a3840353abb/" target="_blank" rel="noreferrer noopener">`/itemsort`</a> command for sorting. Condition and order are configurable.
+Uses the games `/itemsort` command for sorting. Condition and order are configurable.
 
 ### Character Class Switcher [[src](Tweaks/CharacterClassSwitcher.cs)]
 
