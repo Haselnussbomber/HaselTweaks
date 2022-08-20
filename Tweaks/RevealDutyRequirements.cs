@@ -7,7 +7,7 @@ namespace HaselTweaks.Tweaks;
 public class RevealDutyRequirements : Tweak
 {
     public override string Name => "Reveal Duty Requirements";
-    public override string Description => "Reveals duty names in duty finder, which were shown as \"???\".\nUseful for unlocking Mentor roulette.";
+    public override string Description => "Reveals duty names in duty finder, which were shown as \"???\". Useful for unlocking Mentor roulette.";
 
     /*
         48 8B C8   mov     rcx, rax

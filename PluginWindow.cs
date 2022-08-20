@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using Dalamud;
 using Dalamud.Interface.Windowing;
+using HaselTweaks.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks;
@@ -75,14 +76,10 @@ public class PluginWindow : Window
                         ImGui.PopStyleColor();
                     }
 
-                    if (!string.IsNullOrEmpty(tweak.Description))
+                    if (tweak.HasDescription)
                     {
-                        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().FramePadding.Y);
-                        ImGui.Separator();
-
-                        ImGui.PushStyleColor(ImGuiCol.Text, 0xFFBBBBBB);
-                        ImGui.TextWrapped(tweak.Description);
-                        ImGui.PopStyleColor();
+                        ImGuiUtils.DrawPaddedSeparator();
+                        tweak.DrawDescription();
                     }
 
                     ImGui.PopTextWrapPos();

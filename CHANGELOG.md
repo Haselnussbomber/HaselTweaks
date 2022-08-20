@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Series Exp Bar
+
+The experience bar shows series rank and experience instead. A little * after the rank indicates a claimable reward.
+
+> **Note**
+> In order for this tweak to work properly, please make sure to disable "Show Experience Percentage" in Simple Tweaks first.
+
 ## [0.3.3] (2022-08-13)
 
 - **Added:** A proper changelog! :D Releases will share the same format.

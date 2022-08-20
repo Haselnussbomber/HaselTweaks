@@ -27,6 +27,7 @@ public class TweakConfigs
     public ScrollableTabs.Configuration ScrollableTabs { get; init; } = new();
     public Commands.Configuration Commands { get; init; } = new();
     public CharacterClassSwitcher.Configuration CharacterClassSwitcher { get; init; } = new();
+    public SeriesExpBar.Configuration SeriesExpBar { get; init; } = new();
 }
 
 internal partial class Configuration : IDisposable

@@ -33,7 +33,7 @@ Features:
 - Option to disable Tooltips
 
 > **Note**
-> This tweak is interfering with Simple Tweaks "Character Window Job Switcher". Make sure to disable it there.
+> In order for this tweak to work properly, please make sure to disable \"Character Window Job Switcher\" in Simple Tweaks first.
 
 ### Commands [[src](Tweaks/Commands.cs)]
 
@@ -118,3 +118,10 @@ Enables mouse wheel to switch tabs (like with LB/RB on controllers) in the follo
 ### Search the markets [[src](Tweaks/SearchTheMarkets.cs)]
 
 Adds a context menu entry to items in Inventory, Crafting Log, Recipe Tree or Materials List to quickly search for it on the Market Board. Only visible when Market Board is open.
+
+### Series Exp Bar [[src](Tweaks/SeriesExpBar.cs)]
+
+The experience bar shows series rank and experience instead. A little * after the rank indicates a claimable reward.
+
+> **Note**
+> In order for this tweak to work properly, please make sure to disable "Show Experience Percentage" in Simple Tweaks first.

@@ -6,6 +6,7 @@ using Dalamud.Game;
 using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
+using ImGuiNET;
 
 namespace HaselTweaks;
 
@@ -14,6 +15,13 @@ public abstract class Tweak
     public string InternalName => GetType().Name;
     public abstract string Name { get; }
     public virtual string Description => string.Empty;
+    public virtual bool HasDescription => !string.IsNullOrEmpty(Description);
+    public virtual void DrawDescription()
+    {
+        ImGui.PushStyleColor(ImGuiCol.Text, 0xFFBBBBBB);
+        ImGui.TextWrapped(Description);
+        ImGui.PopStyleColor();
+    }
 
     public virtual bool Outdated { get; protected set; }
     public virtual bool Ready { get; protected set; }
