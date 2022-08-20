@@ -37,7 +37,7 @@ public unsafe class SeriesExpBar : Tweak
 
     public class Configuration
     {
-        [ConfigField(Label = "Only show in PvP Areas")]
+        [ConfigField(Label = "Only show in PvP Areas", OnChange = nameof(RequestUpdate))]
         public bool OnlyInPvPAreas = true;
     }
 
