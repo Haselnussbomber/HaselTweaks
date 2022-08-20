@@ -122,7 +122,7 @@ public unsafe class SeriesExpBar : Tweak
         var ret = OnRequestedUpdateHook!.Original(addon, numberArrayData, stringArrayData);
 
         var job = Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation;
-        var seriesLevelText = Service.Data.GetExcelSheet<Addon>()!.GetRow(14860)!.Text; // "Series Level: "
+        var seriesLevelText = (Service.Data.GetExcelSheet<Addon>()?.GetRow(14860)?.Text?.RawString ?? "Series Level").Trim().Replace(":", "");
         var levelStr = pvpUiState->SeriesRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var star = pvpUiState->SeriesRankWithOverflow > pvpUiState->SeriesRank ? '*' : ' ';
         var rankRequiredExperience = PvPSeriesLevelSheet.GetRow(pvpUiState->SeriesRank)!.Unknown0;
