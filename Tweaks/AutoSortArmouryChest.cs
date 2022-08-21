@@ -42,13 +42,6 @@ public class AutoSortArmouryChest : Tweak
             "魔法防御力", "STR", "DEX", "VIT", "INT", "MND",
             "作業精度", "加工精度", "獲得力", "技術力", "block"
         },
-        [ClientLanguage.ChineseSimplified] = new() {
-            "道具编号", "精炼度", "道具种类", "装备等级", "物品品级", "打包数量",
-            "优质道具", "魔晶石数", "物理基本性能", "魔法基本性能", "攻击间隔",
-            "物理自动攻击", "格挡发动力", "格挡性能", "物理防御力",
-            "魔法防御力", "力量", "灵巧", "耐力", "智力", "精神",
-            "作业精度", "加工精度", "获得力", "鉴别力", "分栏"
-        },
     };
 
     public static readonly Dictionary<ClientLanguage, List<string>> OrderSet = new()
@@ -57,7 +50,6 @@ public class AutoSortArmouryChest : Tweak
         [ClientLanguage.German] = new() { "aufs", "abs" },
         [ClientLanguage.French] = new() { "croissant", "décroissant" },
         [ClientLanguage.Japanese] = new() { "昇順", "降順" },
-        [ClientLanguage.ChineseSimplified] = new() { "升序", "降序" },
     };
 
     public class Configuration
@@ -80,7 +72,6 @@ public class AutoSortArmouryChest : Tweak
                 ClientLanguage.German => "ggstufe",
                 ClientLanguage.French => "niveauobjet",
                 ClientLanguage.Japanese => "アイテムID",
-                ClientLanguage.ChineseSimplified => "物品品级",
                 _ => "ilv",
             };
         }
@@ -92,7 +83,6 @@ public class AutoSortArmouryChest : Tweak
                 ClientLanguage.German => "abs",
                 ClientLanguage.French => "décroissant",
                 ClientLanguage.Japanese => "降順",
-                ClientLanguage.ChineseSimplified => "降序",
                 _ => "des",
             };
         }
@@ -129,10 +119,6 @@ public class AutoSortArmouryChest : Tweak
             case ClientLanguage.Japanese:
                 definition = $"/itemsort condition アーマリーチェスト {Config.Condition} {Config.Order}";
                 execute = "/itemsort execute アーマリーチェスト";
-                break;
-            case ClientLanguage.ChineseSimplified:
-                definition = $"/itemsort condition 兵装库 {Config.Condition} {Config.Order}";
-                execute = "/itemsort execute 兵装库";
                 break;
         }
 
