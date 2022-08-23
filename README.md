@@ -66,14 +66,6 @@ Auto-unmutes background music for cutscenes.
 
 Hides the Main Scenario Guide when you've completed the MSQ. Job quests are still being displayed.
 
-### Keep Instant Portrait [[src](Tweaks/KeepInstantPortrait.cs)]
-
-Prevents Instant Portrait from being reset upon saving/updating the current gearset.
-
-This is for everyone who extracts materia from their fully spiritbond items and has the urge to click the now clickable update gearset button.  
-Updating the gearset unfortunately removes the instant portrait link from it, regardless of whether the gear has actually changed or not, which is pretty annoying.  
-This tweak simply completely skips the code which removes the link.
-
 ### Keep Screen Awake [[src](Tweaks/KeepScreenAwake.cs)]
 
 Prevents the screen from going into standby.
