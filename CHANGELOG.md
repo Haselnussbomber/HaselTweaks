@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Update for Patch 6.2 (Signatures and Offsets updated)
+
 ### Keep Instant Portrait
 
 - **Tweak Removed:** Obsolete due to changes to the portrait system in Patch 6.2.
