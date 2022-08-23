@@ -39,6 +39,7 @@ public unsafe class SearchTheMarkets : Tweak
 
     public SearchTheMarkets()
     {
+        Outdated = true;
         ContextMenu = new();
 
         var text = new SeString(new TextPayload(Service.ClientState.ClientLanguage switch

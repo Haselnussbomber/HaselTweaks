@@ -6,6 +6,10 @@
 
 - **Tweak Removed:** Obsolete due to changes to the portrait system in Patch 6.2.
 
+### Search the markets
+
+- Marked as outdated, because Dalamud.ContextMenu broke
+
 ## [0.4.1] (2022-08-23)
 
 - Preliminary update for Patch 6.2
