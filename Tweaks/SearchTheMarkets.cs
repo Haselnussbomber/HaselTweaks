@@ -86,8 +86,8 @@ public unsafe class SearchTheMarkets : Tweak
         }
         else if (args.ParentAddonName is "RecipeMaterialList" or "RecipeTree")
         {
-            // see function "E8 ?? ?? ?? ?? 89 2B 48 8B C3" which is passing 3 uints to Agent 257 (a1)
-            var agent = Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalID(257);
+            // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint to Agent 259 (a1)
+            var agent = Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalID(259);
             itemId = *(uint*)((IntPtr)agent + 0x28);
         }
 

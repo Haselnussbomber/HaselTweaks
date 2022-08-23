@@ -109,7 +109,7 @@ public unsafe class ScrollableTabs : Tweak
     private delegate void RetainerInventorySetTabDelegate(AddonInventoryRetainer* addon, int tab);
 
     // called via RetainerInventoryLarge vf67
-    [Signature("E8 ?? ?? ?? ?? 48 83 C4 38 41 5E 41 5D")]
+    [Signature("E8 ?? ?? ?? ?? 48 83 C4 38 41 5E 41 5D C3")]
     private RetainerInventoryLargeSetTabDelegate RetainerInventoryLargeSetTab { get; init; } = null!;
     private delegate void RetainerInventoryLargeSetTabDelegate(AddonInventoryRetainerLarge* addon, int tab);
 
@@ -136,7 +136,7 @@ public unsafe class ScrollableTabs : Tweak
     private Hook<WindowProcHandlerDelegate> WindowProcHandlerHook { get; init; } = null!;
     private delegate ulong WindowProcHandlerDelegate(IntPtr hWnd, int uMsg, int wParam);
 
-    [Signature("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 8D 42 DC")]
+    [Signature("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 8D 42 D3 83 F8 08")]
     private MountMinionSwitchToFavoritesDelegate MountMinionSwitchToFavorites { get; init; } = null!;
     private delegate void MountMinionSwitchToFavoritesDelegate(AtkUnitBase* addon);
 
