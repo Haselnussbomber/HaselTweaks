@@ -7,7 +7,7 @@ using Dalamud.Interface.Windowing;
 using HaselTweaks.Utils;
 using ImGuiNET;
 
-namespace HaselTweaks;
+namespace HaselTweaks.Windows;
 
 public class PluginWindow : Window
 {
@@ -17,9 +17,9 @@ public class PluginWindow : Window
     {
         Plugin = plugin;
 
-        base.Size = new Vector2(420, 690);
+        Size = new Vector2(420, 690);
 #if DEBUG
-        base.SizeCondition = ImGuiCond.Appearing;
+        SizeCondition = ImGuiCond.Appearing;
 #else
         base.SizeCondition = ImGuiCond.FirstUseEver;
 #endif
@@ -105,9 +105,7 @@ public class PluginWindow : Window
                 drawTooltip();
 
                 if (tweak != Plugin.Tweaks[^1])
-                {
                     ImGui.Separator();
-                }
 
                 continue;
             }
@@ -201,14 +199,10 @@ public class PluginWindow : Window
                         if (attr != null)
                         {
                             if (!string.IsNullOrEmpty(attr.Description) && ImGui.IsItemHovered())
-                            {
                                 ImGui.SetTooltip(attr.Description);
-                            }
 
                             if (attr.SeparatorAfter)
-                            {
                                 ImGui.Separator();
-                            }
                         }
                     }
 
@@ -227,9 +221,7 @@ public class PluginWindow : Window
             }
 
             if (tweak != Plugin.Tweaks[^1])
-            {
                 ImGui.Separator();
-            }
         }
 
         ImGui.End();
@@ -249,14 +241,10 @@ public class PluginWindow : Window
             foreach (var item in options)
             {
                 if (ImGui.Selectable(item, data.Value == item))
-                {
                     data.Value = item;
-                }
 
                 if (data.Value == item)
-                {
                     ImGui.SetItemDefaultFocus();
-                }
             }
 
             ImGui.EndCombo();
@@ -268,9 +256,7 @@ public class PluginWindow : Window
         var value = data.Value;
 
         if (ImGui.InputText(data.Label + data.Key, ref value, 50))
-        {
             data.Value = value;
-        }
     }
 
     private static void DrawFloat(ConfigDrawData<float> data)
@@ -281,9 +267,7 @@ public class PluginWindow : Window
         var value = data.Value;
 
         if (ImGui.SliderFloat(data.Label + data.Key, ref value, min, max))
-        {
             data.Value = value;
-        }
     }
 
     private static void DrawBool(ConfigDrawData<bool> data)
@@ -291,8 +275,6 @@ public class PluginWindow : Window
         var value = data.Value;
 
         if (ImGui.Checkbox(data.Label + data.Key, ref value))
-        {
             data.Value = value;
-        }
     }
 }

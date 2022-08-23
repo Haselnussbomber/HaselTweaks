@@ -2,7 +2,11 @@
 
 ## [Unreleased]
 
-- Update for Patch 6.2 (Signatures and Offsets updated)
+- Signatures and Offsets updated for Patch 6.2.
+
+### New Tweak: Aether Current Helper
+
+Click on a zone in the Aether Currents window to open up a helper window that gives you details on how to unlock them. Clicking on an aether current in the list opens the map with a flag to the position.
 
 ### Keep Instant Portrait
 
@@ -10,11 +14,11 @@
 
 ### Search the markets
 
-- Marked as outdated, because Dalamud.ContextMenu broke
+- **Tweak disabled:** Marked as outdated until Dalamud.ContextMenu is updated.
 
 ## [0.4.1] (2022-08-23)
 
-- Preliminary update for Patch 6.2
+- Preliminary update for Patch 6.2.
 
 ## [0.4.0] (2022-08-20)
 

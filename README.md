@@ -10,6 +10,10 @@ https://raw.githubusercontent.com/Haselnussbomber/MyDalamudPlugins/main/repo.jso
 
 ## Tweaks
 
+### Aether Current Helper [[src](Tweaks/AetherCurrentHelper.cs)]
+
+Click on a zone in the Aether Currents window to open up a helper window that gives you details on how to unlock them. Clicking on an aether current in the list opens the map with a flag to the position.
+
 ### Auto Sort Armoury Chest [[src](Tweaks/AutoSortArmouryChest.cs)]
 
 Sorts items inside the Armoury Chest upon opening it.

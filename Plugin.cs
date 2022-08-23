@@ -7,6 +7,7 @@ using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin;
+using HaselTweaks.Windows;
 using XivCommon;
 
 namespace HaselTweaks;
@@ -17,7 +18,7 @@ public class Plugin : IDalamudPlugin
 
     internal static XivCommonBase XivCommon = null!;
 
-    private readonly WindowSystem WindowSystem = new("HaselTweaks");
+    internal static readonly WindowSystem WindowSystem = new("HaselTweaks");
     private readonly PluginWindow PluginWindow;
 
     internal List<Tweak> Tweaks = new();
