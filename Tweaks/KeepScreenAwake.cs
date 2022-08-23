@@ -45,7 +45,7 @@ public class KeepScreenAwake : Tweak
         timer.Dispose();
     }
 
-    private static void Timer_Elapsed(object sender, ElapsedEventArgs e)
+    private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)
     {
         SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS | EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_DISPLAY_REQUIRED);
     }
