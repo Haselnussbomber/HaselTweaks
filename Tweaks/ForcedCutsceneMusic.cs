@@ -1,4 +1,3 @@
-using System;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -28,12 +27,14 @@ public unsafe class ForcedCutsceneMusic : Tweak
 
     private bool wasBgmMuted;
 
+    /// <see href="https://github.com/karashiiro/SoundSetter/blob/master/SoundSetter/OptionInternals/OptionKind.cs#L23"/>
+    private uint IsSndBgm => 35; // ConfigOption.IsSndBgm;
     private bool IsBgmMuted
     {
         get
         {
             var configModule = ConfigModule.Instance();
-            return configModule != null && configModule->GetIntValue(ConfigOption.IsSndBgm) == 1;
+            return configModule != null && configModule->GetIntValue(IsSndBgm) == 1;
         }
         set
         {
@@ -42,7 +43,7 @@ public unsafe class ForcedCutsceneMusic : Tweak
 
             Log($"setting IsBgmMuted to {value}");
 
-            configModule->SetOption(ConfigOption.IsSndBgm, value ? 1 : 0);
+            configModule->SetOption(IsSndBgm, value ? 1 : 0);
         }
     }
 
