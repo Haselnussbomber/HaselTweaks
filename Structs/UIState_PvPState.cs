@@ -8,7 +8,7 @@ namespace HaselTweaks.Structs;
 [StructLayout(LayoutKind.Explicit)]
 public unsafe struct UIState_PvPState
 {
-    public static readonly int Offset = 0x293C;
+    public static readonly int Offset = 0x292C;
     private static UIState_PvPState* pInstance { get; set; }
     public static UIState_PvPState* Instance()
     {
