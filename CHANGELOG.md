@@ -12,10 +12,6 @@ Click on a zone in the Aether Currents window to open up a helper window that gi
 
 - **Tweak Removed:** Obsolete due to changes to the portrait system in Patch 6.2.
 
-### Search the markets
-
-- **Tweak disabled:** Marked as outdated until Dalamud.ContextMenu is updated.
-
 ## [0.4.1] (2022-08-23)
 
 - Preliminary update for Patch 6.2.
