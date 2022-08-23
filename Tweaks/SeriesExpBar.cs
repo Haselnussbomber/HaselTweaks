@@ -112,7 +112,7 @@ public unsafe class SeriesExpBar : Tweak
             goto OriginalOnRequestedUpdateWithColorReset;
 
         var PvPSeriesLevelSheet = Service.Data.GetExcelSheet<PvPSeriesLevel>();
-        if (PvPSeriesLevelSheet == null || pvpUiState->SeriesRank > PvPSeriesLevelSheet.Count() - 1)
+        if (PvPSeriesLevelSheet == null || pvpUiState->SeasonRank > PvPSeriesLevelSheet.Count() - 1)
             goto OriginalOnRequestedUpdateWithColorReset;
 
         var leftText = (AtkTextNode*)addon->AtkUnitBase.UldManager.SearchNodeById(4);
@@ -123,16 +123,16 @@ public unsafe class SeriesExpBar : Tweak
 
         var job = Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation;
         var seriesLevelText = (Service.Data.GetExcelSheet<Addon>()?.GetRow(14860)?.Text?.RawString ?? "Series Level").Trim().Replace(":", "");
-        var levelStr = pvpUiState->SeriesRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-        var star = pvpUiState->SeriesRankWithOverflow > pvpUiState->SeriesRank ? '*' : ' ';
-        var rankRequiredExperience = PvPSeriesLevelSheet.GetRow(pvpUiState->SeriesRank)!.Unknown0;
+        var levelStr = pvpUiState->SeasonRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
+        var star = pvpUiState->SeasonRankWithOverflow > pvpUiState->SeasonRank ? '*' : ' ';
+        var rankRequiredExperience = PvPSeriesLevelSheet.GetRow(pvpUiState->SeasonRank)!.Unknown0;
 
-        leftText->SetText($"{job}  {seriesLevelText} {levelStr}{star}   {pvpUiState->SeriesExperience}/{rankRequiredExperience}");
+        leftText->SetText($"{job}  {seriesLevelText} {levelStr}{star}   {pvpUiState->SeasonExperience}/{rankRequiredExperience}");
 
         GaugeBarSetRestedBarValue(addon->GaugeBarNode, 0);
 
         // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-        GaugeBarSetBarValue(addon->GaugeBarNode, (uint)(pvpUiState->SeriesExperience / (float)rankRequiredExperience * 10000), 0, false);
+        GaugeBarSetBarValue(addon->GaugeBarNode, (uint)(pvpUiState->SeasonExperience / (float)rankRequiredExperience * 10000), 0, false);
 
         // trying to make it look like the xp bar in the PvP Profile window and failing miserably. eh, good enough
         nineGridNode->AtkResNode.MultiplyRed = 65;

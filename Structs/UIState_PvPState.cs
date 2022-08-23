@@ -31,12 +31,13 @@ public unsafe struct UIState_PvPState
     [FieldOffset(0x11)] public byte RankTwinAdder;
     [FieldOffset(0x12)] public byte RankImmortalFlames;
 
-    [FieldOffset(0x28)] public byte CurrentSeries; // probably not
-    [FieldOffset(0x29)] public byte SeriesRankWithOverflow; // resets to 30 when rank 31 is claimed
-    [FieldOffset(0x2A)] public byte SeriesRank; // capped at 30
+    [FieldOffset(0x28)] public byte CurrentSeason; // starting at 0
+    [FieldOffset(0x29)] public byte SeasonRankWithOverflow; // resets to 30 when rank 31 is claimed
+    [FieldOffset(0x2A)] public byte SeasonRank; // capped at 30
 
-    [FieldOffset(0x2C)] public ushort SeriesExperience;
-
+    [FieldOffset(0x2C)] public ushort SeasonExperience;
+    //[FieldOffset(0x2E)] public byte SeasonMaxRank;
+    //[FieldOffset(0x2F)] public byte SeasonMaxRankAgain??;
     [FieldOffset(0x30)] public uint FrontlineTotalMatches;
     [FieldOffset(0x34)] public uint FrontlineTotalFirstPlace;
     [FieldOffset(0x38)] public uint FrontlineTotalSecondPlace;
