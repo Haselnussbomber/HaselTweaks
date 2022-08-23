@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.4.1] (2022-08-23)
+
+- Preliminary update for Patch 6.2
+
 ## [0.4.0] (2022-08-20)
 
 ### New Tweak: Series Exp Bar
@@ -245,7 +249,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.3.3...v0.4.0
 [0.3.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.3.1...v0.3.2
