@@ -62,6 +62,7 @@ public unsafe class SeriesExpBar : Tweak
     public override void Disable()
     {
         Service.ClientState.LeavePvP -= ClientState_LeavePvP;
+        RequestUpdate();
     }
 
     private void ClientState_LeavePvP()
