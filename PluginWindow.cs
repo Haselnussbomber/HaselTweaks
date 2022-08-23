@@ -87,7 +87,7 @@ public class PluginWindow : Window
                 }
             };
 
-            if (!tweak.Ready)
+            if (!tweak.Ready || tweak.Outdated)
             {
                 // padding left
                 ImGui.SetCursorPosX(ImGui.GetFrameHeight() + ImGui.GetStyle().FramePadding.X * 10 + 1);

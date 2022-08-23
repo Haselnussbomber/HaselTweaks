@@ -68,6 +68,7 @@ public abstract class Tweak
 
     internal virtual void EnableInternal()
     {
+        if (!Ready || Outdated) return;
         CallHooks("Enable");
         Enable();
         Enabled = true;

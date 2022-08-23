@@ -55,7 +55,7 @@ public class Plugin : IDalamudPlugin
                 PluginLog.Error(ex, $"Failed setting up tweak '{tweak.InternalName}'.");
             }
 
-            if (tweak.Ready && Configuration.Instance.EnabledTweaks.Contains(tweak.InternalName))
+            if (Configuration.Instance.EnabledTweaks.Contains(tweak.InternalName))
             {
                 try
                 {
