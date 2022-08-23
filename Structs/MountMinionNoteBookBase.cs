@@ -5,7 +5,7 @@ namespace HaselTweaks.Structs;
 
 // ctor 48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 41 54 41 55 41 56 41 57 48 83 EC 20 48 8B D9 E8
 // used by MinionNoteBook and MountNoteBook
-[StructLayout(LayoutKind.Explicit, Size = 0xAE0)]
+[StructLayout(LayoutKind.Explicit, Size = 0xBE0)]
 public unsafe partial struct MountMinionNoteBookBase
 {
     public enum ViewType
@@ -19,5 +19,5 @@ public unsafe partial struct MountMinionNoteBookBase
 
     [FieldOffset(0x298)] public TabSwitcher TabSwitcher;
 
-    [FieldOffset(0x7A8)] public ViewType CurrentView;
+    [FieldOffset(0x8A8)] public ViewType CurrentView;
 }
