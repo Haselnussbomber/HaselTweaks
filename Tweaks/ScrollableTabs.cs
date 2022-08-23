@@ -243,7 +243,9 @@ public unsafe class ScrollableTabs : Tweak
 
             default:
                 wheelState = 0;
+#if DEBUG
                 Verbose($"Unhandled AtkUnitBase: {name}");
+#endif
                 return;
         }
 
