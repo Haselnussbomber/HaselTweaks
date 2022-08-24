@@ -41,10 +41,13 @@ jobs:
       - name: Build
         run: dotnet build -c Release -p:IsCI=true -clp:NoSummary
 
+      - name: Rename manifest
+        run: mv bin/${{ env.plugin_name }}/${{ env.plugin_name }}.json bin/${{ env.plugin_name }}/manifest.json
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
-          path: bin/*
+          path: bin/${{ env.plugin_name }}/*
 
   release:
     name: Release
@@ -53,17 +56,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: 'true'
-
       - name: Download Build Artifact
         uses: actions/download-artifact@v3
-
-      - name: Move files
-        run: |
-          mv artifact bin
-          mv bin/${{ env.plugin_name }}/${{ env.plugin_name }}.json bin/${{ env.plugin_name }}/manifest.json
 
       - name: Extract release notes
         id: extract-release-notes
@@ -74,9 +68,7 @@ jobs:
         with:
           name: ${{ env.plugin_name }} ${{ github.ref_name }}
           body: ${{ steps.extract-release-notes.outputs.release_notes }}
-          files: |
-            bin/${{ env.plugin_name }}/latest.zip
-            bin/${{ env.plugin_name }}/manifest.json
+          files: artifact/*
 
       - name: Trigger Repo Update
         uses: peter-evans/repository-dispatch@v1
