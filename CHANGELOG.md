@@ -1,20 +1,20 @@
 # Changelog
 
-## [Unreleased]
+## [0.5.0] (2022-08-24)
 
-- Signatures and Offsets updated for Patch 6.2.
+Updated for Patch 6.2.
 
-### New Tweak: Aether Current Helper
+### Added Tweak: Aether Current Helper
 
 Click on a zone in the Aether Currents window to open up a helper window that gives you details on how to unlock them. Clicking on an aether current in the list opens the map with a flag to the position.
 
-### Keep Instant Portrait
+### Removed Tweak: Keep Instant Portrait
 
-- **Tweak Removed:** Obsolete due to changes to the portrait system in Patch 6.2.
+Obsolete due to changes to the portrait system in Patch 6.2.
 
 ## [0.4.1] (2022-08-23)
 
-- Preliminary update for Patch 6.2.
+Preliminary update for Patch 6.2.
 
 ## [0.4.0] (2022-08-20)
 
@@ -261,7 +261,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.3.3...v0.4.0
 [0.3.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.3.2...v0.3.3
