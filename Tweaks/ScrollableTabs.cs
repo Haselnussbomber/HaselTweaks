@@ -158,10 +158,10 @@ public unsafe class ScrollableTabs : Tweak
         if (wheelState == 0) return;
 
         var hoveredUnitBase = AtkUtils.GetHighestAtkUnitBaseAtPosition();
-        if (hoveredUnitBase == null) return;
+        if (hoveredUnitBase == null) goto ResetWheelState;
 
         var name = Marshal.PtrToStringAnsi((IntPtr)hoveredUnitBase->Name);
-        if (string.IsNullOrEmpty(name)) return;
+        if (string.IsNullOrEmpty(name)) goto ResetWheelState;
 
         // parent lookup
         switch (name)
@@ -242,19 +242,15 @@ public unsafe class ScrollableTabs : Tweak
                 break;
 
             default:
-                wheelState = 0;
 #if DEBUG
                 Verbose($"Unhandled AtkUnitBase: {name}");
 #endif
-                return;
+                goto ResetWheelState;
         }
 
         var unitBase = AtkUtils.GetUnitBase(name);
-        if (unitBase == null)
-        {
-            wheelState = 0;
-            return;
-        }
+        if (unitBase == null || !unitBase->IsVisible)
+            goto ResetWheelState;
 
         if (Config.HandleArmouryBoard && name == "ArmouryBoard")
         {
@@ -335,6 +331,7 @@ public unsafe class ScrollableTabs : Tweak
             UpdateFieldNotes((AddonMYCWarResultNotebook*)unitBase);
         }
 
+        ResetWheelState:
         wheelState = 0;
     }
 
