@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5.1] (2022-08-24)
+
+### Scrollable Tabs
+
+- **Fix:** Scrolling state is now reset each frame.
+
 ## [0.5.0] (2022-08-24)
 
 Updated for Patch 6.2.
@@ -261,7 +267,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.3.3...v0.4.0
