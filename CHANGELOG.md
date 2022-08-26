@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-### Reworked Tweak: Series Exp Bar -> Enhanced Exp Bar
+### Reworked Tweak: Series Exp Bar -> Enhanced Experience Bar
 
 - **Added:** Sanctuary Bar for the new Island.
 - **Added:** Max Level Override setting.

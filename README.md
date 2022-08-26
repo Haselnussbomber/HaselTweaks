@@ -58,7 +58,7 @@ As it says, configurable chat timestamp format. Uses C#'s <a href="https://docs.
 
 Shows Instance, FPS and Busy status in DTR bar. Use Dalamud Settings to enable/disable or to change order.
 
-### Enhanced Exp Bar [[src](Tweaks/EnhancedExpBar.cs)]
+### Enhanced Experience Bar [[src](Tweaks/EnhancedExpBar.cs)]
 
 The experience bar shows different level/experience based on your location.
 

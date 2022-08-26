@@ -19,7 +19,7 @@ namespace HaselTweaks.Tweaks;
 
 public unsafe class EnhancedExpBar : Tweak
 {
-    public override string Name => "Enhanced Exp Bar";
+    public override string Name => "Enhanced Experience Bar";
     public override bool HasDescription => true;
     public override void DrawDescription()
     {
