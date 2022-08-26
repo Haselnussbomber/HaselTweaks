@@ -27,7 +27,7 @@ public class TweakConfigs
     public ScrollableTabs.Configuration ScrollableTabs { get; init; } = new();
     public Commands.Configuration Commands { get; init; } = new();
     public CharacterClassSwitcher.Configuration CharacterClassSwitcher { get; init; } = new();
-    public SeriesExpBar.Configuration SeriesExpBar { get; init; } = new();
+    public EnhancedExpBar.Configuration EnhancedExpBar { get; init; } = new();
 }
 
 internal partial class Configuration : IDisposable
@@ -77,6 +77,7 @@ internal partial class Configuration : IDisposable
             var renamedTweaks = new Dictionary<string, string>()
             {
                 ["RevealDungeonRequirements"] = "RevealDutyRequirements", // commit 7ce9b37b
+                ["SeriesExpBar"] = "EnhancedExpBar",
             };
 
             var newEnabledTweaks = new JArray();

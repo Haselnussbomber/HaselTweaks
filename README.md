@@ -58,6 +58,16 @@ As it says, configurable chat timestamp format. Uses C#'s <a href="https://docs.
 
 Shows Instance, FPS and Busy status in DTR bar. Use Dalamud Settings to enable/disable or to change order.
 
+### Enhanced Exp Bar [[src](Tweaks/EnhancedExpBar.cs)]
+
+The experience bar shows different level/experience based on your location.
+
+- The PvP Season Bar shows season rank and experience. A little * after the rank indicates a claimable rank-up reward.
+- The Sanctuary Bar shows sanctuary level and island experience.
+
+> **Note**
+> In order for this tweak to work properly, please make sure to disable "Show Experience Percentage" in Simple Tweaks first.
+
 ### Expert Deliveries [[src](Tweaks/ExpertDeliveries.cs)]
 
 Always opens the Grand Company Delivery Missions window on the third tab (Expert Delivery).
@@ -114,10 +124,3 @@ Enables mouse wheel to switch tabs (like with LB/RB on controllers) in the follo
 ### Search the markets [[src](Tweaks/SearchTheMarkets.cs)]
 
 Adds a context menu entry to items in Inventory, Crafting Log, Recipe Tree or Materials List to quickly search for it on the Market Board. Only visible when Market Board is open.
-
-### Series Exp Bar [[src](Tweaks/SeriesExpBar.cs)]
-
-The experience bar shows series rank and experience instead. A little * after the rank indicates a claimable reward.
-
-> **Note**
-> In order for this tweak to work properly, please make sure to disable "Show Experience Percentage" in Simple Tweaks first.

@@ -259,7 +259,6 @@ public class AetherCurrentHelperWindow : Window
                 {
                     var direction = distance > 1 ? GetCompassDirection(level) : string.Empty;
                     var text = $"{distance:0}y {direction}";
-                    var textSize = ImGui.CalcTextSize(text);
                     ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
                     ImGui.Text(text);
                 }

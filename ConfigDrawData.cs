@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace HaselTweaks;
 
-internal class ConfigDrawData<T>
+internal class ConfigDrawData<T> : IConfigDrawData
 {
     public Plugin Plugin { get; init; } = null!;
     public Tweak Tweak { get; init; } = null!;
@@ -13,10 +13,12 @@ internal class ConfigDrawData<T>
 
     public string Key => $"###{Tweak.InternalName}#{Field.Name}";
     public string Label => Attr != null && !string.IsNullOrEmpty(Attr.Label) ? Attr.Label : Field.Name;
+    public string Description => Attr?.Description ?? string.Empty;
+    public bool SeparatorAfter => Attr?.SeparatorAfter ?? false;
 
     public T? Value
     {
-        get { return (T?)Field.GetValue(Config); }
+        get => (T?)Field.GetValue(Config);
         set
         {
             Field.SetValue(Config, value);

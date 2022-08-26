@@ -1,4 +1,5 @@
 using Dalamud.Utility.Signatures;
+using HaselTweaks.Structs;
 
 namespace HaselTweaks.Utils;
 
@@ -20,4 +21,9 @@ public unsafe class GameFunctions
         var flag = (byte)(1 << (int)(id - 8 * pos));
         return (flag & AetherCurrentUnlocksPtr[pos]) != 0;
     }
+
+
+    [Signature("E8 ?? ?? ?? ?? 8B 50 10")]
+    public GetIslandStateDelegate GetIslandState { get; init; } = null!;
+    public delegate IslandState* GetIslandStateDelegate();
 }

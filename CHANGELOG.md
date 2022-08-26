@@ -1,10 +1,18 @@
 # Changelog
 
+## [Unreleased]
+
+### Reworked Tweak: Series Exp Bar -> Enhanced Exp Bar
+
+- **Added:** Sanctuary Bar for the new Island.
+- **Added:** Max Level Override setting.
+- **Added:** Option to disable color change.
+
 ## [0.5.1] (2022-08-24)
 
 ### Scrollable Tabs
 
-- **Fix:** Scrolling state is now reset each frame.
+- **Fixed:** Scrolling state is now reset each frame.
 
 ## [0.5.0] (2022-08-24)
 

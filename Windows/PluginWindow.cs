@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using Dalamud;
 using Dalamud.Interface.Windowing;
+using HaselTweaks.Attributes;
 using HaselTweaks.Utils;
 using ImGuiNET;
 
@@ -17,12 +19,14 @@ public class PluginWindow : Window
     {
         Plugin = plugin;
 
-        Size = new Vector2(420, 690);
-#if DEBUG
-        SizeCondition = ImGuiCond.Appearing;
-#else
-        base.SizeCondition = ImGuiCond.FirstUseEver;
-#endif
+        Size = new Vector2(420, 600);
+        SizeConstraints = new()
+        {
+            MinimumSize = new Vector2(420, 600),
+            MaximumSize = new Vector2(4096, 2160)
+        };
+
+        SizeCondition = ImGuiCond.Always;
     }
 
     public override void Draw()
@@ -141,7 +145,7 @@ public class PluginWindow : Window
 
             if (config != null)
             {
-                var isOpen = ImGui.TreeNodeEx(tweak.Name);
+                var isOpen = ImGui.TreeNodeEx(tweak.Name, ImGuiTreeNodeFlags.SpanAvailWidth);
 
                 drawTooltip();
 
@@ -167,42 +171,62 @@ public class PluginWindow : Window
                                 case nameof(Single): DrawFloat((ConfigDrawData<float>)data); break;
                                 case nameof(Boolean): DrawBool((ConfigDrawData<bool>)data); break;
 
-                                default: DrawNoDrawingFunctionError(field.Name); break;
+                                default: DrawNoDrawingFunctionError(field); break;
                             }
                         }
                         else if (attr.Type == ConfigFieldTypes.SingleSelect)
                         {
-                            var options = tweak.GetType().GetField(attr.Options)?.GetValue(tweak);
-                            if (options is Dictionary<ClientLanguage, List<string>> opts)
+                            if (field.FieldType.IsEnum)
                             {
-                                var data = new ConfigDrawData<string>()
+                                var enumType = tweak.GetType().GetNestedType(attr.Options);
+                                if (enumType == null)
                                 {
-                                    Plugin = Plugin,
-                                    Tweak = tweak,
-                                    Config = config,
-                                    Field = field,
-                                    Attr = attr,
-                                };
-                                var list = opts[Service.ClientState.ClientLanguage];
-                                DrawSingleSelect(data, list);
+                                    DrawNoDrawingFunctionError(field);
+                                }
+                                else
+                                {
+                                    var underlyingType = Enum.GetUnderlyingType(enumType);
+                                    var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { underlyingType }))!;
+
+                                    data.GetType().GetProperty("Plugin")!.SetValue(data, Plugin);
+                                    data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
+                                    data.GetType().GetProperty("Config")!.SetValue(data, config);
+                                    data.GetType().GetProperty("Field")!.SetValue(data, field);
+                                    data.GetType().GetProperty("Attr")!.SetValue(data, attr);
+
+                                    switch (underlyingType.Name)
+                                    {
+                                        case nameof(Int32): DrawSingleSelectEnumInt32((ConfigDrawData<int>)data, enumType); break;
+
+                                        default: DrawNoDrawingFunctionError(field); break;
+                                    }
+                                }
                             }
                             else
                             {
-                                DrawNoDrawingFunctionError(field.Name);
+                                var options = tweak.GetType().GetField(attr.Options)?.GetValue(tweak);
+                                if (options is Dictionary<ClientLanguage, List<string>> opts)
+                                {
+                                    var data = new ConfigDrawData<string>()
+                                    {
+                                        Plugin = Plugin,
+                                        Tweak = tweak,
+                                        Config = config,
+                                        Field = field,
+                                        Attr = attr,
+                                    };
+                                    var list = opts[Service.ClientState.ClientLanguage];
+                                    DrawSingleSelect(data, list);
+                                }
+                                else
+                                {
+                                    DrawNoDrawingFunctionError(field);
+                                }
                             }
                         }
                         else
                         {
-                            DrawNoDrawingFunctionError(field.Name);
-                        }
-
-                        if (attr != null)
-                        {
-                            if (!string.IsNullOrEmpty(attr.Description) && ImGui.IsItemHovered())
-                                ImGui.SetTooltip(attr.Description);
-
-                            if (attr.SeparatorAfter)
-                                ImGui.Separator();
+                            DrawNoDrawingFunctionError(field);
                         }
                     }
 
@@ -213,7 +237,7 @@ public class PluginWindow : Window
             {
                 ImGui.PushStyleColor(ImGuiCol.HeaderHovered, 0);
                 ImGui.PushStyleColor(ImGuiCol.HeaderActive, 0);
-                ImGui.TreeNodeEx(tweak.Name, ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen);
+                ImGui.TreeNodeEx(tweak.Name, ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.SpanAvailWidth);
                 ImGui.PopStyleColor();
                 ImGui.PopStyleColor();
 
@@ -227,16 +251,84 @@ public class PluginWindow : Window
         ImGui.End();
     }
 
-    private static void DrawNoDrawingFunctionError(string fieldName)
+    private static void DrawLabel(IConfigDrawData data)
+    {
+        ImGui.Text(data.Label);
+
+        if (!string.IsNullOrEmpty(data.Description))
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, 0xFFBBBBBB);
+            ImGui.TextWrapped(data.Description);
+            ImGui.PopStyleColor();
+        }
+
+        if (data.SeparatorAfter)
+            ImGui.Separator();
+
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetStyle().IndentSpacing);
+    }
+
+    private static void DrawNoDrawingFunctionError(FieldInfo field)
     {
         ImGui.PushStyleColor(ImGuiCol.Text, 0xFF0000FF);
-        ImGui.Text($"Could not find suitable drawing function for field \"{fieldName}\".");
+        ImGui.TextWrapped($"Could not find suitable drawing function for field \"{field.Name}\" (Type {field.FieldType.Name}).");
         ImGui.PopStyleColor();
+    }
+
+    private static void DrawSingleSelectEnumInt32(ConfigDrawData<int> data, Type enumType)
+    {
+        var selectedLabel = "Invalid Option";
+
+        var selectedName = Enum.GetName(enumType, data.Value);
+        if (string.IsNullOrEmpty(selectedName))
+        {
+            ImGui.TextColored(new Vector4(1, 0, 0, 1), $"Missing Name for Value {data.Value} in {enumType.Name}.");
+        }
+        else
+        {
+            var selectedAttr = (EnumOptionAttribute?)enumType.GetField(selectedName)?.GetCustomAttribute(typeof(EnumOptionAttribute));
+            if (selectedAttr == null)
+            {
+                ImGui.TextColored(new Vector4(1, 0, 0, 1), $"Missing EnumOptionAttribute for {selectedName} in {enumType.Name}.");
+            }
+            else
+            {
+                selectedLabel = selectedAttr.Label;
+            }
+        }
+
+        DrawLabel(data);
+
+        if (ImGui.BeginCombo(data.Key, selectedLabel))
+        {
+            var names = Enum.GetNames(enumType)
+                .Select(name => (
+                    Name: name,
+                    Attr: (EnumOptionAttribute?)enumType.GetField(name)?.GetCustomAttribute(typeof(EnumOptionAttribute))
+                ))
+                .Where(tuple => tuple.Attr != null)
+                .OrderBy((tuple) => tuple.Attr == null ? "" : tuple.Attr.Label);
+
+            foreach (var (Name, Attr) in names)
+            {
+                var value = (int)Enum.Parse(enumType, Name);
+
+                if (ImGui.Selectable(Attr!.Label, data.Value == value))
+                    data.Value = value;
+
+                if (data.Value == value)
+                    ImGui.SetItemDefaultFocus();
+            }
+
+            ImGui.EndCombo();
+        }
     }
 
     private static void DrawSingleSelect(ConfigDrawData<string> data, List<string> options)
     {
-        if (ImGui.BeginCombo(data.Label + data.Key, data.Value))
+        DrawLabel(data);
+
+        if (ImGui.BeginCombo(data.Key, data.Value))
         {
             foreach (var item in options)
             {
@@ -255,7 +347,9 @@ public class PluginWindow : Window
     {
         var value = data.Value;
 
-        if (ImGui.InputText(data.Label + data.Key, ref value, 50))
+        DrawLabel(data);
+
+        if (ImGui.InputText(data.Key, ref value, 50))
             data.Value = value;
     }
 
@@ -266,7 +360,9 @@ public class PluginWindow : Window
 
         var value = data.Value;
 
-        if (ImGui.SliderFloat(data.Label + data.Key, ref value, min, max))
+        DrawLabel(data);
+
+        if (ImGui.SliderFloat(data.Key, ref value, min, max))
             data.Value = value;
     }
 

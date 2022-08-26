@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Version>0.5.1</Version>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -58,7 +58,7 @@
 
   <ItemGroup>
     <PackageReference Include="DalamudPackager" Version="2.1.8" />
-    <PackageReference Include="XivCommon" Version="6.0.0" />
+    <PackageReference Include="XivCommon" Version="6.0.1" />
     <PackageReference Include="Dalamud.ContextMenu" Version="1.2.1" />
   </ItemGroup>
 </Project>
