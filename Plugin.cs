@@ -120,17 +120,18 @@ public class Plugin : IDalamudPlugin
 
         Service.Commands.RemoveHandler("/haseltweaks");
 
-        WindowSystem.RemoveAllWindows();
-
         foreach (var tweak in Tweaks)
         {
-            try
+            if (tweak.Enabled)
             {
-                tweak.DisableInternal();
-            }
-            catch (Exception ex)
-            {
-                PluginLog.Error(ex, $"Failed unloading tweak '{tweak.Name}'.");
+                try
+                {
+                    tweak.DisableInternal();
+                }
+                catch (Exception ex)
+                {
+                    PluginLog.Error(ex, $"Failed unloading tweak '{tweak.Name}'.");
+                }
             }
 
             try
@@ -142,6 +143,8 @@ public class Plugin : IDalamudPlugin
                 PluginLog.Error(ex, $"Failed disposing tweak '{tweak.Name}'.");
             }
         }
+
+        WindowSystem.RemoveAllWindows();
 
         Tweaks.Clear();
 
