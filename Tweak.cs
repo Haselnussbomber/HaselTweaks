@@ -6,6 +6,7 @@ using Dalamud.Game;
 using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
+using HaselTweaks.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks;
@@ -18,14 +19,25 @@ public abstract class Tweak
     public virtual bool HasDescription => !string.IsNullOrEmpty(Description);
     public virtual void DrawDescription()
     {
-        ImGui.PushStyleColor(ImGuiCol.Text, 0xFFBBBBBB);
+        ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey2);
         ImGui.TextWrapped(Description);
+        ImGui.PopStyleColor();
+    }
+    public virtual string IncompatibilityWarning => string.Empty;
+    public virtual bool HasIncompatibilityWarning => !string.IsNullOrEmpty(IncompatibilityWarning);
+    public virtual void DrawIncompatibilityWarning()
+    {
+        ImGuiUtils.DrawIcon(60073, 24, 24);
+        ImGui.SameLine();
+        ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey2);
+        ImGui.TextWrapped(IncompatibilityWarning);
         ImGui.PopStyleColor();
     }
 
     public virtual bool Outdated { get; protected set; }
     public virtual bool Ready { get; protected set; }
     public virtual bool Enabled { get; protected set; }
+    public virtual Exception? LastException { get; protected set; }
 
     protected IEnumerable<PropertyInfo> Hooks => GetType()
         .GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)
@@ -50,7 +62,7 @@ public abstract class Tweak
         }
     }
 
-    internal virtual void SetupInternal()
+    internal void SetupInternal()
     {
         try
         {
@@ -58,34 +70,75 @@ public abstract class Tweak
         }
         catch (SignatureException ex)
         {
-            Warning(ex, $"SignatureException, flagging tweak '{InternalName}' as outdated");
+            Error(ex, "SignatureException, flagging as outdated");
             Outdated = true;
+            LastException = ex;
             return;
         }
-        Setup();
+
+        try
+        {
+            Setup();
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during Setup");
+            LastException = ex;
+            return;
+        }
+
         Ready = true;
     }
 
-    internal virtual void EnableInternal()
+    internal void EnableInternal()
     {
         if (!Ready || Outdated) return;
-        CallHooks("Enable");
-        Enable();
+
+        try
+        {
+            CallHooks("Enable");
+            Enable();
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during Enable");
+            LastException = ex;
+        }
+
         Enabled = true;
     }
 
-    internal virtual void DisableInternal()
+    internal void DisableInternal()
     {
         if (!Enabled) return;
-        CallHooks("Disable");
-        Disable();
+
+        try
+        {
+            CallHooks("Disable");
+            Disable();
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during Disable");
+            LastException = ex;
+        }
+
         Enabled = false;
     }
 
-    internal virtual void DisposeInternal()
+    internal void DisposeInternal()
     {
-        CallHooks("Dispose");
-        Dispose();
+        try
+        {
+            CallHooks("Dispose");
+            Dispose();
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unable to disable");
+            LastException = ex;
+        }
+
         Ready = false;
     }
 

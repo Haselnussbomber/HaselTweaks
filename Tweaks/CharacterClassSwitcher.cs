@@ -16,23 +16,9 @@ namespace HaselTweaks.Tweaks;
 public unsafe class CharacterClassSwitcher : Tweak
 {
     public override string Name => "Character Class Switcher";
-    public override bool HasDescription => true;
-    public override void DrawDescription()
-    {
-        ImGui.PushStyleColor(ImGuiCol.Text, 0xFFBBBBBB);
-
-        ImGui.TextWrapped("Clicking on a class/job in the character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window.");
-
-        if (Service.PluginInterface.PluginInternalNames.Contains("SimpleTweaksPlugin"))
-        {
-            ImGuiUtils.DrawPaddedSeparator();
-            ImGuiUtils.DrawIcon(60073, 24, 24);
-            ImGui.SameLine();
-            ImGui.TextWrapped("In order for this tweak to work properly, please make sure to disable \"Character Window Job Switcher\" in Simple Tweaks first.");
-        }
-
-        ImGui.PopStyleColor();
-    }
+    public override string Description => "Clicking on a class/job in the character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window.";
+    public override bool HasIncompatibilityWarning => Service.PluginInterface.PluginInternalNames.Contains("SimpleTweaksPlugin");
+    public override string IncompatibilityWarning => "In order for this tweak to work properly, please make sure \"Character Window Job Switcher\" is disabled in Simple Tweaks.";
 
     public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.CharacterClassSwitcher;
 

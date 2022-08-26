@@ -1,8 +1,5 @@
 using System;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text.RegularExpressions;
-using Dalamud;
 using Dalamud.Game.Text;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
@@ -12,7 +9,6 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Attributes;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
-using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
@@ -20,27 +16,13 @@ namespace HaselTweaks.Tweaks;
 public unsafe class EnhancedExpBar : Tweak
 {
     public override string Name => "Enhanced Experience Bar";
-    public override bool HasDescription => true;
-    public override void DrawDescription()
-    {
-        ImGui.PushStyleColor(ImGuiCol.Text, 0xFFBBBBBB);
-
-        ImGui.TextWrapped(@"The experience bar shows different level/experience based on your location.
+    public override string Description => @"The experience bar shows different level/experience based on your location.
 
 - The PvP Season Bar shows season rank and experience. A little * after the rank indicates a claimable rank-up reward.
 
-- The Sanctuary Bar shows sanctuary level and island experience.");
-
-        if (Service.PluginInterface.PluginInternalNames.Contains("SimpleTweaksPlugin"))
-        {
-            ImGuiUtils.DrawPaddedSeparator();
-            ImGuiUtils.DrawIcon(60073, 24, 24);
-            ImGui.SameLine();
-            ImGui.TextWrapped("In order for this tweak to work properly, please make sure to disable \"Show Experience Percentage\" in Simple Tweaks first.");
-        }
-
-        ImGui.PopStyleColor();
-    }
+- The Sanctuary Bar shows sanctuary level and island experience.";
+    public override bool HasIncompatibilityWarning => Service.PluginInterface.PluginInternalNames.Contains("SimpleTweaksPlugin");
+    public override string IncompatibilityWarning => "In order for this tweak to work properly, please make sure \"Show Experience Percentage\" is disabled in Simple Tweaks.";
 
     public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.EnhancedExpBar;
 
