@@ -36,7 +36,7 @@ public unsafe struct UIState_PvPState
     [FieldOffset(0x2A)] public byte SeasonRank; // capped at 30
 
     [FieldOffset(0x2C)] public ushort SeasonExperience;
-    //[FieldOffset(0x2E)] public byte SeasonMaxRank;
+    [FieldOffset(0x2E)] public byte SeasonMaxRank; // i guess?
     //[FieldOffset(0x2F)] public byte SeasonMaxRankAgain??;
     [FieldOffset(0x30)] public uint FrontlineTotalMatches;
     [FieldOffset(0x34)] public uint FrontlineTotalFirstPlace;

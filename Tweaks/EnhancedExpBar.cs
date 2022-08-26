@@ -255,7 +255,8 @@ public unsafe class EnhancedExpBar : Tweak
 
             job = Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation;
             levelLabel = (Service.Data.GetExcelSheet<Addon>()?.GetRow(14860)?.Text?.RawString ?? "Series Level").Trim().Replace(":", "");
-            level = pvpState->SeasonRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
+            var rank = pvpState->SeasonRankWithOverflow > pvpState->SeasonMaxRank ? pvpState->SeasonRank : pvpState->SeasonRankWithOverflow;
+            level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
             var star = pvpState->SeasonRankWithOverflow > pvpState->SeasonRank ? '*' : ' ';
             requiredExperience = PvPSeriesLevelSheet.GetRow(pvpState->SeasonRank)!.Unknown0;
 
