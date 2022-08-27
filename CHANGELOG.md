@@ -2,10 +2,14 @@
 
 ## [Unreleased]
 
+- **Changed:** The configuration window has been reworked.
+
 ### Reworked Tweak: Series Exp Bar -> Enhanced Experience Bar
 
-- **Added:** Sanctuary Bar for the new Island.
+- **Added:** Sanctuary Bar for the new Island, because why not?
 - **Added:** Max Level Override setting.
+  - Will switch to the selected bar if your current job is on max level and none of the other settings apply.
+  - *Note:* Sanctuary Bar is not available as Max Level Override, because data is only loaded once you travel to the island. PvP Season data is always available.
 - **Added:** Option to disable color change.
 
 ## [0.5.1] (2022-08-24)

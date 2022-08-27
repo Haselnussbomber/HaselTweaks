@@ -77,7 +77,7 @@ internal partial class Configuration : IDisposable
             var renamedTweaks = new Dictionary<string, string>()
             {
                 ["RevealDungeonRequirements"] = "RevealDutyRequirements", // commit 7ce9b37b
-                ["SeriesExpBar"] = "EnhancedExpBar",
+                ["SeriesExpBar"] = "EnhancedExpBar", // commit 11b6231f
             };
 
             var newEnabledTweaks = new JArray();

@@ -34,8 +34,9 @@ public unsafe class EnhancedExpBar : Tweak
         [EnumOption("PvP Season Bar")]
         PvPSeasonBar,
 
-        [EnumOption("Sanctuary Bar")]
-        SanctuaryBar
+        // Disabled because data is only available once loaded into the island. Sadge.
+        //[EnumOption("Sanctuary Bar")]
+        //SanctuaryBar
     }
 
     public class Configuration
@@ -219,8 +220,8 @@ public unsafe class EnhancedExpBar : Tweak
             if (Config.MaxLevelOverride == MaxLevelOverrideType.PvPSeasonBar)
                 goto PvPBar;
 
-            if (Config.MaxLevelOverride == MaxLevelOverrideType.SanctuaryBar)
-                goto SanctuaryBar;
+            //if (Config.MaxLevelOverride == MaxLevelOverrideType.SanctuaryBar)
+            //    goto SanctuaryBar;
         }
 
         goto OriginalOnRequestedUpdateWithColorReset;
