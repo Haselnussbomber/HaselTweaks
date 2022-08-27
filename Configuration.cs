@@ -28,6 +28,7 @@ public class TweakConfigs
     public Commands.Configuration Commands { get; init; } = new();
     public CharacterClassSwitcher.Configuration CharacterClassSwitcher { get; init; } = new();
     public EnhancedExpBar.Configuration EnhancedExpBar { get; init; } = new();
+    public AetherCurrentHelper.Configuration AetherCurrentHelper { get; init; } = new();
 }
 
 internal partial class Configuration : IDisposable

@@ -15,6 +15,12 @@ public unsafe class AetherCurrentHelper : Tweak
     public override string Name => "Aether Current Helper";
     public override string Description => "Click on a zone in the Aether Currents window to open up a helper window that gives you details on how to unlock them. Clicking on an aether current in the list opens the map with a flag to the position.";
 
+    public class Configuration
+    {
+        [ConfigField(Label = "Show distance instead of checkmark when unlocked")]
+        public bool AlwaysShowDistance = false;
+    }
+
     private readonly AetherCurrentHelperWindow Window = new();
 
     // Client::UI::Agent::AgentAetherCurrent_ReceiveEvent

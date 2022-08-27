@@ -9,6 +9,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
@@ -23,6 +24,8 @@ public class AetherCurrentHelperWindow : Window
     private bool hideUnlocked = true; // false;
 
     private readonly Vector4 TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f, 1);
+
+    public static AetherCurrentHelper.Configuration Config => Configuration.Instance.Tweaks.AetherCurrentHelper;
 
     public AetherCurrentHelperWindow() : base("[HaselTweaks] Aether Current Helper")
     {
@@ -239,16 +242,10 @@ public class AetherCurrentHelperWindow : Window
     {
         var isSameTerritory = level?.Territory.Row == Service.ClientState.TerritoryType;
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 11);
-        if (isUnlocked)
+
+        if (isUnlocked && !Config.AlwaysShowDistance)
         {
-            ImGui.PushFont(UiBuilder.IconFont);
-            var icon = FontAwesomeIcon.Check.ToIconString();
-            if (isSameTerritory)
-            {
-                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(icon).X / 2);
-            }
-            ImGui.TextColored(new Vector4(0, 1, 0, 1), icon);
-            ImGui.PopFont();
+            DrawCheckmark(isSameTerritory);
         }
         else
         {
@@ -260,8 +257,20 @@ public class AetherCurrentHelperWindow : Window
                     var direction = distance > 1 ? GetCompassDirection(level) : string.Empty;
                     var text = $"{distance:0}y {direction}";
                     ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
-                    ImGui.Text(text);
+
+                    if (isUnlocked)
+                    {
+                        ImGui.TextColored(new Vector4(0, 1, 0, 1), text);
+                    }
+                    else
+                    {
+                        ImGui.Text(text);
+                    }
                 }
+            }
+            else if (isUnlocked)
+            {
+                DrawCheckmark(isSameTerritory);
             }
             else
             {
@@ -271,6 +280,20 @@ public class AetherCurrentHelperWindow : Window
                 ImGui.PopFont();
             }
         }
+    }
+
+    private void DrawCheckmark(bool isSameTerritory)
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        var icon = FontAwesomeIcon.Check.ToIconString();
+
+        if (isSameTerritory)
+        {
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(icon).X / 2);
+        }
+
+        ImGui.TextColored(new Vector4(0, 1, 0, 1), icon);
+        ImGui.PopFont();
     }
 
     private EObj? GetEObjByData(uint aetherCurrentId)
