@@ -7,6 +7,7 @@ using Dalamud;
 using Dalamud.Interface.Windowing;
 using HaselTweaks.Utils;
 using ImGuiNET;
+using static Dalamud.Game.Command.CommandInfo;
 
 namespace HaselTweaks.Windows;
 
@@ -232,6 +233,38 @@ public class PluginWindow : Window
         }
 #endif
 
+        if (tweak.SlashCommands.Any())
+        {
+            ImGuiUtils.DrawSection("Slash Commands");
+
+            foreach (var methodInfo in tweak.SlashCommands)
+            {
+                var attr = (SlashCommandAttribute?)methodInfo.GetCustomAttribute(typeof(SlashCommandAttribute));
+                if (attr == null || Delegate.CreateDelegate(typeof(HandlerDelegate), tweak, methodInfo, false) == null)
+                    continue;
+
+                ImGui.Text("•");
+                ImGui.SameLine();
+                ImGui.Text(attr.Command);
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+                }
+                if (ImGui.IsItemClicked())
+                {
+                    methodInfo.Invoke(tweak, new string[] { attr.Command, "" });
+                }
+
+                if (!string.IsNullOrEmpty(attr.HelpMessage))
+                {
+                    ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetStyle().IndentSpacing);
+                    ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey);
+                    ImGui.Text(attr.HelpMessage);
+                    ImGui.PopStyleColor();
+                }
+            }
+        }
+
         var config = Config.Tweaks.GetType().GetProperty(tweak.InternalName)?.GetValue(Config.Tweaks);
         if (config != null)
         {
@@ -354,6 +387,7 @@ public class PluginWindow : Window
 
         if (!string.IsNullOrEmpty(data.Description))
         {
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
             ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey);
             ImGui.TextWrapped(data.Description);
             ImGui.PopStyleColor();
@@ -464,5 +498,13 @@ public class PluginWindow : Window
 
         if (ImGui.Checkbox(data.Label + data.Key, ref value))
             data.Value = value;
+
+        if (!string.IsNullOrEmpty(data.Description))
+        {
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
+            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey);
+            ImGui.TextWrapped(data.Description);
+            ImGui.PopStyleColor();
+        }
     }
 }

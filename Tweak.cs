@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dalamud.Game;
+using Dalamud.Game.Command;
 using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 using HaselTweaks.Utils;
 using ImGuiNET;
+using static Dalamud.Game.Command.CommandInfo;
 
 namespace HaselTweaks;
 
@@ -47,6 +49,10 @@ public abstract class Tweak
             prop.CustomAttributes.Any(ca => ca.AttributeType == typeof(AutoHookAttribute)) &&
             prop.CustomAttributes.Any(ca => ca.AttributeType == typeof(SignatureAttribute))
         );
+
+    internal IEnumerable<MethodInfo> SlashCommands => GetType()
+        .GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+        .Where(method => method.CustomAttributes.Any(ca => ca.AttributeType == typeof(SlashCommandAttribute)));
 
     protected void CallHooks(string methodName)
     {
@@ -105,6 +111,21 @@ public abstract class Tweak
             LastException = ex;
         }
 
+        foreach (var methodInfo in SlashCommands)
+        {
+            var attr = (SlashCommandAttribute?)methodInfo.GetCustomAttribute(typeof(SlashCommandAttribute));
+            if (attr == null || Delegate.CreateDelegate(typeof(HandlerDelegate), this, methodInfo, false) == null)
+                continue;
+
+            Service.Commands.AddHandler(attr.Command, new CommandInfo((string command, string argument) => // HandlerDelegate
+            {
+                methodInfo.Invoke(this, new string[] { command, argument });
+            })
+            {
+                HelpMessage = attr.HelpMessage
+            });
+        }
+
         Enabled = true;
     }
 
@@ -121,6 +142,15 @@ public abstract class Tweak
         {
             Error(ex, "Unexpected error during Disable");
             LastException = ex;
+        }
+
+        foreach (var methodInfo in SlashCommands)
+        {
+            var attr = (SlashCommandAttribute?)methodInfo.GetCustomAttribute(typeof(SlashCommandAttribute));
+            if (attr == null || Delegate.CreateDelegate(typeof(HandlerDelegate), this, methodInfo, false) == null)
+                continue;
+
+            Service.Commands.RemoveHandler(attr.Command);
         }
 
         Enabled = false;
