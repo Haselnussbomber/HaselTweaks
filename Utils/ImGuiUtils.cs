@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
+using System.Threading.Tasks;
+using Dalamud.Interface;
 using Dalamud.Utility;
 using ImGuiNET;
 using ImGuiScene;
@@ -9,6 +12,8 @@ namespace HaselTweaks.Utils;
 
 public static class ImGuiUtils
 {
+    public const uint ColorWhite = 0xFFFFFFFF;
+    public const uint ColorOrange = 0xFF009AFF;
     public const uint ColorGold = 0xFF7DBBD8;
     public const uint ColorGreen = 0xFF00FF00;
     public const uint ColorRed = 0xFF0000FF;
@@ -58,5 +63,50 @@ public static class ImGuiUtils
         ImGui.Separator();
 
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y * 2 - 1);
+    }
+
+    public static uint ToColor(this Vector4 vec)
+    {
+        return ((uint)(vec.W * 255) << 24) + ((uint)(vec.X * 255) << 16) + ((uint)(vec.Y * 255) << 8) + (uint)(vec.Z * 255);
+    }
+
+    public static Vector4 ToVector(this uint val)
+    {
+        return new Vector4((byte)val / 255f, (byte)(val >> 8) / 255f, (byte)(val >> 16) / 255f, (byte)(val >> 24) / 255f);
+    }
+
+    public static void DrawLink(string label, string title, string url)
+    {
+        ImGui.Text(label);
+
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+            ImGui.BeginTooltip();
+            ImGui.Text(title);
+
+            var pos = ImGui.GetCursorPos();
+            ImGui.GetWindowDrawList().AddText(
+                UiBuilder.IconFont, 12,
+                ImGui.GetWindowPos() + pos + new Vector2(2),
+                ColorGrey,
+                FontAwesomeIcon.ExternalLinkAlt.ToIconString()
+            );
+            ImGui.SetCursorPos(pos + new Vector2(20, 0));
+            ImGui.TextColored(ColorGrey.ToVector(), url);
+            ImGui.EndTooltip();
+        }
+
+        if (ImGui.IsItemClicked())
+        {
+            Task.Run(() => Util.OpenLink(url));
+        }
+    }
+
+    public static void BulletSeparator()
+    {
+        ImGui.SameLine();
+        ImGui.Text("•");
+        ImGui.SameLine();
     }
 }

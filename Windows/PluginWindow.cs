@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Dalamud;
+using Dalamud.Interface.GameFonts;
 using Dalamud.Interface.Windowing;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -36,6 +38,11 @@ public class PluginWindow : Window
 
         Flags |= ImGuiWindowFlags.AlwaysAutoResize;
         Flags |= ImGuiWindowFlags.NoSavedSettings;
+    }
+
+    public override void OnClose()
+    {
+        SelectedTweak = string.Empty;
     }
 
     public override void Draw()
@@ -171,8 +178,53 @@ public class PluginWindow : Window
     {
         var Config = Configuration.Instance;
 
-        if (!ImGui.BeginChild("##HaselTweaks_Config", new Vector2(ConfigWidth, -1), true) || string.IsNullOrEmpty(SelectedTweak))
+        if (!ImGui.BeginChild("##HaselTweaks_Config", new Vector2(ConfigWidth, -1), true))
         {
+            ImGui.EndChild();
+            return;
+        }
+
+        if (string.IsNullOrEmpty(SelectedTweak))
+        {
+            var drawList = ImGui.GetWindowDrawList();
+            var font = Service.PluginInterface.UiBuilder.GetGameFontHandle(new GameFontStyle(GameFontFamilyAndSize.Axis36)).ImFont;
+            var cursorPos = ImGui.GetCursorPos();
+            var absolutePos = ImGui.GetWindowPos() + cursorPos;
+            var contentAvail = ImGui.GetContentRegionAvail();
+
+            // I miss CSS...
+            var offset = new Vector2(0, -8);
+            var pluginNameSize = new Vector2(88, 18);
+            var spacing = new Vector2(0, 28);
+
+            drawList.AddText(
+                font, 34,
+                absolutePos + contentAvail / 2 - pluginNameSize - spacing / 2 + offset,
+                ImGuiUtils.ColorWhite,
+                "HaselTweaks"
+            );
+
+            drawList.AddLine(
+                absolutePos + new Vector2(contentAvail.X / 5, contentAvail.Y / 2) + spacing / 2 + offset,
+                absolutePos + new Vector2(contentAvail.X / 5 * 4, contentAvail.Y / 2) + spacing / 2 + offset,
+                ImGuiUtils.ColorOrange
+            );
+
+            // links, bottom left
+            ImGui.SetCursorPos(cursorPos + new Vector2(0, contentAvail.Y - ImGui.CalcTextSize(" ").Y));
+            ImGuiUtils.DrawLink("GitHub", "Visit the HaselTweaks GitHub Repository", "https://github.com/Haselnussbomber/HaselTweaks");
+            ImGuiUtils.BulletSeparator();
+            ImGuiUtils.DrawLink("Ko-fi", "Support me on Ko-fi", "https://ko-fi.com/haselnussbomber");
+
+            // version, bottom right
+            var version = GetType().Assembly.GetName().Version;
+            if (version != null)
+            {
+                var versionString = "v" + Regex.Replace(version.ToString(), @"\.0$", "");
+                ImGui.SetCursorPos(cursorPos + contentAvail - ImGui.CalcTextSize(versionString));
+                ImGuiUtils.DrawLink(versionString, "Visit Release Notes", $"https://github.com/Haselnussbomber/HaselTweaks/releases/tag/{versionString}");
+            }
+
             ImGui.EndChild();
             return;
         }
