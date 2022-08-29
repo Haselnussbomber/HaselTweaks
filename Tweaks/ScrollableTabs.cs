@@ -17,7 +17,7 @@ public unsafe class ScrollableTabs : Tweak
 
     public class Configuration
     {
-        [ConfigField(SeparatorAfter = true)]
+        [ConfigField]
         public bool Invert = true;
 
         [ConfigField(Label = "Enable in Aether Currents")]

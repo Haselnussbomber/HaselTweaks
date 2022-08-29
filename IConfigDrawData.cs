@@ -14,5 +14,4 @@ public interface IConfigDrawData
     public string Key { get; }
     public string Label { get; }
     public string Description { get; }
-    public bool SeparatorAfter { get; }
 }

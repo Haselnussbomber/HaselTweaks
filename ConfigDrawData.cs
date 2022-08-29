@@ -14,7 +14,6 @@ internal class ConfigDrawData<T> : IConfigDrawData
     public string Key => $"###{Tweak.InternalName}#{Field.Name}";
     public string Label => Attr != null && !string.IsNullOrEmpty(Attr.Label) ? Attr.Label : Field.Name;
     public string Description => Attr?.Description ?? string.Empty;
-    public bool SeparatorAfter => Attr?.SeparatorAfter ?? false;
 
     public T? Value
     {

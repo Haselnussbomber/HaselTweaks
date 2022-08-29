@@ -63,7 +63,6 @@ public class PluginWindow : Window
 
         ImGui.TableSetupColumn("Checkbox", ImGuiTableColumnFlags.WidthFixed);
         ImGui.TableSetupColumn("Tweak Name", ImGuiTableColumnFlags.WidthStretch);
-        ImGui.TableSetupColumn("Gear", ImGuiTableColumnFlags.WidthFixed);
 
         foreach (var tweak in Plugin.Tweaks.OrderBy(t => t.Name))
         {
@@ -360,9 +359,6 @@ public class PluginWindow : Window
             ImGui.TextWrapped(data.Description);
             ImGui.PopStyleColor();
         }
-
-        if (data.SeparatorAfter)
-            ImGui.Separator();
     }
 
     private static void DrawNoDrawingFunctionError(FieldInfo field)
