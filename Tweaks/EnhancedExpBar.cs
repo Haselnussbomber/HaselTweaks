@@ -6,7 +6,6 @@ using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Attributes;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;

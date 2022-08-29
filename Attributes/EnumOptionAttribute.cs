@@ -1,6 +1,6 @@
 using System;
 
-namespace HaselTweaks.Attributes;
+namespace HaselTweaks;
 
 [AttributeUsage(AttributeTargets.Field)]
 public class EnumOptionAttribute : Attribute

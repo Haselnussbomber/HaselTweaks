@@ -5,7 +5,6 @@ using System.Numerics;
 using System.Reflection;
 using Dalamud;
 using Dalamud.Interface.Windowing;
-using HaselTweaks.Attributes;
 using HaselTweaks.Utils;
 using ImGuiNET;
 
