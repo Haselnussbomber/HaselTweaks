@@ -43,7 +43,7 @@ public class AetherCurrentHelperWindow : Window
 
     public override bool DrawConditions()
     {
-        return compFlgSet != null;
+        return Service.ClientState.IsLoggedIn && compFlgSet != null;
     }
 
     public override void Draw()
