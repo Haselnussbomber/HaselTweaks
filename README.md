@@ -70,7 +70,7 @@ The experience bar shows different level/experience based on your location.
 
 ### Expert Deliveries [[src](Tweaks/ExpertDeliveries.cs)]
 
-Always opens the Grand Company Delivery Missions window on the third tab (Expert Delivery).
+Always opens the "Grand Company Delivery Missions" window on the "Expert Delivery" tab.
 
 ### Forced Cutscene Music [[src](Tweaks/ForcedCutsceneMusic.cs)]
 
@@ -97,6 +97,10 @@ Configuration options:
 ### Refresh Material List [[src](Tweaks/RefreshMaterialList.cs)]
 
 Refreshes the material list and recipe tree when you've crafted or gathered an item.
+
+### Requisite Materials [[src](Tweaks/RequisiteMaterials.cs)]
+
+Always opens the Island Sanctuarys "Requisite Materials" window on the "Current & Next Season" tab.
 
 ### Reveal Duty Requirements [[src](Tweaks/RevealDutyRequirements.cs)]
 

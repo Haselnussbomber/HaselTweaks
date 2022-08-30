@@ -12,6 +12,10 @@
   - *Note:* Sanctuary Bar is not available as Max Level Override, because data is only loaded once you travel to the island. PvP Season data is always available.
 - **Added:** Option to disable color change.
 
+### New Tweak: Requisite Materials
+
+Always opens the Island Sanctuary Requisite Materials window on the Current & Next Season tab.
+
 ### Aether Current Helper
 
 - **Added:** An option to always show distance (if in same zone) despite being unlocked.
