@@ -15,8 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: 'true'
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
@@ -56,6 +54,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v3
+
       - name: Download Build Artifact
         uses: actions/download-artifact@v3
 
