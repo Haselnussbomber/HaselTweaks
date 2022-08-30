@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.6.0] (2022-08-30)
 
 - **Changed:** The configuration window has been reworked.
 
@@ -14,7 +14,7 @@
 
 ### New Tweak: Requisite Materials
 
-Always opens the Island Sanctuary Requisite Materials window on the Current & Next Season tab.
+Always opens the Island Sanctuarys "Requisite Materials" window on the "Current & Next Season" tab.
 
 ### Aether Current Helper
 
@@ -287,7 +287,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.4.0...v0.4.1
