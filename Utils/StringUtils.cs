@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Memory;
 using Dalamud.Utility.Signatures;
+using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Utils;
@@ -13,6 +14,7 @@ public unsafe class StringUtils
     private readonly Dictionary<uint, string> ENpcResidentNameCache = new();
     private readonly Dictionary<uint, string> EObjNameCache = new();
     private readonly Dictionary<uint, string> QuestCache = new();
+    private readonly Dictionary<string, Dictionary<uint, Dictionary<string, string>>> SheetCache = new(); // SheetCache[sheetName][rowId][columnName]
 
     public StringUtils()
     {
@@ -74,5 +76,46 @@ public unsafe class StringUtils
         QuestCache.Add(questId, ret);
 
         return ret;
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "Readability")]
+    public string GetSheetText<T>(uint rowId, string columnName) where T : ExcelRow
+    {
+        var sheetType = typeof(T);
+        var sheetName = sheetType.Name;
+        if (SheetCache.ContainsKey(sheetName) && SheetCache[sheetName].ContainsKey(rowId) && SheetCache[sheetName][rowId].ContainsKey(columnName))
+        {
+            return SheetCache[sheetName][rowId][columnName];
+        }
+
+        var prop = sheetType.GetProperty(columnName);
+        if (prop == null || prop.PropertyType != typeof(Lumina.Text.SeString))
+        {
+            return string.Empty;
+        }
+
+        var row = Service.Data.GetExcelSheet<T>()?.GetRow(rowId);
+        if (row == null)
+        {
+            return string.Empty;
+        }
+
+        var value = (Lumina.Text.SeString?)prop.GetValue(row);
+        if (value == null)
+        {
+            return string.Empty;
+        }
+
+        if (!SheetCache.ContainsKey(sheetName))
+        {
+            SheetCache.Add(sheetName, new());
+        }
+
+        if (!SheetCache[sheetName].ContainsKey(rowId))
+        {
+            SheetCache[sheetName].Add(rowId, new());
+        }
+
+        return SheetCache[sheetName][rowId][columnName] = value.ToString();
     }
 }

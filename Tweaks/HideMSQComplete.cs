@@ -25,7 +25,7 @@ public unsafe class HideMSQComplete : Tweak
 
     public override void Setup()
     {
-        msqCompleteText = Service.Data.GetExcelSheet<Addon>()?.GetRow(5672)?.Text ?? "Main Scenario Quests Complete";
+        msqCompleteText = Service.StringUtils.GetSheetText<Addon>(5672, "Text") ?? "Main Scenario Quests Complete";
     }
 
     public override void Disable()

@@ -228,7 +228,7 @@ public unsafe class EnhancedExpBar : Tweak
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             job = Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation;
-            levelLabel = (Service.Data.GetExcelSheet<Addon>()?.GetRow(14860)?.Text?.RawString ?? "Series Level").Trim().Replace(":", "");
+            levelLabel = (Service.StringUtils.GetSheetText<Addon>(14860, "Text") ?? "Series Level").Trim().Replace(":", "");
             var rank = pvpState->SeasonRankWithOverflow > pvpState->SeasonMaxRank ? pvpState->SeasonRank : pvpState->SeasonRankWithOverflow;
             level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
             var star = pvpState->SeasonRankWithOverflow > pvpState->SeasonRank ? '*' : ' ';
@@ -266,7 +266,7 @@ public unsafe class EnhancedExpBar : Tweak
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             job = Config.SanctuaryBarHideJob ? "" : Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation + "  ";
-            levelLabel = (Service.Data.GetExcelSheet<Addon>()?.GetRow(14252)?.Text?.RawString ?? "Sanctuary Rank").Trim().Replace(":", "");
+            levelLabel = (Service.StringUtils.GetSheetText<Addon>(14252, "Text") ?? "Sanctuary Rank").Trim().Replace(":", "");
             level = islandState->Level.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
             requiredExperience = MJIRankSheet.GetRow(islandState->Level)!.Unknown0;
 
