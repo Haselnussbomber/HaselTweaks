@@ -23,6 +23,13 @@
 
   <ItemGroup>
     <None Remove=".git*" />
+    <None Remove="Generators\**" />
+    <Compile Remove=".git*" />
+    <Compile Remove="Generators\**" />
+    <Content Remove=".git*" />
+    <Content Remove="Generators\**" />
+    <EmbeddedResource Remove=".git*" />
+    <EmbeddedResource Remove="Generators\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,5 +67,9 @@
     <PackageReference Include="DalamudPackager" Version="2.1.8" />
     <PackageReference Include="XivCommon" Version="6.0.2" />
     <PackageReference Include="Dalamud.ContextMenu" Version="1.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="Generators\HaselTweaks.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

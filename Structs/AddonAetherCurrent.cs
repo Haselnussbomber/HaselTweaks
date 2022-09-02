@@ -1,5 +1,5 @@
-using System;
 using System.Runtime.InteropServices;
+using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Structs;
@@ -10,8 +10,12 @@ public unsafe partial struct AddonAetherCurrent
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x228)] public IntPtr Tabs; // Tabs[NumTabs]
+    [FieldOffset(0x228)] public HaselAtkComponentRadioButton* Tabs; // Tabs[NumTabs]
 
     [FieldOffset(0x254)] public int TabIndex;
     [FieldOffset(0x258)] public int NumTabs;
+
+    // called in AetherCurrent vf54
+    [MemberFunction("E8 ?? ?? ?? ?? 84 C0 74 65 39 9D")]
+    public partial void SetTab(int tab);
 }

@@ -28,7 +28,7 @@ public unsafe class ExpertDeliveries : Tweak
         var someLoadedStateMaybe = MemoryHelper.Read<byte>((IntPtr)unitBase + 0x188);
         if (switched || someLoadedStateMaybe != 0x14) return;
 
-        Log($"window opened, switching tab");
+        Log("window opened, switching tab");
 
         var receiveEvent = Marshal.GetDelegateForFunctionPointer<ReceiveEventDelegate>((IntPtr)unitBase->AtkEventListener.vfunc[2]);
         receiveEvent((IntPtr)unitBase, AtkEventType.ButtonClick, 4, unitBase->RootNode->AtkEventManager.Event, (IntPtr)unitBase->RootNode);

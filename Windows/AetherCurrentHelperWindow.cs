@@ -7,6 +7,7 @@ using Dalamud;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface;
 using Dalamud.Interface.Windowing;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselTweaks.Tweaks;
@@ -46,7 +47,7 @@ public class AetherCurrentHelperWindow : Window
         return Service.ClientState.IsLoggedIn && compFlgSet != null;
     }
 
-    public override void Draw()
+    public override unsafe void Draw()
     {
         DrawMainCommandButton();
 
@@ -85,6 +86,7 @@ public class AetherCurrentHelperWindow : Window
         var index = 1;
         var type = 0;
         var linesDisplayed = 0;
+        var playerState = (HaselPlayerState*)PlayerState.Instance();
         foreach (var aetherCurrent in compFlgSet.AetherCurrent)
         {
             if (aetherCurrent.Row == 0) continue;
@@ -96,7 +98,7 @@ public class AetherCurrentHelperWindow : Window
                 index = 1;
             }
 
-            var isUnlocked = Service.GameFunctions.IsAetherCurrentUnlocked(aetherCurrent.Row);
+            var isUnlocked = playerState->IsAetherCurrentUnlocked(aetherCurrent.Row);
             if (!hideUnlocked || !isUnlocked)
             {
                 if (type == 0)
@@ -282,7 +284,7 @@ public class AetherCurrentHelperWindow : Window
         }
     }
 
-    private void DrawCheckmark(bool isSameTerritory)
+    private static void DrawCheckmark(bool isSameTerritory)
     {
         ImGui.PushFont(UiBuilder.IconFont);
         var icon = FontAwesomeIcon.Check.ToIconString();

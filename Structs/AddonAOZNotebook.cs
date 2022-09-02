@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Structs;
@@ -11,4 +12,8 @@ public unsafe partial struct AddonAOZNotebook
 
     [FieldOffset(0xCB8)] public int TabIndex;
     [FieldOffset(0xCBC)] public int NumTabs;
+
+    // called via AOZNotebook vf67
+    [MemberFunction("E8 ?? ?? ?? ?? 33 D2 49 8B CF E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 41 8D 40 F7")]
+    public partial void SetTab(int tab, bool a3);
 }

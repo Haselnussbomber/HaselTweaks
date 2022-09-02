@@ -66,79 +66,9 @@ public unsafe class ScrollableTabs : Tweak
         public bool HandleAdventureNoteBook = true;
     }
 
-    // called via ArmouryBoard_ReceiveEvent event/case 12 -> case a4 == 16
-    [Signature("E8 ?? ?? ?? ?? EB E0 84 C9")]
-    private ArmouryBoardNextTabDelegate ArmouryBoardNextTab { get; init; } = null!;
-    private delegate void ArmouryBoardNextTabDelegate(AddonArmouryBoard* addon, byte a2);
-
-    // called via ArmouryBoard_ReceiveEvent event/case 12 -> after switch (a4 == 17)
-    [Signature("40 53 48 83 EC 20 80 B9 ?? ?? ?? ?? ?? 48 8B D9 75 11")]
-    private ArmouryBoardPreviousTabDelegate ArmouryBoardPreviousTab { get; init; } = null!;
-    private delegate void ArmouryBoardPreviousTabDelegate(AddonArmouryBoard* addon, byte a2);
-
-    // called via Inventory vf67
-    [Signature("E9 ?? ?? ?? ?? 83 FD 10")]
-    private InventorySetTabDelegate InventorySetTab { get; init; } = null!;
-    private delegate void InventorySetTabDelegate(AddonInventory* addon, int tab);
-
-    [Signature("E9 ?? ?? ?? ?? CC CC CC CC CC CC CC CC CC CC 48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 44 88 44 24")]
-    private SwitchToInventoryEventDelegate SwitchToInventoryEvent { get; init; } = null!;
-    private delegate void SwitchToInventoryEventDelegate(AddonInventory* addon, byte a2);
-
-    [Signature("E8 ?? ?? ?? ?? B0 01 EB 02 32 C0 48 8B 5C 24 ?? 48 8B 6C 24 ?? 48 8B 74 24 ?? 48 83 C4 30 41 5F 41 5E 41 5D 41 5C 5F C3 CC CC CC CC CC CC CC")]
-    private SwitchToInventoryDelegate SwitchToInventory { get; init; } = null!;
-    private delegate void SwitchToInventoryDelegate(AddonInventoryEvent* addon, byte a2);
-
-    [Signature("E8 ?? ?? ?? ?? EB 09 83 FF 01")]
-    private InventoryEventSetTabDelegate InventoryEventSetTab { get; init; } = null!;
-    private delegate void InventoryEventSetTabDelegate(AddonInventoryEvent* addon, int tab);
-
-    // called via InventoryLarge vf67
-    [Signature("E9 ?? ?? ?? ?? 41 83 FF 46")]
-    private InventoryLargeSetTabDelegate InventoryLargeSetTab { get; init; } = null!;
-    private delegate void InventoryLargeSetTabDelegate(AddonInventoryLarge* addon, int tab);
-
-    // called via InventoryExpansion vf67
-    [Signature("E8 ?? ?? ?? ?? BB ?? ?? ?? ?? 83 EB 01")]
-    private InventoryExpansionSetTabDelegate InventoryExpansionSetTab { get; init; } = null!;
-    private delegate void InventoryExpansionSetTabDelegate(AddonInventoryExpansion* addon, int tab, bool force);
-
-    // called via RetainerInventory vf67
-    [Signature("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 70 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 44 24 ?? 48 8B F1 48 8B 89 ?? ?? ?? ??")]
-    private RetainerInventorySetTabDelegate RetainerInventorySetTab { get; init; } = null!;
-    private delegate void RetainerInventorySetTabDelegate(AddonInventoryRetainer* addon, int tab);
-
-    // called via RetainerInventoryLarge vf67
-    [Signature("E8 ?? ?? ?? ?? 48 83 C4 38 41 5E 41 5D C3")]
-    private RetainerInventoryLargeSetTabDelegate RetainerInventoryLargeSetTab { get; init; } = null!;
-    private delegate void RetainerInventoryLargeSetTabDelegate(AddonInventoryRetainerLarge* addon, int tab);
-
-    // called via AOZNotebook vf67
-    [Signature("E8 ?? ?? ?? ?? 33 D2 49 8B CF E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 41 8D 40 F7")]
-    private AOZNotebookSetTabDelegate AOZNotebookSetTab { get; init; } = null!;
-    private delegate void AOZNotebookSetTabDelegate(AddonAOZNotebook* addon, int tab, bool a3);
-
-    // called via FateProgress vf67
-    [Signature("83 FA 01 0F 87 ?? ?? ?? ?? 48 89 5C 24 ?? 48 89 6C 24")]
-    private FateProgressSetTabDelegate FateProgressSetTab { get; init; } = null!;
-    private delegate void FateProgressSetTabDelegate(AddonFateProgress* addon, int tab, IntPtr atkEvent);
-
-    // called in AetherCurrent vf54
-    [Signature("E8 ?? ?? ?? ?? 84 C0 74 65 39 9D")]
-    private AetherCurrentSetTabDelegate AetherCurrentSetTab { get; init; } = null!;
-    private delegate void AetherCurrentSetTabDelegate(AddonAetherCurrent* addon, int tab);
-
-    [Signature("48 83 EC 38 44 8B 89")]
-    private RadioButtonSetActiveDelegate RadioButtonSetActive { get; init; } = null!;
-    private delegate void RadioButtonSetActiveDelegate(IntPtr button, bool active);
-
     [AutoHook, Signature("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 49 8B F8 C6 05", DetourName = nameof(WindowProcHandlerDetour))]
     private Hook<WindowProcHandlerDelegate> WindowProcHandlerHook { get; init; } = null!;
     private delegate ulong WindowProcHandlerDelegate(IntPtr hWnd, int uMsg, int wParam);
-
-    [Signature("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 8D 42 D3 83 F8 08")]
-    private MountMinionSwitchToFavoritesDelegate MountMinionSwitchToFavorites { get; init; } = null!;
-    private delegate void MountMinionSwitchToFavoritesDelegate(AtkUnitBase* addon);
 
     private const uint WM_MOUSEWHEEL = 0x020A;
     private const uint WHEEL_DELTA = 120;
@@ -288,7 +218,7 @@ public unsafe class ScrollableTabs : Tweak
         }
         else if ((Config.HandleMinionNoteBook && name == "MinionNoteBook") || (Config.HandleMountNoteBook && name == "MountNoteBook"))
         {
-            UpdateMountMinion(unitBase);
+            UpdateMountMinion((MountMinionNoteBookBase*)unitBase);
         }
         else if (Config.HandleFishGuide && name == "FishGuide")
         {
@@ -344,22 +274,22 @@ public unsafe class ScrollableTabs : Tweak
     {
         var tabIndex = GetTabIndex(addon->TabIndex, AddonArmouryBoard.NUM_TABS);
 
-        if (addon->TabIndex < tabIndex) ArmouryBoardNextTab(addon, 0);
-        else if (addon->TabIndex > tabIndex) ArmouryBoardPreviousTab(addon, 0);
+        if (addon->TabIndex < tabIndex) addon->NextTab(0);
+        else if (addon->TabIndex > tabIndex) addon->PreviousTab(0);
     }
 
     private void UpdateInventory(AddonInventory* addon)
     {
         if (addon->TabIndex == AddonInventory.NUM_TABS - 1 && wheelState > 0)
         {
-            SwitchToInventoryEvent(addon, 0);
+            addon->SwitchToInventoryEvent(0);
         }
         else
         {
             var tabIndex = GetTabIndex(addon->TabIndex, AddonInventory.NUM_TABS);
             if (addon->TabIndex == tabIndex) return;
 
-            InventorySetTab(addon, tabIndex);
+            addon->SetTab(tabIndex);
         }
     }
 
@@ -367,14 +297,14 @@ public unsafe class ScrollableTabs : Tweak
     {
         if (addon->TabIndex == 0 && wheelState < 0)
         {
-            SwitchToInventory(addon, 0);
+            addon->SwitchToInventory(0);
         }
         else
         {
             var tabIndex = GetTabIndex(addon->TabIndex, addon->NumTabs);
             if (addon->TabIndex == tabIndex) return;
 
-            InventoryEventSetTab(addon, tabIndex);
+            addon->SetTab(tabIndex);
         }
     }
 
@@ -383,7 +313,7 @@ public unsafe class ScrollableTabs : Tweak
         var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryLarge.NUM_TABS);
         if (addon->TabIndex == tabIndex) return;
 
-        InventoryLargeSetTab(addon, tabIndex);
+        addon->SetTab(tabIndex);
     }
 
     private void UpdateInventoryExpansion(AddonInventoryExpansion* addon)
@@ -391,7 +321,7 @@ public unsafe class ScrollableTabs : Tweak
         var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryExpansion.NUM_TABS);
         if (addon->TabIndex == tabIndex) return;
 
-        InventoryExpansionSetTab(addon, tabIndex, false);
+        addon->SetTab(tabIndex, false);
     }
 
     private void UpdateInventoryRetainer(AddonInventoryRetainer* addon)
@@ -399,7 +329,7 @@ public unsafe class ScrollableTabs : Tweak
         var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryRetainer.NUM_TABS);
         if (addon->TabIndex == tabIndex) return;
 
-        RetainerInventorySetTab(addon, tabIndex);
+        addon->SetTab(tabIndex);
     }
 
     private void UpdateInventoryRetainerLarge(AddonInventoryRetainerLarge* addon)
@@ -407,7 +337,7 @@ public unsafe class ScrollableTabs : Tweak
         var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryRetainerLarge.NUM_TABS);
         if (addon->TabIndex == tabIndex) return;
 
-        RetainerInventoryLargeSetTab(addon, tabIndex);
+        addon->SetTab(tabIndex);
     }
 
     private void UpdateTabSwitcher(IntPtr addon, TabSwitcher tabSwitcher)
@@ -426,7 +356,7 @@ public unsafe class ScrollableTabs : Tweak
         var tabIndex = GetTabIndex(addon->TabIndex, addon->NumTabs);
         if (addon->TabIndex == tabIndex) return;
 
-        AOZNotebookSetTab(addon, tabIndex, true);
+        addon->SetTab(tabIndex, true);
     }
 
     private void UpdateAetherCurrent(AddonAetherCurrent* addon)
@@ -434,15 +364,15 @@ public unsafe class ScrollableTabs : Tweak
         var tabIndex = GetTabIndex(addon->TabIndex, addon->NumTabs);
         if (addon->TabIndex == tabIndex) return;
 
-        AetherCurrentSetTab(addon, tabIndex);
+        addon->SetTab(tabIndex);
 
         var tabs = (IntPtr)addon + 0x228;
         for (var i = 0; i < addon->NumTabs; i++)
         {
             // WAYTOODANK, this is basically like writing addon->Tabs[i]
             // but because this is dynamic (depending on NumTabs), we can't do that... thanks, C#!
-            var tabPtr = *(IntPtr*)(tabs + i * 8);
-            RadioButtonSetActive(tabPtr, i == tabIndex);
+            var button = *(HaselAtkComponentRadioButton**)(tabs + i * 8);
+            button->SetActive(i == tabIndex);
         }
     }
 
@@ -454,7 +384,7 @@ public unsafe class ScrollableTabs : Tweak
 
         // fake event, so it can call SetEventIsHandled
         var atkEvent = Marshal.AllocHGlobal(30);
-        FateProgressSetTab(addon, tabIndex, atkEvent);
+        addon->SetTab(tabIndex, atkEvent);
         Marshal.FreeHGlobal(atkEvent);
     }
 
@@ -493,15 +423,13 @@ public unsafe class ScrollableTabs : Tweak
         IMemorySpace.Free(atkEvent);
     }
 
-    private void UpdateMountMinion(AtkUnitBase* unitBase)
+    private void UpdateMountMinion(MountMinionNoteBookBase* addon)
     {
-        var addon = (MountMinionNoteBookBase*)unitBase;
-
         if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Normal)
         {
             if (addon->TabSwitcher.CurrentTabIndex == 0 && wheelState < 0)
             {
-                MountMinionSwitchToFavorites(unitBase);
+                addon->SwitchToFavorites();
             }
             else
             {
@@ -516,7 +444,7 @@ public unsafe class ScrollableTabs : Tweak
                 return;
             }
 
-            Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(0, (IntPtr)unitBase);
+            Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(0, (IntPtr)addon);
         }
     }
 }

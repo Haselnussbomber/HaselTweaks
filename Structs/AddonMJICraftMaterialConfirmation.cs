@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Structs;
@@ -12,4 +13,7 @@ public unsafe partial struct AddonMJICraftMaterialConfirmation
     [FieldOffset(0x230)] public AtkComponentRadioButton* RadioButton3;
     [FieldOffset(0x238)] public AtkComponentList* ItemList;
     [FieldOffset(0x240)] public AtkResNode* TextResNode; // contains a AtkTextNode showing "No items in production."
+
+    [MemberFunction("E9 ?? ?? ?? ?? 83 EB 04")]
+    public partial void* SwitchTab(uint tabIndex);
 }

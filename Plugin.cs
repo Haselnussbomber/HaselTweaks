@@ -27,6 +27,7 @@ public class Plugin : IDalamudPlugin
     {
         pluginInterface.Create<Service>();
         XivCommon = new();
+        Resolver.Initialize();
 
         PluginWindow = new PluginWindow(this);
         WindowSystem.AddWindow(PluginWindow);

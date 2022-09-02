@@ -1,26 +1,14 @@
-using System;
 using System.Runtime.InteropServices;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.Attributes;
 
 namespace HaselTweaks.Structs;
 
 // copy pasta function 48 89 5C 24 ?? 8B 82
 [StructLayout(LayoutKind.Explicit)]
-public unsafe struct UIState_PvPState
+public unsafe partial struct PvPState
 {
-    public static readonly int Offset = 0x292C;
-    private static UIState_PvPState* pInstance { get; set; }
-    public static UIState_PvPState* Instance()
-    {
-        if (pInstance == null)
-        {
-            var uiState = UIState.Instance();
-            if (uiState == null) return null;
-
-            pInstance = (UIState_PvPState*)((IntPtr)uiState + Offset);
-        }
-        return pInstance;
-    }
+    [StaticAddress("48 8B D3 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 43 08")]
+    public static partial PvPState* Instance();
 
     [FieldOffset(0x0)] public byte IsLoaded;
 

@@ -78,14 +78,6 @@ public unsafe class EnhancedExpBar : Tweak
     private Hook<OnRequestedUpdateDelegate> OnRequestedUpdateHook { get; init; } = null!;
     private delegate IntPtr OnRequestedUpdateDelegate(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData);
 
-    [Signature("48 8D 81 ?? ?? ?? ?? 89 54 24 10")]
-    private GaugeBarSetRestedBarValueDelegate GaugeBarSetRestedBarValue { get; init; } = null!;
-    private delegate uint GaugeBarSetRestedBarValueDelegate(AtkComponentGaugeBar* bar, uint value);
-
-    [Signature("E8 ?? ?? ?? ?? 41 3B 1E")]
-    private GaugeBarSetBarValueDelegate GaugeBarSetBarValue { get; init; } = null!;
-    private delegate uint GaugeBarSetBarValueDelegate(AtkComponentGaugeBar* bar, uint value, uint a3, bool skipAnimation);
-
     public override void Enable()
     {
         Service.ClientState.LeavePvP += ClientState_LeavePvP;
@@ -107,14 +99,14 @@ public unsafe class EnhancedExpBar : Tweak
     {
         var shouldUpdate = false;
 
-        var pvpState = UIState_PvPState.Instance();
+        var pvpState = PvPState.Instance();
         if (pvpState != null && pvpState->IsLoaded == 0x01 && LastSeasonXp != pvpState->SeasonExperience)
         {
             shouldUpdate = true;
             LastSeasonXp = pvpState->SeasonExperience;
         }
 
-        var islandState = Service.GameFunctions.GetIslandState();
+        var islandState = IslandState.Instance();
         if (islandState != null && LastIslandExperience != islandState->Experience)
         {
             shouldUpdate = true;
@@ -227,7 +219,7 @@ public unsafe class EnhancedExpBar : Tweak
 
         PvPBar:
         {
-            var pvpState = UIState_PvPState.Instance();
+            var pvpState = PvPState.Instance();
             if (pvpState == null || pvpState->IsLoaded != 0x01)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
@@ -244,10 +236,10 @@ public unsafe class EnhancedExpBar : Tweak
 
             leftText->SetText($"{job}  {levelLabel} {level}{star}   {pvpState->SeasonExperience}/{requiredExperience}");
 
-            GaugeBarSetRestedBarValue(addon->GaugeBarNode, 0);
+            addon->GaugeBarNode->SetSecondaryValue(0); // rested experience bar
 
             // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-            GaugeBarSetBarValue(addon->GaugeBarNode, (uint)(pvpState->SeasonExperience / (float)requiredExperience * 10000), 0, false);
+            addon->GaugeBarNode->SetValue((uint)(pvpState->SeasonExperience / (float)requiredExperience * 10000), 0, false);
 
             if (!Config.DisableColorChanges)
             {
@@ -265,7 +257,7 @@ public unsafe class EnhancedExpBar : Tweak
 
         SanctuaryBar:
         {
-            var islandState = Service.GameFunctions.GetIslandState();
+            var islandState = IslandState.Instance();
             if (islandState == null)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
@@ -280,10 +272,10 @@ public unsafe class EnhancedExpBar : Tweak
 
             leftText->SetText($"{job}{levelLabel} {level}   {islandState->Experience}/{requiredExperience}");
 
-            GaugeBarSetRestedBarValue(addon->GaugeBarNode, 0);
+            addon->GaugeBarNode->SetSecondaryValue(0); // rested experience bar
 
             // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-            GaugeBarSetBarValue(addon->GaugeBarNode, (uint)(islandState->Experience / (float)requiredExperience * 10000), 0, false);
+            addon->GaugeBarNode->SetValue((uint)(islandState->Experience / (float)requiredExperience * 10000), 0, false);
 
             if (!Config.DisableColorChanges)
             {

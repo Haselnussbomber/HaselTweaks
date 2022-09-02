@@ -4,10 +4,8 @@ using Dalamud;
 using Dalamud.ContextMenu;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;
@@ -18,18 +16,6 @@ public unsafe class SearchTheMarkets : Tweak
 {
     public override string Name => "Search the markets";
     public override string Description => "Adds a context menu entry to items in Inventory, Crafting Log, Recipe Tree or Materials List to quickly search for it on the Market Board. Only visible when Market Board is open.";
-
-    [Signature("E8 ?? ?? ?? ?? 48 8B DE 48 8D BC 24")]
-    private RunSearchDelegate RunSearch { get; init; } = null!;
-    private delegate void RunSearchDelegate(AddonItemSearch* addon, bool a2);
-
-    [Signature("E8 ?? ?? ?? ?? EB 40 41 8D 40 FD")]
-    private SetModeFilterDelegate SetModeFilter { get; init; } = null!;
-    private delegate void SetModeFilterDelegate(AddonItemSearch* addon, AddonItemSearch.SearchMode mode, uint filter);
-
-    [Signature("E8 ?? ?? ?? ?? 48 0F BF 56")]
-    private TriggerRedrawDelegate TriggerRedraw { get; init; } = null!;
-    private delegate IntPtr TriggerRedrawDelegate(AtkComponentTextInput* self);
 
     private readonly DalamudContextMenu ContextMenu = null!;
     private readonly GameObjectContextMenuItem ContextMenuItemGame = null!;
@@ -137,9 +123,9 @@ public unsafe class SearchTheMarkets : Tweak
             itemSearch->TextInput->UnkText2.SetString(ptr);
         }
 
-        SetModeFilter(itemSearch, AddonItemSearch.SearchMode.Normal, 0xFFFFFFFF);
-        TriggerRedraw(itemSearch->TextInput);
-        RunSearch(itemSearch, false);
+        itemSearch->SetModeFilter(AddonItemSearch.SearchMode.Normal, 0xFFFFFFFF);
+        ((HaselAtkComponentTextInput*)itemSearch->TextInput)->TriggerRedraw();
+        itemSearch->RunSearch(false);
     }
 
     private bool InvalidState()

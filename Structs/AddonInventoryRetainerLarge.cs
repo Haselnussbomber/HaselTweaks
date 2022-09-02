@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Structs;
@@ -13,4 +14,8 @@ public unsafe partial struct AddonInventoryRetainerLarge
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
     [FieldOffset(0x2E8)] public int TabIndex;
+
+    // called via RetainerInventoryLarge vf67
+    [MemberFunction("E8 ?? ?? ?? ?? 48 83 C4 38 41 5E 41 5D C3")]
+    public partial void SetTab(int tab);
 }

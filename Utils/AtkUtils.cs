@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Dalamud.Interface;
-using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
 
@@ -45,27 +43,25 @@ public static unsafe class AtkUtils
         node->ToggleVisibility(visible);
     }
 
-    public static AtkUnitBase* GetHighestAtkUnitBaseAtPosition(List<string>? allowList = null, List<string>? ignoreList = null)
+    public static AtkUnitBase* GetHighestAtkUnitBaseAtPosition()
     {
         var position = ImGui.GetMousePos() - ImGuiHelpers.MainViewport.Pos;
 
-        var stage = AtkStage.GetSingleton();
-        var atkUnitList = &stage->RaptureAtkUnitManager->AtkUnitManager.DepthLayerFiveList;
+        var atkUnitList = &AtkStage.GetSingleton()->RaptureAtkUnitManager->AtkUnitManager.DepthLayerFiveList;
         var unitBaseArray = &atkUnitList->AtkUnitEntries;
 
-        for (var j = 0; j < atkUnitList->Count; j++)
+        for (var i = 0; i < atkUnitList->Count; i++)
         {
-            var unitBase = unitBaseArray[j];
+            var unitBase = unitBaseArray[i];
             if (unitBase->RootNode == null) continue;
             if (!(unitBase->IsVisible && unitBase->RootNode->IsVisible)) continue;
 
             if (unitBase->X > position.X || unitBase->Y > position.Y) continue;
             if (unitBase->X + unitBase->RootNode->Width < position.X) continue;
             if (unitBase->Y + unitBase->RootNode->Height < position.Y) continue;
+
             var name = Marshal.PtrToStringAnsi((IntPtr)unitBase->Name);
             if (name == null) continue;
-            if (allowList != null && !allowList.Contains(name)) continue;
-            if (ignoreList != null && ignoreList.Contains(name)) continue;
 
             return unitBase;
         }
@@ -91,7 +87,8 @@ public static unsafe class AtkUtils
         if (node == null) return false;
         while (node != null)
         {
-            if ((node->Flags & (short)NodeFlags.Visible) != (short)NodeFlags.Visible) return false;
+            if ((node->Flags & (short)NodeFlags.Visible) != (short)NodeFlags.Visible)
+                return false;
             node = node->ParentNode;
         }
         return true;

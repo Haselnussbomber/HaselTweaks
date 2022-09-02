@@ -1,13 +1,12 @@
 using System;
-using System.Runtime.InteropServices;
 using Dalamud.Game;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Memory;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 
@@ -17,9 +16,6 @@ public class DTR : Tweak
 {
     public override string Name => "DTR";
     public override string Description => "Shows Instance, FPS and Busy status in DTR bar.\nUse Dalamud Settings to enable/disable or to change order.";
-
-    [Signature("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 3C 01 75 0C 48 8D 0D ?? ?? ?? ?? E8", ScanType = ScanType.StaticAddress)]
-    private IntPtr InstanceIdAddress { get; init; }
 
     public DtrBarEntry? DtrInstance;
     public DtrBarEntry? DtrFPS;
@@ -59,17 +55,18 @@ public class DTR : Tweak
         UpdateBusy();
     }
 
-    private void UpdateInstance()
+    private unsafe void UpdateInstance()
     {
         if (DtrInstance == null) return;
 
-        if (InstanceIdAddress == IntPtr.Zero)
+        var instanceAreaData = InstanceAreaData.Instance();
+        if (instanceAreaData == null)
         {
             if (DtrInstance.Shown) DtrInstance.Shown = false;
             return;
         }
 
-        var instanceId = Marshal.ReadByte(InstanceIdAddress + 0x20);
+        var instanceId = instanceAreaData->GetInstanceId();
 
         if (instanceId <= 0 || instanceId >= 10)
         {
@@ -77,7 +74,7 @@ public class DTR : Tweak
             return;
         }
 
-        var instanceIcon = SeIconChar.Instance1 + (instanceId - 1);
+        var instanceIcon = SeIconChar.Instance1 + (byte)(instanceId - 1);
         DtrInstance.Text = instanceIcon.ToIconString();
         if (!DtrInstance.Shown) DtrInstance.Shown = true;
     }

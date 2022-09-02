@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Structs;
@@ -20,4 +21,7 @@ public unsafe partial struct MountMinionNoteBookBase
     [FieldOffset(0x298)] public TabSwitcher TabSwitcher;
 
     [FieldOffset(0x8A8)] public ViewType CurrentView;
+
+    [MemberFunction("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 8D 42 D3 83 F8 08")]
+    public partial void SwitchToFavorites();
 }
