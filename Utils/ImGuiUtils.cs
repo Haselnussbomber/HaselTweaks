@@ -109,4 +109,11 @@ public static class ImGuiUtils
         ImGui.Text("•");
         ImGui.SameLine();
     }
+
+    public static void SameLineSpace()
+    {
+        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(ImGui.CalcTextSize(" ").X, 0));
+        ImGui.SameLine();
+        ImGui.PopStyleVar();
+    }
 }
