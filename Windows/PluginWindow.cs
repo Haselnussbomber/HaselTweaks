@@ -20,6 +20,7 @@ public class PluginWindow : Window
 
     private Plugin Plugin { get; }
     private string SelectedTweak = string.Empty;
+    private readonly GameFontHandle FontAxis36;
 
     public PluginWindow(Plugin plugin) : base("HaselTweaks")
     {
@@ -38,11 +39,18 @@ public class PluginWindow : Window
 
         Flags |= ImGuiWindowFlags.AlwaysAutoResize;
         Flags |= ImGuiWindowFlags.NoSavedSettings;
+
+        FontAxis36 = Service.PluginInterface.UiBuilder.GetGameFontHandle(new GameFontStyle(GameFontFamilyAndSize.Axis36));
     }
 
     public override void OnClose()
     {
         SelectedTweak = string.Empty;
+    }
+
+    public override bool DrawConditions()
+    {
+        return FontAxis36.Available;
     }
 
     public override void Draw()
@@ -187,7 +195,7 @@ public class PluginWindow : Window
         if (string.IsNullOrEmpty(SelectedTweak))
         {
             var drawList = ImGui.GetWindowDrawList();
-            var font = Service.PluginInterface.UiBuilder.GetGameFontHandle(new GameFontStyle(GameFontFamilyAndSize.Axis36)).ImFont;
+            var font = FontAxis36.ImFont;
             var cursorPos = ImGui.GetCursorPos();
             var absolutePos = ImGui.GetWindowPos() + cursorPos;
             var contentAvail = ImGui.GetContentRegionAvail();
