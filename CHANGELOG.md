@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+- **Fixed:** The layout shift upon opening the configuration window is now fixed due to the font being loaded up-front.
+
+### New Tweak: Portrait Helper
+
+Adds Copy/Paste buttons to the "Edit Portrait" window, so you can copy the settings and then paste it to another one.
+
 ## [0.6.0] (2022-08-30)
 
 - **Changed:** The configuration window has been reworked.

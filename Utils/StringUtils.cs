@@ -78,7 +78,6 @@ public unsafe class StringUtils
         return ret;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "Readability")]
     public string GetSheetText<T>(uint rowId, string columnName) where T : ExcelRow
     {
         var sheetType = typeof(T);
@@ -116,6 +115,6 @@ public unsafe class StringUtils
             SheetCache[sheetName].Add(rowId, new());
         }
 
-        return SheetCache[sheetName][rowId][columnName] = value.ToString();
+        return SheetCache[sheetName][rowId][columnName] = SeString.Parse(value.RawData).ToString();
     }
 }

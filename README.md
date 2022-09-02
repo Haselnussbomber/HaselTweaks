@@ -4,23 +4,22 @@ Just some tweaks I wrote. :)
 
 Open config with `/haseltweaks`.
 
-Repo for auto-updates:
-
+Repo for auto-updates:  
 https://raw.githubusercontent.com/Haselnussbomber/MyDalamudPlugins/main/repo.json
 
 ## Tweaks
 
-### Aether Current Helper [[src](Tweaks/AetherCurrentHelper.cs)]
+### Aether Current Helper 
 
 Click on a zone in the Aether Currents window to open up a helper window that gives you details on how to unlock them. Clicking on an aether current in the list opens the map with a flag to the position.
 
-### Auto Sort Armoury Chest [[src](Tweaks/AutoSortArmouryChest.cs)]
+### Auto Sort Armoury Chest 
 
 Sorts items inside the Armoury Chest upon opening it.
 
 Uses the games `/itemsort` command for sorting. Condition and order are configurable.
 
-### Character Class Switcher [[src](Tweaks/CharacterClassSwitcher.cs)]
+### Character Class Switcher 
 
 Clicking on a class/job in the character window finds the matching gearset and equips it.
 
@@ -39,7 +38,7 @@ Features:
 > **Note**
 > In order for this tweak to work properly, please make sure to disable \"Character Window Job Switcher\" in Simple Tweaks first.
 
-### Commands [[src](Tweaks/Commands.cs)]
+### Commands 
 
 A variety of useful chat commands. Each command is separately toggleable.
 
@@ -50,15 +49,15 @@ Available Commands:
 - `/whatmount`  
   Target a player and execute the command to see what mount your target is riding and which item teaches this mount.
 
-### Custom Chat Timestamp [[src](Tweaks/CustomChatTimestamp.cs)]
+### Custom Chat Timestamp 
 
 As it says, configurable chat timestamp format. Uses C#'s <a href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings" target="_blank" rel="noreferrer noopener">`DateTime.ToString()`</a> to format.
 
-### DTR [[src](Tweaks/DTR.cs)]
+### DTR 
 
 Shows Instance, FPS and Busy status in DTR bar. Use Dalamud Settings to enable/disable or to change order.
 
-### Enhanced Experience Bar [[src](Tweaks/EnhancedExpBar.cs)]
+### Enhanced Experience Bar 
 
 The experience bar shows different level/experience based on your location.
 
@@ -68,23 +67,23 @@ The experience bar shows different level/experience based on your location.
 > **Note**
 > In order for this tweak to work properly, please make sure to disable "Show Experience Percentage" in Simple Tweaks first.
 
-### Expert Deliveries [[src](Tweaks/ExpertDeliveries.cs)]
+### Expert Deliveries 
 
 Always opens the "Grand Company Delivery Missions" window on the "Expert Delivery" tab.
 
-### Forced Cutscene Music [[src](Tweaks/ForcedCutsceneMusic.cs)]
+### Forced Cutscene Music 
 
 Auto-unmutes background music for cutscenes.
 
-### Hide MSQ Complete [[src](Tweaks/HideMSQComplete.cs)]
+### Hide MSQ Complete 
 
 Hides the Main Scenario Guide when you've completed the MSQ. Job quests are still being displayed.
 
-### Keep Screen Awake [[src](Tweaks/KeepScreenAwake.cs)]
+### Keep Screen Awake 
 
 Prevents the screen from going into standby.
 
-### Minimap Adjustments [[src](Tweaks/MinimapAdjustments.cs)]
+### Minimap Adjustments 
 
 Configuration options:
 
@@ -94,19 +93,23 @@ Configuration options:
 - Hide Coordinates (only visible on hover)
 - Hide Weather (only visible on hover)
 
-### Refresh Material List [[src](Tweaks/RefreshMaterialList.cs)]
+### Portrait Helper
+
+Adds Copy/Paste buttons to the "Edit Portrait" window, so you can copy the settings and then paste it to another one.
+
+### Refresh Material List 
 
 Refreshes the material list and recipe tree when you've crafted or gathered an item.
 
-### Requisite Materials [[src](Tweaks/RequisiteMaterials.cs)]
+### Requisite Materials 
 
 Always opens the Island Sanctuarys "Requisite Materials" window on the "Current & Next Season" tab.
 
-### Reveal Duty Requirements [[src](Tweaks/RevealDutyRequirements.cs)]
+### Reveal Duty Requirements 
 
 Reveals duty names in duty finder, which were shown as "???" to prevent spoilers. Useful for unlocking Mentor roulette.
 
-### Scrollable Tabs [[src](Tweaks/ScrollableTabs.cs)]
+### Scrollable Tabs 
 
 Enables mouse wheel to switch tabs (like with LB/RB on controllers) in the following windows:
 
@@ -125,6 +128,6 @@ Enables mouse wheel to switch tabs (like with LB/RB on controllers) in the follo
 - Shared FATE
 - Sightseeing Log
 
-### Search the markets [[src](Tweaks/SearchTheMarkets.cs)]
+### Search the markets 
 
 Adds a context menu entry to items in Inventory, Crafting Log, Recipe Tree or Materials List to quickly search for it on the Market Board. Only visible when Market Board is open.
