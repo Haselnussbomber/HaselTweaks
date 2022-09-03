@@ -37,7 +37,7 @@ jobs:
             unzip latest.zip -d ~/dalamud/
 
       - name: Build
-        run: dotnet build -c Release -p:IsCI=true -clp:NoSummary
+        run: dotnet build -c Release -clp:NoSummary
 
       - name: Rename manifest
         run: mv bin/${{ env.plugin_name }}/${{ env.plugin_name }}.json bin/${{ env.plugin_name }}/manifest.json

@@ -5,6 +5,7 @@
     <CopyLocalLockfileAssemblies>true</CopyLocalLockfileAssemblies>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <ItemGroup>
