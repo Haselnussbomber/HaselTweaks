@@ -15,7 +15,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class EnhancedExpBar : Tweak
 {
     public override string Name => "Enhanced Experience Bar";
-    public override string Description => @"The experience bar shows different level/experience based on your location.
+    public override string Description => @"Enhances the Experience Bar with the following modes:
 
 - The PvP Season Bar shows season rank and experience. A little * after the rank indicates a claimable rank-up reward.
 

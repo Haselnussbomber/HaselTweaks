@@ -13,7 +13,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class AetherCurrentHelper : Tweak
 {
     public override string Name => "Aether Current Helper";
-    public override string Description => "Click on a zone in the Aether Currents window to open up a helper window that gives you details on how to unlock them. Clicking on an aether current in the list opens the map with a flag to the position.";
+    public override string Description => "Clicking on a zone in the Aether Currents window opens a helper window that shows where to find the aether currents or which quests unlocks them. Clicking on an aether current in the list flags the position of the aether current or the quest giver on the map.";
 
     public class Configuration
     {

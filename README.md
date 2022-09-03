@@ -9,17 +9,17 @@ https://raw.githubusercontent.com/Haselnussbomber/MyDalamudPlugins/main/repo.jso
 
 ## Tweaks
 
-### Aether Current Helper 
+### Aether Current Helper
 
-Click on a zone in the Aether Currents window to open up a helper window that gives you details on how to unlock them. Clicking on an aether current in the list opens the map with a flag to the position.
+Clicking on a zone in the Aether Currents window opens a helper window that shows where to find the aether currents or which quests unlocks them. Clicking on an aether current in the list flags the position of the aether current or the quest giver on the map.
 
-### Auto Sort Armoury Chest 
+### Auto Sort Armoury Chest
 
 Sorts items inside the Armoury Chest upon opening it.
 
 Uses the games `/itemsort` command for sorting. Condition and order are configurable.
 
-### Character Class Switcher 
+### Character Class Switcher
 
 Clicking on a class/job in the character window finds the matching gearset and equips it.
 
@@ -36,54 +36,63 @@ Features:
 - Option to disable Tooltips
 
 > **Note**
-> In order for this tweak to work properly, please make sure to disable \"Character Window Job Switcher\" in Simple Tweaks first.
+> In order for this tweak to work properly, please make sure "Character Window Job Switcher" is disabled in Simple Tweaks.
 
-### Commands 
+### Commands
 
 A variety of useful chat commands. Each command is separately toggleable.
 
 Available Commands:
 
-- `/itemlink <id>`  
-  Prints an item link for the given item id in chat.
-- `/whatmount`  
-  Target a player and execute the command to see what mount your target is riding and which item teaches this mount.
+- `/itemlink <id>`
+  - Prints an item link for the given item id in chat.
+- `/whatmount`
+  - Target a player and execute the command to see what mount your target is riding and which item teaches this mount.
 
-### Custom Chat Timestamp 
+### Custom Chat Timestamp
 
 As it says, configurable chat timestamp format. Uses C#'s <a href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings" target="_blank" rel="noreferrer noopener">`DateTime.ToString()`</a> to format.
 
-### DTR 
+### DTR
 
-Shows Instance, FPS and Busy status in DTR bar. Use Dalamud Settings to enable/disable or to change order.
+Shows Instance, FPS and Busy status in DTR bar. To enable/disable elements or to change the order go into Dalamud Settings > Server Info Bar.
 
-### Enhanced Experience Bar 
+### Enhanced Experience Bar
 
-The experience bar shows different level/experience based on your location.
+Enhances the Experience Bar with the following modes:
 
 - The PvP Season Bar shows season rank and experience. A little * after the rank indicates a claimable rank-up reward.
 - The Sanctuary Bar shows sanctuary level and island experience.
 
-> **Note**
-> In order for this tweak to work properly, please make sure to disable "Show Experience Percentage" in Simple Tweaks first.
+Available options include:
 
-### Expert Deliveries 
+- Always show PvP Season Bar in PvP Areas
+- Always show Sanctuary Bar on the Island
+- Hide Job on Sanctuary Bar
+- Max Level Override
+  - Will switch to the selected bar if your current job is on max level and none of the settings above apply.
+- Disable color change
+
+> **Note**
+> In order for this tweak to work properly, please make sure "Show Experience Percentage" is disabled in Simple Tweaks.
+
+### Expert Deliveries
 
 Always opens the "Grand Company Delivery Missions" window on the "Expert Delivery" tab.
 
-### Forced Cutscene Music 
+### Forced Cutscene Music
 
-Auto-unmutes background music for cutscenes.
+Auto-unmutes background music for cutscenes started by quests? I'm not sure. But it works most of the time when I want it to. :D
 
-### Hide MSQ Complete 
+### Hide MSQ Complete
 
-Hides the Main Scenario Guide when you've completed the MSQ. Job quests are still being displayed.
+Hides the Main Scenario Guide when the MSQ is completed. Job quests are still being displayed.
 
-### Keep Screen Awake 
+### Keep Screen Awake
 
-Prevents the screen from going into standby.
+Prevents the screen from going into standby. Alternatively one can use [PowerToys Awake](https://docs.microsoft.com/windows/powertoys/).
 
-### Minimap Adjustments 
+### Minimap Adjustments
 
 Configuration options:
 
@@ -95,21 +104,23 @@ Configuration options:
 
 ### Portrait Helper
 
-Adds Copy/Paste buttons to the "Edit Portrait" window, so you can copy the settings and then paste it to another one.
+Adds Copy/Paste buttons to the "Edit Portrait" window, which allow settings to be copied to other portraits.
 
-### Refresh Material List 
+The Advanced Mode allows you to specify which settings should be pasted.
 
-Refreshes the material list and recipe tree when you've crafted or gathered an item.
+### Refresh Material List
 
-### Requisite Materials 
+Refreshes the material list and recipe tree when an item was crafted, fished or gathered.
+
+### Requisite Materials
 
 Always opens the Island Sanctuarys "Requisite Materials" window on the "Current & Next Season" tab.
 
-### Reveal Duty Requirements 
+### Reveal Duty Requirements
 
 Reveals duty names in duty finder, which were shown as "???" to prevent spoilers. Useful for unlocking Mentor roulette.
 
-### Scrollable Tabs 
+### Scrollable Tabs
 
 Enables mouse wheel to switch tabs (like with LB/RB on controllers) in the following windows:
 
@@ -128,6 +139,6 @@ Enables mouse wheel to switch tabs (like with LB/RB on controllers) in the follo
 - Shared FATE
 - Sightseeing Log
 
-### Search the markets 
+### Search the markets
 
-Adds a context menu entry to items in Inventory, Crafting Log, Recipe Tree or Materials List to quickly search for it on the Market Board. Only visible when Market Board is open.
+Adds a context menu entry to items in Inventory, Crafting Log, Recipe Tree or Materials List to quickly search for the item on the Market Board. Only visible when Market Board is open.

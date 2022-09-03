@@ -8,7 +8,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class ForcedCutsceneMusic : Tweak
 {
     public override string Name => "Forced Cutscene Music";
-    public override string Description => "Auto-unmutes background music for cutscenes.";
+    public override string Description => "Auto-unmutes background music for cutscenes started by quests? I'm not sure. But it works most of the time when I want it to. :D";
     public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.ForcedCutsceneMusic;
 
     public class Configuration
