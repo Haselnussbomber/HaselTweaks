@@ -12,15 +12,14 @@ namespace HaselTweaks.Utils;
 
 public static class ImGuiUtils
 {
-    public const uint ColorWhite = 0xFFFFFFFF;
-    public const uint ColorOrange = 0xFF009AFF;
-    public const uint ColorGold = 0xFF7DBBD8;
-    public const uint ColorGreen = 0xFF00FF00;
-    public const uint ColorRed = 0xFF0000FF;
-    public const uint ColorLightRed = 0xFF3333DD;
-    public const uint ColorGrey = 0xFFBBBBBB;
-    public const uint ColorGrey2 = 0xFFDDDDDD;
-    public const uint ColorGrey3 = 0xFF999999;
+    public static Vector4 ColorWhite = Vector4.One;
+    public static Vector4 ColorOrange = new(1f, 0.6f, 0f, 1f);
+    public static Vector4 ColorGold = new(0.847f, 0.733f, 0.49f, 1f);
+    public static Vector4 ColorGreen = new(0f, 1f, 0f, 1f);
+    public static Vector4 ColorRed = new(1f, 0f, 0f, 1f);
+    public static Vector4 ColorGrey = new(0.73f, 0.73f, 0.73f, 1f);
+    public static Vector4 ColorGrey2 = new(0.87f, 0.87f, 0.87f, 1f);
+    public static Vector4 ColorGrey3 = new(0.6f, 0.6f, 0.6f, 1f);
 
     private static readonly Dictionary<int, TextureWrap> icons = new();
 
@@ -53,26 +52,11 @@ public static class ImGuiUtils
     {
         // push down a bit
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y * 2);
-
-        ImGui.PushStyleColor(ImGuiCol.Text, ColorGold);
-        ImGui.Text(label);
-        ImGui.PopStyleColor();
-
+        ImGui.TextColored(ColorGold, label);
         // pull up the separator
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() - ImGui.GetStyle().ItemSpacing.Y + 3);
         ImGui.Separator();
-
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y * 2 - 1);
-    }
-
-    public static uint ToColor(this Vector4 vec)
-    {
-        return ((uint)(vec.W * 255) << 24) + ((uint)(vec.X * 255) << 16) + ((uint)(vec.Y * 255) << 8) + (uint)(vec.Z * 255);
-    }
-
-    public static Vector4 ToVector(this uint val)
-    {
-        return new Vector4((byte)val / 255f, (byte)(val >> 8) / 255f, (byte)(val >> 16) / 255f, (byte)(val >> 24) / 255f);
     }
 
     public static void DrawLink(string label, string title, string url)
@@ -89,11 +73,11 @@ public static class ImGuiUtils
             ImGui.GetWindowDrawList().AddText(
                 UiBuilder.IconFont, 12,
                 ImGui.GetWindowPos() + pos + new Vector2(2),
-                ColorGrey,
+                ImGui.GetColorU32(ColorGrey),
                 FontAwesomeIcon.ExternalLinkAlt.ToIconString()
             );
             ImGui.SetCursorPos(pos + new Vector2(20, 0));
-            ImGui.TextColored(ColorGrey.ToVector(), url);
+            ImGui.TextColored(ColorGrey, url);
             ImGui.EndTooltip();
         }
 
@@ -115,5 +99,12 @@ public static class ImGuiUtils
         ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(ImGui.CalcTextSize(" ").X, 0));
         ImGui.SameLine();
         ImGui.PopStyleVar();
+    }
+
+    public static void TextColoredWrapped(Vector4 col, string text)
+    {
+        ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetColorU32(col));
+        ImGui.TextWrapped(text);
+        ImGui.PopStyleColor();
     }
 }

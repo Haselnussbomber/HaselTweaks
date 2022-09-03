@@ -5,7 +5,6 @@ using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Colors;
-using Dalamud.Interface.Style;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using HaselTweaks.Structs;
@@ -19,16 +18,15 @@ namespace HaselTweaks.Tweaks;
 public class DTR : Tweak
 {
     public override string Name => "DTR";
+
     public override bool HasDescription => true;
     public override void DrawDescription()
     {
-        ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey2);
-        ImGui.TextWrapped("Shows Instance, FPS and Busy status in DTR bar.");
-        ImGui.PopStyleColor();
+        ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey, "Shows Instance, FPS and Busy status in DTR bar.");
 
         ImGuiUtils.DrawSection("Configuration");
         ImGui.Text("To enable/disable elements or to change the order go into");
-        ImGui.TextColored(ImGuiUtils.ColorRed.ToVector(), "Dalamud Settings");
+        ImGui.TextColored(ImGuiColors.DalamudRed, "Dalamud Settings");
         if (ImGui.IsItemHovered())
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);

@@ -317,7 +317,7 @@ public unsafe class PortraitHelperWindow : Window
 
                 ImGui.EndTable();
 
-                ImGui.TextColored(ImGuiUtils.ColorGrey.ToVector(), "Only checked rows will be pasted.");
+                ImGui.TextColored(ImGuiUtils.ColorGrey, "Only checked rows will be pasted.");
             }
         }
 

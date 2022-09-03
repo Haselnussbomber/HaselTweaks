@@ -17,23 +17,18 @@ public abstract class Tweak
 {
     public string InternalName => GetType().Name;
     public abstract string Name { get; }
+
     public virtual string Description => string.Empty;
     public virtual bool HasDescription => !string.IsNullOrEmpty(Description);
-    public virtual void DrawDescription()
-    {
-        ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey2);
-        ImGui.TextWrapped(Description);
-        ImGui.PopStyleColor();
-    }
+    public virtual void DrawDescription() => ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey2, Description);
+
     public virtual string IncompatibilityWarning => string.Empty;
     public virtual bool HasIncompatibilityWarning => !string.IsNullOrEmpty(IncompatibilityWarning);
     public virtual void DrawIncompatibilityWarning()
     {
         ImGuiUtils.DrawIcon(60073, 24, 24);
         ImGui.SameLine();
-        ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey2);
-        ImGui.TextWrapped(IncompatibilityWarning);
-        ImGui.PopStyleColor();
+        ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey2, IncompatibilityWarning);
     }
 
     public virtual bool Outdated { get; protected set; }

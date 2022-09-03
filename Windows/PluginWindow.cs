@@ -89,8 +89,6 @@ public class PluginWindow : Window
 
             if (!tweak.Ready || tweak.Outdated)
             {
-                ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorLightRed);
-
                 var startPos = ImGui.GetCursorPos();
                 var drawList = ImGui.GetWindowDrawList();
                 var pos = ImGui.GetWindowPos() + startPos;
@@ -103,7 +101,9 @@ public class PluginWindow : Window
                 if (ImGui.IsItemHovered())
                 {
                     var (status, color) = GetTweakStatus(tweak);
-                    ImGui.SetTooltip(status);
+                    ImGui.BeginTooltip();
+                    ImGui.TextColored(color, status);
+                    ImGui.EndTooltip();
                 }
 
                 drawList.AddRectFilled(pos, pos + size, ImGui.GetColorU32(ImGuiCol.FrameBg), 3f, ImDrawFlags.RoundCornersAll);
@@ -114,13 +114,11 @@ public class PluginWindow : Window
 
                 drawList.PathLineTo(pos);
                 drawList.PathLineTo(pos + size);
-                drawList.PathStroke(ImGui.GetColorU32(ImGuiCol.Text), ImDrawFlags.None, frameHeight / 5f * 0.5f);
+                drawList.PathStroke(ImGui.GetColorU32(ImGuiUtils.ColorRed), ImDrawFlags.None, frameHeight / 5f * 0.5f);
 
                 drawList.PathLineTo(pos + new Vector2(0, size.Y));
                 drawList.PathLineTo(pos + new Vector2(size.X, 0));
-                drawList.PathStroke(ImGui.GetColorU32(ImGuiCol.Text), ImDrawFlags.None, frameHeight / 5f * 0.5f);
-
-                ImGui.PopStyleColor();
+                drawList.PathStroke(ImGui.GetColorU32(ImGuiUtils.ColorRed), ImDrawFlags.None, frameHeight / 5f * 0.5f);
 
                 fixY = true;
             }
@@ -160,7 +158,7 @@ public class PluginWindow : Window
 
             if (!tweak.Ready || tweak.Outdated)
             {
-                ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorLightRed);
+                ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorRed);
             }
             else if (!enabled)
             {
@@ -208,14 +206,14 @@ public class PluginWindow : Window
             drawList.AddText(
                 font, 34,
                 absolutePos + contentAvail / 2 - pluginNameSize - spacing / 2 + offset,
-                ImGuiUtils.ColorWhite,
+                ImGui.GetColorU32(ImGuiUtils.ColorWhite),
                 "HaselTweaks"
             );
 
             drawList.AddLine(
                 absolutePos + new Vector2(contentAvail.X / 5, contentAvail.Y / 2) + spacing / 2 + offset,
                 absolutePos + new Vector2(contentAvail.X / 5 * 4, contentAvail.Y / 2) + spacing / 2 + offset,
-                ImGuiUtils.ColorOrange
+                ImGui.GetColorU32(ImGuiUtils.ColorOrange)
             );
 
             // links, bottom left
@@ -252,9 +250,7 @@ public class PluginWindow : Window
             return;
         }
 
-        ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGold);
-        ImGui.Text(tweak.Name);
-        ImGui.PopStyleColor();
+        ImGui.TextColored(ImGuiUtils.ColorGold, tweak.Name);
 
         var (status, color) = GetTweakStatus(tweak);
 
@@ -264,9 +260,7 @@ public class PluginWindow : Window
 
         ImGui.SameLine(windowX - textSize.X);
 
-        ImGui.PushStyleColor(ImGuiCol.Text, color);
-        ImGui.Text(status);
-        ImGui.PopStyleColor();
+        ImGui.TextColored(color, status);
 
         if (tweak.HasDescription)
         {
@@ -284,12 +278,8 @@ public class PluginWindow : Window
         if (tweak.LastException != null)
         {
             ImGuiUtils.DrawSection("[DEBUG] Exception");
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorRed);
-            ImGui.TextWrapped(tweak.LastException.Message.Replace("HaselTweaks.Tweaks.", ""));
-            ImGui.PopStyleColor();
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey2);
-            ImGui.TextWrapped(tweak.LastException.StackTrace);
-            ImGui.PopStyleColor();
+            ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorRed, tweak.LastException.Message.Replace("HaselTweaks.Tweaks.", ""));
+            ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey2, tweak.LastException.StackTrace ?? "");
         }
 #endif
 
@@ -318,9 +308,7 @@ public class PluginWindow : Window
                 if (!string.IsNullOrEmpty(attr.HelpMessage))
                 {
                     ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetStyle().IndentSpacing);
-                    ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey);
-                    ImGui.Text(attr.HelpMessage);
-                    ImGui.PopStyleColor();
+                    ImGui.TextColored(ImGuiUtils.ColorGrey, attr.HelpMessage);
                 }
             }
         }
@@ -413,7 +401,7 @@ public class PluginWindow : Window
         ImGui.EndChild();
     }
 
-    private static (string, uint) GetTweakStatus(Tweak tweak)
+    private static (string, Vector4) GetTweakStatus(Tweak tweak)
     {
         var status = "???";
         var color = ImGuiUtils.ColorGrey3;
@@ -448,17 +436,13 @@ public class PluginWindow : Window
         if (!string.IsNullOrEmpty(data.Description))
         {
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey);
-            ImGui.TextWrapped(data.Description);
-            ImGui.PopStyleColor();
+            ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
         }
     }
 
     private static void DrawNoDrawingFunctionError(FieldInfo field)
     {
-        ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorRed);
-        ImGui.TextWrapped($"Could not find suitable drawing function for field \"{field.Name}\" (Type {field.FieldType.Name}).");
-        ImGui.PopStyleColor();
+        ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorRed, $"Could not find suitable drawing function for field \"{field.Name}\" (Type {field.FieldType.Name}).");
     }
 
     private static void DrawSingleSelectEnumInt32(ConfigDrawData<int> data, Type enumType)
@@ -562,9 +546,7 @@ public class PluginWindow : Window
         if (!string.IsNullOrEmpty(data.Description))
         {
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey);
-            ImGui.TextWrapped(data.Description);
-            ImGui.PopStyleColor();
+            ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
         }
     }
 }
