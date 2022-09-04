@@ -55,7 +55,9 @@ public unsafe partial struct AgentBannerEditPortraitState
     [FieldOffset(0x1AC)] public byte AmbientLightingBrightness;
     [FieldOffset(0x1AD)] public bool PoseHasNoCustomName;
 
-    [FieldOffset(0x2A8)] public CharaView* CharaView;
+    [FieldOffset(0x240)] public fixed uint ItemIds[14];
+
+    [FieldOffset(0x2A8)] public CharaViewPortrait* CharaView;
 
     [FieldOffset(0x2C4)] public byte PortraitIndex;
 
