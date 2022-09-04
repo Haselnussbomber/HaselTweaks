@@ -6,10 +6,10 @@ using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class RequisiteMaterials : Tweak
+public unsafe class MaterialAllocation : Tweak
 {
-    public override string Name => "Requisite Materials";
-    public override string Description => "Always opens the Island Sanctuarys \"Requisite Materials\" window on the \"Current & Next Season\" tab.";
+    public override string Name => "Material Allocation";
+    public override string Description => "Always opens the Island Sanctuarys \"Material Allocation\" window on the \"Current & Next Season\" tab.";
 
     private bool CurrentNextSeasonTabSwitched;
     public override void OnFrameworkUpdate(Framework framework)

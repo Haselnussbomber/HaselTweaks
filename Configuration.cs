@@ -79,6 +79,7 @@ internal partial class Configuration : IDisposable
             {
                 ["RevealDungeonRequirements"] = "RevealDutyRequirements", // commit 7ce9b37b
                 ["SeriesExpBar"] = "EnhancedExpBar", // commit 11b6231f
+                ["RequisiteMaterials"] = "MaterialAllocation",
             };
 
             var newEnabledTweaks = new JArray();
