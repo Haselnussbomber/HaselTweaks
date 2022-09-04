@@ -1,12 +1,12 @@
 # Changelog
 
-### Unreleased
+### [0.7.2] (2022-09-04)
 
 - Improved Tweak Descriptions
 
 ### Renamed Tweak: Requisite Materials -> Material Allocation
 
-I play with the german client and picked the wrong window title from the games sheets. Sorry for the confusion.
+I play with the german client and picked the wrong window title from the games sheets. 😳 Sorry for the confusion.
 
 ## [0.7.1] (2022-09-02)
 
@@ -309,7 +309,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.2...HEAD
+[0.7.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.5.1...v0.6.0
