@@ -1,5 +1,13 @@
 # Changelog
 
+### Unreleased
+
+- Improved Tweak Descriptions
+
+### Renamed Tweak: Requisite Materials -> Material Allocation
+
+I play with the german client and picked the wrong window title from the games sheets. Sorry for the confusion.
+
 ## [0.7.1] (2022-09-02)
 
 ### Enhanced Experience Bar

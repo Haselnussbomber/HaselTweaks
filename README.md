@@ -92,6 +92,10 @@ Hides the Main Scenario Guide when the MSQ is completed. Job quests are still be
 
 Prevents the screen from going into standby. Alternatively one can use [PowerToys Awake](https://docs.microsoft.com/windows/powertoys/).
 
+### Material Allocation
+
+Always opens the Island Sanctuarys "Material Allocation" window on the "Current & Next Season" tab.
+
 ### Minimap Adjustments
 
 Configuration options:
@@ -106,15 +110,11 @@ Configuration options:
 
 Adds Copy/Paste buttons to the "Edit Portrait" window, which allow settings to be copied to other portraits.
 
-The Advanced Mode allows you to specify which settings should be pasted.
+The Advanced Mode allows to specify which settings should be pasted.
 
 ### Refresh Material List
 
 Refreshes the material list and recipe tree when an item was crafted, fished or gathered.
-
-### Requisite Materials
-
-Always opens the Island Sanctuarys "Requisite Materials" window on the "Current & Next Season" tab.
 
 ### Reveal Duty Requirements
 

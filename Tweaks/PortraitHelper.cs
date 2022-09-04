@@ -11,7 +11,7 @@ public unsafe class PortraitHelper : Tweak
     public override string Name => "Portrait Helper";
     public override string Description => @"Adds Copy/Paste buttons to the ""Edit Portrait"" window, which allow settings to be copied to other portraits.
 
-The Advanced Mode allows you to specify which settings should be pasted.";
+The Advanced Mode allows to specify which settings should be pasted.";
 
     private readonly PortraitHelperWindow Window = new();
 
