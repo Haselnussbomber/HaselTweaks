@@ -7,7 +7,7 @@ namespace HaselTweaks.Utils;
 
 public static unsafe class GamepadUtils
 {
-    public static Dictionary<GamepadButtons, ConfigOption> ButtonConfigMapping = new()
+    public static Dictionary<GamepadButtons, ConfigOption> ButtonConfigMapping { get; } = new()
     {
         [GamepadButtons.North] = ConfigOption.PadButton_Triangle,
         [GamepadButtons.East] = ConfigOption.PadButton_Circle,

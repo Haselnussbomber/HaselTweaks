@@ -28,7 +28,7 @@ public unsafe class ForcedCutsceneMusic : Tweak
     private bool wasBgmMuted;
 
     /// <see href="https://github.com/karashiiro/SoundSetter/blob/master/SoundSetter/OptionInternals/OptionKind.cs#L23"/>
-    private uint IsSndBgm => 35; // ConfigOption.IsSndBgm;
+    private static uint IsSndBgm => 35; // ConfigOption.IsSndBgm;
     private bool IsBgmMuted
     {
         get

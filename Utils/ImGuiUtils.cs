@@ -12,14 +12,14 @@ namespace HaselTweaks.Utils;
 
 public static class ImGuiUtils
 {
-    public static Vector4 ColorWhite = Vector4.One;
-    public static Vector4 ColorOrange = new(1f, 0.6f, 0f, 1f);
-    public static Vector4 ColorGold = new(0.847f, 0.733f, 0.49f, 1f);
-    public static Vector4 ColorGreen = new(0f, 1f, 0f, 1f);
-    public static Vector4 ColorRed = new(1f, 0f, 0f, 1f);
-    public static Vector4 ColorGrey = new(0.73f, 0.73f, 0.73f, 1f);
-    public static Vector4 ColorGrey2 = new(0.87f, 0.87f, 0.87f, 1f);
-    public static Vector4 ColorGrey3 = new(0.6f, 0.6f, 0.6f, 1f);
+    public static Vector4 ColorWhite { get; } = Vector4.One;
+    public static Vector4 ColorOrange { get; } = new(1f, 0.6f, 0f, 1f);
+    public static Vector4 ColorGold { get; } = new(0.847f, 0.733f, 0.49f, 1f);
+    public static Vector4 ColorGreen { get; } = new(0f, 1f, 0f, 1f);
+    public static Vector4 ColorRed { get; } = new(1f, 0f, 0f, 1f);
+    public static Vector4 ColorGrey { get; } = new(0.73f, 0.73f, 0.73f, 1f);
+    public static Vector4 ColorGrey2 { get; } = new(0.87f, 0.87f, 0.87f, 1f);
+    public static Vector4 ColorGrey3 { get; } = new(0.6f, 0.6f, 0.6f, 1f);
 
     private static readonly Dictionary<int, TextureWrap> icons = new();
 

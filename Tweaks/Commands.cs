@@ -28,7 +28,7 @@ public class Commands : Tweak
         public bool EnableWhatMountCommand = true;
     }
 
-    private void OnConfigChange()
+    private static void OnConfigChange()
     {
         DisableCommands();
         EnableCommands();
@@ -44,7 +44,7 @@ public class Commands : Tweak
         DisableCommands(true);
     }
 
-    private void EnableCommands()
+    private static void EnableCommands()
     {
         if (Config.EnableItemLinkCommand && !Service.Commands.Commands.ContainsKey(ItemLinkCommand))
         {
@@ -65,7 +65,7 @@ public class Commands : Tweak
         }
     }
 
-    private void DisableCommands(bool removeAll = false)
+    private static void DisableCommands(bool removeAll = false)
     {
         if ((!Config.EnableItemLinkCommand || removeAll) && Service.Commands.Commands.ContainsKey(ItemLinkCommand))
         {
