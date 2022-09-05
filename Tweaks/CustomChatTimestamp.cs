@@ -14,7 +14,7 @@ public unsafe class CustomChatTimestamp : Tweak
 
     public class Configuration
     {
-        [ConfigField(Description = "This gets passed to C#'s DateTime.ToString() function.")]
+        [ConfigField(Description = "This gets passed to C#'s DateTime.ToString() function.", DefaultValue = "[HH:mm] ")]
         public string Format = "[HH:mm] ";
     }
 

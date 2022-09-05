@@ -107,4 +107,12 @@ public static class ImGuiUtils
         ImGui.TextWrapped(text);
         ImGui.PopStyleColor();
     }
+
+    public static bool IconButton(FontAwesomeIcon icon, Vector2 size = default)
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        var ret = ImGui.Button(icon.ToIconString(), size);
+        ImGui.PopFont();
+        return ret;
+    }
 }

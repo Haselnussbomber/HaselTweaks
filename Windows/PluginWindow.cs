@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Dalamud;
+using Dalamud.Interface;
 using Dalamud.Interface.GameFonts;
 using Dalamud.Interface.Windowing;
 using HaselTweaks.Utils;
@@ -521,6 +522,8 @@ public class PluginWindow : Window
 
         if (ImGui.InputText(data.Key, ref value, 50))
             data.Value = value;
+
+        DrawResetButton(data);
     }
 
     private static void DrawFloat(ConfigDrawData<float> data)
@@ -534,6 +537,8 @@ public class PluginWindow : Window
 
         if (ImGui.SliderFloat(data.Key, ref value, min, max))
             data.Value = value;
+
+        DrawResetButton(data);
     }
 
     private static void DrawBool(ConfigDrawData<bool> data)
@@ -547,6 +552,22 @@ public class PluginWindow : Window
         {
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
             ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
+        }
+    }
+
+    private static void DrawResetButton<T>(ConfigDrawData<T> data)
+    {
+        if (data.Attr?.DefaultValue != null)
+        {
+            ImGui.SameLine();
+            if (ImGuiUtils.IconButton(FontAwesomeIcon.Undo))
+            {
+                data.Value = (T)data.Attr!.DefaultValue;
+            }
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip($"Reset to Default: {(T)data.Attr!.DefaultValue}");
+            }
         }
     }
 }
