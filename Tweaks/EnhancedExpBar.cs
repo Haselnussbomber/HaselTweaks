@@ -270,7 +270,14 @@ public unsafe class EnhancedExpBar : Tweak
             level = islandState->Level.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
             requiredExperience = MJIRankSheet.GetRow(islandState->Level)!.Unknown0;
 
-            leftText->SetText($"{job}{levelLabel} {level}   {islandState->Experience}/{requiredExperience}");
+            var expStr = islandState->Experience.ToString();
+            var reqExpStr = requiredExperience.ToString();
+            if (requiredExperience == 0)
+            {
+                expStr = reqExpStr = "--";
+            }
+
+            leftText->SetText($"{job}{levelLabel} {level}   {expStr}/{reqExpStr}");
 
             addon->GaugeBarNode->SetSecondaryValue(0); // rested experience bar
 
