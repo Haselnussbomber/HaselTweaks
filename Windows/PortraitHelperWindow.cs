@@ -269,7 +269,7 @@ public unsafe class PortraitHelperWindow : Window
                     "CameraPosition",
                     ref CopyCameraPosition,
                     "Camera Position",
-                    ExportedPortraitData->CameraPositionX != 0 || ExportedPortraitData->CameraPositionY != 0
+                    ExportedPortraitData->CameraPhi != 0 || ExportedPortraitData->CameraTheta != 0
                         ? (Service.StringUtils.GetSheetText<Addon>(4203, "Text") ?? "Custom")
                         : (Service.StringUtils.GetSheetText<Addon>(4202, "Text") ?? "Default")
                 );
@@ -278,7 +278,7 @@ public unsafe class PortraitHelperWindow : Window
                     "CameraTarget",
                     ref CopyCameraTarget,
                     "Camera Target",
-                    ExportedPortraitData->CameraTargetX != 0 || ExportedPortraitData->CameraTargetY != 0 || ExportedPortraitData->CameraTargetZ != 0
+                    ExportedPortraitData->CameraTarget1 != 0 || ExportedPortraitData->CameraTarget2 != 0 || ExportedPortraitData->CameraTarget3 != 0
                         ? (Service.StringUtils.GetSheetText<Addon>(4203, "Text") ?? "Custom")
                         : (Service.StringUtils.GetSheetText<Addon>(4202, "Text") ?? "Default")
                 );
@@ -473,18 +473,18 @@ public unsafe class PortraitHelperWindow : Window
 
         if (!AdvancedMode || CopyCameraPosition)
         {
-            portraitData->CameraPositionX = ExportedPortraitData->CameraPositionX;
-            portraitData->CameraPositionY = ExportedPortraitData->CameraPositionY;
-            portraitData->CameraPositionZ = ExportedPortraitData->CameraPositionZ;
-            portraitData->CameraPositionW = ExportedPortraitData->CameraPositionW;
+            portraitData->CameraPhi = ExportedPortraitData->CameraPhi;
+            portraitData->CameraTheta = ExportedPortraitData->CameraTheta;
+            portraitData->CameraR = ExportedPortraitData->CameraR;
+            portraitData->CameraUnk2AC = ExportedPortraitData->CameraUnk2AC;
         }
 
         if (!AdvancedMode || CopyCameraTarget)
         {
-            portraitData->CameraTargetX = ExportedPortraitData->CameraTargetX;
-            portraitData->CameraTargetY = ExportedPortraitData->CameraTargetY;
-            portraitData->CameraTargetZ = ExportedPortraitData->CameraTargetZ;
-            portraitData->CameraTargetW = ExportedPortraitData->CameraTargetW;
+            portraitData->CameraTarget1 = ExportedPortraitData->CameraTarget1;
+            portraitData->CameraTarget2 = ExportedPortraitData->CameraTarget2;
+            portraitData->CameraTarget3 = ExportedPortraitData->CameraTarget3;
+            portraitData->CameraTarget4 = ExportedPortraitData->CameraTarget4;
         }
 
         if (!AdvancedMode || CopyHeadDirection)
