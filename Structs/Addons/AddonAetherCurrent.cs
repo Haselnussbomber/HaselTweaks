@@ -10,7 +10,7 @@ public unsafe partial struct AddonAetherCurrent
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x228)] public HaselAtkComponentRadioButton* Tabs; // Tabs[NumTabs]
+    [FieldOffset(0x228)] public AtkComponentRadioButton* Tabs; // Tabs[NumTabs]
 
     [FieldOffset(0x254)] public int TabIndex;
     [FieldOffset(0x258)] public int NumTabs;

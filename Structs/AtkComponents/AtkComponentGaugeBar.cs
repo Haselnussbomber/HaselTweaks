@@ -5,7 +5,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Structs;
 
 [StructLayout(LayoutKind.Explicit, Size = 0x1A8)]
-public partial struct HaselAtkComponentGaugeBar
+public partial struct AtkComponentGaugeBar
 {
     [FieldOffset(0x0)] public AtkComponentBase AtkComponentBase;
 

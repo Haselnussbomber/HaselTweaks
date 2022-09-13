@@ -1,8 +1,6 @@
-using System;
 using System.Runtime.InteropServices;
 using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
-using static HaselTweaks.Structs.HaselRaptureGearsetModule;
 
 namespace HaselTweaks.Structs;
 
@@ -22,12 +20,12 @@ public unsafe partial struct ClientObjectManager
         [FieldOffset(0x14)] public short Unk14;
     }
 
-    [StructLayout(LayoutKind.Sequential, Size = 0x10)]
+    [StructLayout(LayoutKind.Sequential, Size = Length * 0x10)]
     public struct ClientObjectArray
     {
         public const int Length = 45;
 
-        private fixed byte data[Length * Gearset.StructSize];
+        private fixed byte data[Length * 0x10];
 
         public ClientObjectEntry* this[int i]
         {

@@ -7,9 +7,9 @@ namespace HaselTweaks.Structs;
 
 // ctor 48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 48 89 7C 24 ?? 41 56 48 83 EC 20 45 33 F6 48 89 51 10 48 8D 05 ?? ?? ?? ?? 4C 89 71 08 49 8B D8
 [StructLayout(LayoutKind.Explicit, Size = 0xB348)]
-public unsafe struct HaselRaptureGearsetModule
+public unsafe struct RaptureGearsetModule
 {
-    public static HaselRaptureGearsetModule* Instance() => (HaselRaptureGearsetModule*)Framework.Instance()->GetUiModule()->GetRaptureGearsetModule();
+    public static RaptureGearsetModule* Instance() => (RaptureGearsetModule*)Framework.Instance()->GetUiModule()->GetRaptureGearsetModule();
 
     [FieldOffset(0x00)] public void* vtbl;
     [FieldOffset(0x30)] public fixed byte ModuleName[16];

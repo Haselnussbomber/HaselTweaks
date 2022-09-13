@@ -9,6 +9,8 @@ using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using Action = Lumina.Excel.GeneratedSheets.Action;
+using HaselAtkComponentDropDownList = HaselTweaks.Structs.AtkComponentDropDownList;
+using HaselAtkComponentList = HaselTweaks.Structs.AtkComponentList;
 
 namespace HaselTweaks.Windows;
 

@@ -1,10 +1,10 @@
 using System.Runtime.InteropServices;
 using FFXIVClientStructs.Attributes;
 
-namespace FFXIVClientStructs.FFXIV.Client.Game.UI;
+namespace HaselTweaks.Structs;
 
 [StructLayout(LayoutKind.Explicit, Size = 0x798)]
-public unsafe partial struct HaselPlayerState
+public unsafe partial struct PlayerState
 {
     [StaticAddress("4C 89 7C 24 ?? 48 8D 1D")]
     public static partial byte* GetAetherCurrentUnlocksPointer(); // UIState.Instance().PlayerState.AetherCurrentUnlocks aka. (IntPtr)UIState.Instance() + 0xA38 + 0x4E1

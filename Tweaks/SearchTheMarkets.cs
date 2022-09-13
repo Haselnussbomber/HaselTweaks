@@ -9,6 +9,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;
+using HaselAtkComponentTextInput = HaselTweaks.Structs.AtkComponentTextInput;
 
 namespace HaselTweaks.Tweaks;
 

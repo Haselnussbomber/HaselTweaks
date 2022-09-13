@@ -14,6 +14,7 @@ using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
+using HaselPlayerState = HaselTweaks.Structs.PlayerState;
 
 namespace HaselTweaks.Windows;
 

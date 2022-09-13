@@ -24,7 +24,7 @@ public unsafe partial struct AddonItemSearch
     [FieldOffset(0x230)] public SearchMode Mode;
     [FieldOffset(0x234)] public uint SelectedFilter;
 
-    [FieldOffset(0x2DB0)] public AtkComponentTextInput* TextInput;
+    [FieldOffset(0x2DB0)] public FFXIVClientStructs.FFXIV.Component.GUI.AtkComponentTextInput* TextInput;
     [FieldOffset(0x2DB8)] public AtkComponentButton* SearchButton;
 
     [FieldOffset(0x3EDB)] public bool PartialMatch;

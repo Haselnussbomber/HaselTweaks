@@ -6,8 +6,8 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
-using GearsetArray = HaselTweaks.Structs.HaselRaptureGearsetModule.GearsetArray;
-using GearsetFlag = HaselTweaks.Structs.HaselRaptureGearsetModule.GearsetFlag;
+using GearsetArray = HaselTweaks.Structs.RaptureGearsetModule.GearsetArray;
+using GearsetFlag = HaselTweaks.Structs.RaptureGearsetModule.GearsetFlag;
 
 namespace HaselTweaks.Tweaks;
 
@@ -321,7 +321,7 @@ public unsafe class CharacterClassSwitcher : Tweak
 
     private static void SwitchClassJob(uint classJobId)
     {
-        var gearsetModule = HaselRaptureGearsetModule.Instance();
+        var gearsetModule = RaptureGearsetModule.Instance();
         if (gearsetModule == null) return;
 
         // loop through all gearsets and find the one matching classJobId with the highest avg itemlevel

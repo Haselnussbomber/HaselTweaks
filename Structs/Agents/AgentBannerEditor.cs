@@ -59,6 +59,9 @@ public unsafe partial struct AgentBannerEditPortraitState
 
     [FieldOffset(0x2A8)] public CharaViewPortrait* CharaView;
 
+    [FieldOffset(0x2B8)] public uint Unk2B8;
+    [FieldOffset(0x2BC)] public uint Unk2BC;
+
     [FieldOffset(0x2C4)] public byte PortraitIndex;
 
     [FieldOffset(0x2CC)] public uint CloseDialogAddonId;

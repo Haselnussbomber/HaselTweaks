@@ -5,7 +5,7 @@ using FFXIVClientStructs.Attributes;
 namespace HaselTweaks.Structs;
 
 [StructLayout(LayoutKind.Explicit)]
-public unsafe partial struct HaselAtkComponentList
+public unsafe partial struct AtkComponentList
 {
     [VirtualFunction(35)]
     public partial uint GetListLength();

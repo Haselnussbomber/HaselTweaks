@@ -8,7 +8,7 @@ public unsafe struct AddonExp
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x250)] public HaselAtkComponentGaugeBar* GaugeBarNode; // #6
+    [FieldOffset(0x250)] public AtkComponentGaugeBar* GaugeBarNode; // #6
     [FieldOffset(0x258)] public AtkTextNode* RightTextNode; // #5
     [FieldOffset(0x260)] public AtkImageNode* RestedAreaImageNode; // #3
     [FieldOffset(0x268)] public AtkImageNode* PvpAreaImageNode; // #2
