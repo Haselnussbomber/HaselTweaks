@@ -1,5 +1,11 @@
 # Changelog
 
+### [0.7.3] (2022-09-17)
+
+### Aether Current Helper
+
+- **Fixed(?):** Window expanding infinitely.
+
 ### [0.7.2] (2022-09-04)
 
 - Improved Tweak Descriptions
@@ -309,7 +315,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.2...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.3...HEAD
+[0.7.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.2...v0.7.3
 [0.7.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.6.0...v0.7.0
