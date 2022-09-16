@@ -148,11 +148,11 @@ public class AetherCurrentHelperWindow : Window
         }
 
         var startPos = ImGui.GetCursorPos();
-        var windowSize = ImGui.GetWindowSize();
+        var windowSize = ImGui.GetContentRegionAvail();
         var style = ImGui.GetStyle();
         var iconSize = 26;
 
-        ImGui.SetCursorPos(new Vector2(windowSize.X - style.ItemSpacing.X - iconSize, iconSize + style.ItemSpacing.Y));
+        ImGui.SetCursorPos(new Vector2(windowSize.X + style.WindowPadding.X - iconSize - 1, iconSize + style.ItemSpacing.Y));
 
         ImGuiUtils.DrawIcon(64, iconSize, iconSize);
 
