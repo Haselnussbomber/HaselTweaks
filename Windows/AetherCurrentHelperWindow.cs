@@ -177,7 +177,33 @@ public class AetherCurrentHelperWindow : Window
 
     private void DrawQuest(int index, bool isUnlocked, AetherCurrent aetherCurrent)
     {
-        var quest = aetherCurrent.Quest.Value!;
+        var questId = aetherCurrent.Quest.Row;
+
+        // Some AetherCurrents link to the wrong Quest.
+        // See https://github.com/Haselnussbomber/HaselTweaks/issues/15
+
+        /*
+        // The Dravanian Forelands (CompFlgSet#2)
+        if (aetherCurrent.RowId == 2818065 && questId == 67328) // Natural Repellent
+            questId = 67333 or 67326; // "The Hunter Becomes the Kweh" or "Stolen Munitions"
+        else if (aetherCurrent.RowId == 2818066 && questId == 67334) // Chocobo's Last Stand
+            questId = 67333 or 67326; // "The Hunter Becomes the Kweh" or "Stolen Munitions"
+        */
+
+        // The Churning Mists (CompFlgSet#4)
+        if (aetherCurrent.RowId == 2818096 && questId == 67365) // The Unceasing Gardener
+            questId = 67364; // Hide Your Moogles
+
+        // The Sea of Clouds (CompFlgSet#5)
+        else if (aetherCurrent.RowId == 2818110 && questId == 67437) // Search and Rescue
+            questId = 67410; // Honoring the Past
+
+        // Thavnair (CompFlgSet#21)
+        else if (aetherCurrent.RowId == 2818328 && questId == 70030) // Curing What Ails
+            questId = 69793; // In Agama's Footsteps
+
+        var quest = Service.Data.GetExcelSheet<Quest>()?.GetRow(questId);
+        if (questId == 0 || quest == null) return;
 
         ImGui.TableNextColumn();
         {
