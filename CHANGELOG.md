@@ -1,10 +1,16 @@
 # Changelog
 
+### [0.7.4] (2022-10-06)
+
+### Aether Current Helper
+
+- **Fix:** Some AetherCurrent entries link to the wrong quest. Added 3 of 5 as special case in the plugin. (see issue #15)
+
 ### [0.7.3] (2022-09-17)
 
 ### Aether Current Helper
 
-- **Fixed(?):** Window expanding infinitely.
+- **Fixed:** Window expanding infinitely.
 
 ### [0.7.2] (2022-09-04)
 
@@ -315,7 +321,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.3...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.4...HEAD
+[0.7.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.3...v0.7.4
 [0.7.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.2...v0.7.3
 [0.7.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.0...v0.7.1
