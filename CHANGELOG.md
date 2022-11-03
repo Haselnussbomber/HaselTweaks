@@ -1,5 +1,11 @@
 # Changelog
 
+### [Unreleased]
+
+### Aether Current Helper
+
+- **Fix:** Corrects the Dravanian Forelands quest ids.
+
 ### [0.7.4] (2022-10-06)
 
 ### Aether Current Helper

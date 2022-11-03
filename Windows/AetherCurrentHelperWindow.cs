@@ -184,9 +184,9 @@ public class AetherCurrentHelperWindow : Window
 
         // The Dravanian Forelands (CompFlgSet#2)
         if (aetherCurrent.RowId == 2818065 && questId == 67328) // Natural Repellent
-            questId = 67333; // The Hunter Becomes the Kweh
-        else if (aetherCurrent.RowId == 2818066 && questId == 67334) // Chocobo's Last Stand
             questId = 67326; // Stolen Munitions
+        else if (aetherCurrent.RowId == 2818066 && questId == 67334) // Chocobo's Last Stand
+            questId = 67333; // The Hunter Becomes the Kweh
 
         // The Churning Mists (CompFlgSet#4)
         else if (aetherCurrent.RowId == 2818096 && questId == 67365) // The Unceasing Gardener
@@ -213,24 +213,6 @@ public class AetherCurrentHelperWindow : Window
             ImGui.TextColored(TitleColor, $"[#{index}] {Service.StringUtils.GetQuestName(quest.RowId, true)}");
 
             ImGui.Text(GetHumanReadableCoords(quest.IssuerLocation.Value!) + " | " + Service.StringUtils.GetENpcResidentName(quest.IssuerStart));
-
-            if (aetherCurrent.RowId is 2818065 or 2818066)
-            {
-                ImGui.Text("Note: Incorrect quest data in the game files. This is a 50/50 guess.");
-                ImGui.Text("Please use the");
-                ImGui.SameLine();
-                ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorOrange);
-                ImGuiUtils.DrawLink("Wiki", "", "https://ffxiv.consolegameswiki.com/wiki/Aether_Currents#The_Dravanian_Forelands");
-                ImGui.PopStyleColor();
-                ImGui.SameLine();
-                ImGui.Text("for this entry and maybe comment on");
-                ImGui.SameLine();
-                ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorOrange);
-                ImGuiUtils.DrawLink("issue #15", "", "https://github.com/Haselnussbomber/HaselTweaks/issues/15");
-                ImGui.PopStyleColor();
-                ImGui.SameLine();
-                ImGui.Text("on GitHub if it's right or wrong.");
-            }
         }
 
         ImGui.TableNextColumn();
