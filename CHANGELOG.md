@@ -1,6 +1,6 @@
 # Changelog
 
-### [Unreleased]
+### [0.7.6] (2022-12-09)
 
 ### Aether Current Helper
 
@@ -11,13 +11,13 @@
 
 ### Aether Current Helper
 
-- **Fix:** Corrects the Dravanian Forelands quest ids.
+- **Fixed:** Corrects the Dravanian Forelands quest ids.
 
 ### [0.7.4] (2022-10-06)
 
 ### Aether Current Helper
 
-- **Fix:** Some AetherCurrent entries link to the wrong quest. Added 3 of 5 as special case in the plugin. (see issue #15)
+- **Fixed:** Some AetherCurrent entries link to the wrong quest. Added 3 of 5 as special case in the plugin. (see issue #15)
 
 ### [0.7.3] (2022-09-17)
 
@@ -334,7 +334,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.5...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.6...HEAD
+[0.7.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.5...v0.7.6
 [0.7.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.4...v0.7.5
 [0.7.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.3...v0.7.4
 [0.7.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.2...v0.7.3
