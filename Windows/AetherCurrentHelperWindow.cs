@@ -23,7 +23,7 @@ public class AetherCurrentHelperWindow : Window
     private readonly Dictionary<uint, EObj?> EObjCache = new(); // key is AetherCurrent.RowId
     private readonly Dictionary<uint, Level?> LevelCache = new(); // key is Level.RowId
     private AetherCurrentCompFlgSet? compFlgSet;
-    private bool hideUnlocked = true; // false;
+    private bool hideUnlocked = true;
 
     private readonly Vector4 TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f, 1);
 
@@ -283,7 +283,11 @@ public class AetherCurrentHelperWindow : Window
                 {
                     var direction = distance > 1 ? GetCompassDirection(level) : string.Empty;
                     var text = $"{distance:0}y {direction}";
-                    ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
+
+                    if (Config.CenterDistance)
+                    {
+                        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
+                    }
 
                     if (isUnlocked)
                     {
@@ -314,7 +318,7 @@ public class AetherCurrentHelperWindow : Window
         ImGui.PushFont(UiBuilder.IconFont);
         var icon = FontAwesomeIcon.Check.ToIconString();
 
-        if (isSameTerritory)
+        if (isSameTerritory && Config.CenterDistance)
         {
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(icon).X / 2);
         }

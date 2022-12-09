@@ -4,6 +4,7 @@
 
 ### Aether Current Helper
 
+- **Added:** A new config option to disable centering of the distance column, which *might* help in case the window keeps expanding endlessly to the right.
 - **Fixed:** Corrects the Compass Directions (East/West was swapped).
 
 ### [0.7.5] (2022-11-03)
