@@ -417,8 +417,8 @@ public class AetherCurrentHelperWindow : Window
         return localPlayer == null || level == null
             ? string.Empty
             : GetCompassDirection(
-                new Vector2(localPlayer.Position.X, localPlayer.Position.Z),
-                new Vector2(level.X, level.Z)
+                new Vector2(-localPlayer.Position.X, localPlayer.Position.Z),
+                new Vector2(-level.X, level.Z)
             );
     }
 }

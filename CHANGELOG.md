@@ -1,5 +1,11 @@
 # Changelog
 
+### [Unreleased]
+
+### Aether Current Helper
+
+- **Fixed:** Corrects the Compass Directions (East/West was swapped).
+
 ### [0.7.5] (2022-11-03)
 
 ### Aether Current Helper
