@@ -73,7 +73,7 @@ public unsafe partial struct CharaViewPortrait : ICreatable
 
     /* This is the base CharaView initializer. Use the other one below.
     [VirtualFunction(1)]
-    public partial void Initialize(CharaViewCharacterData* a2, int objectIndex, IntPtr a4);
+    public partial void Initialize(CharaViewCharacterData* characterData, int objectIndex, IntPtr agentCallbackReady);
     */
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 8B 43 10 C6 80 ?? ?? ?? ?? ?? 48 8B 4B 10")]

@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
+using Lumina.Data.Parsing;
 
 namespace HaselTweaks.Structs;
 
@@ -15,7 +16,7 @@ namespace HaselTweaks.Structs;
  *  4 used in BannerList, BannerEdit
  */
 
-public enum CharaViewState : byte
+public enum CharaViewState : uint
 {
     Ready = 6
 }
@@ -24,27 +25,28 @@ public enum CharaViewState : byte
 public unsafe partial struct CharaView : ICreatable
 {
     [FieldOffset(0x8)] public CharaViewState State; // initialization state of KernelTexture, Camera etc. that happens in Render()
-
     [FieldOffset(0xC)] public uint ClientObjectId; // ClientObjectManager = non-networked objects, ClientObjectIndex + 40
     [FieldOffset(0x10)] public uint ClientObjectIndex;
-    [FieldOffset(0x14)] public uint Unk14; // turns portrait ambient/directional lighting on/off
-
-    [FieldOffset(0x18)] public IntPtr CameraManager; // ?
+    [FieldOffset(0x14)] public uint CameraType; // turns portrait ambient/directional lighting on/off
+    [FieldOffset(0x18)] public IntPtr CameraManager;
     [FieldOffset(0x20)] public IntPtr Camera;
-
+    [FieldOffset(0x28)] public IntPtr Unk28;
     [FieldOffset(0x30)] public IntPtr Agent; // for example: AgentTryOn
-
+    [FieldOffset(0x38)] public IntPtr AgentCallbackReady; // if set, called when State changes to Ready
+    [FieldOffset(0x40)] public IntPtr AgentCallback; // not investigated, used inside vf7 and vf11
     [FieldOffset(0x48)] public CharaViewCharacterData CharacterData;
 
     [FieldOffset(0xB8)] public uint UnkB8;
     [FieldOffset(0xBC)] public uint UnkBC;
     [FieldOffset(0xC0)] public float UnkC0;
-    [FieldOffset(0xC4)] public float ZoomRatio; // from SimpleTweaks
+    [FieldOffset(0xC4)] public float ZoomRatio;
 
     [FieldOffset(0xD0)] public fixed byte Items[0x20 * 14];
-
+    //[FieldOffset(0x290)] public byte SomeFlag;
     [FieldOffset(0x291)] public bool CharacterDataCopied;
     [FieldOffset(0x292)] public bool CharacterLoaded;
+
+    [FieldOffset(0x298)] public long Unk298; // timestamp?
 
     public Span<CharaViewItem> ItemSpan
     {
@@ -69,7 +71,7 @@ public unsafe partial struct CharaView : ICreatable
     public partial void Dtor(bool freeMemory);
 
     [VirtualFunction(1)]
-    public partial void Initialize(IntPtr agent, int clientObjectId, IntPtr a4); // a4 is set to +0x38
+    public partial void Initialize(IntPtr agent, int clientObjectId, IntPtr agentCallbackReady);
 
     [VirtualFunction(2)]
     public partial void Release();
@@ -123,7 +125,7 @@ public unsafe partial struct CharaView : ICreatable
     public partial void UnequipGear(bool hasCharacterData = false, bool characterLoaded = true);
 
     [MemberFunction("E8 ?? ?? ?? ?? 45 33 DB FF C3")]
-    public partial void SetItemSlotData(byte slotId, uint itemId, byte stain, int a5 = 0, byte a6 = 1); // maybe a6 is visible flag?
+    public partial void SetItemSlotData(byte slotId, uint itemId, byte stain, int a5 = 0, byte a6 = 1); // maybe a5 is glamour id and a6 is a boolean that it should use glamour?
 
     [MemberFunction("E8 ?? ?? ?? ?? B1 01 0F B6 87 ?? ?? ?? ??")]
     public partial void ToggleDrawWeapon(bool drawn);
@@ -175,9 +177,9 @@ public unsafe struct CharaViewItem
     [FieldOffset(0x6)] public byte Unk6;
     [FieldOffset(0x7)] public byte Unk7;
     [FieldOffset(0x8)] public uint ItemId;
-    [FieldOffset(0xC)] public byte ItemId2;
-    [FieldOffset(0x10)] public long Unk10;
-    [FieldOffset(0x18)] public long Unk18;
+    [FieldOffset(0xC)] public uint ItemId2;
+    [FieldOffset(0x10)] public Quad ModelMain;
+    [FieldOffset(0x18)] public Quad ModelSub;
 }
 
 [StructLayout(LayoutKind.Explicit)]
