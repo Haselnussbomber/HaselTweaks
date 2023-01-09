@@ -470,6 +470,8 @@ public class PluginWindow : Window
 
         DrawLabel(data);
 
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
+
         if (ImGui.BeginCombo(data.Key, selectedLabel))
         {
             var names = Enum.GetNames(enumType)
@@ -499,6 +501,8 @@ public class PluginWindow : Window
     {
         DrawLabel(data);
 
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
+
         if (ImGui.BeginCombo(data.Key, data.Value))
         {
             foreach (var item in options)
@@ -520,6 +524,8 @@ public class PluginWindow : Window
 
         DrawLabel(data);
 
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
+
         if (ImGui.InputText(data.Key, ref value, 50))
             data.Value = value;
 
@@ -534,6 +540,8 @@ public class PluginWindow : Window
         var value = data.Value;
 
         DrawLabel(data);
+
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
 
         if (ImGui.SliderFloat(data.Key, ref value, min, max))
             data.Value = value;
