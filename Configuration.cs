@@ -121,16 +121,10 @@ internal partial class Configuration : IDisposable
 
             config[nameof(EnabledTweaks)] = newEnabledTweaks;
 
-            if (config[nameof(Tweaks)] is not null)
+            if (tweakConfigs?["EnhancedExpBar"]?["ForcePvPSeasonBar"] != null)
             {
-                if (config[nameof(Tweaks)][nameof(EnhancedExpBar)] is not null)
-                {
-                    if (config[nameof(Tweaks)]["EnhancedExpBar"]["ForcePvPSeasonBar"] is not null)
-                    {
-                        config[nameof(Tweaks)]["EnhancedExpBar"]["ForcePvPSeriesBar"]= config[nameof(Tweaks)]["EnhancedExpBar"]["ForcePvPSeasonBar"];
-                        config[nameof(Tweaks)]["EnhancedExpBar"]["ForcePvPSeasonBar"].Remove();
-                    }
-                }
+                tweakConfigs["EnhancedExpBar"]!["ForcePvPSeriesBar"] = tweakConfigs["EnhancedExpBar"]!["ForcePvPSeasonBar"];
+                tweakConfigs["EnhancedExpBar"]!["ForcePvPSeasonBar"]!.Remove();
             }
 
             if (gameVersion == null || (string?)config[nameof(SigCacheVersion)] != gameVersion)
