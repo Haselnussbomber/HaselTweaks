@@ -1,5 +1,3 @@
-using System;
-
 namespace HaselTweaks;
 
 public enum ConfigFieldTypes

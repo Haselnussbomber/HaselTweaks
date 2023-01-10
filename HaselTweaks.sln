@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31606.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HaselTweaks", "HaselTweaks.csproj", "{66F84C6F-1F37-4331-AD98-92C10C931CCF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HaselTweaks.Generators", "Generators\HaselTweaks.Generators.csproj", "{92E53B74-0E6F-4325-95D3-27C539F211BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HaselTweaks.InteropSourceGenerators", "InteropSourceGenerators\HaselTweaks.InteropSourceGenerators.csproj", "{92E53B74-0E6F-4325-95D3-27C539F211BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

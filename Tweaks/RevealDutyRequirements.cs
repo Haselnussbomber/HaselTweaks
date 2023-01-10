@@ -1,4 +1,3 @@
-using System;
 using Dalamud.Utility.Signatures;
 using HaselTweaks.Utils;
 

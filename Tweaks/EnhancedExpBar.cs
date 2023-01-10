@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Dalamud.Game.Text;
 using Dalamud.Hooking;
@@ -18,7 +17,7 @@ public unsafe class EnhancedExpBar : Tweak
     public override string Name => "Enhanced Experience Bar";
     public override string Description => @"Enhances the Experience Bar with the following modes:
 
-- The PvP Season Bar shows season rank and experience. A little * after the rank indicates a claimable rank-up reward.
+- The PvP Series Bar shows series rank and experience. A little * after the rank indicates a claimable rank-up reward.
 
 - The Sanctuary Bar shows sanctuary level and island experience.";
     public override bool HasIncompatibilityWarning => Service.PluginInterface.PluginInternalNames.Contains("SimpleTweaksPlugin");
@@ -31,8 +30,8 @@ public unsafe class EnhancedExpBar : Tweak
         [EnumOption("Default")]
         Default,
 
-        [EnumOption("PvP Season Bar")]
-        PvPSeasonBar,
+        [EnumOption("PvP Series Bar")]
+        PvPSeriesBar,
 
         // Disabled because data is only available once loaded into the island. Sadge.
         //[EnumOption("Sanctuary Bar")]
@@ -42,10 +41,10 @@ public unsafe class EnhancedExpBar : Tweak
     public class Configuration
     {
         [ConfigField(
-            Label = "Always show PvP Season Bar in PvP Areas",
+            Label = "Always show PvP Series Bar in PvP Areas",
             OnChange = nameof(RequestUpdate)
         )]
-        public bool ForcePvPSeasonBar = true;
+        public bool ForcePvPSeriesBar = true;
 
         [ConfigField(
             Label = "Always show Sanctuary Bar on the Island",
@@ -94,17 +93,17 @@ public unsafe class EnhancedExpBar : Tweak
     }
 
     // probably the laziest way to detect if xp has changed
-    private ushort LastSeasonXp = 0;
+    private ushort LastSeriesXp = 0;
     private uint LastIslandExperience = 0;
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
         var shouldUpdate = false;
 
         var pvpState = PvPState.Instance();
-        if (pvpState != null && pvpState->IsLoaded == 0x01 && LastSeasonXp != pvpState->SeasonExperience)
+        if (pvpState != null && pvpState->IsLoaded == 0x01 && LastSeriesXp != pvpState->SeriesExperience)
         {
             shouldUpdate = true;
-            LastSeasonXp = pvpState->SeasonExperience;
+            LastSeriesXp = pvpState->SeriesExperience;
         }
 
         var islandState = MJIManager.Instance();
@@ -199,7 +198,7 @@ public unsafe class EnhancedExpBar : Tweak
 
         // --- forced bars in certain locations
 
-        if (Config.ForcePvPSeasonBar && Service.ClientState.IsPvP) // TODO: only when PvP Season is active
+        if (Config.ForcePvPSeriesBar && Service.ClientState.IsPvP) // TODO: only when PvP Series is active
             goto PvPBar;
 
         if (Config.ForceSanctuaryBar && Service.ClientState.TerritoryType == 1055) // TODO: is there a better way to check if we are on the island?
@@ -209,7 +208,7 @@ public unsafe class EnhancedExpBar : Tweak
 
         if (isMaxLevel)
         {
-            if (Config.MaxLevelOverride == MaxLevelOverrideType.PvPSeasonBar)
+            if (Config.MaxLevelOverride == MaxLevelOverrideType.PvPSeriesBar)
                 goto PvPBar;
 
             //if (Config.MaxLevelOverride == MaxLevelOverrideType.SanctuaryBar)
@@ -225,22 +224,22 @@ public unsafe class EnhancedExpBar : Tweak
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             var PvPSeriesLevelSheet = Service.Data.GetExcelSheet<PvPSeriesLevel>();
-            if (PvPSeriesLevelSheet == null || pvpState->SeasonRank > PvPSeriesLevelSheet.Count() - 1)
+            if (PvPSeriesLevelSheet == null || pvpState->SeriesRank > PvPSeriesLevelSheet.Count() - 1)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             job = Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation;
             levelLabel = (Service.StringUtils.GetSheetText<Addon>(14860, "Text") ?? "Series Level").Trim().Replace(":", "");
-            var rank = pvpState->SeasonRankWithOverflow > pvpState->SeasonMaxRank ? pvpState->SeasonRank : pvpState->SeasonRankWithOverflow;
+            var rank = pvpState->SeriesRankWithOverflow > 30 ? pvpState->SeriesRank : pvpState->SeriesRankWithOverflow; // 30 = Series Max Rank
             level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-            var star = pvpState->SeasonRankWithOverflow > pvpState->SeasonRank ? '*' : ' ';
-            requiredExperience = PvPSeriesLevelSheet.GetRow(pvpState->SeasonRank)!.Unknown0;
+            var star = pvpState->SeriesRankWithOverflow > pvpState->SeriesRank ? '*' : ' ';
+            requiredExperience = PvPSeriesLevelSheet.GetRow(pvpState->SeriesRank)!.Unknown0;
 
-            leftText->SetText($"{job}  {levelLabel} {level}{star}   {pvpState->SeasonExperience}/{requiredExperience}");
+            leftText->SetText($"{job}  {levelLabel} {level}{star}   {pvpState->SeriesExperience}/{requiredExperience}");
 
             addon->GaugeBarNode->SetSecondaryValue(0); // rested experience bar
 
             // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-            addon->GaugeBarNode->SetValue((uint)(pvpState->SeasonExperience / (float)requiredExperience * 10000), 0, false);
+            addon->GaugeBarNode->SetValue((uint)(pvpState->SeriesExperience / (float)requiredExperience * 10000), 0, false);
 
             if (!Config.DisableColorChanges)
             {

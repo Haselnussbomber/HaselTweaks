@@ -15,7 +15,7 @@ The Advanced Mode allows to specify which settings should be pasted.";
 
     private readonly PortraitHelperWindow Window = new();
 
-    internal static AgentBannerEditor* AgentBannerEditor => (AgentBannerEditor*)Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalId(AgentId.BannerEditor);
+    internal static AgentBannerEditor* AgentBannerEditor => (AgentBannerEditor*)Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalID(393); // TODO: 6.3 - use AgentId.BannerEditor once updated
     internal static AddonBannerEditor* AddonBannerEditor => (AddonBannerEditor*)AtkUtils.GetUnitBase("BannerEditor");
 
     public PortraitHelper() : base()

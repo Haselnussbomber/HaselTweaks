@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Specialized;
-using System.Runtime.InteropServices;
-using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 
 namespace HaselTweaks.Structs;
@@ -52,7 +49,7 @@ public unsafe partial struct CharaViewMiragePlate : ICreatable
         return IMemorySpace.GetUISpace()->Create<CharaViewMiragePlate>();
     }
 
-    [MemberFunction("40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 66 C7 83 ?? ?? ?? ?? ?? ?? 48 89 03 33 C0 89 83 ?? ?? ?? ??")]
+    [MemberFunction("40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 66 C7 83 ?? ?? ?? ?? ?? ?? 48 89 03 33 C0 89 83")]
     public partial void Ctor();
 
     [VirtualFunction(0)]

@@ -8,6 +8,7 @@ namespace HaselTweaks.Tweaks;
 public class AutoSortArmouryChest : Tweak
 {
     public override string Name => "Auto Sort Armoury Chest";
+    public override bool Outdated => true; // TODO: waiting for XivCommon update
     public override string Description => "Sorts items inside the Armoury Chest upon opening it.";
     public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.AutoSortArmouryChest;
 
@@ -123,9 +124,9 @@ public class AutoSortArmouryChest : Tweak
         }
 
         Log($"Executing {definition}");
-        Plugin.XivCommon.Functions.Chat.SendMessage(definition);
+        //Plugin.XivCommon.Functions.Chat.SendMessage(definition);
 
         Log($"Executing {execute}");
-        Plugin.XivCommon.Functions.Chat.SendMessage(execute);
+        //Plugin.XivCommon.Functions.Chat.SendMessage(execute);
     }
 }

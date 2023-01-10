@@ -1,9 +1,8 @@
-using System.Runtime.InteropServices;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 
 namespace HaselTweaks.Structs;
 
-// ctor E8 ?? ?? ?? ?? 48 8B F0 48 89 45 0F
+// ctor "E8 ?? ?? ?? ?? 48 8B F0 48 89 45 0F"
 [StructLayout(LayoutKind.Explicit, Size = 0x90)]
 public unsafe struct CutsceneState
 {

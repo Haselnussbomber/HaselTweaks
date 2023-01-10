@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
@@ -103,7 +101,7 @@ public unsafe class ScrollableTabs : Tweak
             case "AOZNotebook":            // Blue Magic Spellbook
             case "OrnamentNoteBook":       // Fashion Accessories
             case "MYCWarResultNotebook":   // Field Records
-            case "FishGuide":              // Fish Guide
+            case "FishGuide2":             // Fish Guide
             case "GSInfoCardList":         // Gold Saucer -> Card List
             case "GSInfoEditDeck":         // Gold Saucer -> Decks -> Edit Deck
             case "LovmPaletteEdit":        // Gold Saucer -> Lord of Verminion -> Minion Hotbar
@@ -221,9 +219,9 @@ public unsafe class ScrollableTabs : Tweak
         {
             UpdateMountMinion((MountMinionNoteBookBase*)unitBase);
         }
-        else if (Config.HandleFishGuide && name == "FishGuide")
+        else if (Config.HandleFishGuide && name == "FishGuide2")
         {
-            UpdateTabSwitcher((IntPtr)unitBase, ((AddonFishGuide*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((IntPtr)unitBase, ((AddonFishGuide2*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleAdventureNoteBook && name == "AdventureNoteBook")
         {
@@ -404,8 +402,8 @@ public unsafe class ScrollableTabs : Tweak
             if (addon->CurrentPageIndex > 0)
             {
                 var page = addon->CurrentPageIndex - 1;
-                addon->vtbl->ReceiveEvent(addon, AtkEventType.ButtonClick, page + 10, atkEvent);
-                addon->vtbl->ReceiveEvent(addon, AtkEventType.ButtonClick, 9, atkEvent);
+                addon->ReceiveEvent(AtkEventType.ButtonClick, page + 10, atkEvent, 0);
+                addon->ReceiveEvent(AtkEventType.ButtonClick, 9, atkEvent, 0);
             }
         }
         else if (eventParam == 10)
@@ -413,12 +411,12 @@ public unsafe class ScrollableTabs : Tweak
             if (addon->CurrentPageIndex < 4)
             {
                 var page = addon->CurrentPageIndex + 1;
-                addon->vtbl->ReceiveEvent(addon, AtkEventType.ButtonClick, page + 10, atkEvent);
+                addon->ReceiveEvent(AtkEventType.ButtonClick, page + 10, atkEvent, 0);
             }
         }
         else
         {
-            addon->vtbl->ReceiveEvent(addon, AtkEventType.ButtonClick, eventParam, atkEvent);
+            addon->ReceiveEvent(AtkEventType.ButtonClick, eventParam, atkEvent, 0);
         }
 
         IMemorySpace.Free(atkEvent);

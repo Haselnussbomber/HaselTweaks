@@ -1,6 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 
 namespace HaselTweaks.Structs;

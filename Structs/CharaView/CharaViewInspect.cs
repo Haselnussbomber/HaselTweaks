@@ -1,6 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 
 namespace HaselTweaks.Structs;
@@ -16,7 +13,7 @@ public unsafe partial struct CharaViewInspect : ICreatable
     }
 
     // CharaView_Ctor
-    [MemberFunction("E8 ?? ?? ?? ?? 41 80 A6 ?? ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ??")]
+    [MemberFunction("E8 ?? ?? ?? ?? 41 80 A6 ?? ?? ?? ?? ?? 48 8D 05")]
     public partial void Ctor();
 
     [VirtualFunction(0)]

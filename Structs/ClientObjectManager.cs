@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 
 namespace HaselTweaks.Structs;

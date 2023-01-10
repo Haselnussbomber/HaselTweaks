@@ -1,4 +1,3 @@
-using System;
 using Dalamud.Hooking;
 using Dalamud.Memory;
 using Dalamud.Utility.Signatures;

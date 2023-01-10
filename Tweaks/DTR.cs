@@ -1,4 +1,3 @@
-using System;
 using Dalamud.Game;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text;
@@ -22,11 +21,13 @@ public class DTR : Tweak
     public override bool HasDescription => true;
     public override void DrawDescription()
     {
-        ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey2, "Shows Instance, FPS and Busy status in DTR bar.");
+        ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey, "Shows Instance, FPS and Busy status in DTR bar.");
 
         ImGuiUtils.DrawSection("Configuration");
         ImGui.Text("To enable/disable elements or to change the order go into");
         ImGui.TextColored(ImGuiColors.DalamudRed, "Dalamud Settings");
+        // TODO: waiting for XivCommon update
+        #if false
         if (ImGui.IsItemHovered())
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
@@ -45,6 +46,7 @@ public class DTR : Tweak
             }
             Service.Framework.RunOnTick(OpenSettings, default, 2);
         }
+        #endif
         ImGuiUtils.SameLineSpace();
         ImGui.Text("> Server Info Bar.");
     }

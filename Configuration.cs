@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,6 +16,8 @@ internal partial class Configuration : IPluginConfiguration
     public int Version { get; set; } = 1;
     public HashSet<string> EnabledTweaks { get; private set; } = new();
     public TweakConfigs Tweaks { get; init; } = new();
+    public string SigCacheVersion { get; init; } = string.Empty;
+    public ConcurrentDictionary<string, long>? SigCache { get; init; } = new();
 }
 
 public class TweakConfigs
@@ -35,7 +37,7 @@ internal partial class Configuration : IDisposable
 {
     public static Configuration Instance { get; private set; } = null!;
 
-    internal static Configuration Load(string[] tweakNames)
+    internal static Configuration Load(string[] tweakNames, string? gameVersion)
     {
         if (Instance != null)
             return Instance;
@@ -118,6 +120,27 @@ internal partial class Configuration : IDisposable
             }
 
             config[nameof(EnabledTweaks)] = newEnabledTweaks;
+
+            if (config[nameof(Tweaks)] is not null)
+            {
+                if (config[nameof(Tweaks)][nameof(EnhancedExpBar)] is not null)
+                {
+                    if (config[nameof(Tweaks)]["EnhancedExpBar"]["ForcePvPSeasonBar"] is not null)
+                    {
+                        config[nameof(Tweaks)]["EnhancedExpBar"]["ForcePvPSeriesBar"]= config[nameof(Tweaks)]["EnhancedExpBar"]["ForcePvPSeasonBar"];
+                        config[nameof(Tweaks)]["EnhancedExpBar"]["ForcePvPSeasonBar"].Remove();
+                    }
+                }
+            }
+
+            if (gameVersion == null || (string?)config[nameof(SigCacheVersion)] != gameVersion)
+            {
+                if ((string?)config[nameof(SigCacheVersion)] != null)
+                    PluginLog.Information($"SigCache outdated (${(string?)config[nameof(SigCacheVersion)]}) => {gameVersion})");
+
+                config[nameof(SigCacheVersion)] = gameVersion;
+                config[nameof(SigCache)]?.Remove();
+            }
         }
         catch (Exception e)
         {

@@ -1,4 +1,3 @@
-using System;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
@@ -27,7 +26,7 @@ public unsafe class AetherCurrentHelper : Tweak
     private readonly AetherCurrentHelperWindow Window = new();
 
     // Client::UI::Agent::AgentAetherCurrent_ReceiveEvent
-    [AutoHook, Signature("48 89 5C 24 ?? 55 56 57 41 56 41 57 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 48 8B D9 49 8B F8", DetourName = nameof(ReceiveEventDetour))]
+    [AutoHook, Signature("40 53 55 56 57 41 56 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 48 8B D9 49 8B F8", DetourName = nameof(ReceiveEventDetour))]
     private Hook<ReceiveEventDelegate> ReceiveEventHook { get; init; } = null!;
     private unsafe delegate IntPtr ReceiveEventDelegate(AgentAetherCurrent* agent, IntPtr a2, AtkValue* a3);
 

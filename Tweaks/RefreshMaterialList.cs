@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
 using Dalamud.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Utils;
