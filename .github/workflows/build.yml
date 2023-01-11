@@ -50,7 +50,7 @@ jobs:
   release:
     name: Release
     needs: build
-    if: success() && startsWith(github.ref, 'refs/tags/v')
+    if: success() && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/tags/test')
     runs-on: ubuntu-latest
 
     steps:
@@ -67,6 +67,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           name: ${{ env.plugin_name }} ${{ github.ref_name }}
+          prerelease: ${{ github.ref == 'refs/tags/test' }}
           body: ${{ steps.extract-release-notes.outputs.release_notes }}
           files: artifact/*
 
