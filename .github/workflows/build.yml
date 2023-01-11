@@ -63,11 +63,61 @@ jobs:
         id: extract-release-notes
         uses: ffurrer2/extract-release-notes@v1
 
+      - name: Delete old test-release tag and release
+        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          tag_name: "test-release"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           name: ${{ env.plugin_name }} ${{ github.ref_name }}
-          prerelease: ${{ endsWith(github.ref, '-test') }}
+          body: ${{ steps.extract-release-notes.outputs.release_notes }}
+          files: artifact/*
+
+      - name: Trigger Repo Update
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ github.repository_owner }}/MyDalamudPlugins
+          event-type: new-release
+
+  pre_release:
+    name: Pre-Release
+    needs: build
+    if: success() && github.ref == 'refs/heads/test'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v3
+
+      - name: Extract release notes
+        id: extract-release-notes
+        uses: ffurrer2/extract-release-notes@v1
+
+      - name: Delete old test-release tag and release
+        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          tag_name: "test-release"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
+      - name: Create new test-release tag
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: "test-release"
+
+      - name: Pre-Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ env.plugin_name }} ${{ github.ref_name }}
+          prerelease: true
+          tag_name: "test-release"
           body: ${{ steps.extract-release-notes.outputs.release_notes }}
           files: artifact/*
 
