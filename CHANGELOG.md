@@ -1,6 +1,6 @@
 # Changelog
 
-### [Unreleased]
+### [0.7.7] (Pre-Release)
 
 Updated for Patch 6.3.
 
@@ -344,6 +344,7 @@ Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
 [Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.6...HEAD
+[0.7.7]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.6...test
 [0.7.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.5...v0.7.6
 [0.7.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.4...v0.7.5
 [0.7.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.3...v0.7.4
