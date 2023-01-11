@@ -2,7 +2,7 @@
 
 ### [0.7.7] (Pre-Release)
 
-Updated for Patch 6.3.
+Updated for Patch 6.3!
 
 ### Enhanced Experience Bar
 
