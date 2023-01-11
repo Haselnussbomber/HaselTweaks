@@ -268,7 +268,7 @@ public unsafe class EnhancedExpBar : Tweak
             job = Config.SanctuaryBarHideJob ? "" : Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation + "  ";
             levelLabel = (Service.StringUtils.GetSheetText<Addon>(14252, "Text") ?? "Sanctuary Rank").Trim().Replace(":", "");
             level = islandState->CurrentRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-            requiredExperience = MJIRankSheet.GetRow(islandState->CurrentRank)!.Unknown0;
+            requiredExperience = MJIRankSheet.GetRow(islandState->CurrentRank)!.ExpToNext;
 
             var expStr = islandState->CurrentXP.ToString();
             var reqExpStr = requiredExperience.ToString();
