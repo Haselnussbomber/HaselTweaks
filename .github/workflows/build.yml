@@ -65,9 +65,19 @@ jobs:
 
       - name: Release
         uses: softprops/action-gh-release@v1
+        if: ${{ github.ref != 'refs/heads/test' }}
         with:
           name: ${{ env.plugin_name }} ${{ github.ref_name }}
-          prerelease: ${{ github.ref == 'refs/heads/test' }}
+          body: ${{ steps.extract-release-notes.outputs.release_notes }}
+          files: artifact/*
+
+      - name: Pre-Release
+        uses: softprops/action-gh-release@v1
+        if: ${{ github.ref == 'refs/heads/test' }}
+        with:
+          name: ${{ env.plugin_name }} ${{ github.ref_name }}
+          prerelease: true
+          tag_name: test
           body: ${{ steps.extract-release-notes.outputs.release_notes }}
           files: artifact/*
 
