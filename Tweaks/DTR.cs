@@ -26,8 +26,6 @@ public class DTR : Tweak
         ImGuiUtils.DrawSection("Configuration");
         ImGui.Text("To enable/disable elements or to change the order go into");
         ImGui.TextColored(ImGuiColors.DalamudRed, "Dalamud Settings");
-        // TODO: waiting for XivCommon update
-        #if false
         if (ImGui.IsItemHovered())
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
@@ -42,11 +40,10 @@ public class DTR : Tweak
                     return;
                 }
 
-                Plugin.XivCommon.Functions.Chat.SendMessage("/xlsettings");
+                Chat.SendMessage("/xlsettings");
             }
             Service.Framework.RunOnTick(OpenSettings, default, 2);
         }
-        #endif
         ImGuiUtils.SameLineSpace();
         ImGui.Text("> Server Info Bar.");
     }

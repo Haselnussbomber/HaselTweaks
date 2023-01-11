@@ -8,21 +8,11 @@ using Dalamud.Logging;
 using Dalamud.Plugin;
 using HaselTweaks.Windows;
 
-// TODO: waiting for XivCommon update
-#if false
-using XivCommon;
-#endif
-
 namespace HaselTweaks;
 
 public class Plugin : IDalamudPlugin
 {
     public string Name => "HaselTweaks";
-
-    // TODO: waiting for XivCommon update
-#if false
-    internal static XivCommonBase XivCommon = null!;
-#endif
 
     internal static readonly WindowSystem WindowSystem = new("HaselTweaks");
     private readonly PluginWindow PluginWindow;
@@ -32,10 +22,6 @@ public class Plugin : IDalamudPlugin
     public Plugin(DalamudPluginInterface pluginInterface)
     {
         pluginInterface.Create<Service>();
-        // TODO: waiting for XivCommon update
-#if false
-        XivCommon = new(Hooks.None);
-#endif
 
         foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(Tweak)) && !t.IsAbstract))
         {
@@ -166,11 +152,5 @@ public class Plugin : IDalamudPlugin
 
         Configuration.Save();
         ((IDisposable)Configuration.Instance).Dispose();
-
-        // TODO: waiting for XivCommon update
-#if false
-        XivCommon?.Dispose();
-        XivCommon = null!;
-#endif
     }
 }

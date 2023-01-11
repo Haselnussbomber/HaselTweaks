@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Dalamud;
 using Dalamud.Game;
+using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
@@ -8,7 +9,6 @@ namespace HaselTweaks.Tweaks;
 public class AutoSortArmouryChest : Tweak
 {
     public override string Name => "Auto Sort Armoury Chest";
-    public override bool Outdated => true; // TODO: waiting for XivCommon update
     public override string Description => "Sorts items inside the Armoury Chest upon opening it.";
     public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.AutoSortArmouryChest;
 
@@ -124,9 +124,9 @@ public class AutoSortArmouryChest : Tweak
         }
 
         Log($"Executing {definition}");
-        //Plugin.XivCommon.Functions.Chat.SendMessage(definition);
+        Chat.SendMessage(definition);
 
         Log($"Executing {execute}");
-        //Plugin.XivCommon.Functions.Chat.SendMessage(execute);
+        Chat.SendMessage(execute);
     }
 }

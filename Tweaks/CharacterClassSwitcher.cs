@@ -13,7 +13,6 @@ namespace HaselTweaks.Tweaks;
 public unsafe class CharacterClassSwitcher : Tweak
 {
     public override string Name => "Character Class Switcher";
-    public override bool Outdated => true; // TODO: waiting for XivCommon update
     public override string Description => "Clicking on a class/job in the character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window.";
     public override bool HasIncompatibilityWarning => Service.PluginInterface.PluginInternalNames.Contains("SimpleTweaksPlugin");
     public override string IncompatibilityWarning => "In order for this tweak to work properly, please make sure \"Character Window Job Switcher\" is disabled in Simple Tweaks.";
@@ -279,7 +278,7 @@ public unsafe class CharacterClassSwitcher : Tweak
     }
 
     /// <returns>Boolean whether original code should be skipped (true) or not (false)</returns>
-    private static bool ProcessEvents(AtkComponentNode* componentNode, AtkImageNode* imageNode, AtkEventType eventType)
+    private bool ProcessEvents(AtkComponentNode* componentNode, AtkImageNode* imageNode, AtkEventType eventType)
     {
         var isClick =
             eventType == AtkEventType.MouseClick ||
@@ -319,7 +318,7 @@ public unsafe class CharacterClassSwitcher : Tweak
         return false;
     }
 
-    private static void SwitchClassJob(uint classJobId)
+    private void SwitchClassJob(uint classJobId)
     {
         var gearsetModule = RaptureGearsetModule.Instance();
         if (gearsetModule == null) return;
@@ -345,6 +344,8 @@ public unsafe class CharacterClassSwitcher : Tweak
             return;
         }
 
-        //Plugin.XivCommon.Functions.Chat.SendMessage("/gs change " + selectedGearset.Index);
+        var command = $"/gearset change {selectedGearset.Index}";
+        Log($"Executing {command}");
+        Chat.SendMessage(command);
     }
 }
