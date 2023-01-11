@@ -50,7 +50,7 @@ jobs:
   release:
     name: Release
     needs: build
-    if: success() && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/test')
+    if: success() && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
 
     steps:
@@ -65,19 +65,9 @@ jobs:
 
       - name: Release
         uses: softprops/action-gh-release@v1
-        if: ${{ github.ref != 'refs/heads/test' }}
         with:
           name: ${{ env.plugin_name }} ${{ github.ref_name }}
-          body: ${{ steps.extract-release-notes.outputs.release_notes }}
-          files: artifact/*
-
-      - name: Pre-Release
-        uses: softprops/action-gh-release@v1
-        if: ${{ github.ref == 'refs/heads/test' }}
-        with:
-          name: ${{ env.plugin_name }} ${{ github.ref_name }}
-          prerelease: true
-          tag_name: test
+          prerelease: ${{ endsWith(github.ref, '-test') }}
           body: ${{ steps.extract-release-notes.outputs.release_notes }}
           files: artifact/*
 
