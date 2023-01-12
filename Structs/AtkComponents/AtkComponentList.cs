@@ -1,7 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-using FFXIVClientStructs.Attributes;
-
 namespace HaselTweaks.Structs;
 
 [StructLayout(LayoutKind.Explicit)]

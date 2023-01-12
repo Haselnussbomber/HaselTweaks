@@ -1,16 +1,13 @@
-using System;
-using System.Runtime.InteropServices;
-using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 
 namespace HaselTweaks.Structs;
 
-[StructLayout(LayoutKind.Explicit, Size = 0x2A8)]
+[StructLayout(LayoutKind.Explicit, Size = 0x2D0)]
 public unsafe partial struct CharaViewStatus : ICreatable
 {
     [FieldOffset(0)] public CharaView Base;
-    [FieldOffset(0x2A0)] public uint MainhandItemID;
-    [FieldOffset(0x2A4)] public bool DrawWeapon;
+    [FieldOffset(0x2C8)] public uint MainhandItemID;
+    [FieldOffset(0x2CC)] public bool DrawWeapon;
 
     public static CharaViewStatus* Create()
     {

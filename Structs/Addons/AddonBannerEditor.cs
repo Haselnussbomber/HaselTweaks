@@ -1,10 +1,9 @@
-using System.Runtime.InteropServices;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Structs;
 
-// ctor 40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 48 8B CB 48 89 03 E8 ?? ?? ?? ?? 48 8B D0 48 8D 8B ?? ?? ?? ?? E8 ?? ?? ?? ?? B9
-[StructLayout(LayoutKind.Explicit, Size = 0x4E0)]
+// ctor "40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 48 8B CB 48 89 03 E8 ?? ?? ?? ?? 48 8B D0 48 8D 8B ?? ?? ?? ?? E8 ?? ?? ?? ?? B9"
+[StructLayout(LayoutKind.Explicit, Size = 0x4E8)]
 public unsafe struct AddonBannerEditor
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
@@ -37,5 +36,5 @@ public unsafe struct AddonBannerEditor
     [FieldOffset(0x460)] public AtkComponentSlider* CameraZoomSlider;
     [FieldOffset(0x468)] public AtkComponentSlider* ImageRotation;
 
-    [FieldOffset(0x4C4)] public short NumPresets;
+    [FieldOffset(0x4CC)] public short NumPresets;
 }

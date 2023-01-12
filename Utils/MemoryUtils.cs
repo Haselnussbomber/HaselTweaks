@@ -1,4 +1,3 @@
-using System;
 using Dalamud.Memory;
 
 namespace HaselTweaks.Utils;

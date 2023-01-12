@@ -1,5 +1,14 @@
 # Changelog
 
+### [Unreleased]
+
+Preliminary update for Patch 6.3.
+
+### Enhanced Experience Bar
+
+- **Changed:** Corrects the name of "PvP Season Bar" to "PvP Series Bar".
+  - Configuration is automatically updated.
+
 ### [0.7.6] (2022-12-09)
 
 ### Aether Current Helper
@@ -56,7 +65,7 @@ Adds Copy/Paste buttons to the "Edit Portrait" window, so you can copy the setti
 - **Added:** Sanctuary Bar for the new Island, because why not?
 - **Added:** Max Level Override setting.
   - Will switch to the selected bar if your current job is on max level and none of the other settings apply.
-  - *Note:* Sanctuary Bar is not available as Max Level Override, because data is only loaded once you travel to the island. PvP Season data is always available.
+  - *Note:* Sanctuary Bar is not available as Max Level Override, because data is only loaded once you travel to the island. PvP Series data is always available.
 - **Added:** Option to disable color change.
 
 ### New Tweak: Requisite Materials

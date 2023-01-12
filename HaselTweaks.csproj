@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>0.7.5</Version>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <Version>0.7.6</Version>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <Platforms>x64</Platforms>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
@@ -11,6 +11,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\</OutputPath>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -27,13 +29,13 @@
 
   <ItemGroup>
     <None Remove=".git*" />
-    <None Remove="Generators\**" />
+    <None Remove="InteropSourceGenerators\**" />
     <Compile Remove=".git*" />
-    <Compile Remove="Generators\**" />
+    <Compile Remove="InteropSourceGenerators\**" />
     <Content Remove=".git*" />
-    <Content Remove="Generators\**" />
+    <Content Remove="InteropSourceGenerators\**" />
     <EmbeddedResource Remove=".git*" />
-    <EmbeddedResource Remove="Generators\**" />
+    <EmbeddedResource Remove="InteropSourceGenerators\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -68,13 +70,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DalamudPackager" Version="2.1.8" />
-    <PackageReference Include="XivCommon" Version="6.0.2" />
+    <PackageReference Include="DalamudPackager" Version="2.1.10" />
     <PackageReference Include="Dalamud.ContextMenu" Version="1.2.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="Generators\HaselTweaks.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="InteropSourceGenerators\HaselTweaks.InteropSourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

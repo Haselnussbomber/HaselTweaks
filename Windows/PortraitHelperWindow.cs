@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;

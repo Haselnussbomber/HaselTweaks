@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,15 +7,12 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin;
 using HaselTweaks.Windows;
-using XivCommon;
 
 namespace HaselTweaks;
 
 public class Plugin : IDalamudPlugin
 {
     public string Name => "HaselTweaks";
-
-    internal static XivCommonBase XivCommon = null!;
 
     internal static readonly WindowSystem WindowSystem = new("HaselTweaks");
     private readonly PluginWindow PluginWindow;
@@ -26,11 +22,6 @@ public class Plugin : IDalamudPlugin
     public Plugin(DalamudPluginInterface pluginInterface)
     {
         pluginInterface.Create<Service>();
-        XivCommon = new();
-        Resolver.Initialize();
-
-        PluginWindow = new PluginWindow(this);
-        WindowSystem.AddWindow(PluginWindow);
 
         foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(Tweak)) && !t.IsAbstract))
         {
@@ -44,7 +35,16 @@ public class Plugin : IDalamudPlugin
             }
         }
 
-        Configuration.Load(Tweaks.Select(t => t.InternalName).ToArray());
+        string? gameVersion = null;
+        unsafe
+        {
+            gameVersion = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GameVersion.Base;
+        }
+
+        Configuration.Load(Tweaks.Select(t => t.InternalName).ToArray(), gameVersion);
+
+        Interop.Resolver.GetInstance.SetupSearchSpace(Service.SigScanner.SearchBase);
+        Interop.Resolver.GetInstance.Resolve();
 
         foreach (var tweak in Tweaks)
         {
@@ -70,6 +70,9 @@ public class Plugin : IDalamudPlugin
             }
         }
 
+        PluginWindow = new PluginWindow(this);
+        WindowSystem.AddWindow(PluginWindow);
+
         Service.Framework.Update += OnFrameworkUpdate;
         Service.PluginInterface.UiBuilder.Draw += OnDraw;
         Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
@@ -85,9 +88,7 @@ public class Plugin : IDalamudPlugin
         foreach (var tweak in Tweaks)
         {
             if (tweak.Enabled)
-            {
                 tweak.OnFrameworkUpdate(framework);
-            }
         }
     }
 
@@ -151,8 +152,5 @@ public class Plugin : IDalamudPlugin
 
         Configuration.Save();
         ((IDisposable)Configuration.Instance).Dispose();
-
-        XivCommon?.Dispose();
-        XivCommon = null!;
     }
 }

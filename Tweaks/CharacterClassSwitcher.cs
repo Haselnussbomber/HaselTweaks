@@ -1,4 +1,3 @@
-using System;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
@@ -279,7 +278,7 @@ public unsafe class CharacterClassSwitcher : Tweak
     }
 
     /// <returns>Boolean whether original code should be skipped (true) or not (false)</returns>
-    private static bool ProcessEvents(AtkComponentNode* componentNode, AtkImageNode* imageNode, AtkEventType eventType)
+    private bool ProcessEvents(AtkComponentNode* componentNode, AtkImageNode* imageNode, AtkEventType eventType)
     {
         var isClick =
             eventType == AtkEventType.MouseClick ||
@@ -319,7 +318,7 @@ public unsafe class CharacterClassSwitcher : Tweak
         return false;
     }
 
-    private static void SwitchClassJob(uint classJobId)
+    private void SwitchClassJob(uint classJobId)
     {
         var gearsetModule = RaptureGearsetModule.Instance();
         if (gearsetModule == null) return;
@@ -345,6 +344,8 @@ public unsafe class CharacterClassSwitcher : Tweak
             return;
         }
 
-        Plugin.XivCommon.Functions.Chat.SendMessage("/gs change " + selectedGearset.Index);
+        var command = $"/gearset change {selectedGearset.Index}";
+        Log($"Executing {command}");
+        Chat.SendMessage(command);
     }
 }

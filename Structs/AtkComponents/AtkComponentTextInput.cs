@@ -1,6 +1,3 @@
-using System;
-using FFXIVClientStructs.Attributes;
-
 namespace HaselTweaks.Structs;
 
 public partial struct AtkComponentTextInput

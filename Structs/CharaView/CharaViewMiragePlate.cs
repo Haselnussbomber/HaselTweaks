@@ -1,21 +1,16 @@
-using System;
 using System.Collections.Specialized;
-using System.Runtime.InteropServices;
-using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 
 namespace HaselTweaks.Structs;
 
-[StructLayout(LayoutKind.Explicit, Size = 0x2B0)]
+[StructLayout(LayoutKind.Explicit, Size = 0x2D8)]
 public unsafe partial struct CharaViewMiragePlate : ICreatable
 {
     [FieldOffset(0)] public CharaView Base;
-    [FieldOffset(0x2A0)] public bool DoUpdate;
-    [FieldOffset(0x2A1)] public byte Unk2A1;
-    [FieldOffset(0x2A2)] public byte Unk2A2;
-    [FieldOffset(0x2A3)] public byte Unk2A3;
-    [FieldOffset(0x2A4)] public BitVector32 Flags;
-    [FieldOffset(0x2A8)] public IntPtr MiragePlate;
+    [FieldOffset(0x2C8)] public bool DoUpdate;
+
+    [FieldOffset(0x2CC)] public BitVector32 Flags;
+    [FieldOffset(0x2D0)] public IntPtr MiragePlate;
 
     public bool HideOtherEquipment
     {
@@ -52,7 +47,7 @@ public unsafe partial struct CharaViewMiragePlate : ICreatable
         return IMemorySpace.GetUISpace()->Create<CharaViewMiragePlate>();
     }
 
-    [MemberFunction("40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 66 C7 83 ?? ?? ?? ?? ?? ?? 48 89 03 33 C0 89 83 ?? ?? ?? ??")]
+    [MemberFunction("40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 66 C7 83 ?? ?? ?? ?? ?? ?? 48 89 03 33 C0 89 83")]
     public partial void Ctor();
 
     [VirtualFunction(0)]

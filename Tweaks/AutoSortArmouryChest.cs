@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Dalamud;
 using Dalamud.Game;
+using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
@@ -123,9 +124,9 @@ public class AutoSortArmouryChest : Tweak
         }
 
         Log($"Executing {definition}");
-        Plugin.XivCommon.Functions.Chat.SendMessage(definition);
+        Chat.SendMessage(definition);
 
         Log($"Executing {execute}");
-        Plugin.XivCommon.Functions.Chat.SendMessage(execute);
+        Chat.SendMessage(execute);
     }
 }

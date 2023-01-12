@@ -1,4 +1,3 @@
-using System;
 using Dalamud.Game;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text;
@@ -22,7 +21,7 @@ public class DTR : Tweak
     public override bool HasDescription => true;
     public override void DrawDescription()
     {
-        ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey2, "Shows Instance, FPS and Busy status in DTR bar.");
+        ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey, "Shows Instance, FPS and Busy status in DTR bar.");
 
         ImGuiUtils.DrawSection("Configuration");
         ImGui.Text("To enable/disable elements or to change the order go into");
@@ -41,7 +40,7 @@ public class DTR : Tweak
                     return;
                 }
 
-                Plugin.XivCommon.Functions.Chat.SendMessage("/xlsettings");
+                Chat.SendMessage("/xlsettings");
             }
             Service.Framework.RunOnTick(OpenSettings, default, 2);
         }

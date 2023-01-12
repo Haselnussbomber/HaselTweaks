@@ -1,6 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using Lumina.Data.Parsing;
@@ -21,7 +18,7 @@ public enum CharaViewState : uint
     Ready = 6
 }
 
-[StructLayout(LayoutKind.Explicit, Size = 0x2A0)]
+[StructLayout(LayoutKind.Explicit, Size = 0x2C8)]
 public unsafe partial struct CharaView : ICreatable
 {
     [FieldOffset(0x8)] public CharaViewState State; // initialization state of KernelTexture, Camera etc. that happens in Render()
@@ -42,11 +39,9 @@ public unsafe partial struct CharaView : ICreatable
     [FieldOffset(0xC4)] public float ZoomRatio;
 
     [FieldOffset(0xD0)] public fixed byte Items[0x20 * 14];
-    //[FieldOffset(0x290)] public byte SomeFlag;
-    [FieldOffset(0x291)] public bool CharacterDataCopied;
-    [FieldOffset(0x292)] public bool CharacterLoaded;
 
-    [FieldOffset(0x298)] public long Unk298; // timestamp?
+    [FieldOffset(0x2B8)] public bool CharacterDataCopied;
+    [FieldOffset(0x2B9)] public bool CharacterLoaded;
 
     public Span<CharaViewItem> ItemSpan
     {
@@ -64,7 +59,7 @@ public unsafe partial struct CharaView : ICreatable
         return IMemorySpace.GetUISpace()->Create<CharaView>();
     }
 
-    [MemberFunction("E8 ?? ?? ?? ?? 41 80 A6 ?? ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ??")]
+    [MemberFunction("E8 ?? ?? ?? ?? 41 80 A6 ?? ?? ?? ?? ?? 48 8D 05")]
     public partial void Ctor();
 
     [VirtualFunction(0)]
@@ -115,19 +110,19 @@ public unsafe partial struct CharaView : ICreatable
     [MemberFunction("E8 ?? ?? ?? ?? 48 85 C0 75 05 0F 57 C9")]
     public partial CharaViewGameObject* GetGameObject();
 
-    [MemberFunction("E8 ?? ?? ?? ?? 48 8D 4D 10 88 87 ?? ?? ?? ??")]
+    [MemberFunction("E8 ?? ?? ?? ?? 49 8D 4F 10 88 85")]
     public partial bool IsAnimationPaused();
 
-    [MemberFunction("E8 ?? ?? ?? ?? B2 01 48 8B CB E8 ?? ?? ?? ?? 32 C0")]
+    [MemberFunction("E8 ?? ?? ?? ?? B2 01 48 8B CE E8 ?? ?? ?? ?? 32 C0")]
     public partial void ToggleAnimationPaused(bool paused);
 
-    [MemberFunction("E8 ?? ?? ?? ?? 48 8B 47 28 BA ?? ?? ?? ??")]
+    [MemberFunction("E8 ?? ?? ?? ?? 48 8B 47 28 BA")]
     public partial void UnequipGear(bool hasCharacterData = false, bool characterLoaded = true);
 
     [MemberFunction("E8 ?? ?? ?? ?? 45 33 DB FF C3")]
     public partial void SetItemSlotData(byte slotId, uint itemId, byte stain, int a5 = 0, byte a6 = 1); // maybe a5 is glamour id and a6 is a boolean that it should use glamour?
 
-    [MemberFunction("E8 ?? ?? ?? ?? B1 01 0F B6 87 ?? ?? ?? ??")]
+    [MemberFunction("E8 ?? ?? ?? ?? B1 01 0F B6 86")]
     public partial void ToggleDrawWeapon(bool drawn);
 }
 
@@ -161,7 +156,7 @@ public unsafe partial struct CharaViewCharacterData : ICreatable
     [MemberFunction("E8 ?? ?? ?? ?? 4C 8D 45 10 48 8B CF")]
     public partial void Ctor();
 
-    [MemberFunction("40 55 41 57 48 83 EC 48")]
+    [MemberFunction("E9 ?? ?? ?? ?? 41 0F B6 40 ?? 88 42 62")]
     public partial void ImportLocalPlayerEquipment();
 }
 
@@ -205,7 +200,7 @@ public unsafe partial struct CharaViewGameObjectDrawDataContainer
     [MemberFunction("E8 ?? ?? ?? ?? EB 14 40 80 FE 08")]
     public partial void ToggleVisorVisibility(uint a2, bool isHidden); // a2 = 0
 
-    [MemberFunction("E8 ?? ?? ?? ?? 0F B7 2D ?? ?? ?? ??")]
+    [MemberFunction("E8 ?? ?? ?? ?? 0F B7 2D")]
     public partial void ToggleVisorClosed(bool isClosed);
 
     [MemberFunction("E8 ?? ?? ?? ?? 4C 8B 6C 24 ?? 0F BA E5 0A")]

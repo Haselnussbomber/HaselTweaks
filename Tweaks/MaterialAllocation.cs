@@ -1,4 +1,3 @@
-using System;
 using Dalamud.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;

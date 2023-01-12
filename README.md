@@ -61,12 +61,12 @@ Shows Instance, FPS and Busy status in DTR bar. To enable/disable elements or to
 
 Enhances the Experience Bar with the following modes:
 
-- The PvP Season Bar shows season rank and experience. A little * after the rank indicates a claimable rank-up reward.
+- The PvP Series Bar shows series rank and experience. A little * after the rank indicates a claimable rank-up reward.
 - The Sanctuary Bar shows sanctuary level and island experience.
 
 Available options include:
 
-- Always show PvP Season Bar in PvP Areas
+- Always show PvP Series Bar in PvP Areas
 - Always show Sanctuary Bar on the Island
 - Hide Job on Sanctuary Bar
 - Max Level Override
