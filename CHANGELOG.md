@@ -1,5 +1,9 @@
 # Changelog
 
+### [0.7.9] (2023-01-13)
+
+Additional code to automatically re-scan cached hotfix adresses (the bug I fixed in in v0.7.8).
+
 ### [0.7.8] (2023-01-13)
 
 Preliminary update for Patch 6.3 Hotfix 1.  
