@@ -124,7 +124,7 @@ internal partial class Configuration : IDisposable
             if (tweakConfigs?["EnhancedExpBar"]?["ForcePvPSeasonBar"] != null)
             {
                 tweakConfigs["EnhancedExpBar"]!["ForcePvPSeriesBar"] = tweakConfigs["EnhancedExpBar"]!["ForcePvPSeasonBar"];
-                tweakConfigs["EnhancedExpBar"]!["ForcePvPSeasonBar"]!.Remove();
+                ((JObject?)tweakConfigs["EnhancedExpBar"]!).Remove("ForcePvPSeasonBar");
             }
 
             if (gameVersion == null || (string?)config[nameof(SigCacheVersion)] != gameVersion)
@@ -133,7 +133,7 @@ internal partial class Configuration : IDisposable
                     PluginLog.Information($"SigCache outdated (${(string?)config[nameof(SigCacheVersion)]}) => {gameVersion})");
 
                 config[nameof(SigCacheVersion)] = gameVersion;
-                config[nameof(SigCache)]?.Remove();
+                config.Remove(nameof(SigCache));
             }
         }
         catch (Exception e)
