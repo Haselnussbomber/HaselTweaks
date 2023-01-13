@@ -6,6 +6,7 @@ using Dalamud.Configuration;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Logging;
 using HaselTweaks.Tweaks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace HaselTweaks;
@@ -13,7 +14,10 @@ namespace HaselTweaks;
 [Serializable]
 internal partial class Configuration : IPluginConfiguration
 {
-    public int Version { get; set; } = 1;
+    [JsonIgnore]
+    public const int CURRENT_CONFIG_VERSION = 2;
+
+    public int Version { get; set; } = CURRENT_CONFIG_VERSION;
     public HashSet<string> EnabledTweaks { get; private set; } = new();
     public TweakConfigs Tweaks { get; init; } = new();
     public string SigCacheVersion { get; init; } = string.Empty;
@@ -70,11 +74,11 @@ internal partial class Configuration : IDisposable
 
         try
         {
-            var version = (int?)config[nameof(Version)];
+            var version = (int?)config[nameof(Version)] ?? 0;
             var enabledTweaks = (JArray?)config[nameof(EnabledTweaks)];
             var tweakConfigs = (JObject?)config[nameof(Tweaks)];
 
-            if (version == null || enabledTweaks == null || tweakConfigs == null)
+            if (version == 0 || enabledTweaks == null || tweakConfigs == null)
                 return Instance = new();
 
             var renamedTweaks = new Dictionary<string, string>()
@@ -127,13 +131,18 @@ internal partial class Configuration : IDisposable
                 ((JObject?)tweakConfigs["EnhancedExpBar"]!).Remove("ForcePvPSeasonBar");
             }
 
-            if (gameVersion == null || (string?)config[nameof(SigCacheVersion)] != gameVersion)
+            if (version == 1 || gameVersion == null || (string?)config[nameof(SigCacheVersion)] != gameVersion)
             {
                 if ((string?)config[nameof(SigCacheVersion)] != null)
                     PluginLog.Information($"SigCache outdated (${(string?)config[nameof(SigCacheVersion)]}) => {gameVersion})");
 
                 config[nameof(SigCacheVersion)] = gameVersion;
                 config.Remove(nameof(SigCache));
+            }
+
+            if (version < CURRENT_CONFIG_VERSION)
+            {
+                config[nameof(Version)] = CURRENT_CONFIG_VERSION;
             }
         }
         catch (Exception e)
