@@ -1,6 +1,6 @@
 # Changelog
 
-### [Unreleased]
+### [0.7.10] (2023-01-14)
 
 ### Enhanced Experience Bar
 
@@ -358,7 +358,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.9...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.10...HEAD
+[0.7.10]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.9...v0.7.10
 [0.7.9]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.8...v0.7.9
 [0.7.8]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.7...v0.7.8
 [0.7.7]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.6...v0.7.7
