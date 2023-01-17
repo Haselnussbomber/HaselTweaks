@@ -1,5 +1,11 @@
 # Changelog
 
+### [Unreleased]
+
+### Enhanced Experience Bar
+
+- **Fixed:** Signature update, so PvP Series Bar works again.
+
 ### [0.7.9] (2023-01-13)
 
 Additional code to automatically re-scan cached hotfix adresses (the bug I fixed in in v0.7.8).
@@ -352,7 +358,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.8...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.9...HEAD
+[0.7.9]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.8...v0.7.9
 [0.7.8]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.7...v0.7.8
 [0.7.7]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.6...v0.7.7
 [0.7.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.5...v0.7.6

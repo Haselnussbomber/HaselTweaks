@@ -3,12 +3,12 @@ using Dalamud.Game.Text;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;
+using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
 
 namespace HaselTweaks.Tweaks;
 
@@ -190,7 +190,7 @@ public unsafe class EnhancedExpBar : Tweak
 
         var ret = OnRequestedUpdateHook!.Original(addon, numberArrayData, stringArrayData);
 
-        var maxLevel = *(byte*)((IntPtr)UIState.Instance() + 0xA38 + 0x69); // UIState.PlayerState.AllowedMaxLevel
+        var maxLevel = *(byte*)((IntPtr)PlayerState.Instance() + 0x69); // UIState.PlayerState.AllowedMaxLevel
         var isMaxLevel = Service.ClientState.LocalPlayer.Level == maxLevel;
 
         string job, levelLabel, level;
@@ -224,15 +224,15 @@ public unsafe class EnhancedExpBar : Tweak
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             var PvPSeriesLevelSheet = Service.Data.GetExcelSheet<PvPSeriesLevel>();
-            if (PvPSeriesLevelSheet == null || pvpState->SeriesRank > PvPSeriesLevelSheet.Count() - 1)
+            if (PvPSeriesLevelSheet == null || pvpState->SeriesCurrentRank > PvPSeriesLevelSheet.Count() - 1)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             job = Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation;
             levelLabel = (Service.StringUtils.GetSheetText<Addon>(14860, "Text") ?? "Series Level").Trim().Replace(":", "");
-            var rank = pvpState->SeriesRankWithOverflow > 30 ? pvpState->SeriesRank : pvpState->SeriesRankWithOverflow; // 30 = Series Max Rank
+            var rank = pvpState->SeriesClaimedRank > 30 ? pvpState->SeriesCurrentRank : pvpState->SeriesClaimedRank; // 30 = Series Max Rank
             level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-            var star = pvpState->SeriesRankWithOverflow > pvpState->SeriesRank ? '*' : ' ';
-            requiredExperience = PvPSeriesLevelSheet.GetRow(pvpState->SeriesRank)!.Unknown0;
+            var star = pvpState->SeriesClaimedRank > pvpState->SeriesCurrentRank ? '*' : ' ';
+            requiredExperience = PvPSeriesLevelSheet.GetRow(pvpState->SeriesCurrentRank)!.Unknown0;
 
             leftText->SetText($"{job}  {levelLabel} {level}{star}   {pvpState->SeriesExperience}/{requiredExperience}");
 
