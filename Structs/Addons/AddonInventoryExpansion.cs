@@ -12,7 +12,7 @@ public unsafe partial struct AddonInventoryExpansion
 
     [FieldOffset(0x328)] public int TabIndex;
 
-    // called via InventoryExpansion vf67
+    // called via InventoryExpansion vf68
     [MemberFunction("E8 ?? ?? ?? ?? BB ?? ?? ?? ?? 83 EB 01")]
     public partial void SetTab(int tab, bool force);
 }

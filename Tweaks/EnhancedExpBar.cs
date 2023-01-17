@@ -165,7 +165,7 @@ public unsafe class EnhancedExpBar : Tweak
             addon->ClassJob--;
             addon->RequiredExp--;
 
-            addon->AtkUnitBase.OnUpdate(
+            addon->OnUpdate(
                 raptureAtkModule->AtkModule.AtkArrayDataHolder.NumberArrays,
                 raptureAtkModule->AtkModule.AtkArrayDataHolder.StringArrays
             );

@@ -13,7 +13,7 @@ public unsafe partial struct AddonAetherCurrent
     [FieldOffset(0x254)] public int TabIndex;
     [FieldOffset(0x258)] public int NumTabs;
 
-    // called in AetherCurrent vf54
+    // called in AetherCurrent vf55
     [MemberFunction("E8 ?? ?? ?? ?? 84 C0 74 65 39 9D")]
     public partial void SetTab(int tab);
 }

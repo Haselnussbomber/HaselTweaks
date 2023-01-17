@@ -13,7 +13,7 @@ public unsafe partial struct AddonInventoryRetainerLarge
 
     [FieldOffset(0x2F0)] public int TabIndex;
 
-    // called via RetainerInventoryLarge vf67
+    // called via RetainerInventoryLarge vf68
     [MemberFunction("E9 ?? ?? ?? ?? 33 D2 E8 ?? ?? ?? ?? 48 83 C4 48")]
     public partial void SetTab(int tab);
 }

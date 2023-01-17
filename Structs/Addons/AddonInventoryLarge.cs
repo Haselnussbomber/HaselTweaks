@@ -12,7 +12,7 @@ public unsafe partial struct AddonInventoryLarge
 
     [FieldOffset(0x320)] public int TabIndex;
 
-    // called via InventoryLarge vf67
+    // called via InventoryLarge vf68
     [MemberFunction("E9 ?? ?? ?? ?? 41 83 FF 47")]
     public partial void SetTab(int tab);
 }

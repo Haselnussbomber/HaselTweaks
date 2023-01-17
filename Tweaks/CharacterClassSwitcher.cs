@@ -82,12 +82,12 @@ public unsafe class CharacterClassSwitcher : Tweak
         }
     }
 
-    // AddonCharacterClass_OnSetup (vf46)
+    // AddonCharacterClass_OnSetup (vf47)
     [AutoHook, Signature("48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC ?? ?? ?? ?? 0F 29 70 C8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 17 F3 0F 10 35 ?? ?? ?? ?? 45 33 C9 45 33 C0 F3 0F 11 74 24 ?? 0F 57 C9 48 8B F9 E8", DetourName = nameof(OnSetup))]
     private Hook<OnSetupDelegate> OnSetupHook { get; init; } = null!;
     private delegate IntPtr OnSetupDelegate(AddonCharacterClass* addon, int a2);
 
-    // AddonCharacterClass_OnUpdate (vf49)
+    // AddonCharacterClass_OnUpdate (vf50)
     [AutoHook, Signature("4C 8B DC 53 55 56 57 41 55 41 56", DetourName = nameof(OnUpdate))]
     private Hook<OnUpdateDelegate> OnUpdateHook { get; init; } = null!;
     private delegate void OnUpdateDelegate(AddonCharacterClass* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData);
@@ -97,12 +97,12 @@ public unsafe class CharacterClassSwitcher : Tweak
     private Hook<ReceiveEventDelegate> ReceiveEventHook { get; init; } = null!;
     private delegate IntPtr ReceiveEventDelegate(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr a5);
 
-    // AddonPvPCharacter_OnSetup (first fn in vf46)
+    // AddonPvPCharacter_OnSetup (first fn in vf47)
     [AutoHook, Signature("E8 ?? ?? ?? ?? 48 8B 83 ?? ?? ?? ?? 45 33 FF 41 8B CF 48 85 C0 74 07 48 8B 88 ?? ?? ?? ?? 45 33 C0", DetourName = nameof(OnPvPSetup))]
     private Hook<OnPvPSetupDelegate> OnPvPSetupHook { get; init; } = null!;
     private delegate IntPtr OnPvPSetupDelegate(AddonPvPCharacter* addon);
 
-    // AddonPvPCharacter_OnUpdate (second fn in vf49)
+    // AddonPvPCharacter_OnUpdate (second fn in vf50)
     [AutoHook, Signature("48 8B C4 48 89 58 20 55 56 57 41 56 41 57 48 81 EC", DetourName = nameof(OnPvPUpdate))]
     private Hook<OnPvPUpdateDelegate> OnPvPUpdateHook { get; init; } = null!;
     private delegate void OnPvPUpdateDelegate(AddonPvPCharacter* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData);
