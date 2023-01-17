@@ -190,9 +190,6 @@ public unsafe class EnhancedExpBar : Tweak
 
         var ret = OnRequestedUpdateHook!.Original(addon, numberArrayData, stringArrayData);
 
-        var maxLevel = *(byte*)((IntPtr)PlayerState.Instance() + 0x69); // UIState.PlayerState.AllowedMaxLevel
-        var isMaxLevel = Service.ClientState.LocalPlayer.Level == maxLevel;
-
         string job, levelLabel, level;
         uint requiredExperience;
 
@@ -206,7 +203,7 @@ public unsafe class EnhancedExpBar : Tweak
 
         // --- max level overrides
 
-        if (isMaxLevel)
+        if (Service.ClientState.LocalPlayer.Level == PlayerState.Instance()->MaxLevel)
         {
             if (Config.MaxLevelOverride == MaxLevelOverrideType.PvPSeriesBar)
                 goto PvPBar;
