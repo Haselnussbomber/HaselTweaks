@@ -484,10 +484,11 @@ public unsafe class ScrollableTabs : Tweak
             if (addon->Unk220.TabSwitcher.CurrentTabIndex == 0 && wheelState < 0)
             {
                 agent->CurrentView = AgentMJIMinionNoteBook.ViewType.Favorites;
-                agent->SelectedFavoriteMinion.Id = 0;
-                agent->SelectedFavoriteMinion.Index = agent->SelectedNormalMinion.Index;
+                agent->SelectedFavoriteMinion.TabIndex = 0;
+                agent->SelectedFavoriteMinion.SlotIndex = agent->SelectedNormalMinion.SlotIndex;
+                agent->SelectedFavoriteMinion.MinionId = agent->GetSelectedMinionId();
                 agent->SelectedMinion = &agent->SelectedFavoriteMinion;
-                agent->UpdateTabFlags(0x407); // TODO: does not update minion info on the right side of the window
+                agent->UpdateTabFlags(0x407);
             }
             else
             {
@@ -497,7 +498,11 @@ public unsafe class ScrollableTabs : Tweak
         }
         else if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Favorites && wheelState > 0)
         {
-            agent->SelectedNormalMinion.Index = agent->SelectedFavoriteMinion.Index;
+            agent->CurrentView = AgentMJIMinionNoteBook.ViewType.Normal;
+            agent->SelectedNormalMinion.TabIndex = 0;
+            agent->SelectedNormalMinion.SlotIndex = agent->SelectedFavoriteMinion.SlotIndex;
+            agent->SelectedNormalMinion.MinionId = agent->GetSelectedMinionId();
+            agent->SelectedMinion = &agent->SelectedNormalMinion;
 
             addon->Unk220.TabSwitcher.CurrentTabIndex = 0;
 

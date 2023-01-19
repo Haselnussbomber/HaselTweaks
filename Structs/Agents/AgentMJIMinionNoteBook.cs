@@ -4,7 +4,7 @@ namespace HaselTweaks.Structs;
 [StructLayout(LayoutKind.Explicit, Size = 0x208)]
 public unsafe partial struct AgentMJIMinionNoteBook
 {
-    public enum ViewType
+    public enum ViewType : byte
     {
         Favorites = 1,
         Normal,
@@ -14,9 +14,9 @@ public unsafe partial struct AgentMJIMinionNoteBook
     [StructLayout(LayoutKind.Explicit, Size = 0x4)]
     public unsafe partial struct SelectedMinionInfo
     {
-        [FieldOffset(0)] public ushort Id;
+        [FieldOffset(0)] public ushort MinionId;
         [FieldOffset(2)] public byte TabIndex;
-        [FieldOffset(3)] public byte Index;
+        [FieldOffset(3)] public byte SlotIndex;
     }
 
     [FieldOffset(0x1DC)] public SelectedMinionInfo SelectedFavoriteMinion;
@@ -38,5 +38,28 @@ public unsafe partial struct AgentMJIMinionNoteBook
         *ptr = flags;
         UpdateTabFlags(ptr);
         Marshal.FreeHGlobal((IntPtr)ptr);
+    }
+
+    [MemberFunction("E8 ?? ?? ?? ?? 0F B7 D8 85 DB")]
+    public partial ushort GetSelectedMinionId(byte* viewType, byte* currentTabIndex, byte* currentSlotIndex);
+
+    public ushort GetSelectedMinionId()
+    {
+        if (SelectedMinion != null)
+        {
+            var ptr = (byte*)Marshal.AllocHGlobal(3);
+
+            *ptr = (byte)CurrentView;
+            *(ptr + 1) = SelectedMinion->TabIndex;
+            *(ptr + 2) = SelectedMinion->SlotIndex;
+
+            var value = GetSelectedMinionId(ptr, ptr + 1, ptr + 2);
+
+            Marshal.FreeHGlobal((IntPtr)ptr);
+
+            return value;
+        }
+
+        return 0;
     }
 }
