@@ -1,6 +1,7 @@
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
@@ -48,6 +49,9 @@ public unsafe class ScrollableTabs : Tweak
 
         [ConfigField(Label = "Enable in Inventory")]
         public bool HandleInventory = true;
+
+        [ConfigField(Label = "Enable in Island Minion Guide")]
+        public bool HandleMJIMinionNoteBook = true;
 
         [ConfigField(Label = "Enable in Minions")]
         public bool HandleMinionNoteBook = true;
@@ -114,6 +118,7 @@ public unsafe class ScrollableTabs : Tweak
             case "InventoryRetainerLarge": // Retainer Inventory
             case "FateProgress":           // Shared FATE
             case "AdventureNoteBook":      // Sightseeing Log
+            case "MJIMinionNoteBook":      // Island Minion Guide
                 break;
 
             // used by Inventory
@@ -221,27 +226,27 @@ public unsafe class ScrollableTabs : Tweak
         }
         else if (Config.HandleFishGuide && name == "FishGuide2")
         {
-            UpdateTabSwitcher((IntPtr)unitBase, ((AddonFishGuide2*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((IntPtr)unitBase, &((AddonFishGuide2*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleAdventureNoteBook && name == "AdventureNoteBook")
         {
-            UpdateTabSwitcher((IntPtr)unitBase, ((AddonAdventureNoteBook*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((IntPtr)unitBase, &((AddonAdventureNoteBook*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleOrnamentNoteBook && name == "OrnamentNoteBook")
         {
-            UpdateTabSwitcher((IntPtr)unitBase, ((AddonOrnamentNoteBook*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((IntPtr)unitBase, &((AddonOrnamentNoteBook*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleGoldSaucerCardList && name == "GSInfoCardList")
         {
-            UpdateTabSwitcher((IntPtr)unitBase, ((AddonGoldSaucerCardList*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((IntPtr)unitBase, &((AddonGoldSaucerCardList*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleGoldSaucerCardDeckEdit && name == "GSInfoEditDeck")
         {
-            UpdateTabSwitcher((IntPtr)unitBase, ((AddonGoldSaucerCardDeckEdit*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((IntPtr)unitBase, &((AddonGoldSaucerCardDeckEdit*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleLovmPaletteEdit && name == "LovmPaletteEdit")
         {
-            UpdateTabSwitcher((IntPtr)unitBase, ((AddonLovmPaletteEdit*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((IntPtr)unitBase, &((AddonLovmPaletteEdit*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleAOZNotebook && name == "AOZNotebook")
         {
@@ -259,6 +264,10 @@ public unsafe class ScrollableTabs : Tweak
         {
             UpdateFieldNotes((AddonMYCWarResultNotebook*)unitBase);
         }
+        else if (Config.HandleMJIMinionNoteBook && name == "MJIMinionNoteBook")
+        {
+            UpdateMJIMountMinion((AddonMJIMinionNoteBook*)unitBase);
+        }
 
         ResetWheelState:
         wheelState = 0;
@@ -273,8 +282,10 @@ public unsafe class ScrollableTabs : Tweak
     {
         var tabIndex = GetTabIndex(addon->TabIndex, AddonArmouryBoard.NUM_TABS);
 
-        if (addon->TabIndex < tabIndex) addon->NextTab(0);
-        else if (addon->TabIndex > tabIndex) addon->PreviousTab(0);
+        if (addon->TabIndex < tabIndex)
+            addon->NextTab(0);
+        else if (addon->TabIndex > tabIndex)
+            addon->PreviousTab(0);
     }
 
     private void UpdateInventory(AddonInventory* addon)
@@ -286,7 +297,9 @@ public unsafe class ScrollableTabs : Tweak
         else
         {
             var tabIndex = GetTabIndex(addon->TabIndex, AddonInventory.NUM_TABS);
-            if (addon->TabIndex == tabIndex) return;
+
+            if (addon->TabIndex == tabIndex)
+                return;
 
             addon->SetTab(tabIndex);
         }
@@ -301,7 +314,9 @@ public unsafe class ScrollableTabs : Tweak
         else
         {
             var tabIndex = GetTabIndex(addon->TabIndex, addon->NumTabs);
-            if (addon->TabIndex == tabIndex) return;
+
+            if (addon->TabIndex == tabIndex)
+                return;
 
             addon->SetTab(tabIndex);
         }
@@ -310,7 +325,9 @@ public unsafe class ScrollableTabs : Tweak
     private void UpdateInventoryLarge(AddonInventoryLarge* addon)
     {
         var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryLarge.NUM_TABS);
-        if (addon->TabIndex == tabIndex) return;
+
+        if (addon->TabIndex == tabIndex)
+            return;
 
         addon->SetTab(tabIndex);
     }
@@ -318,7 +335,9 @@ public unsafe class ScrollableTabs : Tweak
     private void UpdateInventoryExpansion(AddonInventoryExpansion* addon)
     {
         var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryExpansion.NUM_TABS);
-        if (addon->TabIndex == tabIndex) return;
+
+        if (addon->TabIndex == tabIndex)
+            return;
 
         addon->SetTab(tabIndex, false);
     }
@@ -326,7 +345,9 @@ public unsafe class ScrollableTabs : Tweak
     private void UpdateInventoryRetainer(AddonInventoryRetainer* addon)
     {
         var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryRetainer.NUM_TABS);
-        if (addon->TabIndex == tabIndex) return;
+
+        if (addon->TabIndex == tabIndex)
+            return;
 
         addon->SetTab(tabIndex);
     }
@@ -334,26 +355,34 @@ public unsafe class ScrollableTabs : Tweak
     private void UpdateInventoryRetainerLarge(AddonInventoryRetainerLarge* addon)
     {
         var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryRetainerLarge.NUM_TABS);
-        if (addon->TabIndex == tabIndex) return;
+
+        if (addon->TabIndex == tabIndex)
+            return;
 
         addon->SetTab(tabIndex);
     }
 
-    private void UpdateTabSwitcher(IntPtr addon, TabSwitcher tabSwitcher)
+    private void UpdateTabSwitcher(IntPtr addon, TabSwitcher* tabSwitcher)
     {
-        var tabIndex = GetTabIndex(tabSwitcher.CurrentTabIndex, tabSwitcher.NumTabs);
-        if (tabSwitcher.CurrentTabIndex == tabIndex) return;
+        var tabIndex = GetTabIndex(tabSwitcher->CurrentTabIndex, tabSwitcher->NumTabs);
 
-        var callbackAddress = (IntPtr)tabSwitcher.Callback;
-        if (callbackAddress == IntPtr.Zero) return;
+        if (tabSwitcher->CurrentTabIndex == tabIndex)
+            return;
 
-        Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(tabIndex, addon);
+        tabSwitcher->CurrentTabIndex = tabIndex;
+
+        if (tabSwitcher->CallbackPtr == IntPtr.Zero)
+            return;
+
+        Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(tabSwitcher->CallbackPtr)(tabIndex, addon);
     }
 
     private void UpdateAOZNotebook(AddonAOZNotebook* addon)
     {
         var tabIndex = GetTabIndex(addon->TabIndex, addon->NumTabs);
-        if (addon->TabIndex == tabIndex) return;
+
+        if (addon->TabIndex == tabIndex)
+            return;
 
         addon->SetTab(tabIndex, true);
     }
@@ -432,18 +461,51 @@ public unsafe class ScrollableTabs : Tweak
             }
             else
             {
-                UpdateTabSwitcher((IntPtr)addon, addon->TabSwitcher);
+                UpdateTabSwitcher((IntPtr)addon, &addon->TabSwitcher);
             }
         }
         else if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Favorites && wheelState > 0)
         {
-            var callbackAddress = (IntPtr)addon->TabSwitcher.Callback;
-            if (callbackAddress == IntPtr.Zero)
-            {
-                return;
-            }
+            addon->TabSwitcher.CurrentTabIndex = 0;
 
-            Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(0, (IntPtr)addon);
+            var callbackAddress = addon->TabSwitcher.CallbackPtr;
+            if (callbackAddress == IntPtr.Zero)
+                Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(0, (IntPtr)addon);
+        }
+    }
+
+    private void UpdateMJIMountMinion(AddonMJIMinionNoteBook* addon)
+    {
+        var agent = (AgentMJIMinionNoteBook*)AgentModule.Instance()->GetAgentByInternalId(AgentId.MJIMinionNoteBook);
+        if (agent == null) return;
+
+        if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Normal)
+        {
+            if (addon->Unk220.TabSwitcher.CurrentTabIndex == 0 && wheelState < 0)
+            {
+                agent->CurrentView = AgentMJIMinionNoteBook.ViewType.Favorites;
+                agent->SelectedFavoriteMinion.Id = 0;
+                agent->SelectedFavoriteMinion.Index = agent->SelectedNormalMinion.Index;
+                agent->SelectedMinion = &agent->SelectedFavoriteMinion;
+                agent->UpdateTabFlags(0x407); // TODO: does not update minion info on the right side of the window
+            }
+            else
+            {
+                UpdateTabSwitcher((IntPtr)addon, &addon->Unk220.TabSwitcher);
+                agent->UpdateTabFlags(0x40B);
+            }
+        }
+        else if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Favorites && wheelState > 0)
+        {
+            agent->SelectedNormalMinion.Index = agent->SelectedFavoriteMinion.Index;
+
+            addon->Unk220.TabSwitcher.CurrentTabIndex = 0;
+
+            var callbackAddress = addon->Unk220.TabSwitcher.CallbackPtr;
+            if (callbackAddress != IntPtr.Zero)
+                Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(0, (IntPtr)addon);
+
+            agent->UpdateTabFlags(0x40B);
         }
     }
 }
