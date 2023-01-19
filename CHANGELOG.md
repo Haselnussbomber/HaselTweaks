@@ -1,5 +1,11 @@
 # Changelog
 
+### [0.7.12] (2023-01-19)
+
+### Scrollable Tabs
+
+- **Added:** Support for Island Minion Guide window.
+
 ### [0.7.11] (2023-01-14)
 
 ### Enhanced Experience Bar
@@ -364,7 +370,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.11...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.12...HEAD
+[0.7.12]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.11...v0.7.12
 [0.7.11]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.10...v0.7.11
 [0.7.10]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.9...v0.7.10
 [0.7.9]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.8...v0.7.9
