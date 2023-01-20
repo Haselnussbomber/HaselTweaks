@@ -1,5 +1,11 @@
 # Changelog
 
+### [Unreleased]
+
+### Search the markets
+
+- **Fixed:** Searching via Recipe Tree or Materials List doesn't crash the game anymore.
+
 ### [0.7.12] (2023-01-19)
 
 ### Scrollable Tabs

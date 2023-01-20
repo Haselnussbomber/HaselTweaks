@@ -72,8 +72,8 @@ public unsafe class SearchTheMarkets : Tweak
         }
         else if (args.ParentAddonName is "RecipeMaterialList" or "RecipeTree")
         {
-            // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint to Agent 259 (a1)
-            var agent = Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalID(259);
+            // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint to Agent 262 (a1)
+            var agent = Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalId(AgentId.RecipeItemContext);
             itemId = *(uint*)((IntPtr)agent + 0x28);
         }
 
@@ -130,6 +130,6 @@ public unsafe class SearchTheMarkets : Tweak
 
     private bool InvalidState()
     {
-        return Item == null || Item.IsUntradable || AtkUtils.GetUnitBase("ItemSearch") == null;
+        return Item == null || Item.RowId == 0 || Item.IsUntradable || AtkUtils.GetUnitBase("ItemSearch") == null;
     }
 }
