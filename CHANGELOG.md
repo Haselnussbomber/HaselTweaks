@@ -1,5 +1,11 @@
 # Changelog
 
+### [Unreleased]
+
+### Scrollable Tabs
+
+- **Fixed:** Minions and Mounts windows should be able to scroll out of favorites again (bug introduced in v0.7.12).
+
 ### [0.7.13] (2023-01-20)
 
 ### Search the markets

@@ -466,10 +466,8 @@ public unsafe class ScrollableTabs : Tweak
         }
         else if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Favorites && wheelState > 0)
         {
-            addon->TabSwitcher.CurrentTabIndex = 0;
-
             var callbackAddress = addon->TabSwitcher.CallbackPtr;
-            if (callbackAddress == IntPtr.Zero)
+            if (callbackAddress != IntPtr.Zero)
                 Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(0, (IntPtr)addon);
         }
     }
