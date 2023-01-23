@@ -4,7 +4,6 @@ using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Colors;
-using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
@@ -98,7 +97,6 @@ public class DTR : Tweak
         }
 
         var instanceId = instanceAreaData->GetInstanceId();
-
         if (instanceId <= 0 || instanceId >= 10)
         {
             if (DtrInstance.Shown) DtrInstance.Shown = false;
@@ -159,7 +157,6 @@ public class DTR : Tweak
         DtrFPS.Shown = fw != null;
         if (fw == null) return;
 
-        var fps = MemoryHelper.Read<float>((IntPtr)fw + 0x17C4);
-        DtrFPS.Text = $"{fps:0} fps";
+        DtrFPS.Text = $"{fw->FrameRate:0} fps";
     }
 }
