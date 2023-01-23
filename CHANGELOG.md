@@ -1,10 +1,15 @@
 # Changelog
 
-### [Unreleased]
+### [0.7.14](2023-01-23)
+
+### Refresh Material List
+
+- **Fixed:** Possible crash fix.
 
 ### Scrollable Tabs
 
 - **Fixed:** Minions and Mounts windows should be able to scroll out of favorites again (bug introduced in v0.7.12).
+- **Changed:** The plugin now uses the game's UI collision system to detect which window is being hovered instead of finding a match based on cursor and window position.
 
 ### [0.7.13] (2023-01-20)
 
@@ -382,7 +387,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.13...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.14...HEAD
+[0.7.14]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.13...v0.7.14
 [0.7.13]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.12...v0.7.13
 [0.7.12]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.11...v0.7.12
 [0.7.11]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.10...v0.7.11
