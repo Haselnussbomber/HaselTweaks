@@ -2,11 +2,10 @@ using Dalamud.Game.ClientState.Keys;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
-using GearsetArray = HaselTweaks.Structs.RaptureGearsetModule.GearsetArray;
-using GearsetFlag = HaselTweaks.Structs.RaptureGearsetModule.GearsetFlag;
 
 namespace HaselTweaks.Tweaks;
 
@@ -325,14 +324,23 @@ public unsafe class CharacterClassSwitcher : Tweak
 
         // loop through all gearsets and find the one matching classJobId with the highest avg itemlevel
         var selectedGearset = (Index: -1, ItemLevel: -1);
-        for (var i = 0; i < GearsetArray.Length; i++)
+        for (var id = 0; id < 100; id++)
         {
-            var gearset = gearsetModule->Gearsets[i];
-            if (!gearset->Flags.HasFlag(GearsetFlag.Exists)) continue;
-            if (gearset->ClassJob != classJobId) continue;
-            if (selectedGearset.ItemLevel >= gearset->ItemLevel) continue;
+            // skip if invalid
+            if (gearsetModule->IsValidGearset(id) == 0)
+                continue;
 
-            selectedGearset = (i + 1, gearset->ItemLevel);
+            var gearset = gearsetModule->GetGearset(id);
+
+            // skip wrong job
+            if (gearset->ClassJob != classJobId)
+                continue;
+
+            // skip if lower itemlevel than previous selected gearset
+            if (selectedGearset.ItemLevel >= gearset->ItemLevel)
+                continue;
+
+            selectedGearset = (id + 1, gearset->ItemLevel);
         }
 
         UIModule.PlaySound(8, 0, 0, 0);
