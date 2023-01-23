@@ -38,21 +38,11 @@ public unsafe partial struct CharaView : ICreatable
     [FieldOffset(0xC0)] public float UnkC0;
     [FieldOffset(0xC4)] public float ZoomRatio;
 
+    [FixedSizeArray<CharaViewItem>(14)]
     [FieldOffset(0xD0)] public fixed byte Items[0x20 * 14];
 
     [FieldOffset(0x2B8)] public bool CharacterDataCopied;
     [FieldOffset(0x2B9)] public bool CharacterLoaded;
-
-    public Span<CharaViewItem> ItemSpan
-    {
-        get
-        {
-            fixed (byte* ptr = Items)
-            {
-                return new Span<CharaViewItem>(ptr, sizeof(CharaViewItem));
-            }
-        }
-    }
 
     public static CharaView* Create()
     {

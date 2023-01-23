@@ -46,17 +46,6 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     [FieldOffset(0x3A1)] public bool CharacterDataCopied;
     [FieldOffset(0x3A2)] public bool CharacterLoaded;
 
-    public Span<CharaViewItem> CharaViewItemSpan
-    {
-        get
-        {
-            fixed (byte* ptr = Base.Items)
-            {
-                return new Span<CharaViewItem>(ptr, sizeof(CharaViewItem));
-            }
-        }
-    }
-
     public static CharaViewPortrait* Create()
     {
         return IMemorySpace.GetUISpace()->Create<CharaViewPortrait>();

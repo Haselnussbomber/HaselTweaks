@@ -126,8 +126,9 @@ public unsafe class CharacterClassSwitcher : Tweak
             // skip crafters as they already have ButtonClick events
             if (IsCrafter(i)) continue;
 
-            var node = addon->BaseComponentNodes[i];
-            if (node == null) continue;
+            var nodePointer = addon->BaseComponentNodesSpan[i];
+            if (nodePointer.Value == null) continue;
+            var node = nodePointer.Value;
 
             var collisionNode = (AtkCollisionNode*)node->UldManager.RootNode;
             if (collisionNode == null) continue;
@@ -148,8 +149,9 @@ public unsafe class CharacterClassSwitcher : Tweak
             // skip crafters as they already have Cursor Pointer flags
             if (IsCrafter(i)) continue;
 
-            var node = addon->BaseComponentNodes[i];
-            if (node == null) continue;
+            var nodePointer = addon->BaseComponentNodesSpan[i];
+            if (nodePointer.Value == null) continue;
+            var node = nodePointer.Value;
 
             var collisionNode = (AtkCollisionNode*)node->UldManager.RootNode;
             if (collisionNode == null) continue;
@@ -173,7 +175,11 @@ public unsafe class CharacterClassSwitcher : Tweak
         if (eventParam < 2)
             goto OriginalReceiveEventCode;
 
-        var node = addon->BaseComponentNodes[eventParam - 2];
+        var nodePointer = addon->BaseComponentNodesSpan[eventParam - 2];
+        if (nodePointer.Value == null)
+            goto OriginalReceiveEventCode;
+
+        var node = nodePointer.Value;
         if (node == null || node->OwnerNode == null)
             goto OriginalReceiveEventCode;
 
@@ -215,10 +221,10 @@ public unsafe class CharacterClassSwitcher : Tweak
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
-            var entry = addon->ClassEntries[i];
-            if (entry == null || entry->Base == null) continue;
+            var entry = addon->ClassEntriesSpan[i];
+            if (entry.Base == null) continue;
 
-            var collisionNode = (AtkCollisionNode*)entry->Base->UldManager.RootNode;
+            var collisionNode = (AtkCollisionNode*)entry.Base->UldManager.RootNode;
             if (collisionNode == null) continue;
 
             collisionNode->AtkResNode.AddEvent(AtkEventType.MouseClick, (uint)i | 0x10000, eventListener, null, false);
@@ -234,14 +240,14 @@ public unsafe class CharacterClassSwitcher : Tweak
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
-            var entry = addon->ClassEntries[i];
-            if (entry == null || entry->Base == null || entry->Icon == null) continue;
+            var entry = addon->ClassEntriesSpan[i];
+            if (entry.Base == null || entry.Icon == null) continue;
 
-            var collisionNode = (AtkCollisionNode*)entry->Base->UldManager.RootNode;
+            var collisionNode = (AtkCollisionNode*)entry.Base->UldManager.RootNode;
             if (collisionNode == null) continue;
 
             // if job is unlocked, it has full alpha
-            var isUnlocked = entry->Icon->AtkResNode.Color.A == 255;
+            var isUnlocked = entry.Icon->AtkResNode.Color.A == 255;
 
             if (isUnlocked)
                 collisionNode->AtkResNode.Flags_2 |= 1 << 20; // add Cursor Pointer flag
@@ -259,17 +265,17 @@ public unsafe class CharacterClassSwitcher : Tweak
         if (entryId is < 0 or > AddonPvPCharacter.NUM_CLASSES)
             goto OriginalPvPReceiveEventCode;
 
-        var entry = addon->ClassEntries[entryId];
+        var entry = addon->ClassEntriesSpan[entryId];
 
-        if (entry == null || entry->Base == null || entry->Base->OwnerNode == null || entry->Icon == null)
+        if (entry.Base == null || entry.Base->OwnerNode == null || entry.Icon == null)
             goto OriginalPvPReceiveEventCode;
 
         // if job is unlocked, it has full alpha
-        var isUnlocked = entry->Icon->AtkResNode.Color.A == 255;
+        var isUnlocked = entry.Icon->AtkResNode.Color.A == 255;
         if (!isUnlocked)
             goto OriginalPvPReceiveEventCode;
 
-        if (ProcessEvents(entry->Base->OwnerNode, entry->Icon, eventType))
+        if (ProcessEvents(entry.Base->OwnerNode, entry.Icon, eventType))
             return IntPtr.Zero;
 
         OriginalPvPReceiveEventCode:
