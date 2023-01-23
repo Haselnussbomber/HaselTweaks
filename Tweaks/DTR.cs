@@ -5,6 +5,7 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Colors;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -89,14 +90,7 @@ public class DTR : Tweak
     {
         if (DtrInstance == null) return;
 
-        var instanceAreaData = InstanceAreaData.Instance();
-        if (instanceAreaData == null)
-        {
-            if (DtrInstance.Shown) DtrInstance.Shown = false;
-            return;
-        }
-
-        var instanceId = instanceAreaData->GetInstanceId();
+        var instanceId = UIState.Instance()->AreaInstance.Instance;
         if (instanceId <= 0 || instanceId >= 10)
         {
             if (DtrInstance.Shown) DtrInstance.Shown = false;
