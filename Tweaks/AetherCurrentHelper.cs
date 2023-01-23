@@ -28,7 +28,7 @@ public unsafe class AetherCurrentHelper : Tweak
     // Client::UI::Agent::AgentAetherCurrent_ReceiveEvent
     [AutoHook, Signature("40 53 55 56 57 41 56 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 48 8B D9 49 8B F8", DetourName = nameof(ReceiveEventDetour))]
     private Hook<ReceiveEventDelegate> ReceiveEventHook { get; init; } = null!;
-    private unsafe delegate IntPtr ReceiveEventDelegate(AgentAetherCurrent* agent, IntPtr a2, AtkValue* a3);
+    private unsafe delegate AtkValue* ReceiveEventDelegate(AgentAetherCurrent* agent, AtkValue* result, AtkValue* a3);
 
     public override void Enable()
     {
@@ -40,15 +40,12 @@ public unsafe class AetherCurrentHelper : Tweak
         Plugin.WindowSystem.RemoveWindow(Window);
     }
 
-    private unsafe IntPtr ReceiveEventDetour(AgentAetherCurrent* agent, IntPtr a2, AtkValue* atkValue)
+    private unsafe AtkValue* ReceiveEventDetour(AgentAetherCurrent* agent, AtkValue* result, AtkValue* atkValue)
     {
         if (Service.KeyState[VirtualKey.SHIFT])
             goto OriginalCode;
 
-        if (atkValue == null)
-            goto OriginalCode;
-
-        if (atkValue->Type != ValueType.Int || atkValue->Int != 0)
+        if (atkValue == null || atkValue->Type != ValueType.Int || atkValue->Int != 0)
             goto OriginalCode;
 
         var atkValue2 = (AtkValue*)((IntPtr)atkValue + 0x10);
@@ -70,11 +67,11 @@ public unsafe class AetherCurrentHelper : Tweak
             Window.Toggle();
 
         // handled, just like in the original code
-        *(uint*)a2 = 2;
-        *(byte*)(a2 + 8) = 0;
-        return a2;
+        result->Type = ValueType.Bool;
+        result->Byte = 0;
+        return result;
 
         OriginalCode:
-        return ReceiveEventHook.Original(agent, a2, atkValue);
+        return ReceiveEventHook.Original(agent, result, atkValue);
     }
 }
