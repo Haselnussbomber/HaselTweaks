@@ -4,7 +4,7 @@ namespace HaselTweaks.Structs;
 [StructLayout(LayoutKind.Explicit)]
 public unsafe partial struct PvPState
 {
-    [StaticAddress("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 43 08")]
+    [StaticAddress("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 43 08", 3)]
     public static partial PvPState* Instance();
 
     [FieldOffset(0x0)] public byte IsLoaded;
