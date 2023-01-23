@@ -8,7 +8,7 @@ public unsafe partial struct AddonRecipeTree
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x228)] public AtkComponentButton RefreshButton;
+    [FieldOffset(0x228)] public AtkComponentButton* RefreshButton;
 
     [VirtualFunction(2)]
     public partial void ReceiveEvent(AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr unk);

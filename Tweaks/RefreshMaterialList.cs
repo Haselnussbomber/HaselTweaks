@@ -41,9 +41,9 @@ public unsafe class RefreshMaterialList : Tweak
         if (!ShouldRefresh()) return;
 
         if (recipeMaterialList != null &&
-            recipeMaterialList->AtkUnitBase.RootNode != null &&
-            recipeMaterialList->RefreshButton.AtkComponentBase.OwnerNode != null &&
-            recipeMaterialList->RefreshButton.IsEnabled)
+            recipeMaterialList->RefreshButton != null &&
+            recipeMaterialList->RefreshButton->AtkComponentBase.OwnerNode != null &&
+            recipeMaterialList->RefreshButton->IsEnabled)
         {
             Log("Refreshing RecipeMaterialList");
             var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
@@ -52,9 +52,9 @@ public unsafe class RefreshMaterialList : Tweak
         }
 
         if (recipeTree != null &&
-            recipeTree->AtkUnitBase.RootNode != null &&
-            recipeTree->RefreshButton.AtkComponentBase.OwnerNode != null &&
-            recipeTree->RefreshButton.IsEnabled)
+            recipeTree->RefreshButton != null &&
+            recipeTree->RefreshButton->AtkComponentBase.OwnerNode != null &&
+            recipeTree->RefreshButton->IsEnabled)
         {
             Log("Refreshing RecipeTree");
             var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
