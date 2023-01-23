@@ -1,5 +1,7 @@
 using Dalamud.Game;
+using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
@@ -8,8 +10,6 @@ public unsafe class RefreshMaterialList : Tweak
 {
     public override string Name => "Refresh Material List";
     public override string Description => "Refreshes the material list and recipe tree when an item was crafted, fished or gathered.";
-
-    private delegate void* ReceiveEventDelegate(IntPtr addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr resNode);
 
     private record WindowState
     {
@@ -34,24 +34,32 @@ public unsafe class RefreshMaterialList : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        var recipeMaterialList = AtkUtils.GetUnitBase("RecipeMaterialList");
-        var recipeTree = AtkUtils.GetUnitBase("RecipeTree");
-        if (recipeMaterialList == null && recipeTree == null) return;
+        var recipeMaterialList = (AddonRecipeMaterialList*)AtkUtils.GetUnitBase("RecipeMaterialList");
+        var recipeTree = (AddonRecipeTree*)AtkUtils.GetUnitBase("RecipeTree");
 
+        if (recipeMaterialList == null && recipeTree == null) return;
         if (!ShouldRefresh()) return;
 
-        if (recipeMaterialList != null)
+        if (recipeMaterialList != null &&
+            recipeMaterialList->AtkUnitBase.RootNode != null &&
+            recipeMaterialList->RefreshButton.AtkComponentBase.OwnerNode != null &&
+            recipeMaterialList->RefreshButton.IsEnabled)
         {
             Log("Refreshing RecipeMaterialList");
-            var receiveEvent = Marshal.GetDelegateForFunctionPointer<ReceiveEventDelegate>((IntPtr)recipeMaterialList->AtkEventListener.vfunc[2]);
-            receiveEvent((IntPtr)recipeMaterialList, AtkEventType.ButtonClick, 1, recipeMaterialList->RootNode->AtkEventManager.Event, (IntPtr)recipeMaterialList->RootNode);
+            var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
+            recipeMaterialList->ReceiveEvent(AtkEventType.ButtonClick, 1, atkEvent, 0);
+            IMemorySpace.Free(atkEvent);
         }
 
-        if (recipeTree != null)
+        if (recipeTree != null &&
+            recipeTree->AtkUnitBase.RootNode != null &&
+            recipeTree->RefreshButton.AtkComponentBase.OwnerNode != null &&
+            recipeTree->RefreshButton.IsEnabled)
         {
             Log("Refreshing RecipeTree");
-            var receiveEvent = Marshal.GetDelegateForFunctionPointer<ReceiveEventDelegate>((IntPtr)recipeTree->AtkEventListener.vfunc[2]);
-            receiveEvent((IntPtr)recipeTree, AtkEventType.ButtonClick, 0, recipeTree->RootNode->AtkEventManager.Event, (IntPtr)recipeTree->RootNode);
+            var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
+            recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, atkEvent, 0);
+            IMemorySpace.Free(atkEvent);
         }
     }
 
