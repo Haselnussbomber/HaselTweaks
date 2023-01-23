@@ -2,7 +2,6 @@ using Dalamud.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
-using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
@@ -34,16 +33,13 @@ public unsafe class RefreshMaterialList : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        var recipeMaterialList = (AddonRecipeMaterialList*)AtkUtils.GetUnitBase("RecipeMaterialList");
-        var recipeTree = (AddonRecipeTree*)AtkUtils.GetUnitBase("RecipeTree");
+        var recipeMaterialList = GetAgent<AgentRecipeMaterialList>()->GetAddon();
+        var recipeTree = GetAgent<AgentRecipeTree>()->GetAddon();
 
-        if (recipeMaterialList == null && recipeTree == null) return;
-        if (!ShouldRefresh()) return;
+        if ((recipeMaterialList == null && recipeTree == null) || !ShouldRefresh())
+            return;
 
-        if (recipeMaterialList != null &&
-            recipeMaterialList->RefreshButton != null &&
-            recipeMaterialList->RefreshButton->AtkComponentBase.OwnerNode != null &&
-            recipeMaterialList->RefreshButton->IsEnabled)
+        if (recipeMaterialList != null)
         {
             Log("Refreshing RecipeMaterialList");
             var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
@@ -51,10 +47,7 @@ public unsafe class RefreshMaterialList : Tweak
             IMemorySpace.Free(atkEvent);
         }
 
-        if (recipeTree != null &&
-            recipeTree->RefreshButton != null &&
-            recipeTree->RefreshButton->AtkComponentBase.OwnerNode != null &&
-            recipeTree->RefreshButton->IsEnabled)
+        if (recipeTree != null)
         {
             Log("Refreshing RecipeTree");
             var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
@@ -70,7 +63,7 @@ public unsafe class RefreshMaterialList : Tweak
         // checks if any depending windows were open and are now closed
         foreach (var state in windowState)
         {
-            var unitBase = AtkUtils.GetUnitBase(state.Addon);
+            var unitBase = GetAddon(state.Addon);
             state.WasOpen = state.IsOpen;
             state.IsOpen = unitBase != null && unitBase->IsVisible;
 

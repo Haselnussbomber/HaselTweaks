@@ -1,8 +1,11 @@
+using FFXIVClientStructs.Attributes;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Structs;
 
 // ctor "40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 48 89 03 48 8D 53 30"
+[Agent(AgentId.BannerEditor)]
 [StructLayout(LayoutKind.Explicit, Size = 0x38)]
 public unsafe struct AgentBannerEditor
 {

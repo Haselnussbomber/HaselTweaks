@@ -154,7 +154,7 @@ public unsafe class CharacterClassSwitcher : Tweak
             var collisionNode = (AtkCollisionNode*)node->UldManager.RootNode;
             if (collisionNode == null) continue;
 
-            var imageNode = (AtkImageNode*)node->UldManager.SearchNodeById(4);
+            var imageNode = GetNode<AtkImageNode>(node, 4);
             if (imageNode == null) continue;
 
             // if job is unlocked, it has full alpha
@@ -177,7 +177,7 @@ public unsafe class CharacterClassSwitcher : Tweak
         if (node == null || node->OwnerNode == null)
             goto OriginalReceiveEventCode;
 
-        var imageNode = (AtkImageNode*)node->UldManager.SearchNodeById(4);
+        var imageNode = GetNode<AtkImageNode>(node, 4);
         if (imageNode == null)
             goto OriginalReceiveEventCode;
 

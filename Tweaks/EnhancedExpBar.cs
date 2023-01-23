@@ -6,7 +6,6 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
-using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;
 using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
 
@@ -139,7 +138,7 @@ public unsafe class EnhancedExpBar : Tweak
 
     private void RunUpdate(bool useDetour = false)
     {
-        var addon = (AddonExp*)AtkUtils.GetUnitBase("_Exp");
+        var addon = GetAddon<AddonExp>("_Exp");
         if (addon == null) return;
 
         var framework = Framework.Instance();
@@ -174,17 +173,14 @@ public unsafe class EnhancedExpBar : Tweak
 
     private IntPtr OnRequestedUpdateDetour(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        if (addon->GaugeBarNode == null)
-            goto OriginalOnRequestedUpdate;
-
-        var nineGridNode = (AtkNineGridNode*)addon->GaugeBarNode->AtkComponentBase.UldManager.SearchNodeById(4);
+        var nineGridNode = GetNode<AtkNineGridNode>((AtkComponentBase*)addon->GaugeBarNode, 4);
         if (nineGridNode == null)
             goto OriginalOnRequestedUpdate;
 
         if (Service.ClientState.LocalPlayer?.ClassJob.GameData == null || !Service.Data.IsDataReady)
             goto OriginalOnRequestedUpdateWithColorReset;
 
-        var leftText = (AtkTextNode*)addon->AtkUnitBase.UldManager.SearchNodeById(4);
+        var leftText = GetNode<AtkTextNode>((AtkUnitBase*)addon, 4);
         if (leftText == null)
             goto OriginalOnRequestedUpdateWithColorReset;
 

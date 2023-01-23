@@ -1,6 +1,6 @@
 using Dalamud.Game;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
@@ -10,23 +10,11 @@ public unsafe class HideMSQComplete : Tweak
     public override string Name => "Hide MSQ Complete";
     public override string Description => "Hides the Main Scenario Guide when the MSQ is completed. Job quests are still being displayed.";
 
-    private enum NodeId : uint
-    {
-        Text = 11,
-        NineGrid = 12,
-        Button = 13,
-    }
-
-    private AtkResNode* buttonNode;
+    private AtkComponentButton* buttonNode;
     private AtkNineGridNode* msqCompleteNineGridNode;
     private AtkTextNode* msqCompleteTextNode;
 
-    private string msqCompleteText = "";
-
-    public override void Setup()
-    {
-        msqCompleteText = Service.StringUtils.GetSheetText<Addon>(5672, "Text") ?? "Main Scenario Quests Complete";
-    }
+    private Lazy<string> msqCompleteText => new(() => Service.StringUtils.GetSheetText<Addon>(5672, "Text") ?? "Main Scenario Quests Complete");
 
     public override void Disable()
     {
@@ -35,28 +23,27 @@ public unsafe class HideMSQComplete : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        var addon = AtkUtils.GetUnitBase("ScenarioTree");
-        if (addon == null) return;
+        var addon = GetAddon<AtkUnitBase>(AgentId.ScenarioTree);
+        if (addon == null)
+            return;
 
-        msqCompleteTextNode = (AtkTextNode*)AtkUtils.GetNode(addon, (uint)NodeId.Text);
-        if (msqCompleteTextNode == null) return;
+        msqCompleteTextNode = GetNode<AtkTextNode>(addon, 11);
+        msqCompleteNineGridNode = GetNode<AtkNineGridNode>(addon, 12);
+        buttonNode = GetNode<AtkComponentButton>(addon, 13);
 
-        msqCompleteNineGridNode = (AtkNineGridNode*)AtkUtils.GetNode(addon, (uint)NodeId.NineGrid);
-        if (msqCompleteNineGridNode == null) return;
-
-        buttonNode = AtkUtils.GetNode(addon, (uint)NodeId.Button);
-        if (buttonNode == null) return;
+        if (msqCompleteTextNode == null)
+            return;
 
         var text = msqCompleteTextNode->NodeText.ToString();
-        var isMSQIncomplete = text != msqCompleteText;
+        var isMSQIncomplete = text != msqCompleteText.Value;
 
         UpdateVisibility(isMSQIncomplete);
     }
 
     private void UpdateVisibility(bool visible)
     {
-        AtkUtils.SetVisibility(&msqCompleteNineGridNode->AtkResNode, visible);
-        AtkUtils.SetVisibility(&msqCompleteTextNode->AtkResNode, visible);
-        AtkUtils.SetVisibility(buttonNode, visible);
+        SetVisibility((AtkResNode*)msqCompleteNineGridNode, visible);
+        SetVisibility((AtkResNode*)msqCompleteTextNode, visible);
+        SetVisibility((AtkResNode*)buttonNode, visible);
     }
 }

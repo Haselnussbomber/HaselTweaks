@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Dalamud;
 using Dalamud.Game;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselTweaks.Structs;
-using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
@@ -91,10 +91,11 @@ public class AutoSortArmouryChest : Tweak
 
     public override unsafe void OnFrameworkUpdate(Framework framework)
     {
-        var unitBase = AtkUtils.GetUnitBase("ArmouryBoard");
-        if (unitBase == null || unitBase->RootNode == null) return;
+        var addon = GetAddon<AddonArmouryBoard>(AgentId.ArmouryBoard);
+        if (addon == null || addon->AtkUnitBase.RootNode == null)
+            return;
 
-        var isVisible = unitBase->RootNode->IsVisible;
+        var isVisible = addon->AtkUnitBase.RootNode->IsVisible;
 
         if (!wasVisible && isVisible)
             Run();

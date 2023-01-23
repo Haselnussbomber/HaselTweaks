@@ -1,7 +1,5 @@
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselTweaks.Structs;
-using HaselTweaks.Utils;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
@@ -15,8 +13,8 @@ The Advanced Mode allows to specify which settings should be pasted.";
 
     private readonly PortraitHelperWindow Window = new();
 
-    internal static AgentBannerEditor* AgentBannerEditor => (AgentBannerEditor*)Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalId(AgentId.BannerEditor);
-    internal static AddonBannerEditor* AddonBannerEditor => (AddonBannerEditor*)AtkUtils.GetUnitBase("BannerEditor");
+    internal static AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
+    internal static AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
 
     public PortraitHelper() : base()
     {
@@ -35,8 +33,7 @@ The Advanced Mode allows to specify which settings should be pasted.";
 
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
-        var addon = AtkUtils.GetUnitBase("BannerEditor");
-        if (addon == null)
+        if (AddonBannerEditor == null)
         {
             if (Window.IsOpen)
                 Window.Toggle();

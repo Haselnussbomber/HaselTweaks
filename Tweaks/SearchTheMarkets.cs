@@ -3,11 +3,9 @@ using Dalamud;
 using Dalamud.ContextMenu;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
-using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselTweaks.Structs;
-using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;
+using AgentRecipeNote = HaselTweaks.Structs.AgentRecipeNote;
 using HaselAtkComponentTextInput = HaselTweaks.Structs.AtkComponentTextInput;
 
 namespace HaselTweaks.Tweaks;
@@ -67,22 +65,18 @@ public unsafe class SearchTheMarkets : Tweak
 
         if (args.ParentAddonName is "RecipeNote")
         {
-            var agent = (AgentRecipeNote*)Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalId(AgentId.RecipeNote);
-            itemId = *(uint*)((IntPtr)agent + 0x398);
+            itemId = GetAgent<AgentRecipeNote>()->ResultItemId;
         }
         else if (args.ParentAddonName is "RecipeMaterialList" or "RecipeTree")
         {
-            // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint to Agent 262 (a1)
-            var agent = Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalId(AgentId.RecipeItemContext);
-            itemId = *(uint*)((IntPtr)agent + 0x28);
+            // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
+            itemId = GetAgent<AgentRecipeItemContext>()->ResultItemId;
         }
 
         Item = Service.Data.GetExcelSheet<Item>()?.GetRow(itemId);
 
-        if (InvalidState())
-        {
+        if (IsInvalidState())
             return;
-        }
 
         args.AddCustomItem(ContextMenuItemGame);
     }
@@ -91,22 +85,20 @@ public unsafe class SearchTheMarkets : Tweak
     {
         Item = Service.Data.GetExcelSheet<Item>()?.GetRow(args.ItemId);
 
-        if (InvalidState())
-        {
+        if (IsInvalidState())
             return;
-        }
 
         args.AddCustomItem(ContextMenuItemInventory);
     }
 
     private void Search()
     {
-        if (InvalidState())
-        {
-            return;
-        }
+        var agent = GetAgent<AgentItemSearch>();
 
-        var itemSearch = (AddonItemSearch*)AtkUtils.GetUnitBase("ItemSearch");
+        if (IsInvalidState(agent))
+            return;
+
+        var addon = agent->GetAddon();
 
         var itemName = Item!.Name.ToString();
         if (itemName.Length > 40)
@@ -117,19 +109,17 @@ public unsafe class SearchTheMarkets : Tweak
         var byteArray = Encoding.UTF8.GetBytes(itemName);
         fixed (byte* ptr = byteArray)
         {
-            itemSearch->TextInput->AtkComponentInputBase.UnkText1.SetString(ptr);
-            itemSearch->TextInput->AtkComponentInputBase.UnkText2.SetString(ptr);
-            itemSearch->TextInput->UnkText1.SetString(ptr);
-            itemSearch->TextInput->UnkText2.SetString(ptr);
+            addon->TextInput->AtkComponentInputBase.UnkText1.SetString(ptr);
+            addon->TextInput->AtkComponentInputBase.UnkText2.SetString(ptr);
+            addon->TextInput->UnkText1.SetString(ptr);
+            addon->TextInput->UnkText2.SetString(ptr);
         }
 
-        itemSearch->SetModeFilter(AddonItemSearch.SearchMode.Normal, 0xFFFFFFFF);
-        ((HaselAtkComponentTextInput*)itemSearch->TextInput)->TriggerRedraw();
-        itemSearch->RunSearch(false);
+        addon->SetModeFilter(AddonItemSearch.SearchMode.Normal, 0xFFFFFFFF);
+        ((HaselAtkComponentTextInput*)addon->TextInput)->TriggerRedraw();
+        addon->RunSearch(false);
     }
 
-    private bool InvalidState()
-    {
-        return Item == null || Item.RowId == 0 || Item.IsUntradable || AtkUtils.GetUnitBase("ItemSearch") == null;
-    }
+    private bool IsInvalidState(AgentItemSearch* agent) => Item == null || Item.RowId == 0 || Item.IsUntradable || agent->GetAddon() != null;
+    private bool IsInvalidState() => IsInvalidState(GetAgent<AgentItemSearch>());
 }

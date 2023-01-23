@@ -48,7 +48,7 @@ public unsafe class MinimapAdjustments : Tweak
 
     public override void Disable()
     {
-        var addon = AtkUtils.GetUnitBase("_NaviMap");
+        var addon = GetAddon("_NaviMap");
         if (addon == null) return;
 
         // reset visibility
@@ -60,7 +60,7 @@ public unsafe class MinimapAdjustments : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        var addon = AtkUtils.GetUnitBase("_NaviMap");
+        var addon = GetAddon("_NaviMap");
         if (addon == null) return;
         SetVisibility(addon, isHovering);
         SetCollision(addon, Config.Square);
@@ -82,8 +82,7 @@ public unsafe class MinimapAdjustments : Tweak
 
     private static void UpdateVisibility()
     {
-        var addon = AtkUtils.GetUnitBase("_NaviMap");
-        if (addon == null) return;
+        var addon = GetAddon("_NaviMap");
         AtkUtils.SetVisibility(addon, (uint)NodeId.Coords, !Config.HideCoords);
         AtkUtils.SetVisibility(addon, (uint)NodeId.Weather, !Config.HideWeather);
     }
@@ -97,7 +96,7 @@ public unsafe class MinimapAdjustments : Tweak
 
     private static void SetCollision(AtkUnitBase* addon, bool square)
     {
-        var collisionNode = AtkUtils.GetNode(addon, (uint)NodeId.Collision);
+        var collisionNode = GetNode(addon, (uint)NodeId.Collision);
         if (collisionNode == null) return;
         var hasCircularCollisionFlag = (collisionNode->Flags_2 & (1 << 23)) != 0;
 

@@ -1,7 +1,7 @@
 using Dalamud.Game;
-using Dalamud.Memory;
+using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Utils;
+using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
@@ -10,26 +10,30 @@ public unsafe class ExpertDeliveries : Tweak
     public override string Name => "Expert Deliveries";
     public override string Description => "Always opens the \"Grand Company Delivery Missions\" window on the \"Expert Delivery\" tab.";
 
-    private delegate void* ReceiveEventDelegate(IntPtr addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr resNode);
-
     private bool switched;
 
-    public override void OnFrameworkUpdate(Framework framework)
+    public override unsafe void OnFrameworkUpdate(Framework framework)
     {
-        var unitBase = AtkUtils.GetUnitBase("GrandCompanySupplyList");
-        if (unitBase == null || !unitBase->IsVisible)
+        var agent = GetAgent<AgentGrandCompanySupply>();
+        if (agent == null || !agent->AgentInterface.IsAgentActive())
         {
             if (switched) switched = false;
             return;
         }
 
-        var someLoadedStateMaybe = MemoryHelper.Read<byte>((IntPtr)unitBase + 0x188);
-        if (switched || someLoadedStateMaybe != 0x14) return;
+        if (switched)
+            return;
+
+        var addon = agent->GetAddon();
+        if (addon == null)
+            return;
 
         Log("window opened, switching tab");
 
-        var receiveEvent = Marshal.GetDelegateForFunctionPointer<ReceiveEventDelegate>((IntPtr)unitBase->AtkEventListener.vfunc[2]);
-        receiveEvent((IntPtr)unitBase, AtkEventType.ButtonClick, 4, unitBase->RootNode->AtkEventManager.Event, (IntPtr)unitBase->RootNode);
+        var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
+        addon->ReceiveEvent(AtkEventType.ButtonClick, 4, atkEvent, 0);
+        IMemorySpace.Free(atkEvent);
+
         switched = true;
     }
 }

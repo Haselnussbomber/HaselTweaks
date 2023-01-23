@@ -7,8 +7,7 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface;
 using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
-using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -140,10 +139,9 @@ public class AetherCurrentHelperWindow : Window
 
     private unsafe bool DrawMainCommandButton()
     {
-        if (AtkUtils.GetUnitBase("AetherCurrent") != null)
-        {
+        var agent = GetAgent<AgentAetherCurrent>();
+        if (agent->GetAddon() != null)
             return false;
-        }
 
         var startPos = ImGui.GetCursorPos();
         var windowSize = ImGui.GetContentRegionAvail();
@@ -161,11 +159,7 @@ public class AetherCurrentHelperWindow : Window
 
         if (ImGui.IsItemClicked())
         {
-            var agent = Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalId(AgentId.AetherCurrent);
-            if (agent != null && agent->AddonId == 0)
-            {
-                agent->Show();
-            }
+            agent->AgentInterface.Show();
         }
 
         ImGui.SetCursorPos(startPos);

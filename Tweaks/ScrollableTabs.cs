@@ -138,7 +138,7 @@ public unsafe class ScrollableTabs : Tweak
             // used by InventoryLarge or InventoryExpansion
             case "InventoryCrystalGrid":
                 name = "InventoryLarge";
-                if (AtkUtils.GetUnitBase(name) == null)
+                if (GetAddon(name) == null)
                     name = "InventoryExpansion";
                 break;
 
@@ -185,8 +185,8 @@ public unsafe class ScrollableTabs : Tweak
                 goto ResetWheelState;
         }
 
-        var unitBase = AtkUtils.GetUnitBase(name);
-        if (unitBase == null || !unitBase->IsVisible) // TODO: use (AtkStage+0x30)->+0x8 to scan for intersecting addon
+        var unitBase = GetAddon(name);
+        if (unitBase == null)
             goto ResetWheelState;
 
         if (Config.HandleArmouryBoard && name == "ArmouryBoard")
@@ -403,7 +403,7 @@ public unsafe class ScrollableTabs : Tweak
             // WAYTOODANK, this is basically like writing addon->Tabs[i]
             // but because this is dynamic (depending on NumTabs), we can't do that... thanks, C#!
             var button = *(HaselAtkComponentRadioButton**)(tabs + i * 8);
-            button->SetActive(i == tabIndex);
+            button->SetSelected(i == tabIndex);
         }
     }
 
@@ -476,7 +476,7 @@ public unsafe class ScrollableTabs : Tweak
 
     private void UpdateMJIMountMinion(AddonMJIMinionNoteBook* addon)
     {
-        var agent = (AgentMJIMinionNoteBook*)AgentModule.Instance()->GetAgentByInternalId(AgentId.MJIMinionNoteBook);
+        var agent = GetAgent<AgentMJIMinionNoteBook>();
         if (agent == null) return;
 
         if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Normal)

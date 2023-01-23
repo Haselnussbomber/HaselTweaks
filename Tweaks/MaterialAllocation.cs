@@ -1,7 +1,5 @@
 using Dalamud.Game;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
-using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
@@ -10,35 +8,26 @@ public unsafe class MaterialAllocation : Tweak
     public override string Name => "Material Allocation";
     public override string Description => "Always opens the Island Sanctuarys \"Material Allocation\" window on the \"Current & Next Season\" tab.";
 
-    private bool CurrentNextSeasonTabSwitched;
+    private bool switched;
     public override void OnFrameworkUpdate(Framework framework)
     {
-        var addon = (AddonMJICraftMaterialConfirmation*)AtkUtils.GetUnitBase("MJICraftMaterialConfirmation");
-        if (addon == null || !addon->AtkUnitBase.IsVisible) // no clue, but seems to help
+        var agent = GetAgent<AgentMJICraftSchedule>();
+        if (!agent->AgentInterface.IsAgentActive())
         {
-            if (CurrentNextSeasonTabSwitched) CurrentNextSeasonTabSwitched = false;
+            if (switched) switched = false;
             return;
         }
 
-        var button = (AtkComponentButton*)addon->RadioButton3; // AtkComponentRadioButton inherits from AtkComponentButton
-        if (CurrentNextSeasonTabSwitched || button == null) // selected flag
-        {
+        if (switched || agent->Data == null || agent->Data->IsLoading)
             return;
-        }
 
-        var isRadioButtonSelected = (button->Flags & 0x40000) != 0;
-        if (isRadioButtonSelected)
-        {
+        var addon = GetAddon<AddonMJICraftMaterialConfirmation>("MJICraftMaterialConfirmation");
+        if (!IsAddonReady(addon->AtkUnitBase.ID) || addon->RadioButton3 == null)
             return;
-        }
 
-        var isLoadingData = (*(uint*)((IntPtr)addon + 0x1AF) & 0x100000) != 0; // I guess?
-        if (isLoadingData)
-        {
-            return;
-        }
+        if (agent->TabIndex != 2)
+            addon->SwitchTab(2);
 
-        addon->SwitchTab(2);
-        CurrentNextSeasonTabSwitched = true;
+        switched = true;
     }
 }
