@@ -90,7 +90,10 @@ public unsafe class ScrollableTabs : Tweak
     {
         if (wheelState == 0) return;
 
-        var hoveredUnitBase = AtkUtils.GetHighestAtkUnitBaseAtPosition();
+        var collisionManager = AtkCollisionManager.Instance;
+        if (collisionManager == null) goto ResetWheelState;
+
+        var hoveredUnitBase = collisionManager->IntersectingAddon;
         if (hoveredUnitBase == null) goto ResetWheelState;
 
         var name = Marshal.PtrToStringAnsi((IntPtr)hoveredUnitBase->Name);
@@ -183,7 +186,7 @@ public unsafe class ScrollableTabs : Tweak
         }
 
         var unitBase = AtkUtils.GetUnitBase(name);
-        if (unitBase == null || !unitBase->IsVisible)
+        if (unitBase == null || !unitBase->IsVisible) // TODO: use (AtkStage+0x30)->+0x8 to scan for intersecting addon
             goto ResetWheelState;
 
         if (Config.HandleArmouryBoard && name == "ArmouryBoard")
@@ -418,10 +421,9 @@ public unsafe class ScrollableTabs : Tweak
 
     private void UpdateFieldNotes(AddonMYCWarResultNotebook* addon)
     {
-        if (AtkUtils.IsCursorIntersecting(addon->AtkUnitBase.UldManager, addon->DescriptionCollisionNode))
-        {
+        var collisionManager = AtkCollisionManager.Instance;
+        if (collisionManager != null && collisionManager->IntersectingCollisionNode == addon->DescriptionCollisionNode)
             return;
-        }
 
         var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
         var eventParam = Math.Clamp(addon->CurrentNoteIndex % 10 + wheelState, -1, addon->MaxNoteIndex - 1);
