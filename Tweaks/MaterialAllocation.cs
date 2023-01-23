@@ -1,4 +1,5 @@
 using Dalamud.Game;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
@@ -11,21 +12,23 @@ public unsafe class MaterialAllocation : Tweak
     private bool switched;
     public override void OnFrameworkUpdate(Framework framework)
     {
-        var agent = GetAgent<AgentMJICraftSchedule>();
-        if (!agent->AgentInterface.IsAgentActive())
+        var agent = GetAgent(AgentId.MJICraftSchedule);
+        if (!agent->IsAgentActive())
         {
             if (switched) switched = false;
             return;
         }
 
-        if (switched || agent->Data == null || agent->Data->IsLoading)
+        var agentMJICraftSchedule = (AgentMJICraftSchedule*)agent;
+
+        if (switched || agentMJICraftSchedule->Data == null || agentMJICraftSchedule->Data->IsLoading)
             return;
 
         var addon = GetAddon<AddonMJICraftMaterialConfirmation>("MJICraftMaterialConfirmation");
         if (!IsAddonReady(addon->AtkUnitBase.ID) || addon->RadioButton3 == null)
             return;
 
-        if (agent->TabIndex != 2)
+        if (agentMJICraftSchedule->TabIndex != 2)
             addon->SwitchTab(2);
 
         switched = true;

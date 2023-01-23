@@ -13,7 +13,7 @@ The Advanced Mode allows to specify which settings should be pasted.";
 
     private readonly PortraitHelperWindow Window = new();
 
-    internal static AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
+    internal static AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>(AgentId.BannerEditor);
     internal static AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
 
     public PortraitHelper() : base()

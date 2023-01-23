@@ -10,6 +10,5 @@ namespace HaselTweaks.Structs;
 public struct AgentRecipeItemContext
 {
     [FieldOffset(0)] public AgentInterface AgentInterface;
-
     [FieldOffset(0x28)] public uint ResultItemId;
 }

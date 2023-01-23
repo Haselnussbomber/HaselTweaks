@@ -7,6 +7,7 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface;
 using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
@@ -139,7 +140,7 @@ public class AetherCurrentHelperWindow : Window
 
     private unsafe bool DrawMainCommandButton()
     {
-        var agent = GetAgent<AgentAetherCurrent>();
+        var agent = GetAgent<AgentAetherCurrent>(AgentId.AetherCurrent);
         if (agent->GetAddon() != null)
             return false;
 

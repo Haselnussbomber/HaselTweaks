@@ -1,5 +1,6 @@
 using Dalamud.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 
@@ -14,8 +15,8 @@ public unsafe class ExpertDeliveries : Tweak
 
     public override unsafe void OnFrameworkUpdate(Framework framework)
     {
-        var agent = GetAgent<AgentGrandCompanySupply>();
-        if (agent == null || !agent->AgentInterface.IsAgentActive())
+        var agent = GetAgent<AgentGrandCompanySupply>(AgentId.GrandCompanySupply);
+        if (!agent->AgentInterface.IsAgentActive())
         {
             if (switched) switched = false;
             return;

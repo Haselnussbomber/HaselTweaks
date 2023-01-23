@@ -36,6 +36,7 @@ public static unsafe class AtkUtils
     public static bool IsAddonReady(ushort id)
         => RaptureAtkModule.Instance->IsAddonReady(id);
     public static bool IsAddonReady(uint id) => IsAddonReady((ushort)id);
+    public static bool IsAddonReady(AtkUnitBase* unitBase) => IsAddonReady(unitBase->ID);
     public static bool IsAddonReady(AgentInterface* agent)
         => agent->IsAgentActive() ? IsAddonReady(agent->GetAddonID()) : false;
     public static bool IsAddonReady(AgentId id) => IsAddonReady(GetAgent(id));
@@ -44,14 +45,22 @@ public static unsafe class AtkUtils
 
     #region GetAgent
 
+    public static AgentInterface* GetAgent(uint id)
+        => AgentModule.Instance()->GetAgentByInternalID(id);
+
     public static AgentInterface* GetAgent(AgentId id)
         => AgentModule.Instance()->GetAgentByInternalId(id);
 
+    /*
+     * too slow
     public static T* GetAgent<T>()
     {
         var attr = typeof(T).GetCustomAttribute<AgentAttribute>();
         return attr == null ? null : (T*)GetAgent(attr.ID);
     }
+    */
+
+    public static T* GetAgent<T>(AgentId id) => (T*)GetAgent(id);
 
     #endregion
 

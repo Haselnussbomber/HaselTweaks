@@ -1,5 +1,6 @@
 using Dalamud.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 
@@ -33,8 +34,8 @@ public unsafe class RefreshMaterialList : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        var recipeMaterialList = GetAgent<AgentRecipeMaterialList>()->GetAddon();
-        var recipeTree = GetAgent<AgentRecipeTree>()->GetAddon();
+        var recipeMaterialList = GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList)->GetAddon();
+        var recipeTree = GetAgent<AgentRecipeTree>(AgentId.RecipeTree)->GetAddon();
 
         if ((recipeMaterialList == null && recipeTree == null) || !ShouldRefresh())
             return;

@@ -5,6 +5,7 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
+using AgentId = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentId;
 using AgentRecipeNote = HaselTweaks.Structs.AgentRecipeNote;
 using HaselAtkComponentTextInput = HaselTweaks.Structs.AtkComponentTextInput;
 
@@ -65,12 +66,12 @@ public unsafe class SearchTheMarkets : Tweak
 
         if (args.ParentAddonName is "RecipeNote")
         {
-            itemId = GetAgent<AgentRecipeNote>()->ResultItemId;
+            itemId = GetAgent<AgentRecipeNote>(AgentId.RecipeNote)->ResultItemId;
         }
         else if (args.ParentAddonName is "RecipeMaterialList" or "RecipeTree")
         {
             // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
-            itemId = GetAgent<AgentRecipeItemContext>()->ResultItemId;
+            itemId = GetAgent<AgentRecipeItemContext>(AgentId.RecipeItemContext)->ResultItemId;
         }
 
         Item = Service.Data.GetExcelSheet<Item>()?.GetRow(itemId);
@@ -93,7 +94,7 @@ public unsafe class SearchTheMarkets : Tweak
 
     private void Search()
     {
-        var agent = GetAgent<AgentItemSearch>();
+        var agent = GetAgent<AgentItemSearch>(AgentId.ItemSearch);
 
         if (IsInvalidState(agent))
             return;
@@ -121,5 +122,5 @@ public unsafe class SearchTheMarkets : Tweak
     }
 
     private bool IsInvalidState(AgentItemSearch* agent) => Item == null || Item.RowId == 0 || Item.IsUntradable || agent->GetAddon() != null;
-    private bool IsInvalidState() => IsInvalidState(GetAgent<AgentItemSearch>());
+    private bool IsInvalidState() => IsInvalidState(GetAgent<AgentItemSearch>(AgentId.ItemSearch));
 }

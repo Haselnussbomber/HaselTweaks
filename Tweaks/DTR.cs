@@ -19,6 +19,7 @@ public class DTR : Tweak
     public override string Name => "DTR";
 
     public override bool HasDescription => true;
+
     public override void DrawDescription()
     {
         ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey, "Shows Instance, FPS and Busy status in DTR bar.");
@@ -49,9 +50,11 @@ public class DTR : Tweak
     }
 
     public DtrBarEntry? DtrInstance;
+    private int LastInstance;
     public DtrBarEntry? DtrFPS;
     public DtrBarEntry? DtrBusy;
-    private string BusyStatusText = string.Empty;
+    private string? BusyStatusText = null;
+    private int LastOnlineStatus;
 
     public override void Enable()
     {
@@ -88,44 +91,59 @@ public class DTR : Tweak
 
     private unsafe void UpdateInstance()
     {
-        if (DtrInstance == null) return;
+        if (DtrInstance == null)
+            return;
 
         var instanceId = UIState.Instance()->AreaInstance.Instance;
         if (instanceId <= 0 || instanceId >= 10)
         {
-            if (DtrInstance.Shown) DtrInstance.Shown = false;
+            if (DtrInstance.Shown)
+                DtrInstance.Shown = false;
             return;
         }
 
+        if (LastInstance == instanceId)
+            return;
+
+        LastInstance = instanceId;
+
         var instanceIcon = SeIconChar.Instance1 + (byte)(instanceId - 1);
         DtrInstance.Text = instanceIcon.ToIconString();
-        if (!DtrInstance.Shown) DtrInstance.Shown = true;
+
+        DtrInstance.Shown = true;
     }
 
     private unsafe void UpdateBusy()
     {
-        if (DtrBusy == null) return;
+        if (DtrBusy == null)
+            return;
 
         var addr = Service.ClientState.LocalPlayer?.Address;
-        if (addr == null || addr == IntPtr.Zero)
+        if (addr == null || addr == 0)
         {
-            if (DtrBusy.Shown) DtrBusy.Shown = false;
+            if (DtrBusy.Shown)
+                DtrBusy.Shown = false;
             return;
         }
 
         var character = (Character*)addr;
+        if (LastOnlineStatus == character->OnlineStatus)
+            return;
+
+        LastOnlineStatus = character->OnlineStatus;
+
         if (character->OnlineStatus != 12) // 12 = Busy
         {
-            if (DtrBusy.Shown) DtrBusy.Shown = false;
+            DtrBusy.Shown = false;
             return;
         }
 
-        if (string.IsNullOrEmpty(BusyStatusText))
+        if (BusyStatusText == null)
         {
             var nameBytes = Service.Data.Excel.GetSheet<OnlineStatus>()?.GetRow(12)?.Name.RawData.ToArray();
             if (nameBytes == null)
             {
-                if (DtrBusy.Shown) DtrBusy.Shown = false;
+                DtrBusy.Shown = false;
                 return;
             }
 
@@ -140,7 +158,7 @@ public class DTR : Tweak
             UIForegroundPayload.UIForegroundOff
         );
 
-        if (!DtrBusy.Shown) DtrBusy.Shown = true;
+        DtrBusy.Shown = true;
     }
 
     private unsafe void UpdateFPS()
@@ -148,9 +166,16 @@ public class DTR : Tweak
         if (DtrFPS == null) return;
 
         var fw = GameFramework.Instance();
-        DtrFPS.Shown = fw != null;
-        if (fw == null) return;
+        if (fw != null)
+        {
+            if (DtrFPS.Shown)
+                DtrFPS.Shown = false;
+            return;
+        }
 
         DtrFPS.Text = $"{fw->FrameRate:0} fps";
+
+        if (!DtrFPS.Shown)
+            DtrFPS.Shown = true;
     }
 }

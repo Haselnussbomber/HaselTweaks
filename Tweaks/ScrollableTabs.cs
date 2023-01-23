@@ -476,7 +476,7 @@ public unsafe class ScrollableTabs : Tweak
 
     private void UpdateMJIMountMinion(AddonMJIMinionNoteBook* addon)
     {
-        var agent = GetAgent<AgentMJIMinionNoteBook>();
+        var agent = GetAgent<AgentMJIMinionNoteBook>(AgentId.MJIMinionNoteBook);
         if (agent == null) return;
 
         if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Normal)
