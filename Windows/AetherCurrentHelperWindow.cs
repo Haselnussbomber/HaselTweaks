@@ -13,7 +13,6 @@ using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
-using HaselPlayerState = HaselTweaks.Structs.PlayerState;
 
 namespace HaselTweaks.Windows;
 
@@ -86,7 +85,7 @@ public class AetherCurrentHelperWindow : Window
         var index = 1;
         var type = 0;
         var linesDisplayed = 0;
-        var playerState = (HaselPlayerState*)PlayerState.Instance();
+        var playerState = PlayerState.Instance();
         foreach (var aetherCurrent in compFlgSet.AetherCurrent)
         {
             if (aetherCurrent.Row == 0) continue;
