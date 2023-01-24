@@ -1,6 +1,14 @@
 # Changelog
 
-### [0.7.14](2023-01-23)
+### [0.8.0] (2023-01-25)
+
+Some internal restructuring and performance optimizations.
+
+### New Tweak: Auto Sort Inventory
+
+Just like "Auto Sort Armoury Chest", but for inventory. ([PR](https://github.com/Haselnussbomber/HaselTweaks/pull/22) by [53m1k0l0n](https://github.com/53m1k0l0n). Thanks!)
+
+### [0.7.14] (2023-01-23)
 
 ### Refresh Material List
 
@@ -387,7 +395,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.14...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.14...v0.8.0
 [0.7.14]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.13...v0.7.14
 [0.7.13]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.12...v0.7.13
 [0.7.12]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.11...v0.7.12

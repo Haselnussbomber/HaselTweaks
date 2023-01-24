@@ -19,6 +19,12 @@ Sorts items inside the Armoury Chest upon opening it.
 
 Uses the games `/itemsort` command for sorting. Condition and order are configurable.
 
+### Auto Sort Inventory
+
+Sorts items inside the Inventory upon opening it.
+
+Uses the games `/itemsort` command for sorting. Condition and order are configurable.
+
 ### Character Class Switcher
 
 Clicking on a class/job in the character window finds the matching gearset and equips it.
