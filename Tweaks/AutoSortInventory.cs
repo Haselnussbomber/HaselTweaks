@@ -119,8 +119,8 @@ public class AutoSortInventory : Tweak
                 execute = "/triobjet exécuter inventaire";
                 break;
             case ClientLanguage.Japanese:
-                definition = $"/itemsort condition アーマリーチェスト {Config.Condition} {Config.Order}";
-                execute = "/itemsort execute アーマリーチェスト";
+                definition = $"/itemsort condition 所持品 {Config.Condition} {Config.Order}";
+                execute = "/itemsort execute 所持品";
                 break;
         }
 
