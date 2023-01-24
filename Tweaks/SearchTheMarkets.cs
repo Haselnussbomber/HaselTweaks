@@ -121,6 +121,6 @@ public unsafe class SearchTheMarkets : Tweak
         addon->RunSearch(false);
     }
 
-    private bool IsInvalidState(AgentItemSearch* agent) => Item == null || Item.RowId == 0 || Item.IsUntradable || agent->GetAddon() != null;
+    private bool IsInvalidState(AgentItemSearch* agent) => Item == null || Item.RowId == 0 || Item.IsUntradable || agent->GetAddon() == null;
     private bool IsInvalidState() => IsInvalidState(GetAgent<AgentItemSearch>(AgentId.ItemSearch));
 }
