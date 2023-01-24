@@ -8,11 +8,11 @@ public unsafe partial struct AddonMJIMinionNoteBook
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x220)] public AddonMJIMinionNoteBook_Unk220 Unk220;
-}
+    [FieldOffset(0x220)] public MJIMinionNoteBook220 Unk220;
 
-[StructLayout(LayoutKind.Explicit, Size = 0x2C8)]
-public unsafe partial struct AddonMJIMinionNoteBook_Unk220
-{
-    [FieldOffset(0x80)] public TabSwitcher TabSwitcher;
+    [StructLayout(LayoutKind.Explicit, Size = 0x2C8)]
+    public unsafe partial struct MJIMinionNoteBook220
+    {
+        [FieldOffset(0x80)] public TabSwitcher TabSwitcher;
+    }
 }
