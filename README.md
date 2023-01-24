@@ -133,6 +133,7 @@ Enables mouse wheel to switch tabs (like with LB/RB on controllers) in the follo
 - Gold Saucer -> Decks -> Edit Deck
 - Gold Saucer -> Lord of Verminion -> Minion Hotbar
 - Inventory
+- Island Minion Guide
 - Minions
 - Mounts
 - Retainer Inventory
