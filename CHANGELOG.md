@@ -1,10 +1,20 @@
 # Changelog
 
+### [Unreleased]
+
+### DTR
+
+- **Fixed:** DTRs without data will be hidden again.
+
+### Enhanced Experience Bar
+
+- **Fixed:** Messed up signature for PvP Stats.
+
 ### [0.8.1] (2023-01-25)
 
 ### DTR
 
-- **Fixed:** FPS should properly appear again (bug introduced in v0.8.0).
+- **Fixed:** FPS should properly appear again.
 
 ### [0.8.0] (2023-01-25)
 
@@ -22,7 +32,7 @@ Just like "Auto Sort Armoury Chest", but for inventory. ([PR](https://github.com
 
 ### Scrollable Tabs
 
-- **Fixed:** Minions and Mounts windows should be able to scroll out of favorites again (bug introduced in v0.7.12).
+- **Fixed:** Minions and Mounts windows should be able to scroll out of favorites again.
 - **Changed:** The plugin now uses the game's UI collision system to detect which window is being hovered instead of finding a match based on cursor and window position.
 
 ### [0.7.13] (2023-01-20)
@@ -41,7 +51,7 @@ Just like "Auto Sort Armoury Chest", but for inventory. ([PR](https://github.com
 
 ### Enhanced Experience Bar
 
-- **Fixed:** The Experience Bar should now update as intended (just another thing that broke in Patch 6.3).
+- **Fixed:** The Experience Bar should now update as intended.
 
 ### [0.7.10] (2023-01-14)
 
@@ -51,7 +61,7 @@ Just like "Auto Sort Armoury Chest", but for inventory. ([PR](https://github.com
 
 ### [0.7.9] (2023-01-13)
 
-Additional code to automatically re-scan cached hotfix adresses (the bug I fixed in in v0.7.8).
+Additional code to automatically re-scan cached hotfix adresses.
 
 ### [0.7.8] (2023-01-13)
 
