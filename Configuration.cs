@@ -15,7 +15,7 @@ namespace HaselTweaks;
 internal partial class Configuration : IPluginConfiguration
 {
     [JsonIgnore]
-    public const int CURRENT_CONFIG_VERSION = 2;
+    public const int CURRENT_CONFIG_VERSION = 3;
 
     public int Version { get; set; } = CURRENT_CONFIG_VERSION;
     public HashSet<string> EnabledTweaks { get; private set; } = new();
@@ -132,7 +132,7 @@ internal partial class Configuration : IDisposable
                 ((JObject?)tweakConfigs["EnhancedExpBar"]!).Remove("ForcePvPSeasonBar");
             }
 
-            if (version == 1 || gameVersion == null || (string?)config[nameof(SigCacheVersion)] != gameVersion)
+            if (version < 3 || gameVersion == null || (string?)config[nameof(SigCacheVersion)] != gameVersion)
             {
                 if ((string?)config[nameof(SigCacheVersion)] != null)
                     PluginLog.Information($"SigCache outdated (${(string?)config[nameof(SigCacheVersion)]}) => {gameVersion})");
