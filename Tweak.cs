@@ -30,6 +30,9 @@ public abstract class Tweak
         ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey2, IncompatibilityWarning);
     }
 
+    public virtual bool HasCustomConfig => false;
+    public virtual void DrawCustomConfig() { }
+
     public virtual bool Outdated { get; protected set; }
     public virtual bool Ready { get; protected set; }
     public virtual bool Enabled { get; protected set; }

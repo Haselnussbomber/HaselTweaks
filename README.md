@@ -13,17 +13,11 @@ https://raw.githubusercontent.com/Haselnussbomber/MyDalamudPlugins/main/repo.jso
 
 Clicking on a zone in the Aether Currents window opens a helper window that shows where to find the aether currents or which quests unlocks them. Clicking on an aether current in the list flags the position of the aether current or the quest giver on the map.
 
-### Auto Sort Armoury Chest
+### Auto Sorter
 
-Sorts items inside the Armoury Chest upon opening it.
+Sorts items inside various containers when they are opened. Rules can be configured.
 
-Uses the games `/itemsort` command for sorting. Condition and order are configurable.
-
-### Auto Sort Inventory
-
-Sorts items inside the Inventory upon opening it.
-
-Uses the games `/itemsort` command for sorting. Condition and order are configurable.
+Uses the games `/itemsort` command for sorting.
 
 ### Character Class Switcher
 

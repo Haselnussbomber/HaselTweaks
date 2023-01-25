@@ -26,8 +26,7 @@ internal partial class Configuration : IPluginConfiguration
 
 public class TweakConfigs
 {
-    public AutoSortArmouryChest.Configuration AutoSortArmouryChest { get; init; } = new();
-    public AutoSortInventory.Configuration AutoSortInventory { get; init; } = new();
+    public AutoSorter.Configuration AutoSorter { get; init; } = new();
     public CustomChatTimestamp.Configuration CustomChatTimestamp { get; init; } = new();
     public MinimapAdjustments.Configuration MinimapAdjustments { get; init; } = new();
     public ForcedCutsceneMusic.Configuration ForcedCutsceneMusic { get; init; } = new();

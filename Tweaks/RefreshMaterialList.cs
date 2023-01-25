@@ -44,7 +44,7 @@ public unsafe class RefreshMaterialList : Tweak
         GatheringObserver.Update();
     }
 
-    private void Refresh(AddonObserver sender)
+    private void Refresh(AddonObserver sender, AtkUnitBase* unitBase)
     {
         var recipeMaterialList = GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList)->GetAddon();
         var recipeTree = GetAgent<AgentRecipeTree>(AgentId.RecipeTree)->GetAddon();

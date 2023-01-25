@@ -114,4 +114,12 @@ public static class ImGuiUtils
         ImGui.PopFont();
         return ret;
     }
+
+    public static bool IconButton(FontAwesomeIcon icon, string key, Vector2 size = default)
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        var ret = ImGui.Button(icon.ToIconString() + key, size);
+        ImGui.PopFont();
+        return ret;
+    }
 }

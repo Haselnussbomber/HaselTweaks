@@ -13,7 +13,6 @@ public class ConfigFieldAttribute : Attribute
     public string Label = "";
     public string Description = "";
     public string OnChange = "";
-    public bool SeparatorAfter = false;
     public object? DefaultValue = null!;
 
     // SingleSelect

@@ -1,5 +1,12 @@
 # Changelog
 
+### [Unreleased]
+
+### New Tweak: Auto Sorter
+
+This one replaces "Auto Sort Armoury Chest" and "Auto Sort Inventory", which didn't last long, in a more general Auto Sorter (hence the name). I just couldn't resist. :D  
+Since I can't easily convert the configurations, you have to add rules yourself.
+
 ### [0.8.2] (2023-01-25)
 
 ### DTR

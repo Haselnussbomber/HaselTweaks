@@ -313,87 +313,95 @@ public class PluginWindow : Window
             }
         }
 
-        var config = Config.Tweaks.GetType().GetProperty(tweak.InternalName)?.GetValue(Config.Tweaks);
-        if (config != null)
+        if (tweak.HasCustomConfig)
         {
             ImGuiUtils.DrawSection("Configuration");
-
-            foreach (var field in config.GetType().GetFields())
+            tweak.DrawCustomConfig();
+        }
+        else
+        {
+            var config = Config.Tweaks.GetType().GetProperty(tweak.InternalName)?.GetValue(Config.Tweaks);
+            if (config != null)
             {
-                var attr = (ConfigFieldAttribute?)Attribute.GetCustomAttribute(field, typeof(ConfigFieldAttribute));
+                ImGuiUtils.DrawSection("Configuration");
 
-                if (attr == null || attr.Type == ConfigFieldTypes.Auto)
+                foreach (var field in config.GetType().GetFields())
                 {
-                    var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType }))!;
+                    var attr = (ConfigFieldAttribute?)Attribute.GetCustomAttribute(field, typeof(ConfigFieldAttribute));
 
-                    data.GetType().GetProperty("Plugin")!.SetValue(data, Plugin);
-                    data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
-                    data.GetType().GetProperty("Config")!.SetValue(data, config);
-                    data.GetType().GetProperty("Field")!.SetValue(data, field);
-                    data.GetType().GetProperty("Attr")!.SetValue(data, attr);
-
-                    switch (field.FieldType.Name)
+                    if (attr == null || attr.Type == ConfigFieldTypes.Auto)
                     {
-                        case nameof(String): DrawString((ConfigDrawData<string>)data); break;
-                        case nameof(Single): DrawFloat((ConfigDrawData<float>)data); break;
-                        case nameof(Boolean): DrawBool((ConfigDrawData<bool>)data); break;
+                        var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType }))!;
 
-                        default: DrawNoDrawingFunctionError(field); break;
-                    }
-                }
-                else if (attr.Type == ConfigFieldTypes.SingleSelect)
-                {
-                    if (field.FieldType.IsEnum)
-                    {
-                        var enumType = tweak.GetType().GetNestedType(attr.Options);
-                        if (enumType == null)
+                        data.GetType().GetProperty("Plugin")!.SetValue(data, Plugin);
+                        data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
+                        data.GetType().GetProperty("Config")!.SetValue(data, config);
+                        data.GetType().GetProperty("Field")!.SetValue(data, field);
+                        data.GetType().GetProperty("Attr")!.SetValue(data, attr);
+
+                        switch (field.FieldType.Name)
                         {
-                            DrawNoDrawingFunctionError(field);
+                            case nameof(String): DrawString((ConfigDrawData<string>)data); break;
+                            case nameof(Single): DrawFloat((ConfigDrawData<float>)data); break;
+                            case nameof(Boolean): DrawBool((ConfigDrawData<bool>)data); break;
+
+                            default: DrawNoDrawingFunctionError(field); break;
+                        }
+                    }
+                    else if (attr.Type == ConfigFieldTypes.SingleSelect)
+                    {
+                        if (field.FieldType.IsEnum)
+                        {
+                            var enumType = tweak.GetType().GetNestedType(attr.Options);
+                            if (enumType == null)
+                            {
+                                DrawNoDrawingFunctionError(field);
+                            }
+                            else
+                            {
+                                var underlyingType = Enum.GetUnderlyingType(enumType);
+                                var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { underlyingType }))!;
+
+                                data.GetType().GetProperty("Plugin")!.SetValue(data, Plugin);
+                                data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
+                                data.GetType().GetProperty("Config")!.SetValue(data, config);
+                                data.GetType().GetProperty("Field")!.SetValue(data, field);
+                                data.GetType().GetProperty("Attr")!.SetValue(data, attr);
+
+                                switch (underlyingType.Name)
+                                {
+                                    case nameof(Int32): DrawSingleSelectEnumInt32((ConfigDrawData<int>)data, enumType); break;
+
+                                    default: DrawNoDrawingFunctionError(field); break;
+                                }
+                            }
                         }
                         else
                         {
-                            var underlyingType = Enum.GetUnderlyingType(enumType);
-                            var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { underlyingType }))!;
-
-                            data.GetType().GetProperty("Plugin")!.SetValue(data, Plugin);
-                            data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
-                            data.GetType().GetProperty("Config")!.SetValue(data, config);
-                            data.GetType().GetProperty("Field")!.SetValue(data, field);
-                            data.GetType().GetProperty("Attr")!.SetValue(data, attr);
-
-                            switch (underlyingType.Name)
+                            var options = tweak.GetType().GetField(attr.Options)?.GetValue(tweak);
+                            if (options is Dictionary<ClientLanguage, List<string>> opts)
                             {
-                                case nameof(Int32): DrawSingleSelectEnumInt32((ConfigDrawData<int>)data, enumType); break;
-
-                                default: DrawNoDrawingFunctionError(field); break;
+                                var data = new ConfigDrawData<string>()
+                                {
+                                    Plugin = Plugin,
+                                    Tweak = tweak,
+                                    Config = config,
+                                    Field = field,
+                                    Attr = attr,
+                                };
+                                var list = opts[Service.ClientState.ClientLanguage];
+                                DrawSingleSelect(data, list);
+                            }
+                            else
+                            {
+                                DrawNoDrawingFunctionError(field);
                             }
                         }
                     }
                     else
                     {
-                        var options = tweak.GetType().GetField(attr.Options)?.GetValue(tweak);
-                        if (options is Dictionary<ClientLanguage, List<string>> opts)
-                        {
-                            var data = new ConfigDrawData<string>()
-                            {
-                                Plugin = Plugin,
-                                Tweak = tweak,
-                                Config = config,
-                                Field = field,
-                                Attr = attr,
-                            };
-                            var list = opts[Service.ClientState.ClientLanguage];
-                            DrawSingleSelect(data, list);
-                        }
-                        else
-                        {
-                            DrawNoDrawingFunctionError(field);
-                        }
+                        DrawNoDrawingFunctionError(field);
                     }
-                }
-                else
-                {
-                    DrawNoDrawingFunctionError(field);
                 }
             }
         }
