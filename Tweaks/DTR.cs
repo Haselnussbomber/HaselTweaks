@@ -95,15 +95,12 @@ public class DTR : Tweak
             return;
 
         var instanceId = UIState.Instance()->AreaInstance.Instance;
-        if (instanceId <= 0 || instanceId >= 10)
+        if (instanceId <= 0 || instanceId >= 10 || LastInstance == instanceId)
         {
             if (DtrInstance.Shown)
                 DtrInstance.Shown = false;
             return;
         }
-
-        if (LastInstance == instanceId)
-            return;
 
         LastInstance = instanceId;
 
@@ -128,13 +125,18 @@ public class DTR : Tweak
 
         var character = (Character*)addr;
         if (LastOnlineStatus == character->OnlineStatus)
+        {
+            if (DtrBusy.Shown)
+                DtrBusy.Shown = false;
             return;
+        }
 
         LastOnlineStatus = character->OnlineStatus;
 
         if (character->OnlineStatus != 12) // 12 = Busy
         {
-            DtrBusy.Shown = false;
+            if (DtrBusy.Shown)
+                DtrBusy.Shown = false;
             return;
         }
 
@@ -143,7 +145,8 @@ public class DTR : Tweak
             var nameBytes = Service.Data.Excel.GetSheet<OnlineStatus>()?.GetRow(12)?.Name.RawData.ToArray();
             if (nameBytes == null)
             {
-                DtrBusy.Shown = false;
+                if (DtrBusy.Shown)
+                    DtrBusy.Shown = false;
                 return;
             }
 
