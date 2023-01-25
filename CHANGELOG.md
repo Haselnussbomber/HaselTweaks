@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.9.1] (2023-01-26)
+
+### Auto Sorter
+
+- **Changed:** It's now possible to add more rules for the same category, allowing to sort with multiple conditions.
+- **Added:** A "Run All" button for easy testing.
+
 ### [0.9.0] (2023-01-25)
 
 ### New Tweak: Auto Sorter
@@ -418,7 +425,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.1...HEAD
+[0.9.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.8.2...v0.9.0
 [0.8.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.8.0...v0.8.1
