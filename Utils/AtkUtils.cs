@@ -1,5 +1,3 @@
-using System.Reflection;
-using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
@@ -23,6 +21,11 @@ public static unsafe class AtkUtils
 
     public static AtkUnitBase* GetAddon(ushort id)
         => IsAddonReady(id) ? AtkStage.GetSingleton()->RaptureAtkUnitManager->GetAddonById(id) : null;
+    public static AtkUnitBase* GetAddon(uint id) => GetAddon((ushort)id);
+    public static AtkUnitBase* GetAddon(AgentInterface* agent)
+        => agent->IsAgentActive() ? GetAddon((ushort)agent->GetAddonID()) : null;
+    public static AtkUnitBase* GetAddon(AgentId id) => GetAddon(GetAgent(id));
+
     public static T* GetAddon<T>(ushort id) => (T*)GetAddon(id);
     public static T* GetAddon<T>(uint id) => GetAddon<T>((ushort)id);
     public static T* GetAddon<T>(AgentInterface* agent)

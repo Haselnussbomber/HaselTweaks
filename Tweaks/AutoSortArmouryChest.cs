@@ -3,6 +3,7 @@ using Dalamud;
 using Dalamud.Game;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselTweaks.Structs;
+using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
@@ -62,7 +63,7 @@ public class AutoSortArmouryChest : Tweak
         public string Order = "";
     }
 
-    private bool wasVisible;
+    private readonly unsafe AddonObserver Observer = new(() => GetAddon(AgentId.ArmouryBoard));
 
     public override void Setup()
     {
@@ -89,21 +90,22 @@ public class AutoSortArmouryChest : Tweak
         }
     }
 
-    public override unsafe void OnFrameworkUpdate(Framework framework)
+    public override void Enable()
     {
-        var addon = GetAddon<AddonArmouryBoard>(AgentId.ArmouryBoard);
-        if (addon == null || addon->AtkUnitBase.RootNode == null)
-            return;
-
-        var isVisible = addon->AtkUnitBase.RootNode->IsVisible;
-
-        if (!wasVisible && isVisible)
-            Run();
-
-        wasVisible = isVisible;
+        Observer.OnOpen += OnOpen;
     }
 
-    private void Run()
+    public override void Disable()
+    {
+        Observer.OnOpen -= OnOpen;
+    }
+
+    public override unsafe void OnFrameworkUpdate(Framework framework)
+    {
+        Observer.Update();
+    }
+
+    private void OnOpen(AddonObserver sender)
     {
         var definition = $"/isort condition armoury {Config.Condition} {Config.Order}";
         var execute = "/isort execute armoury";

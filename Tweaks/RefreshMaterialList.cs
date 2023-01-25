@@ -3,6 +3,7 @@ using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
+using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
@@ -11,33 +12,44 @@ public unsafe class RefreshMaterialList : Tweak
     public override string Name => "Refresh Material List";
     public override string Description => "Refreshes the material list and recipe tree when an item was crafted, fished or gathered.";
 
-    private record WindowState
-    {
-        public string Addon = string.Empty;
-        public bool WasOpen;
-        public bool IsOpen;
-        public bool OnOpen;
+    private readonly AddonObserver CatchObserver = new("Catch");
+    private readonly AddonObserver SynthesisObserver = new("Synthesis");
+    private readonly AddonObserver SynthesisSimpleObserver = new("SynthesisSimple");
+    private readonly AddonObserver GatheringObserver = new("Gathering");
 
-        public WindowState(string Addon, bool OnOpen = false)
-        {
-            this.Addon = Addon;
-            this.OnOpen = OnOpen;
-        }
+    public override void Enable()
+    {
+        CatchObserver.OnOpen += Refresh;
+
+        SynthesisObserver.OnClose += Refresh;
+        SynthesisSimpleObserver.OnClose += Refresh;
+        GatheringObserver.OnClose += Refresh;
     }
 
-    private readonly WindowState[] windowState = {
-        new("Synthesis"),
-        new("SynthesisSimple"),
-        new("Gathering"),
-        new("Catch", true)
-    };
+    public override void Disable()
+    {
+        CatchObserver.OnOpen -= Refresh;
+
+        SynthesisObserver.OnClose -= Refresh;
+        SynthesisSimpleObserver.OnClose -= Refresh;
+        GatheringObserver.OnClose -= Refresh;
+    }
 
     public override void OnFrameworkUpdate(Framework framework)
+    {
+        CatchObserver.Update();
+
+        SynthesisObserver.Update();
+        SynthesisSimpleObserver.Update();
+        GatheringObserver.Update();
+    }
+
+    private void Refresh(AddonObserver sender)
     {
         var recipeMaterialList = GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList)->GetAddon();
         var recipeTree = GetAgent<AgentRecipeTree>(AgentId.RecipeTree)->GetAddon();
 
-        if ((recipeMaterialList == null && recipeTree == null) || !ShouldRefresh())
+        if (recipeMaterialList == null && recipeTree == null)
             return;
 
         if (recipeMaterialList != null)
@@ -55,28 +67,5 @@ public unsafe class RefreshMaterialList : Tweak
             recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, atkEvent, 0);
             IMemorySpace.Free(atkEvent);
         }
-    }
-
-    private bool ShouldRefresh()
-    {
-        var ret = false;
-
-        // checks if any depending windows were open and are now closed
-        foreach (var state in windowState)
-        {
-            var unitBase = GetAddon(state.Addon);
-            state.WasOpen = state.IsOpen;
-            state.IsOpen = unitBase != null && unitBase->IsVisible;
-
-            var changed = (!state.OnOpen && state.WasOpen && !state.IsOpen) || (state.OnOpen && !state.WasOpen && state.IsOpen);
-            if (changed)
-            {
-                var changestr = state.OnOpen ? "opened" : "closed";
-                Debug($"{state.Addon} {changestr}");
-            }
-            ret = ret || changed;
-        }
-
-        return ret;
     }
 }
