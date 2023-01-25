@@ -166,7 +166,7 @@ public class DTR : Tweak
         if (DtrFPS == null) return;
 
         var fw = GameFramework.Instance();
-        if (fw != null)
+        if (fw == null)
         {
             if (DtrFPS.Shown)
                 DtrFPS.Shown = false;
