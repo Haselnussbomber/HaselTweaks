@@ -1,5 +1,11 @@
 # Changelog
 
+### [0.8.1] (2023-01-25)
+
+### DTR
+
+- **Fixed:** FPS should properly appear again (bug introduced in v0.8.0).
+
 ### [0.8.0] (2023-01-25)
 
 Some internal restructuring and performance optimizations.
@@ -395,7 +401,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.8.1...HEAD
+[0.8.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.14...v0.8.0
 [0.7.14]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.13...v0.7.14
 [0.7.13]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.7.12...v0.7.13
