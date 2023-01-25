@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Dalamud;
 using Dalamud.Game;
 using Dalamud.Interface;
@@ -304,9 +305,6 @@ public unsafe class AutoSorter : Tweak
             {
                 foreach (var kv in CategorySet[lang])
                 {
-                    if (usedCategories.Contains(kv.Key))
-                        continue;
-
                     if (ImGui.Selectable(kv.Value, entry.Category == kv.Key))
                     {
                         entry.Category = kv.Key;
@@ -462,6 +460,16 @@ public unsafe class AutoSorter : Tweak
                     ImGui.SetTooltip("This rule has errors:\n\n- " + string.Join("\n -", errors));
                 }
             }
+            else if ((entry.Category is "saddlebag" or "rightsaddlebag") && !InventoryBuddyObserver.IsOpen)
+            {
+                ImGui.PushStyleColor(ImGuiCol.Text, 0xff02d2ee); // safety yellow
+                ImGuiUtils.IconButton(FontAwesomeIcon.ExclamationTriangle);
+                ImGui.PopStyleColor();
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.SetTooltip("Sorting for saddlebags/rightsaddlebag only works when the window is open.");
+                }
+            }
             else
             {
                 if (ImGuiUtils.IconButton(FontAwesomeIcon.Terminal, key + "Execute"))
@@ -470,7 +478,7 @@ public unsafe class AutoSorter : Tweak
                 }
                 if (ImGui.IsItemHovered())
                 {
-                    ImGui.SetTooltip("Execute");
+                    ImGui.SetTooltip("Execute this rule only");
                 }
             }
 
@@ -486,6 +494,16 @@ public unsafe class AutoSorter : Tweak
         {
             Config.Settings.Add(new());
             SaveConfig();
+        }
+
+        ImGui.SameLine();
+
+        if (ImGui.Button("Run All##HaselTweaks_AutoSortSettings_RunAll"))
+        {
+            var settings = Config.Settings
+                .GroupBy(entry => entry.Category);
+
+            ProcessCategories(settings);
         }
 
         if (entryToMoveUp != -1)
@@ -513,7 +531,7 @@ public unsafe class AutoSorter : Tweak
         if (entryToExecute != -1)
         {
             var entry = Config.Settings[entryToExecute];
-            Sort(entry.Category, entry.Condition, entry.Order);
+            ProcessCategory(new[] { entry });
         }
     }
 
@@ -548,55 +566,93 @@ public unsafe class AutoSorter : Tweak
 
     private void OnOpenArmoury(AddonObserver sender, AtkUnitBase* unitBase)
     {
-        foreach (var entry in Config.Settings)
-        {
-            if (entry.Category is "armoury" or "mh" or "oh" or "head" or "body" or "hands" or "legs" or "feet" or "neck" or "ears" or "wrists" or "rings" or "soul")
-            {
-                Sort(entry.Category, entry.Condition, entry.Order);
-            }
-        }
+        var settings = Config.Settings
+            .FindAll(entry => entry.Category is "armoury" or "mh" or "oh" or "head" or "body" or "hands" or "legs" or "feet" or "neck" or "ears" or "wrists" or "rings" or "soul")
+            .GroupBy(entry => entry.Category);
+
+        ProcessCategories(settings);
     }
 
     private void OnOpenInventory(AddonObserver sender, AtkUnitBase* unitBase)
     {
-        foreach (var entry in Config.Settings)
-        {
-            if (entry.Category is "inventory")
-            {
-                Sort(entry.Category, entry.Condition, entry.Order);
-            }
-        }
+        var category = Config.Settings
+            .FindAll(entry => entry.Category is "inventory");
+
+        ProcessCategory(category);
     }
 
     private void OnOpenInventoryBuddy(AddonObserver sender, AtkUnitBase* unitBase)
     {
-        foreach (var entry in Config.Settings)
-        {
-            if (entry.Category is "saddlebag" or "rightsaddlebag")
-            {
-                Sort(entry.Category, entry.Condition, entry.Order);
-            }
-        }
+        var categories = Config.Settings
+            .FindAll(entry => entry.Category is "saddlebag" or "rightsaddlebag")
+            .GroupBy(entry => entry.Category);
+
+        ProcessCategories(categories);
     }
 
     private void OnOpenRetainer(AddonObserver sender, AtkUnitBase* unitBase)
     {
-        foreach (var entry in Config.Settings)
+        var category = Config.Settings
+            .FindAll(entry => entry.Category is "retainer");
+
+        ProcessCategory(category);
+    }
+
+    private void ProcessCategories(IEnumerable<IGrouping<string, CategorySetting>> categories)
+    {
+        if (!categories.Any())
+            return;
+
+        foreach (var category in categories)
         {
-            if (entry.Category is "retainer")
-            {
-                Sort(entry.Category, entry.Condition, entry.Order);
-            }
+            Log($"Sorting Category: {category.Key}");
+            ProcessCategory(category);
         }
     }
 
-    private void Sort(string category, string condition, string order)
+    private void ProcessCategory(IEnumerable<CategorySetting> settings)
+    {
+        if (!settings.Any())
+            return;
+
+        var category = settings.First().Category;
+
+        if ((category is "saddlebag" or "rightsaddlebag") && !InventoryBuddyObserver.IsOpen)
+        {
+            Warning("Sorting for saddlebags/rightsaddlebag only works when the window is open, skipping.");
+            return;
+        }
+
+        ClearConditions(category);
+
+        foreach (var entry in settings)
+        {
+            DefineCondition(entry.Category, entry.Condition, entry.Order);
+        }
+
+        ExecuteSort(category);
+    }
+
+    private void ClearConditions(string category)
+    {
+        category = GetLocalizedString(CategorySet, category);
+
+        if (string.IsNullOrEmpty(category))
+        {
+            Error("Category not set!");
+            return;
+        }
+
+        var definition = $"/itemsort clear {category}";
+        Log($"Executing {definition}");
+        Chat.SendMessage(definition);
+    }
+
+    private void DefineCondition(string category, string condition, string order)
     {
         category = GetLocalizedString(CategorySet, category);
         condition = GetLocalizedString(ConditionSet, condition);
         order = GetLocalizedString(OrderSet, order);
-
-        Log($"Sorting: Category: {category} | Condition: {condition} | Order: {order}");
 
         if (string.IsNullOrEmpty(category))
         {
@@ -619,6 +675,17 @@ public unsafe class AutoSorter : Tweak
         var definition = $"/itemsort condition {category} {condition} {order}";
         Log($"Executing {definition}");
         Chat.SendMessage(definition);
+    }
+
+    private void ExecuteSort(string category)
+    {
+        category = GetLocalizedString(CategorySet, category);
+
+        if (string.IsNullOrEmpty(category))
+        {
+            Error("Category not set!");
+            return;
+        }
 
         var execute = $"/itemsort execute {category}";
         Log($"Executing {execute}");
