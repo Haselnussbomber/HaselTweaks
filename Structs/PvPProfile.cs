@@ -2,10 +2,10 @@ namespace HaselTweaks.Structs;
 
 // copy pasta function "48 89 5C 24 ?? 8B 82"
 [StructLayout(LayoutKind.Explicit)]
-public unsafe partial struct PvPState
+public unsafe partial struct PvPProfile
 {
     [StaticAddress("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 43 08", 3)]
-    public static partial PvPState* Instance();
+    public static partial PvPProfile* Instance();
 
     [FieldOffset(0x0)] public byte IsLoaded;
 

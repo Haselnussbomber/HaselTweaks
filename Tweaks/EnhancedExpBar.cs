@@ -98,11 +98,11 @@ public unsafe class EnhancedExpBar : Tweak
     {
         var shouldUpdate = false;
 
-        var pvpState = PvPState.Instance();
-        if (pvpState != null && pvpState->IsLoaded == 0x01 && LastSeriesXp != pvpState->SeriesExperience)
+        var pvpProfile = PvPProfile.Instance();
+        if (pvpProfile != null && pvpProfile->IsLoaded == 0x01 && LastSeriesXp != pvpProfile->SeriesExperience)
         {
             shouldUpdate = true;
-            LastSeriesXp = pvpState->SeriesExperience;
+            LastSeriesXp = pvpProfile->SeriesExperience;
         }
 
         var islandState = MJIManager.Instance();
@@ -212,27 +212,27 @@ public unsafe class EnhancedExpBar : Tweak
 
         PvPBar:
         {
-            var pvpState = PvPState.Instance();
-            if (pvpState == null || pvpState->IsLoaded != 0x01)
+            var pvpProfile = PvPProfile.Instance();
+            if (pvpProfile == null || pvpProfile->IsLoaded != 0x01)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             var PvPSeriesLevelSheet = Service.Data.GetExcelSheet<PvPSeriesLevel>();
-            if (PvPSeriesLevelSheet == null || pvpState->SeriesCurrentRank > PvPSeriesLevelSheet.Count() - 1)
+            if (PvPSeriesLevelSheet == null || pvpProfile->SeriesCurrentRank > PvPSeriesLevelSheet.Count() - 1)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             job = Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation;
             levelLabel = (Service.StringUtils.GetSheetText<Addon>(14860, "Text") ?? "Series Level").Trim().Replace(":", "");
-            var rank = pvpState->SeriesClaimedRank > 30 ? pvpState->SeriesCurrentRank : pvpState->SeriesClaimedRank; // 30 = Series Max Rank
+            var rank = pvpProfile->SeriesClaimedRank > 30 ? pvpProfile->SeriesCurrentRank : pvpProfile->SeriesClaimedRank; // 30 = Series Max Rank
             level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-            var star = pvpState->SeriesClaimedRank > pvpState->SeriesCurrentRank ? '*' : ' ';
-            requiredExperience = PvPSeriesLevelSheet.GetRow(pvpState->SeriesCurrentRank)!.Unknown0;
+            var star = pvpProfile->SeriesClaimedRank > pvpProfile->SeriesCurrentRank ? '*' : ' ';
+            requiredExperience = PvPSeriesLevelSheet.GetRow(pvpProfile->SeriesCurrentRank)!.Unknown0;
 
-            leftText->SetText($"{job}  {levelLabel} {level}{star}   {pvpState->SeriesExperience}/{requiredExperience}");
+            leftText->SetText($"{job}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
 
             addon->GaugeBarNode->SetSecondaryValue(0); // rested experience bar
 
             // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-            addon->GaugeBarNode->SetValue((uint)(pvpState->SeriesExperience / (float)requiredExperience * 10000), 0, false);
+            addon->GaugeBarNode->SetValue((uint)(pvpProfile->SeriesExperience / (float)requiredExperience * 10000), 0, false);
 
             if (!Config.DisableColorChanges)
             {
