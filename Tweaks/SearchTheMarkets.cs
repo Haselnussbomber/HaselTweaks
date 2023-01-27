@@ -55,7 +55,7 @@ public unsafe class SearchTheMarkets : Tweak
         ContextMenu.Dispose();
     }
 
-    private unsafe void ContextMenu_OnOpenGameObjectContextMenu(GameObjectContextMenuOpenArgs args)
+    private void ContextMenu_OnOpenGameObjectContextMenu(GameObjectContextMenuOpenArgs args)
     {
         if (args.ParentAddonName is not ("RecipeNote" or "RecipeMaterialList" or "RecipeTree"))
         {

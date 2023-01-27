@@ -13,7 +13,7 @@ public unsafe class ExpertDeliveries : Tweak
 
     private bool switched;
 
-    public override unsafe void OnFrameworkUpdate(Framework framework)
+    public override void OnFrameworkUpdate(Framework framework)
     {
         var agent = GetAgent<AgentGrandCompanySupply>(AgentId.GrandCompanySupply);
         if (!agent->AgentInterface.IsAgentActive())

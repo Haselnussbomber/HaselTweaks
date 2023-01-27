@@ -14,7 +14,7 @@ using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework
 
 namespace HaselTweaks.Tweaks;
 
-public class DTR : Tweak
+public unsafe class DTR : Tweak
 {
     public override string Name => "DTR";
 
@@ -89,7 +89,7 @@ public class DTR : Tweak
         UpdateBusy();
     }
 
-    private unsafe void UpdateInstance()
+    private void UpdateInstance()
     {
         if (DtrInstance == null)
             return;
@@ -110,7 +110,7 @@ public class DTR : Tweak
         DtrInstance.Shown = true;
     }
 
-    private unsafe void UpdateBusy()
+    private void UpdateBusy()
     {
         if (DtrBusy == null)
             return;
@@ -164,7 +164,7 @@ public class DTR : Tweak
         DtrBusy.Shown = true;
     }
 
-    private unsafe void UpdateFPS()
+    private void UpdateFPS()
     {
         if (DtrFPS == null) return;
 

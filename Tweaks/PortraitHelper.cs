@@ -5,7 +5,7 @@ using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
-public class PortraitHelper : Tweak
+public unsafe class PortraitHelper : Tweak
 {
     public override string Name => "Portrait Helper";
     public override string Description => @"Adds Copy/Paste buttons to the ""Edit Portrait"" window, which allow settings to be copied to other portraits.
@@ -24,7 +24,7 @@ The Advanced Mode allows to specify which settings should be pasted.";
         Plugin.WindowSystem.RemoveWindow(Window);
     }
 
-    public override unsafe void OnFrameworkUpdate(Dalamud.Game.Framework framework)
+    public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
         var agent = GetAgent<AgentBannerEditor>(AgentId.BannerEditor);
         var addon = GetAddon<AddonBannerEditor>((AgentInterface*)agent);

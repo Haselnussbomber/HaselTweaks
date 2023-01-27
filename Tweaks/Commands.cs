@@ -9,7 +9,7 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-public class Commands : Tweak
+public unsafe class Commands : Tweak
 {
     public override string Name => "Commands";
     public override string Description => "A variety of useful chat commands.";
@@ -128,7 +128,7 @@ public class Commands : Tweak
         });
     }
 
-    private static unsafe void OnWhatMountCommand(string command, string arguments)
+    private static void OnWhatMountCommand(string command, string arguments)
     {
         var target = Service.TargetManager.Target;
         if (target == null)

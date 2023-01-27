@@ -535,10 +535,10 @@ public unsafe class AutoSorter : Tweak
         }
     }
 
-    private readonly unsafe AddonObserver ArmouryObserver = new(() => GetAddon(AgentId.ArmouryBoard));
-    private readonly unsafe AddonObserver InventoryObserver = new(() => GetAddon(AgentId.Inventory));
-    private readonly unsafe AddonObserver InventoryBuddyObserver = new(() => GetAddon(AgentId.InventoryBuddy));
-    private readonly unsafe AddonObserver RetainerObserver = new(() => GetAddon(AgentId.Retainer));
+    private readonly AddonObserver ArmouryObserver = new(() => GetAddon(AgentId.ArmouryBoard));
+    private readonly AddonObserver InventoryObserver = new(() => GetAddon(AgentId.Inventory));
+    private readonly AddonObserver InventoryBuddyObserver = new(() => GetAddon(AgentId.InventoryBuddy));
+    private readonly AddonObserver RetainerObserver = new(() => GetAddon(AgentId.Retainer));
 
     public override void Enable()
     {
@@ -556,7 +556,7 @@ public unsafe class AutoSorter : Tweak
         RetainerObserver.OnOpen -= OnOpenRetainer;
     }
 
-    public override unsafe void OnFrameworkUpdate(Framework framework)
+    public override void OnFrameworkUpdate(Framework framework)
     {
         ArmouryObserver.Update();
         InventoryObserver.Update();
