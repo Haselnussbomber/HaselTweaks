@@ -23,13 +23,13 @@ public static unsafe class AtkUtils
         => IsAddonReady(id) ? AtkStage.GetSingleton()->RaptureAtkUnitManager->GetAddonById(id) : null;
     public static AtkUnitBase* GetAddon(uint id) => GetAddon((ushort)id);
     public static AtkUnitBase* GetAddon(AgentInterface* agent)
-        => agent->IsAgentActive() ? GetAddon((ushort)agent->GetAddonID()) : null;
+        => agent != null && agent->IsAgentActive() ? GetAddon((ushort)agent->GetAddonID()) : null;
     public static AtkUnitBase* GetAddon(AgentId id) => GetAddon(GetAgent(id));
 
     public static T* GetAddon<T>(ushort id) => (T*)GetAddon(id);
     public static T* GetAddon<T>(uint id) => GetAddon<T>((ushort)id);
     public static T* GetAddon<T>(AgentInterface* agent)
-        => agent->IsAgentActive() ? GetAddon<T>((ushort)agent->GetAddonID()) : null;
+        => agent != null && agent->IsAgentActive() ? GetAddon<T>((ushort)agent->GetAddonID()) : null;
     public static T* GetAddon<T>(AgentId id) => GetAddon<T>(GetAgent(id));
 
     #endregion
@@ -41,7 +41,7 @@ public static unsafe class AtkUtils
     public static bool IsAddonReady(uint id) => IsAddonReady((ushort)id);
     public static bool IsAddonReady(AtkUnitBase* unitBase) => IsAddonReady(unitBase->ID);
     public static bool IsAddonReady(AgentInterface* agent)
-        => agent->IsAgentActive() ? IsAddonReady(agent->GetAddonID()) : false;
+        => agent != null && agent->IsAgentActive() ? IsAddonReady(agent->GetAddonID()) : false;
     public static bool IsAddonReady(AgentId id) => IsAddonReady(GetAgent(id));
 
     #endregion
