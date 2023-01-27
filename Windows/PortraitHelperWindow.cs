@@ -1,8 +1,6 @@
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
-using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
@@ -14,7 +12,9 @@ namespace HaselTweaks.Windows;
 
 public unsafe class PortraitHelperWindow : Window
 {
-    private PortraitHelper? Tweak;
+    public AgentBannerEditor* AgentBannerEditor { get; internal set; }
+    public AddonBannerEditor* AddonBannerEditor { get; internal set; }
+
     private bool HasSavedData;
 
     private short Frame;
@@ -61,17 +61,11 @@ public unsafe class PortraitHelperWindow : Window
         MemoryHelper.GameFree(ref ptr, 0x34);
     }
 
-    internal void SetTweak(PortraitHelper tweak)
-    {
-        Tweak = tweak;
-    }
-
     public override bool DrawConditions()
     {
-        return Tweak != null
-            && PortraitHelper.AgentBannerEditor != null
-            && PortraitHelper.AgentBannerEditor->AgentInterface.IsAgentActive()
-            && PortraitHelper.AgentBannerEditor->PortraitState != null;
+        return AgentBannerEditor != null
+            && AddonBannerEditor != null
+            && AgentBannerEditor->PortraitState != null;
     }
 
     public override void Draw()
@@ -99,7 +93,7 @@ public unsafe class PortraitHelperWindow : Window
             {
                 ImGuiUtils.DrawPaddedSeparator();
 
-                var state = PortraitHelper.AgentBannerEditor->PortraitState;
+                var state = AgentBannerEditor->PortraitState;
                 if (!ImGui.BeginTable("##HaselTweaks_PortraitData", 3))
                 {
                     return;
@@ -321,14 +315,15 @@ public unsafe class PortraitHelperWindow : Window
             }
         }
 
-        var addon = (AtkUnitBase*)PortraitHelper.AddonBannerEditor;
-        if (addon == null) return;
-        Position = new(addon->X - ImGui.GetWindowSize().X, addon->Y + 1);
+        Position = new(
+            AddonBannerEditor->AtkUnitBase.X - ImGui.GetWindowSize().X,
+            AddonBannerEditor->AtkUnitBase.Y + 1
+        );
     }
 
-    public unsafe void Copy()
+    public void Copy()
     {
-        var state = PortraitHelper.AgentBannerEditor->PortraitState;
+        var state = AgentBannerEditor->PortraitState;
 
         Frame = state->Frame;
         Accent = state->Accent;
@@ -337,10 +332,10 @@ public unsafe class PortraitHelperWindow : Window
         HasSavedData = true;
     }
 
-    public unsafe void Paste()
+    public void Paste()
     {
-        var state = PortraitHelper.AgentBannerEditor->PortraitState;
-        var addon = PortraitHelper.AddonBannerEditor;
+        var state = AgentBannerEditor->PortraitState;
+        var addon = AddonBannerEditor;
 
         var portraitData = (ExportedPortraitData*)MemoryHelper.Allocate(0x34);
         state->CharaView->ExportPortraitData(portraitData); // read current state
@@ -524,12 +519,12 @@ public unsafe class PortraitHelperWindow : Window
         MemoryHelper.Free((IntPtr)portraitData);
     }
 
-    private HaselAtkComponentList* GetDropdownList(HaselAtkComponentDropDownList* dropdown)
+    private static HaselAtkComponentList* GetDropdownList(HaselAtkComponentDropDownList* dropdown)
     {
         return *(HaselAtkComponentList**)((IntPtr)dropdown + 0xC8);
     }
 
-    private int FindListIndex(IntPtr list, uint numItems, short value)
+    private static int FindListIndex(IntPtr list, uint numItems, short value)
     {
         var i = 0;
         while (i < numItems)
@@ -547,7 +542,7 @@ public unsafe class PortraitHelperWindow : Window
         return i;
     }
 
-    private string? GetExpressionName(IntPtr list, uint numItems, short value)
+    private static string? GetExpressionName(IntPtr list, uint numItems, short value)
     {
         if (value == 0)
         {

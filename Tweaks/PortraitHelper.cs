@@ -1,10 +1,11 @@
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class PortraitHelper : Tweak
+public class PortraitHelper : Tweak
 {
     public override string Name => "Portrait Helper";
     public override string Description => @"Adds Copy/Paste buttons to the ""Edit Portrait"" window, which allow settings to be copied to other portraits.
@@ -12,14 +13,6 @@ public unsafe class PortraitHelper : Tweak
 The Advanced Mode allows to specify which settings should be pasted.";
 
     private readonly PortraitHelperWindow Window = new();
-
-    internal static AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>(AgentId.BannerEditor);
-    internal static AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
-
-    public PortraitHelper() : base()
-    {
-        Window.SetTweak(this);
-    }
 
     public override void Enable()
     {
@@ -31,16 +24,30 @@ The Advanced Mode allows to specify which settings should be pasted.";
         Plugin.WindowSystem.RemoveWindow(Window);
     }
 
-    public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
+    public override unsafe void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
-        if (AddonBannerEditor == null)
+        var agent = GetAgent<AgentBannerEditor>(AgentId.BannerEditor);
+        var addon = GetAddon<AddonBannerEditor>((AgentInterface*)agent);
+
+        if (addon == null)
         {
             if (Window.IsOpen)
-                Window.Toggle();
+                Window.IsOpen = false;
+
+            if (Window.AgentBannerEditor != null)
+                Window.AgentBannerEditor = null;
+
+            if (Window.AddonBannerEditor != null)
+                Window.AddonBannerEditor = null;
+
             return;
         }
 
         if (!Window.IsOpen)
-            Window.Toggle();
+        {
+            Window.AgentBannerEditor = agent;
+            Window.AddonBannerEditor = addon;
+            Window.IsOpen = true;
+        }
     }
 }
