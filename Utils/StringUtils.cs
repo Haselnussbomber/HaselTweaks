@@ -26,94 +26,80 @@ public unsafe class StringUtils
 
     public string GetENpcResidentName(uint npcId)
     {
-        if (ENpcResidentNameCache.ContainsKey(npcId))
+        if (!ENpcResidentNameCache.TryGetValue(npcId, out var value))
         {
-            return ENpcResidentNameCache[npcId];
+            value = MemoryHelper.ReadSeStringNullTerminated(FormatObjectString(0, npcId, 3, 1)).ToString();
+            ENpcResidentNameCache.Add(npcId, value);
         }
 
-        var ret = MemoryHelper.ReadSeStringNullTerminated(FormatObjectString(0, npcId, 3, 1)).ToString();
-
-        ENpcResidentNameCache.Add(npcId, ret);
-
-        return ret;
+        return value;
     }
 
     public string GetEObjName(uint objId)
     {
-        if (EObjNameCache.ContainsKey(objId))
+        if (!EObjNameCache.TryGetValue(objId, out var value))
         {
-            return EObjNameCache[objId];
+            value = MemoryHelper.ReadSeStringNullTerminated(FormatObjectString(0, objId, 5, 1)).ToString();
+            EObjNameCache.Add(objId, value);
         }
 
-        var ret = MemoryHelper.ReadSeStringNullTerminated(FormatObjectString(0, objId, 5, 1)).ToString();
-
-        EObjNameCache.Add(objId, ret);
-
-        return ret;
+        return value;
     }
 
     public string GetQuestName(uint questId, bool clean)
     {
-        if (QuestCache.ContainsKey(questId))
+        if (!QuestCache.TryGetValue(questId, out var value))
         {
-            return QuestCache[questId];
+            var quest = Service.Data.GetExcelSheet<Quest>()?.GetRow(questId);
+            if (quest == null)
+                return string.Empty;
+
+            value = SeString.Parse(quest.Name.RawData).ToString();
+
+            if (clean)
+                value = Regex.Replace(value, @"^[\ue000-\uf8ff]+ ", "");
+
+            QuestCache.Add(questId, value);
         }
 
-        var quest = Service.Data.GetExcelSheet<Quest>()?.GetRow(questId);
-        if (quest == null)
-        {
-            return string.Empty;
-        }
-
-        var ret = SeString.Parse(quest.Name.RawData).ToString();
-
-        if (clean)
-        {
-            ret = Regex.Replace(ret, @"^[\ue000-\uf8ff]+ ", "");
-        }
-
-        QuestCache.Add(questId, ret);
-
-        return ret;
+        return value;
     }
 
     public string GetSheetText<T>(uint rowId, string columnName) where T : ExcelRow
     {
         var sheetType = typeof(T);
         var sheetName = sheetType.Name;
-        if (SheetCache.ContainsKey(sheetName) && SheetCache[sheetName].ContainsKey(rowId) && SheetCache[sheetName][rowId].ContainsKey(columnName))
+
+        if (!SheetCache.TryGetValue(sheetName, out var sheet))
         {
-            return SheetCache[sheetName][rowId][columnName];
+            sheet = new();
+            SheetCache.Add(sheetName, sheet);
         }
 
-        var prop = sheetType.GetProperty(columnName);
-        if (prop == null || prop.PropertyType != typeof(Lumina.Text.SeString))
+        if (!sheet.TryGetValue(rowId, out var row))
         {
-            return string.Empty;
+            row = new();
+            sheet.Add(rowId, row);
         }
 
-        var row = Service.Data.GetExcelSheet<T>()?.GetRow(rowId);
-        if (row == null)
+        if (!row.TryGetValue(columnName, out var column))
         {
-            return string.Empty;
+            var prop = sheetType.GetProperty(columnName);
+            if (prop == null || prop.PropertyType != typeof(Lumina.Text.SeString))
+                return string.Empty;
+
+            var sheetRow = Service.Data.GetExcelSheet<T>()?.GetRow(rowId);
+            if (sheetRow == null)
+                return string.Empty;
+
+            var value = (Lumina.Text.SeString?)prop.GetValue(sheetRow);
+            if (value == null)
+                return string.Empty;
+
+            column = SeString.Parse(value.RawData).ToString();
+            row.Add(columnName, column);
         }
 
-        var value = (Lumina.Text.SeString?)prop.GetValue(row);
-        if (value == null)
-        {
-            return string.Empty;
-        }
-
-        if (!SheetCache.ContainsKey(sheetName))
-        {
-            SheetCache.Add(sheetName, new());
-        }
-
-        if (!SheetCache[sheetName].ContainsKey(rowId))
-        {
-            SheetCache[sheetName].Add(rowId, new());
-        }
-
-        return SheetCache[sheetName][rowId][columnName] = SeString.Parse(value.RawData).ToString();
+        return column;
     }
 }
