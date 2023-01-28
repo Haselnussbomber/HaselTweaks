@@ -266,7 +266,7 @@ public unsafe class AutoSorter : Tweak
         public List<CategorySetting> Settings = new();
     }
 
-    private void SaveConfig() => HaselTweaks.Configuration.Save();
+    private static void SaveConfig() => HaselTweaks.Configuration.Save();
     public override bool HasCustomConfig => true;
     public override void DrawCustomConfig()
     {

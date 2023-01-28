@@ -41,7 +41,7 @@ public static unsafe class AtkUtils
     public static bool IsAddonReady(uint id) => IsAddonReady((ushort)id);
     public static bool IsAddonReady(AtkUnitBase* unitBase) => IsAddonReady(unitBase->ID);
     public static bool IsAddonReady(AgentInterface* agent)
-        => agent != null && agent->IsAgentActive() ? IsAddonReady(agent->GetAddonID()) : false;
+        => agent != null && agent->IsAgentActive() && IsAddonReady(agent->GetAddonID());
     public static bool IsAddonReady(AgentId id) => IsAddonReady(GetAgent(id));
 
     #endregion

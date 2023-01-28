@@ -2,7 +2,7 @@ using System.Timers;
 
 namespace HaselTweaks.Tweaks;
 
-public class KeepScreenAwake : Tweak
+public partial class KeepScreenAwake : Tweak
 {
     public override string Name => "Keep Screen Awake";
     public override string Description => "Prevents the screen from going into standby.";
@@ -17,8 +17,8 @@ public class KeepScreenAwake : Tweak
         ES_SYSTEM_REQUIRED = 0x00000001
     }
 
-    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-    private static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
+    [LibraryImport("kernel32.dll", SetLastError = true)]
+    private static partial EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
 
     public override void Setup()
     {

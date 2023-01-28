@@ -3,12 +3,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Dalamud.Game;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin;
 using HaselTweaks.Windows;
-using DalamudFramework = Dalamud.Game.Framework;
 
 namespace HaselTweaks;
 
@@ -94,7 +94,7 @@ public class Plugin : IDalamudPlugin
         Service.Framework.Update += OnFrameworkUpdate;
     }
 
-    private void OnFrameworkUpdate(DalamudFramework framework)
+    private void OnFrameworkUpdate(Framework framework)
     {
         foreach (var tweak in Tweaks)
         {

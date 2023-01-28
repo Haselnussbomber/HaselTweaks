@@ -322,30 +322,24 @@ public class AetherCurrentHelperWindow : Window
 
     private EObj? GetEObjByData(uint aetherCurrentId)
     {
-        if (EObjCache.ContainsKey(aetherCurrentId))
+        if (!EObjCache.TryGetValue(aetherCurrentId, out var value))
         {
-            return EObjCache[aetherCurrentId];
+            value = Service.Data.GetExcelSheet<EObj>()?.FirstOrDefault(row => row.Data == aetherCurrentId);
+            EObjCache.Add(aetherCurrentId, value);
         }
 
-        var eobj = Service.Data.GetExcelSheet<EObj>()?.FirstOrDefault(row => row.Data == aetherCurrentId);
-
-        EObjCache.Add(aetherCurrentId, eobj);
-
-        return eobj;
+        return value;
     }
 
     private Level? GetLevelByObjectId(uint objId)
     {
-        if (LevelCache.ContainsKey(objId))
+        if (!LevelCache.TryGetValue(objId, out var value))
         {
-            return LevelCache[objId];
+            value = Service.Data.GetExcelSheet<Level>()?.FirstOrDefault(row => row.Object == objId);
+            LevelCache.Add(objId, value);
         }
 
-        var level = Service.Data.GetExcelSheet<Level>()?.FirstOrDefault(row => row.Object == objId);
-
-        LevelCache.Add(objId, level);
-
-        return level;
+        return value;
     }
 
     private static Vector2 GetLevelPos(Level level)
