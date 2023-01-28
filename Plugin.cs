@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Dalamud.Game;
@@ -21,6 +23,14 @@ public class Plugin : IDalamudPlugin
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
+        var module = Process.GetCurrentProcess().MainModule;
+        if (module == null)
+            throw new Exception("Unable to access process module.");
+
+        var gameVersion = File.ReadAllText(Path.Combine(Directory.GetParent(module.FileName)!.FullName, "ffxivgame.ver"));
+        if (string.IsNullOrEmpty(gameVersion))
+            throw new Exception("Unable to read game version.");
+
         pluginInterface.Create<Service>();
 
         foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(Tweak)) && !t.IsAbstract))
@@ -33,12 +43,6 @@ public class Plugin : IDalamudPlugin
             {
                 PluginLog.Error(ex, $"Failed initializing tweak '{t.Name}'.");
             }
-        }
-
-        string? gameVersion = null;
-        unsafe
-        {
-            gameVersion = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GameVersion.Base;
         }
 
         Configuration.Load(Tweaks.Select(t => t.InternalName).ToArray(), gameVersion);
