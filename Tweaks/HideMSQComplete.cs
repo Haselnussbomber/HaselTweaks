@@ -12,40 +12,9 @@ public unsafe class HideMSQComplete : Tweak
 
     private AgentScenarioTree* agent;
 
-    private AtkTextNode* msqCompleteTextNode;
-    private AtkNineGridNode* msqCompleteNineGridNode;
-    private AtkComponentButton* buttonNode;
-
     public override void Setup()
     {
         agent = GetAgent<AgentScenarioTree>(AgentId.ScenarioTree);
-    }
-
-    private bool IsMSQIncomplete
-    {
-        get
-        {
-            if (agent == null || agent->Data == null)
-                return false;
-
-            if (msqCompleteTextNode == null || msqCompleteNineGridNode == null || buttonNode == null)
-            {
-                var addon = GetAddon<AtkUnitBase>(AgentId.ScenarioTree);
-                if (addon == null)
-                    return false;
-
-                if (msqCompleteTextNode == null)
-                    msqCompleteTextNode = GetNode<AtkTextNode>(addon, 11);
-
-                if (msqCompleteNineGridNode == null)
-                    msqCompleteNineGridNode = GetNode<AtkNineGridNode>(addon, 12);
-
-                if (buttonNode == null)
-                    buttonNode = GetNode<AtkComponentButton>(addon, 13);
-            }
-
-            return agent->Data->NextId != 0;
-        }
     }
 
     public override void Disable()
@@ -55,13 +24,17 @@ public unsafe class HideMSQComplete : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        UpdateVisibility(IsMSQIncomplete);
+        UpdateVisibility(agent->Data != null && agent->Data->NextId != 0);
     }
 
     private void UpdateVisibility(bool visible)
     {
-        SetVisibility((AtkResNode*)msqCompleteNineGridNode, visible);
-        SetVisibility((AtkResNode*)msqCompleteTextNode, visible);
-        SetVisibility((AtkResNode*)buttonNode, visible);
+        var addon = GetAddon<AtkUnitBase>((AgentInterface*)agent);
+        if (addon == null)
+            return;
+
+        SetVisibility(addon, 11, visible); // AtkTextNode
+        SetVisibility(addon, 12, visible); // AtkNineGridNode
+        SetVisibility(addon, 13, visible); // AtkComponentButton
     }
 }
