@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Memory;
 using Dalamud.Utility.Signatures;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
 
@@ -10,10 +11,11 @@ namespace HaselTweaks.Utils;
 
 public unsafe class StringUtils
 {
-    private readonly Dictionary<uint, string> ENpcResidentNameCache = new();
-    private readonly Dictionary<uint, string> EObjNameCache = new();
-    private readonly Dictionary<uint, string> QuestCache = new();
-    private readonly Dictionary<string, Dictionary<uint, Dictionary<string, string>>> SheetCache = new(); // SheetCache[sheetName][rowId][columnName]
+    private static readonly Dictionary<uint, string> ENpcResidentNameCache = new();
+    private static readonly Dictionary<uint, string> EObjNameCache = new();
+    private static readonly Dictionary<uint, string> QuestCache = new();
+    private static readonly Dictionary<uint, string> AddonCache = new();
+    private static readonly Dictionary<string, Dictionary<uint, Dictionary<string, string>>> SheetCache = new(); // SheetCache[sheetName][rowId][columnName]
 
     public StringUtils()
     {
@@ -22,13 +24,14 @@ public unsafe class StringUtils
 
     [Signature("E9 ?? ?? ?? ?? 48 8D 47 30")]
     private readonly FormatObjectStringDelegate FormatObjectString = null!; // how do you expect me to name things i have no clue about
-    private delegate IntPtr FormatObjectStringDelegate(int mode, uint id, uint idConversionMode, uint a4);
+    private delegate nint FormatObjectStringDelegate(int mode, uint id, uint idConversionMode, uint a4);
 
     public string GetENpcResidentName(uint npcId)
     {
         if (!ENpcResidentNameCache.TryGetValue(npcId, out var value))
         {
-            value = MemoryHelper.ReadSeStringNullTerminated(FormatObjectString(0, npcId, 3, 1)).ToString();
+            var ptr = FormatObjectString(0, npcId, 3, 1);
+            value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
             ENpcResidentNameCache.Add(npcId, value);
         }
 
@@ -39,14 +42,15 @@ public unsafe class StringUtils
     {
         if (!EObjNameCache.TryGetValue(objId, out var value))
         {
-            value = MemoryHelper.ReadSeStringNullTerminated(FormatObjectString(0, objId, 5, 1)).ToString();
+            var ptr = FormatObjectString(0, objId, 5, 1);
+            value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
             EObjNameCache.Add(objId, value);
         }
 
         return value;
     }
 
-    public string GetQuestName(uint questId, bool clean)
+    public static string GetQuestName(uint questId, bool clean)
     {
         if (!QuestCache.TryGetValue(questId, out var value))
         {
@@ -65,7 +69,23 @@ public unsafe class StringUtils
         return value;
     }
 
-    public string GetSheetText<T>(uint rowId, string columnName) where T : ExcelRow
+    public static string? GetAddonText(uint rowId)
+    {
+        if (!AddonCache.TryGetValue(rowId, out var value))
+        {
+            var ptr = (nint)Framework.Instance()->GetUiModule()->GetRaptureTextModule()->GetAddonText(rowId);
+            value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
+
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
+
+            AddonCache.Add(rowId, value);
+        }
+
+        return value;
+    }
+
+    public static string GetSheetText<T>(uint rowId, string columnName) where T : ExcelRow
     {
         var sheetType = typeof(T);
         var sheetName = sheetType.Name;

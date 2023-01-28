@@ -6,6 +6,7 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
+using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;
 using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
 
@@ -221,7 +222,7 @@ public unsafe class EnhancedExpBar : Tweak
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             job = Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation;
-            levelLabel = (Service.StringUtils.GetSheetText<Addon>(14860, "Text") ?? "Series Level").Trim().Replace(":", "");
+            levelLabel = (StringUtils.GetAddonText(14860) ?? "Series Level").Trim().Replace(":", "");
             var rank = pvpProfile->SeriesClaimedRank > 30 ? pvpProfile->SeriesCurrentRank : pvpProfile->SeriesClaimedRank; // 30 = Series Max Rank
             level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
             var star = pvpProfile->SeriesClaimedRank > pvpProfile->SeriesCurrentRank ? '*' : ' ';
@@ -259,7 +260,7 @@ public unsafe class EnhancedExpBar : Tweak
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             job = Config.SanctuaryBarHideJob ? "" : Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation + "  ";
-            levelLabel = (Service.StringUtils.GetSheetText<Addon>(14252, "Text") ?? "Sanctuary Rank").Trim().Replace(":", "");
+            levelLabel = (StringUtils.GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
             level = islandState->CurrentRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
             requiredExperience = MJIRankSheet.GetRow(islandState->CurrentRank)!.ExpToNext;
 

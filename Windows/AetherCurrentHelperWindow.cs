@@ -203,7 +203,7 @@ public class AetherCurrentHelperWindow : Window
 
         ImGui.TableNextColumn();
         {
-            ImGui.TextColored(TitleColor, $"[#{index}] {Service.StringUtils.GetQuestName(quest.RowId, true)}");
+            ImGui.TextColored(TitleColor, $"[#{index}] {StringUtils.GetQuestName(quest.RowId, true)}");
 
             ImGui.Text(GetHumanReadableCoords(quest.IssuerLocation.Value!) + " | " + Service.StringUtils.GetENpcResidentName(quest.IssuerStart));
         }

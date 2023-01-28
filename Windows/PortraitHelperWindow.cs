@@ -70,7 +70,7 @@ public unsafe class PortraitHelperWindow : Window
 
     public override void Draw()
     {
-        var labelCopy = Service.StringUtils.GetSheetText<Addon>(100, "Text") ?? "Copy";
+        var labelCopy = StringUtils.GetAddonText(100) ?? "Copy";
         if (ImGui.Button(labelCopy))
         {
             Copy();
@@ -80,7 +80,7 @@ public unsafe class PortraitHelperWindow : Window
         {
             ImGui.SameLine();
 
-            var labelPaste = Service.StringUtils.GetSheetText<Addon>(101, "Text") ?? "Paste";
+            var labelPaste = StringUtils.GetAddonText(101) ?? "Paste";
             if (ImGui.Button(labelPaste))
             {
                 Paste();
@@ -113,25 +113,25 @@ public unsafe class PortraitHelperWindow : Window
                 AddRow(
                     "Background",
                     ref CopyBackground,
-                    Service.StringUtils.GetSheetText<Addon>(14687, "Text") ?? "Background",
-                    Service.StringUtils.GetSheetText<BannerBg>((uint)ExportedPortraitData->Background, "Name") ?? ExportedPortraitData->Background.ToString()
+                    StringUtils.GetAddonText(14687) ?? "Background",
+                    StringUtils.GetSheetText<BannerBg>((uint)ExportedPortraitData->Background, "Name") ?? ExportedPortraitData->Background.ToString()
                 );
 
                 AddRow(
                     "Frame",
                     ref CopyFrame,
-                    Service.StringUtils.GetSheetText<Addon>(14688, "Text") ?? "Frame",
-                    Service.StringUtils.GetSheetText<BannerFrame>((uint)Frame, "Name") ?? Frame.ToString()
+                    StringUtils.GetAddonText(14688) ?? "Frame",
+                    StringUtils.GetSheetText<BannerFrame>((uint)Frame, "Name") ?? Frame.ToString()
                 );
 
                 AddRow(
                     "Accent",
                     ref CopyAccent,
-                    Service.StringUtils.GetSheetText<Addon>(14689, "Text") ?? "Accent",
-                    Service.StringUtils.GetSheetText<BannerDecoration>((uint)Accent, "Name") ?? Accent.ToString()
+                    StringUtils.GetAddonText(14689) ?? "Accent",
+                    StringUtils.GetSheetText<BannerDecoration>((uint)Accent, "Name") ?? Accent.ToString()
                 );
 
-                var poseName = Service.StringUtils.GetSheetText<BannerTimeline>((uint)ExportedPortraitData->Pose, "Name");
+                var poseName = StringUtils.GetSheetText<BannerTimeline>((uint)ExportedPortraitData->Pose, "Name");
                 if (string.IsNullOrEmpty(poseName))
                 {
                     var poseRow = Service.Data.GetExcelSheet<BannerTimeline>()?.GetRow((uint)ExportedPortraitData->Pose);
@@ -140,12 +140,12 @@ public unsafe class PortraitHelperWindow : Window
                         switch (poseRow.Type)
                         {
                             case 2:
-                                poseName = Service.StringUtils.GetSheetText<Action>(poseRow.AdditionalData, "Name");
+                                poseName = StringUtils.GetSheetText<Action>(poseRow.AdditionalData, "Name");
                                 break;
 
                             case 10:
                             case 11:
-                                poseName = Service.StringUtils.GetSheetText<Emote>(poseRow.AdditionalData, "Name");
+                                poseName = StringUtils.GetSheetText<Emote>(poseRow.AdditionalData, "Name");
                                 break;
 
                             case 20:
@@ -162,25 +162,25 @@ public unsafe class PortraitHelperWindow : Window
                 AddRow(
                     "Pose",
                     ref CopyPose,
-                    Service.StringUtils.GetSheetText<Addon>(14690, "Text") ?? "Pose",
+                    StringUtils.GetAddonText(14690) ?? "Pose",
                     poseName
                 );
 
                 AddRow(
                     "Expression",
                     ref CopyExpression,
-                    Service.StringUtils.GetSheetText<Addon>(14691, "Text") ?? "Expression",
+                    StringUtils.GetAddonText(14691) ?? "Expression",
                     GetExpressionName(state->ExpressionItems, state->ExpressionItemsCount, ExportedPortraitData->Expression) ?? ExportedPortraitData->Expression.ToString()
                 );
 
-                var labelAmbientLighing = Service.StringUtils.GetSheetText<Addon>(14692, "Text") ?? "Ambient Lighting";
-                var labelDirectionalLighing = Service.StringUtils.GetSheetText<Addon>(14693, "Text") ?? "Directional Lighting";
-                var labelBrightness = Service.StringUtils.GetSheetText<Addon>(14694, "Text") ?? "Brightness";
-                var labelVerticalAngle = Service.StringUtils.GetSheetText<Addon>(14696, "Text") ?? "Vertical Angle";
-                var labelHorizontalAngle = Service.StringUtils.GetSheetText<Addon>(14695, "Text") ?? "Horizontal Angle";
-                var labelRed = Service.StringUtils.GetSheetText<Addon>(5932, "Text") ?? "Red";
-                var labelGreen = Service.StringUtils.GetSheetText<Addon>(5933, "Text") ?? "Green";
-                var labelBlue = Service.StringUtils.GetSheetText<Addon>(5934, "Text") ?? "Blue";
+                var labelAmbientLighing = StringUtils.GetAddonText(14692) ?? "Ambient Lighting";
+                var labelDirectionalLighing = StringUtils.GetAddonText(14693) ?? "Directional Lighting";
+                var labelBrightness = StringUtils.GetAddonText(14694) ?? "Brightness";
+                var labelVerticalAngle = StringUtils.GetAddonText(14696) ?? "Vertical Angle";
+                var labelHorizontalAngle = StringUtils.GetAddonText(14695) ?? "Horizontal Angle";
+                var labelRed = StringUtils.GetAddonText(5932) ?? "Red";
+                var labelGreen = StringUtils.GetAddonText(5933) ?? "Green";
+                var labelBlue = StringUtils.GetAddonText(5934) ?? "Blue";
 
                 AddRow(
                     "AmbientLightingBrightness",
@@ -264,8 +264,8 @@ public unsafe class PortraitHelperWindow : Window
                     ref CopyCameraPosition,
                     "Camera Position",
                     ExportedPortraitData->CameraPhi != 0 || ExportedPortraitData->CameraTheta != 0
-                        ? (Service.StringUtils.GetSheetText<Addon>(4203, "Text") ?? "Custom")
-                        : (Service.StringUtils.GetSheetText<Addon>(4202, "Text") ?? "Default")
+                        ? (StringUtils.GetAddonText(4203) ?? "Custom")
+                        : (StringUtils.GetAddonText(4202) ?? "Default")
                 );
 
                 AddRow(
@@ -273,8 +273,8 @@ public unsafe class PortraitHelperWindow : Window
                     ref CopyCameraTarget,
                     "Camera Target",
                     ExportedPortraitData->CameraTarget1 != 0 || ExportedPortraitData->CameraTarget2 != 0 || ExportedPortraitData->CameraTarget3 != 0
-                        ? (Service.StringUtils.GetSheetText<Addon>(4203, "Text") ?? "Custom")
-                        : (Service.StringUtils.GetSheetText<Addon>(4202, "Text") ?? "Default")
+                        ? (StringUtils.GetAddonText(4203) ?? "Custom")
+                        : (StringUtils.GetAddonText(4202) ?? "Default")
                 );
 
                 AddRow(
@@ -282,8 +282,8 @@ public unsafe class PortraitHelperWindow : Window
                     ref CopyHeadDirection,
                     "Head Direction",
                     ExportedPortraitData->HeadDirection1 != 0 || ExportedPortraitData->HeadDirection1 != 0
-                        ? (Service.StringUtils.GetSheetText<Addon>(4203, "Text") ?? "Custom")
-                        : (Service.StringUtils.GetSheetText<Addon>(4202, "Text") ?? "Default")
+                        ? (StringUtils.GetAddonText(4203) ?? "Custom")
+                        : (StringUtils.GetAddonText(4202) ?? "Default")
                 );
 
                 AddRow(
@@ -291,21 +291,21 @@ public unsafe class PortraitHelperWindow : Window
                     ref CopyEyeDirection,
                     "Eye Direction",
                     ExportedPortraitData->EyeDirection1 != 0 || ExportedPortraitData->EyeDirection2 != 0
-                        ? (Service.StringUtils.GetSheetText<Addon>(4203, "Text") ?? "Custom")
-                        : (Service.StringUtils.GetSheetText<Addon>(4202, "Text") ?? "Default")
+                        ? (StringUtils.GetAddonText(4203) ?? "Custom")
+                        : (StringUtils.GetAddonText(4202) ?? "Default")
                 );
 
                 AddRow(
                     "CameraZoom",
                     ref CopyZoom,
-                    Service.StringUtils.GetSheetText<Addon>(14711, "Text") ?? "Zoom",
+                    StringUtils.GetAddonText(14711) ?? "Zoom",
                     $"{ExportedPortraitData->CameraZoom}"
                 );
 
                 AddRow(
                     "ImageRotation",
                     ref CopyRotation,
-                    Service.StringUtils.GetSheetText<Addon>(14712, "Text") ?? "Rotation",
+                    StringUtils.GetAddonText(14712) ?? "Rotation",
                     $"{ExportedPortraitData->ImageRotation}"
                 );
 
@@ -546,7 +546,7 @@ public unsafe class PortraitHelperWindow : Window
     {
         if (value == 0)
         {
-            return Service.StringUtils.GetSheetText<Addon>(14727, "Text");
+            return StringUtils.GetAddonText(14727) ?? "None";
         }
 
         var i = 0;
