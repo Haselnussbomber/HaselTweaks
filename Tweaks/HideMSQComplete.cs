@@ -10,15 +10,21 @@ public unsafe class HideMSQComplete : Tweak
     public override string Name => "Hide MSQ Complete";
     public override string Description => "Hides the Main Scenario Guide when the MSQ is completed. Job quests are still being displayed.";
 
+    private AgentScenarioTree* agent;
+
     private AtkTextNode* msqCompleteTextNode;
     private AtkNineGridNode* msqCompleteNineGridNode;
     private AtkComponentButton* buttonNode;
+
+    public override void Setup()
+    {
+        agent = GetAgent<AgentScenarioTree>(AgentId.ScenarioTree);
+    }
 
     private bool IsMSQIncomplete
     {
         get
         {
-            var agent = GetAgent<AgentScenarioTree>(AgentId.ScenarioTree);
             if (agent == null || agent->Data == null)
                 return false;
 

@@ -16,15 +16,23 @@ public unsafe class SearchTheMarkets : Tweak
     public override string Name => "Search the markets";
     public override string Description => "Adds a context menu entry to items in Inventory, Crafting Log, Recipe Tree or Materials List to quickly search for the item on the Market Board. Only visible when Market Board is open.";
 
-    private readonly DalamudContextMenu ContextMenu = null!;
-    private readonly GameObjectContextMenuItem ContextMenuItemGame = null!;
-    private readonly InventoryContextMenuItem ContextMenuItemInventory = null!;
+    private readonly DalamudContextMenu ContextMenu = new();
+    private GameObjectContextMenuItem ContextMenuItemGame = null!;
+    private InventoryContextMenuItem ContextMenuItemInventory = null!;
 
     private Item? Item = null;
 
-    public SearchTheMarkets()
+    private AgentRecipeNote* agentRecipeNote;
+    private AgentRecipeItemContext* agentRecipeItemContext;
+    private AgentItemSearch* agentItemSearch;
+
+    private bool IsInvalidState => Item == null || Item.RowId == 0 || Item.IsUntradable || agentItemSearch->GetAddon() == null;
+
+    public override void Setup()
     {
-        ContextMenu = new();
+        agentRecipeNote = GetAgent<AgentRecipeNote>(AgentId.RecipeNote);
+        agentRecipeItemContext = GetAgent<AgentRecipeItemContext>(AgentId.RecipeItemContext);
+        agentItemSearch = GetAgent<AgentItemSearch>(AgentId.ItemSearch);
 
         var text = new SeString(new TextPayload(Service.ClientState.ClientLanguage switch
         {
@@ -66,17 +74,17 @@ public unsafe class SearchTheMarkets : Tweak
 
         if (args.ParentAddonName is "RecipeNote")
         {
-            itemId = GetAgent<AgentRecipeNote>(AgentId.RecipeNote)->ResultItemId;
+            itemId = agentRecipeNote->ResultItemId;
         }
         else if (args.ParentAddonName is "RecipeMaterialList" or "RecipeTree")
         {
             // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
-            itemId = GetAgent<AgentRecipeItemContext>(AgentId.RecipeItemContext)->ResultItemId;
+            itemId = agentRecipeItemContext->ResultItemId;
         }
 
         Item = Service.Data.GetExcelSheet<Item>()?.GetRow(itemId);
 
-        if (IsInvalidState())
+        if (IsInvalidState)
             return;
 
         args.AddCustomItem(ContextMenuItemGame);
@@ -86,7 +94,7 @@ public unsafe class SearchTheMarkets : Tweak
     {
         Item = Service.Data.GetExcelSheet<Item>()?.GetRow(args.ItemId);
 
-        if (IsInvalidState())
+        if (IsInvalidState)
             return;
 
         args.AddCustomItem(ContextMenuItemInventory);
@@ -94,12 +102,10 @@ public unsafe class SearchTheMarkets : Tweak
 
     private void Search()
     {
-        var agent = GetAgent<AgentItemSearch>(AgentId.ItemSearch);
-
-        if (IsInvalidState(agent))
+        if (IsInvalidState)
             return;
 
-        var addon = agent->GetAddon();
+        var addon = agentItemSearch->GetAddon();
 
         var itemName = Item!.Name.ToString();
         if (itemName.Length > 40)
@@ -119,8 +125,7 @@ public unsafe class SearchTheMarkets : Tweak
         addon->SetModeFilter(AddonItemSearch.SearchMode.Normal, 0xFFFFFFFF);
         ((HaselAtkComponentTextInput*)addon->TextInput)->TriggerRedraw();
         addon->RunSearch(false);
-    }
 
-    private bool IsInvalidState(AgentItemSearch* agent) => Item == null || Item.RowId == 0 || Item.IsUntradable || agent->GetAddon() == null;
-    private bool IsInvalidState() => IsInvalidState(GetAgent<AgentItemSearch>(AgentId.ItemSearch));
+        Item = null;
+    }
 }

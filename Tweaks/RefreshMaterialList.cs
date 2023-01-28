@@ -17,6 +17,15 @@ public unsafe class RefreshMaterialList : Tweak
     private readonly AddonObserver SynthesisSimpleObserver = new("SynthesisSimple");
     private readonly AddonObserver GatheringObserver = new("Gathering");
 
+    private AgentRecipeTree* agentRecipeTree;
+    private AgentRecipeMaterialList* agentRecipeMaterialList;
+
+    public override void Setup()
+    {
+        agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList);
+        agentRecipeTree = GetAgent<AgentRecipeTree>(AgentId.RecipeTree);
+    }
+
     public override void Enable()
     {
         CatchObserver.OnOpen += Refresh;
@@ -46,8 +55,8 @@ public unsafe class RefreshMaterialList : Tweak
 
     private void Refresh(AddonObserver sender, AtkUnitBase* unitBase)
     {
-        var recipeMaterialList = GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList)->GetAddon();
-        var recipeTree = GetAgent<AgentRecipeTree>(AgentId.RecipeTree)->GetAddon();
+        var recipeMaterialList = agentRecipeMaterialList->GetAddon();
+        var recipeTree = agentRecipeTree->GetAddon();
 
         if (recipeMaterialList == null && recipeTree == null)
             return;
