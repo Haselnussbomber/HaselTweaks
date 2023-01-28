@@ -3,12 +3,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Dalamud.Game;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin;
 using HaselTweaks.Windows;
+using DalamudFramework = Dalamud.Game.Framework;
 
 namespace HaselTweaks;
 
@@ -50,6 +50,23 @@ public class Plugin : IDalamudPlugin
         Interop.Resolver.GetInstance.SetupSearchSpace(Service.SigScanner.SearchBase);
         Interop.Resolver.GetInstance.Resolve();
 
+        PluginWindow = new PluginWindow(this);
+        WindowSystem.AddWindow(PluginWindow);
+
+        Service.PluginInterface.UiBuilder.Draw += OnDraw;
+        Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
+
+        Service.Commands.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
+        {
+            HelpMessage = "Show Window"
+        });
+
+        // ensure Framework is set up
+        Service.Framework.RunOnFrameworkThread(SetupTweaks);
+    }
+
+    private void SetupTweaks()
+    {
         foreach (var tweak in Tweaks)
         {
             try
@@ -74,20 +91,10 @@ public class Plugin : IDalamudPlugin
             }
         }
 
-        PluginWindow = new PluginWindow(this);
-        WindowSystem.AddWindow(PluginWindow);
-
         Service.Framework.Update += OnFrameworkUpdate;
-        Service.PluginInterface.UiBuilder.Draw += OnDraw;
-        Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
-
-        Service.Commands.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
-        {
-            HelpMessage = "Show Window"
-        });
     }
 
-    private void OnFrameworkUpdate(Framework framework)
+    private void OnFrameworkUpdate(DalamudFramework framework)
     {
         foreach (var tweak in Tweaks)
         {
@@ -126,7 +133,7 @@ public class Plugin : IDalamudPlugin
 
         Service.Commands.RemoveHandler("/haseltweaks");
 
-        foreach (var tweak in Tweaks)
+        foreach (var tweak in Tweaks.ToArray())
         {
             if (tweak.Enabled)
             {
@@ -148,13 +155,13 @@ public class Plugin : IDalamudPlugin
             {
                 PluginLog.Error(ex, $"Failed disposing tweak '{tweak.Name}'.");
             }
+
+            Tweaks.Remove(tweak);
         }
 
         WindowSystem.RemoveAllWindows();
 
-        Tweaks.Clear();
-
         Configuration.Save();
-        ((IDisposable)Configuration.Instance).Dispose();
+        ((IDisposable?)Configuration.Instance)?.Dispose();
     }
 }
