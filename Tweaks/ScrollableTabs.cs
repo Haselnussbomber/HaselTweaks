@@ -89,10 +89,10 @@ public unsafe class ScrollableTabs : Tweak
     {
         if (wheelState == 0) return;
 
-        var collisionManager = AtkCollisionManager.Instance;
-        if (collisionManager == null) goto ResetWheelState;
+        var raptureAtkModule = RaptureAtkModule.Instance;
+        if (raptureAtkModule == null) goto ResetWheelState;
 
-        var hoveredUnitBase = collisionManager->IntersectingAddon;
+        var hoveredUnitBase = raptureAtkModule->IntersectingAddon;
         if (hoveredUnitBase == null) goto ResetWheelState;
 
         var name = Marshal.PtrToStringAnsi((IntPtr)hoveredUnitBase->Name);
@@ -420,8 +420,8 @@ public unsafe class ScrollableTabs : Tweak
 
     private void UpdateFieldNotes(AddonMYCWarResultNotebook* addon)
     {
-        var collisionManager = AtkCollisionManager.Instance;
-        if (collisionManager != null && collisionManager->IntersectingCollisionNode == addon->DescriptionCollisionNode)
+        var raptureAtkModule = RaptureAtkModule.Instance;
+        if (raptureAtkModule != null && raptureAtkModule->IntersectingCollisionNode == addon->DescriptionCollisionNode)
             return;
 
         var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();

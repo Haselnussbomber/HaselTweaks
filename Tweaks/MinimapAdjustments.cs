@@ -53,7 +53,7 @@ public unsafe class MinimapAdjustments : Tweak
     {
         var addon = GetAddon("_NaviMap");
         if (addon == null) return;
-        UpdateVisibility(addon, AtkCollisionManager.Instance->IntersectingAddon == addon);
+        UpdateVisibility(addon, RaptureAtkModule.Instance->IntersectingAddon == addon);
         UpdateCollision(addon, Config.Square);
     }
 
