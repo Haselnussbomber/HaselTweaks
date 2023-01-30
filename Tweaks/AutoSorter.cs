@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Dalamud;
 using Dalamud.Game;
 using Dalamud.Interface;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
@@ -198,7 +200,7 @@ public unsafe class AutoSorter : Tweak
             ["lv"] = "装備レベル",
             ["ilv"] = "アイテムレベル",
             ["stack"] = "スタック数",
-            ["hq"] = "HQ付き",
+            ["hq"] = "hq",
             ["materia"] = "マテリア数",
             ["pdamage"] = "物理基本性能",
             ["mdamage"] = "魔法基本性能",
@@ -254,7 +256,7 @@ public unsafe class AutoSorter : Tweak
         return result ?? fallback;
     }
 
-    public record CategorySetting
+    public record SortingRule
     {
         public string Category = "";
         public string Condition = "";
@@ -263,7 +265,7 @@ public unsafe class AutoSorter : Tweak
 
     public class Configuration
     {
-        public List<CategorySetting> Settings = new();
+        public List<SortingRule> Settings = new();
     }
 
     private static void SaveConfig() => HaselTweaks.Configuration.Save();
@@ -449,6 +451,24 @@ public unsafe class AutoSorter : Tweak
                 errors.Add("This rule overrides a slot-based armoury rule. Move it up.");
             }
 
+            if (entry.Category is "rightsaddlebag" && !HasPremiumSaddlebag)
+            {
+                errors ??= new();
+                errors.Add("Not subscribed to the Companion Premium Service.");
+            }
+
+            if (entry.Category is "saddlebag" or "rightsaddlebag" && !InventoryBuddyObserver.IsOpen)
+            {
+                errors ??= new();
+                errors.Add("Sorting for saddlebag/rightsaddlebag only works when the window is open.");
+            }
+
+            if (entry.Category is "retainer" && !RetainerObserver.IsOpen)
+            {
+                errors ??= new();
+                errors.Add("Sorting for retainer only works when the window is open.");
+            }
+
             if (errors != null)
             {
                 ImGui.SameLine();
@@ -457,17 +477,7 @@ public unsafe class AutoSorter : Tweak
                 ImGui.PopStyleColor();
                 if (ImGui.IsItemHovered())
                 {
-                    ImGui.SetTooltip("This rule has errors:\n\n- " + string.Join("\n -", errors));
-                }
-            }
-            else if ((entry.Category is "saddlebag" or "rightsaddlebag") && !InventoryBuddyObserver.IsOpen)
-            {
-                ImGui.PushStyleColor(ImGuiCol.Text, 0xff02d2ee); // safety yellow
-                ImGuiUtils.IconButton(FontAwesomeIcon.ExclamationTriangle);
-                ImGui.PopStyleColor();
-                if (ImGui.IsItemHovered())
-                {
-                    ImGui.SetTooltip("Sorting for saddlebags/rightsaddlebag only works when the window is open.");
+                    ImGui.SetTooltip("This rule has errors:\n\n- " + string.Join("\n- ", errors));
                 }
             }
             else
@@ -500,10 +510,10 @@ public unsafe class AutoSorter : Tweak
 
         if (ImGui.Button("Run All##HaselTweaks_AutoSortSettings_RunAll"))
         {
-            var settings = Config.Settings
-                .GroupBy(entry => entry.Category);
-
-            ProcessCategories(settings);
+            foreach (var group in Config.Settings.GroupBy(entry => entry.Category))
+            {
+                queue.Enqueue(group);
+            }
         }
 
         if (entryToMoveUp != -1)
@@ -531,7 +541,7 @@ public unsafe class AutoSorter : Tweak
         if (entryToExecute != -1)
         {
             var entry = Config.Settings[entryToExecute];
-            ProcessCategory(new[] { entry });
+            queue.Enqueue(new[] { entry }.GroupBy(entry => entry.Category).First());
         }
     }
 
@@ -539,6 +549,11 @@ public unsafe class AutoSorter : Tweak
     private readonly AddonObserver InventoryObserver = new(() => GetAddon(AgentId.Inventory));
     private readonly AddonObserver InventoryBuddyObserver = new(() => GetAddon(AgentId.InventoryBuddy));
     private readonly AddonObserver RetainerObserver = new(() => GetAddon(AgentId.Retainer));
+
+    private bool HasPremiumSaddlebag => *(bool*)((nint)PlayerState.Instance() + 0x133); // last checked: Patch 6.31
+
+    private readonly Queue<IGrouping<string, SortingRule>> queue = new();
+    private bool IsBusy = false;
 
     public override void Enable()
     {
@@ -562,75 +577,125 @@ public unsafe class AutoSorter : Tweak
         InventoryObserver.Update();
         InventoryBuddyObserver.Update();
         RetainerObserver.Update();
+
+        ProcessQueue();
     }
 
     private void OnOpenArmoury(AddonObserver sender, AtkUnitBase* unitBase)
     {
-        var settings = Config.Settings
+        var groups = Config.Settings
             .FindAll(entry => entry.Category is "armoury" or "mh" or "oh" or "head" or "body" or "hands" or "legs" or "feet" or "neck" or "ears" or "wrists" or "rings" or "soul")
             .GroupBy(entry => entry.Category);
 
-        ProcessCategories(settings);
+        foreach (var group in groups)
+        {
+            queue.Enqueue(group);
+        }
     }
 
     private void OnOpenInventory(AddonObserver sender, AtkUnitBase* unitBase)
     {
-        var category = Config.Settings
-            .FindAll(entry => entry.Category is "inventory");
+        var groups = Config.Settings
+            .FindAll(entry => entry.Category is "inventory")
+            .GroupBy(entry => entry.Category);
 
-        ProcessCategory(category);
+        foreach (var group in groups)
+        {
+            queue.Enqueue(group);
+        }
     }
 
     private void OnOpenInventoryBuddy(AddonObserver sender, AtkUnitBase* unitBase)
     {
-        var categories = Config.Settings
+        var groups = Config.Settings
             .FindAll(entry => entry.Category is "saddlebag" or "rightsaddlebag")
             .GroupBy(entry => entry.Category);
 
-        ProcessCategories(categories);
+        foreach (var group in groups)
+        {
+            queue.Enqueue(group);
+        }
     }
 
     private void OnOpenRetainer(AddonObserver sender, AtkUnitBase* unitBase)
     {
-        var category = Config.Settings
-            .FindAll(entry => entry.Category is "retainer");
+        var groups = Config.Settings
+            .FindAll(entry => entry.Category is "retainer")
+            .GroupBy(entry => entry.Category);
 
-        ProcessCategory(category);
-    }
-
-    private void ProcessCategories(IEnumerable<IGrouping<string, CategorySetting>> categories)
-    {
-        if (!categories.Any())
-            return;
-
-        foreach (var category in categories)
+        foreach (var group in groups)
         {
-            Log($"Sorting Category: {category.Key}");
-            ProcessCategory(category);
+            queue.Enqueue(group);
         }
     }
 
-    private void ProcessCategory(IEnumerable<CategorySetting> settings)
+    private void ProcessQueue()
     {
-        if (!settings.Any())
+        if (IsBusy || !queue.Any())
             return;
 
-        var category = settings.First().Category;
-
-        if ((category is "saddlebag" or "rightsaddlebag") && !InventoryBuddyObserver.IsOpen)
-        {
-            Warning("Sorting for saddlebags/rightsaddlebag only works when the window is open, skipping.");
+        var nextGroup = queue.Peek();
+        if (nextGroup == null)
             return;
-        }
 
-        ClearConditions(category);
-
-        foreach (var entry in settings)
+        if (nextGroup.Key is "armoury" or "mh" or "oh" or "head" or "body" or "hands" or "legs" or "feet" or "neck" or "ears" or "wrists" or "rings" or "soul")
         {
-            DefineCondition(entry.Category, entry.Condition, entry.Order);
+            // check if ItemOrderModule is busy
+            var itemOrderModule = ItemOrderModule.Instance;
+            if (itemOrderModule == null || itemOrderModule->IsLocked)
+            {
+                Debug("ItemOrderModule is busy, waiting.");
+                return;
+            }
+            if (itemOrderModule->ArmouryBoardSorter == null || itemOrderModule->ArmouryBoardSorter->Status != -1)
+            {
+                Debug("ItemOrderModule ArmouryBoardSorter is busy, waiting.");
+                return;
+            }
         }
 
-        ExecuteSort(category);
+        IsBusy = true;
+
+        Task.Run(() =>
+        {
+            var group = queue.Dequeue();
+
+            if (!group.Any())
+                return;
+
+            var category = group.Key;
+
+            Log($"Sorting Category: {category}");
+
+            if ((category is "saddlebag" or "rightsaddlebag") && !InventoryBuddyObserver.IsOpen)
+            {
+                Warning("Sorting for saddlebag/rightsaddlebag only works when the window is open, skipping.");
+                return;
+            }
+
+            if (category is "rightsaddlebag" && !HasPremiumSaddlebag)
+            {
+                Warning("Not subscribed to the Companion Premium Service, skipping.");
+                return;
+            }
+
+            if (category is "retainer" && !RetainerObserver.IsOpen)
+            {
+                Warning("Sorting for retainer only works when the window is open, skipping.");
+                return;
+            }
+
+            ClearConditions(category);
+
+            foreach (var rule in group)
+            {
+                DefineCondition(rule.Category, rule.Condition, rule.Order);
+            }
+
+            ExecuteSort(category);
+        }).Wait();
+
+        IsBusy = false;
     }
 
     private void ClearConditions(string category)
