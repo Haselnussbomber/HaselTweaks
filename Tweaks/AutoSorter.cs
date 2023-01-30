@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Dalamud;
 using Dalamud.Game;
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
@@ -10,6 +8,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using ImGuiNET;
+using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
@@ -19,242 +18,68 @@ public unsafe class AutoSorter : Tweak
     public override string Description => "Sorts items inside various containers when they are opened.";
     public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.AutoSorter;
 
-    public static readonly Dictionary<ClientLanguage, Dictionary<string, string>> CategorySet = new()
+    public static readonly Dictionary<string, uint> CategorySet = new()
     {
-        [ClientLanguage.English] = new()
-        {
-            ["inventory"] = "inventory",
-            ["retainer"] = "retainer",
-            ["armoury"] = "armoury",
-            ["saddlebag"] = "saddlebag",
-            ["rightsaddlebag"] = "rightsaddlebag",
-            ["mh"] = "mh",
-            ["oh"] = "oh",
-            ["head"] = "head",
-            ["body"] = "body",
-            ["hands"] = "hands",
-            ["legs"] = "legs",
-            ["feet"] = "feet",
-            ["neck"] = "neck",
-            ["ears"] = "ears",
-            ["wrists"] = "wrists",
-            ["rings"] = "rings",
-            ["soul"] = "soul"
-        },
-        [ClientLanguage.German] = new()
-        {
-            ["inventory"] = "inventar",
-            ["retainer"] = "gehilfe",
-            ["armoury"] = "arsenal",
-            ["saddlebag"] = "satteltasche",
-            ["rightsaddlebag"] = "satteltasche2",
-            ["mh"] = "hauptwaffe",
-            ["oh"] = "nebenwaffe",
-            ["head"] = "kopf",
-            ["body"] = "rumpf",
-            ["hands"] = "hände",
-            ["legs"] = "beine",
-            ["feet"] = "füße",
-            ["neck"] = "hals",
-            ["ears"] = "ohren",
-            ["wrists"] = "handgelenke",
-            ["rings"] = "ringe",
-            ["soul"] = "job"
-        },
-        [ClientLanguage.French] = new()
-        {
-            ["inventory"] = "inventaire",
-            ["retainer"] = "servant",
-            ["armoury"] = "arsenal",
-            ["saddlebag"] = "sacochechocobo",
-            ["rightsaddlebag"] = "sacochechocobo2",
-            ["mh"] = "direct",
-            ["oh"] = "nondir",
-            ["head"] = "tête",
-            ["body"] = "torse",
-            ["hands"] = "mains",
-            ["legs"] = "jambes",
-            ["feet"] = "pieds",
-            ["neck"] = "cou",
-            ["ears"] = "oreilles",
-            ["wrists"] = "poignets",
-            ["rings"] = "bagues",
-            ["soul"] = "âme"
-        },
-        [ClientLanguage.Japanese] = new()
-        {
-            ["inventory"] = "所持品",
-            ["retainer"] = "リテイナー所持品",
-            ["armoury"] = "アーマリーチェスト",
-            ["saddlebag"] = "チョコボかばん",
-            ["rightsaddlebag"] = "チョコボかばん2",
-            ["mh"] = "メインアーム",
-            ["oh"] = "サブアーム",
-            ["head"] = "頭",
-            ["body"] = "胴",
-            ["hands"] = "手",
-            ["legs"] = "脚",
-            ["feet"] = "足",
-            ["neck"] = "首",
-            ["ears"] = "耳",
-            ["wrists"] = "腕",
-            ["rings"] = "指",
-            ["soul"] = "ソウルクリスタル"
-        },
+        ["inventory"] = 257,
+        ["retainer"] = 261,
+        ["armoury"] = 259,
+        ["saddlebag"] = 467,
+        ["rightsaddlebag"] = 469,
+        ["mh"] = 26,
+        ["oh"] = 28,
+        ["head"] = 37,
+        ["body"] = 41,
+        ["hands"] = 47,
+        ["legs"] = 45,
+        ["feet"] = 49,
+        ["neck"] = 53,
+        ["ears"] = 285,
+        ["wrists"] = 287,
+        ["rings"] = 289,
+        ["soul"] = 291
     };
 
-    public static readonly Dictionary<ClientLanguage, Dictionary<string, string>> ConditionSet = new()
+    public static readonly Dictionary<string, uint> ConditionSet = new()
     {
-        [ClientLanguage.English] = new()
-        {
-            ["id"] = "id",
-            ["spiritbond"] = "spiritbond",
-            ["category"] = "category",
-            ["lv"] = "lv",
-            ["ilv"] = "ilv",
-            ["stack"] = "stack",
-            ["hq"] = "hq",
-            ["materia"] = "materia",
-            ["pdamage"] = "pdamage",
-            ["mdamage"] = "mdamage",
-            ["delay"] = "delay",
-            ["autoattack"] = "autoattack",
-            ["blockrate"] = "blockrate",
-            ["blockstrength"] = "blockstrength",
-            ["defense"] = "defense",
-            ["mdefense"] = "mdefense",
-            ["str"] = "str",
-            ["dex"] = "dex",
-            ["vit"] = "vit",
-            ["int"] = "int",
-            ["mnd"] = "mnd",
-            ["craftsmanship"] = "craftsmanship",
-            ["control"] = "control",
-            ["gathering"] = "gathering",
-            ["perception"] = "perception",
-            ["tab"] = "tab"
-        },
-        [ClientLanguage.German] = new()
-        {
-            ["id"] = "id",
-            ["spiritbond"] = "bindung",
-            ["category"] = "kategorie",
-            ["lv"] = "stufe",
-            ["ilv"] = "ggstufe",
-            ["stack"] = "stapel",
-            ["hq"] = "hq",
-            ["materia"] = "materia",
-            ["pdamage"] = "pschaden",
-            ["mdamage"] = "mschaden",
-            ["delay"] = "verzögerung",
-            ["autoattack"] = "pautoattacke",
-            ["blockrate"] = "blockrate",
-            ["blockstrength"] = "blockeffekt",
-            ["defense"] = "verteidigung",
-            ["mdefense"] = "mabwehr",
-            ["str"] = "str",
-            ["dex"] = "ges",
-            ["vit"] = "kon",
-            ["int"] = "int",
-            ["mnd"] = "wlk",
-            ["craftsmanship"] = "kunstfertigkeit",
-            ["control"] = "kontrolle",
-            ["gathering"] = "sammeln",
-            ["perception"] = "expertise",
-            ["tab"] = "reiter"
-        },
-        [ClientLanguage.French] = new()
-        {
-            ["id"] = "id",
-            ["spiritbond"] = "symbiose",
-            ["category"] = "catégorie",
-            ["lv"] = "niveau",
-            ["ilv"] = "niveauobjet",
-            ["stack"] = "exemplaires",
-            ["hq"] = "hq",
-            ["materia"] = "matéria",
-            ["pdamage"] = "dégâtsphysiques",
-            ["mdamage"] = "dégâtsmagiques",
-            ["delay"] = "délai",
-            ["autoattack"] = "attaqueauto",
-            ["blockrate"] = "tauxblocage",
-            ["blockstrength"] = "forceblocage",
-            ["defense"] = "défense",
-            ["mdefense"] = "défensemagique",
-            ["str"] = "for",
-            ["dex"] = "dex",
-            ["vit"] = "vit",
-            ["int"] = "int",
-            ["mnd"] = "esp",
-            ["craftsmanship"] = "habileté",
-            ["control"] = "contrôle",
-            ["gathering"] = "collecte",
-            ["perception"] = "savoir-faire",
-            ["tab"] = "onglet"
-        },
-        [ClientLanguage.Japanese] = new()
-        {
-            ["id"] = "アイテムID",
-            ["spiritbond"] = "錬精度",
-            ["category"] = "アイテムカテゴリー",
-            ["lv"] = "装備レベル",
-            ["ilv"] = "アイテムレベル",
-            ["stack"] = "スタック数",
-            ["hq"] = "hq",
-            ["materia"] = "マテリア数",
-            ["pdamage"] = "物理基本性能",
-            ["mdamage"] = "魔法基本性能",
-            ["delay"] = "攻撃間隔",
-            ["autoattack"] = "物理オートアタック",
-            ["blockrate"] = "ブロック発動力",
-            ["blockstrength"] = "ブロック性能",
-            ["defense"] = "物理防御力",
-            ["mdefense"] = "魔法防御力",
-            ["str"] = "STR",
-            ["dex"] = "DEX",
-            ["vit"] = "VIT",
-            ["int"] = "INT",
-            ["mnd"] = "MND",
-            ["craftsmanship"] = "作業精度",
-            ["control"] = "加工精度",
-            ["gathering"] = "獲得力",
-            ["perception"] = "技術力",
-            ["tab"] = "block"
-        },
+        ["id"] = 271,
+        ["spiritbond"] = 275,
+        ["category"] = 263,
+        ["lv"] = 265,
+        ["ilv"] = 267,
+        ["stack"] = 269,
+        ["hq"] = 277,
+        ["materia"] = 279,
+        ["pdamage"] = 293,
+        ["mdamage"] = 295,
+        ["delay"] = 297,
+        ["autoattack"] = 299,
+        ["blockrate"] = 301,
+        ["blockstrength"] = 303,
+        ["defense"] = 305,
+        ["mdefense"] = 307,
+        ["str"] = 309,
+        ["dex"] = 311,
+        ["vit"] = 313,
+        ["int"] = 315,
+        ["mnd"] = 317,
+        ["craftsmanship"] = 321,
+        ["control"] = 323,
+        ["gathering"] = 325,
+        ["perception"] = 327,
+        ["tab"] = 273
     };
 
-    public static readonly Dictionary<ClientLanguage, Dictionary<string, string>> OrderSet = new()
+    public static readonly Dictionary<string, uint> OrderSet = new()
     {
-        [ClientLanguage.English] = new()
-        {
-            ["asc"] = "asc",
-            ["des"] = "des"
-        },
-        [ClientLanguage.German] = new()
-        {
-            ["asc"] = "aufs",
-            ["des"] = "abs"
-        },
-        [ClientLanguage.French] = new()
-        {
-            ["asc"] = "croissant",
-            ["des"] = "décroissant"
-        },
-        [ClientLanguage.Japanese] = new()
-        {
-            ["asc"] = "昇順",
-            ["des"] = "降順"
-        },
+        ["asc"] = 281,
+        ["des"] = 283
     };
 
-    public static string GetLocalizedString(Dictionary<ClientLanguage, Dictionary<string, string>> dict, string key, string fallback = "")
-    {
-        if (string.IsNullOrEmpty(key) || !dict.ContainsKey(Service.ClientState.ClientLanguage))
-            return fallback;
+    public static string GetLocalizedParam(uint rowId, string fallback = "")
+        => StringUtils.GetSheetText<TextCommandParam>(rowId, "Param") ?? fallback;
 
-        dict[Service.ClientState.ClientLanguage].TryGetValue(key, out var result);
-        return result ?? fallback;
-    }
+    public static string GetLocalizedParam(Dictionary<string, uint> dict, string key, string fallback = "")
+        => dict.TryGetValue(key, out var value) ? GetLocalizedParam(value, fallback) : fallback;
 
     public record SortingRule
     {
@@ -301,13 +126,13 @@ public unsafe class AutoSorter : Tweak
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
-            preview = GetLocalizedString(CategorySet, entry.Category, "Category...");
+            preview = GetLocalizedParam(CategorySet, entry.Category, "Category...");
 
             if (ImGui.BeginCombo(key + "Category", preview))
             {
-                foreach (var kv in CategorySet[lang])
+                foreach (var kv in CategorySet)
                 {
-                    if (ImGui.Selectable(kv.Value, entry.Category == kv.Key))
+                    if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Category == kv.Key))
                     {
                         entry.Category = kv.Key;
                         SaveConfig();
@@ -323,13 +148,13 @@ public unsafe class AutoSorter : Tweak
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
-            preview = GetLocalizedString(ConditionSet, entry.Condition, "Condition...");
+            preview = GetLocalizedParam(ConditionSet, entry.Condition, "Condition...");
 
             if (ImGui.BeginCombo(key + "Condition", preview))
             {
-                foreach (var kv in ConditionSet[lang])
+                foreach (var kv in ConditionSet)
                 {
-                    if (ImGui.Selectable(kv.Value, entry.Condition == kv.Key))
+                    if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Condition == kv.Key))
                     {
                         entry.Condition = kv.Key;
                         SaveConfig();
@@ -345,13 +170,13 @@ public unsafe class AutoSorter : Tweak
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
-            preview = GetLocalizedString(OrderSet, entry.Order, "Order...");
+            preview = GetLocalizedParam(OrderSet, entry.Order, "Order...");
 
             if (ImGui.BeginCombo(key + "Order", preview))
             {
-                foreach (var kv in OrderSet[lang])
+                foreach (var kv in OrderSet)
                 {
-                    if (ImGui.Selectable(kv.Value, entry.Order == kv.Key))
+                    if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Order == kv.Key))
                     {
                         entry.Order = kv.Key;
                         SaveConfig();
@@ -656,7 +481,7 @@ public unsafe class AutoSorter : Tweak
 
         IsBusy = true;
 
-        Task.Run(() =>
+        try
         {
             var group = queue.Dequeue();
 
@@ -693,14 +518,20 @@ public unsafe class AutoSorter : Tweak
             }
 
             ExecuteSort(category);
-        }).Wait();
-
-        IsBusy = false;
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during sorting");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private void ClearConditions(string category)
     {
-        category = GetLocalizedString(CategorySet, category);
+        category = GetLocalizedParam(CategorySet, category);
 
         if (string.IsNullOrEmpty(category))
         {
@@ -715,9 +546,9 @@ public unsafe class AutoSorter : Tweak
 
     private void DefineCondition(string category, string condition, string order)
     {
-        category = GetLocalizedString(CategorySet, category);
-        condition = GetLocalizedString(ConditionSet, condition);
-        order = GetLocalizedString(OrderSet, order);
+        category = GetLocalizedParam(CategorySet, category);
+        condition = GetLocalizedParam(ConditionSet, condition);
+        order = GetLocalizedParam(OrderSet, order);
 
         if (string.IsNullOrEmpty(category))
         {
@@ -744,7 +575,7 @@ public unsafe class AutoSorter : Tweak
 
     private void ExecuteSort(string category)
     {
-        category = GetLocalizedString(CategorySet, category);
+        category = GetLocalizedParam(CategorySet, category);
 
         if (string.IsNullOrEmpty(category))
         {
