@@ -1,5 +1,15 @@
 # Changelog
 
+### [Unreleased]
+
+### Auto Sorter
+
+- **Added:** To prevent the right saddlebag sorter from running and returning an error a detection was added whether the player is subscribed to the Companion Premium Service.
+- **Added:** To prevent the retainer sorter from running and returning an error a detection was added whether the retainer window is open.
+- **Changed:** A queue system was implemented, so the game has time between each frame to complete its sorting.
+- **Fixed:** The armoury category and its subcategories will now wait for completion of the in-games sorting mechanism before running.
+- **Fixed:** A copy-paste mistake has been corrected for the HQ condition for the Japanese client.
+
 ### [0.9.1] (2023-01-26)
 
 ### Auto Sorter
@@ -425,7 +435,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
 [0.9.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.8.2...v0.9.0
 [0.8.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.8.1...v0.8.2
