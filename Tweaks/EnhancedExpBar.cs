@@ -221,12 +221,15 @@ public unsafe class EnhancedExpBar : Tweak
             if (PvPSeriesLevelSheet == null || pvpProfile->SeriesCurrentRank > PvPSeriesLevelSheet.Count() - 1)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
+            var claimedRank = pvpProfile->GetSeriesClaimedRank();
+            var currentRank = pvpProfile->GetSeriesCurrentRank();
+
             job = Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation;
             levelLabel = (StringUtils.GetAddonText(14860) ?? "Series Level").Trim().Replace(":", "");
-            var rank = pvpProfile->SeriesClaimedRank > 30 ? pvpProfile->SeriesCurrentRank : pvpProfile->SeriesClaimedRank; // 30 = Series Max Rank
+            var rank = currentRank > 30 ? 30 : currentRank; // 30 = Series Max Rank, hopefully in the future too
             level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-            var star = pvpProfile->SeriesClaimedRank > pvpProfile->SeriesCurrentRank ? '*' : ' ';
-            requiredExperience = PvPSeriesLevelSheet.GetRow(pvpProfile->SeriesCurrentRank)!.Unknown0;
+            var star = currentRank > claimedRank ? '*' : ' ';
+            requiredExperience = PvPSeriesLevelSheet.GetRow(currentRank)!.Unknown0;
 
             leftText->SetText($"{job}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
 
