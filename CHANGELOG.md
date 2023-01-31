@@ -1,5 +1,11 @@
 # Changelog
 
+### [Unreleased]
+
+### Enhanced Experience Bar
+
+- **Fixed:** In Update 6.3 the current rank and claimed rank were swapped. Updated the code to reflect the change.
+
 ### [0.9.3] (2023-01-31)
 
 ### Auto Sorter
