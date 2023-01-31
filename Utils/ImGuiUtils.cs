@@ -107,18 +107,47 @@ public static class ImGuiUtils
         ImGui.PopStyleColor();
     }
 
-    public static bool IconButton(FontAwesomeIcon icon, Vector2 size = default)
+    public static unsafe bool ButtonDisabled(string label, Vector2 size = default)
     {
-        ImGui.PushFont(UiBuilder.IconFont);
-        var ret = ImGui.Button(icon.ToIconString(), size);
-        ImGui.PopFont();
+        ImGui.PushStyleColor(ImGuiCol.Text, 0xff999999);
+
+        var frameBg = ImGui.GetStyleColorVec4(ImGuiCol.FrameBg);
+        if (frameBg != null) ImGui.PushStyleColor(ImGuiCol.Button, *frameBg);
+
+        var frameBgHovered = ImGui.GetStyleColorVec4(ImGuiCol.FrameBgHovered);
+        if (frameBgHovered != null) ImGui.PushStyleColor(ImGuiCol.ButtonHovered, *frameBgHovered);
+
+        var frameBgActive = ImGui.GetStyleColorVec4(ImGuiCol.FrameBgActive);
+        if (frameBgActive != null) ImGui.PushStyleColor(ImGuiCol.ButtonActive, *frameBgActive);
+
+        var ret = ImGui.Button(label, size);
+
+        if (frameBgActive != null) ImGui.PopStyleColor();
+        if (frameBgHovered != null) ImGui.PopStyleColor();
+        if (frameBg != null) ImGui.PopStyleColor();
+        ImGui.PopStyleColor();
+
         return ret;
     }
+
+    public static bool IconButton(FontAwesomeIcon icon, Vector2 size = default)
+        => IconButton(icon, "", size);
 
     public static bool IconButton(FontAwesomeIcon icon, string key, Vector2 size = default)
     {
         ImGui.PushFont(UiBuilder.IconFont);
         var ret = ImGui.Button(icon.ToIconString() + key, size);
+        ImGui.PopFont();
+        return ret;
+    }
+
+    public static bool IconButtonDisabled(FontAwesomeIcon icon, Vector2 size = default)
+        => IconButtonDisabled(icon, "", size);
+
+    public static bool IconButtonDisabled(FontAwesomeIcon icon, string key, Vector2 size = default)
+    {
+        ImGui.PushFont(UiBuilder.IconFont);
+        var ret = ButtonDisabled(icon.ToIconString() + key, size);
         ImGui.PopFont();
         return ret;
     }
