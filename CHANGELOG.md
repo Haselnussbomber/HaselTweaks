@@ -1,5 +1,15 @@
 # Changelog
 
+### [Unreleased]
+
+### Auto Sorter
+
+- **Added:** To prevent accidentally deleting a rule, you must now hold down the shift key to make the button clickable.
+- **Changed:** Run rule buttons are now disabled when the Tweak is disabled or rules are queued.
+- **Changed:** When a rule is disabled (for example, when the needed window isn't open), the Run button is disabled instead of displaying an error.
+- **Changed:** All in-game armoury sorters are now checked for readiness before sorting.
+- **Fixed:** Disabling the tweak now clears the queue.
+
 ### [0.9.2] (2023-01-30)
 
 ### Auto Sorter
