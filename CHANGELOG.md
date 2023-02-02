@@ -1,6 +1,6 @@
 # Changelog
 
-### [Unreleased]
+### [0.9.4] (2023-02-02)
 
 ### Auto Sorter
 
@@ -458,6 +458,7 @@ Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
 [Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[0.9.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.0...v0.9.1
