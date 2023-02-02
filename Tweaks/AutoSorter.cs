@@ -611,6 +611,12 @@ public unsafe class AutoSorter : Tweak
                 return;
             }
 
+            if (RaptureShellModule.Instance->IsTextCommandUnavailable)
+            {
+                Warning("Text commands are unavailable, skipping.");
+                return;
+            }
+
             if ((key is "saddlebag" or "rightsaddlebag") && !InventoryBuddyObserver.IsOpen)
             {
                 Warning("Sorting for saddlebag/rightsaddlebag only works when the window is open, skipping.");
