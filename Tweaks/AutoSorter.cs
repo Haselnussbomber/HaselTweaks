@@ -116,6 +116,7 @@ public unsafe class AutoSorter : Tweak
 
     public record SortingRule
     {
+        public bool Enabled = true;
         public string? Category = null;
         public string? Condition = null;
         public string? Order = null;
@@ -171,12 +172,13 @@ public unsafe class AutoSorter : Tweak
     public override bool HasCustomConfig => true;
     public override void DrawCustomConfig()
     {
-        if (!ImGui.BeginTable("##HaselTweaks_AutoSortSettings", 4, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.NoPadOuterX))
+        if (!ImGui.BeginTable("##HaselTweaks_AutoSortSettings", 5, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.NoPadOuterX))
         {
             ImGui.PopStyleVar();
             return;
         }
 
+        ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed);
         ImGui.TableSetupColumn("Category", ImGuiTableColumnFlags.WidthStretch);
         ImGui.TableSetupColumn("Condition", ImGuiTableColumnFlags.WidthStretch);
         ImGui.TableSetupColumn("Order", ImGuiTableColumnFlags.WidthStretch);
@@ -196,6 +198,13 @@ public unsafe class AutoSorter : Tweak
             var key = $"##HaselTweaks_AutoSortSettings_Setting[{i}]";
 
             ImGui.TableNextRow();
+
+            ImGui.TableNextColumn();
+            ImGui.Checkbox(key + "_Enabled", ref entry.Enabled);
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip("Rule is " + (entry.Enabled ? "enabled" : "disabled"));
+            }
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
@@ -513,7 +522,7 @@ public unsafe class AutoSorter : Tweak
     private void OnOpenArmoury(AddonObserver sender, AtkUnitBase* unitBase)
     {
         var groups = Config.Settings
-            .FindAll(entry => entry.Category is "armoury" || ArmourySubcategories.Any(subcat => subcat == entry.Category))
+            .FindAll(entry => entry.Enabled && (entry.Category is "armoury" || ArmourySubcategories.Any(subcat => subcat == entry.Category)))
             .GroupBy(entry => entry.Category!);
 
         foreach (var group in groups)
@@ -525,7 +534,7 @@ public unsafe class AutoSorter : Tweak
     private void OnOpenInventory(AddonObserver sender, AtkUnitBase* unitBase)
     {
         var groups = Config.Settings
-            .FindAll(entry => entry.Category is "inventory")
+            .FindAll(entry => entry.Enabled && entry.Category is "inventory")
             .GroupBy(entry => entry.Category!);
 
         foreach (var group in groups)
@@ -537,7 +546,7 @@ public unsafe class AutoSorter : Tweak
     private void OnOpenInventoryBuddy(AddonObserver sender, AtkUnitBase* unitBase)
     {
         var groups = Config.Settings
-            .FindAll(entry => entry.Category is "saddlebag" or "rightsaddlebag")
+            .FindAll(entry => entry.Enabled && entry.Category is "saddlebag" or "rightsaddlebag")
             .GroupBy(entry => entry.Category!);
 
         foreach (var group in groups)
@@ -549,7 +558,7 @@ public unsafe class AutoSorter : Tweak
     private void OnOpenRetainer(AddonObserver sender, AtkUnitBase* unitBase)
     {
         var groups = Config.Settings
-            .FindAll(entry => entry.Category is "retainer")
+            .FindAll(entry => entry.Enabled && entry.Category is "retainer")
             .GroupBy(entry => entry.Category!);
 
         foreach (var group in groups)
