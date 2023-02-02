@@ -300,7 +300,7 @@ public unsafe class AutoSorter : Tweak
 
             ImGui.SameLine();
 
-            if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && ImGui.IsKeyDown(ImGuiKey.LeftShift))
+            if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
             {
                 if (ImGuiUtils.IconButton(FontAwesomeIcon.Trash, key + "Delete"))
                 {
