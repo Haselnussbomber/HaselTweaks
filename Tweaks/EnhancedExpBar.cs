@@ -142,21 +142,14 @@ public unsafe class EnhancedExpBar : Tweak
         var addon = GetAddon<AddonExp>("_Exp");
         if (addon == null) return;
 
-        var framework = Framework.Instance();
-        if (framework == null) return;
-
-        var uiModule = framework->GetUiModule();
-        if (uiModule == null) return;
-
-        var raptureAtkModule = uiModule->GetRaptureAtkModule();
-        if (raptureAtkModule == null) return;
+        var atkArrayDataHolder = Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.AtkArrayDataHolder;
 
         if (useDetour)
         {
             OnRequestedUpdateDetour(
                 addon,
-                raptureAtkModule->AtkModule.AtkArrayDataHolder.NumberArrays,
-                raptureAtkModule->AtkModule.AtkArrayDataHolder.StringArrays
+                atkArrayDataHolder.NumberArrays,
+                atkArrayDataHolder.StringArrays
             );
         }
         else
@@ -166,8 +159,8 @@ public unsafe class EnhancedExpBar : Tweak
             addon->RequiredExp--;
 
             addon->OnUpdate(
-                raptureAtkModule->AtkModule.AtkArrayDataHolder.NumberArrays,
-                raptureAtkModule->AtkModule.AtkArrayDataHolder.StringArrays
+                atkArrayDataHolder.NumberArrays,
+                atkArrayDataHolder.StringArrays
             );
         }
     }
