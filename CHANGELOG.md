@@ -2,6 +2,11 @@
 
 ### [Unreleased]
 
+### Auto Sorter
+
+- **Fixed:** When text commands are unavailable, for example when placing housing furniture, sorting operations will be skipped.
+- **Fixed:** Delete button now also works with the right shift key.
+
 ### Enhanced Experience Bar
 
 - **Fixed:** In Update 6.3 the current rank and claimed rank were swapped. Updated the code to reflect the change.
