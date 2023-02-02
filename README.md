@@ -82,7 +82,9 @@ Always opens the "Grand Company Delivery Missions" window on the "Expert Deliver
 
 ### Forced Cutscene Music
 
-Auto-unmutes background music for cutscenes started by quests? I'm not sure. But it works most of the time when I want it to. :D
+Auto-unmutes background music for most cutscenes.
+
+I've added this since `/bgm` command doesn't work during cutscenes anymore and I usually play with background music muted.
 
 ### Hide MSQ Complete
 

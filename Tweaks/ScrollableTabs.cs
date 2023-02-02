@@ -87,16 +87,16 @@ public unsafe class ScrollableTabs : Tweak
 
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
-        if (wheelState == 0) return;
+        if (wheelState == 0)
+            return;
 
-        var raptureAtkModule = RaptureAtkModule.Instance;
-        if (raptureAtkModule == null) goto ResetWheelState;
-
-        var hoveredUnitBase = raptureAtkModule->IntersectingAddon;
-        if (hoveredUnitBase == null) goto ResetWheelState;
+        var hoveredUnitBase = RaptureAtkModule.Instance->IntersectingAddon;
+        if (hoveredUnitBase == null)
+            goto ResetWheelState;
 
         var name = Marshal.PtrToStringAnsi((IntPtr)hoveredUnitBase->Name);
-        if (string.IsNullOrEmpty(name)) goto ResetWheelState;
+        if (string.IsNullOrEmpty(name))
+            goto ResetWheelState;
 
         // parent lookup
         switch (name)
@@ -409,8 +409,8 @@ public unsafe class ScrollableTabs : Tweak
     private void UpdateFateProgress(AddonFateProgress* addon)
     {
         var tabIndex = GetTabIndex(addon->TabIndex, addon->NumTabs);
-        if (addon->TabIndex == tabIndex) return;
-        if (!addon->Loaded) return;
+        if (!addon->Loaded || addon->TabIndex == tabIndex)
+            return;
 
         // fake event, so it can call SetEventIsHandled
         var atkEvent = Marshal.AllocHGlobal(30);
@@ -420,8 +420,7 @@ public unsafe class ScrollableTabs : Tweak
 
     private void UpdateFieldNotes(AddonMYCWarResultNotebook* addon)
     {
-        var raptureAtkModule = RaptureAtkModule.Instance;
-        if (raptureAtkModule != null && raptureAtkModule->IntersectingCollisionNode == addon->DescriptionCollisionNode)
+        if (RaptureAtkModule.Instance->IntersectingCollisionNode == addon->DescriptionCollisionNode)
             return;
 
         var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
@@ -476,7 +475,8 @@ public unsafe class ScrollableTabs : Tweak
     private void UpdateMJIMountMinion(AddonMJIMinionNoteBook* addon)
     {
         var agent = GetAgent<AgentMJIMinionNoteBook>(AgentId.MJIMinionNoteBook);
-        if (agent == null) return;
+        if (agent == null)
+            return;
 
         if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Normal)
         {

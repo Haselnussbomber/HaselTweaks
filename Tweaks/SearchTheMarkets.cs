@@ -66,9 +66,7 @@ public unsafe class SearchTheMarkets : Tweak
     private void ContextMenu_OnOpenGameObjectContextMenu(GameObjectContextMenuOpenArgs args)
     {
         if (args.ParentAddonName is not ("RecipeNote" or "RecipeMaterialList" or "RecipeTree"))
-        {
             return;
-        }
 
         var itemId = 0u;
 
@@ -109,9 +107,7 @@ public unsafe class SearchTheMarkets : Tweak
 
         var itemName = Item!.Name.ToString();
         if (itemName.Length > 40)
-        {
             itemName = itemName[..40];
-        }
 
         var byteArray = Encoding.UTF8.GetBytes(itemName);
         fixed (byte* ptr = byteArray)
