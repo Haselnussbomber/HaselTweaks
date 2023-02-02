@@ -3,6 +3,7 @@ using FFXIVClientStructs.FFXIV.Client.System.Framework;
 
 namespace HaselTweaks.Structs;
 
+// ctor "48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 41 56 41 57 48 83 EC 20 45 33 FF 48 89 51 10 48 8D 05 ?? ?? ?? ?? 4C 89 79 08 48 8B F1"
 [StructLayout(LayoutKind.Explicit, Size = 0xD8)]
 public unsafe partial struct ItemOrderModule
 {
@@ -13,10 +14,8 @@ public unsafe partial struct ItemOrderModule
     [FieldOffset(0x3D)] public bool IsEventPending;
 
     [FieldOffset(0x40)] public ItemOrderModuleSorter* InventorySorter;
-
-    [FieldOffset(0x48), FixedSizeArray<Pointer<ItemOrderModuleSorter>>(12)]
-    public fixed byte ArmourySorter[12 * 8];
-
+    [FixedSizeArray<Pointer<ItemOrderModuleSorter>>(12)]
+    [FieldOffset(0x48)] public fixed byte ArmourySorter[12 * 8];
     [FieldOffset(0x48)] public ItemOrderModuleSorter* ArmouryMainHandSorter;
     [FieldOffset(0x50)] public ItemOrderModuleSorter* ArmouryHeadSorter;
     [FieldOffset(0x58)] public ItemOrderModuleSorter* ArmouryBodySorter;
@@ -39,5 +38,6 @@ public unsafe partial struct ItemOrderModule
     {
         [FieldOffset(0)] public InventoryType InventoryType;
         [FieldOffset(0x38)] public int Status;
+        [FieldOffset(0x58)] public nint PreviousOrder;
     }
 }
