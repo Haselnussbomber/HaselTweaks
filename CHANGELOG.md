@@ -4,8 +4,9 @@
 
 ### Auto Sorter
 
+- **Added:** It's now possible to disable rules.
 - **Fixed:** When text commands are unavailable, for example when placing housing furniture, sorting operations will be skipped.
-- **Fixed:** Delete button now also works with the right shift key.
+- **Fixed:** The delete button now also work with the right shift key.
 
 ### Enhanced Experience Bar
 
