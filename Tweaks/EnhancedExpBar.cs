@@ -2,7 +2,7 @@ using System.Linq;
 using Dalamud.Game.Text;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
-using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
@@ -106,11 +106,11 @@ public unsafe class EnhancedExpBar : Tweak
             LastSeriesXp = pvpProfile->SeriesExperience;
         }
 
-        var islandState = MJIManager.Instance();
-        if (islandState != null && LastIslandExperience != islandState->CurrentXP)
+        var mjiManager = MJIManager.Instance();
+        if (mjiManager != null && LastIslandExperience != mjiManager->IslandState.CurrentXP)
         {
             shouldUpdate = true;
-            LastIslandExperience = islandState->CurrentXP;
+            LastIslandExperience = mjiManager->IslandState.CurrentXP;
         }
 
         if (shouldUpdate)
@@ -247,20 +247,20 @@ public unsafe class EnhancedExpBar : Tweak
 
         SanctuaryBar:
         {
-            var islandState = MJIManager.Instance();
-            if (islandState == null)
+            var mjiManager = MJIManager.Instance();
+            if (mjiManager == null)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             var MJIRankSheet = Service.Data.GetExcelSheet<MJIRank>();
-            if (MJIRankSheet == null || islandState->CurrentRank > MJIRankSheet.Count() - 1)
+            if (MJIRankSheet == null || mjiManager->IslandState.CurrentRank > MJIRankSheet.Count() - 1)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             job = Config.SanctuaryBarHideJob ? "" : Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation + "  ";
             levelLabel = (StringUtils.GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
-            level = islandState->CurrentRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-            requiredExperience = MJIRankSheet.GetRow(islandState->CurrentRank)!.ExpToNext;
+            level = mjiManager->IslandState.CurrentRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
+            requiredExperience = MJIRankSheet.GetRow(mjiManager->IslandState.CurrentRank)!.ExpToNext;
 
-            var expStr = islandState->CurrentXP.ToString();
+            var expStr = mjiManager->IslandState.CurrentXP.ToString();
             var reqExpStr = requiredExperience.ToString();
             if (requiredExperience == 0)
             {
@@ -272,7 +272,7 @@ public unsafe class EnhancedExpBar : Tweak
             addon->GaugeBarNode->SetSecondaryValue(0); // rested experience bar
 
             // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-            addon->GaugeBarNode->SetValue((uint)(islandState->CurrentXP / (float)requiredExperience * 10000), 0, false);
+            addon->GaugeBarNode->SetValue((uint)(mjiManager->IslandState.CurrentXP / (float)requiredExperience * 10000), 0, false);
 
             if (!Config.DisableColorChanges)
             {
