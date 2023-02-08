@@ -93,10 +93,8 @@ internal partial class Configuration
                     continue;
 
                 // re-enable renamed tweaks
-                if (renamedTweaks.TryGetValue(tweakName, out var value))
+                if (renamedTweaks.TryGetValue(tweakName, out var newTweakName))
                 {
-                    var newTweakName = value;
-
                     PluginLog.Log($"Renamed Tweak: {tweakName} => {newTweakName}");
 
                     // copy renamed tweak config
