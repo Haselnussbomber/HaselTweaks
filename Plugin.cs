@@ -17,9 +17,10 @@ public class Plugin : IDalamudPlugin
     public string Name => "HaselTweaks";
 
     internal static readonly WindowSystem WindowSystem = new("HaselTweaks");
-    private readonly PluginWindow PluginWindow;
+    internal static List<Tweak> Tweaks = new();
+    internal static Configuration Config = null!;
 
-    internal List<Tweak> Tweaks = new();
+    private readonly PluginWindow PluginWindow;
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
@@ -45,12 +46,12 @@ public class Plugin : IDalamudPlugin
             }
         }
 
-        Configuration.Load(Tweaks.Select(t => t.InternalName).ToArray(), gameVersion);
+        Config = Configuration.Load(Tweaks.Select(t => t.InternalName).ToArray(), gameVersion);
 
         Interop.Resolver.GetInstance.SetupSearchSpace(Service.SigScanner.SearchBase);
         Interop.Resolver.GetInstance.Resolve();
 
-        PluginWindow = new PluginWindow(this);
+        PluginWindow = new PluginWindow();
         WindowSystem.AddWindow(PluginWindow);
 
         Service.PluginInterface.UiBuilder.Draw += OnDraw;
@@ -78,7 +79,7 @@ public class Plugin : IDalamudPlugin
                 PluginLog.Error(ex, $"Failed setting up tweak '{tweak.InternalName}'.");
             }
 
-            if (Configuration.Instance.EnabledTweaks.Contains(tweak.InternalName))
+            if (Config.EnabledTweaks.Contains(tweak.InternalName))
             {
                 try
                 {
@@ -161,7 +162,6 @@ public class Plugin : IDalamudPlugin
 
         WindowSystem.RemoveAllWindows();
 
-        Configuration.Save();
-        ((IDisposable?)Configuration.Instance)?.Dispose();
+        Config.Save();
     }
 }

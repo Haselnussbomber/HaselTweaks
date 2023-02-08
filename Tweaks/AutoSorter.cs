@@ -16,7 +16,7 @@ public unsafe class AutoSorter : Tweak
 {
     public override string Name => "Auto Sorter";
     public override string Description => "Sorts items inside various containers when they are opened.";
-    public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.AutoSorter;
+    public static Configuration Config => Plugin.Config.Tweaks.AutoSorter;
 
     public static readonly Dictionary<string, uint> CategorySet = new()
     {
@@ -168,7 +168,6 @@ public unsafe class AutoSorter : Tweak
         public List<SortingRule> Settings = new();
     }
 
-    private static void SaveConfig() => HaselTweaks.Configuration.Save();
     public override bool HasCustomConfig => true;
     public override void DrawCustomConfig()
     {
@@ -218,7 +217,7 @@ public unsafe class AutoSorter : Tweak
                     if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Category == kv.Key))
                     {
                         entry.Category = kv.Key;
-                        SaveConfig();
+                        Plugin.Config.Save();
                     }
 
                     if (entry.Category == kv.Key)
@@ -240,7 +239,7 @@ public unsafe class AutoSorter : Tweak
                     if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Condition == kv.Key))
                     {
                         entry.Condition = kv.Key;
-                        SaveConfig();
+                        Plugin.Config.Save();
                     }
 
                     if (entry.Condition == kv.Key)
@@ -262,7 +261,7 @@ public unsafe class AutoSorter : Tweak
                     if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Order == kv.Key))
                     {
                         entry.Order = kv.Key;
-                        SaveConfig();
+                        Plugin.Config.Save();
                     }
 
                     if (entry.Order == kv.Key)
@@ -421,7 +420,7 @@ public unsafe class AutoSorter : Tweak
         if (ImGui.Button("Add##HaselTweaks_AutoSortSettings_Add"))
         {
             Config.Settings.Add(new());
-            SaveConfig();
+            Plugin.Config.Save();
         }
 
         if (Enabled)
@@ -457,7 +456,7 @@ public unsafe class AutoSorter : Tweak
             var removedItem = Config.Settings[entryToMoveUp];
             Config.Settings.RemoveAt(entryToMoveUp);
             Config.Settings.Insert(entryToMoveUp - 1, removedItem);
-            SaveConfig();
+            Plugin.Config.Save();
         }
 
         if (entryToMoveDown != -1)
@@ -465,13 +464,13 @@ public unsafe class AutoSorter : Tweak
             var removedItem = Config.Settings[entryToMoveDown];
             Config.Settings.RemoveAt(entryToMoveDown);
             Config.Settings.Insert(entryToMoveDown + 1, removedItem);
-            SaveConfig();
+            Plugin.Config.Save();
         }
 
         if (entryToRemove != -1)
         {
             Config.Settings.RemoveAt(entryToRemove);
-            SaveConfig();
+            Plugin.Config.Save();
         }
 
         if (entryToExecute != -1)

@@ -23,7 +23,7 @@ public unsafe class EnhancedExpBar : Tweak
     public override bool HasIncompatibilityWarning => Service.PluginInterface.PluginInternalNames.Contains("SimpleTweaksPlugin");
     public override string IncompatibilityWarning => "In order for this tweak to work properly, please make sure \"Show Experience Percentage\" is disabled in Simple Tweaks.";
 
-    public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.EnhancedExpBar;
+    public static Configuration Config => Plugin.Config.Tweaks.EnhancedExpBar;
 
     public enum MaxLevelOverrideType
     {

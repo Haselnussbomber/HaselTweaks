@@ -9,7 +9,7 @@ public unsafe class CustomChatTimestamp : Tweak
 {
     public override string Name => "Custom Chat Timestamp";
     public override string Description => "As it says, configurable chat timestamp format.";
-    public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.CustomChatTimestamp;
+    public static Configuration Config => Plugin.Config.Tweaks.CustomChatTimestamp;
 
     public class Configuration
     {

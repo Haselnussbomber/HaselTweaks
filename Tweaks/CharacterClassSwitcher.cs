@@ -16,7 +16,7 @@ public unsafe class CharacterClassSwitcher : Tweak
     public override bool HasIncompatibilityWarning => Service.PluginInterface.PluginInternalNames.Contains("SimpleTweaksPlugin");
     public override string IncompatibilityWarning => "In order for this tweak to work properly, please make sure \"Character Window Job Switcher\" is disabled in Simple Tweaks.";
 
-    public static Configuration Config => HaselTweaks.Configuration.Instance.Tweaks.CharacterClassSwitcher;
+    public static Configuration Config => Plugin.Config.Tweaks.CharacterClassSwitcher;
 
     public class Configuration
     {

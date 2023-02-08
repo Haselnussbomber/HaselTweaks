@@ -4,7 +4,6 @@ namespace HaselTweaks;
 
 public interface IConfigDrawData
 {
-    public Plugin Plugin { get; init; }
     public Tweak Tweak { get; init; }
 
     public object Config { get; init; }

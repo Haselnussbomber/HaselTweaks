@@ -25,7 +25,7 @@ public class AetherCurrentHelperWindow : Window
 
     private readonly Vector4 TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f, 1);
 
-    public static AetherCurrentHelper.Configuration Config => Configuration.Instance.Tweaks.AetherCurrentHelper;
+    public static AetherCurrentHelper.Configuration Config => Plugin.Config.Tweaks.AetherCurrentHelper;
 
     public AetherCurrentHelperWindow() : base("[HaselTweaks] Aether Current Helper")
     {

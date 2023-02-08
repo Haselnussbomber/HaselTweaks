@@ -18,14 +18,11 @@ public class PluginWindow : Window
     private const uint SidebarWidth = 250;
     private const uint ConfigWidth = SidebarWidth * 2;
 
-    private Plugin Plugin { get; }
     private string SelectedTweak = string.Empty;
     private readonly GameFontHandle FontAxis36;
 
-    public PluginWindow(Plugin plugin) : base("HaselTweaks")
+    public PluginWindow() : base("HaselTweaks")
     {
-        Plugin = plugin;
-
         var width = SidebarWidth + ConfigWidth + ImGui.GetStyle().ItemSpacing.X + ImGui.GetStyle().FramePadding.X * 2;
 
         Size = new Vector2(width, 600);
@@ -62,8 +59,6 @@ public class PluginWindow : Window
 
     private void DrawSidebar()
     {
-        var Config = Configuration.Instance;
-
         if (!ImGui.BeginChild("##HaselTweaks_Sidebar", new Vector2(SidebarWidth, -1), true))
         {
             ImGui.EndChild();
@@ -130,20 +125,20 @@ public class PluginWindow : Window
                     {
                         tweak.DisableInternal();
 
-                        if (Config.EnabledTweaks.Contains(tweak.InternalName))
+                        if (Plugin.Config.EnabledTweaks.Contains(tweak.InternalName))
                         {
-                            Config.EnabledTweaks.Remove(tweak.InternalName);
-                            Configuration.Save();
+                            Plugin.Config.EnabledTweaks.Remove(tweak.InternalName);
+                            Plugin.Config.Save();
                         }
                     }
                     else
                     {
                         tweak.EnableInternal();
 
-                        if (!Config.EnabledTweaks.Contains(tweak.InternalName))
+                        if (!Plugin.Config.EnabledTweaks.Contains(tweak.InternalName))
                         {
-                            Config.EnabledTweaks.Add(tweak.InternalName);
-                            Configuration.Save();
+                            Plugin.Config.EnabledTweaks.Add(tweak.InternalName);
+                            Plugin.Config.Save();
                         }
                     }
                 }
@@ -182,8 +177,6 @@ public class PluginWindow : Window
 
     private void DrawConfig()
     {
-        var Config = Configuration.Instance;
-
         if (!ImGui.BeginChild("##HaselTweaks_Config", new Vector2(ConfigWidth, -1), true))
         {
             ImGui.EndChild();
@@ -320,7 +313,7 @@ public class PluginWindow : Window
         }
         else
         {
-            var config = Config.Tweaks.GetType().GetProperty(tweak.InternalName)?.GetValue(Config.Tweaks);
+            var config = Plugin.Config.Tweaks.GetType().GetProperty(tweak.InternalName)?.GetValue(Plugin.Config.Tweaks);
             if (config != null)
             {
                 ImGuiUtils.DrawSection("Configuration");
@@ -333,7 +326,6 @@ public class PluginWindow : Window
                     {
                         var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType }))!;
 
-                        data.GetType().GetProperty("Plugin")!.SetValue(data, Plugin);
                         data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
                         data.GetType().GetProperty("Config")!.SetValue(data, config);
                         data.GetType().GetProperty("Field")!.SetValue(data, field);
@@ -362,7 +354,6 @@ public class PluginWindow : Window
                                 var underlyingType = Enum.GetUnderlyingType(enumType);
                                 var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { underlyingType }))!;
 
-                                data.GetType().GetProperty("Plugin")!.SetValue(data, Plugin);
                                 data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
                                 data.GetType().GetProperty("Config")!.SetValue(data, config);
                                 data.GetType().GetProperty("Field")!.SetValue(data, field);
@@ -383,7 +374,6 @@ public class PluginWindow : Window
                             {
                                 var data = new ConfigDrawData<string>()
                                 {
-                                    Plugin = Plugin,
                                     Tweak = tweak,
                                     Config = config,
                                     Field = field,

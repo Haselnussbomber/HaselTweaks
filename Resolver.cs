@@ -124,7 +124,7 @@ public sealed partial class Resolver
 
     private bool ResolveFromCache()
     {
-        var sigCache = Configuration.Instance.SigCache;
+        var sigCache = Plugin.Config.SigCache;
         foreach (Address address in _addresses)
         {
             if (sigCache!.TryGetValue(address.String, out var offset))
@@ -158,7 +158,7 @@ public sealed partial class Resolver
 
         ReadOnlySpan<byte> targetSpan = new ReadOnlySpan<byte>(_targetSpace.ToPointer(), _targetLength)[_textSectionOffset..];
 
-        var sigCache = Configuration.Instance.SigCache;
+        var sigCache = Plugin.Config.SigCache;
         var cacheChanged = false;
 
         for (int location = 0; location < _textSectionSize; location++)
@@ -223,7 +223,7 @@ public sealed partial class Resolver
         outLoop:;
 
         if (cacheChanged)
-            Configuration.Save();
+            Plugin.Config.Save();
 
         _hasResolved = true;
     }

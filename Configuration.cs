@@ -37,15 +37,10 @@ public class TweakConfigs
     public AetherCurrentHelper.Configuration AetherCurrentHelper { get; init; } = new();
 }
 
-internal partial class Configuration : IDisposable
+internal partial class Configuration
 {
-    public static Configuration Instance { get; private set; } = null!;
-
     internal static Configuration Load(string[] tweakNames, string? gameVersion)
     {
-        if (Instance != null)
-            return Instance;
-
         var configPath = Service.PluginInterface.ConfigFile.FullName;
         JObject? config = null;
 
@@ -53,7 +48,7 @@ internal partial class Configuration : IDisposable
         {
             var jsonData = File.Exists(configPath) ? File.ReadAllText(configPath) : null;
             if (string.IsNullOrEmpty(jsonData))
-                return Instance = new();
+                return new();
 
             config = JObject.Parse(jsonData);
         }
@@ -70,7 +65,7 @@ internal partial class Configuration : IDisposable
         }
 
         if (config == null)
-            return Instance = new();
+            return new();
 
         try
         {
@@ -79,7 +74,7 @@ internal partial class Configuration : IDisposable
             var tweakConfigs = (JObject?)config[nameof(Tweaks)];
 
             if (version == 0 || enabledTweaks == null || tweakConfigs == null)
-                return Instance = new();
+                return new();
 
             var renamedTweaks = new Dictionary<string, string>()
             {
@@ -93,12 +88,14 @@ internal partial class Configuration : IDisposable
             foreach (var tweakToken in enabledTweaks)
             {
                 var tweakName = (string?)tweakToken;
-                if (string.IsNullOrEmpty(tweakName)) continue;
+
+                if (string.IsNullOrEmpty(tweakName))
+                    continue;
 
                 // re-enable renamed tweaks
-                if (renamedTweaks.ContainsKey(tweakName))
+                if (renamedTweaks.TryGetValue(tweakName, out var value))
                 {
-                    var newTweakName = renamedTweaks[tweakName];
+                    var newTweakName = value;
 
                     PluginLog.Log($"Renamed Tweak: {tweakName} => {newTweakName}");
 
@@ -151,16 +148,11 @@ internal partial class Configuration : IDisposable
             // continue, for now
         }
 
-        return Instance = config.ToObject<Configuration>() ?? new();
+        return config.ToObject<Configuration>() ?? new();
     }
 
-    internal static void Save()
+    internal void Save()
     {
-        Service.PluginInterface.SavePluginConfig(Instance);
-    }
-
-    void IDisposable.Dispose()
-    {
-        Instance = null!;
+        Service.PluginInterface.SavePluginConfig(this);
     }
 }

@@ -4,7 +4,6 @@ namespace HaselTweaks;
 
 internal class ConfigDrawData<T> : IConfigDrawData
 {
-    public Plugin Plugin { get; init; } = null!;
     public Tweak Tweak { get; init; } = null!;
 
     public object Config { get; init; } = null!;
@@ -21,7 +20,7 @@ internal class ConfigDrawData<T> : IConfigDrawData
         set
         {
             Field.SetValue(Config, value);
-            Configuration.Save();
+            Plugin.Config.Save();
             OnChange();
         }
     }
