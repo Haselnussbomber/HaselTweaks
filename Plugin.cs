@@ -16,7 +16,7 @@ public class Plugin : IDalamudPlugin
 {
     public string Name => "HaselTweaks";
 
-    internal static readonly WindowSystem WindowSystem = new("HaselTweaks");
+    internal static WindowSystem WindowSystem = new("HaselTweaks");
     internal static List<Tweak> Tweaks = new();
     internal static Configuration Config = null!;
 
@@ -163,5 +163,12 @@ public class Plugin : IDalamudPlugin
         WindowSystem.RemoveAllWindows();
 
         Config.Save();
+
+        WindowSystem = null!;
+        Tweaks = null!;
+        Config = null!;
+
+        ((IDisposable)Service.StringUtils).Dispose();
+        Service.StringUtils = null!;
     }
 }

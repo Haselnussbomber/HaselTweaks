@@ -9,13 +9,13 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Utils;
 
-public unsafe class StringUtils
+public unsafe class StringUtils : IDisposable
 {
-    private static readonly Dictionary<uint, string> ENpcResidentNameCache = new();
-    private static readonly Dictionary<uint, string> EObjNameCache = new();
-    private static readonly Dictionary<uint, string> QuestCache = new();
-    private static readonly Dictionary<uint, string> AddonCache = new();
-    private static readonly Dictionary<string, Dictionary<uint, Dictionary<string, string>>> SheetCache = new(); // SheetCache[sheetName][rowId][columnName]
+    private static Dictionary<uint, string> ENpcResidentNameCache = new();
+    private static Dictionary<uint, string> EObjNameCache = new();
+    private static Dictionary<uint, string> QuestCache = new();
+    private static Dictionary<uint, string> AddonCache = new();
+    private static Dictionary<string, Dictionary<uint, Dictionary<string, string>>> SheetCache = new(); // SheetCache[sheetName][rowId][columnName]
 
     public StringUtils()
     {
@@ -121,5 +121,14 @@ public unsafe class StringUtils
         }
 
         return column;
+    }
+
+    void IDisposable.Dispose()
+    {
+        ENpcResidentNameCache = null!;
+        EObjNameCache = null!;
+        QuestCache = null!;
+        AddonCache = null!;
+        SheetCache = null!;
     }
 }

@@ -15,7 +15,7 @@ namespace HaselTweaks;
 
 public class Service
 {
-    public static StringUtils StringUtils { get; } = new();
+    public static StringUtils StringUtils { get; internal set; } = new();
 
     [PluginService] public static DalamudPluginInterface PluginInterface { get; private set; } = null!;
     [PluginService] public static SigScanner SigScanner { get; private set; } = null!;
