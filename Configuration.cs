@@ -102,9 +102,9 @@ internal partial class Configuration
                     if (tweakConfig != null)
                     {
                         // adjust $type
-                        var type = (string?)tweakConfig["type"];
+                        var type = (string?)tweakConfig["$type"];
                         if (type != null)
-                            tweakConfig["type"] = type.Replace(tweakName, newTweakName);
+                            tweakConfig["$type"] = type.Replace(tweakName, newTweakName);
 
                         tweakConfigs[newTweakName] = tweakConfig;
                         tweakConfigs.Remove(tweakName);
