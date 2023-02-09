@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using Dalamud.Game;
@@ -20,19 +18,21 @@ public class Plugin : IDalamudPlugin
     internal static List<Tweak> Tweaks = new();
     internal static Configuration Config = null!;
 
-    private readonly PluginWindow PluginWindow;
+    private PluginWindow? PluginWindow;
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
-        var module = Process.GetCurrentProcess().MainModule;
-        if (module == null)
-            throw new Exception("Unable to access process module.");
+        pluginInterface.Create<Service>();
 
-        var gameVersion = File.ReadAllText(Path.Combine(Directory.GetParent(module.FileName)!.FullName, "ffxivgame.ver"));
+        // ensure Framework is set up
+        Service.Framework.RunOnFrameworkThread(Setup);
+    }
+
+    private unsafe void Setup()
+    {
+        var gameVersion = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GameVersion.Base;
         if (string.IsNullOrEmpty(gameVersion))
             throw new Exception("Unable to read game version.");
-
-        pluginInterface.Create<Service>();
 
         foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(Tweak)) && !t.IsAbstract))
         {
@@ -62,12 +62,6 @@ public class Plugin : IDalamudPlugin
             HelpMessage = "Show Window"
         });
 
-        // ensure Framework is set up
-        Service.Framework.RunOnFrameworkThread(SetupTweaks);
-    }
-
-    private void SetupTweaks()
-    {
         foreach (var tweak in Tweaks)
         {
             try
@@ -118,12 +112,12 @@ public class Plugin : IDalamudPlugin
 
     private void OnOpenConfigUi()
     {
-        PluginWindow.Toggle();
+        PluginWindow!.Toggle();
     }
 
     private void OnCommand(string command, string args)
     {
-        PluginWindow.Toggle();
+        PluginWindow!.Toggle();
     }
 
     void IDisposable.Dispose()
@@ -161,11 +155,11 @@ public class Plugin : IDalamudPlugin
         }
 
         WindowSystem.RemoveAllWindows();
+        WindowSystem = null!;
+
+        Tweaks = null!;
 
         Config.Save();
-
-        WindowSystem = null!;
-        Tweaks = null!;
         Config = null!;
 
         ((IDisposable)Service.StringUtils).Dispose();
