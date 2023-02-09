@@ -485,8 +485,6 @@ public unsafe class AutoSorter : Tweak
     private readonly AddonObserver InventoryBuddyObserver = new(() => GetAddon(AgentId.InventoryBuddy));
     private readonly AddonObserver RetainerObserver = new(() => GetAddon(AgentId.Retainer));
 
-    private bool HasPremiumSaddlebag => *(bool*)((nint)PlayerState.Instance() + 0x133); // last checked: Patch 6.31
-
     private readonly Queue<IGrouping<string, SortingRule>> queue = new();
     private bool IsBusy = false;
 
@@ -631,7 +629,7 @@ public unsafe class AutoSorter : Tweak
                 return;
             }
 
-            if (key is "rightsaddlebag" && !HasPremiumSaddlebag)
+            if (key is "rightsaddlebag" && !PlayerState.Instance()->HasPremiumSaddlebag)
             {
                 Warning("Not subscribed to the Companion Premium Service, skipping.");
                 return;
