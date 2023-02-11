@@ -25,6 +25,7 @@ public unsafe class SearchTheMarkets : Tweak
     private AgentRecipeNote* agentRecipeNote;
     private AgentRecipeItemContext* agentRecipeItemContext;
     private AgentItemSearch* agentItemSearch;
+    private AgentChatLog* agentChatLog;
 
     private bool IsInvalidState => Item == null || Item.RowId == 0 || Item.IsUntradable || agentItemSearch->GetAddon() == null;
 
@@ -33,6 +34,7 @@ public unsafe class SearchTheMarkets : Tweak
         agentRecipeNote = GetAgent<AgentRecipeNote>(AgentId.RecipeNote);
         agentRecipeItemContext = GetAgent<AgentRecipeItemContext>(AgentId.RecipeItemContext);
         agentItemSearch = GetAgent<AgentItemSearch>(AgentId.ItemSearch);
+        agentChatLog = GetAgent<AgentChatLog>(AgentId.ChatLog);
 
         var text = new SeString(new TextPayload(Service.ClientState.ClientLanguage switch
         {
@@ -65,19 +67,26 @@ public unsafe class SearchTheMarkets : Tweak
 
     private void ContextMenu_OnOpenGameObjectContextMenu(GameObjectContextMenuOpenArgs args)
     {
-        if (args.ParentAddonName is not ("RecipeNote" or "RecipeMaterialList" or "RecipeTree"))
+        if (args.ParentAddonName is not ("RecipeNote" or "RecipeMaterialList" or "RecipeTree" or "ChatLog"))
             return;
 
         var itemId = 0u;
 
-        if (args.ParentAddonName is "RecipeNote")
+        switch (args.ParentAddonName)
         {
-            itemId = agentRecipeNote->ResultItemId;
-        }
-        else if (args.ParentAddonName is "RecipeMaterialList" or "RecipeTree")
-        {
-            // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
-            itemId = agentRecipeItemContext->ResultItemId;
+            case "RecipeNote":
+                itemId = agentRecipeNote->ResultItemId;
+                break;
+
+            case "RecipeTree":
+            case "RecipeMaterialList":
+                // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
+                itemId = agentRecipeItemContext->ResultItemId;
+                break;
+
+            case "ChatLog":
+                itemId = agentChatLog->ContextItemId;
+                break;
         }
 
         Item = Service.Data.GetExcelSheet<Item>()?.GetRow(itemId);

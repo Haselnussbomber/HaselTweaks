@@ -1,5 +1,11 @@
 # Changelog
 
+### [Unreleased]
+
+### Search the markets
+
+- **Added:** Support for items in Chat.
+
 ### [0.9.5] (2023-02-04)
 
 Fix for game crash caused by FFXIVClientStructs changes.
