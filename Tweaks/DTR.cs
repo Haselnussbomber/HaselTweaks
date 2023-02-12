@@ -126,7 +126,7 @@ public unsafe class DTR : Tweak
         var character = (Character*)addr;
         if (LastOnlineStatus == character->OnlineStatus)
         {
-            if (DtrBusy.Shown)
+            if (LastOnlineStatus != 12 && DtrBusy.Shown)
                 DtrBusy.Shown = false;
             return;
         }
