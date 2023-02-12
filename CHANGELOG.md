@@ -6,6 +6,10 @@
 
 - **Added:** Support for items in Chat.
 
+### DTR
+
+- **Fixed:** Adjusted conditions for Busy status, so it is no longer immediately hidden after being shown.
+
 ### [0.9.5] (2023-02-04)
 
 Fix for game crash caused by FFXIVClientStructs changes.
