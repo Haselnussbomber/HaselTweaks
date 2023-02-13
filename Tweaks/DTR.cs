@@ -95,7 +95,10 @@ public unsafe class DTR : Tweak
             return;
 
         var instanceId = UIState.Instance()->AreaInstance.Instance;
-        if (instanceId <= 0 || instanceId >= 10 || LastInstance == instanceId)
+        if (LastInstance == instanceId)
+            return;
+
+        if (instanceId <= 0 || instanceId >= 10)
         {
             if (DtrInstance.Shown)
                 DtrInstance.Shown = false;

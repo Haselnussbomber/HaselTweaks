@@ -1,6 +1,12 @@
 # Changelog
 
-### [0.9.6]
+### [Unreleased]
+
+### DTR
+
+- **Fixed:** Adjusted conditions for Instance indicator, so it is no longer immediately hidden after being shown.
+
+### [0.9.6] (2023-02-13)
 
 ### Search the markets
 
