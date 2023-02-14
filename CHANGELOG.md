@@ -1,12 +1,18 @@
 # Changelog
 
-### [0.9.7] (2023-02-13)
+## [Unreleased]
+
+### DTR
+
+- **Fixed:** Initial values changed to -1 instead of 0, so it wont show empty DTRs after starting the game/enabling the tweak.
+
+## [0.9.7] (2023-02-13)
 
 ### DTR
 
 - **Fixed:** Adjusted conditions for Instance indicator, so it is no longer immediately hidden after being shown.
 
-### [0.9.6] (2023-02-12)
+## [0.9.6] (2023-02-12)
 
 ### Search the markets
 
@@ -16,11 +22,11 @@
 
 - **Fixed:** Adjusted conditions for Busy status, so it is no longer immediately hidden after being shown.
 
-### [0.9.5] (2023-02-04)
+## [0.9.5] (2023-02-04)
 
 Fix for game crash caused by FFXIVClientStructs changes.
 
-### [0.9.4] (2023-02-02)
+## [0.9.4] (2023-02-02)
 
 ### Auto Sorter
 
@@ -32,7 +38,7 @@ Fix for game crash caused by FFXIVClientStructs changes.
 
 - **Fixed:** In Update 6.3 the current rank and claimed rank were swapped. Updated the code to reflect the change.
 
-### [0.9.3] (2023-01-31)
+## [0.9.3] (2023-01-31)
 
 ### Auto Sorter
 
@@ -42,7 +48,7 @@ Fix for game crash caused by FFXIVClientStructs changes.
 - **Changed:** All in-game armoury sorters are now checked for readiness before sorting.
 - **Fixed:** Disabling the tweak now clears the queue.
 
-### [0.9.2] (2023-01-30)
+## [0.9.2] (2023-01-30)
 
 ### Auto Sorter
 
@@ -52,21 +58,21 @@ Fix for game crash caused by FFXIVClientStructs changes.
 - **Fixed:** The armoury category and its subcategories will now wait for completion of the in-games sorting mechanism before running.
 - **Fixed:** A copy-paste mistake has been corrected for the HQ condition for the Japanese client.
 
-### [0.9.1] (2023-01-26)
+## [0.9.1] (2023-01-26)
 
 ### Auto Sorter
 
 - **Changed:** It's now possible to add more rules for the same category, allowing to sort with multiple conditions.
 - **Added:** A "Run All" button for easy testing.
 
-### [0.9.0] (2023-01-25)
+## [0.9.0] (2023-01-25)
 
 ### New Tweak: Auto Sorter
 
 This one replaces "Auto Sort Armoury Chest" and "Auto Sort Inventory", which didn't last long, in a more general Auto Sorter (hence the name). I just couldn't resist. :D  
 Since I can't easily convert the configurations, you have to add rules yourself.
 
-### [0.8.2] (2023-01-25)
+## [0.8.2] (2023-01-25)
 
 ### DTR
 
@@ -76,13 +82,13 @@ Since I can't easily convert the configurations, you have to add rules yourself.
 
 - **Fixed:** Messed up signature for PvP Stats.
 
-### [0.8.1] (2023-01-25)
+## [0.8.1] (2023-01-25)
 
 ### DTR
 
 - **Fixed:** FPS should properly appear again.
 
-### [0.8.0] (2023-01-25)
+## [0.8.0] (2023-01-25)
 
 Some internal restructuring and performance optimizations.
 
@@ -90,7 +96,7 @@ Some internal restructuring and performance optimizations.
 
 Just like "Auto Sort Armoury Chest", but for inventory. ([PR](https://github.com/Haselnussbomber/HaselTweaks/pull/22) by [53m1k0l0n](https://github.com/53m1k0l0n). Thanks!)
 
-### [0.7.14] (2023-01-23)
+## [0.7.14] (2023-01-23)
 
 ### Refresh Material List
 
@@ -101,40 +107,40 @@ Just like "Auto Sort Armoury Chest", but for inventory. ([PR](https://github.com
 - **Fixed:** Minions and Mounts windows should be able to scroll out of favorites again.
 - **Changed:** The plugin now uses the game's UI collision system to detect which window is being hovered instead of finding a match based on cursor and window position.
 
-### [0.7.13] (2023-01-20)
+## [0.7.13] (2023-01-20)
 
 ### Search the markets
 
 - **Fixed:** Searching via Recipe Tree or Materials List doesn't crash the game anymore.
 
-### [0.7.12] (2023-01-19)
+## [0.7.12] (2023-01-19)
 
 ### Scrollable Tabs
 
 - **Added:** Support for Island Minion Guide window.
 
-### [0.7.11] (2023-01-14)
+## [0.7.11] (2023-01-14)
 
 ### Enhanced Experience Bar
 
 - **Fixed:** The Experience Bar should now update as intended.
 
-### [0.7.10] (2023-01-14)
+## [0.7.10] (2023-01-14)
 
 ### Enhanced Experience Bar
 
 - **Fixed:** Signature update, so PvP Series Bar works again.
 
-### [0.7.9] (2023-01-13)
+## [0.7.9] (2023-01-13)
 
 Additional code to automatically re-scan cached hotfix adresses.
 
-### [0.7.8] (2023-01-13)
+## [0.7.8] (2023-01-13)
 
 Preliminary update for Patch 6.3 Hotfix 1.  
 Fixed some internal bugs introduced with the last version.
 
-### [0.7.7] (2023-01-12)
+## [0.7.7] (2023-01-12)
 
 Preliminary update for Patch 6.3.
 
@@ -143,32 +149,32 @@ Preliminary update for Patch 6.3.
 - **Changed:** Corrects the name of "PvP Season Bar" to "PvP Series Bar".
   - Configuration is automatically updated.
 
-### [0.7.6] (2022-12-09)
+## [0.7.6] (2022-12-09)
 
 ### Aether Current Helper
 
 - **Added:** A new config option to disable centering of the distance column, which *might* help in case the window keeps expanding endlessly to the right.
 - **Fixed:** Corrects the Compass Directions (East/West was swapped).
 
-### [0.7.5] (2022-11-03)
+## [0.7.5] (2022-11-03)
 
 ### Aether Current Helper
 
 - **Fixed:** Corrects the Dravanian Forelands quest ids.
 
-### [0.7.4] (2022-10-06)
+## [0.7.4] (2022-10-06)
 
 ### Aether Current Helper
 
 - **Fixed:** Some AetherCurrent entries link to the wrong quest. Added 3 of 5 as special case in the plugin. (see issue #15)
 
-### [0.7.3] (2022-09-17)
+## [0.7.3] (2022-09-17)
 
 ### Aether Current Helper
 
 - **Fixed:** Window expanding infinitely.
 
-### [0.7.2] (2022-09-04)
+## [0.7.2] (2022-09-04)
 
 - Improved Tweak Descriptions
 

@@ -58,6 +58,9 @@ public unsafe class DTR : Tweak
 
     public override void Enable()
     {
+        LastInstance = -1;
+        LastOnlineStatus = -1;
+
         DtrInstance = Service.DtrBar.Get("[HaselTweaks] Instance");
         DtrFPS = Service.DtrBar.Get("[HaselTweaks] FPS");
         DtrBusy = Service.DtrBar.Get("[HaselTweaks] Busy");
