@@ -27,6 +27,10 @@
     <DalamudLibPath>$(HOME)/dalamud/</DalamudLibPath>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <AssemblySearchPaths>$(AssemblySearchPaths);$(DalamudLibPath);</AssemblySearchPaths>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove=".git*" />
     <None Remove="InteropSourceGenerators\**" />
@@ -39,34 +43,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Dalamud">
-      <HintPath>$(DalamudLibPath)Dalamud.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Lumina">
-      <HintPath>$(DalamudLibPath)Lumina.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Lumina.Excel">
-      <HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="FFXIVClientStructs">
-      <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="ImGui">
-      <HintPath>$(DalamudLibPath)ImGui.NET.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="ImGuiScene">
-      <HintPath>$(DalamudLibPath)ImGuiScene.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
+    <Reference Include="Dalamud" Private="false" />
+    <Reference Include="Lumina" Private="false" />
+    <Reference Include="Lumina.Excel" Private="false" />
+    <Reference Include="FFXIVClientStructs" Private="false" />
+    <Reference Include="ImGui.NET" Private="false" />
+    <Reference Include="ImGuiScene" Private="false" />
+    <Reference Include="Newtonsoft.Json" Private="false" />
   </ItemGroup>
 
   <ItemGroup>
