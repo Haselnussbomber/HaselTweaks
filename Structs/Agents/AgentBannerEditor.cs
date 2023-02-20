@@ -16,20 +16,22 @@ public unsafe struct AgentBannerEditor
 [StructLayout(LayoutKind.Explicit)]
 public unsafe partial struct AgentBannerEditPortraitState
 {
-    [FieldOffset(0x40)] public IntPtr BannerItems;
+    [FieldOffset(0x40)] public nint BannerItems;
     [FieldOffset(0x48)] public uint BannerItemsCount;
 
-    [FieldOffset(0x70)] public IntPtr FrameItems;
+    [FieldOffset(0x70)] public nint FrameItems;
     [FieldOffset(0x78)] public uint FrameItemsCount;
 
-    [FieldOffset(0xA0)] public IntPtr AccentItems;
+    [FieldOffset(0xA0)] public nint AccentItems;
     [FieldOffset(0xA8)] public uint AccentItemsCount;
 
-    [FieldOffset(0xD0)] public IntPtr PoseItems;
+    [FieldOffset(0xD0)] public nint PoseItems;
     [FieldOffset(0xD8)] public uint PoseItemsCount;
 
-    [FieldOffset(0x100)] public IntPtr ExpressionItems;
+    [FieldOffset(0x100)] public nint ExpressionItems;
     [FieldOffset(0x108)] public uint ExpressionItemsCount;
+
+    //[FieldOffset(0x120)] public BannerModuleEntry Banner;
 
     [FieldOffset(0x17C)] public short DirectionalLightingVerticalAngle;
     [FieldOffset(0x17E)] public short DirectionalLightingHorizontalAngle;
@@ -41,13 +43,13 @@ public unsafe partial struct AgentBannerEditPortraitState
     [FieldOffset(0x188)] public byte AmbientLightingColorGreen;
     [FieldOffset(0x189)] public byte AmbientLightingColorBlue;
 
-    [FieldOffset(0x190)] public uint PoseEmoteIcon;
-    [FieldOffset(0x194)] public uint UpdatedTimestamp;
+    [FieldOffset(0x190)] public uint BannerTimelineIcon;
+    [FieldOffset(0x194)] public uint LastUpdated;
 
-    [FieldOffset(0x19C)] public short Background;
-    [FieldOffset(0x19E)] public short Frame;
-    [FieldOffset(0x1A0)] public short Accent;
-    [FieldOffset(0x1A2)] public short Pose;
+    [FieldOffset(0x19C)] public short BannerBg;
+    [FieldOffset(0x19E)] public short BannerFrame;
+    [FieldOffset(0x1A0)] public short BannerDecoration;
+    [FieldOffset(0x1A2)] public short BannerTimeline;
 
     [FieldOffset(0x1A9)] public byte Expression;
 
@@ -63,8 +65,9 @@ public unsafe partial struct AgentBannerEditPortraitState
     [FieldOffset(0x2BC)] public uint Unk2BC;
 
     [FieldOffset(0x2C4)] public byte PortraitIndex;
+    [FieldOffset(0x2C8)] public uint GearsetIndex;
 
-    [FieldOffset(0x2CC)] public uint CloseDialogAddonId;
+    [FieldOffset(0x2CC)] public int CloseDialogAddonId;
     [FieldOffset(0x2D0)] public bool HasDataChanged;
 
     [MemberFunction("48 89 5C 24 ?? 48 89 7C 24 ?? 80 79 2C 00")]

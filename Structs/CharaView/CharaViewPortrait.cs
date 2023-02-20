@@ -9,14 +9,14 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     [FieldOffset(0)] public CharaView Base;
 
     // not sure on these floats. i think it's a Spherical Camera
-    [FieldOffset(0x2D0)] public float CameraPhi;
-    [FieldOffset(0x2D4)] public float CameraTheta;
-    [FieldOffset(0x2D8)] public float CameraR;
-    [FieldOffset(0x2DC)] public float CameraUnk2AC; // always 0?
-    [FieldOffset(0x2E0)] public float CameraTargetX;
-    [FieldOffset(0x2E4)] public float CameraTargetY;
-    [FieldOffset(0x2E8)] public float CameraTargetZ;
-    [FieldOffset(0x2EC)] public float CameraTargetW;
+    [FieldOffset(0x2D0)] public Half CameraPosition1;
+    [FieldOffset(0x2D4)] public Half CameraPosition2;
+    [FieldOffset(0x2D8)] public Half CameraPosition3;
+    [FieldOffset(0x2DC)] public Half CameraPosition4;
+    [FieldOffset(0x2E0)] public Half CameraTarget1;
+    [FieldOffset(0x2E4)] public Half CameraTarget2;
+    [FieldOffset(0x2E8)] public Half CameraTarget3;
+    [FieldOffset(0x2EC)] public Half CameraTarget4;
     [FieldOffset(0x2F0)] public float CameraRatio1;
     [FieldOffset(0x2F4)] public float CameraRatio2;
     [FieldOffset(0x2F8)] public float CameraRatio3;
@@ -47,9 +47,7 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     [FieldOffset(0x3A2)] public bool CharacterLoaded;
 
     public static CharaViewPortrait* Create()
-    {
-        return IMemorySpace.GetUISpace()->Create<CharaViewPortrait>();
-    }
+        => IMemorySpace.GetUISpace()->Create<CharaViewPortrait>();
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 89 83 ?? ?? ?? ?? EB 0B")]
     public partial void Ctor();
@@ -59,7 +57,7 @@ public unsafe partial struct CharaViewPortrait : ICreatable
 
     /* This is the base CharaView initializer. Use the other one below.
     [VirtualFunction(1)]
-    public partial void Initialize(CharaViewCharacterData* characterData, int objectIndex, IntPtr agentCallbackReady);
+    public partial void Initialize(CharaViewCharacterData* characterData, int objectIndex, nint agentCallbackReady);
     */
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 8B 43 10 C6 80 ?? ?? ?? ?? ?? 48 8B 4B 10")]
@@ -94,7 +92,7 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     public partial void ResetCamera(); // sets position, target, zoom etc.
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 43 10 48 8D 4C 24")]
-    public partial void SetCameraPosition(CompressedVector4* cam, CompressedVector4* target);
+    public partial void SetCameraPosition(HalfVector4* cam, HalfVector4* target);
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 93 ?? ?? ?? ?? 0F 28 D0")]
     public partial float GetAnimationTime(); // as Vector3?
@@ -130,10 +128,10 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     public partial void SetExpression(byte id); // same as GetGameObject()->Unk8D0.SetExpression(id)
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 45 F2")]
-    public partial IntPtr ExportPortraitData(ExportedPortraitData* output);
+    public partial nint ExportPortraitData(ExportedPortraitData* output);
 
     [MemberFunction("E8 ?? ?? ?? ?? 83 BE ?? ?? ?? ?? ?? 4C 8B B4 24 ?? ?? ?? ?? 74 2D")]
-    public partial IntPtr ImportPortraitData(ExportedPortraitData* input);
+    public partial nint ImportPortraitData(ExportedPortraitData* input);
 
     /// <summary>Use this after manually setting camera positions.</summary>
     [MemberFunction("E8 ?? ?? ?? ?? F3 0F 10 53 ?? 48 8B CF")]
@@ -152,62 +150,28 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     public partial void ToggleGearVisibility(bool hideVisor, bool hideWeapon, bool closeVisor);
 }
 
-[StructLayout(LayoutKind.Explicit, Size = 0x8)]
-public unsafe partial struct CompressedVector4
-{
-    [FieldOffset(0x0)] public short X;
-    [FieldOffset(0x2)] public short Y;
-    [FieldOffset(0x4)] public short Z;
-    [FieldOffset(0x6)] public short W;
-
-    [MemberFunction("E8 ?? ?? ?? ?? 8B 7D A8")]
-    public partial void Compress(float x, float y, float z, float w = 1.0f);
-
-    public static CompressedVector4* From(float x, float y, float z, float w = 1.0f)
-    {
-        var cvec = (CompressedVector4*)IMemorySpace.GetUISpace()->Malloc<CompressedVector4>();
-        cvec->Compress(x, y, z, w);
-        return cvec;
-    }
-
-    public static CompressedVector4* From(System.Numerics.Vector3 vec)
-    {
-        var cvec = (CompressedVector4*)IMemorySpace.GetUISpace()->Malloc<CompressedVector4>();
-        cvec->Compress(vec.X, vec.Y, vec.Z);
-        return cvec;
-    }
-
-    public static CompressedVector4* From(System.Numerics.Vector4 vec)
-    {
-        var cvec = (CompressedVector4*)IMemorySpace.GetUISpace()->Malloc<CompressedVector4>();
-        cvec->Compress(vec.X, vec.Y, vec.Z, vec.W);
-        return cvec;
-    }
-}
-
 // exported by "E8 ?? ?? ?? ?? 0F B7 45 F2"
 // imported by "E8 ?? ?? ?? ?? 83 BE ?? ?? ?? ?? ?? 4C 8B B4 24 ?? ?? ?? ?? 74 2D"
 [StructLayout(LayoutKind.Explicit, Size = 0x34)]
 public unsafe struct ExportedPortraitData
 {
-    // compressed coordinates, see "E8 ?? ?? ?? ?? 0F B7 43 10 48 8D 4C 24"
-    [FieldOffset(0x0)] public short CameraPhi;
-    [FieldOffset(0x2)] public short CameraTheta;
-    [FieldOffset(0x4)] public short CameraR;
-    [FieldOffset(0x6)] public short CameraUnk2AC;
-    [FieldOffset(0x8)] public short CameraTarget1;
-    [FieldOffset(0xA)] public short CameraTarget2;
-    [FieldOffset(0xC)] public short CameraTarget3;
-    [FieldOffset(0xE)] public short CameraTarget4;
+    [FieldOffset(0x0)] public Half CameraPosition1; // Phi?
+    [FieldOffset(0x2)] public Half CameraPosition2; // Theta?
+    [FieldOffset(0x4)] public Half CameraPosition3; // R?
+    [FieldOffset(0x6)] public Half CameraPosition4;
+    [FieldOffset(0x8)] public Half CameraTarget1;
+    [FieldOffset(0xA)] public Half CameraTarget2;
+    [FieldOffset(0xC)] public Half CameraTarget3;
+    [FieldOffset(0xE)] public Half CameraTarget4;
     [FieldOffset(0x10)] public short ImageRotation;
     [FieldOffset(0x12)] public byte CameraZoom;
     [FieldOffset(0x14)] public short Pose;
     [FieldOffset(0x18)] public float AnimationProgress;
     [FieldOffset(0x1C)] public byte Expression;
-    [FieldOffset(0x1E)] public short HeadDirection1;
-    [FieldOffset(0x20)] public short HeadDirection2;
-    [FieldOffset(0x22)] public short EyeDirection1;
-    [FieldOffset(0x24)] public short EyeDirection2;
+    [FieldOffset(0x1E)] public Half HeadDirection1;
+    [FieldOffset(0x20)] public Half HeadDirection2;
+    [FieldOffset(0x22)] public Half EyeDirection1;
+    [FieldOffset(0x24)] public Half EyeDirection2;
     [FieldOffset(0x26)] public byte DirectionalLightingColorRed;
     [FieldOffset(0x27)] public byte DirectionalLightingColorGreen;
     [FieldOffset(0x28)] public byte DirectionalLightingColorBlue;
@@ -218,5 +182,5 @@ public unsafe struct ExportedPortraitData
     [FieldOffset(0x2F)] public byte AmbientLightingColorGreen;
     [FieldOffset(0x30)] public byte AmbientLightingColorBlue;
     [FieldOffset(0x31)] public byte AmbientLightingBrightness;
-    [FieldOffset(0x32)] public short Background;
+    [FieldOffset(0x32)] public short BannerBg;
 }

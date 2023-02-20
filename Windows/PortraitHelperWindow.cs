@@ -114,7 +114,7 @@ public unsafe class PortraitHelperWindow : Window
                     "Background",
                     ref CopyBackground,
                     StringUtils.GetAddonText(14687) ?? "Background",
-                    StringUtils.GetSheetText<BannerBg>((uint)ExportedPortraitData->Background, "Name") ?? ExportedPortraitData->Background.ToString()
+                    StringUtils.GetSheetText<BannerBg>((uint)ExportedPortraitData->BannerBg, "Name") ?? ExportedPortraitData->BannerBg.ToString()
                 );
 
                 AddRow(
@@ -263,37 +263,49 @@ public unsafe class PortraitHelperWindow : Window
                     "CameraPosition",
                     ref CopyCameraPosition,
                     "Camera Position",
-                    ExportedPortraitData->CameraPhi != 0 || ExportedPortraitData->CameraTheta != 0
+                    ExportedPortraitData->CameraPosition1 != Half.Zero || ExportedPortraitData->CameraPosition2 != Half.Zero // || ExportedPortraitData->CameraPosition3 != (Half)1.2f
                         ? (StringUtils.GetAddonText(4203) ?? "Custom")
                         : (StringUtils.GetAddonText(4202) ?? "Default")
                 );
+#if DEBUG
+                ImGui.Text($"{ExportedPortraitData->CameraPosition1:0.00}, {ExportedPortraitData->CameraPosition2:0.00}, {ExportedPortraitData->CameraPosition3:0.00}, {ExportedPortraitData->CameraPosition4:0.00}");
+#endif
 
                 AddRow(
                     "CameraTarget",
                     ref CopyCameraTarget,
                     "Camera Target",
-                    ExportedPortraitData->CameraTarget1 != 0 || ExportedPortraitData->CameraTarget2 != 0 || ExportedPortraitData->CameraTarget3 != 0
+                    ExportedPortraitData->CameraTarget1 != Half.Zero || ExportedPortraitData->CameraTarget2 != Half.Zero || ExportedPortraitData->CameraTarget3 != Half.Zero
                         ? (StringUtils.GetAddonText(4203) ?? "Custom")
                         : (StringUtils.GetAddonText(4202) ?? "Default")
                 );
+#if DEBUG
+                ImGui.Text($"{ExportedPortraitData->CameraTarget1:0.00}, {ExportedPortraitData->CameraTarget2:0.00}, {ExportedPortraitData->CameraTarget3:0.00}, {ExportedPortraitData->CameraTarget4:0.00}");
+#endif
 
                 AddRow(
                     "HeadDirection",
                     ref CopyHeadDirection,
                     "Head Direction",
-                    ExportedPortraitData->HeadDirection1 != 0 || ExportedPortraitData->HeadDirection1 != 0
+                    ExportedPortraitData->HeadDirection1 != Half.Zero || ExportedPortraitData->HeadDirection2 != Half.Zero
                         ? (StringUtils.GetAddonText(4203) ?? "Custom")
                         : (StringUtils.GetAddonText(4202) ?? "Default")
                 );
+#if DEBUG
+                ImGui.Text($"{ExportedPortraitData->HeadDirection1:0.00}, {ExportedPortraitData->HeadDirection2:0.00}");
+#endif
 
                 AddRow(
                     "EyeDirection",
                     ref CopyEyeDirection,
                     "Eye Direction",
-                    ExportedPortraitData->EyeDirection1 != 0 || ExportedPortraitData->EyeDirection2 != 0
+                    ExportedPortraitData->EyeDirection1 != Half.Zero || ExportedPortraitData->EyeDirection2 != Half.Zero
                         ? (StringUtils.GetAddonText(4203) ?? "Custom")
                         : (StringUtils.GetAddonText(4202) ?? "Default")
                 );
+#if DEBUG
+                ImGui.Text($"{ExportedPortraitData->EyeDirection1:0.00}, {ExportedPortraitData->EyeDirection2:0.00}");
+#endif
 
                 AddRow(
                     "CameraZoom",
@@ -325,8 +337,8 @@ public unsafe class PortraitHelperWindow : Window
     {
         var state = AgentBannerEditor->PortraitState;
 
-        Frame = state->Frame;
-        Accent = state->Accent;
+        Frame = state->BannerFrame;
+        Accent = state->BannerDecoration;
 
         state->CharaView->ExportPortraitData(ExportedPortraitData);
         HasSavedData = true;
@@ -342,10 +354,10 @@ public unsafe class PortraitHelperWindow : Window
 
         if (!AdvancedMode || CopyBackground)
         {
-            state->Background = ExportedPortraitData->Background;
-            portraitData->Background = ExportedPortraitData->Background;
+            state->BannerBg = ExportedPortraitData->BannerBg;
+            portraitData->BannerBg = ExportedPortraitData->BannerBg;
 
-            addon->BackgroundDropdown->SetValue(FindListIndex(state->BannerItems, state->BannerItemsCount, ExportedPortraitData->Background));
+            addon->BackgroundDropdown->SetValue(FindListIndex(state->BannerItems, state->BannerItemsCount, ExportedPortraitData->BannerBg));
         }
 
         if (!AdvancedMode || CopyFrame)
@@ -364,7 +376,7 @@ public unsafe class PortraitHelperWindow : Window
 
         if (!AdvancedMode || CopyBackground | CopyFrame | CopyAccent)
         {
-            var presetIndex = state->GetPresetIndex(state->Background, state->Frame, state->Accent);
+            var presetIndex = state->GetPresetIndex(state->BannerBg, state->BannerFrame, state->BannerDecoration);
             if (presetIndex < 0)
             {
                 presetIndex = addon->NumPresets - 1;
@@ -377,7 +389,7 @@ public unsafe class PortraitHelperWindow : Window
 
         if (!AdvancedMode || CopyPose)
         {
-            state->Pose = ExportedPortraitData->Pose;
+            state->BannerTimeline = ExportedPortraitData->Pose;
             portraitData->Pose = ExportedPortraitData->Pose;
 
             addon->PoseDropdown->SetValue(FindListIndex(state->PoseItems, state->PoseItemsCount, ExportedPortraitData->Pose));
@@ -468,10 +480,10 @@ public unsafe class PortraitHelperWindow : Window
 
         if (!AdvancedMode || CopyCameraPosition)
         {
-            portraitData->CameraPhi = ExportedPortraitData->CameraPhi;
-            portraitData->CameraTheta = ExportedPortraitData->CameraTheta;
-            portraitData->CameraR = ExportedPortraitData->CameraR;
-            portraitData->CameraUnk2AC = ExportedPortraitData->CameraUnk2AC;
+            portraitData->CameraPosition1 = ExportedPortraitData->CameraPosition1;
+            portraitData->CameraPosition2 = ExportedPortraitData->CameraPosition2;
+            portraitData->CameraPosition3 = ExportedPortraitData->CameraPosition3;
+            portraitData->CameraPosition4 = ExportedPortraitData->CameraPosition4;
         }
 
         if (!AdvancedMode || CopyCameraTarget)
