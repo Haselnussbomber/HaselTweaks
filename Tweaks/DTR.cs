@@ -124,7 +124,7 @@ public unsafe class DTR : Tweak
         var addr = Service.ClientState.LocalPlayer?.Address;
         if (addr == null || addr == 0)
         {
-            if (DtrBusy.Shown)
+            if (LastOnlineStatus != 12 && DtrBusy.Shown)
                 DtrBusy.Shown = false;
             return;
         }

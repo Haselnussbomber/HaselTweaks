@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### DTR
+
+- **Fixed:** Adjusted conditions for Busy status, so it is no longer immediately hidden after switching zones.
+
 ## [0.9.8] (2023-02-14)
 
 ### DTR
