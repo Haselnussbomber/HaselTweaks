@@ -2,7 +2,6 @@ using System.Text;
 using Dalamud;
 using Dalamud.ContextMenu;
 using Dalamud.Game.Text.SeStringHandling;
-using Dalamud.Game.Text.SeStringHandling.Payloads;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 using AgentId = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentId;
@@ -36,13 +35,16 @@ public unsafe class SearchTheMarkets : Tweak
         agentItemSearch = GetAgent<AgentItemSearch>(AgentId.ItemSearch);
         agentChatLog = GetAgent<AgentChatLog>(AgentId.ChatLog);
 
-        var text = new SeString(new TextPayload(Service.ClientState.ClientLanguage switch
-        {
-            ClientLanguage.German => "Auf den M\u00e4rkten suchen",
-            // ClientLanguage.French => "",
-            // ClientLanguage.Japanese => "",
-            _ => "Search the markets"
-        }));
+        var text = new SeStringBuilder()
+            .AddUiForeground("\uE078 ", 32)
+            .AddText(Service.ClientState.ClientLanguage switch
+            {
+                ClientLanguage.German => "Auf den M\u00e4rkten suchen",
+                // ClientLanguage.French => "",
+                // ClientLanguage.Japanese => "",
+                _ => "Search the markets"
+            })
+            .BuiltString;
 
         ContextMenuItemGame = new(text, (_) => Search(), false);
         ContextMenuItemInventory = new(text, (_) => Search(), false);
