@@ -195,6 +195,22 @@ public unsafe class LockWindowPosition : Tweak
         ShowPicker = false;
     }
 
+    // block GearSetList from moving when opened by Character
+    [AutoHook, Signature("40 53 56 57 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 48 89 AC 24 ?? ?? ?? ??", DetourName = nameof(AddonGearSetList_OnSetupDetour))]
+    private Hook<AddonGearSetList_OnSetupDelegate> AddonGearSetList_OnSetupHook { get; init; } = null!;
+    private delegate nint AddonGearSetList_OnSetupDelegate(nint a1, int a2, nint a3);
+    public nint AddonGearSetList_OnSetupDetour(nint a1, int a2, nint a3) // a1: AddonGearSetList*, a2: ?, a3: 2x AtkValue*
+    {
+        var result = AddonGearSetList_OnSetupHook.Original(a1, a2, a3);
+
+        if (Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == "GearSetList"))
+        {
+            *(byte*)(a1 + 0x3A8D) = 0;
+        }
+
+        return result;
+    }
+
     [AutoHook, Signature("E8 ?? ?? ?? ?? 0F BF 8C 24 ?? ?? ?? ?? 01 8F ?? ?? ?? ??", DetourName = nameof(MoveDetour))]
     private Hook<MoveDelegate> MoveHook { get; init; } = null!;
     private delegate bool MoveDelegate(AtkUnitBase* atkUnitBase, nint xDelta, nint yDelta);
