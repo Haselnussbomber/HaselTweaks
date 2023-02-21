@@ -204,6 +204,10 @@ public unsafe class AutoSorter : Tweak
             {
                 ImGui.SetTooltip("Rule is " + (entry.Enabled ? "enabled" : "disabled"));
             }
+            if (ImGui.IsItemClicked())
+            {
+                Plugin.Config.Save();
+            }
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
