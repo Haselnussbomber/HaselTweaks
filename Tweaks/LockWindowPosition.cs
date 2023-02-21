@@ -36,6 +36,9 @@ public unsafe class LockWindowPosition : Tweak
 
     private const int EventParamLock = 9901;
     private const int EventParamUnlock = 9902;
+    private readonly string[] IgnoredAddons = new[] {
+        "CharaCardEditMenu", // always opens docked to CharaCard (OnSetup)
+    };
 
     private bool ShowPicker = false;
     private string HoveredWindowName = "";
@@ -238,9 +241,19 @@ public unsafe class LockWindowPosition : Tweak
                 var atkUnitBase = *(AtkUnitBase**)(a2 + 8);
                 if (atkUnitBase != null && atkUnitBase->WindowNode != null && atkUnitBase->WindowCollisionNode != null)
                 {
-                    HoveredWindowName = MemoryHelper.ReadStringNullTerminated((nint)atkUnitBase->Name);
-                    HoveredWindowPos = new(atkUnitBase->X, atkUnitBase->Y);
-                    HoveredWindowSize = new(atkUnitBase->WindowNode->AtkResNode.Width, atkUnitBase->WindowNode->AtkResNode.Height - 7);
+                    var name = MemoryHelper.ReadStringNullTerminated((nint)atkUnitBase->Name);
+                    if (!IgnoredAddons.Contains(name))
+                    {
+                        HoveredWindowName = name;
+                        HoveredWindowPos = new(atkUnitBase->X, atkUnitBase->Y);
+                        HoveredWindowSize = new(atkUnitBase->WindowNode->AtkResNode.Width, atkUnitBase->WindowNode->AtkResNode.Height - 7);
+                    }
+                    else
+                    {
+                        HoveredWindowName = "";
+                        HoveredWindowPos = default;
+                        HoveredWindowSize = default;
+                    }
                 }
                 else
                 {
@@ -296,36 +309,39 @@ public unsafe class LockWindowPosition : Tweak
             {
                 var name = MemoryHelper.ReadStringNullTerminated((nint)addon->Name);
 
-                if (Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == name)) // is locked?
+                if (!IgnoredAddons.Contains(name))
                 {
-                    agent->CurrentContextMenu->ContextItemDisabledMask |= 1; // keeping it simple. disables "Return to Default Position"
-
-                    if (Config.AddLockUnlockContextMenuEntries)
+                    if (Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == name)) // is locked?
                     {
-                        var title = Service.ClientState.ClientLanguage switch
-                        {
-                            ClientLanguage.German => "Position entsperren",
-                            // ClientLanguage.French => "",
-                            // ClientLanguage.Japanese => "",
-                            _ => "Unlock Position"
-                        };
+                        agent->CurrentContextMenu->ContextItemDisabledMask |= 1; // keeping it simple. disables "Return to Default Position"
 
-                        AddMenuEntry(title, EventParamUnlock);
+                        if (Config.AddLockUnlockContextMenuEntries)
+                        {
+                            var title = Service.ClientState.ClientLanguage switch
+                            {
+                                ClientLanguage.German => "Position entsperren",
+                                // ClientLanguage.French => "",
+                                // ClientLanguage.Japanese => "",
+                                _ => "Unlock Position"
+                            };
+
+                            AddMenuEntry(title, EventParamUnlock);
+                        }
                     }
-                }
-                else
-                {
-                    if (Config.AddLockUnlockContextMenuEntries)
+                    else
                     {
-                        var title = Service.ClientState.ClientLanguage switch
+                        if (Config.AddLockUnlockContextMenuEntries)
                         {
-                            ClientLanguage.German => "Position sperren",
-                            // ClientLanguage.French => "",
-                            // ClientLanguage.Japanese => "",
-                            _ => "Lock Position"
-                        };
+                            var title = Service.ClientState.ClientLanguage switch
+                            {
+                                ClientLanguage.German => "Position sperren",
+                                // ClientLanguage.French => "",
+                                // ClientLanguage.Japanese => "",
+                                _ => "Lock Position"
+                            };
 
-                        AddMenuEntry(title, EventParamLock);
+                            AddMenuEntry(title, EventParamLock);
+                        }
                     }
                 }
             }
