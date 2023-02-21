@@ -35,6 +35,7 @@ public class TweakConfigs
     public CharacterClassSwitcher.Configuration CharacterClassSwitcher { get; init; } = new();
     public EnhancedExpBar.Configuration EnhancedExpBar { get; init; } = new();
     public AetherCurrentHelper.Configuration AetherCurrentHelper { get; init; } = new();
+    public LockWindowPosition.Configuration LockWindowPosition { get; init; } = new();
 }
 
 internal partial class Configuration

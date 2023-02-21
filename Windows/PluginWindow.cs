@@ -43,6 +43,14 @@ public class PluginWindow : Window
     public override void OnClose()
     {
         SelectedTweak = string.Empty;
+
+        foreach (var tweak in Plugin.Tweaks)
+        {
+            if (tweak.Enabled && tweak.HasCustomConfig)
+            {
+                tweak.OnConfigWindowClose();
+            }
+        }
     }
 
     public override bool DrawConditions()

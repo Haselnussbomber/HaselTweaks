@@ -32,6 +32,7 @@ public abstract class Tweak
 
     public virtual bool HasCustomConfig => false;
     public virtual void DrawCustomConfig() { }
+    public virtual void OnConfigWindowClose() { }
 
     public virtual bool Outdated { get; protected set; }
     public virtual bool Ready { get; protected set; }
