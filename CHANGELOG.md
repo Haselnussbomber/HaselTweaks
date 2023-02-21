@@ -2,31 +2,43 @@
 
 ## [Unreleased]
 
+### New Tweak: Lock Window Position
+
+Lock window positions so they can't move. Not much more to say, really.
+
+### Auto Sorter
+
+- **Fixed:** After clicking the Enable/Disable checkbox, the configuration is saved.
+
 ### DTR
 
-- **Fixed:** Adjusted conditions for Busy status, so it is no longer immediately hidden after switching zones.
+- **Fixed:** Changed the conditions for the busy state so that it no longer disappears immediately after switching zones.
+
+### Search the markets
+
+- **Changed:** Added an orange H for HaselTweaks in front of the context menu entry.
 
 ## [0.9.8] (2023-02-14)
 
 ### DTR
 
-- **Fixed:** Initial values changed to -1 instead of 0, so it wont show empty DTRs after starting the game/enabling the tweak.
+- **Fixed:** Initial values changed to -1 instead of 0, so it will not show empty DTRs after starting the game/enabling the tweak.
 
 ## [0.9.7] (2023-02-13)
 
 ### DTR
 
-- **Fixed:** Adjusted conditions for Instance indicator, so it is no longer immediately hidden after being shown.
+- **Fixed:** Changed the conditions for the instance indicator so that it no longer hides immediately after being displayed.
 
 ## [0.9.6] (2023-02-12)
 
 ### Search the markets
 
-- **Added:** Support for items in Chat.
+- **Added:** Support for items in chat.
 
 ### DTR
 
-- **Fixed:** Adjusted conditions for Busy status, so it is no longer immediately hidden after being shown.
+- **Fixed:** Changed the conditions for the busy state so that it no longer disappears immediately after being displayed.
 
 ## [0.9.5] (2023-02-04)
 

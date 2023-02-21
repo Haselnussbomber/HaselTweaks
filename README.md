@@ -94,6 +94,10 @@ Hides the Main Scenario Guide when the MSQ is completed. Job quests are still be
 
 Prevents the screen from going into standby. Alternatively one can use [PowerToys Awake](https://docs.microsoft.com/windows/powertoys/).
 
+### Lock Window Position
+
+Lock window positions so they can't move.
+
 ### Material Allocation
 
 Always opens the Island Sanctuarys "Material Allocation" window on the "Current & Next Season" tab.

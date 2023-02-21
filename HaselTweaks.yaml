@@ -1,23 +1,5 @@
 name: HaselTweaks
 author: Haselnussbomber
-punchline: Some FFXIV tweaks.
+punchline: A collection of quality of life tweaks.
 repo_url: https://github.com/Haselnussbomber/HaselTweaks
-description: |
-  Included Tweaks:
-
-  - Aether Current Helper
-  - Auto Sorter
-  - Character Class Switcher
-  - Commands
-  - Custom Chat Timestamp
-  - DTR
-  - Expert Deliveries
-  - Forced Cutscene Music
-  - Hide MSQ Complete
-  - Keep Screen Awake
-  - Minimap Adjustments
-  - Refresh Material List
-  - Reveal Duty Requirements
-  - Scrollable Tabs
-  - Search the markets
-  - Series Exp Bar
+description: Keep on tweaking.
