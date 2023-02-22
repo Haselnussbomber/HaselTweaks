@@ -1,4 +1,6 @@
-# HaselTweaks
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/96642047/220611506-da811a05-6c84-41da-89b3-498f5450db84.svg" width="580px" alt="HaselTweaks">
+</p>
 
 Just some tweaks I wrote. :)
 
