@@ -4,7 +4,10 @@
 
 ### New Tweak: Lock Window Position
 
-Lock window positions so they can't move. Not much more to say, really.
+Lock window positions so they can't move.
+
+Adds a context menu entry for the title bar to "Lock/Unlock Position" (can be disabled).  
+Alternatively it's possible to add windows by using the window picker in the configuration.
 
 ### Auto Sorter
 

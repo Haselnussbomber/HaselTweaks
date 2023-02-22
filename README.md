@@ -98,6 +98,9 @@ Prevents the screen from going into standby. Alternatively one can use [PowerToy
 
 Lock window positions so they can't move.
 
+Adds a context menu entry for the title bar to "Lock/Unlock Position" (can be disabled).  
+Alternatively it's possible to add windows by using the window picker in the configuration.
+
 ### Material Allocation
 
 Always opens the Island Sanctuarys "Material Allocation" window on the "Current & Next Season" tab.
