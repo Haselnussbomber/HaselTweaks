@@ -7,12 +7,16 @@ namespace HaselTweaks.Structs;
 public unsafe partial struct AddonMJICraftMaterialConfirmation
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
+
+    [FixedSizeArray<Pointer<AtkComponentRadioButton>>(3)]
+    [FieldOffset(0x220)] public fixed byte RadioButtons[8 * 3];
+
     [FieldOffset(0x220)] public AtkComponentRadioButton* RadioButton1;
     [FieldOffset(0x228)] public AtkComponentRadioButton* RadioButton2;
     [FieldOffset(0x230)] public AtkComponentRadioButton* RadioButton3;
     [FieldOffset(0x238)] public AtkComponentList* ItemList;
     [FieldOffset(0x240)] public AtkResNode* TextResNode; // contains a AtkTextNode showing "No items in production."
 
-    [MemberFunction("E9 ?? ?? ?? ?? 83 EB 04")]
-    public partial void* SwitchTab(uint tabIndex);
+    // [MemberFunction("E9 ?? ?? ?? ?? 83 EB 04")]
+    // public partial void* SwitchTab(uint tabIndex); // note: this fires events wich result in network communication
 }
