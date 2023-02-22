@@ -14,6 +14,10 @@ Lock window positions so they can't move. Not much more to say, really.
 
 - **Fixed:** Changed the conditions for the busy state so that it no longer disappears immediately after switching zones.
 
+### Material Allocation
+
+- **Changed:** Tweak reworked, so that the game doesn't fire an extra network packet on opening the window.
+
 ### Search the markets
 
 - **Changed:** Added an orange H for HaselTweaks in front of the context menu entry.
