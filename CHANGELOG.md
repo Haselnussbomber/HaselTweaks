@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.10.0] (2023-02-22)
 
 ### New Tweak: Lock Window Position
 
@@ -509,6 +509,7 @@ Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
 [Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[0.10.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.8...v0.10.0
 [0.9.8]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.7...v0.9.8
 [0.9.7]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.6...v0.9.7
 [0.9.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.5...v0.9.6
