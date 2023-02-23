@@ -330,7 +330,17 @@ public class PluginWindow : Window
                 {
                     var attr = (ConfigFieldAttribute?)Attribute.GetCustomAttribute(field, typeof(ConfigFieldAttribute));
 
-                    if (attr == null || attr.Type == ConfigFieldTypes.Auto)
+                    if (attr == null)
+                    {
+#if DEBUG
+                        ImGui.TextColored(ImGuiUtils.ColorRed, $"No ConfigFieldAttribute for {field.Name}");
+#endif
+                    }
+                    else if (attr.Type == ConfigFieldTypes.Ignore)
+                    {
+                        // hidden
+                    }
+                    else if (attr.Type == ConfigFieldTypes.Auto)
                     {
                         var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType }))!;
 

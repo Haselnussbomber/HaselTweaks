@@ -3,6 +3,7 @@ namespace HaselTweaks;
 public enum ConfigFieldTypes
 {
     Auto,
+    Ignore,
     SingleSelect
 }
 

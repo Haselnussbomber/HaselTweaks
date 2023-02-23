@@ -105,7 +105,10 @@ Alternatively it's possible to add windows by using the window picker in the con
 
 ### Material Allocation
 
-Always opens the Island Sanctuarys "Material Allocation" window on the "Current & Next Season" tab.
+Enhances the Island Sanctuarys "Material Allocation" window.
+
+- Saves the last selected tab between game sessions.
+- Clicking on a gatherable item opens the Sanctuary Gathering Log with that item selected.
 
 ### Minimap Adjustments
 

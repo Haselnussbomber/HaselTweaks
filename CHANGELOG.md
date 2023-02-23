@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Material Allocation
+
+- **Added:** A config option to enable clicking on gatherable items to open the Sanctuary Gathering Log (enabled by default).
+- **Changed:** Since this tweak now does two things, the previous function has been reworked and added as config option. Instead of always selecting the third tab, it now opens the window with the last selected tab, saved between game sessions.
+
 ## [0.10.0] (2023-02-22)
 
 ### New Tweak: Lock Window Position
