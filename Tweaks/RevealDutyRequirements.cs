@@ -19,7 +19,7 @@ public class RevealDutyRequirements : Tweak
         that way the code doesn't jump to the else {...} which sets the duty name to "???" (Addon#102598)
      */
     [Signature("48 8B C8 48 8B D8 48 8B 10 FF 52 68 84 C0 74 1B")]
-    private IntPtr Address { get; init; }
+    private nint Address { get; init; }
     private byte[]? OriginalBytes;
 
     private const int Offset = 14;

@@ -35,7 +35,7 @@ public unsafe class CharacterClassSwitcher : Tweak
        completely skips the whole if () {...} block, by jumping regardless of cmp result
      */
     [Signature("83 FD 14 48 8B 6C 24 ?? 7D 69")]
-    private IntPtr TooltipAddress { get; init; }
+    private nint TooltipAddress { get; init; }
 
     /* Address for AddonPvPCharacter Tooltip Patch
 
@@ -46,7 +46,7 @@ public unsafe class CharacterClassSwitcher : Tweak
         completely skips the tooltip code, by jumping to the end of the function
      */
     [Signature("48 8D 4C 24 ?? E8 ?? ?? ?? ?? 48 8B 83 ?? ?? ?? ?? 48 8B CF 0F B7 9F")]
-    private IntPtr PvPTooltipAddress { get; init; }
+    private nint PvPTooltipAddress { get; init; }
 
     public override void Enable()
     {
@@ -84,7 +84,7 @@ public unsafe class CharacterClassSwitcher : Tweak
     // AddonCharacterClass_OnSetup (vf47)
     [AutoHook, Signature("48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC ?? ?? ?? ?? 0F 29 70 C8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 17 F3 0F 10 35 ?? ?? ?? ?? 45 33 C9 45 33 C0 F3 0F 11 74 24 ?? 0F 57 C9 48 8B F9 E8", DetourName = nameof(OnSetup))]
     private Hook<OnSetupDelegate> OnSetupHook { get; init; } = null!;
-    private delegate IntPtr OnSetupDelegate(AddonCharacterClass* addon, int a2);
+    private delegate nint OnSetupDelegate(AddonCharacterClass* addon, int a2);
 
     // AddonCharacterClass_OnUpdate (vf50)
     [AutoHook, Signature("4C 8B DC 53 55 56 57 41 55 41 56", DetourName = nameof(OnUpdate))]
@@ -94,12 +94,12 @@ public unsafe class CharacterClassSwitcher : Tweak
     // AddonCharacterClass_ReceiveEvent (vf2)
     [AutoHook, Signature("48 89 5C 24 ?? 57 48 83 EC 20 48 8B D9 4D 8B D1", DetourName = nameof(OnEvent))]
     private Hook<ReceiveEventDelegate> ReceiveEventHook { get; init; } = null!;
-    private delegate IntPtr ReceiveEventDelegate(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr a5);
+    private delegate nint ReceiveEventDelegate(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5);
 
     // AddonPvPCharacter_OnSetup (first fn in vf47)
     [AutoHook, Signature("E8 ?? ?? ?? ?? 48 8B 83 ?? ?? ?? ?? 45 33 FF 41 8B CF 48 85 C0 74 07 48 8B 88 ?? ?? ?? ?? 45 33 C0", DetourName = nameof(OnPvPSetup))]
     private Hook<OnPvPSetupDelegate> OnPvPSetupHook { get; init; } = null!;
-    private delegate IntPtr OnPvPSetupDelegate(AddonPvPCharacter* addon);
+    private delegate nint OnPvPSetupDelegate(AddonPvPCharacter* addon);
 
     // AddonPvPCharacter_OnUpdate (second fn in vf50)
     [AutoHook, Signature("48 8B C4 48 89 58 20 55 56 57 41 56 41 57 48 81 EC", DetourName = nameof(OnPvPUpdate))]
@@ -109,14 +109,14 @@ public unsafe class CharacterClassSwitcher : Tweak
     // AddonPvPCharacter_ReceiveEvent (vf2)
     [AutoHook, Signature("48 89 5C 24 ?? 57 48 83 EC 30 0F B7 C2 4D 8B D1 83 C0 FD", DetourName = nameof(OnPvPEvent))]
     private Hook<PvPReceiveEventDelegate> PvPReceiveEventHook { get; init; } = null!;
-    private delegate IntPtr PvPReceiveEventDelegate(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr a5);
+    private delegate nint PvPReceiveEventDelegate(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5);
 
     private static bool IsCrafter(int id)
     {
         return id >= 20 && id <= 27;
     }
 
-    private IntPtr OnSetup(AddonCharacterClass* addon, int a2)
+    private nint OnSetup(AddonCharacterClass* addon, int a2)
     {
         var result = OnSetupHook.Original(addon, a2);
         var eventListener = &addon->AtkUnitBase.AtkEventListener;
@@ -169,7 +169,7 @@ public unsafe class CharacterClassSwitcher : Tweak
         }
     }
 
-    private IntPtr OnEvent(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr a5)
+    private nint OnEvent(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
         // skip events for tabs
         if (eventParam < 2)
@@ -202,19 +202,19 @@ public unsafe class CharacterClassSwitcher : Tweak
             if (isClick && !Service.KeyState[VirtualKey.SHIFT])
             {
                 SwitchClassJob(8 + (uint)eventParam - 22);
-                return IntPtr.Zero;
+                return 0;
             }
         }
         else if (ProcessEvents(node->OwnerNode, imageNode, eventType))
         {
-            return IntPtr.Zero;
+            return 0;
         }
 
         OriginalReceiveEventCode:
         return ReceiveEventHook.Original(addon, eventType, eventParam, atkEvent, a5);
     }
 
-    private IntPtr OnPvPSetup(AddonPvPCharacter* addon)
+    private nint OnPvPSetup(AddonPvPCharacter* addon)
     {
         var result = OnPvPSetupHook.Original(addon);
         var eventListener = &addon->AtkUnitBase.AtkEventListener;
@@ -256,7 +256,7 @@ public unsafe class CharacterClassSwitcher : Tweak
         }
     }
 
-    private IntPtr OnPvPEvent(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr a5)
+    private nint OnPvPEvent(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
         if ((eventParam & 0xFFFF0000) != 0x10000)
             goto OriginalPvPReceiveEventCode;
@@ -276,7 +276,7 @@ public unsafe class CharacterClassSwitcher : Tweak
             goto OriginalPvPReceiveEventCode;
 
         if (ProcessEvents(entry.Base->OwnerNode, entry.Icon, eventType))
-            return IntPtr.Zero;
+            return 0;
 
         OriginalPvPReceiveEventCode:
         return PvPReceiveEventHook.Original(addon, eventType, eventParam, atkEvent, a5);

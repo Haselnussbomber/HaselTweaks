@@ -25,8 +25,8 @@ public unsafe partial struct AddonCharacterClass
         [FieldOffset(0x00)] public uint Level;
         [FieldOffset(0x04)] public uint CurrentXP;
         [FieldOffset(0x08)] public uint LevelMaxXP;
-        [FieldOffset(0x10)] public IntPtr DesynthesisLevel;
-        [FieldOffset(0x18)] public IntPtr TooltipText;
+        [FieldOffset(0x10)] public nint DesynthesisLevel;
+        [FieldOffset(0x18)] public nint TooltipText;
         [FieldOffset(0x20)] public bool IsMaxLevel;
     }
 }

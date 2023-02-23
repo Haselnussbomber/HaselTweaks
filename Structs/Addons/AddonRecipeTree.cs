@@ -11,5 +11,5 @@ public unsafe partial struct AddonRecipeTree
     [FieldOffset(0x228)] public AtkComponentButton* RefreshButton;
 
     [VirtualFunction(2)]
-    public partial void ReceiveEvent(AtkEventType eventType, int eventParam, AtkEvent* atkEvent, IntPtr unk);
+    public partial void ReceiveEvent(AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5);
 }

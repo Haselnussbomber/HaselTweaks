@@ -76,7 +76,7 @@ public unsafe class EnhancedExpBar : Tweak
 
     [AutoHook, Signature("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 41 56 41 57 48 83 EC 30 48 8B 72 18", DetourName = nameof(OnRequestedUpdateDetour))]
     private Hook<OnRequestedUpdateDelegate> OnRequestedUpdateHook { get; init; } = null!;
-    private delegate IntPtr OnRequestedUpdateDelegate(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData);
+    private delegate nint OnRequestedUpdateDelegate(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData);
 
     public override void Enable()
     {
@@ -165,7 +165,7 @@ public unsafe class EnhancedExpBar : Tweak
         }
     }
 
-    private IntPtr OnRequestedUpdateDetour(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
+    private nint OnRequestedUpdateDetour(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
         var nineGridNode = GetNode<AtkNineGridNode>((AtkComponentBase*)addon->GaugeBarNode, 4);
         if (nineGridNode == null)

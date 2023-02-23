@@ -57,7 +57,7 @@ public unsafe class PortraitHelperWindow : Window
 
     ~PortraitHelperWindow()
     {
-        var ptr = (IntPtr)ExportedPortraitData;
+        var ptr = (nint)ExportedPortraitData;
         MemoryHelper.GameFree(ref ptr, 0x34);
     }
 
@@ -528,20 +528,20 @@ public unsafe class PortraitHelperWindow : Window
 
         state->SetHasChanged(true);
 
-        MemoryHelper.Free((IntPtr)portraitData);
+        MemoryHelper.Free((nint)portraitData);
     }
 
     private static HaselAtkComponentList* GetDropdownList(HaselAtkComponentDropDownList* dropdown)
     {
-        return *(HaselAtkComponentList**)((IntPtr)dropdown + 0xC8);
+        return *(HaselAtkComponentList**)((nint)dropdown + 0xC8);
     }
 
-    private static int FindListIndex(IntPtr list, uint numItems, short value)
+    private static int FindListIndex(nint list, uint numItems, short value)
     {
         var i = 0;
         while (i < numItems)
         {
-            var entry = *(IntPtr*)list;
+            var entry = *(nint*)list;
             if (*(short*)(entry + 0x10) == value)
             {
                 break;
@@ -554,7 +554,7 @@ public unsafe class PortraitHelperWindow : Window
         return i;
     }
 
-    private static string? GetExpressionName(IntPtr list, uint numItems, short value)
+    private static string? GetExpressionName(nint list, uint numItems, short value)
     {
         if (value == 0)
         {
@@ -562,12 +562,12 @@ public unsafe class PortraitHelperWindow : Window
         }
 
         var i = 0;
-        list = *(IntPtr*)list + 0x10;
+        list = *(nint*)list + 0x10;
         while (i < numItems)
         {
             if (*(short*)list == value - 1)
             {
-                return Marshal.PtrToStringUTF8(*(IntPtr*)(list + 0x10) + 0x28);
+                return Marshal.PtrToStringUTF8(*(nint*)(list + 0x10) + 0x28);
             }
 
             list += 0x18;

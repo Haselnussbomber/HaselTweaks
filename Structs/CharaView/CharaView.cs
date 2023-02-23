@@ -25,12 +25,12 @@ public unsafe partial struct CharaView : ICreatable
     [FieldOffset(0xC)] public uint ClientObjectId; // ClientObjectManager = non-networked objects, ClientObjectIndex + 40
     [FieldOffset(0x10)] public uint ClientObjectIndex;
     [FieldOffset(0x14)] public uint CameraType; // turns portrait ambient/directional lighting on/off
-    [FieldOffset(0x18)] public IntPtr CameraManager;
-    [FieldOffset(0x20)] public IntPtr Camera;
-    [FieldOffset(0x28)] public IntPtr Unk28;
-    [FieldOffset(0x30)] public IntPtr Agent; // for example: AgentTryOn
-    [FieldOffset(0x38)] public IntPtr AgentCallbackReady; // if set, called when State changes to Ready
-    [FieldOffset(0x40)] public IntPtr AgentCallback; // not investigated, used inside vf7 and vf11
+    [FieldOffset(0x18)] public nint CameraManager;
+    [FieldOffset(0x20)] public nint Camera;
+    [FieldOffset(0x28)] public nint Unk28;
+    [FieldOffset(0x30)] public nint Agent; // for example: AgentTryOn
+    [FieldOffset(0x38)] public nint AgentCallbackReady; // if set, called when State changes to Ready
+    [FieldOffset(0x40)] public nint AgentCallback; // not investigated, used inside vf7 and vf11
     [FieldOffset(0x48)] public CharaViewCharacterData CharacterData;
 
     [FieldOffset(0xB8)] public uint UnkB8;
@@ -56,7 +56,7 @@ public unsafe partial struct CharaView : ICreatable
     public partial void Dtor(bool freeMemory);
 
     [VirtualFunction(1)]
-    public partial void Initialize(IntPtr agent, int clientObjectId, IntPtr agentCallbackReady);
+    public partial void Initialize(nint agent, int clientObjectId, nint agentCallbackReady);
 
     [VirtualFunction(2)]
     public partial void Release();
@@ -74,7 +74,7 @@ public unsafe partial struct CharaView : ICreatable
     public partial void Vf6(float a2, float a3);
 
     [VirtualFunction(7)]
-    public partial byte Vf7(IntPtr a2); // called by Render()
+    public partial byte Vf7(nint a2); // called by Render()
 
     [VirtualFunction(8)]
     public partial void Vf8(); // noop

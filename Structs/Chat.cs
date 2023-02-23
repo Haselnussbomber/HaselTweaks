@@ -14,10 +14,10 @@ namespace HaselTweaks.Structs;
 public unsafe partial struct Chat
 {
     [MemberFunction("48 89 5C 24 ?? 57 48 83 EC 20 48 8B FA 48 8B D9 45 84 C9")]
-    public static partial void* ProcessChatBox(UIModule* uiModule, IntPtr message, IntPtr unused, byte a4);
+    public static partial void* ProcessChatBox(UIModule* uiModule, nint message, nint unused, byte a4);
 
     [MemberFunction("E8 ?? ?? ?? ?? EB 0A 48 8D 4C 24 ?? E8 ?? ?? ?? ?? 48 8D 8D")]
-    public static partial void* SanitiseString(Utf8String* a1, int a2, IntPtr a3);
+    public static partial void* SanitiseString(Utf8String* a1, int a2, nint a3);
 
     /// <summary>
     /// <para>
@@ -43,7 +43,7 @@ public unsafe partial struct Chat
         var mem1 = Marshal.AllocHGlobal(400);
         Marshal.StructureToPtr(payload, mem1, false);
 
-        ProcessChatBox(Framework.Instance()->GetUiModule(), mem1, IntPtr.Zero, 0);
+        ProcessChatBox(Framework.Instance()->GetUiModule(), mem1, 0, 0);
 
         Marshal.FreeHGlobal(mem1);
     }
@@ -104,7 +104,7 @@ public unsafe partial struct Chat
 
         var uText = Utf8String.FromString(text);
 
-        SanitiseString(uText, 0x27F, IntPtr.Zero);
+        SanitiseString(uText, 0x27F, 0);
         var sanitised = uText->ToString();
 
         uText->Dtor();
@@ -117,7 +117,7 @@ public unsafe partial struct Chat
     private readonly struct ChatPayload : IDisposable
     {
         [FieldOffset(0)]
-        private readonly IntPtr textPtr;
+        private readonly nint textPtr;
 
         [FieldOffset(16)]
         private readonly ulong textLen;

@@ -70,14 +70,14 @@ public unsafe class ScrollableTabs : Tweak
 
     [AutoHook, Signature("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 49 8B F8 C6 05", DetourName = nameof(WindowProcHandlerDetour))]
     private Hook<WindowProcHandlerDelegate> WindowProcHandlerHook { get; init; } = null!;
-    private delegate ulong WindowProcHandlerDelegate(IntPtr hWnd, int uMsg, int wParam);
+    private delegate ulong WindowProcHandlerDelegate(nint hWnd, int uMsg, int wParam);
 
     private const uint WM_MOUSEWHEEL = 0x020A;
     private const uint WHEEL_DELTA = 120;
 
     private short wheelState;
 
-    private ulong WindowProcHandlerDetour(IntPtr hwnd, int uMsg, int wParam)
+    private ulong WindowProcHandlerDetour(nint hwnd, int uMsg, int wParam)
     {
         if (uMsg == WM_MOUSEWHEEL)
             wheelState = (short)Math.Clamp((wParam >> 16) / WHEEL_DELTA * (Config.Invert ? -1 : 1), -1, 1);
@@ -94,7 +94,7 @@ public unsafe class ScrollableTabs : Tweak
         if (hoveredUnitBase == null)
             goto ResetWheelState;
 
-        var name = Marshal.PtrToStringAnsi((IntPtr)hoveredUnitBase->Name);
+        var name = Marshal.PtrToStringAnsi((nint)hoveredUnitBase->Name);
         if (string.IsNullOrEmpty(name))
             goto ResetWheelState;
 
@@ -228,27 +228,27 @@ public unsafe class ScrollableTabs : Tweak
         }
         else if (Config.HandleFishGuide && name == "FishGuide2")
         {
-            UpdateTabSwitcher((IntPtr)unitBase, &((AddonFishGuide2*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((nint)unitBase, &((AddonFishGuide2*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleAdventureNoteBook && name == "AdventureNoteBook")
         {
-            UpdateTabSwitcher((IntPtr)unitBase, &((AddonAdventureNoteBook*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((nint)unitBase, &((AddonAdventureNoteBook*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleOrnamentNoteBook && name == "OrnamentNoteBook")
         {
-            UpdateTabSwitcher((IntPtr)unitBase, &((AddonOrnamentNoteBook*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((nint)unitBase, &((AddonOrnamentNoteBook*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleGoldSaucerCardList && name == "GSInfoCardList")
         {
-            UpdateTabSwitcher((IntPtr)unitBase, &((AddonGoldSaucerCardList*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((nint)unitBase, &((AddonGoldSaucerCardList*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleGoldSaucerCardDeckEdit && name == "GSInfoEditDeck")
         {
-            UpdateTabSwitcher((IntPtr)unitBase, &((AddonGoldSaucerCardDeckEdit*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((nint)unitBase, &((AddonGoldSaucerCardDeckEdit*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleLovmPaletteEdit && name == "LovmPaletteEdit")
         {
-            UpdateTabSwitcher((IntPtr)unitBase, &((AddonLovmPaletteEdit*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((nint)unitBase, &((AddonLovmPaletteEdit*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleAOZNotebook && name == "AOZNotebook")
         {
@@ -364,7 +364,7 @@ public unsafe class ScrollableTabs : Tweak
         addon->SetTab(tabIndex);
     }
 
-    private void UpdateTabSwitcher(IntPtr addon, TabSwitcher* tabSwitcher)
+    private void UpdateTabSwitcher(nint addon, TabSwitcher* tabSwitcher)
     {
         var tabIndex = GetTabIndex(tabSwitcher->CurrentTabIndex, tabSwitcher->NumTabs);
 
@@ -373,7 +373,7 @@ public unsafe class ScrollableTabs : Tweak
 
         tabSwitcher->CurrentTabIndex = tabIndex;
 
-        if (tabSwitcher->CallbackPtr == IntPtr.Zero)
+        if (tabSwitcher->CallbackPtr == 0)
             return;
 
         Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(tabSwitcher->CallbackPtr)(tabIndex, addon);
@@ -396,7 +396,7 @@ public unsafe class ScrollableTabs : Tweak
 
         addon->SetTab(tabIndex);
 
-        var tabs = (IntPtr)addon + 0x228;
+        var tabs = (nint)addon + 0x228;
         for (var i = 0; i < addon->NumTabs; i++)
         {
             // WAYTOODANK, this is basically like writing addon->Tabs[i]
@@ -461,14 +461,14 @@ public unsafe class ScrollableTabs : Tweak
             }
             else
             {
-                UpdateTabSwitcher((IntPtr)addon, &addon->TabSwitcher);
+                UpdateTabSwitcher((nint)addon, &addon->TabSwitcher);
             }
         }
         else if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Favorites && wheelState > 0)
         {
             var callbackAddress = addon->TabSwitcher.CallbackPtr;
-            if (callbackAddress != IntPtr.Zero)
-                Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(0, (IntPtr)addon);
+            if (callbackAddress != 0)
+                Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(0, (nint)addon);
         }
     }
 
@@ -491,7 +491,7 @@ public unsafe class ScrollableTabs : Tweak
             }
             else
             {
-                UpdateTabSwitcher((IntPtr)addon, &addon->Unk220.TabSwitcher);
+                UpdateTabSwitcher((nint)addon, &addon->Unk220.TabSwitcher);
                 agent->UpdateTabFlags(0x40B);
             }
         }
@@ -506,8 +506,8 @@ public unsafe class ScrollableTabs : Tweak
             addon->Unk220.TabSwitcher.CurrentTabIndex = 0;
 
             var callbackAddress = addon->Unk220.TabSwitcher.CallbackPtr;
-            if (callbackAddress != IntPtr.Zero)
-                Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(0, (IntPtr)addon);
+            if (callbackAddress != 0)
+                Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(0, (nint)addon);
 
             agent->UpdateTabFlags(0x40B);
         }

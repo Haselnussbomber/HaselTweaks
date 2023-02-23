@@ -19,9 +19,9 @@ public unsafe class CustomChatTimestamp : Tweak
 
     [AutoHook, Signature("E8 ?? ?? ?? ?? 48 8B D0 48 8B CB E8 ?? ?? ?? ?? 4C 8D 87", DetourName = nameof(Detour))]
     private Hook<DetourDelegate> Hook { get; init; } = null!;
-    private delegate byte* DetourDelegate(IntPtr a1, ulong addonRowId, ulong value);
+    private delegate byte* DetourDelegate(nint a1, ulong addonRowId, ulong value);
 
-    private byte* Detour(IntPtr a1, ulong addonRowId, ulong value)
+    private byte* Detour(nint a1, ulong addonRowId, ulong value)
     {
         if (addonRowId != 7840) return Hook.Original(a1, addonRowId, value);
 
@@ -29,7 +29,7 @@ public unsafe class CustomChatTimestamp : Tweak
         var time = DateTime.UnixEpoch.AddSeconds(value).ToLocalTime();
         var formatted = time.ToString(Config.Format);
 
-        MemoryHelper.WriteString((IntPtr)str->StringPtr, formatted + "\0");
+        MemoryHelper.WriteString((nint)str->StringPtr, formatted + "\0");
         str->BufUsed = formatted.Length + 1;
         str->StringLength = formatted.Length;
 

@@ -32,7 +32,7 @@ public static class ImGuiUtils
                 return;
 
             var texWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(tex.GetRgbaImageData(), tex.Header.Width, tex.Header.Height, 4);
-            if (texWrap.ImGuiHandle == IntPtr.Zero)
+            if (texWrap.ImGuiHandle == 0)
                 return;
 
             icons[iconId] = texWrap;

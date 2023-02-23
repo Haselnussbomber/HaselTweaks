@@ -48,7 +48,7 @@ public unsafe class AetherCurrentHelper : Tweak
         if (atkValue == null || atkValue->Type != ValueType.Int || atkValue->Int != 0)
             goto OriginalCode;
 
-        var atkValue2 = (AtkValue*)((IntPtr)atkValue + 0x10);
+        var atkValue2 = (AtkValue*)((nint)atkValue + 0x10);
         if (atkValue2->Type != ValueType.Int)
             goto OriginalCode;
 

@@ -4,7 +4,7 @@ namespace HaselTweaks.Utils;
 
 public static class MemoryUtils
 {
-    public static byte[] ReplaceRaw(IntPtr address, byte[] data)
+    public static byte[] ReplaceRaw(nint address, byte[] data)
     {
         var originalBytes = MemoryHelper.ReadRaw(address, data.Length);
 

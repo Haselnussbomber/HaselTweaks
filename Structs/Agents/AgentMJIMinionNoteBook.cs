@@ -44,7 +44,7 @@ public unsafe partial struct AgentMJIMinionNoteBook
         var ptr = (int*)Marshal.AllocHGlobal(4);
         *ptr = flags;
         UpdateTabFlags(ptr);
-        Marshal.FreeHGlobal((IntPtr)ptr);
+        Marshal.FreeHGlobal((nint)ptr);
     }
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 D8 85 DB")]
@@ -62,7 +62,7 @@ public unsafe partial struct AgentMJIMinionNoteBook
 
             var value = GetSelectedMinionId(ptr, ptr + 1, ptr + 2);
 
-            Marshal.FreeHGlobal((IntPtr)ptr);
+            Marshal.FreeHGlobal((nint)ptr);
 
             return value;
         }
