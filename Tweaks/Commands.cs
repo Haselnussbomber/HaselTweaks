@@ -100,30 +100,23 @@ public unsafe class Commands : Tweak
         var fgColor = (ushort)(549 + (item.Rarity - 1) * 2);
         var glowColor = (ushort)(fgColor + 1);
 
+        var sb = new SeStringBuilder()
+            .AddText($"Item #{id}: ")
+            .AddUiForeground(fgColor)
+            .AddUiGlow(glowColor)
+            .AddItemLink(item.RowId, false)
+            .AddUiForeground(500)
+            .AddUiGlow(501)
+            .AddText(SeIconChar.LinkMarker.ToIconString() + " ")
+            .AddUiForegroundOff()
+            .AddUiGlowOff()
+            .AddText(item.Name)
+            .Add(new RawPayload(new byte[] { 0x02, 0x27, 0x07, 0xCF, 0x01, 0x01, 0x01, 0xFF, 0x01, 0x03 })) // LinkTerminator
+            .Add(new RawPayload(new byte[] { 0x02, 0x13, 0x02, 0xEC, 0x03 })); // SaintCoinach says 0x13 is named Color, but idk
+
         Service.Chat.PrintChat(new XivChatEntry
         {
-            Message = new SeString(
-                new TextPayload($"Item #{id}: "),
-
-                new UIForegroundPayload(fgColor),
-                new UIGlowPayload(glowColor),
-                new ItemPayload(item.RowId),
-
-                new UIForegroundPayload(500),
-                new UIGlowPayload(501),
-                new TextPayload(SeIconChar.LinkMarker.ToIconString()),
-
-                new UIForegroundPayload(0),
-                new UIGlowPayload(0),
-                new TextPayload(item.Name),
-
-                // LinkTerminator
-                new RawPayload(new byte[] { 0x02, 0x27, 0x07, 0xCF, 0x01, 0x01, 0x01, 0xFF, 0x01, 0x03 }),
-
-                // SaintCoinach says 0x13 is named Color
-                // idk, but if this missing the game crashes after a couple lines
-                new RawPayload(new byte[] { 0x02, 0x13, 0x02, 0xEC, 0x03 })
-            ),
+            Message = sb.BuiltString,
             Type = XivChatType.Echo
         });
     }
@@ -210,30 +203,23 @@ public unsafe class Commands : Tweak
         var fgColor = (ushort)(549 + (itemRow.Rarity - 1) * 2);
         var glowColor = (ushort)(fgColor + 1);
 
+        var sb = new SeStringBuilder()
+            .AddText($"Mount {mountRow.Singular} learned by ")
+            .AddUiForeground(fgColor)
+            .AddUiGlow(glowColor)
+            .AddItemLink(itemRow.RowId, false)
+            .AddUiForeground(500)
+            .AddUiGlow(501)
+            .AddText(SeIconChar.LinkMarker.ToIconString() + " ")
+            .AddUiForegroundOff()
+            .AddUiGlowOff()
+            .AddText(itemRow.Name)
+            .Add(new RawPayload(new byte[] { 0x02, 0x27, 0x07, 0xCF, 0x01, 0x01, 0x01, 0xFF, 0x01, 0x03 })) // LinkTerminator
+            .Add(new RawPayload(new byte[] { 0x02, 0x13, 0x02, 0xEC, 0x03 })); // SaintCoinach says 0x13 is named Color, but idk
+
         Service.Chat.PrintChat(new XivChatEntry
         {
-            Message = new SeString(
-                new TextPayload($"Mount {mountRow.Singular} learned by "),
-
-                new UIForegroundPayload(fgColor),
-                new UIGlowPayload(glowColor),
-                new ItemPayload(itemRow.RowId),
-
-                new UIForegroundPayload(500),
-                new UIGlowPayload(501),
-                new TextPayload(SeIconChar.LinkMarker.ToIconString()),
-
-                new UIForegroundPayload(0),
-                new UIGlowPayload(0),
-                new TextPayload(itemRow.Name),
-
-                // LinkTerminator
-                new RawPayload(new byte[] { 0x02, 0x27, 0x07, 0xCF, 0x01, 0x01, 0x01, 0xFF, 0x01, 0x03 }),
-
-                // SaintCoinach says 0x13 is named Color
-                // idk, but if this missing the game crashes after a couple lines
-                new RawPayload(new byte[] { 0x02, 0x13, 0x02, 0xEC, 0x03 })
-            ),
+            Message = sb.BuiltString,
             Type = XivChatType.Echo
         });
     }
