@@ -11,6 +11,7 @@ using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Structs.Addons;
 using HaselTweaks.Utils;
 using ImGuiNET;
 
@@ -201,14 +202,14 @@ public unsafe class LockWindowPosition : Tweak
     // block GearSetList from moving when opened by Character
     [AutoHook, Signature("40 53 56 57 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 48 89 AC 24 ?? ?? ?? ??", DetourName = nameof(AddonGearSetList_OnSetupDetour))]
     private Hook<AddonGearSetList_OnSetupDelegate> AddonGearSetList_OnSetupHook { get; init; } = null!;
-    private delegate nint AddonGearSetList_OnSetupDelegate(nint a1, int a2, nint a3);
-    public nint AddonGearSetList_OnSetupDetour(nint a1, int a2, nint a3) // a1: AddonGearSetList*, a2: ?, a3: 2x AtkValue*
+    private delegate nint AddonGearSetList_OnSetupDelegate(AddonGearSetList* addon, int numAtkValues, AtkValue* atkValues);
+    public nint AddonGearSetList_OnSetupDetour(AddonGearSetList* addon, int numAtkValues, AtkValue* atkValues)
     {
-        var result = AddonGearSetList_OnSetupHook.Original(a1, a2, a3);
+        var result = AddonGearSetList_OnSetupHook.Original(addon, numAtkValues, atkValues);
 
         if (Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == "GearSetList"))
         {
-            *(byte*)(a1 + 0x3A8D) = 0;
+            addon->ResetPosition = false;
         }
 
         return result;
@@ -350,7 +351,7 @@ public unsafe class LockWindowPosition : Tweak
         return AgentContext_OpenContextMenuForAddonHook.Original(agent, addonId, bindToOwner);
     }
 
-    [AutoHook, Signature("48 89 6C 24 ?? 48 89 54 24 ?? 56 41 54 ", DetourName = nameof(WindowContextMenuEventHandlerDetour))]
+    [AutoHook, Signature("48 89 6C 24 ?? 48 89 54 24 ?? 56 41 54", DetourName = nameof(WindowContextMenuEventHandlerDetour))]
     private Hook<WindowContextMenuEventHandlerDelegate> WindowContextMenuEventHandlerHook { get; init; } = null!;
     private delegate AtkValue* WindowContextMenuEventHandlerDelegate(nint self, AtkValue* result, nint a3, long a4, long eventParam);
     public AtkValue* WindowContextMenuEventHandlerDetour(nint self, AtkValue* result, nint a3, long a4, long eventParam)
@@ -399,7 +400,7 @@ public unsafe class LockWindowPosition : Tweak
             .Encode();
 
         var textPtr = Marshal.AllocHGlobal(bytes.Length + 1);
-        Unsafe.InitBlockUnaligned((void*)textPtr, 0, (uint)bytes.Length + 1);
+        Unsafe.InitBlock((void*)textPtr, 0, (uint)bytes.Length + 1);
         MemoryHelper.WriteRaw(textPtr, bytes);
 
         var handler = (nint)AtkStage.GetSingleton()->RaptureAtkUnitManager + 0x9C88; // see vtbl ptr in ctor
