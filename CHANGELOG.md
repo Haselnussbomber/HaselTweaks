@@ -1,8 +1,8 @@
 # Changelog
 
-## [Unreleased]
+## [0.11.0] (2023-02-23)
 
-### Material Allocation
+### Reworked Tweak: Material Allocation
 
 - **Added:** A config option to enable clicking on gatherable items to open the Sanctuary Gathering Log (enabled by default).
 - **Changed:** Since this tweak now does two things, the previous function has been reworked and added as config option. Instead of always selecting the third tab, it now opens the window with the last selected tab, saved between game sessions.
@@ -516,6 +516,7 @@ Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
 [Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[0.11.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.8...v0.10.0
 [0.9.8]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.7...v0.9.8
 [0.9.7]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.6...v0.9.7
