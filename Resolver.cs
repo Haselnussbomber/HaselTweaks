@@ -127,7 +127,10 @@ public sealed partial class Resolver
         var sigCache = Plugin.Config.SigCache;
         foreach (Address address in _addresses)
         {
-            if (sigCache!.TryGetValue(address.String, out var offset))
+            var str = address is StaticAddress sAddress
+                ? $"{sAddress.String}+0x{sAddress.Offset:X}"
+                : address.String;
+            if (sigCache!.TryGetValue(str, out var offset))
             {
                 address.Value = (nuint)(offset + _baseAddress);
                 PluginLog.Debug($"[SigCache] Using cached address {address.Value:X} (ffxiv_dx11.exe+{address.Value - (nuint)_baseAddress:X}) for {address.String}");
@@ -204,7 +207,10 @@ public sealed partial class Resolver
 
                         address.Value = (nuint)(_baseAddress + _textSectionOffset + outLocation);
                         PluginLog.Debug($"[SigCache] Caching address {address.Value:X} (ffxiv_dx11.exe+{address.Value - (nuint)_baseAddress:X}) for {address.String}");
-                        if (sigCache!.TryAdd(address.String, outLocation + _textSectionOffset) == true)
+                        var str = address is StaticAddress sAddress
+                            ? $"{sAddress.String}+0x{sAddress.Offset:X}"
+                            : address.String;
+                        if (sigCache!.TryAdd(str, outLocation + _textSectionOffset) == true)
                             cacheChanged = true;
                         availableAddresses.Remove(address);
                         if (availableAddresses.Count == 0)

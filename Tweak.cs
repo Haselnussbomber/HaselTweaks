@@ -43,9 +43,7 @@ public abstract class Tweak
         .GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)
         .Where(prop =>
             prop.PropertyType.IsGenericType &&
-            prop.PropertyType.GetGenericTypeDefinition() == typeof(Hook<>) &&
-            prop.CustomAttributes.Any(ca => ca.AttributeType == typeof(AutoHookAttribute)) &&
-            prop.CustomAttributes.Any(ca => ca.AttributeType == typeof(SignatureAttribute))
+            prop.PropertyType.GetGenericTypeDefinition() == typeof(Hook<>)
         );
 
     internal IEnumerable<MethodInfo> SlashCommands => GetType()
@@ -76,6 +74,17 @@ public abstract class Tweak
         {
             Error(ex, "SignatureException, flagging as outdated");
             Outdated = true;
+            LastException = ex;
+            return;
+        }
+
+        try
+        {
+            SetupVTableHooks();
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during SetupAutoHooks");
             LastException = ex;
             return;
         }
@@ -171,6 +180,7 @@ public abstract class Tweak
     }
 
     public virtual void Setup() { }
+    public virtual void SetupVTableHooks() { }
     public virtual void Enable() { }
     public virtual void Disable() { }
     public virtual void Dispose() { }

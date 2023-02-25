@@ -1,6 +1,4 @@
 using Dalamud.Game.ClientState.Keys;
-using Dalamud.Hooking;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows;
@@ -9,7 +7,7 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class AetherCurrentHelper : Tweak
+public unsafe partial class AetherCurrentHelper : Tweak
 {
     public override string Name => "Aether Current Helper";
     public override string Description => "Clicking on a zone in the Aether Currents window opens a helper window that shows where to find the aether currents or which quests unlocks them. Clicking on an aether current in the list flags the position of the aether current or the quest giver on the map.";
@@ -25,11 +23,6 @@ public unsafe class AetherCurrentHelper : Tweak
 
     private readonly AetherCurrentHelperWindow Window = new();
 
-    // Client::UI::Agent::AgentAetherCurrent_ReceiveEvent
-    [AutoHook, Signature("40 53 55 56 57 41 56 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 48 8B D9 49 8B F8", DetourName = nameof(ReceiveEventDetour))]
-    private Hook<ReceiveEventDelegate> ReceiveEventHook { get; init; } = null!;
-    private delegate AtkValue* ReceiveEventDelegate(AgentAetherCurrent* agent, AtkValue* result, AtkValue* a3);
-
     public override void Enable()
     {
         Plugin.WindowSystem.AddWindow(Window);
@@ -40,7 +33,8 @@ public unsafe class AetherCurrentHelper : Tweak
         Plugin.WindowSystem.RemoveWindow(Window);
     }
 
-    private AtkValue* ReceiveEventDetour(AgentAetherCurrent* agent, AtkValue* result, AtkValue* atkValue)
+    [SigHook("40 53 55 56 57 41 56 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 48 8B D9 49 8B F8")]
+    private AtkValue* AgentAetherCurrent_ReceiveEvent(AgentAetherCurrent* agent, AtkValue* result, AtkValue* atkValue)
     {
         if (Service.KeyState[VirtualKey.SHIFT])
             goto OriginalCode;
@@ -72,6 +66,6 @@ public unsafe class AetherCurrentHelper : Tweak
         return result;
 
         OriginalCode:
-        return ReceiveEventHook.Original(agent, result, atkValue);
+        return AgentAetherCurrent_ReceiveEventHook.Original(agent, result, atkValue);
     }
 }

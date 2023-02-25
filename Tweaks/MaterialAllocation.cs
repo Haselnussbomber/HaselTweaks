@@ -2,8 +2,6 @@ using System.Linq;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Hooking;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
@@ -13,7 +11,7 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class MaterialAllocation : Tweak
+public unsafe partial class MaterialAllocation : Tweak
 {
     public override string Name => "Material Allocation";
     public override string Description => "Enhances the Island Sanctuarys \"Material Allocation\" window.";
@@ -51,10 +49,8 @@ public unsafe class MaterialAllocation : Tweak
     }
 
     // vf48 = OnOpen?
-    [AutoHook, Signature("BA ?? ?? ?? ?? E9 ?? ?? ?? ?? CC CC CC CC CC CC 40 57 48 83 EC 20 48 8B F9 85 D2 7E 51", DetourName = nameof(AddonMJICraftMaterialConfirmation_vf48Detour))]
-    private Hook<AddonMJICraftMaterialConfirmation_vf48Delegate> AddonMJICraftMaterialConfirmation_vf48Hook { get; init; } = null!;
-    private delegate nint AddonMJICraftMaterialConfirmation_vf48Delegate(AddonMJICraftMaterialConfirmation* addon, int numAtkValues, nint atkValues);
-    public nint AddonMJICraftMaterialConfirmation_vf48Detour(AddonMJICraftMaterialConfirmation* addon, int numAtkValues, nint atkValues)
+    [SigHook("BA ?? ?? ?? ?? E9 ?? ?? ?? ?? CC CC CC CC CC CC 40 57 48 83 EC 20 48 8B F9 85 D2 7E 51")]
+    public nint AddonMJICraftMaterialConfirmation_vf48(AddonMJICraftMaterialConfirmation* addon, int numAtkValues, nint atkValues)
     {
         if (Config.SaveLastSelectedTab)
         {
@@ -76,14 +72,12 @@ public unsafe class MaterialAllocation : Tweak
         return AddonMJICraftMaterialConfirmation_vf48Hook.Original(addon, numAtkValues, atkValues);
     }
 
-    // not really OnUpdate, but the function it calls after checking agent->Data exists
-    [AutoHook, Signature("40 53 48 83 EC 20 48 8B 51 28 48 8B D9 8B 0A 83 E9 01 74 39", DetourName = nameof(AgentMJIGatheringNoteBook_OnUpdateDetour))]
-    private Hook<AgentMJIGatheringNoteBook_OnUpdateDelegate> AgentMJIGatheringNoteBook_OnUpdateHook { get; init; } = null!;
-    private delegate bool AgentMJIGatheringNoteBook_OnUpdateDelegate(AgentMJIGatheringNoteBook* agent);
-    public bool AgentMJIGatheringNoteBook_OnUpdateDetour(AgentMJIGatheringNoteBook* agent)
+    [SigHook("40 53 48 83 EC 20 48 8B 51 28 48 8B D9 8B 0A 83 E9 01 74 39")]
+    public bool AgentMJIGatheringNoteBook_OnUpdate(AgentMJIGatheringNoteBook* agent)
     {
         var handleUpdate = Config.OpenGatheringLogOnItemClick
             && nextMJIGatheringNoteBookItemId != 0
+            && agent->Data != null
             && agent->Data->Status == 3
             && (agent->Data->Flags & 2) != 0 // refresh pending
             && agent->Data->GatherItemPtrs != null;
@@ -99,30 +93,8 @@ public unsafe class MaterialAllocation : Tweak
         return ret;
     }
 
-    private void UpdateGatheringNoteBookItem(AgentMJIGatheringNoteBook* agent, uint itemId)
-    {
-        if (sheetMJIItemPouch == null)
-            return;
-
-        var index = 0u;
-        for (; index < sheetMJIItemPouch.RowCount; index++)
-        {
-            var gatherItem = agent->Data->GatherItemPtrs[index];
-            if (gatherItem != null && gatherItem->ItemId == itemId)
-                break; // found
-        }
-
-        if (index > 0)
-        {
-            agent->Data->SelectedItemIndex = index;
-            agent->Data->Flags |= 2;
-        }
-    }
-
-    [AutoHook, Signature("48 89 5C 24 ?? 55 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24 ?? 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 17 BA ?? ?? ?? ?? 49 8B D8", DetourName = nameof(AddonMJICraftMaterialConfirmation_OnSetupDetour))]
-    private Hook<AddonMJICraftMaterialConfirmation_OnSetupDelegate> AddonMJICraftMaterialConfirmation_OnSetupHook { get; init; } = null!;
-    private delegate void AddonMJICraftMaterialConfirmation_OnSetupDelegate(AddonMJICraftMaterialConfirmation* addon, int numAtkValues, AtkValue* atkValues);
-    public void AddonMJICraftMaterialConfirmation_OnSetupDetour(AddonMJICraftMaterialConfirmation* addon, int numAtkValues, AtkValue* atkValues)
+    [SigHook("48 89 5C 24 ?? 55 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24 ?? 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 17 BA ?? ?? ?? ?? 49 8B D8")]
+    public void AddonMJICraftMaterialConfirmation_OnSetup(AddonMJICraftMaterialConfirmation* addon, int numAtkValues, AtkValue* atkValues)
     {
         AddonMJICraftMaterialConfirmation_OnSetupHook.Original(addon, numAtkValues, atkValues);
         if (addon->ItemList != null && addon->ItemList->AtkComponentBase.OwnerNode != null)
@@ -132,10 +104,8 @@ public unsafe class MaterialAllocation : Tweak
         }
     }
 
-    [AutoHook, Signature("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 60 41 8D 40 FF", DetourName = nameof(AddonMJICraftMaterialConfirmation_ReceiveEventDetour))]
-    private Hook<AddonMJICraftMaterialConfirmation_ReceiveEventDelegate> AddonMJICraftMaterialConfirmation_ReceiveEventHook { get; init; } = null!;
-    private delegate void AddonMJICraftMaterialConfirmation_ReceiveEventDelegate(AddonMJICraftMaterialConfirmation* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5);
-    public void AddonMJICraftMaterialConfirmation_ReceiveEventDetour(AddonMJICraftMaterialConfirmation* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
+    [SigHook("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 60 41 8D 40 FF")]
+    public void AddonMJICraftMaterialConfirmation_ReceiveEvent(AddonMJICraftMaterialConfirmation* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
         if (eventParam is > 0 and < 4 && Config.SaveLastSelectedTab)
         {
@@ -211,5 +181,25 @@ public unsafe class MaterialAllocation : Tweak
         }
 
         AddonMJICraftMaterialConfirmation_ReceiveEventHook.Original(addon, eventType, eventParam, atkEvent, a5);
+    }
+
+    private void UpdateGatheringNoteBookItem(AgentMJIGatheringNoteBook* agent, uint itemId)
+    {
+        if (sheetMJIItemPouch == null)
+            return;
+
+        var index = 0u;
+        for (; index < sheetMJIItemPouch.RowCount; index++)
+        {
+            var gatherItem = agent->Data->GatherItemPtrs[index];
+            if (gatherItem != null && gatherItem->ItemId == itemId)
+                break; // found
+        }
+
+        if (index > 0)
+        {
+            agent->Data->SelectedItemIndex = index;
+            agent->Data->Flags |= 2;
+        }
     }
 }

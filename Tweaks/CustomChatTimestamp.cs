@@ -1,11 +1,9 @@
-using Dalamud.Hooking;
 using Dalamud.Memory;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class CustomChatTimestamp : Tweak
+public unsafe partial class CustomChatTimestamp : Tweak
 {
     public override string Name => "Custom Chat Timestamp";
     public override string Description => "As it says, configurable chat timestamp format.";
@@ -17,13 +15,10 @@ public unsafe class CustomChatTimestamp : Tweak
         public string Format = "[HH:mm] ";
     }
 
-    [AutoHook, Signature("E8 ?? ?? ?? ?? 48 8B D0 48 8B CB E8 ?? ?? ?? ?? 4C 8D 87", DetourName = nameof(Detour))]
-    private Hook<DetourDelegate> Hook { get; init; } = null!;
-    private delegate byte* DetourDelegate(nint a1, ulong addonRowId, ulong value);
-
-    private byte* Detour(nint a1, ulong addonRowId, ulong value)
+    [SigHook("E8 ?? ?? ?? ?? 48 8B D0 48 8B CB E8 ?? ?? ?? ?? 4C 8D 87")]
+    private byte* FormatAddon(nint a1, ulong addonRowId, ulong value)
     {
-        if (addonRowId != 7840) return Hook.Original(a1, addonRowId, value);
+        if (addonRowId != 7840) return FormatAddonHook.Original(a1, addonRowId, value);
 
         var str = (Utf8String*)(a1 + 0x9C0);
         var time = DateTime.UnixEpoch.AddSeconds(value).ToLocalTime();

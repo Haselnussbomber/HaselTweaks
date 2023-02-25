@@ -51,7 +51,7 @@ internal sealed record MethodInfo(string Name, string Modifiers, string ReturnTy
 
     public string GetParameterNamesString() => string.Join(", ", Parameters.Map(p => p.Name));
 
-    private string GetParameterTypesAndNamesString() => string.Join(", ", Parameters.Map(p => $"{p.Type} {p.Name}"));
+    public string GetParameterTypesAndNamesString() => string.Join(", ", Parameters.Map(p => $"{p.Type} {p.Name}"));
 
     public string GetReturnString() => ReturnType == "void" ? "" : "return ";
 

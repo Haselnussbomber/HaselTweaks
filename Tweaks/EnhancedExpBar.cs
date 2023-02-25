@@ -1,7 +1,5 @@
 using System.Linq;
 using Dalamud.Game.Text;
-using Dalamud.Hooking;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -12,7 +10,7 @@ using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class EnhancedExpBar : Tweak
+public unsafe partial class EnhancedExpBar : Tweak
 {
     public override string Name => "Enhanced Experience Bar";
     public override string Description => @"Enhances the Experience Bar with the following modes:
@@ -73,10 +71,6 @@ public unsafe class EnhancedExpBar : Tweak
         )]
         public bool DisableColorChanges = false;
     }
-
-    [AutoHook, Signature("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 41 56 41 57 48 83 EC 30 48 8B 72 18", DetourName = nameof(OnRequestedUpdateDetour))]
-    private Hook<OnRequestedUpdateDelegate> OnRequestedUpdateHook { get; init; } = null!;
-    private delegate nint OnRequestedUpdateDelegate(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData);
 
     public override void Enable()
     {
@@ -146,7 +140,7 @@ public unsafe class EnhancedExpBar : Tweak
 
         if (useDetour)
         {
-            OnRequestedUpdateDetour(
+            AddonExp_OnRequestedUpdate(
                 addon,
                 atkArrayDataHolder.NumberArrays,
                 atkArrayDataHolder.StringArrays
@@ -165,7 +159,8 @@ public unsafe class EnhancedExpBar : Tweak
         }
     }
 
-    private nint OnRequestedUpdateDetour(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
+    [SigHook("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 41 56 41 57 48 83 EC 30 48 8B 72 18")]
+    private nint AddonExp_OnRequestedUpdate(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
         var nineGridNode = GetNode<AtkNineGridNode>((AtkComponentBase*)addon->GaugeBarNode, 4);
         if (nineGridNode == null)
@@ -178,7 +173,7 @@ public unsafe class EnhancedExpBar : Tweak
         if (leftText == null)
             goto OriginalOnRequestedUpdateWithColorReset;
 
-        var ret = OnRequestedUpdateHook!.Original(addon, numberArrayData, stringArrayData);
+        var ret = AddonExp_OnRequestedUpdateHook!.Original(addon, numberArrayData, stringArrayData);
 
         string job, levelLabel, level;
         uint requiredExperience;
@@ -293,7 +288,7 @@ public unsafe class EnhancedExpBar : Tweak
         ResetColor(nineGridNode);
 
         OriginalOnRequestedUpdate:
-        return OnRequestedUpdateHook!.Original(addon, numberArrayData, stringArrayData);
+        return AddonExp_OnRequestedUpdateHook!.Original(addon, numberArrayData, stringArrayData);
     }
 
     private void ResetColor(AtkNineGridNode* nineGridNode)

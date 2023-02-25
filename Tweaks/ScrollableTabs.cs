@@ -1,5 +1,3 @@
-using Dalamud.Hooking;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -8,7 +6,7 @@ using HaselAtkComponentRadioButton = HaselTweaks.Structs.AtkComponentRadioButton
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class ScrollableTabs : Tweak
+public unsafe partial class ScrollableTabs : Tweak
 {
     public override string Name => "Scrollable Tabs";
     public override string Description => "Enables mouse wheel to switch tabs (like with LB/RB on controllers).";
@@ -68,16 +66,13 @@ public unsafe class ScrollableTabs : Tweak
         public bool HandleAdventureNoteBook = true;
     }
 
-    [AutoHook, Signature("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 49 8B F8 C6 05", DetourName = nameof(WindowProcHandlerDetour))]
-    private Hook<WindowProcHandlerDelegate> WindowProcHandlerHook { get; init; } = null!;
-    private delegate ulong WindowProcHandlerDelegate(nint hWnd, int uMsg, int wParam);
-
     private const uint WM_MOUSEWHEEL = 0x020A;
     private const uint WHEEL_DELTA = 120;
 
     private short wheelState;
 
-    private ulong WindowProcHandlerDetour(nint hwnd, int uMsg, int wParam)
+    [SigHook("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 49 8B F8 C6 05")]
+    private ulong WindowProcHandler(nint hwnd, int uMsg, int wParam)
     {
         if (uMsg == WM_MOUSEWHEEL)
             wheelState = (short)Math.Clamp((wParam >> 16) / WHEEL_DELTA * (Config.Invert ? -1 : 1), -1, 1);

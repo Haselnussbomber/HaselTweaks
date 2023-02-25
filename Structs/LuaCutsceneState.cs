@@ -3,8 +3,9 @@ using FFXIVClientStructs.FFXIV.Client.System.String;
 namespace HaselTweaks.Structs;
 
 // ctor "E8 ?? ?? ?? ?? 48 8B F0 48 89 45 0F"
+[VTableAddress("E8 ?? ?? ?? ?? 48 8B F0 48 89 45 0F", 0x19 + 3)]
 [StructLayout(LayoutKind.Explicit, Size = 0x90)]
-public unsafe struct LuaCutsceneState
+public unsafe partial struct LuaCutsceneState
 {
     [FieldOffset(0x00)] public void* vtbl;
     [FieldOffset(0x08)] public uint Unk8;
