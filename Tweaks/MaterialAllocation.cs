@@ -29,7 +29,7 @@ public unsafe partial class MaterialAllocation : Tweak
         public bool SaveLastSelectedTab = true;
 
         [ConfigField(Type = ConfigFieldTypes.Ignore)]
-        public sbyte LastSelectedTab = 2;
+        public byte LastSelectedTab = 2;
 
         [ConfigField(Label = "Open Sanctuary Gathering Log for gatherable items")]
         public bool OpenGatheringLogOnItemClick = true;
@@ -109,7 +109,7 @@ public unsafe partial class MaterialAllocation : Tweak
     {
         if (eventParam is > 0 and < 4 && Config.SaveLastSelectedTab)
         {
-            Config.LastSelectedTab = (sbyte)(eventParam - 1);
+            Config.LastSelectedTab = (byte)(eventParam - 1);
         }
 
         if (eventParam == 9902)
