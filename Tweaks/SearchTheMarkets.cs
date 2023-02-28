@@ -13,7 +13,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class SearchTheMarkets : Tweak
 {
     public override string Name => "Search the markets";
-    public override string Description => "Adds a context menu entry to items in Inventory, Crafting Log, Recipe Tree or Materials List to quickly search for the item on the Market Board. Only visible when Market Board is open.";
+    public override string Description => "Adds a context menu entry to items in Chat, Crafting Log, Inventory, Materials List and Recipe Tree to quickly search for the item on the Market Board. Only visible when Market Board is open.";
 
     private readonly DalamudContextMenu ContextMenu = new();
     private GameObjectContextMenuItem ContextMenuItemGame = null!;
