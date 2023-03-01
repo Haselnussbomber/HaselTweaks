@@ -84,9 +84,9 @@ jobs:
           body: ${{ steps.extract-release-notes.outputs.release_notes }}
           files: artifact/*
 
-      - name: Trigger Repo Update
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.PAT }}
-          repository: ${{ github.repository_owner }}/MyDalamudPlugins
-          event-type: new-release
+      #- name: Trigger Repo Update
+      #  uses: peter-evans/repository-dispatch@v1
+      #  with:
+      #    token: ${{ secrets.PAT }}
+      #    repository: ${{ github.repository_owner }}/MyDalamudPlugins
+      #    event-type: new-release
