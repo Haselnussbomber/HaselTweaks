@@ -173,6 +173,7 @@ public unsafe partial class LockWindowPosition : Tweak
                 {
                     entry.Enabled = !entry.Enabled;
                 }
+                Plugin.Config.Save();
             }
         }
 
@@ -404,6 +405,8 @@ public unsafe partial class LockWindowPosition : Tweak
                         Name = name,
                     });
                 }
+
+                Plugin.Config.Save();
             }
 
             EventIndexToDisable = 0;
