@@ -163,6 +163,19 @@ public unsafe partial class LockWindowPosition : Tweak
             }
         }
 
+        if (Config.LockedWindows.Any())
+        {
+            ImGui.SameLine();
+
+            if (ImGui.Button("Toggle All"))
+            {
+                foreach (var entry in Config.LockedWindows)
+                {
+                    entry.Enabled = !entry.Enabled;
+                }
+            }
+        }
+
         if (ShowPicker && HoveredWindowPos != default)
         {
             ImGui.SetNextWindowPos(HoveredWindowPos);

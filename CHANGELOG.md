@@ -5,6 +5,7 @@
 ### Lock Window Position
 
 - **Added:** A config option to invert the logic (locks all windows).
+- **Added:** A "Toggle All" button to easily toggle all locked window states.
 
 ## [0.11.0] (2023-02-23)
 
