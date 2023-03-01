@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Lock Window Position
+
+- **Added:** A config option to invert the logic (locks all windows).
+
 ## [0.11.0] (2023-02-23)
 
 ### Reworked Tweak: Material Allocation

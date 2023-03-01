@@ -29,6 +29,7 @@ public unsafe partial class LockWindowPosition : Tweak
 
     public class Configuration
     {
+        public bool Inverted = false;
         public bool AddLockUnlockContextMenuEntries = true;
         public List<LockedWindowSetting> LockedWindows = new();
     }
@@ -48,6 +49,12 @@ public unsafe partial class LockWindowPosition : Tweak
     public override bool HasCustomConfig => true;
     public override void DrawCustomConfig()
     {
+        ImGui.Checkbox("Invert logic (locks all windows)##HaselTweaks_LockWindows_Inverted", ref Config.Inverted);
+        if (ImGui.IsItemClicked())
+        {
+            Plugin.Config.Save();
+        }
+
         ImGui.Checkbox("Add Lock/Unlock Position to windows context menu##HaselTweaks_LockWindows_AddLockUnlockContextMenuEntries", ref Config.AddLockUnlockContextMenuEntries);
         if (ImGui.IsItemClicked())
         {
@@ -80,7 +87,12 @@ public unsafe partial class LockWindowPosition : Tweak
                 ImGui.Checkbox($"{key}_Enabled", ref entry.Enabled);
                 if (ImGui.IsItemHovered())
                 {
-                    ImGui.SetTooltip("Window is " + (entry.Enabled ? "locked" : "unlocked"));
+                    var isLocked = entry.Enabled;
+
+                    if (Config.Inverted)
+                        isLocked = !isLocked;
+
+                    ImGui.SetTooltip("Window is " + (isLocked ? "locked" : "unlocked"));
                 }
                 if (ImGui.IsItemClicked())
                 {
@@ -203,10 +215,13 @@ public unsafe partial class LockWindowPosition : Tweak
     {
         var result = AddonGearSetList_OnSetupHook.Original(addon, numAtkValues, atkValues);
 
-        if (Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == "GearSetList"))
-        {
+        var isLocked = Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == "GearSetList");
+
+        if (Config.Inverted)
+            isLocked = !isLocked;
+
+        if (isLocked)
             addon->ResetPosition = false;
-        }
 
         return result;
     }
@@ -217,7 +232,12 @@ public unsafe partial class LockWindowPosition : Tweak
         if (atkUnitBase != null)
         {
             var name = MemoryHelper.ReadStringNullTerminated((nint)atkUnitBase->Name);
-            if (Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == name))
+            var isLocked = Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == name);
+
+            if (Config.Inverted)
+                isLocked = !isLocked;
+
+            if (isLocked)
                 return false;
         }
 
@@ -298,7 +318,12 @@ public unsafe partial class LockWindowPosition : Tweak
 
                 if (!IgnoredAddons.Contains(name))
                 {
-                    if (Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == name)) // is locked?
+                    var isLocked = Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == name);
+
+                    if (Config.Inverted)
+                        isLocked = !isLocked;
+
+                    if (isLocked)
                     {
                         agent->CurrentContextMenu->ContextItemDisabledMask |= 1; // keeping it simple. disables "Return to Default Position"
 
@@ -349,15 +374,20 @@ public unsafe partial class LockWindowPosition : Tweak
                 var name = MemoryHelper.ReadStringNullTerminated((nint)addon->Name);
 
                 var entry = Config.LockedWindows.FirstOrDefault(entry => entry?.Name == name, null);
+                var isLocked = eventParam == EventParamLock;
+
+                if (Config.Inverted)
+                    isLocked = !isLocked;
+
                 if (entry != null)
                 {
-                    entry.Enabled = eventParam == EventParamLock;
+                    entry.Enabled = isLocked;
                 }
                 else
                 {
                     Config.LockedWindows.Add(new()
                     {
-                        Enabled = eventParam == EventParamLock,
+                        Enabled = isLocked,
                         Name = name,
                     });
                 }
