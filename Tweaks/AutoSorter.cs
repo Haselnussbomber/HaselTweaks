@@ -153,7 +153,7 @@ public unsafe class AutoSorter : Tweak
                 errors.Add("This rule overrides a slot-based armoury rule. Move it up.");
             }
 
-            if (Category is "rightsaddlebag" && !tweak.HasPremiumSaddlebag)
+            if (Category is "rightsaddlebag" && !PlayerState.Instance()->HasPremiumSaddlebag)
             {
                 errors ??= new();
                 errors.Add("Not subscribed to the Companion Premium Service.");
