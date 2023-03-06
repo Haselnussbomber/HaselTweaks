@@ -9,8 +9,11 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Utils;
 
-public unsafe class StringUtils : IDisposable
+public sealed unsafe partial class StringUtils : IDisposable
 {
+    [GeneratedRegex("^[\\ue000-\\uf8ff]+ ")]
+    private static partial Regex Utf8PrivateUseAreaRegex();
+
     private static Dictionary<uint, string> ENpcResidentNameCache = new();
     private static Dictionary<uint, string> EObjNameCache = new();
     private static Dictionary<uint, string> QuestCache = new();
@@ -61,7 +64,7 @@ public unsafe class StringUtils : IDisposable
             value = SeString.Parse(quest.Name.RawData).ToString();
 
             if (clean)
-                value = Regex.Replace(value, @"^[\ue000-\uf8ff]+ ", "");
+                value = Utf8PrivateUseAreaRegex().Replace(value, "");
 
             QuestCache.Add(questId, value);
         }

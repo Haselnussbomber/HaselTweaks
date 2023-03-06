@@ -11,13 +11,11 @@ public static class ParameterSymbolExtensions
         if (symbol.HasExplicitDefaultValue)
         {
             var defaultValue = symbol.ExplicitDefaultValue;
-            switch (defaultValue)
+            return defaultValue switch
             {
-                case bool boolValue:
-                    return boolValue ? Some("true") : Some("false");
-                default:
-                    return defaultValue is null ? None : Some(defaultValue.ToString());
-            }
+                bool boolValue => boolValue ? Some("true") : Some("false"),
+                _ => defaultValue is null ? None : Some(defaultValue.ToString()),
+            };
         }
 
         return None;

@@ -10,7 +10,7 @@ using HaselTweaks.Windows;
 
 namespace HaselTweaks;
 
-public class Plugin : IDalamudPlugin
+public sealed class Plugin : IDalamudPlugin
 {
     public string Name => "HaselTweaks";
 

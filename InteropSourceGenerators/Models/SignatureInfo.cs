@@ -38,7 +38,7 @@ internal sealed record SignatureInfo(string Signature)
 
         for (var repeatIndex = 0; repeatIndex < paddingNeeded; repeatIndex++)
         {
-            repeated.CopyTo(result.Slice(signature.Length + repeatIndex * repeated.Length));
+            repeated.CopyTo(result[(signature.Length + repeatIndex * repeated.Length)..]);
         }
 
         return result.ToString();

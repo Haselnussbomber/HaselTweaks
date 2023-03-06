@@ -13,13 +13,16 @@ using static Dalamud.Game.Command.CommandInfo;
 
 namespace HaselTweaks.Windows;
 
-public class PluginWindow : Window
+public partial class PluginWindow : Window
 {
     private const uint SidebarWidth = 250;
     private const uint ConfigWidth = SidebarWidth * 2;
 
     private string SelectedTweak = string.Empty;
     private readonly GameFontHandle FontAxis36;
+
+    [GeneratedRegex("\\.0$")]
+    private static partial Regex VersionPatchZeroRegex();
 
     public PluginWindow() : base("HaselTweaks")
     {
@@ -227,7 +230,7 @@ public class PluginWindow : Window
             var version = GetType().Assembly.GetName().Version;
             if (version != null)
             {
-                var versionString = "v" + Regex.Replace(version.ToString(), @"\.0$", "");
+                var versionString = "v" + VersionPatchZeroRegex().Replace(version.ToString(), "");
                 ImGui.SetCursorPos(cursorPos + contentAvail - ImGui.CalcTextSize(versionString));
                 ImGuiUtils.DrawLink(versionString, "Visit Release Notes", $"https://github.com/Haselnussbomber/HaselTweaks/releases/tag/{versionString}");
             }

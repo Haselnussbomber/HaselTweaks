@@ -22,8 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// This is a copy of https://github.com/aers/FFXIVClientStructs/blob/main/FFXIVClientStructs/Interop/Resolver.cs
-// but for HaselTweaks.Structs and using Configuration for cache.
+// Based on https://github.com/aers/FFXIVClientStructs/blob/main/FFXIVClientStructs/Interop/Resolver.cs
 
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -32,8 +31,7 @@ using Dalamud.Logging;
 
 namespace HaselTweaks.Interop;
 
-#pragma warning disable IDE0047
-#pragma warning disable IDE0007
+#pragma warning disable
 
 public sealed partial class Resolver
 {
@@ -56,10 +54,6 @@ public sealed partial class Resolver
 
     private int _textSectionOffset;
     private int _textSectionSize;
-    private int _dataSectionOffset;
-    private int _dataSectionSize;
-    private int _rdataSectionOffset;
-    private int _rdataSectionSize;
 
     private bool _hasResolved = false;
 
@@ -102,20 +96,11 @@ public sealed partial class Resolver
             long sectionName = BitConverter.ToInt64(sectionCursor);
 
             // .text
-            switch (sectionName)
+            if (sectionName == 0x747865742E)
             {
-                case 0x747865742E: // .text
-                    _textSectionOffset = BitConverter.ToInt32(sectionCursor.Slice(12, 4));
-                    _textSectionSize = BitConverter.ToInt32(sectionCursor.Slice(8, 4));
-                    break;
-                case 0x617461642E: // .data
-                    _dataSectionOffset = BitConverter.ToInt32(sectionCursor.Slice(12, 4));
-                    _dataSectionSize = BitConverter.ToInt32(sectionCursor.Slice(8, 4));
-                    break;
-                case 0x61746164722E: // .rdata
-                    _rdataSectionOffset = BitConverter.ToInt32(sectionCursor.Slice(12, 4));
-                    _rdataSectionSize = BitConverter.ToInt32(sectionCursor.Slice(8, 4));
-                    break;
+                _textSectionOffset = BitConverter.ToInt32(sectionCursor.Slice(12, 4));
+                _textSectionSize = BitConverter.ToInt32(sectionCursor.Slice(8, 4));
+                break;
             }
 
             sectionCursor = sectionCursor[40..]; // advance by 40
@@ -238,7 +223,7 @@ public sealed partial class Resolver
     {
         _addresses.Add(address);
 
-        byte firstByte = (byte)(address.Bytes[0]);
+        byte firstByte = (byte)address.Bytes[0];
 
         if (_preResolveArray[firstByte] is null)
         {
@@ -250,5 +235,4 @@ public sealed partial class Resolver
     }
 }
 
-#pragma warning restore IDE0007
-#pragma warning restore IDE0047
+#pragma warning restore
