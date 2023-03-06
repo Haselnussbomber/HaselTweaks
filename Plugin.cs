@@ -6,6 +6,7 @@ using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin;
+using HaselTweaks.Utils;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks;
@@ -161,6 +162,13 @@ public sealed class Plugin : IDalamudPlugin
 
         Config.Save();
         Config = null!;
+
+        foreach (var kv in ImGuiUtils.IconCache)
+        {
+            kv.Value?.Dispose();
+        }
+
+        ImGuiUtils.IconCache.Clear();
 
         ((IDisposable)Service.StringUtils).Dispose();
         Service.StringUtils = null!;

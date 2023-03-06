@@ -5,7 +5,6 @@ using Dalamud.Interface;
 using Dalamud.Utility;
 using ImGuiNET;
 using ImGuiScene;
-using Lumina.Data.Files;
 
 namespace HaselTweaks.Utils;
 
@@ -21,24 +20,20 @@ public static class ImGuiUtils
     public static Vector4 ColorGrey2 { get; } = new(0.87f, 0.87f, 0.87f, 1f);
     public static Vector4 ColorGrey3 { get; } = new(0.6f, 0.6f, 0.6f, 1f);
 
-    private static readonly Dictionary<int, TextureWrap> icons = new();
+    public static readonly Dictionary<int, TextureWrap?> IconCache = new();
 
     public static void DrawIcon(int iconId, int width = -1, int height = -1)
     {
-        if (!icons.ContainsKey(iconId))
+        if (!IconCache.TryGetValue(iconId, out var tex))
         {
-            var tex = Service.Data.GetFile<TexFile>($"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex");
-            if (tex == null)
-                return;
-
-            var texWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(tex.GetRgbaImageData(), tex.Header.Width, tex.Header.Height, 4);
-            if (texWrap.ImGuiHandle == 0)
-                return;
-
-            icons[iconId] = texWrap;
+            tex = Service.Data.GetImGuiTexture($"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex");
+            IconCache[iconId] = tex;
         }
 
-        ImGui.Image(icons[iconId].ImGuiHandle, new(width == -1 ? icons[iconId].Width : width, height == -1 ? icons[iconId].Height : height));
+        if (tex == null || tex.ImGuiHandle == 0)
+            return;
+
+        ImGui.Image(tex.ImGuiHandle, new(width == -1 ? tex.Width : width, height == -1 ? tex.Height : height));
     }
 
     public static void DrawPaddedSeparator()
