@@ -1,6 +1,7 @@
 using System.Linq;
 using Dalamud.Game.Text;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
