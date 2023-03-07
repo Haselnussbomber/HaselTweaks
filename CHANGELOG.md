@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.11.2] (2023-03-07)
+
+Preliminary update for Patch 6.35.
+
+### Lock Window Position
+
+- **Fixed:** Configuration will now save when toggling the enable state of a window lock.  
+  This wasn't really worth a hotfix, since the configuration is saved when the plugin unloads (e.g. when closing the game).
+
 ## [0.11.1] (2023-03-01)
 
 ### Lock Window Position
@@ -523,6 +532,7 @@ Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
 [Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[0.11.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.10.1...v0.11.2
 [0.11.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.10.0...v0.11.1
 [0.11.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.8...v0.10.0
