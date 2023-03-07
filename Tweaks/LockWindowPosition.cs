@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using Dalamud;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface;
+using Dalamud.Interface.Raii;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -181,9 +182,10 @@ public unsafe partial class LockWindowPosition : Tweak
         {
             ImGui.SetNextWindowPos(HoveredWindowPos);
             ImGui.SetNextWindowSize(HoveredWindowSize);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 1.0f);
-            ImGui.PushStyleColor(ImGuiCol.Border, ImGuiUtils.ColorGold);
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.847f, 0.733f, 0.49f, 0.33f));
+
+            using var windowBorderSize = ImRaii.PushStyle(ImGuiStyleVar.WindowBorderSize, 1.0f);
+            using var borderColor = ImRaii.PushColor(ImGuiCol.Border, ImGuiUtils.ColorGold);
+            using var windowBgColor = ImRaii.PushColor(ImGuiCol.WindowBg, new Vector4(0.847f, 0.733f, 0.49f, 0.33f));
 
             if (ImGui.Begin("Lock Windows Picker", ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize))
             {
@@ -210,8 +212,6 @@ public unsafe partial class LockWindowPosition : Tweak
 
                 ImGui.End();
             }
-            ImGui.PopStyleColor(2);
-            ImGui.PopStyleVar();
         }
     }
 

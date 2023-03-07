@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 using Dalamud.Interface;
+using Dalamud.Interface.Raii;
 using Dalamud.Utility;
 using ImGuiNET;
 using ImGuiScene;
@@ -61,7 +62,9 @@ public static class ImGuiUtils
         if (ImGui.IsItemHovered())
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-            ImGui.BeginTooltip();
+
+            using var tooltip = ImRaii.Tooltip();
+
             ImGui.Text(title);
 
             var pos = ImGui.GetCursorPos();
@@ -73,7 +76,6 @@ public static class ImGuiUtils
             );
             ImGui.SetCursorPos(pos + new Vector2(20, 0));
             ImGui.TextColored(ColorGrey, url);
-            ImGui.EndTooltip();
         }
 
         if (ImGui.IsItemClicked())
@@ -91,21 +93,19 @@ public static class ImGuiUtils
 
     public static void SameLineSpace()
     {
-        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(ImGui.CalcTextSize(" ").X, 0));
+        using var itemSpacing = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, new Vector2(ImGui.CalcTextSize(" ").X, 0));
         ImGui.SameLine();
-        ImGui.PopStyleVar();
     }
 
     public static void TextColoredWrapped(Vector4 col, string text)
     {
-        ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetColorU32(col));
+        using var textCol = ImRaii.PushColor(ImGuiCol.Text, col);
         ImGui.TextWrapped(text);
-        ImGui.PopStyleColor();
     }
 
     public static unsafe bool ButtonDisabled(string label, Vector2 size = default)
     {
-        ImGui.PushStyleColor(ImGuiCol.Text, 0xff999999);
+        using var textCol = ImRaii.PushColor(ImGuiCol.Text, 0xff999999);
 
         var frameBg = ImGui.GetStyleColorVec4(ImGuiCol.FrameBg);
         if (frameBg != null) ImGui.PushStyleColor(ImGuiCol.Button, *frameBg);
@@ -121,7 +121,6 @@ public static class ImGuiUtils
         if (frameBgActive != null) ImGui.PopStyleColor();
         if (frameBgHovered != null) ImGui.PopStyleColor();
         if (frameBg != null) ImGui.PopStyleColor();
-        ImGui.PopStyleColor();
 
         return ret;
     }
@@ -131,10 +130,8 @@ public static class ImGuiUtils
 
     public static bool IconButton(FontAwesomeIcon icon, string key, Vector2 size = default)
     {
-        ImGui.PushFont(UiBuilder.IconFont);
-        var ret = ImGui.Button(icon.ToIconString() + key, size);
-        ImGui.PopFont();
-        return ret;
+        using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
+        return ImGui.Button(icon.ToIconString() + key, size);
     }
 
     public static bool IconButtonDisabled(FontAwesomeIcon icon, Vector2 size = default)
@@ -142,9 +139,7 @@ public static class ImGuiUtils
 
     public static bool IconButtonDisabled(FontAwesomeIcon icon, string key, Vector2 size = default)
     {
-        ImGui.PushFont(UiBuilder.IconFont);
-        var ret = ButtonDisabled(icon.ToIconString() + key, size);
-        ImGui.PopFont();
-        return ret;
+        using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
+        return ButtonDisabled(icon.ToIconString() + key, size);
     }
 }

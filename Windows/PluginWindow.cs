@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Dalamud;
 using Dalamud.Interface;
 using Dalamud.Interface.GameFonts;
+using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -70,17 +71,13 @@ public partial class PluginWindow : Window
 
     private void DrawSidebar()
     {
-        if (!ImGui.BeginChild("##HaselTweaks_Sidebar", new Vector2(SidebarWidth, -1), true))
-        {
-            ImGui.EndChild();
+        using var child = ImRaii.Child("##HaselTweaks_Sidebar", new Vector2(SidebarWidth, -1), true);
+        if (!child)
             return;
-        }
 
-
-        if (!ImGui.BeginTable("##HaselTweaks_SidebarTable", 2, ImGuiTableFlags.NoSavedSettings))
-        {
+        using var table = ImRaii.Table("##HaselTweaks_SidebarTable", 2, ImGuiTableFlags.NoSavedSettings);
+        if (!table)
             return;
-        }
 
         ImGui.TableSetupColumn("Checkbox", ImGuiTableColumnFlags.WidthFixed);
         ImGui.TableSetupColumn("Tweak Name", ImGuiTableColumnFlags.WidthStretch);
@@ -107,9 +104,8 @@ public partial class PluginWindow : Window
                 if (ImGui.IsItemHovered())
                 {
                     var (status, color) = GetTweakStatus(tweak);
-                    ImGui.BeginTooltip();
+                    using var tooltip = ImRaii.Tooltip();
                     ImGui.TextColored(color, status);
-                    ImGui.EndTooltip();
                 }
 
                 drawList.AddRectFilled(pos, pos + size, ImGui.GetColorU32(ImGuiCol.FrameBg), 3f, ImDrawFlags.RoundCornersAll);
@@ -181,18 +177,13 @@ public partial class PluginWindow : Window
                 ImGui.PopStyleColor();
             }
         }
-
-        ImGui.EndTable();
-        ImGui.EndChild();
     }
 
     private void DrawConfig()
     {
-        if (!ImGui.BeginChild("##HaselTweaks_Config", new Vector2(ConfigWidth, -1), true))
-        {
-            ImGui.EndChild();
+        using var child = ImRaii.Child("##HaselTweaks_Config", new Vector2(ConfigWidth, -1), true);
+        if (!child)
             return;
-        }
 
         if (string.IsNullOrEmpty(SelectedTweak))
         {
@@ -235,24 +226,12 @@ public partial class PluginWindow : Window
                 ImGuiUtils.DrawLink(versionString, "Visit Release Notes", $"https://github.com/Haselnussbomber/HaselTweaks/releases/tag/{versionString}");
             }
 
-            ImGui.EndChild();
             return;
         }
 
-        Tweak? tweak = null;
-        foreach (var t in Plugin.Tweaks)
-        {
-            if (t.InternalName == SelectedTweak)
-            {
-                tweak = t;
-                break;
-            }
-        }
+        var tweak = Plugin.Tweaks.FirstOrDefault(t => t.InternalName == SelectedTweak);
         if (tweak == null)
-        {
-            ImGui.EndChild();
             return;
-        }
 
         ImGui.TextColored(ImGuiUtils.ColorGold, tweak.Name);
 
@@ -416,8 +395,6 @@ public partial class PluginWindow : Window
                 }
             }
         }
-
-        ImGui.EndChild();
     }
 
     private static (string, Vector4) GetTweakStatus(Tweak tweak)
@@ -488,28 +465,27 @@ public partial class PluginWindow : Window
 
         DrawLabel(data);
 
-        if (ImGui.BeginCombo(data.Key, selectedLabel))
+        using var combo = ImRaii.Combo(data.Key, selectedLabel);
+        if (!combo)
+            return;
+
+        var names = Enum.GetNames(enumType)
+            .Select(name => (
+                Name: name,
+                Attr: (EnumOptionAttribute?)enumType.GetField(name)?.GetCustomAttribute(typeof(EnumOptionAttribute))
+            ))
+            .Where(tuple => tuple.Attr != null)
+            .OrderBy((tuple) => tuple.Attr == null ? "" : tuple.Attr.Label);
+
+        foreach (var (Name, Attr) in names)
         {
-            var names = Enum.GetNames(enumType)
-                .Select(name => (
-                    Name: name,
-                    Attr: (EnumOptionAttribute?)enumType.GetField(name)?.GetCustomAttribute(typeof(EnumOptionAttribute))
-                ))
-                .Where(tuple => tuple.Attr != null)
-                .OrderBy((tuple) => tuple.Attr == null ? "" : tuple.Attr.Label);
+            var value = (int)Enum.Parse(enumType, Name);
 
-            foreach (var (Name, Attr) in names)
-            {
-                var value = (int)Enum.Parse(enumType, Name);
+            if (ImGui.Selectable(Attr!.Label, data.Value == value))
+                data.Value = value;
 
-                if (ImGui.Selectable(Attr!.Label, data.Value == value))
-                    data.Value = value;
-
-                if (data.Value == value)
-                    ImGui.SetItemDefaultFocus();
-            }
-
-            ImGui.EndCombo();
+            if (data.Value == value)
+                ImGui.SetItemDefaultFocus();
         }
     }
 
@@ -517,18 +493,17 @@ public partial class PluginWindow : Window
     {
         DrawLabel(data);
 
-        if (ImGui.BeginCombo(data.Key, data.Value))
+        using var combo = ImRaii.Combo(data.Key, data.Value ?? "");
+        if (!combo)
+            return;
+
+        foreach (var item in options)
         {
-            foreach (var item in options)
-            {
-                if (ImGui.Selectable(item, data.Value == item))
-                    data.Value = item;
+            if (ImGui.Selectable(item, data.Value == item))
+                data.Value = item;
 
-                if (data.Value == item)
-                    ImGui.SetItemDefaultFocus();
-            }
-
-            ImGui.EndCombo();
+            if (data.Value == item)
+                ImGui.SetItemDefaultFocus();
         }
     }
 

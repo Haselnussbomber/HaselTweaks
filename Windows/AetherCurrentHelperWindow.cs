@@ -5,6 +5,7 @@ using System.Numerics;
 using Dalamud;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface;
+using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -69,18 +70,14 @@ public class AetherCurrentHelperWindow : Window
         ImGui.Text(placeName);
         ImGui.SetCursorPos(startPos + new Vector2(0, textSize.Y + style.ItemSpacing.Y * 4));
 
-        ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(4));
-
-        if (!ImGui.BeginTable($"##HaselTweaks_AetherCurrents", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.NoPadOuterX))
-        {
-            ImGui.PopStyleVar();
+        using var cellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(4));
+        using var table = ImRaii.Table($"##HaselTweaks_AetherCurrents", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.NoPadOuterX);
+        if (!table)
             return;
-        }
 
         ImGui.TableSetupColumn("Icon", ImGuiTableColumnFlags.WidthFixed);
         ImGui.TableSetupColumn("Content", ImGuiTableColumnFlags.WidthStretch);
         ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthFixed);
-        ImGui.TableSetupColumn("Selectable", ImGuiTableColumnFlags.WidthFixed, 0);
 
         var index = 1;
         var type = 0;
@@ -133,9 +130,6 @@ public class AetherCurrentHelperWindow : Window
             ImGui.Text(text);
             ImGui.TableNextColumn();
         }
-
-        ImGui.EndTable();
-        ImGui.PopStyleVar();
     }
 
     private unsafe bool DrawMainCommandButton()
@@ -196,32 +190,28 @@ public class AetherCurrentHelperWindow : Window
         var quest = Service.Data.GetExcelSheet<Quest>()?.GetRow(questId);
         if (questId == 0 || quest == null) return;
 
+        // Icon
         ImGui.TableNextColumn();
-        {
-            ImGuiUtils.DrawIcon(quest.JournalGenre.Value!.Icon, 40, 40);
-        }
+        ImGuiUtils.DrawIcon(quest.JournalGenre.Value!.Icon, 40, 40);
 
+        // Content
         ImGui.TableNextColumn();
-        {
-            ImGui.TextColored(TitleColor, $"[#{index}] {StringUtils.GetQuestName(quest.RowId, true)}");
+        ImGui.TextColored(TitleColor, $"[#{index}] {StringUtils.GetQuestName(quest.RowId, true)}");
+        ImGui.Text(GetHumanReadableCoords(quest.IssuerLocation.Value!) + " | " + Service.StringUtils.GetENpcResidentName(quest.IssuerStart));
 
-            ImGui.Text(GetHumanReadableCoords(quest.IssuerLocation.Value!) + " | " + Service.StringUtils.GetENpcResidentName(quest.IssuerStart));
-        }
-
+        // Actions
         ImGui.TableNextColumn();
+        var selected = false;
+        ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, 40));
+        if (selected)
         {
-            var selected = false;
-            ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, 40));
-            if (selected)
-            {
-                OpenMapLocation(quest.IssuerLocation.Value);
-            }
-            ImGui.SameLine();
-
-            DrawUnlockStatus(isUnlocked, quest.IssuerLocation.Value);
-            ImGui.SameLine(); // for padding
-            ImGui.Dummy(new Vector2(0, 0));
+            OpenMapLocation(quest.IssuerLocation.Value);
         }
+        ImGui.SameLine();
+
+        DrawUnlockStatus(isUnlocked, quest.IssuerLocation.Value);
+        ImGui.SameLine(); // for padding
+        ImGui.Dummy(new Vector2(0, 0));
     }
 
     private void DrawEObject(int index, bool isUnlocked, AetherCurrent aetherCurrent)
@@ -231,31 +221,28 @@ public class AetherCurrentHelperWindow : Window
 
         var level = GetLevelByObjectId(eobj.RowId);
 
+        // Icon
         ImGui.TableNextColumn();
-        {
-            ImGuiUtils.DrawIcon(60033, 40, 40);
-        }
+        ImGuiUtils.DrawIcon(60033, 40, 40);
 
+        // Content
         ImGui.TableNextColumn();
-        {
-            ImGui.TextColored(TitleColor, $"[#{index}] {Service.StringUtils.GetEObjName(eobj.RowId)}");
-            ImGui.Text(GetHumanReadableCoords(level!));
-        }
+        ImGui.TextColored(TitleColor, $"[#{index}] {Service.StringUtils.GetEObjName(eobj.RowId)}");
+        ImGui.Text(GetHumanReadableCoords(level!));
 
+        // Actions
         ImGui.TableNextColumn();
+        var selected = false;
+        ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, 40));
+        if (selected)
         {
-            var selected = false;
-            ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, 40));
-            if (selected)
-            {
-                OpenMapLocation(level);
-            }
-            ImGui.SameLine();
-
-            DrawUnlockStatus(isUnlocked, level);
-            ImGui.SameLine(); // for padding
-            ImGui.Dummy(new Vector2(0, 0));
+            OpenMapLocation(level);
         }
+        ImGui.SameLine();
+
+        DrawUnlockStatus(isUnlocked, level);
+        ImGui.SameLine(); // for padding
+        ImGui.Dummy(new Vector2(0, 0));
     }
 
     private void DrawUnlockStatus(bool isUnlocked, Level? level)
@@ -299,16 +286,15 @@ public class AetherCurrentHelperWindow : Window
             else
             {
                 ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 2);
-                ImGui.PushFont(UiBuilder.IconFont);
+                using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
                 ImGui.TextColored(new Vector4(0.3f, 0.3f, 0.3f, 1), FontAwesomeIcon.Times.ToIconString());
-                ImGui.PopFont();
             }
         }
     }
 
     private static void DrawCheckmark(bool isSameTerritory)
     {
-        ImGui.PushFont(UiBuilder.IconFont);
+        using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
         var icon = FontAwesomeIcon.Check.ToIconString();
 
         if (isSameTerritory && Config.CenterDistance)
@@ -317,7 +303,6 @@ public class AetherCurrentHelperWindow : Window
         }
 
         ImGui.TextColored(new Vector4(0, 1, 0, 1), icon);
-        ImGui.PopFont();
     }
 
     private EObj? GetEObjByData(uint aetherCurrentId)

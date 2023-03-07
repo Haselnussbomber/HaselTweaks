@@ -44,6 +44,7 @@
 
   <ItemGroup>
     <Reference Include="Dalamud" Private="false" />
+    <Reference Include="Dalamud.Interface" Private="false" />
     <Reference Include="Lumina" Private="false" />
     <Reference Include="Lumina.Excel" Private="false" />
     <Reference Include="FFXIVClientStructs" Private="false" />
