@@ -135,7 +135,7 @@ public class AetherCurrentHelperWindow : Window
     private unsafe bool DrawMainCommandButton()
     {
         var agent = GetAgent<AgentAetherCurrent>(AgentId.AetherCurrent);
-        if (agent->GetAddon() != null)
+        if (GetAddon(AgentId.AetherCurrent) != null)
             return false;
 
         var startPos = ImGui.GetCursorPos();

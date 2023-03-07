@@ -11,17 +11,11 @@ public unsafe class ExpertDeliveries : Tweak
     public override string Name => "Expert Deliveries";
     public override string Description => "Always opens the \"Grand Company Delivery Missions\" window on the \"Expert Delivery\" tab.";
 
-    private AgentGrandCompanySupply* agent;
     private bool switched;
-
-    public override void Setup()
-    {
-        agent = GetAgent<AgentGrandCompanySupply>(AgentId.GrandCompanySupply);
-    }
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        var addon = agent->GetAddon();
+        var addon = GetAddon<AddonGrandCompanySupplyList>(AgentId.GrandCompanySupply);
         if (addon == null)
         {
             if (switched)

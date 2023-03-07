@@ -161,7 +161,7 @@ public unsafe partial class MaterialAllocation : Tweak
                 goto handled;
             }
 
-            var gatheringNoteBookAddon = agentMJIGatheringNoteBook->GetAddon();
+            var gatheringNoteBookAddon = GetAddon<AddonAetherCurrent>(AgentId.MJIGatheringNoteBook);
             if (gatheringNoteBookAddon != null)
             {
                 // just switch item

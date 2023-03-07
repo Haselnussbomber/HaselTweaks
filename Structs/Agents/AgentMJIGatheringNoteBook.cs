@@ -13,11 +13,6 @@ public unsafe partial struct AgentMJIGatheringNoteBook
 {
     [FieldOffset(0)] public AgentInterface AgentInterface;
     [FieldOffset(0x28)] public AgentMJIGatheringNoteBook_Data* Data;
-
-    public AddonAetherCurrent* GetAddon() =>
-        AgentInterface.IsAgentActive() && IsAddonReady(AgentInterface.AddonId)
-            ? GetAddon<AddonAetherCurrent>(AgentInterface.AddonId)
-            : null;
 }
 
 [StructLayout(LayoutKind.Explicit, Size = 0x1A0)]

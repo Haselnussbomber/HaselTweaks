@@ -13,8 +13,5 @@ public unsafe struct AgentAetherCurrent
 
     [FieldOffset(0x64)] public byte TabIndex;
 
-    public AddonAetherCurrent* GetAddon() =>
-        AgentInterface.IsAgentActive() && IsAddonReady(AgentInterface.AddonId)
-            ? GetAddon<AddonAetherCurrent>(AgentInterface.AddonId)
-            : null;
+    public static AddonAetherCurrent* GetAddon() => GetAddon<AddonAetherCurrent>(AgentId.AetherCurrent);
 }

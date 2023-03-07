@@ -23,16 +23,14 @@ public unsafe class SearchTheMarkets : Tweak
 
     private AgentRecipeNote* agentRecipeNote;
     private AgentRecipeItemContext* agentRecipeItemContext;
-    private AgentItemSearch* agentItemSearch;
     private AgentChatLog* agentChatLog;
 
-    private bool IsInvalidState => Item == null || Item.RowId == 0 || Item.IsUntradable || agentItemSearch->GetAddon() == null;
+    private bool IsInvalidState => Item == null || Item.RowId == 0 || Item.IsUntradable || GetAddon<AddonItemSearch>(AgentId.ItemSearch) == null;
 
     public override void Setup()
     {
         agentRecipeNote = GetAgent<AgentRecipeNote>(AgentId.RecipeNote);
         agentRecipeItemContext = GetAgent<AgentRecipeItemContext>(AgentId.RecipeItemContext);
-        agentItemSearch = GetAgent<AgentItemSearch>(AgentId.ItemSearch);
         agentChatLog = GetAgent<AgentChatLog>(AgentId.ChatLog);
 
         var text = new SeStringBuilder()
@@ -114,7 +112,7 @@ public unsafe class SearchTheMarkets : Tweak
         if (IsInvalidState)
             return;
 
-        var addon = agentItemSearch->GetAddon();
+        var addon = GetAddon<AddonItemSearch>(AgentId.ItemSearch);
 
         var itemName = Item!.Name.ToString();
         if (itemName.Length > 40)
