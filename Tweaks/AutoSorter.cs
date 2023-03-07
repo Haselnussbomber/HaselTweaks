@@ -4,6 +4,8 @@ using Dalamud.Game;
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using FFXIVClientStructs.FFXIV.Client.UI.Shell;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
@@ -580,8 +582,8 @@ public unsafe class AutoSorter : Tweak
         if (nextGroup.Key is "armoury" || ArmourySubcategories.Any(subcat => subcat == nextGroup.Key))
         {
             // check if ItemOrderModule is busy
-            var itemOrderModule = ItemOrderModule.Instance;
-            if (itemOrderModule == null || itemOrderModule->IsEventPending)
+            var itemOrderModule = ItemOrderModule.Instance();
+            if (itemOrderModule == null || itemOrderModule->UserFileEvent.IsSavePending)
             {
                 Debug("ItemOrderModule is busy, waiting.");
                 return;
@@ -590,7 +592,7 @@ public unsafe class AutoSorter : Tweak
             for (var i = 0; i < itemOrderModule->ArmourySorterSpan.Length; i++)
             {
                 var sorter = itemOrderModule->ArmourySorterSpan[i].Value;
-                if (sorter != null && sorter->Status != -1)
+                if (sorter != null && sorter->SortFunctionIndex != -1)
                 {
                     Debug($"ItemOrderModule: Sorter #{i} ({sorter->InventoryType}) is busy, waiting.");
                     return;

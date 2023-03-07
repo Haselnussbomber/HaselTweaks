@@ -3,8 +3,8 @@ using Dalamud.Game.Text;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;
 using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
@@ -153,7 +153,7 @@ public unsafe partial class EnhancedExpBar : Tweak
             addon->ClassJob--;
             addon->RequiredExp--;
 
-            addon->OnUpdate(
+            addon->AtkUnitBase.OnUpdate(
                 atkArrayDataHolder.NumberArrays,
                 atkArrayDataHolder.StringArrays
             );
@@ -163,7 +163,11 @@ public unsafe partial class EnhancedExpBar : Tweak
     [SigHook("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 41 56 41 57 48 83 EC 30 48 8B 72 18")]
     private nint AddonExp_OnRequestedUpdate(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        var nineGridNode = GetNode<AtkNineGridNode>((AtkComponentBase*)addon->GaugeBarNode, 4);
+        var gaugeBarNode = GetNode<Structs.AtkComponentGaugeBar>((AtkUnitBase*)addon, 6);
+        if (gaugeBarNode == null)
+            goto OriginalOnRequestedUpdate;
+
+        var nineGridNode = GetNode<AtkNineGridNode>((AtkComponentBase*)gaugeBarNode, 4);
         if (nineGridNode == null)
             goto OriginalOnRequestedUpdate;
 
@@ -222,10 +226,10 @@ public unsafe partial class EnhancedExpBar : Tweak
 
             leftText->SetText($"{job}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
 
-            addon->GaugeBarNode->SetSecondaryValue(0); // rested experience bar
+            gaugeBarNode->SetSecondaryValue(0); // rested experience bar
 
             // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-            addon->GaugeBarNode->SetValue((uint)(pvpProfile->SeriesExperience / (float)requiredExperience * 10000), 0, false);
+            gaugeBarNode->SetValue((uint)(pvpProfile->SeriesExperience / (float)requiredExperience * 10000), 0, false);
 
             if (!Config.DisableColorChanges)
             {
@@ -265,10 +269,10 @@ public unsafe partial class EnhancedExpBar : Tweak
 
             leftText->SetText($"{job}{levelLabel} {level}   {expStr}/{reqExpStr}");
 
-            addon->GaugeBarNode->SetSecondaryValue(0); // rested experience bar
+            gaugeBarNode->SetSecondaryValue(0); // rested experience bar
 
             // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-            addon->GaugeBarNode->SetValue((uint)(mjiManager->IslandState.CurrentXP / (float)requiredExperience * 10000), 0, false);
+            gaugeBarNode->SetValue((uint)(mjiManager->IslandState.CurrentXP / (float)requiredExperience * 10000), 0, false);
 
             if (!Config.DisableColorChanges)
             {

@@ -1,6 +1,5 @@
-using Dalamud.Game;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
@@ -49,11 +48,11 @@ public unsafe class MinimapAdjustments : Tweak
         UpdateCollision(addon, false);
     }
 
-    public override void OnFrameworkUpdate(Framework framework)
+    public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
         var addon = GetAddon("_NaviMap");
         if (addon == null) return;
-        UpdateVisibility(addon, RaptureAtkModule.Instance->IntersectingAddon == addon);
+        UpdateVisibility(addon, Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.IntersectingAddon == addon);
         UpdateCollision(addon, Config.Square);
     }
 

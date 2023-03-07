@@ -1,6 +1,6 @@
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Structs;
 
 namespace HaselTweaks.Utils;
 
@@ -37,7 +37,7 @@ public static unsafe class AtkUtils
     #region IsAddonReady
 
     public static bool IsAddonReady(ushort id)
-        => RaptureAtkModule.Instance->IsAddonReady(id);
+        => Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.IsAddonReady(id);
     public static bool IsAddonReady(uint id) => IsAddonReady((ushort)id);
     public static bool IsAddonReady(AtkUnitBase* unitBase) => IsAddonReady(unitBase->ID);
     public static bool IsAddonReady(AgentInterface* agent)

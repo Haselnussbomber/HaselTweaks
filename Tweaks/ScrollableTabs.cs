@@ -1,3 +1,4 @@
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -85,7 +86,7 @@ public unsafe partial class ScrollableTabs : Tweak
         if (wheelState == 0)
             return;
 
-        var hoveredUnitBase = RaptureAtkModule.Instance->IntersectingAddon;
+        var hoveredUnitBase = Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.IntersectingAddon;
         if (hoveredUnitBase == null)
             goto ResetWheelState;
 
@@ -415,7 +416,7 @@ public unsafe partial class ScrollableTabs : Tweak
 
     private void UpdateFieldNotes(AddonMYCWarResultNotebook* addon)
     {
-        if (RaptureAtkModule.Instance->IntersectingCollisionNode == addon->DescriptionCollisionNode)
+        if (Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.IntersectingCollisionNode == addon->DescriptionCollisionNode)
             return;
 
         var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
