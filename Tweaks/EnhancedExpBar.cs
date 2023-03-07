@@ -1,5 +1,6 @@
 using System.Linq;
 using Dalamud.Game.Text;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
@@ -185,10 +186,10 @@ public unsafe partial class EnhancedExpBar : Tweak
 
         // --- forced bars in certain locations
 
-        if (Config.ForcePvPSeriesBar && Service.ClientState.IsPvP) // TODO: only when PvP Series is active
+        if (Config.ForcePvPSeriesBar && GameMain.IsInPvPArea()) // TODO: only when PvP Series is active
             goto PvPBar;
 
-        if (Config.ForceSanctuaryBar && Service.ClientState.TerritoryType == 1055) // TODO: is there a better way to check if we are on the island?
+        if (Config.ForceSanctuaryBar && GameMain.Instance()->CurrentTerritoryIntendedUseId == 49)
             goto SanctuaryBar;
 
         // --- max level overrides
