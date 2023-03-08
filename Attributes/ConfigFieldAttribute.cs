@@ -15,6 +15,7 @@ public class ConfigFieldAttribute : Attribute
     public string Description = "";
     public string OnChange = "";
     public object? DefaultValue = null!;
+    public string DependsOn = ""; // MUST be a bool field
 
     // SingleSelect
     public string Options = "";

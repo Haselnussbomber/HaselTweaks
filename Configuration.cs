@@ -37,6 +37,7 @@ public class TweakConfigs
     public AetherCurrentHelper.Configuration AetherCurrentHelper { get; init; } = new();
     public LockWindowPosition.Configuration LockWindowPosition { get; init; } = new();
     public MaterialAllocation.Configuration MaterialAllocation { get; init; } = new();
+    public EnhancedMaterialList.Configuration EnhancedMaterialList { get; init; } = new();
 }
 
 internal partial class Configuration

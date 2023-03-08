@@ -310,10 +310,19 @@ public partial class PluginWindow : Window
             if (config != null)
             {
                 ImGuiUtils.DrawSection("Configuration");
+                var configType = config.GetType();
 
-                foreach (var field in config.GetType().GetFields())
+                foreach (var field in configType.GetFields())
                 {
                     var attr = (ConfigFieldAttribute?)Attribute.GetCustomAttribute(field, typeof(ConfigFieldAttribute));
+
+                    var hasDependency = !string.IsNullOrEmpty(attr?.DependsOn);
+                    if (hasDependency)
+                        ImGui.Indent();
+
+                    var isDisabled = hasDependency && (bool?)configType.GetField(attr!.DependsOn)?.GetValue(config) == false;
+                    if (isDisabled)
+                        ImGui.BeginDisabled();
 
                     if (attr == null)
                     {
@@ -395,6 +404,12 @@ public partial class PluginWindow : Window
                     {
                         DrawNoDrawingFunctionError(field);
                     }
+
+                    if (hasDependency)
+                        ImGui.Unindent();
+
+                    if (isDisabled)
+                        ImGui.EndDisabled();
                 }
             }
         }
