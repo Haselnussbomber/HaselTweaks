@@ -66,7 +66,7 @@ public static class ImGuiUtils
             using var tooltip = ImRaii.Tooltip();
             if (tooltip != null && tooltip.Success)
             {
-                ImGui.Text(title);
+                ImGui.TextColored(ColorWhite, title);
 
                 var pos = ImGui.GetCursorPos();
                 ImGui.GetWindowDrawList().AddText(

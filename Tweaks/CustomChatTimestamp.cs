@@ -1,5 +1,7 @@
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.String;
+using HaselTweaks.Utils;
+using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
 
@@ -11,8 +13,25 @@ public unsafe partial class CustomChatTimestamp : Tweak
 
     public class Configuration
     {
-        [ConfigField(Description = "This gets passed to C#'s DateTime.ToString() function.", DefaultValue = "[HH:mm] ")]
+        [ConfigField(DefaultValue = "[HH:mm] ")]
         public string Format = "[HH:mm] ";
+    }
+
+    public override bool HasCustomConfig => true;
+    public override void DrawCustomConfig()
+    {
+        if (ImGui.InputText("Format##HaselTweaks_CustomChatTimestamp_Format", ref Config.Format, 50))
+        {
+            Plugin.Config.Save();
+        }
+
+        ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey);
+        ImGui.Text("This gets passed to C#'s");
+        ImGuiUtils.SameLineSpace();
+        ImGuiUtils.DrawLink("DateTime.ToString()", "Custom date and time format strings documentation", "https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings");
+        ImGuiUtils.SameLineSpace();
+        ImGui.Text("function.");
+        ImGui.PopStyleColor();
     }
 
     [SigHook("E8 ?? ?? ?? ?? 48 8B D0 48 8B CB E8 ?? ?? ?? ?? 4C 8D 87")]
