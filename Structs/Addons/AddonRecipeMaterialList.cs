@@ -7,7 +7,7 @@ namespace HaselTweaks.Structs;
 public unsafe partial struct AddonRecipeMaterialList
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
-
+    [FieldOffset(0x220)] public AtkComponentTreeList* TreeList;
     [FieldOffset(0x228)] public AtkComponentButton* RefreshButton;
 
     [VirtualFunction(2)]

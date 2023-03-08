@@ -72,11 +72,11 @@ public partial class PluginWindow : Window
     private void DrawSidebar()
     {
         using var child = ImRaii.Child("##HaselTweaks_Sidebar", new Vector2(SidebarWidth, -1), true);
-        if (!child)
+        if (!child || !child.Success)
             return;
 
         using var table = ImRaii.Table("##HaselTweaks_SidebarTable", 2, ImGuiTableFlags.NoSavedSettings);
-        if (!table)
+        if (!table || !table.Success)
             return;
 
         ImGui.TableSetupColumn("Checkbox", ImGuiTableColumnFlags.WidthFixed);
@@ -105,7 +105,10 @@ public partial class PluginWindow : Window
                 {
                     var (status, color) = GetTweakStatus(tweak);
                     using var tooltip = ImRaii.Tooltip();
-                    ImGui.TextColored(color, status);
+                    if (tooltip != null && tooltip.Success)
+                    {
+                        ImGui.TextColored(color, status);
+                    }
                 }
 
                 drawList.AddRectFilled(pos, pos + size, ImGui.GetColorU32(ImGuiCol.FrameBg), 3f, ImDrawFlags.RoundCornersAll);
@@ -182,7 +185,7 @@ public partial class PluginWindow : Window
     private void DrawConfig()
     {
         using var child = ImRaii.Child("##HaselTweaks_Config", new Vector2(ConfigWidth, -1), true);
-        if (!child)
+        if (!child || !child.Success)
             return;
 
         if (string.IsNullOrEmpty(SelectedTweak))
@@ -466,7 +469,7 @@ public partial class PluginWindow : Window
         DrawLabel(data);
 
         using var combo = ImRaii.Combo(data.Key, selectedLabel);
-        if (!combo)
+        if (!combo || !combo.Success)
             return;
 
         var names = Enum.GetNames(enumType)
@@ -494,7 +497,7 @@ public partial class PluginWindow : Window
         DrawLabel(data);
 
         using var combo = ImRaii.Combo(data.Key, data.Value ?? "");
-        if (!combo)
+        if (!combo || !combo.Success)
             return;
 
         foreach (var item in options)

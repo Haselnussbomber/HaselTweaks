@@ -64,18 +64,20 @@ public static class ImGuiUtils
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
 
             using var tooltip = ImRaii.Tooltip();
+            if (tooltip != null && tooltip.Success)
+            {
+                ImGui.Text(title);
 
-            ImGui.Text(title);
-
-            var pos = ImGui.GetCursorPos();
-            ImGui.GetWindowDrawList().AddText(
-                UiBuilder.IconFont, 12,
-                ImGui.GetWindowPos() + pos + new Vector2(2),
-                ImGui.GetColorU32(ColorGrey),
-                FontAwesomeIcon.ExternalLinkAlt.ToIconString()
-            );
-            ImGui.SetCursorPos(pos + new Vector2(20, 0));
-            ImGui.TextColored(ColorGrey, url);
+                var pos = ImGui.GetCursorPos();
+                ImGui.GetWindowDrawList().AddText(
+                    UiBuilder.IconFont, 12,
+                    ImGui.GetWindowPos() + pos + new Vector2(2),
+                    ImGui.GetColorU32(ColorGrey),
+                    FontAwesomeIcon.ExternalLinkAlt.ToIconString()
+                );
+                ImGui.SetCursorPos(pos + new Vector2(20, 0));
+                ImGui.TextColored(ColorGrey, url);
+            }
         }
 
         if (ImGui.IsItemClicked())

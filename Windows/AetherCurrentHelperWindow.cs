@@ -72,7 +72,7 @@ public class AetherCurrentHelperWindow : Window
 
         using var cellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(4));
         using var table = ImRaii.Table($"##HaselTweaks_AetherCurrents", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.NoPadOuterX);
-        if (!table)
+        if (!table || !table.Success)
             return;
 
         ImGui.TableSetupColumn("Icon", ImGuiTableColumnFlags.WidthFixed);
