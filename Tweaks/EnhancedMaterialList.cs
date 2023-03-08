@@ -20,7 +20,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe partial class EnhancedMaterialList : Tweak
 {
     public override string Name => "Enhanced Material List";
-    public override string Description => @"Tweaks to the Material List.";
+    public override string Description => "Enhances the Material List (and Recipe Tree).";
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedMaterialList;
 
     private readonly AddonObserver CatchObserver = new("Catch");
@@ -77,22 +77,22 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     public override void Enable()
     {
-        CatchObserver.OnOpen += Refresh;
+        CatchObserver.OnOpen += RequestRefresh;
 
-        SynthesisObserver.OnClose += Refresh;
-        SynthesisSimpleObserver.OnClose += Refresh;
-        GatheringObserver.OnClose += Refresh;
+        SynthesisObserver.OnClose += RequestRefresh;
+        SynthesisSimpleObserver.OnClose += RequestRefresh;
+        GatheringObserver.OnClose += RequestRefresh;
 
         Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
     }
 
     public override void Disable()
     {
-        CatchObserver.OnOpen -= Refresh;
+        CatchObserver.OnOpen -= RequestRefresh;
 
-        SynthesisObserver.OnClose -= Refresh;
-        SynthesisSimpleObserver.OnClose -= Refresh;
-        GatheringObserver.OnClose -= Refresh;
+        SynthesisObserver.OnClose -= RequestRefresh;
+        SynthesisSimpleObserver.OnClose -= RequestRefresh;
+        GatheringObserver.OnClose -= RequestRefresh;
 
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
     }
@@ -109,7 +109,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         RefreshRecipeTree();
     }
 
-    private void Refresh(AddonObserver sender, AtkUnitBase* unitBase)
+    private void RequestRefresh(AddonObserver sender, AtkUnitBase* unitBase)
     {
         if (Config.AutoRefreshMaterialList)
             RecipeMaterialListRefreshPending = true;

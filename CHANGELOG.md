@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.12.0] (2023-03-08)
+
+### Reworked Tweak: Refresh Material List -> Enhanced Material List
+
+- **Added:** Enable Zone Names: Displays a zone name underneath the item name indicating where it can be gathered. Only the zone with the lowest teleportation cost is displayed. If the name is green it means it's the current zone. Since space is limited it has to shorten the item and zone name.
+  - An option is available to disable this for Crystals.
+- **Added:** Enable click to open Map: Allows you to open the map with the gathering marker in said zone.
+  - An option is available to disable this for Crystals.
+- **Changed:** Auto-refresh Material List/Auto-refresh Recipe Tree separated and converted to options.
+
+### Character Class Switcher
+
+- **Fixed:** The game no longer crashes when checking which button was pressed.  
+  *Dev Note:* This is a result of config IDs changing with each patch. I've reworked the function to find the config option by name and no longer rely on ClientStructs being updated with the correct IDs.
+
 ## [0.11.2] (2023-03-07)
 
 Preliminary update for Patch 6.35.
@@ -532,8 +547,9 @@ Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 
 [Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
-[0.11.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.10.1...v0.11.2
-[0.11.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.10.0...v0.11.1
+[0.12.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.11.2...v0.12.0
+[0.11.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.11.1...v0.11.2
+[0.11.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.8...v0.10.0
 [0.9.8]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.9.7...v0.9.8

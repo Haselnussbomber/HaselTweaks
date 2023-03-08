@@ -78,6 +78,16 @@ Available options include:
 > **Note**
 > In order for this tweak to work properly, please make sure "Show Experience Percentage" is disabled in Simple Tweaks.
 
+### Enhanced Material List
+
+Enhances the Material List (and Recipe Tree).
+
+- Enable Zone Names: Displays a zone name underneath the item name indicating where it can be gathered. Only the zone with the lowest teleportation cost is displayed. If the name is green it means it's the current zone. Since space is limited it has to shorten the item and zone name.
+  - An option is available to disable this for Crystals.
+- Enable click to open Map: Allows you to open the map with the gathering marker in said zone.
+  - An option is available to disable this for Crystals.
+- Auto-refresh Material List/Recipe Tree: Refreshes the material list and/or recipe tree when an item was crafted, fished or gathered.
+
 ### Expert Deliveries
 
 Always opens the "Grand Company Delivery Missions" window on the "Expert Delivery" tab.
@@ -125,10 +135,6 @@ Configuration options:
 Adds Copy/Paste buttons to the "Edit Portrait" window, which allow settings to be copied to other portraits.
 
 The Advanced Mode allows to specify which settings should be pasted.
-
-### Refresh Material List
-
-Refreshes the material list and recipe tree when an item was crafted, fished or gathered.
 
 ### Reveal Duty Requirements
 
