@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Utils;
@@ -5,49 +6,88 @@ namespace HaselTweaks.Utils;
 public unsafe class AddonObserver
 {
     public delegate AtkUnitBase* GetAddonDelegate();
-    public delegate void OnOpenDelegate(AddonObserver sender, AtkUnitBase* unitBase);
-    public delegate void OnCloseDelegate(AddonObserver sender, AtkUnitBase* unitBase);
+    public delegate void OnOpenDelegate(AddonObserver sender, string addonName, AtkUnitBase* unitBase);
+    public delegate void OnCloseDelegate(AddonObserver sender, string addonName, AtkUnitBase* unitBase);
 
     public event OnOpenDelegate? OnOpen;
     public event OnCloseDelegate? OnClose;
 
-    public GetAddonDelegate? GetAddonFn;
-    public bool IsOpen;
+    public Dictionary<string, AddonState> AddonStates = new();
 
-    public AddonObserver(GetAddonDelegate fn)
+    public void Register(string addonName, GetAddonDelegate getAddonFn)
     {
-        GetAddonFn = fn;
-
-        if (GetAddonFn != null)
+        if (!AddonStates.TryGetValue(addonName, out var state))
         {
-            var unitBase = GetAddonFn();
-            IsOpen = unitBase == null || unitBase->IsVisible;
+            state = new(getAddonFn);
+            AddonStates.Add(addonName, state);
+        }
+
+        state.NumRegistrations += 1;
+    }
+
+    public void Register(string addonName)
+        => Register(addonName, () => GetAddon(addonName));
+
+    public void Register(params string[] addonNames)
+    {
+        foreach (var addonName in addonNames)
+            Register(addonName, () => GetAddon(addonName));
+    }
+
+    public void Unregister(string addonName)
+    {
+        if (AddonStates.TryGetValue(addonName, out var state))
+        {
+            state.NumRegistrations -= 1;
+
+            if (state.NumRegistrations == 0)
+            {
+                AddonStates.Remove(addonName);
+            }
         }
     }
 
-    public AddonObserver(string addonName) : this(() => GetAddon(addonName)) { }
-
-    internal void Update()
+    public void Unregister(params string[] addonNames)
     {
-        if (GetAddonFn == null)
-            return;
+        foreach (var addonName in addonNames)
+            Unregister(addonName);
+    }
 
-        var unitBase = GetAddonFn();
-        if (unitBase == null || !unitBase->IsVisible)
+    public void Update()
+    {
+        foreach (var (addonName, state) in AddonStates)
         {
-            if (IsOpen)
+            var unitBase = state.GetAddonFn();
+            var isOpen = unitBase == null || unitBase->IsVisible;
+
+            if (state.Open != isOpen)
             {
-                IsOpen = false;
-                OnClose?.Invoke(this, unitBase);
+                if (isOpen)
+                {
+                    OnOpen?.Invoke(this, addonName, unitBase);
+                }
+                else
+                {
+                    OnClose?.Invoke(this, addonName, unitBase);
+                }
+
+                state.Open = isOpen;
             }
-
-            return;
         }
+    }
 
-        if (!IsOpen)
+    public bool IsOpen(string addonName)
+        => AddonStates.TryGetValue(addonName, out var state) && state.Open;
+
+    public record AddonState
+    {
+        public GetAddonDelegate GetAddonFn { get; }
+        public int NumRegistrations = 0;
+        public bool Open = false;
+
+        public AddonState(GetAddonDelegate GetAddonFn)
         {
-            IsOpen = true;
-            OnOpen?.Invoke(this, unitBase);
+            this.GetAddonFn = GetAddonFn;
         }
     }
 }

@@ -92,6 +92,8 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnFrameworkUpdate(Framework framework)
     {
+        Service.AddonObserver.Update();
+
         foreach (var tweak in Tweaks)
         {
             if (tweak.Enabled)

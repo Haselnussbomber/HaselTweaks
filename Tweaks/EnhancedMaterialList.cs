@@ -23,13 +23,6 @@ public unsafe partial class EnhancedMaterialList : Tweak
     public override string Description => "Enhances the Material List (and Recipe Tree).";
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedMaterialList;
 
-    private readonly AddonObserver CatchObserver = new("Catch");
-    private readonly AddonObserver SynthesisObserver = new("Synthesis");
-    private readonly AddonObserver SynthesisSimpleObserver = new("SynthesisSimple");
-    private readonly AddonObserver GatheringObserver = new("Gathering");
-    private readonly AddonObserver ItemSearchResultObserver = new("ItemSearchResult");
-    private readonly AddonObserver InclusionShopObserver = new("InclusionShop");
-
     private DateTime LastRecipeMaterialListRefresh = DateTime.Now;
     private bool RecipeMaterialListRefreshPending = false;
 
@@ -79,45 +72,43 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     public override void Enable()
     {
-        CatchObserver.OnOpen += RequestRefresh;
+        Service.AddonObserver.Register("Catch", "Synthesis", "SynthesisSimple", "Gathering", "ItemSearchResult", "InclusionShop");
 
-        SynthesisObserver.OnClose += RequestRefresh;
-        SynthesisSimpleObserver.OnClose += RequestRefresh;
-        GatheringObserver.OnClose += RequestRefresh;
-        ItemSearchResultObserver.OnClose += RequestRefresh;
-        InclusionShopObserver.OnClose += RequestRefresh;
+        Service.AddonObserver.OnOpen += AddonObserver_OnOpen;
+        Service.AddonObserver.OnClose += AddonObserver_OnClose;
 
         Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
     }
 
     public override void Disable()
     {
-        CatchObserver.OnOpen -= RequestRefresh;
+        Service.AddonObserver.OnOpen -= AddonObserver_OnOpen;
+        Service.AddonObserver.OnClose -= AddonObserver_OnClose;
 
-        SynthesisObserver.OnClose -= RequestRefresh;
-        SynthesisSimpleObserver.OnClose -= RequestRefresh;
-        GatheringObserver.OnClose -= RequestRefresh;
-        ItemSearchResultObserver.OnClose -= RequestRefresh;
-        InclusionShopObserver.OnClose -= RequestRefresh;
+        Service.AddonObserver.Unregister("Catch", "Synthesis", "SynthesisSimple", "Gathering", "ItemSearchResult", "InclusionShop");
 
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
     }
 
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
-        CatchObserver.Update();
-
-        SynthesisObserver.Update();
-        SynthesisSimpleObserver.Update();
-        GatheringObserver.Update();
-        ItemSearchResultObserver.Update();
-        InclusionShopObserver.Update();
-
         RefreshRecipeMaterialList();
         RefreshRecipeTree();
     }
 
-    private void RequestRefresh(AddonObserver sender, AtkUnitBase* unitBase)
+    private void AddonObserver_OnOpen(AddonObserver sender, string addonName, AtkUnitBase* unitBase)
+    {
+        if (addonName is "Catch")
+            RequestRefresh();
+    }
+
+    private void AddonObserver_OnClose(AddonObserver sender, string addonName, AtkUnitBase* unitBase)
+    {
+        if (addonName is "Synthesis" or "SynthesisSimple" or "Gathering" or "ItemSearchResult" or "InclusionShop")
+            RequestRefresh();
+    }
+
+    private void RequestRefresh()
     {
         if (Config.AutoRefreshMaterialList)
             RecipeMaterialListRefreshPending = true;
