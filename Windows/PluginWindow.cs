@@ -221,6 +221,10 @@ public partial class PluginWindow : Window
             ImGuiUtils.DrawLink("Ko-fi", "Support me on Ko-fi", "https://ko-fi.com/haselnussbomber");
 
             // version, bottom right
+#if DEBUG
+            ImGui.SetCursorPos(cursorPos + contentAvail - ImGui.CalcTextSize("dev"));
+            ImGuiUtils.DrawLink("dev", "Compare changes", $"https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev");
+#else
             var version = GetType().Assembly.GetName().Version;
             if (version != null)
             {
@@ -228,6 +232,7 @@ public partial class PluginWindow : Window
                 ImGui.SetCursorPos(cursorPos + contentAvail - ImGui.CalcTextSize(versionString));
                 ImGuiUtils.DrawLink(versionString, "Visit Release Notes", $"https://github.com/Haselnussbomber/HaselTweaks/releases/tag/{versionString}");
             }
+#endif
 
             return;
         }
