@@ -27,6 +27,8 @@ public unsafe partial class EnhancedMaterialList : Tweak
     private readonly AddonObserver SynthesisObserver = new("Synthesis");
     private readonly AddonObserver SynthesisSimpleObserver = new("SynthesisSimple");
     private readonly AddonObserver GatheringObserver = new("Gathering");
+    private readonly AddonObserver ItemSearchResultObserver = new("ItemSearchResult");
+    private readonly AddonObserver InclusionShopObserver = new("InclusionShop");
 
     private DateTime LastRecipeMaterialListRefresh = DateTime.Now;
     private bool RecipeMaterialListRefreshPending = false;
@@ -82,6 +84,8 @@ public unsafe partial class EnhancedMaterialList : Tweak
         SynthesisObserver.OnClose += RequestRefresh;
         SynthesisSimpleObserver.OnClose += RequestRefresh;
         GatheringObserver.OnClose += RequestRefresh;
+        ItemSearchResultObserver.OnClose += RequestRefresh;
+        InclusionShopObserver.OnClose += RequestRefresh;
 
         Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
     }
@@ -93,6 +97,8 @@ public unsafe partial class EnhancedMaterialList : Tweak
         SynthesisObserver.OnClose -= RequestRefresh;
         SynthesisSimpleObserver.OnClose -= RequestRefresh;
         GatheringObserver.OnClose -= RequestRefresh;
+        ItemSearchResultObserver.OnClose -= RequestRefresh;
+        InclusionShopObserver.OnClose -= RequestRefresh;
 
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
     }
@@ -104,6 +110,8 @@ public unsafe partial class EnhancedMaterialList : Tweak
         SynthesisObserver.Update();
         SynthesisSimpleObserver.Update();
         GatheringObserver.Update();
+        ItemSearchResultObserver.Update();
+        InclusionShopObserver.Update();
 
         RefreshRecipeMaterialList();
         RefreshRecipeTree();
@@ -135,8 +143,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
             return;
         }
 
-        var recipeMaterialList = GetAddon<AddonRecipeMaterialList>(AgentId.RecipeMaterialList);
-        if (recipeMaterialList == null)
+        if (!GetAddon<AddonRecipeMaterialList>(AgentId.RecipeMaterialList, out var recipeMaterialList))
         {
             RecipeMaterialListRefreshPending = false;
             return;
@@ -162,8 +169,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
             return;
         }
 
-        var recipeTree = GetAddon<AddonRecipeTree>(AgentId.RecipeTree);
-        if (recipeTree == null)
+        if (!GetAddon<AddonRecipeTree>(AgentId.RecipeTree, out var recipeTree))
         {
             RecipeTreeRefreshPending = false;
             return;
@@ -248,7 +254,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
         // when you don't know how to add text nodes... Sadge
 
-        nameNode->AtkResNode.Y = 13;
+        nameNode->AtkResNode.Y = 14;
         nameNode->AtkResNode.Flags_2 |= 0x1;
 
         nameNode->TextFlags = 192; // allow multiline text (not sure on the actual flags it sets though)
