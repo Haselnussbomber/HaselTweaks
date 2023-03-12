@@ -58,7 +58,7 @@ public unsafe class AddonObserver
         foreach (var (addonName, state) in AddonStates)
         {
             var unitBase = state.GetAddonFn();
-            var isOpen = unitBase == null || unitBase->IsVisible;
+            var isOpen = unitBase != null && unitBase->IsVisible;
 
             if (state.Open != isOpen)
             {
