@@ -88,11 +88,18 @@ public sealed class Plugin : IDalamudPlugin
         }
 
         Service.Framework.Update += OnFrameworkUpdate;
+        Service.ClientState.Login += ClientState_Login;
+    }
+
+    private void ClientState_Login(object? sender, EventArgs e)
+    {
+        Service.AddonObserver.Reset();
     }
 
     private void OnFrameworkUpdate(Framework framework)
     {
-        Service.AddonObserver.Update();
+        if (Service.ClientState.IsLoggedIn)
+            Service.AddonObserver.Update();
 
         foreach (var tweak in Tweaks)
         {
@@ -125,6 +132,7 @@ public sealed class Plugin : IDalamudPlugin
 
     void IDisposable.Dispose()
     {
+        Service.ClientState.Login -= ClientState_Login;
         Service.Framework.Update -= OnFrameworkUpdate;
         Service.PluginInterface.UiBuilder.Draw -= OnDraw;
         Service.PluginInterface.UiBuilder.OpenConfigUi -= OnOpenConfigUi;

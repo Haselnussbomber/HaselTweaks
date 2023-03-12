@@ -76,6 +76,15 @@ public unsafe class AddonObserver
         }
     }
 
+    public void Reset()
+    {
+        foreach (var (_, state) in AddonStates)
+        {
+            if (state.Open)
+                state.Open = false;
+        }
+    }
+
     public bool IsOpen(string addonName)
         => AddonStates.TryGetValue(addonName, out var state) && state.Open;
 
