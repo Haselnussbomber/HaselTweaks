@@ -164,11 +164,15 @@ public unsafe partial class EnhancedExpBar : Tweak
     [SigHook("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 41 56 41 57 48 83 EC 30 48 8B 72 18")]
     private nint AddonExp_OnRequestedUpdate(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        var gaugeBarNode = GetNode<Structs.AtkComponentGaugeBar>((AtkUnitBase*)addon, 6);
+        var gaugeBarNode = GetNode<AtkComponentNode>((AtkUnitBase*)addon, 6);
         if (gaugeBarNode == null)
             goto OriginalOnRequestedUpdate;
 
-        var nineGridNode = GetNode<AtkNineGridNode>((AtkComponentBase*)gaugeBarNode, 4);
+        var gaugeBar = (Structs.AtkComponentGaugeBar*)gaugeBarNode->Component;
+        if (gaugeBar == null)
+            goto OriginalOnRequestedUpdate;
+
+        var nineGridNode = GetNode<AtkNineGridNode>(gaugeBarNode, 4);
         if (nineGridNode == null)
             goto OriginalOnRequestedUpdate;
 
@@ -227,10 +231,10 @@ public unsafe partial class EnhancedExpBar : Tweak
 
             leftText->SetText($"{job}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
 
-            gaugeBarNode->SetSecondaryValue(0); // rested experience bar
+            gaugeBar->SetSecondaryValue(0); // rested experience bar
 
             // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-            gaugeBarNode->SetValue((uint)(pvpProfile->SeriesExperience / (float)requiredExperience * 10000), 0, false);
+            gaugeBar->SetValue((uint)(pvpProfile->SeriesExperience / (float)requiredExperience * 10000), 0, false);
 
             if (!Config.DisableColorChanges)
             {
@@ -270,10 +274,10 @@ public unsafe partial class EnhancedExpBar : Tweak
 
             leftText->SetText($"{job}{levelLabel} {level}   {expStr}/{reqExpStr}");
 
-            gaugeBarNode->SetSecondaryValue(0); // rested experience bar
+            gaugeBar->SetSecondaryValue(0); // rested experience bar
 
             // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-            gaugeBarNode->SetValue((uint)(mjiManager->IslandState.CurrentXP / (float)requiredExperience * 10000), 0, false);
+            gaugeBar->SetValue((uint)(mjiManager->IslandState.CurrentXP / (float)requiredExperience * 10000), 0, false);
 
             if (!Config.DisableColorChanges)
             {

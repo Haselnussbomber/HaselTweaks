@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+Forgot to update the plugin version in the last release, so please check out the [0.12.0] changes regarding "Refresh Material List"!
+
+### Enhanced Experience Bar
+
+- **Fixed:** Max Level Override should work again. I confused the type of nodes involved.
+
 ## [0.12.0] (2023-03-08)
 
 ### Reworked Tweak: Refresh Material List -> Enhanced Material List

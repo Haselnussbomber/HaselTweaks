@@ -5,7 +5,7 @@ namespace HaselTweaks.Structs;
 [StructLayout(LayoutKind.Explicit, Size = 0x1A8)]
 public partial struct AtkComponentGaugeBar
 {
-    [FieldOffset(0x0)] public AtkComponentBase AtkComponentBase;
+    [FieldOffset(0x0)] public AtkComponentNode AtkComponentNode;
 
     [MemberFunction("E8 ?? ?? ?? ?? 41 3B 1E")]
     public partial uint SetValue(uint value, uint a3, bool skipAnimation);

@@ -145,6 +145,12 @@ public static unsafe class AtkUtils
     public static bool GetNode<T>(AtkComponentBase* component, uint nodeId, out T* node)
         => (node = GetNode<T>(component, nodeId)) != null;
 
+    public static T* GetNode<T>(AtkComponentNode* node, uint nodeId)
+        => node == null ? null : (T*)node->Component->UldManager.SearchNodeById(nodeId);
+
+    public static bool GetNode<T>(AtkComponentNode* node, uint nodeId, out T* outNode)
+        => (outNode = GetNode<T>(node, nodeId)) != null;
+
     #endregion
 
     #region SetAlpha
