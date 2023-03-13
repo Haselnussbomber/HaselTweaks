@@ -8,6 +8,11 @@ Forgot to update the plugin version in the last release, so please check out the
 
 - **Fixed:** Max Level Override should work again. I confused the type of nodes involved.
 
+### Enhanced Material List
+
+- **Added:** Auto-refresh upon closing for Market Board Search Results and Vendor windows.
+- **Added:** Restore Material List on Login: The material list will reopen with the same recipe and quantity each time you log in as long as the window is locked.
+
 ## [0.12.0] (2023-03-08)
 
 ### Reworked Tweak: Refresh Material List -> Enhanced Material List
@@ -21,7 +26,7 @@ Forgot to update the plugin version in the last release, so please check out the
 ### Character Class Switcher
 
 - **Fixed:** The game no longer crashes when checking which button was pressed.  
-  *Dev Note:* This is a result of config IDs changing with each patch. I've reworked the function to find the config option by name and no longer rely on ClientStructs being updated with the correct IDs.
+  _Dev Note:_ This is a result of config IDs changing with each patch. I've reworked the function to find the config option by name and no longer rely on ClientStructs being updated with the correct IDs.
 
 ## [0.11.2] (2023-03-07)
 
@@ -224,7 +229,7 @@ Preliminary update for Patch 6.3.
 
 ### Aether Current Helper
 
-- **Added:** A new config option to disable centering of the distance column, which *might* help in case the window keeps expanding endlessly to the right.
+- **Added:** A new config option to disable centering of the distance column, which _might_ help in case the window keeps expanding endlessly to the right.
 - **Fixed:** Corrects the Compass Directions (East/West was swapped).
 
 ## [0.7.5] (2022-11-03)
@@ -276,7 +281,7 @@ Adds Copy/Paste buttons to the "Edit Portrait" window, so you can copy the setti
 - **Added:** Sanctuary Bar for the new Island, because why not?
 - **Added:** Max Level Override setting.
   - Will switch to the selected bar if your current job is on max level and none of the other settings apply.
-  - *Note:* Sanctuary Bar is not available as Max Level Override, because data is only loaded once you travel to the island. PvP Series data is always available.
+  - _Note:_ Sanctuary Bar is not available as Max Level Override, because data is only loaded once you travel to the island. PvP Series data is always available.
 - **Added:** Option to disable color change.
 
 ### New Tweak: Requisite Materials
@@ -313,7 +318,7 @@ Preliminary update for Patch 6.2.
 
 ### New Tweak: Series Exp Bar
 
-The experience bar shows series rank and experience instead. A little * after the rank indicates a claimable reward.
+The experience bar shows series rank and experience instead. A little \* after the rank indicates a claimable reward.
 
 > **Note**
 > In order for this tweak to work properly, please make sure to disable "Show Experience Percentage" in Simple Tweaks first.
@@ -323,6 +328,7 @@ The experience bar shows series rank and experience instead. A little * after th
 - **Added:** A proper changelog! :D Releases will share the same format.
 
 ### Scrollable Tabs
+
 - **Added:** Support for the Bozjan Field Records window.
 - **Added:** Support for scrolling in and out of the favorites tab in the Mounts and Minions windows.
 - **Added:** Support for scrolling between the normal sized Inventory and the Key Items window.
@@ -379,7 +385,7 @@ Adds a context menu entry to items in Inventory, Crafting Log, Recipe Tree or Ma
 
 ## [0.2.1] (2022-05-12)
 
-> **Warning**
+> **Warning**  
 > **Please update to v0.2.2.** Under-the-hood changes make Keep Instant Portrait crash the game due to a copy paste error.
 
 ### Character Class Switcher
@@ -509,19 +515,19 @@ First release! 🥳
 
 Starting with the following Tweaks:
 
-###  Auto Sort Armoury Chest
+### Auto Sort Armoury Chest
 
 Automatically runs the shared macro in the third slot when the armoury is opened. Use `/isort` in the macro.
 
-###  Character Class Switcher
+### Character Class Switcher
 
 Always equips the gearset with the highest average item level.
 
-###  Chat Timestamp Fixer
+### Chat Timestamp Fixer
 
 At least in the german client the game uses the format `[H:mm]` and it bugged me to have a single digit in the early mornings, so I changed it to `[HH:mm]` and added a space afterwards for better visibility.
 
-###  DTR
+### DTR
 
 Shows Instance, FPS and Busy status in DTR bar. Use Dalamud Settings to enable/disable or to change order.
 
@@ -553,8 +559,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-
-[Unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
 [0.12.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.11.2...v0.12.0
 [0.11.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.11.1...v0.11.2
 [0.11.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.11.0...v0.11.1

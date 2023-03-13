@@ -23,8 +23,11 @@ public unsafe partial class EnhancedMaterialList : Tweak
     public override string Description => "Enhances the Material List (and Recipe Tree).";
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedMaterialList;
 
+    private AgentRecipeMaterialList* agentRecipeMaterialList;
+
     private DateTime LastRecipeMaterialListRefresh = DateTime.Now;
     private bool RecipeMaterialListRefreshPending = false;
+    private bool RecipeMaterialListLockPending = false;
 
     private DateTime LastRecipeTreeRefresh = DateTime.Now;
     private bool RecipeTreeRefreshPending = false;
@@ -68,6 +71,24 @@ public unsafe partial class EnhancedMaterialList : Tweak
             Description = "Refreshes the recipe tree when an item was crafted, fished or gathered."
         )]
         public bool AutoRefreshRecipeTree = true;
+
+        [ConfigField(
+            Label = "Restore Material List on Login",
+            Description = "The material list will reopen with the same recipe and quantity each time you log in as long as the window is locked.",
+            OnChange = nameof(SaveRestoreMaterialList)
+        )]
+        public bool RestoreMaterialList = true;
+
+        [ConfigField(Type = ConfigFieldTypes.Ignore)]
+        public uint RestoreMaterialListRecipeId = 0;
+
+        [ConfigField(Type = ConfigFieldTypes.Ignore)]
+        public uint RestoreMaterialListAmount = 0;
+    }
+
+    public override void Setup()
+    {
+        agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList);
     }
 
     public override void Enable()
@@ -78,6 +99,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         Service.AddonObserver.OnClose += AddonObserver_OnClose;
 
         Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
+        Service.ClientState.Login += ClientState_Login;
     }
 
     public override void Disable()
@@ -88,6 +110,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         Service.AddonObserver.Unregister("Catch", "Synthesis", "SynthesisSimple", "Gathering", "ItemSearchResult", "InclusionShop");
 
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
+        Service.ClientState.Login -= ClientState_Login;
     }
 
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
@@ -120,19 +143,30 @@ public unsafe partial class EnhancedMaterialList : Tweak
     private void ClientState_TerritoryChanged(object? sender, ushort e)
         => RequestRecipeMaterialListRefresh();
 
+    private void ClientState_Login(object? sender, EventArgs e)
+    {
+        if (Config.RestoreMaterialList &&
+            Config.RestoreMaterialListRecipeId != 0 &&
+            agentRecipeMaterialList != null &&
+            agentRecipeMaterialList->RecipeId != Config.RestoreMaterialListRecipeId)
+        {
+            Log("Restoring RecipeMaterialList");
+            agentRecipeMaterialList->OpenByRecipeId(Config.RestoreMaterialListRecipeId, Math.Max(Config.RestoreMaterialListAmount, 1));
+
+            RecipeMaterialListLockPending = true;
+        }
+    }
+
     private void RequestRecipeMaterialListRefresh()
         => RecipeMaterialListRefreshPending = true;
 
     private void RefreshRecipeMaterialList()
     {
-        if (!RecipeMaterialListRefreshPending)
+        if (!RecipeMaterialListRefreshPending && !RecipeMaterialListLockPending)
             return;
 
         if (DateTime.Now.Subtract(LastRecipeMaterialListRefresh).TotalSeconds < 2)
-        {
-            RecipeMaterialListRefreshPending = false;
             return;
-        }
 
         if (!GetAddon<AddonRecipeMaterialList>(AgentId.RecipeMaterialList, out var recipeMaterialList))
         {
@@ -140,13 +174,23 @@ public unsafe partial class EnhancedMaterialList : Tweak
             return;
         }
 
-        Log("Refreshing RecipeMaterialList");
-        var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
-        recipeMaterialList->ReceiveEvent(AtkEventType.ButtonClick, 1, atkEvent, 0);
-        IMemorySpace.Free(atkEvent);
+        if (RecipeMaterialListRefreshPending)
+        {
+            Log("Refreshing RecipeMaterialList");
+            var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
+            recipeMaterialList->ReceiveEvent(AtkEventType.ButtonClick, 1, atkEvent, 0);
+            IMemorySpace.Free(atkEvent);
+
+            RecipeMaterialListRefreshPending = false;
+        }
+
+        if (RecipeMaterialListLockPending)
+        {
+            recipeMaterialList->SetWindowLock(true);
+            RecipeMaterialListLockPending = false;
+        }
 
         LastRecipeMaterialListRefresh = DateTime.Now;
-        RecipeMaterialListRefreshPending = false;
     }
 
     private void RefreshRecipeTree()
@@ -155,10 +199,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
             return;
 
         if (DateTime.Now.Subtract(LastRecipeTreeRefresh).TotalSeconds < 2)
-        {
-            RecipeTreeRefreshPending = false;
             return;
-        }
 
         if (!GetAddon<AddonRecipeTree>(AgentId.RecipeTree, out var recipeTree))
         {
@@ -173,6 +214,22 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
         LastRecipeTreeRefresh = DateTime.Now;
         RecipeTreeRefreshPending = false;
+    }
+
+    private void SaveRestoreMaterialList()
+    {
+        var shouldSave = Config.RestoreMaterialList && agentRecipeMaterialList != null && agentRecipeMaterialList->WindowLocked;
+        Config.RestoreMaterialListRecipeId = shouldSave ? agentRecipeMaterialList->RecipeId : 0u;
+        Config.RestoreMaterialListAmount = shouldSave ? agentRecipeMaterialList->Amount : 0u;
+        Plugin.Config.Save();
+    }
+
+    [SigHook("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 48 8B D9 49 8B F0 49 8B C8 48 8B FA E8 ?? ?? ?? ?? 48 83 7C 24 ?? ??")]
+    public nint AgentRecipeMaterialList_ReceiveEvent(AgentRecipeMaterialList* agent, nint a2, nint a3, nint a4, nint a5)
+    {
+        var ret = AgentRecipeMaterialList_ReceiveEventHook.Original(agent, a2, a3, a4, a5);
+        SaveRestoreMaterialList();
+        return ret;
     }
 
     [SigHook("40 55 53 56 57 48 8D 6C 24 ?? 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 1F 0F B7 C2 41 8B D8 48 8B F1 83 F8 19 0F 84 ?? ?? ?? ?? 83 F8 1B")]

@@ -12,4 +12,7 @@ public unsafe partial struct AddonRecipeMaterialList
 
     [VirtualFunction(2)]
     public partial void ReceiveEvent(AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5);
+
+    [MemberFunction("E8 ?? ?? ?? ?? BB ?? ?? ?? ?? C7 45 ?? ?? ?? ?? ?? 8B D3 C7 45 ?? ?? ?? ?? ??")]
+    public partial void SetWindowLock(bool locked);
 }

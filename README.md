@@ -63,7 +63,7 @@ Shows Instance, FPS and Busy status in DTR bar. To enable/disable elements or to
 
 Enhances the Experience Bar with the following modes:
 
-- The PvP Series Bar shows series rank and experience. A little * after the rank indicates a claimable rank-up reward.
+- The PvP Series Bar shows series rank and experience. A little \* after the rank indicates a claimable rank-up reward.
 - The Sanctuary Bar shows sanctuary level and island experience.
 
 Available options include:
@@ -87,6 +87,7 @@ Enhances the Material List (and Recipe Tree).
 - Enable click to open Map: Allows you to open the map with the gathering marker in said zone.
   - An option is available to disable this for Crystals.
 - Auto-refresh Material List/Recipe Tree: Refreshes the material list and/or recipe tree when an item was crafted, fished or gathered.
+- Restore Material List on Login: The material list will reopen with the same recipe and quantity each time you log in as long as the window is locked.
 
 ### Expert Deliveries
 
