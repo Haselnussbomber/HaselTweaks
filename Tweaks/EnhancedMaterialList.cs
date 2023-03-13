@@ -93,7 +93,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     public override void Enable()
     {
-        Service.AddonObserver.Register("Catch", "Synthesis", "SynthesisSimple", "Gathering", "ItemSearchResult", "InclusionShop");
+        Service.AddonObserver.Register("Catch", "Synthesis", "SynthesisSimple", "Gathering", "ItemSearchResult", "InclusionShop", "Shop", "ShopExchangeItem");
 
         Service.AddonObserver.OnOpen += AddonObserver_OnOpen;
         Service.AddonObserver.OnClose += AddonObserver_OnClose;
@@ -107,7 +107,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         Service.AddonObserver.OnOpen -= AddonObserver_OnOpen;
         Service.AddonObserver.OnClose -= AddonObserver_OnClose;
 
-        Service.AddonObserver.Unregister("Catch", "Synthesis", "SynthesisSimple", "Gathering", "ItemSearchResult", "InclusionShop");
+        Service.AddonObserver.Unregister("Catch", "Synthesis", "SynthesisSimple", "Gathering", "ItemSearchResult", "InclusionShop", "Shop", "ShopExchangeItem");
 
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
         Service.ClientState.Login -= ClientState_Login;
@@ -127,7 +127,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     private void AddonObserver_OnClose(AddonObserver sender, string addonName, AtkUnitBase* unitBase)
     {
-        if (addonName is "Synthesis" or "SynthesisSimple" or "Gathering" or "ItemSearchResult" or "InclusionShop")
+        if (addonName is "Synthesis" or "SynthesisSimple" or "Gathering" or "ItemSearchResult" or "InclusionShop" or "Shop" or "ShopExchangeItem")
             RequestRefresh();
     }
 
