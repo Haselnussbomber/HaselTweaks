@@ -176,7 +176,7 @@ public unsafe partial class MaterialAllocation : Tweak
             }
 
             handled:
-            ((HAtkEvent*)atkEvent)->SetEventHandled(false);
+            atkEvent->SetEventIsHandled();
             return;
         }
 
