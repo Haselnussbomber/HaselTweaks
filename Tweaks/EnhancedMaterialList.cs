@@ -317,7 +317,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         nameNode->TextFlags = 192; // allow multiline text (not sure on the actual flags it sets though)
         nameNode->LineSpacing = 17;
 
-        var itemName = MemoryHelper.ReadSeStringNullTerminated(textPtr).TextValue;
+        var itemName = MemoryHelper.ReadSeStringNullTerminated(textPtr).TextValue.Replace("\r\n", "");
         if (itemName.Length > 23)
             itemName = itemName[..20] + "...";
 

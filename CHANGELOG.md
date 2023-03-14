@@ -5,6 +5,7 @@
 ### Enhanced Material List
 
 - **Added:** Option to enable the "Search for Item by Crafting Method" context menu entry. No more need to open the recipe tree first.
+- **Fixed:** When Zone Names are enabled, it now removes new lines from item names so they can fit in one line.
 
 ## [0.12.1] (2023-03-13)
 
