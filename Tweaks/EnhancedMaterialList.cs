@@ -5,6 +5,7 @@ using Dalamud.Memory;
 using Dalamud.Utility;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.String;
@@ -31,6 +32,8 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     private DateTime LastRecipeTreeRefresh = DateTime.Now;
     private bool RecipeTreeRefreshPending = false;
+
+    private bool HandleRecipeResultItemContextMenu = false;
 
     public class Configuration
     {
@@ -62,13 +65,13 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
         [ConfigField(
             Label = "Auto-refresh Material List",
-            Description = "Refreshes the material list when an item was crafted, fished or gathered."
+            Description = "Refreshes the material list after an item has been bought, crafted, fished or gathered."
         )]
         public bool AutoRefreshMaterialList = true;
 
         [ConfigField(
             Label = "Auto-refresh Recipe Tree",
-            Description = "Refreshes the recipe tree when an item was crafted, fished or gathered."
+            Description = "Refreshes the recipe tree after an item has been bought, crafted, fished or gathered."
         )]
         public bool AutoRefreshRecipeTree = true;
 
@@ -84,6 +87,12 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
         [ConfigField(Type = ConfigFieldTypes.Ignore)]
         public uint RestoreMaterialListAmount = 0;
+
+        [ConfigField(
+            Label = "Add \"Search for Item by Crafting Method\" context menu entry",
+            Description = "For the result item. No more need to open the recipe tree first."
+        )]
+        public bool AddSearchForItemByCraftingMethodContextMenuEntry = true; // yep, i spelled it out
     }
 
     public override void Setup()
@@ -326,6 +335,40 @@ public unsafe partial class EnhancedMaterialList : Tweak
             .AddUiForegroundOff();
 
         nameNode->SetText(sb.Encode());
+    }
+
+    [SigHook("48 89 5C 24 ?? 57 48 83 EC 20 BA ?? ?? ?? ?? 48 8B D9 E8 ?? ?? ?? ?? 48 8B F8 48 85 C0 74 5A")]
+    public nint AgentRecipeMaterialList_OpenRecipeResultItemContextMenu(AgentRecipeMaterialList* agent)
+    {
+        HandleRecipeResultItemContextMenu = true;
+        return AgentRecipeMaterialList_OpenRecipeResultItemContextMenuHook.Original(agent);
+    }
+
+    [SigHook("E8 ?? ?? ?? ?? 45 8B C4 41 8B D7")]
+    public nint AddItemContextMenuEntries(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
+    {
+        if (!HandleRecipeResultItemContextMenu)
+            goto originalAddItemContextMenuEntries;
+
+        HandleRecipeResultItemContextMenu = false;
+
+        if (!Config.AddSearchForItemByCraftingMethodContextMenuEntry)
+            goto originalAddItemContextMenuEntries;
+
+        if (GetAddon(AgentId.RecipeMaterialList) == null)
+            goto originalAddItemContextMenuEntries;
+
+        if (agentRecipeMaterialList->Recipe == null || agentRecipeMaterialList->Recipe->ResultItemId != itemId)
+            goto originalAddItemContextMenuEntries;
+
+        var control = Control.Instance();
+        if (control == null || control->LocalPlayer == null || control->LocalPlayer->Character.EventState == 5)
+            goto originalAddItemContextMenuEntries;
+
+        flags |= 2;
+
+        originalAddItemContextMenuEntries:
+        return AddItemContextMenuEntriesHook.Original(agent, itemId, flags, itemName);
     }
 
     private (int, GatheringPoint, uint, bool, SeString)? GetPointForItem(uint itemId)

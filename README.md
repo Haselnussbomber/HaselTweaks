@@ -80,14 +80,15 @@ Available options include:
 
 ### Enhanced Material List
 
-Enhances the Material List (and Recipe Tree).
+Enhances the Material List (and Recipe Tree) with the following options:
 
 - Enable Zone Names: Displays a zone name underneath the item name indicating where it can be gathered. Only the zone with the lowest teleportation cost is displayed. If the name is green it means it's the current zone. Since space is limited it has to shorten the item and zone name.
   - An option is available to disable this for Crystals.
 - Enable click to open Map: Allows you to open the map with the gathering marker in said zone.
   - An option is available to disable this for Crystals.
-- Auto-refresh Material List/Recipe Tree: Refreshes the material list and/or recipe tree when an item was crafted, fished or gathered.
+- Auto-refresh Material List/Recipe Tree: Refreshes the material list and/or recipe tree after an item has been bought, crafted, fished or gathered.
 - Restore Material List on Login: The material list will reopen with the same recipe and quantity each time you log in as long as the window is locked.
+- Add "Search for Item by Crafting Method" context menu entry: No more need to open the recipe tree first.
 
 ### Expert Deliveries
 

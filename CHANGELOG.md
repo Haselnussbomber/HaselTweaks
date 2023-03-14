@@ -1,8 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Material List
+
+- **Added:** Option to enable the "Search for Item by Crafting Method" context menu entry. No more need to open the recipe tree first.
+
 ## [0.12.1] (2023-03-13)
 
-Forgot to update the plugin version in the last release, so please check out the [0.12.0] changes regarding "Refresh Material List", which is now "Enhanced Material List"!
+Forgot to update the plugin version in the last release, so please check out the [0.12.0](https://github.com/Haselnussbomber/HaselTweaks/releases/tag/v0.12.0) changes regarding "Refresh Material List", which is now "Enhanced Material List"!
 
 ### Enhanced Experience Bar
 
@@ -560,6 +566,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[0.12.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.11.2...v0.12.0
 [0.11.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.11.1...v0.11.2
