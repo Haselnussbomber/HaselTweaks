@@ -7,6 +7,10 @@
 - **Added:** Option to enable the "Search for Item by Crafting Method" context menu entry. No more need to open the recipe tree first.
 - **Fixed:** When Zone Names are enabled, it now removes new lines from item names so they can fit in one line.
 
+### Search the markets
+
+- **Added:** Automatically closes the Search Results window when starting a new search.
+
 ## [0.12.1] (2023-03-13)
 
 Forgot to update the plugin version in the last release, so please check out the [0.12.0](https://github.com/Haselnussbomber/HaselTweaks/releases/tag/v0.12.0) changes regarding "Refresh Material List", which is now "Enhanced Material List"!
