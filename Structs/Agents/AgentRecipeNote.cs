@@ -11,5 +11,5 @@ public struct AgentRecipeNote
 {
     [FieldOffset(0)] public AgentInterface AgentInterface;
 
-    [FieldOffset(0x398)] public uint ResultItemId;
+    [FieldOffset(0x398)] public uint ContextMenuResultItemId;
 }

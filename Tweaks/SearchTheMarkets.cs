@@ -75,7 +75,7 @@ public unsafe class SearchTheMarkets : Tweak
         switch (args.ParentAddonName)
         {
             case "RecipeNote":
-                itemId = agentRecipeNote->ResultItemId;
+                itemId = agentRecipeNote->ContextMenuResultItemId;
                 break;
 
             case "RecipeTree":
