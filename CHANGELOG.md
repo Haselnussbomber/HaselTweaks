@@ -7,6 +7,10 @@
 - **Added:** Option to enable the "Search for Item by Crafting Method" context menu entry. No more need to open the recipe tree first.
 - **Fixed:** When Zone Names are enabled, it now removes new lines from item names so they can fit in one line.
 
+### DTR
+
+- **Fixed:** It still sometimes didn't display the right instance or busy status, for example after logging out and back in, so I got mad and removed caching of values altogether. Now it just reads the values on each frame.
+
 ### Search the markets
 
 - **Added:** Automatically closes the Search Results window when starting a new search.
