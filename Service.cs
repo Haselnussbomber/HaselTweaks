@@ -1,6 +1,7 @@
 using Dalamud.Data;
 using Dalamud.Game;
 using Dalamud.Game.ClientState;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Game.ClientState.Objects;
@@ -31,4 +32,5 @@ public class Service
     [PluginService] public static ObjectTable ObjectTable { get; private set; } = null!;
     [PluginService] public static KeyState KeyState { get; private set; } = null!;
     [PluginService] public static GamepadState GamepadState { get; private set; } = null!;
+    [PluginService] public static Condition Condition { get; private set; } = null!;
 }

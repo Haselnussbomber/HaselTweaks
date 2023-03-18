@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### New Tweak: Auto-open Recipe (Experimental)
+
+When a quest progresses and the new quest step requires an item that can be crafted, and you have all the materials for that item in your inventory, this tweak will automatically open the recipe.
+
+I marked this as experimental because I'm still not 100% sure about some things and have only tested it with a few quests so far (Loporrit daily quests).
+
 ### Enhanced Material List
 
 - **Added:** Option to enable the "Search for Item by Crafting Method" context menu entry. No more need to open the recipe tree first.
