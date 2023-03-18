@@ -21,6 +21,10 @@ Sorts items inside various containers when they are opened. Rules can be configu
 
 Uses the games `/itemsort` command for sorting.
 
+### Auto-open Recipe (Experimental)
+
+When a quest progresses and the new quest step requires an item that can be crafted, and you have all the materials for that item in your inventory, this tweak will automatically open the recipe.
+
 ### Character Class Switcher
 
 Clicking on a class/job in the character window finds the matching gearset and equips it.
