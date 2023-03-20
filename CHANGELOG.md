@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased]
+
+### Auto-open Recipe
+
+- **Added:** Support for older daily quests (Ixal and Moogle), which did not return item ids on their objectives.
+- **Changed:** Restricted the tweak to daily quests. Just to make sure it doesn't do anything weird.
+- **Changed:** If the player is not on a crafting job, the recipe search will now open.
+- **Fixed:** The check if all materials are available (in your inventory) will now include HQ materials and be calculated correctly when the objective requires you to craft more than one of an item.
+
+### Character Class Switcher
+
+- **Changed:** Now using Dalamuds GameConfig service to detect which button is bound to "Accept".
+
 ## [0.13.0] (2023-03-18)
 
 ### New Tweak: Auto-open Recipe (Experimental)
