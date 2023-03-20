@@ -6,6 +6,7 @@ using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.Command;
+using Dalamud.Game.Config;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.IoC;
@@ -33,4 +34,5 @@ public class Service
     [PluginService] public static KeyState KeyState { get; private set; } = null!;
     [PluginService] public static GamepadState GamepadState { get; private set; } = null!;
     [PluginService] public static Condition Condition { get; private set; } = null!;
+    [PluginService] public static GameConfig GameConfig { get; private set; } = null!;
 }

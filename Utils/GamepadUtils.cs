@@ -1,18 +1,17 @@
-using System.Collections.Generic;
 using Dalamud.Game.ClientState.GamePad;
-using Dalamud.Memory;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using Dalamud.Game.Config;
 
 namespace HaselTweaks.Utils;
 
 public static unsafe class GamepadUtils
 {
-    public static Dictionary<GamepadButtons, string> ButtonConfigMapping { get; } = new()
+    // Mapping between SystemConfigOption and Dalamuds GamepadButtons
+    private static readonly (SystemConfigOption, GamepadButtons)[] Mapping = new[]
     {
-        [GamepadButtons.North] = "PadButton_Triangle",
-        [GamepadButtons.East] = "PadButton_Circle",
-        [GamepadButtons.South] = "PadButton_Cross",
-        [GamepadButtons.West] = "PadButton_Square",
+        (SystemConfigOption.PadButton_Triangle, GamepadButtons.North),
+        (SystemConfigOption.PadButton_Circle, GamepadButtons.East),
+        (SystemConfigOption.PadButton_Cross, GamepadButtons.South),
+        (SystemConfigOption.PadButton_Square, GamepadButtons.West)
     };
 
     public enum GamepadBinding
@@ -27,33 +26,20 @@ public static unsafe class GamepadUtils
 
     public static GamepadButtons GetButton(GamepadBinding binding)
     {
-        var systemConfigBase = Framework.Instance()->SystemConfig.CommonSystemConfig.ConfigBase;
-        for (var i = 0; i < systemConfigBase.ConfigCount; i++)
+        var bindingName = binding.ToString();
+
+        foreach (var (configOption, gamepadButton) in Mapping)
         {
-            var entry = systemConfigBase.ConfigEntry[i];
-            if (entry.Type != 4 || entry.Name == null || entry.Value.String == null)
+            if (!Service.GameConfig.TryGet(configOption, out string value))
                 continue;
 
-            var name = MemoryHelper.ReadStringNullTerminated((nint)entry.Name);
-            if (string.IsNullOrEmpty(name))
-                continue;
-
-            foreach (var kv in ButtonConfigMapping)
-            {
-                // check config name
-                if (name != kv.Value)
-                    continue;
-
-                // check config value
-                if (entry.Value.String->ToString() == binding.ToString())
-                    return kv.Key;
-            }
+            if (value == bindingName)
+                return gamepadButton;
         }
+
         return GamepadButtons.South; // Default
     }
 
     public static bool IsPressed(GamepadBinding binding)
-    {
-        return Service.GamepadState.Pressed(GetButton(binding)) == 1;
-    }
+        => Service.GamepadState.Pressed(GetButton(binding)) == 1;
 }
