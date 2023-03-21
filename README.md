@@ -23,7 +23,7 @@ Uses the games `/itemsort` command for sorting.
 
 ### Auto-open Recipe
 
-When a daily quest objective requires an item which is craftable and you have materials in your inventory, it will automatically open the recipe.
+When a new daily quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe.
 
 ### Character Class Switcher
 
