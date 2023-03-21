@@ -12,7 +12,7 @@ public unsafe struct AgentScenarioTree
     [FieldOffset(0)] public AgentInterface AgentInterface;
     [FieldOffset(0x28)] public ScenarioTreeData* Data;
 
-    [StructLayout(LayoutKind.Explicit, Size = 0)]
+    [StructLayout(LayoutKind.Explicit, Size = 0x38)]
     public struct ScenarioTreeData
     {
         [FieldOffset(0)] public ushort NextId; // probably?

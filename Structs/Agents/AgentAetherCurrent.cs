@@ -12,6 +12,4 @@ public unsafe struct AgentAetherCurrent
     [FieldOffset(0)] public AgentInterface AgentInterface;
 
     [FieldOffset(0x64)] public byte TabIndex;
-
-    public static AddonAetherCurrent* GetAddon() => GetAddon<AddonAetherCurrent>(AgentId.AetherCurrent);
 }
