@@ -11,7 +11,7 @@ namespace HaselTweaks.InteropSourceGenerators;
 [Generator]
 internal sealed class VTableAddressGenerator : IIncrementalGenerator
 {
-    private const string AttributeName = "HaselTweaks.VTableAddressAttribute";
+    private const string AttributeName = "FFXIVClientStructs.Interop.Attributes.VTableAddressAttribute";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
