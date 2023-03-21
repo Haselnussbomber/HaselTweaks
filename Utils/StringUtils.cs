@@ -16,6 +16,7 @@ public sealed unsafe partial class StringUtils : IDisposable
 
     private static Dictionary<uint, string> ENpcResidentNameCache = new();
     private static Dictionary<uint, string> EObjNameCache = new();
+    private static Dictionary<uint, string> ItemNameCache = new();
     private static Dictionary<uint, string> QuestCache = new();
     private static Dictionary<uint, string> AddonCache = new();
     private static Dictionary<string, Dictionary<uint, Dictionary<string, string>>> SheetCache = new(); // SheetCache[sheetName][rowId][columnName]
@@ -48,6 +49,18 @@ public sealed unsafe partial class StringUtils : IDisposable
             var ptr = FormatObjectString(0, objId, 5, 1);
             value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
             EObjNameCache.Add(objId, value);
+        }
+
+        return value;
+    }
+
+    public string GetItemName(uint itemId)
+    {
+        if (!ItemNameCache.TryGetValue(itemId, out var value))
+        {
+            var ptr = FormatObjectString(1, itemId, 5, 1);
+            value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
+            ItemNameCache.Add(itemId, value);
         }
 
         return value;
@@ -130,6 +143,7 @@ public sealed unsafe partial class StringUtils : IDisposable
     {
         ENpcResidentNameCache = null!;
         EObjNameCache = null!;
+        ItemNameCache = null!;
         QuestCache = null!;
         AddonCache = null!;
         SheetCache = null!;

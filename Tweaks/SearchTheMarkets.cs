@@ -19,13 +19,13 @@ public unsafe class SearchTheMarkets : Tweak
     private GameObjectContextMenuItem ContextMenuItemGame = null!;
     private InventoryContextMenuItem ContextMenuItemInventory = null!;
 
-    private Item? Item = null;
+    private uint ItemId;
 
     private AgentRecipeNote* agentRecipeNote;
     private AgentRecipeItemContext* agentRecipeItemContext;
     private AgentChatLog* agentChatLog;
 
-    private bool IsInvalidState => Item == null || Item.RowId == 0 || Item.IsUntradable || GetAddon<AddonItemSearch>(AgentId.ItemSearch) == null;
+    private bool IsInvalidState => ItemId == 0 || Service.Data.GetExcelSheet<Item>()?.GetRow(ItemId)?.IsUntradable == true || GetAddon<AddonItemSearch>(AgentId.ItemSearch) == null;
 
     public override void Setup()
     {
@@ -70,26 +70,24 @@ public unsafe class SearchTheMarkets : Tweak
         if (args.ParentAddonName is not ("RecipeNote" or "RecipeMaterialList" or "RecipeTree" or "ChatLog"))
             return;
 
-        var itemId = 0u;
+        ItemId = 0u;
 
         switch (args.ParentAddonName)
         {
             case "RecipeNote":
-                itemId = agentRecipeNote->ContextMenuResultItemId;
+                ItemId = agentRecipeNote->ContextMenuResultItemId;
                 break;
 
             case "RecipeTree":
             case "RecipeMaterialList":
                 // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
-                itemId = agentRecipeItemContext->ResultItemId;
+                ItemId = agentRecipeItemContext->ResultItemId;
                 break;
 
             case "ChatLog":
-                itemId = agentChatLog->ContextItemId;
+                ItemId = agentChatLog->ContextItemId;
                 break;
         }
-
-        Item = Service.Data.GetExcelSheet<Item>()?.GetRow(itemId);
 
         if (IsInvalidState)
             return;
@@ -99,7 +97,7 @@ public unsafe class SearchTheMarkets : Tweak
 
     private void ContextMenu_OnOpenInventoryContextMenu(InventoryContextMenuOpenArgs args)
     {
-        Item = Service.Data.GetExcelSheet<Item>()?.GetRow(args.ItemId);
+        ItemId = args.ItemId;
 
         if (IsInvalidState)
             return;
@@ -114,13 +112,11 @@ public unsafe class SearchTheMarkets : Tweak
 
         var itemSearchResult = GetAddon<AddonItemSearchResult>("ItemSearchResult");
         if (itemSearchResult != null)
-        {
             itemSearchResult->Hide2();
-        }
 
         var addon = GetAddon<AddonItemSearch>(AgentId.ItemSearch);
 
-        var itemName = Item!.Name.ToString();
+        var itemName = Service.StringUtils.GetItemName(ItemId);
         if (itemName.Length > 40)
             itemName = itemName[..40];
 
@@ -137,6 +133,6 @@ public unsafe class SearchTheMarkets : Tweak
         ((HaselAtkComponentTextInput*)addon->TextInput)->TriggerRedraw();
         addon->RunSearch(false);
 
-        Item = null;
+        ItemId = 0;
     }
 }

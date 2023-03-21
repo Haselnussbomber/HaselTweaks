@@ -13,6 +13,10 @@
 
 - **Changed:** Now using Dalamuds GameConfig service to detect which button is bound to "Accept".
 
+### Search the markets
+
+- **Fixed:** Item names were not always plain text, causing the search input to bug out.
+
 ## [0.13.0] (2023-03-18)
 
 ### New Tweak: Auto-open Recipe (Experimental)
