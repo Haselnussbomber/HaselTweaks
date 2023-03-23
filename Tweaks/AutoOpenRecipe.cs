@@ -16,7 +16,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe partial class AutoOpenRecipe : Tweak
 {
     public override string Name => "Auto-open Recipe";
-    public override string Description => "When a new daily quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe.";
+    public override string Description => "When a new daily/tribal quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe.";
 
     private ExcelSheet<Quest> questSheet = null!;
     private ExcelSheet<Recipe> recipeSheet = null!;

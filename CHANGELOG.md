@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.13.2] (2023-03-23)
+
+### Auto-open Recipe
+
+- **Changed:** In addition to daily quests, tribal quests are now also allowed. Duh.
+
 ## [0.13.1] (2023-03-21)
 
 ### Auto-open Recipe
@@ -598,6 +604,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[0.13.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.1...v0.13.2
 [0.13.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.12.1...v0.13.0
 [0.12.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.12.0...v0.12.1
