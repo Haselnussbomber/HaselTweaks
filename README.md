@@ -61,7 +61,7 @@ As it says, configurable chat timestamp format. Uses C#'s <a href="https://docs.
 
 ### DTR
 
-Shows Instance, FPS and Busy status in DTR bar. To enable/disable elements or to change the order go into Dalamud Settings > Server Info Bar.
+Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar. To enable/disable elements or to change the order go into Dalamud Settings > Server Info Bar.
 
 ### Enhanced Experience Bar
 
