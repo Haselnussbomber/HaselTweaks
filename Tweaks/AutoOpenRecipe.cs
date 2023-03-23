@@ -133,7 +133,9 @@ public unsafe partial class AutoOpenRecipe : Tweak
                 goto originalUpdateQuestWork;
             }
 
-            if (!(questManager->GetDailyQuestById(questId) != null || quest!.BeastTribe.Row != 0))
+            var isDailyQuest = questManager->GetDailyQuestById(questId) != null;
+            var isTribalQuest = quest!.BeastTribe.Row != 0;
+            if (!(isDailyQuest || isTribalQuest))
             {
                 Warning($"Ignoring quest #{questId}: Quest is not a daily quest or tribal quest");
                 goto originalUpdateQuestWork;
@@ -144,9 +146,12 @@ public unsafe partial class AutoOpenRecipe : Tweak
             if (todoOffset < 0 || todoOffset >= quest.ToDoQty.Length)
                 goto originalUpdateQuestWork;
 
-            var questEventHandler = EventFramework.Instance()->GetEventHandlerById(questId);
             var localPlayer = Control.Instance()->LocalPlayer;
-            if (questEventHandler == null && localPlayer == null)
+            if (localPlayer == null)
+                goto originalUpdateQuestWork;
+
+            var questEventHandler = EventFramework.Instance()->GetEventHandlerById(questId);
+            if (questEventHandler == null)
                 goto originalUpdateQuestWork;
 
             var todoCount = quest.ToDoQty[todoOffset];
