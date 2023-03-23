@@ -124,12 +124,18 @@ public unsafe partial class AutoOpenRecipe : Tweak
         Debug($"UpdateQuestWork({index}, {questId} / {*(byte*)(questData + 2)}, {a3}, {a4}, {a5})");
 
         // DailyQuestWork gets updated before QuestWork, so we can check here if it's a daily quest
-        if (questId > 0 && questManager->GetDailyQuestById(questId) != null)
+        if (questId > 0)
         {
             var quest = questSheet.GetRow((uint)questId | 0x10000);
             if (quest?.RowId == 0)
             {
-                Error($"Could not get Quest {questId}");
+                Warning($"Ignoring quest #{questId}: Quest not found");
+                goto originalUpdateQuestWork;
+            }
+
+            if (!(questManager->GetDailyQuestById(questId) != null || quest!.BeastTribe.Row != 0))
+            {
+                Warning($"Ignoring quest #{questId}: Quest is not a daily quest or tribal quest");
                 goto originalUpdateQuestWork;
             }
 
