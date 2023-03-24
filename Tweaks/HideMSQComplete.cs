@@ -10,11 +10,11 @@ public unsafe class HideMSQComplete : Tweak
     public override string Name => "Hide MSQ Complete";
     public override string Description => "Hides the Main Scenario Guide when the MSQ is completed. Job quests are still being displayed.";
 
-    private AgentScenarioTree* agent;
+    private AgentScenarioTree* agentScenarioTree;
 
     public override void Setup()
     {
-        agent = GetAgent<AgentScenarioTree>(AgentId.ScenarioTree);
+        agentScenarioTree = GetAgent<AgentScenarioTree>(AgentId.ScenarioTree);
     }
 
     public override void Disable()
@@ -24,12 +24,12 @@ public unsafe class HideMSQComplete : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        UpdateVisibility(agent->Data != null && agent->Data->NextId != 0);
+        UpdateVisibility(agentScenarioTree->Data != null && agentScenarioTree->Data->NextId != 0);
     }
 
     private void UpdateVisibility(bool visible)
     {
-        if (!GetAddon<AtkUnitBase>((AgentInterface*)agent, out var addon))
+        if (!GetAddon<AtkUnitBase>((AgentInterface*)agentScenarioTree, out var addon))
             return;
 
         SetVisibility(addon, 11, visible); // AtkTextNode

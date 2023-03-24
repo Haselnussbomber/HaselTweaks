@@ -215,6 +215,15 @@ public unsafe partial class LockWindowPosition : Tweak
         }
     }
 
+    private AtkStage* atkStage;
+    private AgentContext* agentContext;
+
+    public override void Setup()
+    {
+        atkStage = AtkStage.GetSingleton();
+        agentContext = GetAgent<AgentContext>(AgentId.Context);
+    }
+
     public override void OnConfigWindowClose()
     {
         HoveredWindowName = "";
@@ -381,8 +390,7 @@ public unsafe partial class LockWindowPosition : Tweak
     {
         if (EventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock)
         {
-            var agent = GetAgent<AgentContext>(AgentId.Context);
-            var addon = GetAddon(agent->OwnerAddon);
+            var addon = GetAddon(agentContext->OwnerAddon);
             if (addon != null)
             {
                 var name = MemoryHelper.ReadStringNullTerminated((nint)addon->Name);
@@ -433,9 +441,8 @@ public unsafe partial class LockWindowPosition : Tweak
         Unsafe.InitBlock((void*)textPtr, 0, (uint)bytes.Length + 1);
         MemoryHelper.WriteRaw(textPtr, bytes);
 
-        var handler = (nint)AtkStage.GetSingleton()->RaptureAtkUnitManager + 0x9C88; // see vtbl ptr in ctor
-        GetAgent<AgentContext>(AgentId.Context)
-            ->AddMenuItem((byte*)textPtr, (void*)handler, eventParam);
+        var handler = (nint)atkStage->RaptureAtkUnitManager + 0x9C88; // see vtbl ptr in ctor
+        agentContext->AddMenuItem((byte*)textPtr, (void*)handler, eventParam);
 
         Marshal.FreeHGlobal(textPtr);
     }

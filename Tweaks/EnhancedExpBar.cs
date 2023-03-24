@@ -74,6 +74,21 @@ public unsafe partial class EnhancedExpBar : Tweak
         public bool DisableColorChanges = false;
     }
 
+    private GameMain* gameMain;
+    private PvPProfile* pvpProfile;
+    private MJIManager* mjiManager;
+    private PlayerState* playerState;
+    private RaptureAtkModule* raptureAtkModule;
+
+    public override void Setup()
+    {
+        gameMain = GameMain.Instance();
+        pvpProfile = PvPProfile.Instance();
+        mjiManager = MJIManager.Instance();
+        playerState = PlayerState.Instance();
+        raptureAtkModule = Framework.Instance()->GetUiModule()->GetRaptureAtkModule();
+    }
+
     public override void Enable()
     {
         Service.ClientState.LeavePvP += ClientState_LeavePvP;
@@ -91,18 +106,17 @@ public unsafe partial class EnhancedExpBar : Tweak
     // probably the laziest way to detect if xp has changed
     private ushort LastSeriesXp = 0;
     private uint LastIslandExperience = 0;
+
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
         var shouldUpdate = false;
 
-        var pvpProfile = PvPProfile.Instance();
         if (pvpProfile != null && pvpProfile->IsLoaded == 0x01 && LastSeriesXp != pvpProfile->SeriesExperience)
         {
             shouldUpdate = true;
             LastSeriesXp = pvpProfile->SeriesExperience;
         }
 
-        var mjiManager = MJIManager.Instance();
         if (mjiManager != null && LastIslandExperience != mjiManager->IslandState.CurrentXP)
         {
             shouldUpdate = true;
@@ -116,29 +130,23 @@ public unsafe partial class EnhancedExpBar : Tweak
         }
     }
 
+    // request update immediately upon leaving the pvp area, because
+    // otherwise it might get updated too late, like a second after the black screen ends
     private void ClientState_LeavePvP()
-    {
-        // request update immediately upon leaving the pvp area, because
-        // otherwise it might get updated too late, like a second after the black screen ends
-        RequestUpdate();
-    }
+        => RequestUpdate();
 
     private void ClientState_TerritoryChanged(object? sender, ushort territoryType)
-    {
-        RequestUpdate();
-    }
+        => RequestUpdate();
 
     private void RequestUpdate()
-    {
-        RunUpdate(false);
-    }
+        => RunUpdate(false);
 
     private void RunUpdate(bool useDetour = false)
     {
         if (!GetAddon<AddonExp>("_Exp", out var addon))
             return;
 
-        var atkArrayDataHolder = Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.AtkArrayDataHolder;
+        var atkArrayDataHolder = raptureAtkModule->AtkModule.AtkArrayDataHolder;
 
         if (useDetour)
         {
@@ -193,12 +201,12 @@ public unsafe partial class EnhancedExpBar : Tweak
         if (Config.ForcePvPSeriesBar && GameMain.IsInPvPArea()) // TODO: only when PvP Series is active
             goto PvPBar;
 
-        if (Config.ForceSanctuaryBar && GameMain.Instance()->CurrentTerritoryIntendedUseId == 49)
+        if (Config.ForceSanctuaryBar && gameMain->CurrentTerritoryIntendedUseId == 49)
             goto SanctuaryBar;
 
         // --- max level overrides
 
-        if (Service.ClientState.LocalPlayer.Level == PlayerState.Instance()->MaxLevel)
+        if (Service.ClientState.LocalPlayer.Level == playerState->MaxLevel)
         {
             if (Config.MaxLevelOverride == MaxLevelOverrideType.PvPSeriesBar)
                 goto PvPBar;
@@ -211,7 +219,6 @@ public unsafe partial class EnhancedExpBar : Tweak
 
         PvPBar:
         {
-            var pvpProfile = PvPProfile.Instance();
             if (pvpProfile == null || pvpProfile->IsLoaded != 0x01)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
@@ -252,7 +259,6 @@ public unsafe partial class EnhancedExpBar : Tweak
 
         SanctuaryBar:
         {
-            var mjiManager = MJIManager.Instance();
             if (mjiManager == null)
                 goto OriginalOnRequestedUpdateWithColorReset;
 

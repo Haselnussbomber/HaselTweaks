@@ -1,4 +1,5 @@
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;
@@ -36,6 +37,13 @@ public unsafe class MinimapAdjustments : Tweak
         Map = 17,
     }
 
+    private RaptureAtkModule* raptureAtkModule;
+
+    public override void Setup()
+    {
+        raptureAtkModule = Framework.Instance()->GetUiModule()->GetRaptureAtkModule();
+    }
+
     public override void Disable()
     {
         if (!GetAddon("_NaviMap", out var addon))
@@ -53,7 +61,7 @@ public unsafe class MinimapAdjustments : Tweak
         if (!GetAddon("_NaviMap", out var addon))
             return;
 
-        UpdateVisibility(addon, Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.IntersectingAddon == addon);
+        UpdateVisibility(addon, raptureAtkModule->AtkModule.IntersectingAddon == addon);
         UpdateCollision(addon, Config.Square);
     }
 

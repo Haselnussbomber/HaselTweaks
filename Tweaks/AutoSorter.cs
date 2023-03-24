@@ -3,7 +3,6 @@ using System.Linq;
 using Dalamud.Game;
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -486,11 +485,22 @@ public unsafe class AutoSorter : Tweak
         }
     }
 
+    private ItemOrderModule* itemOrderModule;
+    private RaptureShellModule* raptureShellModule;
+    private PlayerState* playerState;
+
     private readonly Queue<IGrouping<string, SortingRule>> queue = new();
     private bool IsBusy = false;
 
     public static bool IsRetainerInventoryOpen => GetAddon("InventoryRetainer") != null || GetAddon("InventoryRetainerLarge") != null;
     public static bool IsInventoryBuddyOpen => GetAddon("InventoryBuddy") != null;
+
+    public override void Setup()
+    {
+        itemOrderModule = ItemOrderModule.Instance();
+        raptureShellModule = RaptureShellModule.Instance;
+        playerState = PlayerState.Instance();
+    }
 
     public override void Disable()
     {
@@ -582,7 +592,6 @@ public unsafe class AutoSorter : Tweak
         if (nextGroup.Key is "armoury" || ArmourySubcategories.Any(subcat => subcat == nextGroup.Key))
         {
             // check if ItemOrderModule is busy
-            var itemOrderModule = ItemOrderModule.Instance();
             if (itemOrderModule == null || itemOrderModule->UserFileEvent.IsSavePending)
             {
                 Debug("ItemOrderModule is busy, waiting.");
@@ -623,7 +632,7 @@ public unsafe class AutoSorter : Tweak
                 return;
             }
 
-            if (RaptureShellModule.Instance->IsTextCommandUnavailable)
+            if (raptureShellModule->IsTextCommandUnavailable)
             {
                 Warning("Text commands are unavailable, skipping.");
                 return;
@@ -635,7 +644,7 @@ public unsafe class AutoSorter : Tweak
                 return;
             }
 
-            if (key is "rightsaddlebag" && !PlayerState.Instance()->HasPremiumSaddlebag)
+            if (key is "rightsaddlebag" && !playerState->HasPremiumSaddlebag)
             {
                 Warning("Not subscribed to the Companion Premium Service, skipping.");
                 return;

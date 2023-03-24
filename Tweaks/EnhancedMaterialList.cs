@@ -25,6 +25,9 @@ public unsafe partial class EnhancedMaterialList : Tweak
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedMaterialList;
 
     private AgentRecipeMaterialList* agentRecipeMaterialList;
+    private AgentMap* agentMap;
+    private GameMain* gameMain;
+    private Control* control;
 
     private DateTime LastRecipeMaterialListRefresh = DateTime.Now;
     private bool RecipeMaterialListRefreshPending = false;
@@ -98,6 +101,9 @@ public unsafe partial class EnhancedMaterialList : Tweak
     public override void Setup()
     {
         agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList);
+        agentMap = GetAgent<AgentMap>(AgentId.Map);
+        gameMain = GameMain.Instance();
+        control = Control.Instance();
     }
 
     public override void Enable()
@@ -351,7 +357,6 @@ public unsafe partial class EnhancedMaterialList : Tweak
         if (agentRecipeMaterialList->Recipe == null || agentRecipeMaterialList->Recipe->ResultItemId != itemId)
             goto originalAddItemContextMenuEntries;
 
-        var control = Control.Instance();
         if (control == null || control->LocalPlayer == null || control->LocalPlayer->Character.EventState == 5)
             goto originalAddItemContextMenuEntries;
 
@@ -387,7 +392,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         if (gatheringPoints == null || !gatheringPoints.Any())
             return null;
 
-        var currentTerritoryTypeId = GameMain.Instance()->CurrentTerritoryTypeId;
+        var currentTerritoryTypeId = gameMain->CurrentTerritoryTypeId;
         var point = gatheringPoints.FirstOrDefault(row => row?.TerritoryType.Row == currentTerritoryTypeId, null);
         var isSameZone = point != null;
         var cost = 0u;
@@ -469,7 +474,6 @@ public unsafe partial class EnhancedMaterialList : Tweak
             ? gatheringType.IconMain
             : gatheringType.IconOff;
 
-        var agentMap = Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentMap();
         agentMap->TempMapMarkerCount = 0;
         agentMap->AddGatheringTempMarker(
             4u,

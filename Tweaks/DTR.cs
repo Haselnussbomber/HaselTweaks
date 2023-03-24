@@ -48,9 +48,17 @@ public unsafe class DTR : Tweak
         ImGui.Text("> Server Info Bar.");
     }
 
+    private UIState* uiState;
+    private GameFramework* gameFramework;
     public DtrBarEntry? DtrInstance;
     public DtrBarEntry? DtrFPS;
     public DtrBarEntry? DtrBusy;
+
+    public override void Setup()
+    {
+        uiState = UIState.Instance();
+        gameFramework = GameFramework.Instance();
+    }
 
     public override void Enable()
     {
@@ -98,7 +106,14 @@ public unsafe class DTR : Tweak
         if (DtrInstance == null)
             return;
 
-        var instanceId = UIState.Instance()->AreaInstance.Instance;
+        if (uiState == null)
+        {
+            if (DtrInstance.Shown)
+                DtrInstance.Shown = false;
+            return;
+        }
+
+        var instanceId = uiState->AreaInstance.Instance;
         if (instanceId <= 0 || instanceId >= 10)
         {
             if (DtrInstance.Shown)
@@ -137,15 +152,14 @@ public unsafe class DTR : Tweak
         if (DtrFPS == null)
             return;
 
-        var fw = GameFramework.Instance();
-        if (fw == null)
+        if (gameFramework == null)
         {
             if (DtrFPS.Shown)
                 DtrFPS.Shown = false;
             return;
         }
 
-        var text = $"{fw->FrameRate:0} fps";
+        var text = $"{gameFramework->FrameRate:0} fps";
         if (DtrFPS.Text?.TextValue != text)
             DtrFPS.Text = text;
 

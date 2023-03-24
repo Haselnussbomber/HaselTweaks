@@ -28,6 +28,8 @@ public unsafe partial class AutoOpenRecipe : Tweak
     private QuestManager* questManager;
     private RecipeNote* recipeNote;
     private PlayerState* playerState;
+    private EventFramework* eventFramework;
+    private Control* control;
 
     // for older quests that don't return the item id in GetTodoArgs
     private readonly record struct QuestTodo(ushort QuestId, byte TodoIndex, string ScriptArgName = "RITEM1");
@@ -115,6 +117,8 @@ public unsafe partial class AutoOpenRecipe : Tweak
         questManager = QuestManager.Instance();
         recipeNote = RecipeNote.Instance();
         playerState = PlayerState.Instance();
+        eventFramework = EventFramework.Instance();
+        control = Control.Instance();
     }
 
     [SigHook("66 83 F9 1E 0F 83")]
@@ -146,11 +150,11 @@ public unsafe partial class AutoOpenRecipe : Tweak
             if (todoOffset < 0 || todoOffset >= quest.ToDoQty.Length)
                 goto originalUpdateQuestWork;
 
-            var localPlayer = Control.Instance()->LocalPlayer;
+            var localPlayer = control->LocalPlayer;
             if (localPlayer == null)
                 goto originalUpdateQuestWork;
 
-            var questEventHandler = EventFramework.Instance()->GetEventHandlerById(questId);
+            var questEventHandler = eventFramework->GetEventHandlerById(questId);
             if (questEventHandler == null)
                 goto originalUpdateQuestWork;
 

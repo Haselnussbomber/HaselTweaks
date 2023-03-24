@@ -9,6 +9,7 @@ using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
@@ -17,8 +18,9 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Windows;
 
-public class AetherCurrentHelperWindow : Window
+public unsafe class AetherCurrentHelperWindow : Window
 {
+    private readonly AgentAetherCurrent* agentAetherCurrent;
     private readonly Dictionary<uint, EObj?> EObjCache = new(); // key is AetherCurrent.RowId
     private readonly Dictionary<uint, Level?> LevelCache = new(); // key is Level.RowId
     private AetherCurrentCompFlgSet? compFlgSet;
@@ -35,6 +37,8 @@ public class AetherCurrentHelperWindow : Window
 
         base.Flags |= ImGuiWindowFlags.NoSavedSettings;
         base.Flags |= ImGuiWindowFlags.AlwaysAutoResize;
+
+        agentAetherCurrent = GetAgent<AgentAetherCurrent>(AgentId.AetherCurrent);
     }
 
     public void SetCompFlgSet(AetherCurrentCompFlgSet compFlgSet)
@@ -134,8 +138,7 @@ public class AetherCurrentHelperWindow : Window
 
     private unsafe bool DrawMainCommandButton()
     {
-        var agent = GetAgent<AgentAetherCurrent>(AgentId.AetherCurrent);
-        if (GetAddon(AgentId.AetherCurrent) != null)
+        if (GetAddon((AgentInterface*)agentAetherCurrent) != null)
             return false;
 
         var startPos = ImGui.GetCursorPos();
@@ -154,7 +157,7 @@ public class AetherCurrentHelperWindow : Window
 
         if (ImGui.IsItemClicked())
         {
-            agent->AgentInterface.Show();
+            agentAetherCurrent->AgentInterface.Show();
         }
 
         ImGui.SetCursorPos(startPos);
