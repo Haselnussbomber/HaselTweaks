@@ -79,7 +79,7 @@ public unsafe partial class MaterialAllocation : Tweak
             && nextMJIGatheringNoteBookItemId != 0
             && agent->Data != null
             && agent->Data->Status == 3
-            && (agent->Data->Flags & 2) != 0 // refresh pending
+            && (agent->Data->Flags & 2) != 2 // refresh pending
             && agent->Data->GatherItemPtrs != null;
 
         var ret = AgentMJIGatheringNoteBook_OnUpdateHook.Original(agent);
