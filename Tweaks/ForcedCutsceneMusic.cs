@@ -1,4 +1,4 @@
-using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using Dalamud.Game.Config;
 using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
@@ -17,24 +17,10 @@ public unsafe partial class ForcedCutsceneMusic : Tweak
 
     private bool wasBgmMuted;
 
-    /// <see href="https://github.com/karashiiro/SoundSetter/blob/master/SoundSetter/OptionInternals/OptionKind.cs#L23"/>
-    private static uint IsSndBgm => 35; // ConfigOption.IsSndBgm
-    private bool IsBgmMuted
+    private static bool IsBgmMuted
     {
-        get
-        {
-            var configModule = ConfigModule.Instance();
-            return configModule != null && configModule->GetIntValue(IsSndBgm) == 1;
-        }
-        set
-        {
-            var configModule = ConfigModule.Instance();
-            if (configModule == null) return;
-
-            Log($"setting IsBgmMuted to {value}");
-
-            configModule->SetOption(IsSndBgm, value ? 1 : 0);
-        }
+        get => Service.GameConfig.TryGet(SystemConfigOption.IsSndBgm, out bool value) && value;
+        set => Service.GameConfig.Set(SystemConfigOption.IsSndBgm, value);
     }
 
     [SigHook("E8 ?? ?? ?? ?? 48 8B F0 48 89 45 0F")]
