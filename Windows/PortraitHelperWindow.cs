@@ -1,5 +1,6 @@
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -12,8 +13,8 @@ namespace HaselTweaks.Windows;
 
 public unsafe class PortraitHelperWindow : Window
 {
-    public AgentBannerEditor* AgentBannerEditor { get; internal set; }
     public AddonBannerEditor* AddonBannerEditor { get; internal set; }
+    private AgentBannerEditor* AgentBannerEditor;
 
     private bool HasSavedData;
 
@@ -52,6 +53,7 @@ public unsafe class PortraitHelperWindow : Window
         base.Flags |= ImGuiWindowFlags.NoDecoration;
         base.Flags |= ImGuiWindowFlags.AlwaysAutoResize;
 
+        AgentBannerEditor = GetAgent<AgentBannerEditor>(AgentId.BannerEditor);
         ExportedPortraitData = (ExportedPortraitData*)MemoryHelper.GameAllocateUi(0x34);
     }
 

@@ -1,4 +1,3 @@
-using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows;
@@ -24,30 +23,21 @@ The Advanced Mode allows to specify which settings should be pasted.";
         Plugin.WindowSystem.RemoveWindow(Window);
     }
 
-    public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
+    public override unsafe void OnAddonOpen(string addonName, AtkUnitBase* unitbase)
     {
-        var agent = GetAgent<AgentBannerEditor>(AgentId.BannerEditor);
-        var addon = GetAddon<AddonBannerEditor>((AgentInterface*)agent);
-
-        if (addon == null)
-        {
-            if (Window.IsOpen)
-                Window.IsOpen = false;
-
-            if (Window.AgentBannerEditor != null)
-                Window.AgentBannerEditor = null;
-
-            if (Window.AddonBannerEditor != null)
-                Window.AddonBannerEditor = null;
-
+        if (addonName != "BannerEditor")
             return;
-        }
 
-        if (!Window.IsOpen)
-        {
-            Window.AgentBannerEditor = agent;
-            Window.AddonBannerEditor = addon;
-            Window.IsOpen = true;
-        }
+        Window.AddonBannerEditor = (AddonBannerEditor*)unitbase;
+        Window.IsOpen = true;
+    }
+
+    public override unsafe void OnAddonClose(string addonName, AtkUnitBase* unitbase)
+    {
+        if (addonName != "BannerEditor")
+            return;
+
+        Window.AddonBannerEditor = null;
+        Window.IsOpen = false;
     }
 }
