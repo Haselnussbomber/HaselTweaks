@@ -135,8 +135,8 @@ public unsafe partial class EnhancedExpBar : Tweak
 
     private void RunUpdate(bool useDetour = false)
     {
-        var addon = GetAddon<AddonExp>("_Exp");
-        if (addon == null) return;
+        if (!GetAddon<AddonExp>("_Exp", out var addon))
+            return;
 
         var atkArrayDataHolder = Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.AtkArrayDataHolder;
 

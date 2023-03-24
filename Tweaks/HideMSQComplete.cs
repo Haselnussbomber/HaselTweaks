@@ -29,8 +29,7 @@ public unsafe class HideMSQComplete : Tweak
 
     private void UpdateVisibility(bool visible)
     {
-        var addon = GetAddon<AtkUnitBase>((AgentInterface*)agent);
-        if (addon == null)
+        if (!GetAddon<AtkUnitBase>((AgentInterface*)agent, out var addon))
             return;
 
         SetVisibility(addon, 11, visible); // AtkTextNode

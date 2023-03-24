@@ -110,11 +110,11 @@ public unsafe class SearchTheMarkets : Tweak
         if (IsInvalidState)
             return;
 
-        var itemSearchResult = GetAddon<AddonItemSearchResult>("ItemSearchResult");
-        if (itemSearchResult != null)
-            itemSearchResult->Hide2();
+        if (!GetAddon<AddonItemSearch>(AgentId.ItemSearch, out var addon))
+            return;
 
-        var addon = GetAddon<AddonItemSearch>(AgentId.ItemSearch);
+        if (GetAddon<AddonItemSearchResult>("ItemSearchResult", out var itemSearchResult))
+            itemSearchResult->Hide2();
 
         var itemName = Service.StringUtils.GetItemName(ItemId);
         if (itemName.Length > 40)

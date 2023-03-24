@@ -180,8 +180,7 @@ public unsafe partial class ScrollableTabs : Tweak
                 goto ResetWheelState;
         }
 
-        var unitBase = GetAddon(name);
-        if (unitBase == null)
+        if (!GetAddon(name, out var unitBase))
             goto ResetWheelState;
 
         if (Config.HandleArmouryBoard && name == "ArmouryBoard")

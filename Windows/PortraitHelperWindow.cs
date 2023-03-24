@@ -14,7 +14,7 @@ namespace HaselTweaks.Windows;
 public unsafe class PortraitHelperWindow : Window
 {
     public AddonBannerEditor* AddonBannerEditor { get; internal set; }
-    private AgentBannerEditor* AgentBannerEditor;
+    private readonly AgentBannerEditor* AgentBannerEditor;
 
     private bool HasSavedData;
 

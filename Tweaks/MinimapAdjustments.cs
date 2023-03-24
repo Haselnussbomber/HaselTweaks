@@ -38,8 +38,8 @@ public unsafe class MinimapAdjustments : Tweak
 
     public override void Disable()
     {
-        var addon = GetAddon("_NaviMap");
-        if (addon == null) return;
+        if (!GetAddon("_NaviMap", out var addon))
+            return;
 
         // reset visibility
         UpdateVisibility(addon, true);
@@ -50,15 +50,18 @@ public unsafe class MinimapAdjustments : Tweak
 
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
-        var addon = GetAddon("_NaviMap");
-        if (addon == null) return;
+        if (!GetAddon("_NaviMap", out var addon))
+            return;
+
         UpdateVisibility(addon, Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.IntersectingAddon == addon);
         UpdateCollision(addon, Config.Square);
     }
 
     private static void OnConfigChange()
     {
-        var addon = GetAddon("_NaviMap");
+        if (!GetAddon("_NaviMap", out var addon))
+            return;
+
         SetVisibility(addon, (uint)NodeId.Coords, !Config.HideCoords);
         SetVisibility(addon, (uint)NodeId.Weather, !Config.HideWeather);
     }
@@ -72,8 +75,8 @@ public unsafe class MinimapAdjustments : Tweak
 
     private static void UpdateCollision(AtkUnitBase* addon, bool square)
     {
-        var collisionNode = GetNode(addon, (uint)NodeId.Collision);
-        if (collisionNode == null) return;
+        if (!GetNode(addon, (uint)NodeId.Collision, out var collisionNode))
+            return;
 
         var hasCircularCollisionFlag = (collisionNode->Flags_2 & (1 << 23)) != 0;
 
