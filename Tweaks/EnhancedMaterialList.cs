@@ -102,22 +102,12 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     public override void Enable()
     {
-        Service.AddonObserver.Register("Catch", "Synthesis", "SynthesisSimple", "Gathering", "ItemSearchResult", "InclusionShop", "Shop", "ShopExchangeItem");
-
-        Service.AddonObserver.OnOpen += AddonObserver_OnOpen;
-        Service.AddonObserver.OnClose += AddonObserver_OnClose;
-
         Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
         Service.ClientState.Login += ClientState_Login;
     }
 
     public override void Disable()
     {
-        Service.AddonObserver.OnOpen -= AddonObserver_OnOpen;
-        Service.AddonObserver.OnClose -= AddonObserver_OnClose;
-
-        Service.AddonObserver.Unregister("Catch", "Synthesis", "SynthesisSimple", "Gathering", "ItemSearchResult", "InclusionShop", "Shop", "ShopExchangeItem");
-
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
         Service.ClientState.Login -= ClientState_Login;
     }
@@ -128,13 +118,13 @@ public unsafe partial class EnhancedMaterialList : Tweak
         RefreshRecipeTree();
     }
 
-    private void AddonObserver_OnOpen(AddonObserver sender, string addonName, AtkUnitBase* unitBase)
+    public override void OnAddonOpen(string addonName, AtkUnitBase* unitBase)
     {
         if (addonName is "Catch")
             RequestRefresh();
     }
 
-    private void AddonObserver_OnClose(AddonObserver sender, string addonName, AtkUnitBase* unitBase)
+    public override void OnAddonClose(string addonName, AtkUnitBase* unitBase)
     {
         if (addonName is "Synthesis" or "SynthesisSimple" or "Gathering" or "ItemSearchResult" or "InclusionShop" or "Shop" or "ShopExchangeItem")
             RequestRefresh();

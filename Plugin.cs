@@ -1,17 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Dalamud.Game;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin;
+using Dalamud.Utility.Signatures;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Utils;
 using HaselTweaks.Windows;
+using DalamudFramework = Dalamud.Game.Framework;
 
 namespace HaselTweaks;
 
-public sealed class Plugin : IDalamudPlugin
+public sealed unsafe partial class Plugin : IDalamudPlugin
 {
     public string Name => "HaselTweaks";
 
@@ -25,13 +28,17 @@ public sealed class Plugin : IDalamudPlugin
     {
         pluginInterface.Create<Service>();
 
+        SignatureHelper.Initialise(this);
+        AddonSetupHook?.Enable();
+        AddonFinalizeHook?.Enable();
+
         // ensure Framework is set up
         Service.Framework.RunOnFrameworkThread(Setup);
     }
 
     private unsafe void Setup()
     {
-        var gameVersion = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GameVersion.Base;
+        var gameVersion = Framework.Instance()->GameVersion.Base;
         if (string.IsNullOrEmpty(gameVersion))
             throw new Exception("Unable to read game version.");
 
@@ -88,23 +95,13 @@ public sealed class Plugin : IDalamudPlugin
         }
 
         Service.Framework.Update += OnFrameworkUpdate;
-        Service.ClientState.Login += ClientState_Login;
     }
 
-    private void ClientState_Login(object? sender, EventArgs e)
+    private void OnFrameworkUpdate(DalamudFramework framework)
     {
-        Service.AddonObserver.Reset();
-    }
-
-    private void OnFrameworkUpdate(Framework framework)
-    {
-        if (Service.ClientState.IsLoggedIn)
-            Service.AddonObserver.Update();
-
-        foreach (var tweak in Tweaks)
+        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
         {
-            if (tweak.Enabled)
-                tweak.OnFrameworkUpdate(framework);
+            tweak.OnFrameworkUpdate(framework);
         }
     }
 
@@ -132,7 +129,6 @@ public sealed class Plugin : IDalamudPlugin
 
     void IDisposable.Dispose()
     {
-        Service.ClientState.Login -= ClientState_Login;
         Service.Framework.Update -= OnFrameworkUpdate;
         Service.PluginInterface.UiBuilder.Draw -= OnDraw;
         Service.PluginInterface.UiBuilder.OpenConfigUi -= OnOpenConfigUi;
@@ -170,6 +166,9 @@ public sealed class Plugin : IDalamudPlugin
 
         Tweaks = null!;
 
+        AddonSetupHook?.Dispose();
+        AddonFinalizeHook?.Dispose();
+
         Config.Save();
         Config = null!;
 
@@ -182,5 +181,27 @@ public sealed class Plugin : IDalamudPlugin
 
         ((IDisposable)Service.StringUtils).Dispose();
         Service.StringUtils = null!;
+    }
+
+    [SigHook("E8 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? C1 E8 14")]
+    public void AddonSetup(AtkUnitBase* unitBase)
+    {
+        AddonSetupHook.Original(unitBase);
+
+        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
+        {
+            tweak.OnAddonOpenInternal(GetAddonName(unitBase), unitBase);
+        }
+    }
+
+    [SigHook("E8 ?? ?? ?? ?? 48 8B 7C 24 ?? 41 8B C6")]
+    public void AddonFinalize(AtkUnitManager* unitManager, AtkUnitBase** unitBase)
+    {
+        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
+        {
+            tweak.OnAddonCloseInternal(GetAddonName(*unitBase), *unitBase);
+        }
+
+        AddonFinalizeHook.Original(unitManager, unitBase);
     }
 }

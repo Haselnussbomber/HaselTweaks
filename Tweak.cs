@@ -6,13 +6,14 @@ using Dalamud.Game.Command;
 using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using static Dalamud.Game.Command.CommandInfo;
 
 namespace HaselTweaks;
 
-public abstract class Tweak
+public abstract unsafe class Tweak
 {
     public string InternalName => GetType().Name;
     public abstract string Name { get; }
@@ -179,12 +180,42 @@ public abstract class Tweak
         Ready = false;
     }
 
+    internal void OnAddonOpenInternal(string addonName, AtkUnitBase* unitbase)
+    {
+        try
+        {
+            OnAddonOpen(addonName, unitbase);
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during OnAddonOpen");
+            LastException = ex;
+            return;
+        }
+    }
+
+    internal void OnAddonCloseInternal(string addonName, AtkUnitBase* unitbase)
+    {
+        try
+        {
+            OnAddonClose(addonName, unitbase);
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during OnAddonOpen");
+            LastException = ex;
+            return;
+        }
+    }
+
     public virtual void Setup() { }
     public virtual void SetupVTableHooks() { }
     public virtual void Enable() { }
     public virtual void Disable() { }
     public virtual void Dispose() { }
     public virtual void OnFrameworkUpdate(Framework framework) { }
+    public virtual void OnAddonOpen(string addonName, AtkUnitBase* unitbase) { }
+    public virtual void OnAddonClose(string addonName, AtkUnitBase* unitbase) { }
 
     #region Logging methods
 

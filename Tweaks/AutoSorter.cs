@@ -357,13 +357,13 @@ public unsafe class AutoSorter : Tweak
                 {
                     List<string>? disabledReasons = null;
 
-                    if (entry.Category is "saddlebag" or "rightsaddlebag" && !Service.AddonObserver.IsOpen("InventoryBuddy"))
+                    if (entry.Category is "saddlebag" or "rightsaddlebag" && !IsInventoryBuddyOpen)
                     {
                         disabledReasons ??= new();
                         disabledReasons.Add("Sorting saddlebag/rightsaddlebag only works when the window is open.");
                     }
 
-                    if (entry.Category is "retainer" && !Service.AddonObserver.IsOpen("Retainer"))
+                    if (entry.Category is "retainer" && !IsRetainerInventoryOpen)
                     {
                         disabledReasons ??= new();
                         disabledReasons.Add("Sorting retainer only works when the window is open.");
@@ -489,22 +489,11 @@ public unsafe class AutoSorter : Tweak
     private readonly Queue<IGrouping<string, SortingRule>> queue = new();
     private bool IsBusy = false;
 
-    public override void Enable()
-    {
-        Service.AddonObserver.Register("Armoury", () => GetAddon(AgentId.ArmouryBoard));
-        Service.AddonObserver.Register("Inventory", () => GetAddon(AgentId.Inventory));
-        Service.AddonObserver.Register("InventoryBuddy", () => GetAddon(AgentId.InventoryBuddy));
-        Service.AddonObserver.Register("Retainer", () => GetAddon(AgentId.Retainer));
-
-        Service.AddonObserver.OnOpen += OnOpen;
-    }
+    public static bool IsRetainerInventoryOpen => GetAddon("InventoryRetainer") != null || GetAddon("InventoryRetainerLarge") != null;
+    public static bool IsInventoryBuddyOpen => GetAddon("InventoryBuddy") != null;
 
     public override void Disable()
     {
-        Service.AddonObserver.OnOpen -= OnOpen;
-
-        Service.AddonObserver.Unregister("Armoury", "Inventory", "InventoryBuddy", "Retainer");
-
         queue.Clear();
     }
 
@@ -513,7 +502,7 @@ public unsafe class AutoSorter : Tweak
         ProcessQueue();
     }
 
-    private void OnOpen(AddonObserver sender, string addonName, AtkUnitBase* unitBase)
+    public override void OnAddonOpen(string addonName, AtkUnitBase* unitBase)
     {
         switch (addonName)
         {
@@ -526,7 +515,8 @@ public unsafe class AutoSorter : Tweak
             case "InventoryBuddy":
                 OnOpenInventoryBuddy();
                 break;
-            case "Retainer":
+            case "InventoryRetainer":
+            case "InventoryRetainerLarge":
                 OnOpenRetainer();
                 break;
         }
@@ -639,7 +629,7 @@ public unsafe class AutoSorter : Tweak
                 return;
             }
 
-            if ((key is "saddlebag" or "rightsaddlebag") && !Service.AddonObserver.IsOpen("InventoryBuddy"))
+            if ((key is "saddlebag" or "rightsaddlebag") && !IsInventoryBuddyOpen)
             {
                 Warning("Sorting for saddlebag/rightsaddlebag only works when the window is open, skipping.");
                 return;
@@ -651,7 +641,7 @@ public unsafe class AutoSorter : Tweak
                 return;
             }
 
-            if (key is "retainer" && !Service.AddonObserver.IsOpen("Retainer"))
+            if (key is "retainer" && !IsRetainerInventoryOpen)
             {
                 Warning("Sorting for retainer only works when the window is open, skipping.");
                 return;

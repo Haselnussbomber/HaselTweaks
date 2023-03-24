@@ -1,6 +1,4 @@
-using Dalamud.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
-using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 
@@ -11,28 +9,13 @@ public unsafe class ExpertDeliveries : Tweak
     public override string Name => "Expert Deliveries";
     public override string Description => "Always opens the \"Grand Company Delivery Missions\" window on the \"Expert Delivery\" tab.";
 
-    private bool switched;
-
-    public override void OnFrameworkUpdate(Framework framework)
+    public override void OnAddonOpen(string addonName, AtkUnitBase* unitBase)
     {
-        var addon = GetAddon<AddonGrandCompanySupplyList>(AgentId.GrandCompanySupply);
-        if (addon == null)
-        {
-            if (switched)
-                switched = false;
-
+        if (addonName != "GrandCompanySupplyList")
             return;
-        }
-
-        if (switched)
-            return;
-
-        Log("window opened, switching tab");
 
         var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
-        addon->ReceiveEvent(AtkEventType.ButtonClick, 4, atkEvent, 0);
+        ((AddonGrandCompanySupplyList*)unitBase)->ReceiveEvent(AtkEventType.ButtonClick, 4, atkEvent, 0);
         IMemorySpace.Free(atkEvent);
-
-        switched = true;
     }
 }
