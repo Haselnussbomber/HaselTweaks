@@ -65,4 +65,10 @@ public static unsafe class MemoryUtils
         *(byte*)(outPtr + totalLength) = 0;
         return (byte*)outPtr;
     }
+
+    public static string ReadString(nint ptr, int maxLength)
+        => MemoryHelper.ReadString(ptr, maxLength).Split("\0", 1)[0];
+
+    public static string ReadString(byte* ptr, int maxLength)
+        => ReadString((nint)ptr, maxLength);
 }

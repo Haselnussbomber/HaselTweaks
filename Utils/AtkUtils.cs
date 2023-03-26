@@ -1,4 +1,3 @@
-using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -129,7 +128,7 @@ public static unsafe class AtkUtils
     #region AtkUnitBase
 
     public static string GetAddonName(AtkUnitBase* addon)
-        => addon == null ? "" : MemoryHelper.ReadString((nint)addon->Name, 0x20).Split("\0", 1)[0];
+        => addon == null ? "" : MemoryUtils.ReadString(addon->Name, 0x20);
 
     public static AtkResNode* GetNode(AtkUnitBase* addon, uint nodeId)
         => addon == null ? null : addon->UldManager.SearchNodeById(nodeId);
