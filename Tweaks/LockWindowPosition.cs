@@ -85,7 +85,7 @@ public unsafe partial class LockWindowPosition : Tweak
                 ImGui.TableNextRow();
 
                 ImGui.TableNextColumn();
-                ImGui.Checkbox($"{key}_Enabled", ref entry.Enabled);
+                ImGui.Checkbox(key + "_Enabled", ref entry.Enabled);
                 if (ImGui.IsItemHovered())
                 {
                     var isLocked = entry.Enabled;
@@ -106,7 +106,7 @@ public unsafe partial class LockWindowPosition : Tweak
                 ImGui.TableNextColumn();
                 if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
                 {
-                    if (ImGuiUtils.IconButton(FontAwesomeIcon.Trash, $"{key}_Delete"))
+                    if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash))
                     {
                         entryToRemove = i;
                     }
@@ -118,7 +118,7 @@ public unsafe partial class LockWindowPosition : Tweak
                 }
                 else
                 {
-                    ImGuiUtils.IconButtonDisabled(FontAwesomeIcon.Trash, $"{key}_Delete");
+                    ImGuiUtils.IconButtonDisabled(key + "_Delete", FontAwesomeIcon.Trash);
 
                     if (ImGui.IsItemHovered())
                     {

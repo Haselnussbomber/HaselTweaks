@@ -279,7 +279,7 @@ public unsafe class AutoSorter : Tweak
             ImGui.TableNextColumn();
             if (i > 0)
             {
-                if (ImGuiUtils.IconButton(FontAwesomeIcon.ArrowUp, key + "Up"))
+                if (ImGuiUtils.IconButton(key + "_Up", FontAwesomeIcon.ArrowUp))
                 {
                     entryToMoveUp = i;
                 }
@@ -297,7 +297,7 @@ public unsafe class AutoSorter : Tweak
 
             if (i < Config.Settings.Count - 1)
             {
-                if (ImGuiUtils.IconButton(FontAwesomeIcon.ArrowDown, key + "Down"))
+                if (ImGuiUtils.IconButton(key + "_Down", FontAwesomeIcon.ArrowDown))
                 {
                     entryToMoveDown = i;
                 }
@@ -315,19 +315,14 @@ public unsafe class AutoSorter : Tweak
 
             if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
             {
-                if (ImGuiUtils.IconButton(FontAwesomeIcon.Trash, key + "Delete"))
+                if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, "Delete rule"))
                 {
                     entryToRemove = i;
-                }
-
-                if (ImGui.IsItemHovered())
-                {
-                    ImGui.SetTooltip("Delete rule");
                 }
             }
             else
             {
-                ImGuiUtils.IconButtonDisabled(FontAwesomeIcon.Trash, key + "Delete");
+                ImGuiUtils.IconButtonDisabled(key + "_Delete", FontAwesomeIcon.Trash);
 
                 if (ImGui.IsItemHovered())
                 {
@@ -345,12 +340,7 @@ public unsafe class AutoSorter : Tweak
                 if (IsBusy || queue.Any())
                 {
                     ImGui.SameLine();
-                    ImGuiUtils.IconButtonDisabled(FontAwesomeIcon.Terminal);
-
-                    if (ImGui.IsItemHovered())
-                    {
-                        ImGui.SetTooltip("Sorting in progress. Please wait.");
-                    }
+                    ImGuiUtils.IconButtonDisabled(FontAwesomeIcon.Terminal, "Sorting in progress. Please wait.");
                 }
                 else
                 {
@@ -372,7 +362,7 @@ public unsafe class AutoSorter : Tweak
 
                     if (disabledReasons != null)
                     {
-                        ImGuiUtils.IconButtonDisabled(FontAwesomeIcon.Terminal, key + "Execute");
+                        ImGuiUtils.IconButtonDisabled(key + "_Execute", FontAwesomeIcon.Terminal);
 
                         if (ImGui.IsItemHovered())
                         {
@@ -388,7 +378,7 @@ public unsafe class AutoSorter : Tweak
                         if (errors != null)
                         {
                             ImGui.PushStyleColor(ImGuiCol.Text, 0xff02d2ee); // safety yellow
-                            ImGuiUtils.IconButton(FontAwesomeIcon.ExclamationTriangle);
+                            ImGuiUtils.IconButtonDisabled(FontAwesomeIcon.ExclamationTriangle);
                             ImGui.PopStyleColor();
 
                             if (ImGui.IsItemHovered())
@@ -401,7 +391,7 @@ public unsafe class AutoSorter : Tweak
                         }
                         else
                         {
-                            if (ImGuiUtils.IconButton(FontAwesomeIcon.Terminal, key + "Execute"))
+                            if (ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal))
                             {
                                 entryToExecute = i;
                             }

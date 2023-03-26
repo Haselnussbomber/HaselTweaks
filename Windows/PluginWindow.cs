@@ -576,13 +576,9 @@ public partial class PluginWindow : Window
         if (data.Attr?.DefaultValue != null)
         {
             ImGui.SameLine();
-            if (ImGuiUtils.IconButton(FontAwesomeIcon.Undo))
+            if (ImGuiUtils.IconButton(FontAwesomeIcon.Undo, $"Reset to Default: {(T)data.Attr!.DefaultValue}"))
             {
                 data.Value = (T)data.Attr!.DefaultValue;
-            }
-            if (ImGui.IsItemHovered())
-            {
-                ImGui.SetTooltip($"Reset to Default: {(T)data.Attr!.DefaultValue}");
             }
         }
     }

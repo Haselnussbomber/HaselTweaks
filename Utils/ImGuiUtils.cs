@@ -127,21 +127,61 @@ public static class ImGuiUtils
         return ret;
     }
 
-    public static bool IconButton(FontAwesomeIcon icon, Vector2 size = default)
-        => IconButton(icon, "", size);
+    #region IconButton
 
-    public static bool IconButton(FontAwesomeIcon icon, string key, Vector2 size = default)
+    public static bool IconButton(string key, FontAwesomeIcon icon, Vector2 size)
     {
         using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
         return ImGui.Button(icon.ToIconString() + key, size);
     }
 
-    public static bool IconButtonDisabled(FontAwesomeIcon icon, Vector2 size = default)
-        => IconButtonDisabled(icon, "", size);
+    public static bool IconButton(string key, FontAwesomeIcon icon, string tooltip, Vector2 size = default)
+    {
+        var pressed = IconButton(key, icon, size);
 
-    public static bool IconButtonDisabled(FontAwesomeIcon icon, string key, Vector2 size = default)
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip(tooltip);
+
+        return pressed;
+    }
+
+    public static bool IconButton(string key, FontAwesomeIcon icon)
+        => IconButton(key, icon, default);
+
+    public static bool IconButton(FontAwesomeIcon icon, Vector2 size = default)
+        => IconButton("", icon, size);
+
+    public static bool IconButton(FontAwesomeIcon icon, string tooltip, Vector2 size = default)
+        => IconButton("", icon, tooltip, size);
+
+    #endregion
+
+    #region IconButtonDisabled
+
+    public static bool IconButtonDisabled(string key, FontAwesomeIcon icon, Vector2 size)
     {
         using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
         return ButtonDisabled(icon.ToIconString() + key, size);
     }
+
+    public static bool IconButtonDisabled(string key, FontAwesomeIcon icon, string tooltip, Vector2 size = default)
+    {
+        var pressed = IconButtonDisabled(key, icon, size);
+
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip(tooltip);
+
+        return pressed;
+    }
+
+    public static bool IconButtonDisabled(string key, FontAwesomeIcon icon)
+        => IconButtonDisabled(key, icon, default);
+
+    public static bool IconButtonDisabled(FontAwesomeIcon icon, Vector2 size = default)
+        => IconButtonDisabled("", icon, size);
+
+    public static bool IconButtonDisabled(FontAwesomeIcon icon, string tooltip, Vector2 size = default)
+        => IconButtonDisabled("", icon, tooltip, size);
+
+    #endregion
 }
