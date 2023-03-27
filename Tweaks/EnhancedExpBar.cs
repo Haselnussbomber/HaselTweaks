@@ -1,6 +1,7 @@
 using System.Linq;
 using Dalamud.Game.Text;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
@@ -42,19 +43,19 @@ public unsafe partial class EnhancedExpBar : Tweak
     {
         [ConfigField(
             Label = "Always show PvP Series Bar in PvP Areas",
-            OnChange = nameof(RequestUpdate)
+            OnChange = nameof(RunUpdate)
         )]
         public bool ForcePvPSeriesBar = true;
 
         [ConfigField(
             Label = "Always show Sanctuary Bar on the Island",
-            OnChange = nameof(RequestUpdate)
+            OnChange = nameof(RunUpdate)
         )]
         public bool ForceSanctuaryBar = true;
 
         [ConfigField(
             Label = "Hide Job on Sanctuary Bar",
-            OnChange = nameof(RequestUpdate)
+            OnChange = nameof(RunUpdate)
         )]
         public bool SanctuaryBarHideJob = false;
 
@@ -63,13 +64,13 @@ public unsafe partial class EnhancedExpBar : Tweak
             Description = "Will switch to the selected bar if your current job is on max level and none of the settings above apply.",
             Type = ConfigFieldTypes.SingleSelect,
             Options = nameof(MaxLevelOverrideType),
-            OnChange = nameof(RequestUpdate)
+            OnChange = nameof(RunUpdate)
         )]
         public MaxLevelOverrideType MaxLevelOverride = MaxLevelOverrideType.Default;
 
         [ConfigField(
             Label = "Disable color change",
-            OnChange = nameof(RequestUpdate)
+            OnChange = nameof(RunUpdate)
         )]
         public bool DisableColorChanges = false;
     }
@@ -77,6 +78,7 @@ public unsafe partial class EnhancedExpBar : Tweak
     private GameMain* gameMain;
     private PvPProfile* pvpProfile;
     private MJIManager* mjiManager;
+    private FateManager* fateManager;
     private PlayerState* playerState;
     private RaptureAtkModule* raptureAtkModule;
 
@@ -85,6 +87,7 @@ public unsafe partial class EnhancedExpBar : Tweak
         gameMain = GameMain.Instance();
         pvpProfile = PvPProfile.Instance();
         mjiManager = MJIManager.Instance();
+        fateManager = FateManager.Instance();
         playerState = PlayerState.Instance();
         raptureAtkModule = Framework.Instance()->GetUiModule()->GetRaptureAtkModule();
     }
@@ -93,19 +96,20 @@ public unsafe partial class EnhancedExpBar : Tweak
     {
         Service.ClientState.LeavePvP += ClientState_LeavePvP;
         Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
-        RequestUpdate();
+        RunUpdate();
     }
 
     public override void Disable()
     {
         Service.ClientState.LeavePvP -= ClientState_LeavePvP;
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
-        RequestUpdate();
+        RunUpdate();
     }
 
     // probably the laziest way to detect if xp has changed
     private ushort LastSeriesXp = 0;
     private uint LastIslandExperience = 0;
+    private ushort LastSyncedFateId = 0;
 
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
@@ -123,9 +127,15 @@ public unsafe partial class EnhancedExpBar : Tweak
             LastIslandExperience = mjiManager->IslandState.CurrentXP;
         }
 
+        if (fateManager != null && LastSyncedFateId != fateManager->SyncedFateId)
+        {
+            shouldUpdate = true;
+            LastSyncedFateId = fateManager->SyncedFateId;
+        }
+
         if (shouldUpdate)
         {
-            RunUpdate(true);
+            RunUpdate();
             shouldUpdate = false;
         }
     }
@@ -133,40 +143,23 @@ public unsafe partial class EnhancedExpBar : Tweak
     // request update immediately upon leaving the pvp area, because
     // otherwise it might get updated too late, like a second after the black screen ends
     private void ClientState_LeavePvP()
-        => RequestUpdate();
+        => RunUpdate();
 
     private void ClientState_TerritoryChanged(object? sender, ushort territoryType)
-        => RequestUpdate();
+        => RunUpdate();
 
-    private void RequestUpdate()
-        => RunUpdate(false);
-
-    private void RunUpdate(bool useDetour = false)
+    private void RunUpdate()
     {
         if (!GetAddon<AddonExp>("_Exp", out var addon))
             return;
 
         var atkArrayDataHolder = raptureAtkModule->AtkModule.AtkArrayDataHolder;
 
-        if (useDetour)
-        {
-            AddonExp_OnRequestedUpdate(
-                addon,
-                atkArrayDataHolder.NumberArrays,
-                atkArrayDataHolder.StringArrays
-            );
-        }
-        else
-        {
-            // to trigger a GaugeBar update. it'll fetch correct values from the number array
-            addon->ClassJob--;
-            addon->RequiredExp--;
-
-            addon->AtkUnitBase.OnUpdate(
-                atkArrayDataHolder.NumberArrays,
-                atkArrayDataHolder.StringArrays
-            );
-        }
+        AddonExp_OnRequestedUpdate(
+            addon,
+            atkArrayDataHolder.NumberArrays,
+            atkArrayDataHolder.StringArrays
+        );
     }
 
     [SigHook("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 41 56 41 57 48 83 EC 30 48 8B 72 18")]
@@ -214,6 +207,10 @@ public unsafe partial class EnhancedExpBar : Tweak
             //if (Config.MaxLevelOverride == MaxLevelOverrideType.SanctuaryBar)
             //    goto SanctuaryBar;
         }
+
+        // nothing matches so let it fetch fresh data
+        addon->ClassJob--;
+        addon->RequiredExp--;
 
         goto OriginalOnRequestedUpdateWithColorReset;
 

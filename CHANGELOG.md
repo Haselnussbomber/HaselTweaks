@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Experience Bar
+
+- **Fixed:** FATE level sync will now refresh the experience bar to remove PvP Series data set by the Max Level Override.
+
 ## [0.13.2] (2023-03-23)
 
 ### Auto-open Recipe
