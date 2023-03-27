@@ -4,7 +4,11 @@
 
 ### Enhanced Experience Bar
 
-- **Fixed:** FATE level sync will now refresh the experience bar to remove PvP Series data set by the Max Level Override.
+- **Fixed:** The experience bar will refresh after level syncing for a FATE to remove leftover PvP Series data set by the Max Level Override.
+
+### Material Allocation
+
+- **Fixed:** Sanctuary Gathering Log now correctly switches to the item you clicked on in the Material Allocation window.
 
 ## [0.13.2] (2023-03-23)
 
