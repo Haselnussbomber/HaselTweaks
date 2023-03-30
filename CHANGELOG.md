@@ -1,6 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## [0.13.3] (2023-03-30)
+
+### Character Class Switcher
+
+- **Fixed:** The tweak now enables DoH buttons when desynthesis is not unlocked.
 
 ### Enhanced Experience Bar
 
@@ -614,6 +618,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[0.13.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.2...v0.13.3
 [0.13.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.1...v0.13.2
 [0.13.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.12.1...v0.13.0
