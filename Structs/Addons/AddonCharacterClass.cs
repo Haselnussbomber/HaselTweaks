@@ -9,8 +9,8 @@ public unsafe partial struct AddonCharacterClass
     public const int NUM_CLASSES = 31;
 
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
-    [FixedSizeArray<Pointer<AtkComponentBase>>(31)]
-    [FieldOffset(0x220)] public fixed byte BaseComponentNodes[0x8 * 31];
+    [FixedSizeArray<Pointer<AtkComponentButton>>(31)]
+    [FieldOffset(0x220)] public fixed byte ButtonNodes[0x8 * 31];
     [FieldOffset(0x318)] public AtkComponentButton* TabsNode;
     [FieldOffset(0x320)] public AtkTextNode* CurrentXPTextNode;
     [FieldOffset(0x328)] public AtkTextNode* MaxXPTextNode;

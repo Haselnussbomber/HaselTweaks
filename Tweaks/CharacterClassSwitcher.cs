@@ -104,11 +104,10 @@ public unsafe partial class CharacterClassSwitcher : Tweak
             // skip crafters as they already have ButtonClick events
             if (IsCrafter(i)) continue;
 
-            var nodePointer = addon->BaseComponentNodesSpan[i];
-            if (nodePointer.Value == null) continue;
-            var node = nodePointer.Value;
+            var node = addon->ButtonNodesSpan[i].Value;
+            if (node == null) continue;
 
-            var collisionNode = (AtkCollisionNode*)node->UldManager.RootNode;
+            var collisionNode = (AtkCollisionNode*)node->AtkComponentBase.UldManager.RootNode;
             if (collisionNode == null) continue;
 
             collisionNode->AtkResNode.AddEvent(AtkEventType.MouseClick, (uint)i + 2, eventListener, null, false);
@@ -126,17 +125,21 @@ public unsafe partial class CharacterClassSwitcher : Tweak
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
         {
+            var node = addon->ButtonNodesSpan[i].Value;
+            if (node == null) continue;
+
             // skip crafters as they already have Cursor Pointer flags
-            if (IsCrafter(i)) continue;
+            if (IsCrafter(i))
+            {
+                // but ensure the button is enabled, even though the player might not have desynthesis unlocked
+                node->AtkComponentBase.SetEnabledState(true);
+                continue;
+            }
 
-            var nodePointer = addon->BaseComponentNodesSpan[i];
-            if (nodePointer.Value == null) continue;
-            var node = nodePointer.Value;
-
-            var collisionNode = (AtkCollisionNode*)node->UldManager.RootNode;
+            var collisionNode = (AtkCollisionNode*)node->AtkComponentBase.UldManager.RootNode;
             if (collisionNode == null) continue;
 
-            var imageNode = GetNode<AtkImageNode>(node, 4);
+            var imageNode = GetNode<AtkImageNode>((AtkComponentBase*)node, 4);
             if (imageNode == null) continue;
 
             // if job is unlocked, it has full alpha
@@ -157,15 +160,11 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         if (eventParam < 2)
             goto OriginalReceiveEventCode;
 
-        var nodePointer = addon->BaseComponentNodesSpan[eventParam - 2];
-        if (nodePointer.Value == null)
+        var node = addon->ButtonNodesSpan[eventParam - 2].Value;
+        if (node == null || node->AtkComponentBase.OwnerNode == null)
             goto OriginalReceiveEventCode;
 
-        var node = nodePointer.Value;
-        if (node == null || node->OwnerNode == null)
-            goto OriginalReceiveEventCode;
-
-        var imageNode = GetNode<AtkImageNode>(node, 4);
+        var imageNode = GetNode<AtkImageNode>((AtkComponentBase*)node, 4);
         if (imageNode == null)
             goto OriginalReceiveEventCode;
 
@@ -187,7 +186,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
                 return 0;
             }
         }
-        else if (ProcessEvents(node->OwnerNode, imageNode, eventType))
+        else if (ProcessEvents(node->AtkComponentBase.OwnerNode, imageNode, eventType))
         {
             return 0;
         }
