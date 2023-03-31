@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.13.6] (2023-03-31)
+
+### Hide MSQ Complete
+
+- **Fixed:** Accidentally flipped a check in v0.13.5.
+
 ## [0.13.5] (2023-03-31)
 
 ### Auto Sorter
@@ -630,6 +636,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[0.13.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.5...v0.13.6
 [0.13.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.4...v0.13.5
 [0.13.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.3...v0.13.4
 [0.13.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.2...v0.13.3
