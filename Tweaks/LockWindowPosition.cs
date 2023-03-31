@@ -215,15 +215,6 @@ public unsafe partial class LockWindowPosition : Tweak
         }
     }
 
-    private AtkStage* atkStage;
-    private AgentContext* agentContext;
-
-    public override void Setup()
-    {
-        atkStage = AtkStage.GetSingleton();
-        GetAgent(AgentId.Context, out agentContext);
-    }
-
     public override void OnConfigWindowClose()
     {
         HoveredWindowName = "";
@@ -388,10 +379,9 @@ public unsafe partial class LockWindowPosition : Tweak
     [SigHook("48 89 6C 24 ?? 48 89 54 24 ?? 56 41 54")]
     public AtkValue* WindowContextMenuEventHandler(nint self, AtkValue* result, nint a3, long a4, long eventParam)
     {
-        if (EventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock)
+        if (EventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock && GetAgent<AgentContext>(AgentId.Context, out var agentContext))
         {
-            var addon = GetAddon(agentContext->OwnerAddon);
-            if (addon != null)
+            if (GetAddon(agentContext->OwnerAddon, out var addon))
             {
                 var name = MemoryHelper.ReadStringNullTerminated((nint)addon->Name);
 
@@ -432,6 +422,9 @@ public unsafe partial class LockWindowPosition : Tweak
 
     private void AddMenuEntry(string text, int eventParam)
     {
+        if (!GetAgent<AgentContext>(AgentId.Context, out var agentContext))
+            return;
+
         var bytes = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
             .AddText(text)
@@ -441,7 +434,7 @@ public unsafe partial class LockWindowPosition : Tweak
         Unsafe.InitBlock((void*)textPtr, 0, (uint)bytes.Length + 1);
         MemoryHelper.WriteRaw(textPtr, bytes);
 
-        var handler = (nint)atkStage->RaptureAtkUnitManager + 0x9C88; // see vtbl ptr in ctor
+        var handler = (nint)AtkStage.GetSingleton()->RaptureAtkUnitManager + 0x9C88; // see vtbl ptr in ctor
         agentContext->AddMenuItem((byte*)textPtr, (void*)handler, eventParam);
 
         Marshal.FreeHGlobal(textPtr);

@@ -47,13 +47,6 @@ public unsafe partial class CharacterClassSwitcher : Tweak
     [Signature("48 8D 4C 24 ?? E8 ?? ?? ?? ?? 48 8B 83 ?? ?? ?? ?? 48 8B CF 0F B7 9F")]
     private nint PvPTooltipAddress { get; init; }
 
-    private RaptureGearsetModule* gearsetModule;
-
-    public override void Setup()
-    {
-        gearsetModule = RaptureGearsetModule.Instance();
-    }
-
     public override void Enable()
     {
         ApplyTooltipPatch(Config.DisableTooltips);
@@ -312,6 +305,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
 
     private void SwitchClassJob(uint classJobId)
     {
+        var gearsetModule = RaptureGearsetModule.Instance();
         if (gearsetModule == null)
             return;
 

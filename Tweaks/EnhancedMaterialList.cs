@@ -24,11 +24,6 @@ public unsafe partial class EnhancedMaterialList : Tweak
     public override string Description => "Enhances the Material List (and Recipe Tree).";
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedMaterialList;
 
-    private AgentRecipeMaterialList* agentRecipeMaterialList;
-    private AgentMap* agentMap;
-    private GameMain* gameMain;
-    private Control* control;
-
     private DateTime LastRecipeMaterialListRefresh = DateTime.Now;
     private bool RecipeMaterialListRefreshPending = false;
     private bool RecipeMaterialListLockPending = false;
@@ -98,14 +93,6 @@ public unsafe partial class EnhancedMaterialList : Tweak
         public bool AddSearchForItemByCraftingMethodContextMenuEntry = true; // yep, i spelled it out
     }
 
-    public override void Setup()
-    {
-        GetAgent(AgentId.RecipeMaterialList, out agentRecipeMaterialList);
-        GetAgent(AgentId.Map, out agentMap);
-        gameMain = GameMain.Instance();
-        control = Control.Instance();
-    }
-
     public override void Enable()
     {
         Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
@@ -152,6 +139,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
     {
         if (Config.RestoreMaterialList &&
             Config.RestoreMaterialListRecipeId != 0 &&
+            GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList, out var agentRecipeMaterialList) &&
             agentRecipeMaterialList != null &&
             agentRecipeMaterialList->RecipeId != Config.RestoreMaterialListRecipeId)
         {
@@ -223,6 +211,9 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     private void SaveRestoreMaterialList()
     {
+        if (!GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList, out var agentRecipeMaterialList))
+            return;
+
         var shouldSave = Config.RestoreMaterialList && agentRecipeMaterialList != null && agentRecipeMaterialList->WindowLocked;
         Config.RestoreMaterialListRecipeId = shouldSave ? agentRecipeMaterialList->RecipeId : 0u;
         Config.RestoreMaterialListAmount = shouldSave ? agentRecipeMaterialList->Amount : 0u;
@@ -351,12 +342,16 @@ public unsafe partial class EnhancedMaterialList : Tweak
         if (!Config.AddSearchForItemByCraftingMethodContextMenuEntry)
             goto originalAddItemContextMenuEntries;
 
+        if (!GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList, out var agentRecipeMaterialList))
+            goto originalAddItemContextMenuEntries;
+
         if (GetAddon(AgentId.RecipeMaterialList) == null)
             goto originalAddItemContextMenuEntries;
 
         if (agentRecipeMaterialList->Recipe == null || agentRecipeMaterialList->Recipe->ResultItemId != itemId)
             goto originalAddItemContextMenuEntries;
 
+        var control = Control.Instance();
         if (control == null || control->LocalPlayer == null || control->LocalPlayer->Character.EventState == 5)
             goto originalAddItemContextMenuEntries;
 
@@ -392,7 +387,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         if (gatheringPoints == null || !gatheringPoints.Any())
             return null;
 
-        var currentTerritoryTypeId = gameMain->CurrentTerritoryTypeId;
+        var currentTerritoryTypeId = GameMain.Instance()->CurrentTerritoryTypeId;
         var point = gatheringPoints.FirstOrDefault(row => row?.TerritoryType.Row == currentTerritoryTypeId, null);
         var isSameZone = point != null;
         var cost = 0u;
@@ -435,6 +430,9 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     public bool OpenMapWithGatheringPoint(GatheringPoint? gatheringPoint, Item? item = null)
     {
+        if (!GetAgent<AgentMap>(AgentId.Map, out var agentMap))
+            return false;
+
         if (gatheringPoint == null)
             return false;
 

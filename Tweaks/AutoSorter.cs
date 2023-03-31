@@ -476,10 +476,6 @@ public unsafe class AutoSorter : Tweak
         }
     }
 
-    private ItemOrderModule* itemOrderModule;
-    private RaptureShellModule* raptureShellModule;
-    private PlayerState* playerState;
-
     private readonly Queue<IGrouping<string, SortingRule>> queue = new();
     private bool IsBusy = false;
 
@@ -492,13 +488,6 @@ public unsafe class AutoSorter : Tweak
         ["InventoryLarge"] = false,
         ["InventoryExpansion"] = false
     };
-
-    public override void Setup()
-    {
-        itemOrderModule = ItemOrderModule.Instance();
-        raptureShellModule = RaptureShellModule.Instance;
-        playerState = PlayerState.Instance();
-    }
 
     public override void Disable()
     {
@@ -611,6 +600,10 @@ public unsafe class AutoSorter : Tweak
         if (nextGroup == null)
             return;
 
+        var itemOrderModule = ItemOrderModule.Instance();
+        if (itemOrderModule == null)
+            return;
+
         if (nextGroup.Key is "armoury" || ArmourySubcategories.Any(subcat => subcat == nextGroup.Key))
         {
             // check if ItemOrderModule is busy
@@ -654,6 +647,13 @@ public unsafe class AutoSorter : Tweak
                 return;
             }
 
+            var raptureShellModule = RaptureShellModule.Instance;
+            if (raptureShellModule == null)
+            {
+                Warning("Could not resolve RaptureShellModule");
+                return;
+            }
+
             if (raptureShellModule->IsTextCommandUnavailable)
             {
                 Warning("Text commands are unavailable, skipping.");
@@ -663,6 +663,13 @@ public unsafe class AutoSorter : Tweak
             if ((key is "saddlebag" or "rightsaddlebag") && !IsInventoryBuddyOpen)
             {
                 Warning("Sorting for saddlebag/rightsaddlebag only works when the window is open, skipping.");
+                return;
+            }
+
+            var playerState = PlayerState.Instance();
+            if (playerState == null)
+            {
+                Warning("Could not resolve PlayerState");
                 return;
             }
 

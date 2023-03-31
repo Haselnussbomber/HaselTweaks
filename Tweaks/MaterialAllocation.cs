@@ -17,10 +17,6 @@ public unsafe partial class MaterialAllocation : Tweak
     public override string Description => "Enhances the Island Sanctuarys \"Material Allocation\" window.";
     public static Configuration Config => Plugin.Config.Tweaks.MaterialAllocation;
 
-    private AgentMJICraftSchedule* agentMJICraftSchedule;
-    private AgentMJIGatheringNoteBook* agentMJIGatheringNoteBook;
-    private ExcelSheet<MJIGatheringItem>? sheetMJIGatheringItem;
-    private ExcelSheet<MJIItemPouch>? sheetMJIItemPouch;
     private uint nextMJIGatheringNoteBookItemId;
 
     public class Configuration
@@ -35,14 +31,6 @@ public unsafe partial class MaterialAllocation : Tweak
         public bool OpenGatheringLogOnItemClick = true;
     }
 
-    public override void Setup()
-    {
-        GetAgent(AgentId.MJICraftSchedule, out agentMJICraftSchedule);
-        GetAgent(AgentId.MJIGatheringNoteBook, out agentMJIGatheringNoteBook);
-        sheetMJIGatheringItem = Service.Data.GetExcelSheet<MJIGatheringItem>();
-        sheetMJIItemPouch = Service.Data.GetExcelSheet<MJIItemPouch>();
-    }
-
     public override void Enable()
     {
         nextMJIGatheringNoteBookItemId = 0;
@@ -55,7 +43,7 @@ public unsafe partial class MaterialAllocation : Tweak
 
         var addon = (AddonMJICraftMaterialConfirmation*)unitbase;
 
-        if (Config.SaveLastSelectedTab)
+        if (Config.SaveLastSelectedTab && GetAgent<AgentMJICraftSchedule>(AgentId.MJICraftSchedule, out var agentMJICraftSchedule))
         {
             if (Config.LastSelectedTab > 2)
                 Config.LastSelectedTab = 2;
@@ -108,8 +96,10 @@ public unsafe partial class MaterialAllocation : Tweak
             Config.LastSelectedTab = (byte)(eventParam - 1);
         }
 
-        if (eventParam == 9902)
+        if (eventParam == 9902 && GetAgent<AgentMJIGatheringNoteBook>(AgentId.MJIGatheringNoteBook, out var agentMJIGatheringNoteBook))
         {
+            var sheetMJIGatheringItem = Service.Data.GetExcelSheet<MJIGatheringItem>();
+            var sheetMJIItemPouch = Service.Data.GetExcelSheet<MJIItemPouch>();
             if (!Config.OpenGatheringLogOnItemClick || sheetMJIItemPouch == null || sheetMJIGatheringItem == null)
                 goto handled;
 
@@ -180,6 +170,7 @@ public unsafe partial class MaterialAllocation : Tweak
 
     private void UpdateGatheringNoteBookItem(AgentMJIGatheringNoteBook* agent, uint itemId)
     {
+        var sheetMJIItemPouch = Service.Data.GetExcelSheet<MJIItemPouch>();
         if (sheetMJIItemPouch == null)
             return;
 

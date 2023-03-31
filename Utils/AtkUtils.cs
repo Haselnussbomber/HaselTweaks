@@ -46,6 +46,9 @@ public static unsafe class AtkUtils
     public static AtkUnitBase* GetAddon(AgentId id)
         => GetAddon(GetAgent(id));
 
+    public static bool GetAddon(AgentId id, out AtkUnitBase* addon)
+        => (addon = GetAddon(id)) != null;
+
     public static T* GetAddon<T>(ushort id)
         => (T*)GetAddon(id);
 

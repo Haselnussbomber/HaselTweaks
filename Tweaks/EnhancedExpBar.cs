@@ -75,23 +75,6 @@ public unsafe partial class EnhancedExpBar : Tweak
         public bool DisableColorChanges = false;
     }
 
-    private GameMain* gameMain;
-    private PvPProfile* pvpProfile;
-    private MJIManager* mjiManager;
-    private FateManager* fateManager;
-    private PlayerState* playerState;
-    private RaptureAtkModule* raptureAtkModule;
-
-    public override void Setup()
-    {
-        gameMain = GameMain.Instance();
-        pvpProfile = PvPProfile.Instance();
-        mjiManager = MJIManager.Instance();
-        fateManager = FateManager.Instance();
-        playerState = PlayerState.Instance();
-        raptureAtkModule = Framework.Instance()->GetUiModule()->GetRaptureAtkModule();
-    }
-
     public override void Enable()
     {
         Service.ClientState.LeavePvP += ClientState_LeavePvP;
@@ -115,18 +98,21 @@ public unsafe partial class EnhancedExpBar : Tweak
     {
         var shouldUpdate = false;
 
+        var pvpProfile = PvPProfile.Instance();
         if (pvpProfile != null && pvpProfile->IsLoaded == 0x01 && LastSeriesXp != pvpProfile->SeriesExperience)
         {
             shouldUpdate = true;
             LastSeriesXp = pvpProfile->SeriesExperience;
         }
 
+        var mjiManager = MJIManager.Instance();
         if (mjiManager != null && LastIslandExperience != mjiManager->IslandState.CurrentXP)
         {
             shouldUpdate = true;
             LastIslandExperience = mjiManager->IslandState.CurrentXP;
         }
 
+        var fateManager = FateManager.Instance();
         if (fateManager != null && LastSyncedFateId != fateManager->SyncedFateId)
         {
             shouldUpdate = true;
@@ -153,7 +139,7 @@ public unsafe partial class EnhancedExpBar : Tweak
         if (!GetAddon<AddonExp>("_Exp", out var addon))
             return;
 
-        var atkArrayDataHolder = raptureAtkModule->AtkModule.AtkArrayDataHolder;
+        var atkArrayDataHolder = Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.AtkArrayDataHolder;
 
         AddonExp_OnRequestedUpdate(
             addon,
@@ -194,12 +180,12 @@ public unsafe partial class EnhancedExpBar : Tweak
         if (Config.ForcePvPSeriesBar && GameMain.IsInPvPArea()) // TODO: only when PvP Series is active
             goto PvPBar;
 
-        if (Config.ForceSanctuaryBar && gameMain->CurrentTerritoryIntendedUseId == 49)
+        if (Config.ForceSanctuaryBar && GameMain.Instance()->CurrentTerritoryIntendedUseId == 49)
             goto SanctuaryBar;
 
         // --- max level overrides
 
-        if (Service.ClientState.LocalPlayer.Level == playerState->MaxLevel)
+        if (Service.ClientState.LocalPlayer.Level == PlayerState.Instance()->MaxLevel)
         {
             if (Config.MaxLevelOverride == MaxLevelOverrideType.PvPSeriesBar)
                 goto PvPBar;
@@ -216,6 +202,7 @@ public unsafe partial class EnhancedExpBar : Tweak
 
         PvPBar:
         {
+            var pvpProfile = PvPProfile.Instance();
             if (pvpProfile == null || pvpProfile->IsLoaded != 0x01)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
@@ -256,6 +243,7 @@ public unsafe partial class EnhancedExpBar : Tweak
 
         SanctuaryBar:
         {
+            var mjiManager = MJIManager.Instance();
             if (mjiManager == null)
                 goto OriginalOnRequestedUpdateWithColorReset;
 

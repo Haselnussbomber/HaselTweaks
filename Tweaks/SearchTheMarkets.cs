@@ -21,18 +21,10 @@ public unsafe class SearchTheMarkets : Tweak
 
     private uint ItemId;
 
-    private AgentRecipeNote* agentRecipeNote;
-    private AgentRecipeItemContext* agentRecipeItemContext;
-    private AgentChatLog* agentChatLog;
-
     private bool IsInvalidState => ItemId == 0 || Service.Data.GetExcelSheet<Item>()?.GetRow(ItemId)?.IsUntradable == true || GetAddon(AgentId.ItemSearch) == null;
 
     public override void Setup()
     {
-        GetAgent(AgentId.RecipeNote, out agentRecipeNote);
-        GetAgent(AgentId.RecipeItemContext, out agentRecipeItemContext);
-        GetAgent(AgentId.ChatLog, out agentChatLog);
-
         var text = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
             .AddText(Service.ClientState.ClientLanguage switch
@@ -75,17 +67,20 @@ public unsafe class SearchTheMarkets : Tweak
         switch (args.ParentAddonName)
         {
             case "RecipeNote":
-                ItemId = agentRecipeNote->ContextMenuResultItemId;
+                if (GetAgent<AgentRecipeNote>(AgentId.RecipeNote, out var agentRecipeNote))
+                    ItemId = agentRecipeNote->ContextMenuResultItemId;
                 break;
 
             case "RecipeTree":
             case "RecipeMaterialList":
                 // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
-                ItemId = agentRecipeItemContext->ResultItemId;
+                if (GetAgent<AgentRecipeItemContext>(AgentId.RecipeItemContext, out var agentRecipeItemContext))
+                    ItemId = agentRecipeItemContext->ResultItemId;
                 break;
 
             case "ChatLog":
-                ItemId = agentChatLog->ContextItemId;
+                if (GetAgent<AgentChatLog>(AgentId.ChatLog, out var agentChatLog))
+                    ItemId = agentChatLog->ContextItemId;
                 break;
         }
 

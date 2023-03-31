@@ -7,7 +7,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
 using EventHandler = FFXIVClientStructs.FFXIV.Client.Game.Event.EventHandler;
 
@@ -17,19 +16,6 @@ public unsafe partial class AutoOpenRecipe : Tweak
 {
     public override string Name => "Auto-open Recipe";
     public override string Description => "When a new daily/tribal quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe.";
-
-    private ExcelSheet<Quest> questSheet = null!;
-    private ExcelSheet<Recipe> recipeSheet = null!;
-    private ExcelSheet<CraftType> craftTypeSheet = null!;
-    private ExcelSheet<Item> itemSheet = null!;
-
-    private AgentRecipeNote* agentRecipeNote;
-    private InventoryManager* inventoryManager;
-    private QuestManager* questManager;
-    private RecipeNote* recipeNote;
-    private PlayerState* playerState;
-    private EventFramework* eventFramework;
-    private Control* control;
 
     // for older quests that don't return the item id in GetTodoArgs
     private readonly record struct QuestTodo(ushort QuestId, byte TodoIndex, string ScriptArgName = "RITEM1");
@@ -105,23 +91,6 @@ public unsafe partial class AutoOpenRecipe : Tweak
         new(2318, 5),
     };
 
-    public override void Setup()
-    {
-        questSheet = Service.Data.GetExcelSheet<Quest>()!;
-        recipeSheet = Service.Data.GetExcelSheet<Recipe>()!;
-        craftTypeSheet = Service.Data.GetExcelSheet<CraftType>()!;
-        itemSheet = Service.Data.GetExcelSheet<Item>()!;
-
-        GetAgent(AgentId.RecipeNote, out agentRecipeNote);
-
-        inventoryManager = InventoryManager.Instance();
-        questManager = QuestManager.Instance();
-        recipeNote = RecipeNote.Instance();
-        playerState = PlayerState.Instance();
-        eventFramework = EventFramework.Instance();
-        control = Control.Instance();
-    }
-
     [SigHook("66 83 F9 1E 0F 83")]
     public nint UpdateQuestWork(ushort index, nint questData, bool a3, bool a4, bool a5)
     {
@@ -131,10 +100,24 @@ public unsafe partial class AutoOpenRecipe : Tweak
         // DailyQuestWork gets updated before QuestWork, so we can check here if it's a daily quest
         if (questId > 0)
         {
+            var questSheet = Service.Data.GetExcelSheet<Quest>();
+            if (questSheet == null)
+            {
+                Warning("Could not get Quest sheet");
+                goto originalUpdateQuestWork;
+            }
+
             var quest = questSheet.GetRow((uint)questId | 0x10000);
             if (quest?.RowId == 0)
             {
                 Warning($"Ignoring quest #{questId}: Quest not found");
+                goto originalUpdateQuestWork;
+            }
+
+            var questManager = QuestManager.Instance();
+            if (questManager == null)
+            {
+                Warning("Could not resolve QuestManager");
                 goto originalUpdateQuestWork;
             }
 
@@ -151,9 +134,23 @@ public unsafe partial class AutoOpenRecipe : Tweak
             if (todoOffset < 0 || todoOffset >= quest.ToDoQty.Length)
                 goto originalUpdateQuestWork;
 
+            var control = Control.Instance();
+            if (control == null)
+            {
+                Warning("Could not resolve Control");
+                goto originalUpdateQuestWork;
+            }
+
             var localPlayer = control->LocalPlayer;
             if (localPlayer == null)
                 goto originalUpdateQuestWork;
+
+            var eventFramework = EventFramework.Instance();
+            if (eventFramework == null)
+            {
+                Warning("Could not resolve EventFramework");
+                goto originalUpdateQuestWork;
+            }
 
             var questEventHandler = eventFramework->GetEventHandlerById(questId);
             if (questEventHandler == null)
@@ -200,6 +197,13 @@ public unsafe partial class AutoOpenRecipe : Tweak
 
     private void OpenRecipe(uint resultItemId, uint amount)
     {
+        if (!GetAgent<AgentRecipeNote>(AgentId.RecipeNote, out var agentRecipeNote))
+            return;
+
+        var recipeSheet = Service.Data.GetExcelSheet<Recipe>();
+        if (recipeSheet == null)
+            return;
+
         if (agentRecipeNote->ActiveCraftRecipeId != 0 || Service.Condition[ConditionFlag.Crafting] || Service.Condition[ConditionFlag.Crafting40])
         {
             Warning($"Not opening Recipe for Item {resultItemId}: Crafting in progress");
@@ -233,6 +237,12 @@ public unsafe partial class AutoOpenRecipe : Tweak
 
     private bool IngredientsAvailable(Recipe recipe, uint amount)
     {
+        var inventoryManager = InventoryManager.Instance();
+        var itemSheet = Service.Data.GetExcelSheet<Item>();
+
+        if (inventoryManager == null || itemSheet == null)
+            return false;
+
         foreach (var ingredient in recipe.UnkData5)
         {
             if (ingredient.ItemIngredient == 0 || ingredient.AmountIngredient == 0)
@@ -261,6 +271,12 @@ public unsafe partial class AutoOpenRecipe : Tweak
     private int GetCurrentCraftType()
     {
         var craftType = -1;
+        var recipeNote = RecipeNote.Instance();
+        var playerState = PlayerState.Instance();
+        var craftTypeSheet = Service.Data.GetExcelSheet<CraftType>();
+
+        if (recipeNote == null || playerState == null || craftTypeSheet == null)
+            return craftType;
 
         for (var i = 0; i < craftTypeSheet.RowCount; i++)
         {
