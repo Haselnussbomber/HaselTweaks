@@ -1,6 +1,5 @@
 using Dalamud.Game;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
@@ -17,7 +16,7 @@ public unsafe class HideMSQComplete : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        if (!GetAgent<AgentScenarioTree>(AgentId.ScenarioTree, out var agentScenarioTree))
+        if (GetAgent<AgentScenarioTree>(AgentId.ScenarioTree, out var agentScenarioTree))
             UpdateVisibility(agentScenarioTree->Data != null && agentScenarioTree->Data->NextId != 0);
     }
 
