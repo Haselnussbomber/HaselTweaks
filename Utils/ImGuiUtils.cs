@@ -107,24 +107,10 @@ public static class ImGuiUtils
 
     public static unsafe bool ButtonDisabled(string label, Vector2 size = default)
     {
-        using var textCol = ImRaii.PushColor(ImGuiCol.Text, 0xff999999);
-
-        var frameBg = ImGui.GetStyleColorVec4(ImGuiCol.FrameBg);
-        if (frameBg != null) ImGui.PushStyleColor(ImGuiCol.Button, *frameBg);
-
-        var frameBgHovered = ImGui.GetStyleColorVec4(ImGuiCol.FrameBgHovered);
-        if (frameBgHovered != null) ImGui.PushStyleColor(ImGuiCol.ButtonHovered, *frameBgHovered);
-
-        var frameBgActive = ImGui.GetStyleColorVec4(ImGuiCol.FrameBgActive);
-        if (frameBgActive != null) ImGui.PushStyleColor(ImGuiCol.ButtonActive, *frameBgActive);
-
-        var ret = ImGui.Button(label, size);
-
-        if (frameBgActive != null) ImGui.PopStyleColor();
-        if (frameBgHovered != null) ImGui.PopStyleColor();
-        if (frameBg != null) ImGui.PopStyleColor();
-
-        return ret;
+        using (ImRaii.Disabled())
+        {
+            return ImGui.Button(label, size);
+        }
     }
 
     #region IconButton
