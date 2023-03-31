@@ -28,7 +28,7 @@ The Advanced Mode allows to specify which settings should be pasted.";
         if (addonName != "BannerEditor")
             return;
 
-        Window.AddonBannerEditor = (AddonBannerEditor*)unitbase;
+        Window.addonBannerEditor = (AddonBannerEditor*)unitbase;
         Window.IsOpen = true;
     }
 
@@ -37,7 +37,7 @@ The Advanced Mode allows to specify which settings should be pasted.";
         if (addonName != "BannerEditor")
             return;
 
-        Window.AddonBannerEditor = null;
+        Window.addonBannerEditor = null;
         Window.IsOpen = false;
     }
 }

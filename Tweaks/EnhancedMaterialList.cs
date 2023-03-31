@@ -100,8 +100,8 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     public override void Setup()
     {
-        agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList);
-        agentMap = GetAgent<AgentMap>(AgentId.Map);
+        GetAgent(AgentId.RecipeMaterialList, out agentRecipeMaterialList);
+        GetAgent(AgentId.Map, out agentMap);
         gameMain = GameMain.Instance();
         control = Control.Instance();
     }

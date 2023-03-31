@@ -37,8 +37,8 @@ public unsafe partial class MaterialAllocation : Tweak
 
     public override void Setup()
     {
-        agentMJICraftSchedule = GetAgent<AgentMJICraftSchedule>(AgentId.MJICraftSchedule);
-        agentMJIGatheringNoteBook = GetAgent<AgentMJIGatheringNoteBook>(AgentId.MJIGatheringNoteBook);
+        GetAgent(AgentId.MJICraftSchedule, out agentMJICraftSchedule);
+        GetAgent(AgentId.MJIGatheringNoteBook, out agentMJIGatheringNoteBook);
         sheetMJIGatheringItem = Service.Data.GetExcelSheet<MJIGatheringItem>();
         sheetMJIItemPouch = Service.Data.GetExcelSheet<MJIItemPouch>();
     }

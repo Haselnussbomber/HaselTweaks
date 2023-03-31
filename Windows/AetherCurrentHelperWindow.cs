@@ -38,7 +38,7 @@ public unsafe class AetherCurrentHelperWindow : Window
         base.Flags |= ImGuiWindowFlags.NoSavedSettings;
         base.Flags |= ImGuiWindowFlags.AlwaysAutoResize;
 
-        agentAetherCurrent = GetAgent<AgentAetherCurrent>(AgentId.AetherCurrent);
+        GetAgent(AgentId.AetherCurrent, out agentAetherCurrent);
     }
 
     public void SetCompFlgSet(AetherCurrentCompFlgSet compFlgSet)

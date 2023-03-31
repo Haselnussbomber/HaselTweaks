@@ -25,13 +25,13 @@ public unsafe class SearchTheMarkets : Tweak
     private AgentRecipeItemContext* agentRecipeItemContext;
     private AgentChatLog* agentChatLog;
 
-    private bool IsInvalidState => ItemId == 0 || Service.Data.GetExcelSheet<Item>()?.GetRow(ItemId)?.IsUntradable == true || GetAddon<AddonItemSearch>(AgentId.ItemSearch) == null;
+    private bool IsInvalidState => ItemId == 0 || Service.Data.GetExcelSheet<Item>()?.GetRow(ItemId)?.IsUntradable == true || GetAddon(AgentId.ItemSearch) == null;
 
     public override void Setup()
     {
-        agentRecipeNote = GetAgent<AgentRecipeNote>(AgentId.RecipeNote);
-        agentRecipeItemContext = GetAgent<AgentRecipeItemContext>(AgentId.RecipeItemContext);
-        agentChatLog = GetAgent<AgentChatLog>(AgentId.ChatLog);
+        GetAgent(AgentId.RecipeNote, out agentRecipeNote);
+        GetAgent(AgentId.RecipeItemContext, out agentRecipeItemContext);
+        GetAgent(AgentId.ChatLog, out agentChatLog);
 
         var text = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)

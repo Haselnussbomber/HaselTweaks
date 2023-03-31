@@ -112,7 +112,8 @@ public unsafe partial class AutoOpenRecipe : Tweak
         craftTypeSheet = Service.Data.GetExcelSheet<CraftType>()!;
         itemSheet = Service.Data.GetExcelSheet<Item>()!;
 
-        agentRecipeNote = GetAgent<AgentRecipeNote>(AgentId.RecipeNote);
+        GetAgent(AgentId.RecipeNote, out agentRecipeNote);
+
         inventoryManager = InventoryManager.Instance();
         questManager = QuestManager.Instance();
         recipeNote = RecipeNote.Instance();

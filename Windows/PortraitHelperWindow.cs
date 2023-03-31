@@ -13,8 +13,8 @@ namespace HaselTweaks.Windows;
 
 public unsafe class PortraitHelperWindow : Window
 {
-    public AddonBannerEditor* AddonBannerEditor { get; internal set; }
-    private readonly AgentBannerEditor* AgentBannerEditor;
+    public AddonBannerEditor* addonBannerEditor { get; internal set; }
+    private readonly AgentBannerEditor* agentBannerEditor;
 
     private bool HasSavedData;
 
@@ -53,7 +53,7 @@ public unsafe class PortraitHelperWindow : Window
         base.Flags |= ImGuiWindowFlags.NoDecoration;
         base.Flags |= ImGuiWindowFlags.AlwaysAutoResize;
 
-        AgentBannerEditor = GetAgent<AgentBannerEditor>(AgentId.BannerEditor);
+        GetAgent(AgentId.BannerEditor, out agentBannerEditor);
         ExportedPortraitData = (ExportedPortraitData*)MemoryHelper.GameAllocateUi(0x34);
     }
 
@@ -65,9 +65,9 @@ public unsafe class PortraitHelperWindow : Window
 
     public override bool DrawConditions()
     {
-        return AgentBannerEditor != null
-            && AddonBannerEditor != null
-            && AgentBannerEditor->PortraitState != null;
+        return agentBannerEditor != null
+            && addonBannerEditor != null
+            && agentBannerEditor->PortraitState != null;
     }
 
     public override void Draw()
@@ -95,7 +95,7 @@ public unsafe class PortraitHelperWindow : Window
             {
                 ImGuiUtils.DrawPaddedSeparator();
 
-                var state = AgentBannerEditor->PortraitState;
+                var state = agentBannerEditor->PortraitState;
                 if (!ImGui.BeginTable("##HaselTweaks_PortraitData", 3))
                 {
                     return;
@@ -330,14 +330,14 @@ public unsafe class PortraitHelperWindow : Window
         }
 
         Position = new(
-            AddonBannerEditor->AtkUnitBase.X - ImGui.GetWindowSize().X,
-            AddonBannerEditor->AtkUnitBase.Y + 1
+            addonBannerEditor->AtkUnitBase.X - ImGui.GetWindowSize().X,
+            addonBannerEditor->AtkUnitBase.Y + 1
         );
     }
 
     public void Copy()
     {
-        var state = AgentBannerEditor->PortraitState;
+        var state = agentBannerEditor->PortraitState;
 
         Frame = state->BannerFrame;
         Accent = state->BannerDecoration;
@@ -348,8 +348,8 @@ public unsafe class PortraitHelperWindow : Window
 
     public void Paste()
     {
-        var state = AgentBannerEditor->PortraitState;
-        var addon = AddonBannerEditor;
+        var state = agentBannerEditor->PortraitState;
+        var addon = addonBannerEditor;
 
         var portraitData = (ExportedPortraitData*)MemoryHelper.Allocate(0x34);
         state->CharaView->ExportPortraitData(portraitData); // read current state

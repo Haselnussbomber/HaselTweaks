@@ -14,7 +14,7 @@ public unsafe class HideMSQComplete : Tweak
 
     public override void Setup()
     {
-        agentScenarioTree = GetAgent<AgentScenarioTree>(AgentId.ScenarioTree);
+        GetAgent(AgentId.ScenarioTree, out agentScenarioTree);
     }
 
     public override void Disable()
@@ -29,7 +29,7 @@ public unsafe class HideMSQComplete : Tweak
 
     private void UpdateVisibility(bool visible)
     {
-        if (!GetAddon<AtkUnitBase>((AgentInterface*)agentScenarioTree, out var addon))
+        if (!GetAddon((AgentInterface*)agentScenarioTree, out var addon))
             return;
 
         SetVisibility(addon, 11, visible); // AtkTextNode

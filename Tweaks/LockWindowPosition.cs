@@ -221,7 +221,7 @@ public unsafe partial class LockWindowPosition : Tweak
     public override void Setup()
     {
         atkStage = AtkStage.GetSingleton();
-        agentContext = GetAgent<AgentContext>(AgentId.Context);
+        GetAgent(AgentId.Context, out agentContext);
     }
 
     public override void OnConfigWindowClose()
