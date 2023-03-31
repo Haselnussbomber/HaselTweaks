@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Game;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -485,6 +486,13 @@ public unsafe class AutoSorter : Tweak
     public static bool IsRetainerInventoryOpen => GetAddon("InventoryRetainer") != null || GetAddon("InventoryRetainerLarge") != null;
     public static bool IsInventoryBuddyOpen => GetAddon("InventoryBuddy") != null;
 
+    private readonly Dictionary<string, bool> InventoryAddons = new()
+    {
+        ["Inventory"] = false,
+        ["InventoryLarge"] = false,
+        ["InventoryExpansion"] = false
+    };
+
     public override void Setup()
     {
         itemOrderModule = ItemOrderModule.Instance();
@@ -499,6 +507,27 @@ public unsafe class AutoSorter : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
+        if (Service.ClientState.IsLoggedIn && !(Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInCutSceneEvent]))
+        {
+            foreach (var (name, wasVisible) in InventoryAddons)
+            {
+                if (GetAddon(name, out var unitBase))
+                {
+                    var isVisible = unitBase->IsVisible;
+
+                    if (wasVisible != isVisible)
+                    {
+                        InventoryAddons[name] = isVisible;
+
+                        if (isVisible)
+                        {
+                            OnOpenInventory();
+                        }
+                    }
+                }
+            }
+        }
+
         ProcessQueue();
     }
 
@@ -506,12 +535,15 @@ public unsafe class AutoSorter : Tweak
     {
         switch (addonName)
         {
-            case "Armoury":
+            case "ArmouryBoard":
                 OnOpenArmoury();
                 break;
-            case "Inventory":
-                OnOpenInventory();
-                break;
+            // TODO: Inventories are created on login
+            //case "Inventory":
+            //case "InventoryLarge":
+            //case "InventoryExpansion":
+            //    OnOpenInventory();
+            //    break;
             case "InventoryBuddy":
                 OnOpenInventoryBuddy();
                 break;
