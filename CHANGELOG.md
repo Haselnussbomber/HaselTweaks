@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.13.7] (2023-04-01)
+
+### Lock Window Position
+
+- **Fixed:** Fixed a game crash caused by an infinite loop due to an overload function removed in v0.13.5 as part of a code cleanup.
+
 ## [0.13.6] (2023-03-31)
 
 ### Hide MSQ Complete
@@ -636,6 +642,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[0.13.7]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.6...v0.13.7
 [0.13.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.5...v0.13.6
 [0.13.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.4...v0.13.5
 [0.13.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.3...v0.13.4
