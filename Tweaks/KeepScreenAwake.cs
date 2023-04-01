@@ -7,7 +7,7 @@ public partial class KeepScreenAwake : Tweak
     public override string Name => "Keep Screen Awake";
     public override string Description => "Prevents the screen from going into standby.";
 
-    private Timer timer = null!;
+    private Timer? timer;
 
     [Flags]
     public enum EXECUTION_STATE : uint
@@ -29,18 +29,18 @@ public partial class KeepScreenAwake : Tweak
 
     public override void Enable()
     {
-        timer.Start();
+        timer?.Start();
     }
 
     public override void Disable()
     {
         SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
-        timer.Stop();
+        timer?.Stop();
     }
 
     public override void Dispose()
     {
-        timer.Dispose();
+        timer?.Dispose();
     }
 
     private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)
