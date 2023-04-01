@@ -20,7 +20,7 @@ public unsafe class HideMSQComplete : Tweak
             UpdateVisibility(agentScenarioTree->Data != null && agentScenarioTree->Data->NextId != 0);
     }
 
-    private void UpdateVisibility(bool visible)
+    private static void UpdateVisibility(bool visible)
     {
         if (!GetAddon(AgentId.ScenarioTree, out var addon))
             return;
