@@ -31,6 +31,9 @@ public static unsafe class AtkUtils
             ? AtkStage.GetSingleton()->RaptureAtkUnitManager->GetAddonById(id)
             : null;
 
+    public static bool GetAddon(ushort id, out AtkUnitBase* addon)
+        => (addon = GetAddon(id)) != null;
+
     public static AtkUnitBase* GetAddon(uint id)
         => GetAddon((ushort)id);
 
