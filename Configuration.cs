@@ -132,7 +132,7 @@ internal partial class Configuration
             if (version < CURRENT_CONFIG_VERSION || gameVersion == null || (string?)config[nameof(SigCacheVersion)] != gameVersion)
             {
                 if ((string?)config[nameof(SigCacheVersion)] != null)
-                    PluginLog.Information($"SigCache outdated (${(string?)config[nameof(SigCacheVersion)]}) => {gameVersion})");
+                    PluginLog.Information($"SigCache outdated: {(string?)config[nameof(SigCacheVersion)]} => {gameVersion}");
 
                 config[nameof(SigCacheVersion)] = gameVersion;
                 config.Remove(nameof(SigCache));
