@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Material List
+
+- **Fixed**: Due to a condition check being evaluated too late, some gatherable items did not have a zone name.
+
 ## [0.13.7] (2023-04-01)
 
 ### Lock Window Position

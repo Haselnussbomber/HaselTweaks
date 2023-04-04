@@ -376,8 +376,8 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
         var gatheringPoints = GatheringPointBaseSheet
             .Where(row => row.Item.Any(item => item == gatheringItem.RowId))
-            .Select(row => GatheringPointSheet.FirstOrDefault(gprow => gprow?.GatheringPointBase.Row == row.RowId, null))
-            .Where(row => row != null && row.TerritoryType.Row > 1)
+            .Select(row => GatheringPointSheet.FirstOrDefault(gprow => gprow?.GatheringPointBase.Row == row.RowId && gprow.TerritoryType.Row > 1, null))
+            .Where(row => row != null)
             /* not needed?
             .GroupBy(row => row!.RowId)
             .Select(rows => rows.First())
