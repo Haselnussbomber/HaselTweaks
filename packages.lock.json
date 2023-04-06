@@ -24,6 +24,12 @@
           "Microsoft.SourceLink.Common": "1.1.1"
         }
       },
+      "SixLabors.ImageSharp": {
+        "type": "Direct",
+        "requested": "[3.0.1, )",
+        "resolved": "3.0.1",
+        "contentHash": "o0v/J6SJwp3RFrzR29beGx0cK7xcMRgOyIuw8ZNLQyNnBhiyL/vIQKn7cfycthcWUPG3XezUjFwBWzkcUUDFbg=="
+      },
       "XXHash3.NET": {
         "type": "Direct",
         "requested": "[2.1.0, )",

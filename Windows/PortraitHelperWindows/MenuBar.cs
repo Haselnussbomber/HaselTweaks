@@ -139,7 +139,7 @@ public unsafe class MenuBar : Window, IDisposable
         ImGui.SameLine();
         if (ImGuiUtils.IconButton("SaveAsPreset", FontAwesomeIcon.Download, "Save as Preset"))
         {
-            SaveAsPresetDialog.Open(PortraitName, Tweak.StateToPreset(), Tweak.GetCurrentTexture());
+            SaveAsPresetDialog.Open(PortraitName, Tweak.StateToPreset(), Tweak.GetCurrentCharaViewImage());
         }
 
         // TODO: update preset button

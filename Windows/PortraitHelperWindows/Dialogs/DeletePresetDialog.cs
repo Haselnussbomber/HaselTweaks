@@ -1,3 +1,5 @@
+using System.IO;
+using Dalamud.Logging;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -33,6 +35,19 @@ public class DeletePresetDialog : ConfirmationDialog
     {
         if (Preset == null)
             return;
+
+        var thumbPath = Plugin.Config.GetPortraitThumbnailPath(Preset.TextureHash);
+        if (File.Exists(thumbPath))
+        {
+            try
+            {
+                File.Delete(thumbPath);
+            }
+            catch (Exception e)
+            {
+                PluginLog.Error($"Could not delete \"{thumbPath}\"", e);
+            }
+        }
 
         Config.Presets.Remove(Preset);
         Plugin.Config.Save();

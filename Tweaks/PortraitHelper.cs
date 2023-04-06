@@ -15,7 +15,8 @@ using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
-using XXHash3NET;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using static HaselTweaks.Structs.AgentBannerEditorState;
 using RenderTargetManager = HaselTweaks.Structs.RenderTargetManager;
 
@@ -211,7 +212,7 @@ Portraits can also be saved to and loaded from presets, which can also be export
         ClipboardNatives.CloseClipboard();
     }
 
-    public unsafe SavedTexture? GetCurrentTexture()
+    public unsafe Image<Bgra32>? GetCurrentCharaViewImage()
     {
         if (!GetAgent<AgentBannerEditor>(AgentId.BannerEditor, out var agentBannerEditor))
             return null;
@@ -226,8 +227,6 @@ Portraits can also be saved to and loaded from presets, which can also be export
         // thanks to ChatGPT
         // Get the texture description
         var desc = texture.Description;
-
-        Log($"desc.Format: {desc.Format}");
 
         // Create a staging texture with the same description
         using var stagingTexture = new Texture2D(device, new Texture2DDescription()
@@ -250,22 +249,13 @@ Portraits can also be saved to and loaded from presets, which can also be export
         // Map the staging texture
         device.ImmediateContext.MapSubresource(stagingTexture, 0, MapMode.Read, SharpDX.Direct3D11.MapFlags.None, out var dataStream);
 
-        // to save some bytes, we convert RGBA to RGB
-        var convertedData = new byte[dataStream.Length * 3 / 4];
-        for (int i = 0, j = 0; i < dataStream.Length; i += 4, j += 3)
-        {
-            convertedData[j + 2] = (byte)dataStream.ReadByte();  // blue channel
-            convertedData[j + 1] = (byte)dataStream.ReadByte();  // green channel
-            convertedData[j] = (byte)dataStream.ReadByte();      // red channel
-            dataStream.ReadByte();                               // alpha channel
-        }
+        using var pixelDataStream = new MemoryStream();
+        dataStream.CopyTo(pixelDataStream);
 
         // Unmap the staging texture
         device.ImmediateContext.UnmapSubresource(stagingTexture, 0);
 
-        using var bufferStream = new MemoryStream(convertedData);
-        var hash = string.Format("{0:x}", XXHash3.Hash64(bufferStream));
-        return new SavedTexture(convertedData, desc.Width, desc.Height, hash);
+        return Image.LoadPixelData<Bgra32>(pixelDataStream.ToArray(), desc.Width, desc.Height);
     }
 
     public unsafe PortraitPreset? StateToPreset()

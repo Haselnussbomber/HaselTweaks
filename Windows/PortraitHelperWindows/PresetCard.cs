@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using Dalamud.Interface.Raii;
@@ -9,15 +10,15 @@ using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using ImGuiNET;
 using ImGuiScene;
 using Lumina.Excel.GeneratedSheets;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
 public unsafe class PresetCard
 {
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
-    private static Vector2 NativePortraitSize = new(576, 960);
-    private static readonly float Scale = 0.3f;
-    private static Vector2 PortraitSize = NativePortraitSize * Scale;
+    public static Vector2 PortraitSize = new(172, 288); // ~ (576, 960) * 0.3f
 
     private readonly PresetBrowserOverlay overlay;
     private readonly Guid id;
@@ -64,22 +65,32 @@ public unsafe class PresetCard
             bannerDecorationImage = Service.Data.GetExcelSheet<BannerDecoration>()?.GetRow(bannerDecoration)?.Image;
         }
 
-        if (preset.Texture.Hash != textureHash)
+        if (preset.TextureHash != textureHash)
         {
-            textureHash = preset.Texture.Hash;
+            textureHash = preset.TextureHash;
             textureWrap?.Dispose();
 
-            var rgbData = preset.Texture.Data;
-            var rgbaData = new byte[rgbData.Length + rgbData.Length / 3];
-            for (int i = 0, j = 0; i < rgbData.Length; i += 3, j += 4)
+            if (!string.IsNullOrEmpty(textureHash))
             {
-                rgbaData[j] = rgbData[i];           // red channel
-                rgbaData[j + 1] = rgbData[i + 1];   // green channel
-                rgbaData[j + 2] = rgbData[i + 2];   // blue channel
-                rgbaData[j + 3] = 255;              // alpha channel
-            }
+                var thumbPath = Plugin.Config.GetPortraitThumbnailPath(textureHash);
 
-            textureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(rgbaData, preset.Texture.Width, preset.Texture.Height, 4);
+                // TODO: re-create of not found
+                if (File.Exists(thumbPath))
+                {
+                    using var image = Image.Load<Rgba32>(thumbPath);
+                    var data = new byte[sizeof(Rgba32) * image.Width * image.Height];
+                    image.CopyPixelDataTo(data);
+                    textureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, image.Width, image.Height, 4);
+                }
+                else
+                {
+                    textureWrap = null;
+                }
+            }
+            else
+            {
+                textureWrap = null;
+            }
         }
 
         var style = ImGui.GetStyle();
@@ -94,6 +105,7 @@ public unsafe class PresetCard
         var windowPos = ImGui.GetWindowPos();
         var cursorPos = ImGui.GetCursorPos();
 
+        //  TODO: fallback behind image :sadface:
         if (textureWrap != null)
         {
             ImGui.SetCursorPos(cursorPos);

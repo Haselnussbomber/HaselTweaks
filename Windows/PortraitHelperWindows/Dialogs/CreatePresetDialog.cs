@@ -2,10 +2,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
+using Dalamud.Logging;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using XXHash3NET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
@@ -16,26 +22,26 @@ public class CreatePresetDialog : ConfirmationDialog
     private readonly ConfirmationButton saveButton;
 
     private string? name;
-    private PortraitPreset? Preset;
-    private SavedTexture? Texture;
-    private readonly List<Guid> SelectedTags = new();
+    private PortraitPreset? preset;
+    private Image<Bgra32>? image;
+    private readonly List<Guid> tags = new();
 
     public CreatePresetDialog() : base("Save as Preset")
     {
         AddButton(saveButton = new ConfirmationButton("Save", OnSave));
     }
 
-    public void Open(string name, PortraitPreset? preset, SavedTexture? texture)
+    public void Open(string name, PortraitPreset? preset, Image<Bgra32>? image)
     {
         this.name = name;
-        Preset = preset;
-        Texture = texture;
-        SelectedTags.Clear();
+        this.preset = preset;
+        this.image = image;
+        tags.Clear();
         Show();
     }
 
     public override bool DrawCondition()
-        => base.DrawCondition() && Preset != null;
+        => base.DrawCondition() && preset != null && image != null;
 
     public override void InnerDraw()
     {
@@ -54,7 +60,7 @@ public class CreatePresetDialog : ConfirmationDialog
         ImGui.Text("Select Tags (optional):");
         ImGui.Spacing();
 
-        var tagNames = SelectedTags
+        var tagNames = tags
             .Select(id => Config.PresetTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
             .Where(name => !string.IsNullOrEmpty(name));
 
@@ -65,7 +71,7 @@ public class CreatePresetDialog : ConfirmationDialog
         {
             foreach (var tag in Config.PresetTags)
             {
-                var isSelected = SelectedTags.Contains(tag.Id);
+                var isSelected = tags.Contains(tag.Id);
 
                 if (ImGui.TreeNodeEx($"{tag.Name}##PresetTag{tag.Id}", (isSelected ? ImGuiTreeNodeFlags.Selected : 0) | ImGuiTreeNodeFlags.FramePadding | ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.SpanAvailWidth))
                 {
@@ -73,11 +79,11 @@ public class CreatePresetDialog : ConfirmationDialog
                     {
                         if (isSelected)
                         {
-                            SelectedTags.Remove(tag.Id);
+                            tags.Remove(tag.Id);
                         }
                         else
                         {
-                            SelectedTags.Add(tag.Id);
+                            tags.Add(tag.Id);
                         }
                     }
 
@@ -103,10 +109,38 @@ public class CreatePresetDialog : ConfirmationDialog
 
     private void OnSave()
     {
-        if (Preset == null || Texture == null || name == null || string.IsNullOrEmpty(name.Trim()))
+        if (preset == null || image == null || name == null || string.IsNullOrEmpty(name.Trim()))
+        {
+            PluginLog.Error("Could not save portrait: data missing"); // TODO: show error
             return;
+        }
 
-        Config.Presets.Add(new(name.Trim(), Preset, SelectedTags, Texture));
+        // resize
+        image.Mutate(x => x.Resize((int)PresetCard.PortraitSize.X, (int)PresetCard.PortraitSize.Y, KnownResamplers.Lanczos3));
+
+        // generate hash
+        var pixelData = new byte[image.Width * image.Height * 4];
+        image.CopyPixelDataTo(pixelData);
+
+        var hash = XXHash3.Hash64(pixelData).ToString("x");
+        if (string.IsNullOrEmpty(hash))
+        {
+            PluginLog.Error("Could not save portrait: hash generation failed"); // TODO: show error
+            return;
+        }
+
+        var encoder = new PngEncoder
+        {
+            CompressionLevel = PngCompressionLevel.BestCompression,
+            ColorType = PngColorType.Rgb // no need for alpha channel
+        };
+
+        var thumbPath = Plugin.Config.GetPortraitThumbnailPath(hash);
+
+        image.SaveAsPng(thumbPath, encoder);
+        image.Dispose();
+
+        Config.Presets.Add(new(name.Trim(), preset, tags, hash));
         Plugin.Config.Save();
     }
 }

@@ -9,23 +9,23 @@ public record SavedPreset
     public string Name;
     public PortraitPreset Preset;
     public List<Guid> Tags;
-    public SavedTexture Texture;
+    public string TextureHash;
 
     [JsonConstructor]
-    public SavedPreset(Guid Id, string Name, PortraitPreset Preset, List<Guid> Tags, SavedTexture Texture)
+    public SavedPreset(Guid Id, string Name, PortraitPreset Preset, List<Guid> Tags, string TextureHash)
     {
         this.Id = Id;
         this.Name = Name;
         this.Preset = Preset;
         this.Tags = Tags;
-        this.Texture = Texture;
+        this.TextureHash = TextureHash;
     }
 
-    public SavedPreset(string Name, PortraitPreset Preset) : this(Guid.NewGuid(), Name, Preset, new(), new())
+    public SavedPreset(string Name, PortraitPreset Preset) : this(Guid.NewGuid(), Name, Preset, new(), string.Empty)
     {
     }
 
-    public SavedPreset(string Name, PortraitPreset Preset, List<Guid> Tags, SavedTexture Texture) : this(Guid.NewGuid(), Name, Preset, Tags, Texture)
+    public SavedPreset(string Name, PortraitPreset Preset, List<Guid> Tags, string TextureHash) : this(Guid.NewGuid(), Name, Preset, Tags, TextureHash)
     {
     }
 }
