@@ -29,9 +29,8 @@ public abstract unsafe class Overlay : Window
 
     public override bool DrawConditions()
     {
-        var windowNode = (AtkResNode*)((AtkUnitBase*)AddonBannerEditor)->WindowNode;
-        var controlsHint = GetNode((AtkUnitBase*)AddonBannerEditor, 2);
-        var verticalSeparatorNode = GetNode((AtkUnitBase*)AddonBannerEditor, 135);
+        if (AgentBannerEditor == null || AddonBannerEditor == null || AgentBannerEditor->EditorState == null)
+            return false;
 
         var isContextMenuOpen = *(byte*)((nint)AddonBannerEditor + 0x1A1) != 0;
         var isCloseDialogOpen = AgentBannerEditor->EditorState->CloseDialogAddonId != 0;
