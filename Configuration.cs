@@ -38,6 +38,7 @@ public class TweakConfigs
     public LockWindowPosition.Configuration LockWindowPosition { get; init; } = new();
     public MaterialAllocation.Configuration MaterialAllocation { get; init; } = new();
     public EnhancedMaterialList.Configuration EnhancedMaterialList { get; init; } = new();
+    public PortraitHelper.Configuration PortraitHelper { get; init; } = new();
 }
 
 internal partial class Configuration

@@ -6,7 +6,6 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Structs.Agents;
-using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;

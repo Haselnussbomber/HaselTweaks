@@ -23,7 +23,7 @@ public static class ImGuiUtils
 
     public static readonly Dictionary<int, TextureWrap?> IconCache = new();
 
-    public static void DrawIcon(int iconId, int width = -1, int height = -1)
+    public static void DrawIcon(int iconId, float width = -1, float height = -1)
     {
         if (!IconCache.TryGetValue(iconId, out var tex))
         {
@@ -37,6 +37,9 @@ public static class ImGuiUtils
         ImGui.Image(tex.ImGuiHandle, new(width == -1 ? tex.Width : width, height == -1 ? tex.Height : height));
     }
 
+    public static void DrawIcon(int iconId, Vector2 size)
+        => DrawIcon(iconId, size.X, size.Y);
+
     public static void DrawPaddedSeparator()
     {
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y);
@@ -44,10 +47,11 @@ public static class ImGuiUtils
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y - 1);
     }
 
-    public static void DrawSection(string label)
+    public static void DrawSection(string label, bool pushDown = true)
     {
         // push down a bit
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y * 2);
+        if (pushDown)
+            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y * 2);
         ImGui.TextColored(ColorGold, label);
         // pull up the separator
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() - ImGui.GetStyle().ItemSpacing.Y + 3);
@@ -93,6 +97,24 @@ public static class ImGuiUtils
         ImGui.SameLine();
     }
 
+    public static unsafe void VerticalSeparator(Vector4 color)
+    {
+        ImGui.SameLine();
+
+        var region = ImGui.GetContentRegionAvail();
+        var pos = ImGui.GetWindowPos() + ImGui.GetCursorPos();
+
+        ImGui.GetWindowDrawList().AddLine(
+            pos + new Vector2(3f, 0f),
+            pos + new Vector2(3f, region.Y),
+            ImGui.GetColorU32(color)
+        );
+        ImGui.Dummy(new(7, region.Y));
+    }
+
+    public static unsafe void VerticalSeparator()
+        => VerticalSeparator(ColorGrey3);
+
     public static void SameLineSpace()
     {
         using var itemSpacing = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, new Vector2(ImGui.CalcTextSize(" ").X, 0));
@@ -118,6 +140,7 @@ public static class ImGuiUtils
     public static bool IconButton(string key, FontAwesomeIcon icon, Vector2 size)
     {
         using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
+        if (!key.StartsWith("##")) key = "##" + key;
         return ImGui.Button(icon.ToIconString() + key, size);
     }
 
@@ -147,6 +170,7 @@ public static class ImGuiUtils
     public static bool IconButtonDisabled(string key, FontAwesomeIcon icon, Vector2 size)
     {
         using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
+        if (!key.StartsWith("##")) key = "##" + key;
         return ButtonDisabled(icon.ToIconString() + key, size);
     }
 

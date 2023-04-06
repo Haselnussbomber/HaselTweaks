@@ -36,9 +36,12 @@ public static unsafe class MemoryUtils
     }
 
     public static int strlen(byte* ptr)
+        => strlen((nint)ptr);
+
+    public static int strlen(nint ptr)
     {
         int i;
-        for (i = 0; *(bool*)((nint)ptr + i); i++) ;
+        for (i = 0; *(bool*)(ptr + i); i++) ;
         return i;
     }
 
