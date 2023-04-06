@@ -74,7 +74,7 @@ public unsafe class PresetCard
             {
                 var thumbPath = Plugin.Config.GetPortraitThumbnailPath(textureHash);
 
-                // TODO: re-create of not found
+                // TODO: re-create if not found, maybe with loading spinner in right side of menu bar
                 if (File.Exists(thumbPath))
                 {
                     using var image = Image.Load<Rgba32>(thumbPath);

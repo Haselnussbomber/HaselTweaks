@@ -9,12 +9,12 @@ public class RenameTagDialog : ConfirmationDialog
     private readonly ConfirmationButton saveButton;
 
     private SavedPresetTag? tag = null;
-    private string name = string.Empty;
+    private string? name;
 
     public RenameTagDialog() : base("Rename Tag")
     {
         AddButton(saveButton = new ConfirmationButton("Save", OnSave));
-        AddButton(new ConfirmationButton("Cancel", Hide));
+        AddButton(new ConfirmationButton("Cancel", Close));
     }
 
     public void Open(SavedPresetTag tag)
@@ -24,8 +24,15 @@ public class RenameTagDialog : ConfirmationDialog
         Show();
     }
 
+    public void Close()
+    {
+        Hide();
+        tag = null;
+        name = null;
+    }
+
     public override bool DrawCondition()
-        => base.DrawCondition() && tag != null;
+        => base.DrawCondition() && tag != null && name != null;
 
     public override void InnerDraw()
     {
@@ -47,7 +54,15 @@ public class RenameTagDialog : ConfirmationDialog
 
     private void OnSave()
     {
-        tag!.Name = name.Trim();
+        if (tag == null || string.IsNullOrEmpty(name?.Trim()))
+        {
+            Close();
+            return;
+        }
+
+        tag.Name = name.Trim();
         Plugin.Config.Save();
+
+        Close();
     }
 }

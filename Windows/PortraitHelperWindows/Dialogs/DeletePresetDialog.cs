@@ -11,32 +11,41 @@ public class DeletePresetDialog : ConfirmationDialog
 {
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
 
-    private SavedPreset? Preset;
+    private SavedPreset? preset;
 
     public DeletePresetDialog() : base("Delete Preset")
     {
         AddButton(new ConfirmationButton("Delete", OnDelete));
-        AddButton(new ConfirmationButton("Cancel", Hide));
+        AddButton(new ConfirmationButton("Cancel", Close));
     }
 
     public void Open(SavedPreset? preset)
     {
-        Preset = preset;
+        this.preset = preset;
         Show();
     }
 
+    public void Close()
+    {
+        Hide();
+        preset = null;
+    }
+
     public override bool DrawCondition()
-        => base.DrawCondition() && Preset != null;
+        => base.DrawCondition() && preset != null;
 
     public override void InnerDraw()
-        => ImGui.TextUnformatted($"Do you really want to delete the preset \"{Preset!.Name}\"?");
+        => ImGui.TextUnformatted($"Do you really want to delete the preset \"{preset!.Name}\"?");
 
     private void OnDelete()
     {
-        if (Preset == null)
+        if (preset == null)
+        {
+            Close();
             return;
+        }
 
-        var thumbPath = Plugin.Config.GetPortraitThumbnailPath(Preset.TextureHash);
+        var thumbPath = Plugin.Config.GetPortraitThumbnailPath(preset.TextureHash);
         if (File.Exists(thumbPath))
         {
             try
@@ -49,7 +58,9 @@ public class DeletePresetDialog : ConfirmationDialog
             }
         }
 
-        Config.Presets.Remove(Preset);
+        Config.Presets.Remove(preset);
         Plugin.Config.Save();
+
+        Close();
     }
 }

@@ -11,6 +11,7 @@ public class DeleteTagDialog : ConfirmationDialog
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
 
     private readonly PresetBrowserOverlay presetBrowserOverlay;
+
     private SavedPresetTag? tag;
 
     public DeleteTagDialog(PresetBrowserOverlay presetBrowserOverlay) : base("Delete Tag")
@@ -18,13 +19,19 @@ public class DeleteTagDialog : ConfirmationDialog
         this.presetBrowserOverlay = presetBrowserOverlay;
 
         AddButton(new ConfirmationButton("Delete", OnDelete));
-        AddButton(new ConfirmationButton("Cancel", Hide));
+        AddButton(new ConfirmationButton("Cancel", Close));
     }
 
     public void Open(SavedPresetTag tag)
     {
         this.tag = tag;
         Show();
+    }
+
+    public void Close()
+    {
+        Hide();
+        tag = null;
     }
 
     public override bool DrawCondition()
@@ -35,17 +42,23 @@ public class DeleteTagDialog : ConfirmationDialog
 
     private void OnDelete()
     {
-        foreach (var preset in Config.Presets)
+        if (tag == null)
         {
-            preset.Tags.Remove(tag!.Id);
+            Close();
+            return;
         }
 
-        Config.PresetTags.Remove(tag!);
+        foreach (var preset in Config.Presets)
+            preset.Tags.Remove(tag.Id);
+
+        Config.PresetTags.Remove(tag);
         Plugin.Config.Save();
 
-        if (presetBrowserOverlay.SelectedTagId == tag!.Id)
+        if (presetBrowserOverlay.SelectedTagId == tag.Id)
             presetBrowserOverlay.SelectedTagId = null;
 
-        presetBrowserOverlay.PresetCards.Remove(tag!.Id);
+        presetBrowserOverlay.PresetCards.Remove(tag.Id);
+
+        Close();
     }
 }

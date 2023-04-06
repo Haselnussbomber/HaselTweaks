@@ -40,8 +40,18 @@ public class CreatePresetDialog : ConfirmationDialog
         Show();
     }
 
+    public void Close()
+    {
+        Hide();
+        name = null;
+        preset = null;
+        image?.Dispose();
+        image = null;
+        tags.Clear();
+    }
+
     public override bool DrawCondition()
-        => base.DrawCondition() && preset != null && image != null;
+        => base.DrawCondition() && name != null && preset != null && image != null;
 
     public override void InnerDraw()
     {
@@ -109,9 +119,10 @@ public class CreatePresetDialog : ConfirmationDialog
 
     private void OnSave()
     {
-        if (preset == null || image == null || name == null || string.IsNullOrEmpty(name.Trim()))
+        if (preset == null || image == null || string.IsNullOrEmpty(name?.Trim()))
         {
             PluginLog.Error("Could not save portrait: data missing"); // TODO: show error
+            Close();
             return;
         }
 
@@ -123,24 +134,17 @@ public class CreatePresetDialog : ConfirmationDialog
         image.CopyPixelDataTo(pixelData);
 
         var hash = XXHash3.Hash64(pixelData).ToString("x");
-        if (string.IsNullOrEmpty(hash))
-        {
-            PluginLog.Error("Could not save portrait: hash generation failed"); // TODO: show error
-            return;
-        }
+        var thumbPath = Plugin.Config.GetPortraitThumbnailPath(hash);
 
-        var encoder = new PngEncoder
+        image.SaveAsPng(thumbPath, new PngEncoder
         {
             CompressionLevel = PngCompressionLevel.BestCompression,
             ColorType = PngColorType.Rgb // no need for alpha channel
-        };
-
-        var thumbPath = Plugin.Config.GetPortraitThumbnailPath(hash);
-
-        image.SaveAsPng(thumbPath, encoder);
-        image.Dispose();
+        });
 
         Config.Presets.Add(new(name.Trim(), preset, tags, hash));
         Plugin.Config.Save();
+
+        Close();
     }
 }

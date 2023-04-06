@@ -13,20 +13,26 @@ public class CreateTagDialog : ConfirmationDialog
     private readonly PresetBrowserOverlay presetBrowserOverlay;
     private readonly ConfirmationButton saveButton;
 
-    private string name = string.Empty;
+    private string? name;
 
     public CreateTagDialog(PresetBrowserOverlay overlay) : base("Create Tag")
     {
         presetBrowserOverlay = overlay;
 
         AddButton(saveButton = new ConfirmationButton("Save", OnSave));
-        AddButton(new ConfirmationButton("Cancel", Hide));
+        AddButton(new ConfirmationButton("Cancel", Close));
     }
 
     public void Open()
     {
         name = string.Empty;
         Show();
+    }
+
+    public void Close()
+    {
+        Hide();
+        name = null;
     }
 
     public override void InnerDraw()
@@ -49,10 +55,18 @@ public class CreateTagDialog : ConfirmationDialog
 
     private void OnSave()
     {
+        if (name == null)
+        {
+            Close();
+            return;
+        }
+
         var tag = new SavedPresetTag(name.Trim());
         Config.PresetTags.Add(tag);
         Plugin.Config.Save();
 
         presetBrowserOverlay.SelectedTagId = tag.Id;
+
+        Close();
     }
 }

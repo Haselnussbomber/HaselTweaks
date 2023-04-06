@@ -15,27 +15,35 @@ public class EditPresetDialog : ConfirmationDialog
 
     private readonly ConfirmationButton saveButton;
 
-    private string name = string.Empty;
+    private string? name;
     private SavedPreset? preset;
-    public List<Guid> SelectedTags = new();
+    public readonly List<Guid> tags = new();
 
     public EditPresetDialog() : base("Edit Preset")
     {
         AddButton(saveButton = new ConfirmationButton("Save", OnSave));
-        AddButton(new ConfirmationButton("Cancel", Hide));
+        AddButton(new ConfirmationButton("Cancel", Close));
     }
 
     public void Open(SavedPreset preset)
     {
         this.preset = preset;
         name = preset.Name;
-        SelectedTags.Clear();
-        SelectedTags.AddRange(preset.Tags);
+        tags.Clear();
+        tags.AddRange(preset.Tags);
         Show();
     }
 
+    public void Close()
+    {
+        Hide();
+        name = null;
+        preset = null;
+        tags.Clear();
+    }
+
     public override bool DrawCondition()
-        => base.DrawCondition() && preset != null;
+        => base.DrawCondition() && name != null && preset != null;
 
     public override void InnerDraw()
     {
@@ -56,7 +64,7 @@ public class EditPresetDialog : ConfirmationDialog
         ImGui.Text("Tags:");
         ImGui.Spacing();
 
-        var tagNames = SelectedTags
+        var tagNames = tags
             .Select(id => Config.PresetTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
             .Where(name => !string.IsNullOrEmpty(name));
 
@@ -67,7 +75,7 @@ public class EditPresetDialog : ConfirmationDialog
         {
             foreach (var tag in Config.PresetTags)
             {
-                var isSelected = SelectedTags.Contains(tag.Id);
+                var isSelected = tags.Contains(tag.Id);
 
                 if (ImGui.TreeNodeEx($"{tag.Name}##PresetTag{tag.Id}", (isSelected ? ImGuiTreeNodeFlags.Selected : 0) | ImGuiTreeNodeFlags.FramePadding | ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.SpanAvailWidth))
                 {
@@ -75,11 +83,11 @@ public class EditPresetDialog : ConfirmationDialog
                     {
                         if (isSelected)
                         {
-                            SelectedTags.Remove(tag.Id);
+                            tags.Remove(tag.Id);
                         }
                         else
                         {
-                            SelectedTags.Add(tag.Id);
+                            tags.Add(tag.Id);
                         }
                     }
 
@@ -105,12 +113,17 @@ public class EditPresetDialog : ConfirmationDialog
 
     private void OnSave()
     {
-        if (preset == null || name == null || string.IsNullOrEmpty(name.Trim()))
+        if (preset == null || string.IsNullOrEmpty(name?.Trim()))
+        {
+            Close();
             return;
+        }
 
         preset.Name = name.Trim();
         preset.Tags.Clear();
-        preset.Tags.AddRange(SelectedTags);
+        preset.Tags.AddRange(tags);
         Plugin.Config.Save();
+
+        Close();
     }
 }

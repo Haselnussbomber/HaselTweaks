@@ -132,8 +132,6 @@ Portraits can also be saved to and loaded from presets, which can also be export
         if (OverlayViewMode == viewMode)
             return;
 
-        Log($"ChangeView({viewMode})");
-
         // open AdvancedImport
         if (viewMode == ViewMode.AdvancedImport && OverlayViewMode != ViewMode.AdvancedImport)
         {
@@ -172,8 +170,6 @@ Portraits can also be saved to and loaded from presets, which can also be export
         if (lastClipboardSequenceNumber == clipboardSequenceNumber)
             return;
 
-        lastClipboardSequenceNumber = clipboardSequenceNumber;
-
         if (!ClipboardNatives.OpenClipboard(0))
             return;
 
@@ -190,7 +186,9 @@ Portraits can also be saved to and loaded from presets, which can also be export
         }
 
         ClipboardNatives.CloseClipboard();
+
         lastClipboardCheck = DateTime.Now;
+        lastClipboardSequenceNumber = clipboardSequenceNumber;
     }
 
     public async void PresetToClipboard(PortraitPreset? preset)
@@ -200,7 +198,8 @@ Portraits can also be saved to and loaded from presets, which can also be export
 
         await ClipboardNatives.OpenClipboard();
 
-        ClipboardNatives.EmptyClipboard(); // TODO: check if it fails?!
+        if (!ClipboardNatives.EmptyClipboard())
+            return;
 
         var clipboardText = Marshal.StringToHGlobalAnsi(ClipboardIdentifier + preset.Serialize());
         if (ClipboardNatives.SetClipboardData(ClipboardNatives.ClipboardFormat.CF_TEXT, clipboardText) != 0)
