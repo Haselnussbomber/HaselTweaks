@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Logging;
 using HaselTweaks.ImGuiComponents;
@@ -76,39 +75,23 @@ public class CreatePresetDialog : ConfirmationDialog
 
         var preview = tagNames.Any() ? string.Join(", ", tagNames) : "None";
 
-        using var tagsCombo = ImRaii.Combo("##PresetTag", preview);
+        using var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge);
         if (tagsCombo.Success)
         {
             foreach (var tag in Config.PresetTags)
             {
                 var isSelected = tags.Contains(tag.Id);
 
-                if (ImGui.TreeNodeEx($"{tag.Name}##PresetTag{tag.Id}", (isSelected ? ImGuiTreeNodeFlags.Selected : 0) | ImGuiTreeNodeFlags.FramePadding | ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.SpanAvailWidth))
+                if (ImGui.Selectable($"{tag.Name}##PresetTag{tag.Id}", isSelected))
                 {
-                    if (ImGui.IsItemClicked())
-                    {
-                        if (isSelected)
-                        {
-                            tags.Remove(tag.Id);
-                        }
-                        else
-                        {
-                            tags.Add(tag.Id);
-                        }
-                    }
-
                     if (isSelected)
                     {
-                        ImGui.SameLine();
-                        ImGui.SetCursorPosX(8);
-
-                        using (ImRaii.PushFont(UiBuilder.IconFont))
-                        {
-                            ImGui.TextUnformatted(FontAwesomeIcon.Check.ToIconString());
-                        }
+                        tags.Remove(tag.Id);
                     }
-
-                    ImGui.TreePop();
+                    else
+                    {
+                        tags.Add(tag.Id);
+                    }
                 }
             }
         }
