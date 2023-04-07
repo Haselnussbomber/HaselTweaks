@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Dalamud.Interface.Raii;
 using Dalamud.Logging;
 using HaselTweaks.ImGuiComponents;
@@ -9,7 +10,6 @@ using ImGuiNET;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using XXHash3NET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
@@ -110,24 +110,29 @@ public class CreatePresetDialog : ConfirmationDialog
         }
 
         // resize
-        image.Mutate(x => x.Resize((int)PresetCard.PortraitSize.X, (int)PresetCard.PortraitSize.Y, KnownResamplers.Lanczos3));
+        // image.Mutate(x => x.Resize((int)PresetCard.PortraitSize.X, (int)PresetCard.PortraitSize.Y, KnownResamplers.Lanczos3));
 
         // generate hash
-        var pixelData = new byte[image.Width * image.Height * 4];
-        image.CopyPixelDataTo(pixelData);
+        Hide();
 
-        var hash = XXHash3.Hash64(pixelData).ToString("x");
-        var thumbPath = Config.GetPortraitThumbnailPath(hash);
-
-        image.SaveAsPng(thumbPath, new PngEncoder
+        Task.Run(() =>
         {
-            CompressionLevel = PngCompressionLevel.BestCompression,
-            ColorType = PngColorType.Rgb // no need for alpha channel
+            var pixelData = new byte[image.Width * image.Height * 4];
+            image.CopyPixelDataTo(pixelData);
+
+            var hash = XXHash3.Hash64(pixelData).ToString("x");
+            var thumbPath = Config.GetPortraitThumbnailPath(hash);
+
+            image.SaveAsPngAsync(thumbPath, new PngEncoder
+            {
+                CompressionLevel = PngCompressionLevel.BestCompression,
+                ColorType = PngColorType.Rgb // no need for alpha channel
+            });
+
+            Config.Presets.Add(new(name.Trim(), preset, tags, hash));
+            Plugin.Config.Save();
+
+            Close();
         });
-
-        Config.Presets.Add(new(name.Trim(), preset, tags, hash));
-        Plugin.Config.Save();
-
-        Close();
     }
 }

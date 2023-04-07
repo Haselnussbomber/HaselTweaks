@@ -120,6 +120,7 @@ Portraits can also be saved to and loaded from presets, which can also be export
         if (presetBrowserOverlay != null)
         {
             Plugin.WindowSystem.RemoveWindow(presetBrowserOverlay);
+            presetBrowserOverlay.Dispose();
             presetBrowserOverlay = null;
         }
 
@@ -161,6 +162,7 @@ Portraits can also be saved to and loaded from presets, which can also be export
         else if (viewMode != ViewMode.PresetBrowser && OverlayViewMode == ViewMode.PresetBrowser && presetBrowserOverlay != null)
         {
             Plugin.WindowSystem.RemoveWindow(presetBrowserOverlay);
+            presetBrowserOverlay.Dispose();
             presetBrowserOverlay = null;
         }
 

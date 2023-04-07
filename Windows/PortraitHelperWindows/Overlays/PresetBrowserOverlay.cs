@@ -11,7 +11,7 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
-public unsafe class PresetBrowserOverlay : Overlay
+public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 {
     public Guid? SelectedTagId { get; set; }
     public Dictionary<Guid, PresetCard> PresetCards { get; init; } = new();
@@ -31,6 +31,14 @@ public unsafe class PresetBrowserOverlay : Overlay
         DeleteTagDialog = new(this);
 
         base.IsOpen = true;
+    }
+
+    public void Dispose()
+    {
+        foreach (var (_, card) in PresetCards)
+            card.Dispose();
+
+        PresetCards.Clear();
     }
 
     public override void Draw()
@@ -275,6 +283,14 @@ public unsafe class PresetBrowserOverlay : Overlay
             .Where((preset) => SelectedTagId == null || preset.Tags.Contains(SelectedTagId.Value))
             .ToArray();
 
+        var presetsPerRow = 3;
+        var availableWidth = ImGui.GetContentRegionAvail().X + style.ItemInnerSpacing.X * (presetsPerRow - 1);
+        if (presets.Length > 3)
+            availableWidth -= style.ScrollbarSize + style.ItemInnerSpacing.X;
+
+        var presetWidth = availableWidth / presetsPerRow;
+        var scale = presetWidth / PresetCard.PortraitSize.X;
+
         for (var i = 0; i < presets.Length; i++)
         {
             var preset = presets[i];
@@ -284,7 +300,7 @@ public unsafe class PresetBrowserOverlay : Overlay
                 PresetCards.Add(preset.Id, new(this, preset.Id));
             }
 
-            card?.Draw();
+            card?.Draw(scale);
 
             if (i % 3 < 2)
                 ImGui.SameLine(0, style.ItemInnerSpacing.X);

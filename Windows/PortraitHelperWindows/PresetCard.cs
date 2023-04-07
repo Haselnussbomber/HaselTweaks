@@ -12,10 +12,11 @@ using ImGuiScene;
 using Lumina.Excel.GeneratedSheets;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
-public unsafe class PresetCard
+public unsafe class PresetCard : IDisposable
 {
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
     public static Vector2 PortraitSize = new(153, 256); // ~ (576, 960) * 0.2664f
@@ -24,8 +25,11 @@ public unsafe class PresetCard
     private readonly Guid id;
 
     private string textureHash = string.Empty;
+    private Image<Rgba32>? image;
     private TextureWrap? textureWrap;
     private DateTime lastTextureCheck = DateTime.MinValue;
+
+    private float lastScale;
 
     private bool warningLogged;
 
@@ -41,7 +45,13 @@ public unsafe class PresetCard
         this.id = id;
     }
 
-    public void Draw()
+    public void Dispose()
+    {
+        image?.Dispose();
+        textureWrap?.Dispose();
+    }
+
+    public void Draw(float scale)
     {
         var preset = Config.Presets.FirstOrDefault((preset) => preset.Id == id);
         if (preset == null)
@@ -76,8 +86,11 @@ public unsafe class PresetCard
             bannerDecorationImage = Service.Data.GetExcelSheet<BannerDecoration>()?.GetRow(bannerDecoration)?.Image;
         }
 
+        var updateTexture = false;
+
         if (preset.TextureHash != textureHash)
         {
+            image?.Dispose();
             textureWrap?.Dispose();
 
             if (!string.IsNullOrEmpty(preset.TextureHash) && DateTime.Now - lastTextureCheck > TimeSpan.FromSeconds(1))
@@ -87,11 +100,8 @@ public unsafe class PresetCard
                 // TODO: re-create if not found, maybe with loading spinner in right side of menu bar
                 if (File.Exists(thumbPath))
                 {
-                    using var image = Image.Load<Rgba32>(thumbPath);
-                    var data = new byte[sizeof(Rgba32) * image.Width * image.Height];
-                    image.CopyPixelDataTo(data);
-                    textureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, image.Width, image.Height, 4);
-                    textureHash = preset.TextureHash;
+                    image = Image.Load<Rgba32>(thumbPath);
+                    updateTexture = true;
                 }
                 else
                 {
@@ -106,6 +116,24 @@ public unsafe class PresetCard
             }
         }
 
+        if (image != null && scale != lastScale)
+        {
+            updateTexture = true;
+            lastScale = scale;
+        }
+
+        if (updateTexture && image != null)
+        {
+            textureWrap?.Dispose();
+
+            var scaledImage = image.Clone();
+            scaledImage.Mutate(i => i.Resize((int)(PortraitSize.X * scale), (int)(PortraitSize.Y * scale), KnownResamplers.Lanczos3));
+            var data = new byte[sizeof(Rgba32) * scaledImage.Width * scaledImage.Height];
+            scaledImage.CopyPixelDataTo(data);
+            textureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, scaledImage.Width, scaledImage.Height, 4);
+            textureHash = preset.TextureHash;
+        }
+
         var style = ImGui.GetStyle();
 
         using var _id = ImRaii.PushId(preset.Id.ToString());
@@ -117,19 +145,19 @@ public unsafe class PresetCard
         if (textureWrap != null)
         {
             ImGui.SetCursorPos(cursorPos);
-            ImGui.Image(textureWrap.ImGuiHandle, PortraitSize);
+            ImGui.Image(textureWrap.ImGuiHandle, PortraitSize * scale);
         }
 
         if (bannerFrameImage != null)
         {
             ImGui.SetCursorPos(cursorPos);
-            ImGuiUtils.DrawIcon(bannerFrameImage.Value, PortraitSize);
+            ImGuiUtils.DrawIcon(bannerFrameImage.Value, PortraitSize * scale);
         }
 
         if (bannerDecorationImage != null)
         {
             ImGui.SetCursorPos(cursorPos);
-            ImGuiUtils.DrawIcon(bannerDecorationImage.Value, PortraitSize);
+            ImGuiUtils.DrawIcon(bannerDecorationImage.Value, PortraitSize * scale);
         }
 
         ImGui.SetCursorPos(cursorPos);
@@ -142,7 +170,7 @@ public unsafe class PresetCard
                 {
                     using (ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0))
                     {
-                        ImGui.Button($"##{preset.Id}_Button", PortraitSize);
+                        ImGui.Button($"##{preset.Id}_Button", PortraitSize * scale);
                     }
                 }
             }

@@ -57,7 +57,11 @@ public class DeleteTagDialog : ConfirmationDialog
         if (presetBrowserOverlay.SelectedTagId == tag.Id)
             presetBrowserOverlay.SelectedTagId = null;
 
-        presetBrowserOverlay.PresetCards.Remove(tag.Id);
+        if (presetBrowserOverlay.PresetCards.TryGetValue(tag.Id, out var card))
+        {
+            presetBrowserOverlay.PresetCards.Remove(tag.Id);
+            card.Dispose();
+        }
 
         Close();
     }
