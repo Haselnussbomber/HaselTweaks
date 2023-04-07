@@ -6,6 +6,10 @@
 
 - **Fixed**: Due to a condition check being evaluated too late, some gatherable items did not have a zone name.
 
+### Material Allocation
+
+- **Fixed**: Restored a hook to correctly switch tabs when opening the window. Since v0.13.3, it looked like it changed the tabs, but it only updated the buttons, not the content.
+
 ## [0.13.7] (2023-04-01)
 
 ### Lock Window Position

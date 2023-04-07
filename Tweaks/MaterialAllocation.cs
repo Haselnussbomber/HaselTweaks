@@ -36,13 +36,10 @@ public unsafe partial class MaterialAllocation : Tweak
         nextMJIGatheringNoteBookItemId = 0;
     }
 
-    public override unsafe void OnAddonOpen(string addonName, AtkUnitBase* unitbase)
+    // vf48 = OnOpen?
+    [SigHook("BA ?? ?? ?? ?? E9 ?? ?? ?? ?? CC CC CC CC CC CC 40 57 48 83 EC 20 48 8B F9 85 D2 7E 51")]
+    public nint AddonMJICraftMaterialConfirmation_vf48(AddonMJICraftMaterialConfirmation* addon, int numAtkValues, nint atkValues)
     {
-        if (addonName != "MJICraftMaterialConfirmation")
-            return;
-
-        var addon = (AddonMJICraftMaterialConfirmation*)unitbase;
-
         if (Config.SaveLastSelectedTab && GetAgent<AgentMJICraftSchedule>(AgentId.MJICraftSchedule, out var agentMJICraftSchedule))
         {
             if (Config.LastSelectedTab > 2)
@@ -60,6 +57,15 @@ public unsafe partial class MaterialAllocation : Tweak
             }
         }
 
+        return AddonMJICraftMaterialConfirmation_vf48Hook.Original(addon, numAtkValues, atkValues);
+    }
+
+    public override unsafe void OnAddonOpen(string addonName, AtkUnitBase* unitbase)
+    {
+        if (addonName != "MJICraftMaterialConfirmation")
+            return;
+
+        var addon = (AddonMJICraftMaterialConfirmation*)unitbase;
         if (addon->ItemList != null && addon->ItemList->AtkComponentBase.OwnerNode != null)
         {
             //addon->ItemList->AtkComponentBase.OwnerNode->AtkResNode.AddEvent(31, 9901, (AtkEventListener*)addon, null, false); // MouseDown
