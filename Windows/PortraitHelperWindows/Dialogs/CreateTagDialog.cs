@@ -65,8 +65,6 @@ public class CreateTagDialog : ConfirmationDialog
         Config.PresetTags.Add(tag);
         Plugin.Config.Save();
 
-        presetBrowserOverlay.SelectedTagId = tag.Id;
-
         Close();
     }
 }
