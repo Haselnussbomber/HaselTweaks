@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using HaselTweaks.Records.PortraitHelper;
@@ -158,16 +159,18 @@ public unsafe class PresetBrowserOverlay : Overlay
 
         var removeUnusedTags = false;
 
-        // TODO: previews of portraits
-        // TODO: right click instead of buttons
+        ImGui.TextColored(ImGuiUtils.ColorGold, "Tags");
+        ImGui.SetCursorPosY(ImGui.GetCursorPosY() - style.ItemSpacing.Y + 3);
+        ImGui.Separator();
+        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + style.ItemSpacing.Y);
 
-        ImGuiUtils.DrawSection("Tags", false);
-
+        using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var child = ImRaii.Child("##PresetBrowser_SideBar", ImGui.GetContentRegionAvail() - style.ItemInnerSpacing);
-        if (child == null || !child.Success)
+        if (!child.Success)
             return;
+        framePadding?.Dispose();
 
-        DrawAllTags(ref removeUnusedTags);
+        DrawAllTag(ref removeUnusedTags);
 
         foreach (var tag in Config.PresetTags)
         {
@@ -188,7 +191,7 @@ public unsafe class PresetBrowserOverlay : Overlay
             RemoveUnusedTags();
     }
 
-    private void DrawAllTags(ref bool removeUnusedTags)
+    private void DrawAllTag(ref bool removeUnusedTags)
     {
         var treeNodeFlags =
             ImGuiTreeNodeFlags.SpanAvailWidth |
@@ -220,7 +223,7 @@ public unsafe class PresetBrowserOverlay : Overlay
 
         using (ImRaii.PushFont(UiBuilder.IconFont))
         {
-            ImGui.TextUnformatted(FontAwesomeIcon.Tag.ToIconString());
+            ImGui.TextUnformatted(FontAwesomeIcon.Tags.ToIconString());
         }
     }
 
@@ -250,13 +253,20 @@ public unsafe class PresetBrowserOverlay : Overlay
     {
         var style = ImGui.GetStyle();
 
-        ImGuiUtils.DrawSection("Presets", false);
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + style.ItemSpacing.X);
+        ImGui.TextColored(ImGuiUtils.ColorGold, "Presets");
+        ImGui.SetCursorPosY(ImGui.GetCursorPosY() - style.ItemSpacing.Y + 3);
+        ImGui.Separator();
+        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + style.ItemSpacing.Y);
 
+        using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var child = ImRaii.Child("##PresetBrowser_Content", ImGui.GetContentRegionAvail() - style.ItemInnerSpacing);
-        if (!child.Success)
+        if (child == null || !child.Success)
             return;
+        framePadding?.Dispose();
 
-        ImGui.Indent(style.ItemInnerSpacing.X * 2);
+        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + style.ItemSpacing.Y);
+        ImGui.Indent(style.ItemSpacing.X);
 
         // TODO: clip scroll thingy
         // TODO: filters (bg, frame, decoration, pose...)

@@ -18,7 +18,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows;
 public unsafe class PresetCard
 {
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
-    public static Vector2 PortraitSize = new(172, 288); // ~ (576, 960) * 0.3f
+    public static Vector2 PortraitSize = new(153, 256); // ~ (576, 960) * 0.2664f
 
     private readonly PresetBrowserOverlay overlay;
     private readonly Guid id;

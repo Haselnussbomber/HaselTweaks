@@ -47,11 +47,10 @@ public static class ImGuiUtils
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y - 1);
     }
 
-    public static void DrawSection(string label, bool pushDown = true)
+    public static void DrawSection(string label)
     {
         // push down a bit
-        if (pushDown)
-            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y * 2);
+        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y * 2);
         ImGui.TextColored(ColorGold, label);
         // pull up the separator
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() - ImGui.GetStyle().ItemSpacing.Y + 3);
