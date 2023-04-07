@@ -42,8 +42,6 @@ Portraits can also be saved to and loaded from presets, which can also be export
         public List<SavedPresetTag> PresetTags = new();
     }
 
-    public static string ClipboardIdentifier = "haseltweaks:portrait:";
-
     public unsafe AgentBannerEditor* AgentBannerEditor;
     public unsafe AddonBannerEditor* AddonBannerEditor;
 
@@ -58,7 +56,6 @@ Portraits can also be saved to and loaded from presets, which can also be export
     public ViewMode OverlayViewMode { get; private set; } = ViewMode.Normal;
     public ImportFlags CurrentImportFlags { get; set; } = ImportFlags.All;
 
-    public bool HasPortraitInClipboard { get; private set; }
     public PortraitPreset? ClipboardPreset { get; private set; }
 
     public override unsafe void Enable()
@@ -173,22 +170,21 @@ Portraits can also be saved to and loaded from presets, which can also be export
         if (!ClipboardNatives.OpenClipboard(0))
             return;
 
+        lastClipboardSequenceNumber = clipboardSequenceNumber;
+
         var data = ClipboardNatives.GetClipboardData(ClipboardNatives.ClipboardFormat.CF_TEXT);
         if (data != 0)
         {
             var clipboardText = MemoryHelper.ReadString(data, 1024);
+            ClipboardPreset = PortraitPreset.FromExportedString(clipboardText);
 
-            HasPortraitInClipboard = clipboardText.StartsWith(ClipboardIdentifier);
-
-            ClipboardPreset = HasPortraitInClipboard
-                ? PortraitPreset.Deserialize(clipboardText[ClipboardIdentifier.Length..])
-                : null;
+            if (ClipboardPreset != null)
+                Debug($"Parsed ClipboardPreset: {ClipboardPreset}");
         }
 
         ClipboardNatives.CloseClipboard();
 
         lastClipboardCheck = DateTime.Now;
-        lastClipboardSequenceNumber = clipboardSequenceNumber;
     }
 
     public async void PresetToClipboard(PortraitPreset? preset)
@@ -201,12 +197,9 @@ Portraits can also be saved to and loaded from presets, which can also be export
         if (!ClipboardNatives.EmptyClipboard())
             return;
 
-        var clipboardText = Marshal.StringToHGlobalAnsi(ClipboardIdentifier + preset.Serialize());
+        var clipboardText = Marshal.StringToHGlobalAnsi(preset.ToExportedString());
         if (ClipboardNatives.SetClipboardData(ClipboardNatives.ClipboardFormat.CF_TEXT, clipboardText) != 0)
-        {
-            HasPortraitInClipboard = true;
             ClipboardPreset = preset;
-        }
 
         ClipboardNatives.CloseClipboard();
     }
@@ -287,7 +280,7 @@ Portraits can also be saved to and loaded from presets, which can also be export
         if (!GetAddon<AddonBannerEditor>((AgentInterface*)agentBannerEditor, out var addonBannerEditor))
             return;
 
-        Debug($"Importing Preset {preset.Serialize()} with ImportFlags {importFlags}");
+        Debug($"Importing Preset {preset.ToExportedString()} with ImportFlags {importFlags}");
 
         var state = agentBannerEditor->EditorState;
         var bannerEntry = state->BannerEntry;

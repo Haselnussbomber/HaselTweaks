@@ -52,6 +52,16 @@ public unsafe class PresetCard
             }
             return;
         }
+        if (preset.Preset == null)
+        {
+            if (!warningLogged)
+            {
+                PluginLog.Warning($"Removing SavedPreset {id}: Preset is null"); // 😳
+                Config.Presets.Remove(preset);
+                warningLogged = true;
+            }
+            return;
+        }
 
         if (preset.Preset.BannerFrame != bannerFrame)
         {

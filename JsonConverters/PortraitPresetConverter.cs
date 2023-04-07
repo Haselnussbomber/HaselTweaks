@@ -7,13 +7,9 @@ public class PortraitPresetConverter : JsonConverter<PortraitPreset>
 {
     public override void WriteJson(JsonWriter writer, PortraitPreset? value, JsonSerializer serializer)
     {
-        writer.WriteValue(value?.Serialize());
+        writer.WriteValue(value?.ToExportedString());
     }
 
-    public override PortraitPreset ReadJson(JsonReader reader, Type objectType, PortraitPreset? existingValue, bool hasExistingValue, JsonSerializer serializer)
-    {
-        return reader.Value == null
-            ? new()
-            : PortraitPreset.Deserialize((string)reader.Value);
-    }
+    public override PortraitPreset? ReadJson(JsonReader reader, Type objectType, PortraitPreset? existingValue, bool hasExistingValue, JsonSerializer serializer)
+        => PortraitPreset.FromExportedString((string?)reader.Value);
 }

@@ -96,7 +96,7 @@ public unsafe class MenuBar : Window, IDisposable
         }
 
         ImGui.SameLine();
-        if (!Tweak.HasPortraitInClipboard)
+        if (Tweak.ClipboardPreset == null)
         {
             ImGuiUtils.IconButtonDisabled("Paste", FontAwesomeIcon.Paste, "Import from Clipboard"); // StringUtils.GetAddonText(101) ?? "Paste"
         }
@@ -110,7 +110,7 @@ public unsafe class MenuBar : Window, IDisposable
         }
 
         ImGui.SameLine();
-        if (!Tweak.HasPortraitInClipboard)
+        if (Tweak.ClipboardPreset == null)
         {
             ImGuiUtils.IconButtonDisabled("ViewModeAdvancedImport", FontAwesomeIcon.FilePen, "Toggle Advanced Import Mode");
         }
