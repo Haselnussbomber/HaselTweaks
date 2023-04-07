@@ -33,7 +33,9 @@ public record SavedPreset
 
     public void Delete()
     {
-        var thumbPath = Plugin.Config.GetPortraitThumbnailPath(TextureHash);
+        var config = Plugin.Config.Tweaks.PortraitHelper;
+
+        var thumbPath = config.GetPortraitThumbnailPath(TextureHash);
         if (File.Exists(thumbPath))
         {
             try
@@ -46,7 +48,7 @@ public record SavedPreset
             }
         }
 
-        Plugin.Config.Tweaks.PortraitHelper.Presets.Remove(this);
+        config.Presets.Remove(this);
         Plugin.Config.Save();
     }
 }

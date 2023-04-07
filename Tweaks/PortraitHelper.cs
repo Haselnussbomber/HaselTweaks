@@ -40,6 +40,16 @@ Portraits can also be saved to and loaded from presets, which can also be export
 
         [ConfigField(Type = ConfigFieldTypes.Ignore)]
         public List<SavedPresetTag> PresetTags = new();
+
+        public string GetPortraitThumbnailPath(string hash)
+        {
+            var portraitsPath = Path.Join(Service.PluginInterface.ConfigDirectory.FullName, "Portraits");
+
+            if (!Directory.Exists(portraitsPath))
+                Directory.CreateDirectory(portraitsPath);
+
+            return Path.Join(portraitsPath, $"{hash}.png");
+        }
     }
 
     public unsafe AgentBannerEditor* AgentBannerEditor;

@@ -82,7 +82,7 @@ public unsafe class PresetCard
 
             if (!string.IsNullOrEmpty(textureHash))
             {
-                var thumbPath = Plugin.Config.GetPortraitThumbnailPath(textureHash);
+                var thumbPath = Config.GetPortraitThumbnailPath(textureHash);
 
                 // TODO: re-create if not found, maybe with loading spinner in right side of menu bar
                 if (File.Exists(thumbPath))

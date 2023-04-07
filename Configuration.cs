@@ -22,16 +22,6 @@ internal partial class Configuration : IPluginConfiguration
     public TweakConfigs Tweaks { get; init; } = new();
     public string SigCacheVersion { get; init; } = string.Empty;
     public ConcurrentDictionary<string, long>? SigCache { get; init; } = new();
-
-    public string GetPortraitThumbnailPath(string hash)
-    {
-        var portraitsPath = Path.Join(Service.PluginInterface.ConfigDirectory.FullName, "Portraits");
-
-        if (!Directory.Exists(portraitsPath))
-            Directory.CreateDirectory(portraitsPath);
-
-        return Path.Join(portraitsPath, $"{hash}.png");
-    }
 }
 
 public class TweakConfigs

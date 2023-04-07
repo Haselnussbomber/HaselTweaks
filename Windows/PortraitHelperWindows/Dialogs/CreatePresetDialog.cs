@@ -134,7 +134,7 @@ public class CreatePresetDialog : ConfirmationDialog
         image.CopyPixelDataTo(pixelData);
 
         var hash = XXHash3.Hash64(pixelData).ToString("x");
-        var thumbPath = Plugin.Config.GetPortraitThumbnailPath(hash);
+        var thumbPath = Config.GetPortraitThumbnailPath(hash);
 
         image.SaveAsPng(thumbPath, new PngEncoder
         {
