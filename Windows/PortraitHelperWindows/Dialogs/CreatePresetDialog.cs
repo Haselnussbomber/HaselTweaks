@@ -24,7 +24,7 @@ public class CreatePresetDialog : ConfirmationDialog
     private string? name;
     private PortraitPreset? preset;
     private Image<Bgra32>? image;
-    private readonly List<Guid> tags = new();
+    private readonly HashSet<Guid> tags = new();
 
     public CreatePresetDialog() : base("Save as Preset")
     {

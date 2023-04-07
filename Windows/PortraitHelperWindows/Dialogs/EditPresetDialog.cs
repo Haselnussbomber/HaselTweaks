@@ -121,7 +121,10 @@ public class EditPresetDialog : ConfirmationDialog
 
         preset.Name = name.Trim();
         preset.Tags.Clear();
-        preset.Tags.AddRange(tags);
+
+        foreach (var tag in tags)
+            preset.Tags.Add(tag);
+
         Plugin.Config.Save();
 
         Close();
