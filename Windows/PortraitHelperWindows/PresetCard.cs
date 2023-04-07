@@ -25,6 +25,7 @@ public unsafe class PresetCard
 
     private string textureHash = string.Empty;
     private TextureWrap? textureWrap;
+    private DateTime lastTextureCheck = DateTime.MinValue;
 
     private bool warningLogged;
 
@@ -77,12 +78,11 @@ public unsafe class PresetCard
 
         if (preset.TextureHash != textureHash)
         {
-            textureHash = preset.TextureHash;
             textureWrap?.Dispose();
 
-            if (!string.IsNullOrEmpty(textureHash))
+            if (!string.IsNullOrEmpty(preset.TextureHash) && DateTime.Now - lastTextureCheck > TimeSpan.FromSeconds(1))
             {
-                var thumbPath = Config.GetPortraitThumbnailPath(textureHash);
+                var thumbPath = Config.GetPortraitThumbnailPath(preset.TextureHash);
 
                 // TODO: re-create if not found, maybe with loading spinner in right side of menu bar
                 if (File.Exists(thumbPath))
@@ -91,11 +91,14 @@ public unsafe class PresetCard
                     var data = new byte[sizeof(Rgba32) * image.Width * image.Height];
                     image.CopyPixelDataTo(data);
                     textureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, image.Width, image.Height, 4);
+                    textureHash = preset.TextureHash;
                 }
                 else
                 {
                     textureWrap = null;
                 }
+
+                lastTextureCheck = DateTime.Now;
             }
             else
             {
