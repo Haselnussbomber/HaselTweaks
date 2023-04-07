@@ -195,7 +195,7 @@ public unsafe class PresetBrowserOverlay : Overlay
         if (ImGui.BeginPopupContextItem("##PresetBrowser_SideBar_AllPopup"))
         {
             if (ImGui.Selectable("Create Tag"))
-                CreateTagDialog.Show();
+                CreateTagDialog.Open();
 
             if (ImGui.Selectable("Remove unused Tags"))
                 removeUnusedTags = true;
