@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.IO;
+using Dalamud.Logging;
 using Newtonsoft.Json;
 
 namespace HaselTweaks.Records.PortraitHelper;
@@ -27,5 +29,24 @@ public record SavedPreset
 
     public SavedPreset(string Name, PortraitPreset? Preset, List<Guid> Tags, string TextureHash) : this(Guid.NewGuid(), Name, Preset, Tags, TextureHash)
     {
+    }
+
+    public void Delete()
+    {
+        var thumbPath = Plugin.Config.GetPortraitThumbnailPath(TextureHash);
+        if (File.Exists(thumbPath))
+        {
+            try
+            {
+                File.Delete(thumbPath);
+            }
+            catch (Exception e)
+            {
+                PluginLog.Error($"Could not delete \"{thumbPath}\"", e);
+            }
+        }
+
+        Plugin.Config.Tweaks.PortraitHelper.Presets.Remove(this);
+        Plugin.Config.Save();
     }
 }

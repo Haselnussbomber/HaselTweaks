@@ -57,7 +57,7 @@ public unsafe class PresetCard
             if (!warningLogged)
             {
                 PluginLog.Warning($"Removing SavedPreset {id}: Preset is null"); // 😳
-                Config.Presets.Remove(preset);
+                preset.Delete();
                 warningLogged = true;
             }
             return;
