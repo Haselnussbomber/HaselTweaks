@@ -103,6 +103,18 @@ public unsafe class PresetBrowserOverlay : Overlay
                     reorderTagOldIndex = Config.PresetTags.IndexOf((tag) => tag.Id.ToString() == tagId);
                     reorderTagNewIndex = Config.PresetTags.IndexOf(tag);
                 }
+
+                payload = ImGui.AcceptDragDropPayload("MovePresetCard");
+                if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
+                {
+                    var presetId = Marshal.PtrToStringAnsi(payload.Data, payload.DataSize);
+                    var preset = Config.Presets.FirstOrDefault((preset) => preset?.Id.ToString() == presetId, null);
+                    if (preset != null)
+                    {
+                        preset.Tags.Add(tag.Id);
+                        Plugin.Config.Save();
+                    }
+                }
             }
         }
 

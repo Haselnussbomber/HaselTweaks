@@ -105,12 +105,7 @@ public unsafe class PresetCard
 
         var style = ImGui.GetStyle();
 
-        using var child = ImRaii.Child(
-            preset.Id.ToString(),
-            PortraitSize + new Vector2(0, style.ItemSpacing.Y + ImGui.GetTextLineHeight()),
-            false,
-            ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoScrollbar
-        );
+        using var _id = ImRaii.PushId(preset.Id.ToString());
 
         var windowPos = ImGui.GetWindowPos();
         var cursorPos = ImGui.GetCursorPos();
@@ -135,15 +130,53 @@ public unsafe class PresetCard
         }
 
         ImGui.SetCursorPos(cursorPos);
-        ImGui.Dummy(PortraitSize);
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.GetWindowDrawList().AddRectFilled(
-                windowPos + cursorPos,
-                windowPos + cursorPos + PortraitSize,
-                ImGui.ColorConvertFloat4ToU32(new(1, 1, 1, 0.2f))
-            );
 
+        using (ImRaii.PushColor(ImGuiCol.Button, ImGui.ColorConvertFloat4ToU32(ImGuiUtils.ColorTransparent)))
+        {
+            using (ImRaii.PushColor(ImGuiCol.ButtonActive, ImGui.ColorConvertFloat4ToU32(new(1, 1, 1, 0.3f))))
+            {
+                using (ImRaii.PushColor(ImGuiCol.ButtonHovered, ImGui.ColorConvertFloat4ToU32(new(1, 1, 1, 0.2f))))
+                {
+                    using (ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0))
+                    {
+                        ImGui.Button($"##{preset.Id}_Button", PortraitSize);
+                    }
+                }
+            }
+        }
+
+        using (var source = ImRaii.DragDropSource())
+        {
+            if (source != null && source.Success)
+            {
+                ImGui.TextUnformatted($"Moving {preset.Name}");
+
+                var idPtr = Marshal.StringToHGlobalAnsi(preset.Id.ToString());
+                ImGui.SetDragDropPayload("MovePresetCard", idPtr, (uint)MemoryUtils.strlen(idPtr));
+                Marshal.FreeHGlobal(idPtr);
+            }
+        }
+
+        using (var target = ImRaii.DragDropTarget())
+        {
+            if (target != null && target.Success)
+            {
+                var payload = ImGui.AcceptDragDropPayload("MovePresetCard");
+                if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
+                {
+                    var presetId = Marshal.PtrToStringAnsi(payload.Data, payload.DataSize);
+                    var oldIndex = Config.Presets.IndexOf((preset) => preset.Id.ToString() == presetId);
+                    var newIndex = Config.Presets.IndexOf(preset);
+                    var item = Config.Presets[oldIndex];
+                    Config.Presets.RemoveAt(oldIndex);
+                    Config.Presets.Insert(newIndex, item);
+                    Plugin.Config.Save();
+                }
+            }
+        }
+
+        if (ImGui.IsItemHovered() && !ImGui.IsMouseDragging(ImGuiMouseButton.Left))
+        {
             using (ImRaii.Tooltip())
             {
                 ImGui.TextUnformatted(preset.Name);
