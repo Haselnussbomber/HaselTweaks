@@ -23,7 +23,7 @@ public static class ImGuiUtils
 
     public static readonly Dictionary<int, TextureWrap?> IconCache = new();
 
-    public static void DrawIcon(int iconId, int width = -1, int height = -1)
+    public static void DrawIcon(int iconId, float width = -1, float height = -1)
     {
         if (!IconCache.TryGetValue(iconId, out var tex))
         {
@@ -36,6 +36,9 @@ public static class ImGuiUtils
 
         ImGui.Image(tex.ImGuiHandle, new(width == -1 ? tex.Width : width, height == -1 ? tex.Height : height));
     }
+
+    public static void DrawIcon(int iconId, Vector2 size)
+        => DrawIcon(iconId, size.X, size.Y);
 
     public static void DrawPaddedSeparator()
     {
@@ -93,10 +96,48 @@ public static class ImGuiUtils
         ImGui.SameLine();
     }
 
+    public static unsafe void VerticalSeparator(Vector4 color)
+    {
+        ImGui.SameLine();
+
+        var region = ImGui.GetContentRegionAvail();
+        var pos = ImGui.GetWindowPos() + ImGui.GetCursorPos();
+
+        ImGui.GetWindowDrawList().AddLine(
+            pos + new Vector2(3f, 0f),
+            pos + new Vector2(3f, region.Y),
+            ImGui.GetColorU32(color)
+        );
+        ImGui.Dummy(new(7, region.Y));
+    }
+
+    public static unsafe void VerticalSeparator()
+        => VerticalSeparator(ColorGrey3);
+
     public static void SameLineSpace()
     {
         using var itemSpacing = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, new Vector2(ImGui.CalcTextSize(" ").X, 0));
         ImGui.SameLine();
+    }
+
+    public static void DrawLoadingSpinner(Vector2 center, float radius = 10f)
+    {
+        var angle = 0.0f;
+        var numSegments = 10;
+        var angleStep = (float)(Math.PI * 2.0f / numSegments);
+
+        for (var i = 0; i < numSegments; i++)
+        {
+            var x = center.X + radius * (float)Math.Cos(angle);
+            var y = center.Y + radius * (float)Math.Sin(angle);
+
+            var t = (float)(-angle / (float)Math.PI / 2f + ImGui.GetTime()) % 1f;
+            var color = new Vector4(1f, 1f, 1f, 1 - t);
+
+            ImGui.GetWindowDrawList().AddCircleFilled(new Vector2(x, y), 2f, ImGui.ColorConvertFloat4ToU32(color));
+
+            angle += angleStep;
+        }
     }
 
     public static void TextColoredWrapped(Vector4 col, string text)
@@ -118,6 +159,7 @@ public static class ImGuiUtils
     public static bool IconButton(string key, FontAwesomeIcon icon, Vector2 size)
     {
         using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
+        if (!key.StartsWith("##")) key = "##" + key;
         return ImGui.Button(icon.ToIconString() + key, size);
     }
 
@@ -147,6 +189,7 @@ public static class ImGuiUtils
     public static bool IconButtonDisabled(string key, FontAwesomeIcon icon, Vector2 size)
     {
         using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
+        if (!key.StartsWith("##")) key = "##" + key;
         return ButtonDisabled(icon.ToIconString() + key, size);
     }
 

@@ -45,18 +45,23 @@
   <ItemGroup>
     <Reference Include="Dalamud" Private="false" />
     <Reference Include="Dalamud.Interface" Private="false" />
-    <Reference Include="Lumina" Private="false" />
-    <Reference Include="Lumina.Excel" Private="false" />
     <Reference Include="FFXIVClientStructs" Private="false" />
     <Reference Include="ImGui.NET" Private="false" />
     <Reference Include="ImGuiScene" Private="false" />
+    <Reference Include="Lumina" Private="false" />
+    <Reference Include="Lumina.Excel" Private="false" />
     <Reference Include="Newtonsoft.Json" Private="false" />
+    <Reference Include="SharpDX" Private="false" />
+    <Reference Include="SharpDX.Direct3D11" Private="false" />
+    <Reference Include="SharpDX.DXGI" Private="false" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DalamudPackager" Version="2.1.11" />
     <PackageReference Include="Dalamud.ContextMenu" Version="1.2.2" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
+    <PackageReference Include="XXHash3.NET" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>

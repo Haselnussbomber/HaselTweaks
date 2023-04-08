@@ -1,3 +1,4 @@
+using System.Numerics;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -124,6 +125,22 @@ public static unsafe class AtkUtils
 
     public static void SetVisibility(AtkUnitBase* addon, uint nodeId, bool visible)
         => SetVisibility(GetNode(addon, nodeId), visible);
+
+    public static Vector2 GetNodeScale(AtkResNode* node)
+    {
+        if (node == null)
+            return Vector2.One;
+
+        var scale = new Vector2(node->ScaleX, node->ScaleY);
+
+        while (node->ParentNode != null)
+        {
+            node = node->ParentNode;
+            scale *= new Vector2(node->ScaleX, node->ScaleY);
+        }
+
+        return scale;
+    }
 
     #endregion
 }

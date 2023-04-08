@@ -1,4 +1,5 @@
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
+using FFXIVClientStructs.FFXIV.Common.Math;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Structs;
@@ -9,17 +10,9 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     [FieldOffset(0)] public CharaView Base;
 
     // not sure on these floats. i think it's a Spherical Camera
-    [FieldOffset(0x2D0)] public Half CameraPosition1;
-    [FieldOffset(0x2D4)] public Half CameraPosition2;
-    [FieldOffset(0x2D8)] public Half CameraPosition3;
-    [FieldOffset(0x2DC)] public Half CameraPosition4;
-    [FieldOffset(0x2E0)] public Half CameraTarget1;
-    [FieldOffset(0x2E4)] public Half CameraTarget2;
-    [FieldOffset(0x2E8)] public Half CameraTarget3;
-    [FieldOffset(0x2EC)] public Half CameraTarget4;
-    [FieldOffset(0x2F0)] public float CameraRatio1;
-    [FieldOffset(0x2F4)] public float CameraRatio2;
-    [FieldOffset(0x2F8)] public float CameraRatio3;
+    [FieldOffset(0x2D0)] public Vector4 CameraPosition;
+    [FieldOffset(0x2E0)] public Vector4 CameraTarget;
+
     [FieldOffset(0x2FC)] public short ImageRotation;
     [FieldOffset(0x2FE)] public byte CameraZoom;
 
@@ -28,15 +21,17 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     [FieldOffset(0x305)] public byte DirectionalLightingColorGreen;
     [FieldOffset(0x306)] public byte DirectionalLightingColorBlue;
     [FieldOffset(0x307)] public byte DirectionalLightingBrightness;
-    [FieldOffset(0x308)] public short CameraVerticalAngle;
-    [FieldOffset(0x30A)] public short CameraHorizontalAngle;
-    [FieldOffset(0x30C)] public byte AmbientLightingColorRed;
+    [FieldOffset(0x308)] public ushort DirectionalLightingVerticalAngle;
+    [FieldOffset(0x30A)] public ushort DirectionalLightingHorizontalAngle;
+    [FieldOffset(0x304)] public byte AmbientLightingColorRed;
     [FieldOffset(0x30D)] public byte AmbientLightingColorGreen;
     [FieldOffset(0x30E)] public byte AmbientLightingColorBlue;
     [FieldOffset(0x30F)] public byte AmbientLightingBrightness;
+    [FieldOffset(0x308)] public short CameraVerticalAngle;
+    [FieldOffset(0x30A)] public short CameraHorizontalAngle;
 
     [FieldOffset(0x314)] public short PoseClassJob;
-    [FieldOffset(0x316)] public short Background; // BannerBg rowId
+    [FieldOffset(0x316)] public short BannerBg;
     [FieldOffset(0x318)] public byte BackgroundState; // 0 = do nothing, 1 = loads texture by icon from row, 2 = renders KernelTexture?, 3 = done
 
     [FieldOffset(0x320)] public AtkTexture BackgroundTexture;
@@ -116,13 +111,13 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     public partial void SetCameraZoom(byte zoom);
 
     [MemberFunction("E8 ?? ?? ?? ?? 41 B5 01 49 63 46 48")]
-    public partial void SetBackground(short id);
+    public partial void SetBackground(ushort id);
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 89 BC 24 ?? ?? ?? ?? 84 DB")]
-    public partial void SetPose(short id);
+    public partial void SetPose(ushort id);
 
     [MemberFunction("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 0F B7 93")]
-    public partial void SetPoseTimed(short id, float time);
+    public partial void SetPoseTimed(ushort id, float time);
 
     [MemberFunction("E8 ?? ?? ?? ?? 84 DB 0F 84 ?? ?? ?? ?? 48 63 87 ?? ?? ?? ?? 45 33 C9")]
     public partial void SetExpression(byte id); // same as GetGameObject()->Unk8D0.SetExpression(id)
@@ -155,23 +150,15 @@ public unsafe partial struct CharaViewPortrait : ICreatable
 [StructLayout(LayoutKind.Explicit, Size = 0x34)]
 public unsafe struct ExportedPortraitData
 {
-    [FieldOffset(0x0)] public Half CameraPosition1; // Phi?
-    [FieldOffset(0x2)] public Half CameraPosition2; // Theta?
-    [FieldOffset(0x4)] public Half CameraPosition3; // R?
-    [FieldOffset(0x6)] public Half CameraPosition4;
-    [FieldOffset(0x8)] public Half CameraTarget1;
-    [FieldOffset(0xA)] public Half CameraTarget2;
-    [FieldOffset(0xC)] public Half CameraTarget3;
-    [FieldOffset(0xE)] public Half CameraTarget4;
+    [FieldOffset(0x0)] public HalfVector4 CameraPosition;
+    [FieldOffset(0x8)] public HalfVector4 CameraTarget;
     [FieldOffset(0x10)] public short ImageRotation;
     [FieldOffset(0x12)] public byte CameraZoom;
-    [FieldOffset(0x14)] public short Pose;
+    [FieldOffset(0x14)] public ushort BannerTimeline;
     [FieldOffset(0x18)] public float AnimationProgress;
     [FieldOffset(0x1C)] public byte Expression;
-    [FieldOffset(0x1E)] public Half HeadDirection1;
-    [FieldOffset(0x20)] public Half HeadDirection2;
-    [FieldOffset(0x22)] public Half EyeDirection1;
-    [FieldOffset(0x24)] public Half EyeDirection2;
+    [FieldOffset(0x1E)] public HalfVector2 HeadDirection;
+    [FieldOffset(0x22)] public HalfVector2 EyeDirection;
     [FieldOffset(0x26)] public byte DirectionalLightingColorRed;
     [FieldOffset(0x27)] public byte DirectionalLightingColorGreen;
     [FieldOffset(0x28)] public byte DirectionalLightingColorBlue;
@@ -182,5 +169,5 @@ public unsafe struct ExportedPortraitData
     [FieldOffset(0x2F)] public byte AmbientLightingColorGreen;
     [FieldOffset(0x30)] public byte AmbientLightingColorBlue;
     [FieldOffset(0x31)] public byte AmbientLightingBrightness;
-    [FieldOffset(0x32)] public short BannerBg;
+    [FieldOffset(0x32)] public ushort BannerBg;
 }
