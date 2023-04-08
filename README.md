@@ -138,9 +138,15 @@ Configuration options:
 
 ### Portrait Helper
 
-Adds Copy/Paste buttons to the "Edit Portrait" window, which allow settings to be copied to other portraits.
+A helper for editing portraits, featuring:
 
-The Advanced Mode allows to specify which settings should be pasted.
+- A reset button that allows you to easily undo any changes made to the portrait, just as it was when the window was opened.
+- Presets can be exported and imported with a short base64-encoded string via clipboard. This allows you to share the preset with others.
+- If you wish to only import parts of a preset stored in your clipboard, you can use the Advanced Import Mode to select each setting you want to import separately.
+- The Preset Browser allows you to save your portraits into presets and organize them using tags. Simply double click a preset to load it or drag and drop it to change the order or add it to tags.
+  - *Note*: The preset list is shared across all tags, but filtered by the selected tag. That means, reordering a preset will change the order across all tags.
+
+The texture used for the preview of a preset is saved as a .png file in the plugins configuration folder.
 
 ### Reveal Duty Requirements
 

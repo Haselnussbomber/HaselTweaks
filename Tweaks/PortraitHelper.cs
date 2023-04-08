@@ -25,11 +25,7 @@ namespace HaselTweaks.Tweaks;
 public class PortraitHelper : Tweak
 {
     public override string Name => "Portrait Helper";
-    public override string Description => @"Adds Reset/Copy/Paste buttons to the ""Edit Portrait"" window, which allow settings to be copied to other portraits.
-
-The Advanced Mode allows to specify which settings should be pasted.
-
-Portraits can also be saved to and loaded from presets, which can also be exported and imported.";
+    public override string Description => "A helper for editing portraits.";
 
     public static Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
 
