@@ -23,7 +23,7 @@ public class CreatePresetDialog : ConfirmationDialog
     private string? name;
     private PortraitPreset? preset;
     private Image<Bgra32>? image;
-    private readonly HashSet<Guid> tags = new();
+    private HashSet<Guid>? tags;
 
     public CreatePresetDialog() : base("Save as Preset")
     {
@@ -35,7 +35,7 @@ public class CreatePresetDialog : ConfirmationDialog
         this.name = name;
         this.preset = preset;
         this.image = image;
-        tags.Clear();
+        tags = new();
         Show();
     }
 
@@ -46,11 +46,11 @@ public class CreatePresetDialog : ConfirmationDialog
         preset = null;
         image?.Dispose();
         image = null;
-        tags.Clear();
+        tags = null;
     }
 
     public override bool DrawCondition()
-        => base.DrawCondition() && name != null && preset != null && image != null;
+        => base.DrawCondition() && name != null && preset != null && image != null && tags != null;
 
     public override void InnerDraw()
     {
@@ -69,7 +69,7 @@ public class CreatePresetDialog : ConfirmationDialog
         ImGui.Text("Select Tags (optional):");
         ImGui.Spacing();
 
-        var tagNames = tags
+        var tagNames = tags!
             .Select(id => Config.PresetTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
             .Where(name => !string.IsNullOrEmpty(name));
 
@@ -80,7 +80,7 @@ public class CreatePresetDialog : ConfirmationDialog
         {
             foreach (var tag in Config.PresetTags)
             {
-                var isSelected = tags.Contains(tag.Id);
+                var isSelected = tags!.Contains(tag.Id);
 
                 if (ImGui.Selectable($"{tag.Name}##PresetTag{tag.Id}", isSelected))
                 {
@@ -109,10 +109,6 @@ public class CreatePresetDialog : ConfirmationDialog
             return;
         }
 
-        // resize
-        // image.Mutate(x => x.Resize((int)PresetCard.PortraitSize.X, (int)PresetCard.PortraitSize.Y, KnownResamplers.Lanczos3));
-
-        // generate hash
         Hide();
 
         Task.Run(() =>
@@ -123,13 +119,13 @@ public class CreatePresetDialog : ConfirmationDialog
             var hash = XXHash3.Hash64(pixelData).ToString("x");
             var thumbPath = Config.GetPortraitThumbnailPath(hash);
 
-            image.SaveAsPngAsync(thumbPath, new PngEncoder
+            image.SaveAsPng(thumbPath, new PngEncoder
             {
                 CompressionLevel = PngCompressionLevel.BestCompression,
                 ColorType = PngColorType.Rgb // no need for alpha channel
             });
 
-            Config.Presets.Insert(0, new(name.Trim(), preset, tags, hash));
+            Config.Presets.Insert(0, new(name.Trim(), preset, tags!, hash));
             Plugin.Config.Save();
 
             Close();

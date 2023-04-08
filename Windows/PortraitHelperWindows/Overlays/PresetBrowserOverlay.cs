@@ -16,10 +16,10 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
     public Guid? SelectedTagId { get; set; }
     public Dictionary<Guid, PresetCard> PresetCards { get; init; } = new();
 
-    public CreateTagDialog CreateTagDialog { get; init; }
+    public CreateTagDialog CreateTagDialog { get; init; } = new();
     public RenameTagDialog RenameTagDialog { get; init; } = new();
     public DeleteTagDialog DeleteTagDialog { get; init; }
-    public DeletePresetDialog DeletePresetDialog { get; init; } = new();
+    public DeletePresetDialog DeletePresetDialog { get; init; }
     public EditPresetDialog EditPresetDialog { get; init; } = new();
 
     private int reorderTagOldIndex = -1;
@@ -27,8 +27,8 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
     public PresetBrowserOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper PresetBrowser", tweak)
     {
-        CreateTagDialog = new(this);
         DeleteTagDialog = new(this);
+        DeletePresetDialog = new(this);
 
         base.IsOpen = true;
     }

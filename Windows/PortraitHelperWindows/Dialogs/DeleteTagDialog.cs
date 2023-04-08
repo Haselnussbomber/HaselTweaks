@@ -55,22 +55,31 @@ public class DeleteTagDialog : ConfirmationDialog
             return;
         }
 
+        var presets = Config.Presets
+            .Where((preset) => preset.Tags.Any((t) => t == tag.Id))
+            .ToArray();
+
         if (deletePortraits)
         {
             // remove presets with tag
-            foreach (var preset in Config.Presets.ToArray())
+            foreach (var preset in presets)
             {
-                if (preset.Tags.Any((t) => t == tag.Id))
+                if (presetBrowserOverlay.PresetCards.TryGetValue(preset.Id, out var card))
                 {
-                    Config.Presets.Remove(preset);
+                    card.Dispose();
+                    presetBrowserOverlay.PresetCards.Remove(preset.Id);
                 }
+
+                Config.Presets.Remove(preset);
             }
         }
         else
         {
             // remove tag from presets
-            foreach (var preset in Config.Presets)
+            foreach (var preset in presets)
+            {
                 preset.Tags.Remove(tag.Id);
+            }
         }
 
         Config.PresetTags.Remove(tag);
@@ -78,12 +87,6 @@ public class DeleteTagDialog : ConfirmationDialog
 
         if (presetBrowserOverlay.SelectedTagId == tag.Id)
             presetBrowserOverlay.SelectedTagId = null;
-
-        if (presetBrowserOverlay.PresetCards.TryGetValue(tag.Id, out var card))
-        {
-            presetBrowserOverlay.PresetCards.Remove(tag.Id);
-            card.Dispose();
-        }
 
         Close();
     }

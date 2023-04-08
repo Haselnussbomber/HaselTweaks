@@ -1,7 +1,5 @@
 using HaselTweaks.ImGuiComponents;
-using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
-using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
@@ -10,15 +8,12 @@ public class CreateTagDialog : ConfirmationDialog
 {
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
 
-    private readonly PresetBrowserOverlay presetBrowserOverlay;
     private readonly ConfirmationButton saveButton;
 
     private string? name;
 
-    public CreateTagDialog(PresetBrowserOverlay overlay) : base("Create Tag")
+    public CreateTagDialog() : base("Create Tag")
     {
-        presetBrowserOverlay = overlay;
-
         AddButton(saveButton = new ConfirmationButton("Save", OnSave));
         AddButton(new ConfirmationButton("Cancel", Close));
     }
@@ -34,6 +29,9 @@ public class CreateTagDialog : ConfirmationDialog
         Hide();
         name = null;
     }
+
+    public override bool DrawCondition()
+        => base.DrawCondition() && name != null;
 
     public override void InnerDraw()
     {
@@ -55,14 +53,13 @@ public class CreateTagDialog : ConfirmationDialog
 
     private void OnSave()
     {
-        if (name == null)
+        if (string.IsNullOrEmpty(name?.Trim()))
         {
             Close();
             return;
         }
 
-        var tag = new SavedPresetTag(name.Trim());
-        Config.PresetTags.Add(tag);
+        Config.PresetTags.Add(new(name.Trim()));
         Plugin.Config.Save();
 
         Close();
