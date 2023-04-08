@@ -129,7 +129,7 @@ public class CreatePresetDialog : ConfirmationDialog
                 ColorType = PngColorType.Rgb // no need for alpha channel
             });
 
-            Config.Presets.Add(new(name.Trim(), preset, tags, hash));
+            Config.Presets.Insert(0, new(name.Trim(), preset, tags, hash));
             Plugin.Config.Save();
 
             Close();
