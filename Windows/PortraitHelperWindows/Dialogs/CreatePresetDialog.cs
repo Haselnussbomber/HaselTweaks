@@ -64,38 +64,41 @@ public class CreatePresetDialog : ConfirmationDialog
             OnSave();
         }
 
-        ImGui.Spacing();
-
-        ImGui.Text("Select Tags (optional):");
-        ImGui.Spacing();
-
-        var tagNames = tags!
-            .Select(id => Config.PresetTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
-            .Where(name => !string.IsNullOrEmpty(name));
-
-        var preview = tagNames.Any() ? string.Join(", ", tagNames) : "None";
-
-        using var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge);
-        if (tagsCombo.Success)
+        if (Config.PresetTags.Any())
         {
-            foreach (var tag in Config.PresetTags)
-            {
-                var isSelected = tags!.Contains(tag.Id);
+            ImGui.Spacing();
+            ImGui.Text("Select Tags (optional):");
 
-                if (ImGui.Selectable($"{tag.Name}##PresetTag{tag.Id}", isSelected))
+            var tagNames = tags!
+                .Select(id => Config.PresetTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
+                .Where(name => !string.IsNullOrEmpty(name));
+
+            var preview = tagNames.Any() ? string.Join(", ", tagNames) : "None";
+
+            ImGui.Spacing();
+            using (var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge))
+            {
+                if (tagsCombo != null && tagsCombo.Success)
                 {
-                    if (isSelected)
+                    foreach (var tag in Config.PresetTags)
                     {
-                        tags.Remove(tag.Id);
-                    }
-                    else
-                    {
-                        tags.Add(tag.Id);
+                        var isSelected = tags!.Contains(tag.Id);
+
+                        if (ImGui.Selectable($"{tag.Name}##PresetTag{tag.Id}", isSelected))
+                        {
+                            if (isSelected)
+                            {
+                                tags.Remove(tag.Id);
+                            }
+                            else
+                            {
+                                tags.Add(tag.Id);
+                            }
+                        }
                     }
                 }
             }
         }
-        tagsCombo.Dispose();
 
         saveButton.Disabled = disabled;
     }
