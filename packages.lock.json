@@ -30,19 +30,11 @@
         "resolved": "3.0.1",
         "contentHash": "o0v/J6SJwp3RFrzR29beGx0cK7xcMRgOyIuw8ZNLQyNnBhiyL/vIQKn7cfycthcWUPG3XezUjFwBWzkcUUDFbg=="
       },
-      "XXHash3.NET": {
+      "System.IO.Hashing": {
         "type": "Direct",
-        "requested": "[2.1.0, )",
-        "resolved": "2.1.0",
-        "contentHash": "lLCpCFIb7Uwun3TaMcb8W2RMmMXATjwwNOD97Cmo3iXhnlrhSfGfWVOEFwRn6Ngcc3qTexPaIVDOgmPRe1mSmw==",
-        "dependencies": {
-          "CommunityToolkit.Diagnostics": "8.0.0"
-        }
-      },
-      "CommunityToolkit.Diagnostics": {
-        "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "wzjy3iA+7qjoL6t89Zhn3qsF9u2linoGEad/sl/MG4i8p8ZnItv3xZ+2/mbIwxwq5u1UdJ0+ZVqMe1wfdV4QRQ=="
+        "requested": "[7.0.0, )",
+        "resolved": "7.0.0",
+        "contentHash": "sDnWM0N3AMCa86LrKTWeF3BZLD2sgWyYUc7HL6z4+xyDZNQRwzmxbo4qP2rX2MqC+Sy1/gOSRDah5ltxY5jPxw=="
       },
       "Microsoft.Build.Tasks.Git": {
         "type": "Transitive",

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO.Hashing;
 using System.Linq;
 using System.Threading.Tasks;
 using Dalamud.Interface.Raii;
@@ -10,7 +11,6 @@ using ImGuiNET;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
-using XXHash3NET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
@@ -119,7 +119,7 @@ public class CreatePresetDialog : ConfirmationDialog
             var pixelData = new byte[image.Width * image.Height * 4];
             image.CopyPixelDataTo(pixelData);
 
-            var hash = XXHash3.Hash64(pixelData).ToString("x");
+            var hash = BitConverter.ToInt64(XxHash64.Hash(pixelData)).ToString("x");
             var thumbPath = Config.GetPortraitThumbnailPath(hash);
 
             image.SaveAsPng(thumbPath, new PngEncoder
