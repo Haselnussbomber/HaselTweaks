@@ -268,7 +268,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + style.ItemSpacing.Y);
 
         using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
-        using var child = ImRaii.Child("##PresetBrowser_Content", ImGui.GetContentRegionAvail() - style.ItemInnerSpacing);
+        using var child = ImRaii.Child("##PresetBrowser_Content", ImGui.GetContentRegionAvail());
         if (child == null || !child.Success)
             return;
         framePadding?.Dispose();
@@ -293,9 +293,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             .ToArray();
 
         var presetsPerRow = 3;
-        var availableWidth = ImGui.GetContentRegionAvail().X + style.ItemInnerSpacing.X * (presetsPerRow - 1);
-        if (presetCards.Length > presetsPerRow)
-            availableWidth -= style.ScrollbarSize + style.ItemInnerSpacing.X;
+        var availableWidth = ImGui.GetContentRegionAvail().X - style.ItemInnerSpacing.X * presetsPerRow;
 
         var presetWidth = availableWidth / presetsPerRow;
         var scale = presetWidth / PresetCard.PortraitSize.X;
