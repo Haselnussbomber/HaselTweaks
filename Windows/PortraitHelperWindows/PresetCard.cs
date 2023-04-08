@@ -1,9 +1,11 @@
 using System.IO;
-using System.Linq;
 using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
 using Dalamud.Interface.Raii;
 using Dalamud.Logging;
 using HaselTweaks.Enums.PortraitHelper;
+using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
@@ -16,22 +18,26 @@ using SixLabors.ImageSharp.Processing;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
-public unsafe class PresetCard : IDisposable
+public class PresetCard : IDisposable
 {
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
-    public static Vector2 PortraitSize = new(153, 256); // ~ (576, 960) * 0.2664f
+    public static Vector2 PortraitSize { get; } = new(576, 960); // native texture size
+
+    private bool isDisposed;
+    private readonly CancellationTokenSource closeTokenSource = new();
 
     private readonly PresetBrowserOverlay overlay;
-    private readonly Guid id;
+    private readonly SavedPreset preset;
 
-    private string textureHash = string.Empty;
+    private bool isImageLoading;
+    private bool isImageUpdatePending;
+
+    private string? textureHash;
     private Image<Rgba32>? image;
     private TextureWrap? textureWrap;
     private DateTime lastTextureCheck = DateTime.MinValue;
 
     private float lastScale;
-
-    private bool warningLogged;
 
     private ushort bannerFrame;
     private int? bannerFrameImage;
@@ -39,100 +45,35 @@ public unsafe class PresetCard : IDisposable
     private ushort bannerDecoration;
     private int? bannerDecorationImage;
 
-    public PresetCard(PresetBrowserOverlay overlay, Guid id)
+    public PresetCard(PresetBrowserOverlay overlay, SavedPreset preset)
     {
         this.overlay = overlay;
-        this.id = id;
+        this.preset = preset;
     }
 
     public void Dispose()
     {
+        if (isDisposed)
+            return;
+
+        closeTokenSource.Cancel();
+        closeTokenSource.Dispose();
+
         image?.Dispose();
+        image = null;
+
         textureWrap?.Dispose();
+        textureWrap = null;
+
+        isDisposed = true;
     }
 
     public void Draw(float scale)
     {
-        var preset = Config.Presets.FirstOrDefault((preset) => preset.Id == id);
-        if (preset == null)
-        {
-            if (!warningLogged)
-            {
-                PluginLog.Warning($"Could not find Preset {id} for PresetCard???");
-                warningLogged = true;
-            }
+        if (isDisposed)
             return;
-        }
-        if (preset.Preset == null)
-        {
-            if (!warningLogged)
-            {
-                PluginLog.Warning($"Removing SavedPreset {id}: Preset is null"); // 😳
-                preset.Delete();
-                warningLogged = true;
-            }
-            return;
-        }
 
-        if (preset.Preset.BannerFrame != bannerFrame)
-        {
-            bannerFrame = preset.Preset.BannerFrame;
-            bannerFrameImage = Service.Data.GetExcelSheet<BannerFrame>()?.GetRow(bannerFrame)?.Image;
-        }
-
-        if (preset.Preset.BannerDecoration != bannerDecoration)
-        {
-            bannerDecoration = preset.Preset.BannerDecoration;
-            bannerDecorationImage = Service.Data.GetExcelSheet<BannerDecoration>()?.GetRow(bannerDecoration)?.Image;
-        }
-
-        var updateTexture = false;
-
-        if (preset.TextureHash != textureHash)
-        {
-            image?.Dispose();
-            textureWrap?.Dispose();
-
-            if (!string.IsNullOrEmpty(preset.TextureHash) && DateTime.Now - lastTextureCheck > TimeSpan.FromSeconds(1))
-            {
-                var thumbPath = Config.GetPortraitThumbnailPath(preset.TextureHash);
-
-                // TODO: re-create if not found, maybe with loading spinner in right side of menu bar
-                if (File.Exists(thumbPath))
-                {
-                    image = Image.Load<Rgba32>(thumbPath);
-                    updateTexture = true;
-                }
-                else
-                {
-                    textureWrap = null;
-                }
-
-                lastTextureCheck = DateTime.Now;
-            }
-            else
-            {
-                textureWrap = null;
-            }
-        }
-
-        if (image != null && scale != lastScale)
-        {
-            updateTexture = true;
-            lastScale = scale;
-        }
-
-        if (updateTexture && image != null)
-        {
-            textureWrap?.Dispose();
-
-            var scaledImage = image.Clone();
-            scaledImage.Mutate(i => i.Resize((int)(PortraitSize.X * scale), (int)(PortraitSize.Y * scale), KnownResamplers.Lanczos3));
-            var data = new byte[sizeof(Rgba32) * scaledImage.Width * scaledImage.Height];
-            scaledImage.CopyPixelDataTo(data);
-            textureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, scaledImage.Width, scaledImage.Height, 4);
-            textureHash = preset.TextureHash;
-        }
+        Update(scale);
 
         var style = ImGui.GetStyle();
 
@@ -140,9 +81,13 @@ public unsafe class PresetCard : IDisposable
 
         var windowPos = ImGui.GetWindowPos();
         var cursorPos = ImGui.GetCursorPos();
+        var center = windowPos + cursorPos + PortraitSize * scale / 2f - new Vector2(0, ImGui.GetScrollY());
 
-        //  TODO: fallback behind image :sadface:
-        if (textureWrap != null)
+        if (isImageLoading)
+        {
+            ImGuiUtils.DrawLoadingSpinner(center);
+        }
+        else if (textureWrap != null)
         {
             ImGui.SetCursorPos(cursorPos);
             ImGui.Image(textureWrap.ImGuiHandle, PortraitSize * scale);
@@ -193,15 +138,18 @@ public unsafe class PresetCard : IDisposable
             if (target != null && target.Success)
             {
                 var payload = ImGui.AcceptDragDropPayload("MovePresetCard");
-                if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
+                unsafe
                 {
-                    var presetId = Marshal.PtrToStringAnsi(payload.Data, payload.DataSize);
-                    var oldIndex = Config.Presets.IndexOf((preset) => preset.Id.ToString() == presetId);
-                    var newIndex = Config.Presets.IndexOf(preset);
-                    var item = Config.Presets[oldIndex];
-                    Config.Presets.RemoveAt(oldIndex);
-                    Config.Presets.Insert(newIndex, item);
-                    Plugin.Config.Save();
+                    if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
+                    {
+                        var presetId = Marshal.PtrToStringAnsi(payload.Data, payload.DataSize);
+                        var oldIndex = Config.Presets.IndexOf((preset) => preset.Id.ToString() == presetId);
+                        var newIndex = Config.Presets.IndexOf(preset);
+                        var item = Config.Presets[oldIndex];
+                        Config.Presets.RemoveAt(oldIndex);
+                        Config.Presets.Insert(newIndex, item);
+                        Plugin.Config.Save();
+                    }
                 }
             }
         }
@@ -246,6 +194,103 @@ public unsafe class PresetCard : IDisposable
             }
 
             ImGui.EndPopup();
+        }
+    }
+
+    private void Update(float scale)
+    {
+        if (preset.Preset!.BannerFrame != bannerFrame)
+        {
+            bannerFrame = preset.Preset.BannerFrame;
+            bannerFrameImage = Service.Data.GetExcelSheet<BannerFrame>()?.GetRow(bannerFrame)?.Image;
+        }
+
+        if (preset.Preset.BannerDecoration != bannerDecoration)
+        {
+            bannerDecoration = preset.Preset.BannerDecoration;
+            bannerDecorationImage = Service.Data.GetExcelSheet<BannerDecoration>()?.GetRow(bannerDecoration)?.Image;
+        }
+
+        if (!isImageLoading && preset.TextureHash != textureHash)
+        {
+            image?.Dispose();
+            image = null;
+
+            textureWrap?.Dispose();
+            textureWrap = null;
+
+            if (!string.IsNullOrEmpty(preset.TextureHash) && DateTime.Now - lastTextureCheck > TimeSpan.FromSeconds(1))
+            {
+                var thumbPath = Config.GetPortraitThumbnailPath(preset.TextureHash);
+
+                // TODO: re-create if not found, maybe with loading spinner in right side of menu bar
+                if (File.Exists(thumbPath))
+                {
+                    isImageLoading = true;
+                    Task.Run(async () =>
+                    {
+                        try
+                        {
+                            image = await Image.LoadAsync<Rgba32>(thumbPath, closeTokenSource.Token);
+                            isImageUpdatePending = true;
+                        }
+                        catch (Exception e)
+                        {
+                            PluginLog.Error("Error while loading thumbnail", e);
+                        }
+                        finally
+                        {
+                            textureHash = preset.TextureHash;
+                        }
+                    }, closeTokenSource.Token);
+                }
+
+                lastTextureCheck = DateTime.Now;
+            }
+        }
+
+        if (scale != lastScale)
+        {
+            isImageUpdatePending = true;
+            lastScale = scale;
+        }
+
+        if (image != null && isImageUpdatePending)
+        {
+            textureWrap?.Dispose();
+            isImageUpdatePending = false;
+
+            Task.Run(() =>
+            {
+                try
+                {
+                    var scaledImage = image.Clone();
+
+                    if (closeTokenSource.IsCancellationRequested)
+                        return;
+
+                    scaledImage.Mutate(i => i.Resize((int)(PortraitSize.X * scale), (int)(PortraitSize.Y * scale), KnownResamplers.Lanczos3));
+
+                    if (closeTokenSource.IsCancellationRequested)
+                        return;
+
+                    var data = new byte[4 * scaledImage.Width * scaledImage.Height];
+                    scaledImage.CopyPixelDataTo(data);
+
+                    if (closeTokenSource.IsCancellationRequested)
+                        return;
+
+                    textureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, scaledImage.Width, scaledImage.Height, 4);
+                }
+                catch (Exception e)
+                {
+                    PluginLog.Error("Error while resizing/loading thumbnail", e);
+                }
+                finally
+                {
+                    isImageLoading = false;
+                }
+            }, closeTokenSource.Token);
         }
     }
 }

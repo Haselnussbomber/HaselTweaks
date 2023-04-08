@@ -279,32 +279,51 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         // TODO: clip scroll thingy
         // TODO: filters (bg, frame, decoration, pose...)
 
-        var presets = Config.Presets
-            .Where((preset) => SelectedTagId == null || preset.Tags.Contains(SelectedTagId.Value))
+        var presetCards = Config.Presets
+            .Where((preset) => (SelectedTagId == null || preset.Tags.Contains(SelectedTagId.Value)) && preset.Preset != null)
+            .Select((preset) =>
+            {
+                if (!PresetCards.TryGetValue(preset.Id, out var card))
+                {
+                    PresetCards.Add(preset.Id, new(this, preset));
+                }
+
+                return card;
+            })
             .ToArray();
 
         var presetsPerRow = 3;
         var availableWidth = ImGui.GetContentRegionAvail().X + style.ItemInnerSpacing.X * (presetsPerRow - 1);
-        if (presets.Length > 3)
+        if (presetCards.Length > presetsPerRow)
             availableWidth -= style.ScrollbarSize + style.ItemInnerSpacing.X;
 
         var presetWidth = availableWidth / presetsPerRow;
         var scale = presetWidth / PresetCard.PortraitSize.X;
 
-        for (var i = 0; i < presets.Length; i++)
+        ImGuiListClipperPtr clipper;
+        unsafe
         {
-            var preset = presets[i];
-
-            if (!PresetCards.TryGetValue(preset.Id, out var card))
-            {
-                PresetCards.Add(preset.Id, new(this, preset.Id));
-            }
-
-            card?.Draw(scale);
-
-            if (i % 3 < 2)
-                ImGui.SameLine(0, style.ItemInnerSpacing.X);
+            clipper = new ImGuiListClipperPtr(ImGuiNative.ImGuiListClipper_ImGuiListClipper());
         }
+
+        clipper.Begin((int)Math.Ceiling(presetCards.Length / (float)presetsPerRow), PresetCard.PortraitSize.Y * scale);
+        while (clipper.Step())
+        {
+            for (var row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
+            {
+                using (ImRaii.Group())
+                {
+                    for (int i = 0, index = row * presetsPerRow; i < presetsPerRow && index < presetCards.Length; i++, index++)
+                    {
+                        presetCards[index]?.Draw(scale);
+
+                        if (i < presetsPerRow - 1 && index + 1 < presetCards.Length)
+                            ImGui.SameLine(0, style.ItemInnerSpacing.X);
+                    }
+                }
+            }
+        }
+        clipper.Destroy();
 
         ImGui.Unindent();
     }

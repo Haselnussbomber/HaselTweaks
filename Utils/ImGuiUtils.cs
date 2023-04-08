@@ -120,6 +120,26 @@ public static class ImGuiUtils
         ImGui.SameLine();
     }
 
+    public static void DrawLoadingSpinner(Vector2 center, float radius = 10f)
+    {
+        var angle = 0.0f;
+        var numSegments = 10;
+        var angleStep = (float)(Math.PI * 2.0f / numSegments);
+
+        for (var i = 0; i < numSegments; i++)
+        {
+            var x = center.X + radius * (float)Math.Cos(angle);
+            var y = center.Y + radius * (float)Math.Sin(angle);
+
+            var t = (float)(-angle / (float)Math.PI / 2f + ImGui.GetTime()) % 1f;
+            var color = new Vector4(1f, 1f, 1f, 1 - t);
+
+            ImGui.GetWindowDrawList().AddCircleFilled(new Vector2(x, y), 2f, ImGui.ColorConvertFloat4ToU32(color));
+
+            angle += angleStep;
+        }
+    }
+
     public static void TextColoredWrapped(Vector4 col, string text)
     {
         using var textCol = ImRaii.PushColor(ImGuiCol.Text, col);
