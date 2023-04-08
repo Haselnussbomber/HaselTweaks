@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Tweak reworked: Portrait Helper
+
+Updated UI and features!
+
+- **Added**: A reset button has been added. This returns the portrait to the state it was in when the window was opened.
+- **Added**: Its now possible to save portraits into presets. Use the brand-new preset browser to load presets and organize them using tags. A double click on the preset will load it and you can drag and drop them to easily change their order or add them to tags!
+  - *Please note:* As the list of presets is shared by all tags, but filtered by the selected tag, reordering a preset will change the order across all tags.
+- **Changed**: The copy and paste buttons have been replaced by export and import buttons, which make use of the clipboard and export the portrait as a short base64-encoded string.
+
 ### Enhanced Material List
 
 - **Fixed**: Due to a condition check being evaluated too late, some gatherable items did not have a zone name.
@@ -107,7 +116,7 @@ Forgot to update the plugin version in the last release, so please check out the
 
 ## [0.12.0] (2023-03-08)
 
-### Reworked Tweak: Refresh Material List -> Enhanced Material List
+### Tweak reworked: Refresh Material List -> Enhanced Material List
 
 - **Added:** Enable Zone Names: Displays a zone name underneath the item name indicating where it can be gathered. Only the zone with the lowest teleportation cost is displayed. If the name is green it means it's the current zone. Since space is limited it has to shorten the item and zone name.
   - An option is available to disable this for Crystals.
@@ -138,7 +147,7 @@ Preliminary update for Patch 6.35.
 
 ## [0.11.0] (2023-02-23)
 
-### Reworked Tweak: Material Allocation
+### Tweak reworked: Material Allocation
 
 - **Added:** A config option to enable clicking on gatherable items to open the Sanctuary Gathering Log (enabled by default).
 - **Changed:** Since this tweak now does two things, the previous function has been reworked and added as config option. Instead of always selecting the third tab, it now opens the window with the last selected tab, saved between game sessions.
@@ -368,7 +377,7 @@ Adds Copy/Paste buttons to the "Edit Portrait" window, so you can copy the setti
 
 - **Changed:** The configuration window has been reworked.
 
-### Reworked Tweak: Series Exp Bar -> Enhanced Experience Bar
+### Tweak reworked: Series Exp Bar -> Enhanced Experience Bar
 
 - **Added:** Sanctuary Bar for the new Island, because why not?
 - **Added:** Max Level Override setting.
