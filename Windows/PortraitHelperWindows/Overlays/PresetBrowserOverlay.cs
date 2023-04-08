@@ -43,7 +43,6 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
     public override void Draw()
     {
-        // TODO: fix error on closing
         ImGui.PopStyleVar(); // WindowPadding from PreDraw()
 
         using (var table = ImRaii.Table("##PresetBrowser_Table", 2, ImGuiTableFlags.BordersInnerV | ImGuiTableFlags.NoPadOuterX | ImGuiTableFlags.NoPadInnerX))
@@ -70,7 +69,6 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
     private void DrawSidebarTag(SavedPresetTag tag, ref bool removeUnusedTags)
     {
-        // TODO: optimize?!?
         var count = Config.Presets.Count(preset => preset.Tags.Contains(tag.Id));
 
         var treeNodeFlags =
@@ -275,9 +273,6 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + style.ItemSpacing.Y);
         ImGui.Indent(style.ItemSpacing.X);
-
-        // TODO: clip scroll thingy
-        // TODO: filters (bg, frame, decoration, pose...)
 
         var presetCards = Config.Presets
             .Where((preset) => (SelectedTagId == null || preset.Tags.Contains(SelectedTagId.Value)) && preset.Preset != null)

@@ -142,8 +142,6 @@ public unsafe class MenuBar : Window, IDisposable
             SaveAsPresetDialog.Open(PortraitName, Tweak.StateToPreset(), Tweak.GetCurrentCharaViewImage());
         }
 
-        // TODO: update preset button
-
         ImGui.SameLine();
         if (Tweak.OverlayViewMode == ViewMode.PresetBrowser)
         {

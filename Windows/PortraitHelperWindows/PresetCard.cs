@@ -2,6 +2,7 @@ using System.IO;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Logging;
 using HaselTweaks.Enums.PortraitHelper;
@@ -30,6 +31,7 @@ public class PresetCard : IDisposable
     private readonly SavedPreset preset;
 
     private bool isImageLoading;
+    private bool doesImageFileExist;
     private bool isImageUpdatePending;
 
     private string? textureHash;
@@ -86,6 +88,17 @@ public class PresetCard : IDisposable
         if (isImageLoading)
         {
             ImGuiUtils.DrawLoadingSpinner(center);
+        }
+        else if (!doesImageFileExist)
+        {
+            using (ImRaii.PushFont(UiBuilder.IconFont))
+            {
+                using (ImRaii.PushColor(ImGuiCol.Text, ImGui.ColorConvertFloat4ToU32(ImGuiUtils.ColorRed)))
+                {
+                    ImGui.SetCursorPos(center - windowPos - ImGui.CalcTextSize(FontAwesomeIcon.FileImage.ToIconString()) / 2f);
+                    ImGui.TextUnformatted(FontAwesomeIcon.FileImage.ToIconString());
+                }
+            }
         }
         else if (textureWrap != null)
         {
@@ -223,7 +236,6 @@ public class PresetCard : IDisposable
             {
                 var thumbPath = Config.GetPortraitThumbnailPath(preset.TextureHash);
 
-                // TODO: re-create if not found, maybe with loading spinner in right side of menu bar
                 if (File.Exists(thumbPath))
                 {
                     isImageLoading = true;
@@ -233,10 +245,13 @@ public class PresetCard : IDisposable
                         {
                             image = await Image.LoadAsync<Rgba32>(thumbPath, closeTokenSource.Token);
                             isImageUpdatePending = true;
+                            doesImageFileExist = true;
                         }
                         catch (Exception e)
                         {
                             PluginLog.Error("Error while loading thumbnail", e);
+                            isImageLoading = false;
+                            doesImageFileExist = false;
                         }
                         finally
                         {
