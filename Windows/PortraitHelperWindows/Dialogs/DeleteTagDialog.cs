@@ -1,3 +1,4 @@
+using System.Linq;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -13,6 +14,7 @@ public class DeleteTagDialog : ConfirmationDialog
     private readonly PresetBrowserOverlay presetBrowserOverlay;
 
     private SavedPresetTag? tag;
+    private bool deletePortraits;
 
     public DeleteTagDialog(PresetBrowserOverlay presetBrowserOverlay) : base("Delete Tag")
     {
@@ -25,6 +27,7 @@ public class DeleteTagDialog : ConfirmationDialog
     public void Open(SavedPresetTag tag)
     {
         this.tag = tag;
+        deletePortraits = false;
         Show();
     }
 
@@ -38,7 +41,11 @@ public class DeleteTagDialog : ConfirmationDialog
         => base.DrawCondition() && tag != null;
 
     public override void InnerDraw()
-        => ImGui.TextUnformatted($"Do you really want to delete the tag \"{tag!.Name}\"?");
+    {
+        ImGui.TextUnformatted($"Do you really want to delete the tag \"{tag!.Name}\"?");
+        ImGui.Spacing();
+        ImGui.Checkbox("Delete portraits too", ref deletePortraits);
+    }
 
     private void OnDelete()
     {
@@ -48,8 +55,23 @@ public class DeleteTagDialog : ConfirmationDialog
             return;
         }
 
-        foreach (var preset in Config.Presets)
-            preset.Tags.Remove(tag.Id);
+        if (deletePortraits)
+        {
+            // remove presets with tag
+            foreach (var preset in Config.Presets.ToArray())
+            {
+                if (preset.Tags.Any((t) => t == tag.Id))
+                {
+                    Config.Presets.Remove(preset);
+                }
+            }
+        }
+        else
+        {
+            // remove tag from presets
+            foreach (var preset in Config.Presets)
+                preset.Tags.Remove(tag.Id);
+        }
 
         Config.PresetTags.Remove(tag);
         Plugin.Config.Save();
