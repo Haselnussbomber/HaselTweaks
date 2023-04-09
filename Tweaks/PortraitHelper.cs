@@ -54,6 +54,7 @@ public class PortraitHelper : Tweak
     private bool isOpen;
     private MenuBar? menuBar;
     private AdvancedImportOverlay? advancedImportOverlay;
+    private AdvancedEditOverlay? advancedEditOverlay;
     private PresetBrowserOverlay? presetBrowserOverlay;
 
     private DateTime lastClipboardCheck = default;
@@ -110,12 +111,21 @@ public class PortraitHelper : Tweak
         if (advancedImportOverlay != null)
         {
             Plugin.WindowSystem.RemoveWindow(advancedImportOverlay);
+            advancedImportOverlay.OnClose();
             advancedImportOverlay = null;
+        }
+
+        if (advancedEditOverlay != null)
+        {
+            Plugin.WindowSystem.RemoveWindow(advancedEditOverlay);
+            advancedEditOverlay.OnClose();
+            advancedEditOverlay = null;
         }
 
         if (presetBrowserOverlay != null)
         {
             Plugin.WindowSystem.RemoveWindow(presetBrowserOverlay);
+            presetBrowserOverlay.OnClose();
             presetBrowserOverlay.Dispose();
             presetBrowserOverlay = null;
         }
@@ -146,7 +156,21 @@ public class PortraitHelper : Tweak
         else if (viewMode != ViewMode.AdvancedImport && OverlayViewMode == ViewMode.AdvancedImport && advancedImportOverlay != null)
         {
             Plugin.WindowSystem.RemoveWindow(advancedImportOverlay);
+            advancedImportOverlay.OnClose();
             advancedImportOverlay = null;
+        }
+
+        // open AdvancedEdit
+        if (viewMode == ViewMode.AdvancedEdit && OverlayViewMode != ViewMode.AdvancedEdit)
+        {
+            Plugin.WindowSystem.AddWindow(advancedEditOverlay = new(this));
+        }
+        // close AdvancedEdit
+        else if (viewMode != ViewMode.AdvancedEdit && OverlayViewMode == ViewMode.AdvancedEdit && advancedEditOverlay != null)
+        {
+            Plugin.WindowSystem.RemoveWindow(advancedEditOverlay);
+            advancedEditOverlay.OnClose();
+            advancedEditOverlay = null;
         }
 
         // open PresetBrowser
@@ -158,6 +182,7 @@ public class PortraitHelper : Tweak
         else if (viewMode != ViewMode.PresetBrowser && OverlayViewMode == ViewMode.PresetBrowser && presetBrowserOverlay != null)
         {
             Plugin.WindowSystem.RemoveWindow(presetBrowserOverlay);
+            presetBrowserOverlay.OnClose();
             presetBrowserOverlay.Dispose();
             presetBrowserOverlay = null;
         }

@@ -4,5 +4,6 @@ public enum ViewMode
 {
     Normal,
     AdvancedImport,
+    AdvancedEdit,
     PresetBrowser,
 }

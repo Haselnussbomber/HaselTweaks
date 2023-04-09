@@ -1,5 +1,6 @@
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
+using FFXIVClientStructs.FFXIV.Common.Math;
 using Lumina.Data.Parsing;
 
 namespace HaselTweaks.Structs;
@@ -86,7 +87,7 @@ public unsafe partial struct CharaView : ICreatable
     public partial void Vf10(); // noop
 
     [VirtualFunction(11)]
-    public partial bool IsGameObjectReady(CharaViewGameObject* obj);
+    public partial bool Vf11(CharaViewGameObject* obj);
 
     [VirtualFunction(12)]
     public partial float Vf12(int a2, int a3);
@@ -171,6 +172,7 @@ public unsafe struct CharaViewItem
 public unsafe partial struct CharaViewGameObject // FFXIVClientStructs.FFXIV.Client.Game.Character.Character
 {
     [FieldOffset(0x1A8)] public CharaViewGameObjectClassJobSettings ClassJobSettings;
+    [FieldOffset(0xC30)] public CharaViewGameObjectFacialAnimationManager FacialAnimationManager; // name not set in stone
     [FieldOffset(0x6D0)] public CharaViewGameObjectDrawDataContainer DrawDataContainer;
     [FieldOffset(0x8F0)] public CharaViewGameObjectActionTimelineManager ActionTimelineManager;
 }
@@ -180,6 +182,19 @@ public unsafe partial struct CharaViewGameObjectClassJobSettings
 {
     [MemberFunction("44 0F B6 49 ?? 88 51 38")]
     public partial void SetClassJob(short classJobId);
+}
+
+[StructLayout(LayoutKind.Explicit)]
+public unsafe partial struct CharaViewGameObjectFacialAnimationManager
+{
+    [FieldOffset(0x604)] public Vector2 HeadDirection;
+    [FieldOffset(0x60C)] public Vector2 EyeDirection;
+
+    [MemberFunction("48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 10 F3 0F 11 89 ?? ?? ?? ?? F3 0F 11 91 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 09 33 C0 48 89 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC CC 48 8B 41 08")]
+    public partial void SetHeadDirection(float x, float y);
+
+    [MemberFunction("48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 10 F3 0F 11 89 ?? ?? ?? ?? F3 0F 11 91 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 09 33 C0 48 89 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC CC 48 89 5C 24 ??")]
+    public partial void SetEyeDirection(float x, float y);
 }
 
 [StructLayout(LayoutKind.Explicit)]
@@ -198,6 +213,23 @@ public unsafe partial struct CharaViewGameObjectDrawDataContainer
 [StructLayout(LayoutKind.Explicit)]
 public unsafe partial struct CharaViewGameObjectActionTimelineManager
 {
+    [FieldOffset(0x80)] public CharaViewGameObjectSchedulerTimeline** BaseAnimation;
+
+    [FieldOffset(0x310)] public ushort BannerTimelineRowId;
+    [FieldOffset(0x312)] public byte BannerFacialRowId;
+
+    [FieldOffset(0x32C)] public uint BannerTimelineAdditionalData;
+    [FieldOffset(0x330)] public uint BannerTimelineIcon;
+    [FieldOffset(0x334)] public ushort BannerTimelineUnlockCondition;
+    [FieldOffset(0x336)] public ushort BannerTimelineSortKey;
+    [FieldOffset(0x338)] public byte BannerTimelineType;
+
     [MemberFunction("48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 10 84 D2")]
     public partial void SetExpression(byte id);
+}
+
+[StructLayout(LayoutKind.Explicit)]
+public unsafe partial struct CharaViewGameObjectSchedulerTimeline
+{
+    [FieldOffset(0x34)] public float CurrentTimestamp;
 }

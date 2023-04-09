@@ -1,5 +1,6 @@
 using System.Numerics;
 using Dalamud.Interface.Windowing;
+using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
@@ -15,6 +16,14 @@ public abstract unsafe class Overlay : Window
     public AddonBannerEditor* AddonBannerEditor => Tweak.AddonBannerEditor;
 
     protected static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
+
+    protected enum OverlayType
+    {
+        Window,
+        LeftPane
+    }
+
+    protected virtual OverlayType Type => OverlayType.Window;
 
     public Overlay(string name, PortraitHelper tweak) : base(name)
     {
@@ -42,25 +51,47 @@ public abstract unsafe class Overlay : Window
         => ToggleUiVisibility(false);
 
     public override void OnClose()
-        => ToggleUiVisibility(true);
+    {
+        ToggleUiVisibility(true);
+        PluginLog.Log("OnOpen");
+    }
 
     public override void PreDraw()
     {
         ImGui.PushStyleColor(ImGuiCol.WindowBg, 0xFF313131);
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10, 4));
 
-        var windowNode = (AtkResNode*)((AtkUnitBase*)AddonBannerEditor)->WindowNode;
-        var scale = GetNodeScale(windowNode);
+        if (Type == OverlayType.Window)
+        {
+            var windowNode = (AtkResNode*)((AtkUnitBase*)AddonBannerEditor)->WindowNode;
+            var scale = GetNodeScale(windowNode);
 
-        Position = new Vector2(
-            AddonBannerEditor->AtkUnitBase.X + (windowNode->X + 8) * scale.X,
-            AddonBannerEditor->AtkUnitBase.Y + (windowNode->Y + 40) * scale.Y
-        );
+            Position = new Vector2(
+                AddonBannerEditor->AtkUnitBase.X + (windowNode->X + 8) * scale.X,
+                AddonBannerEditor->AtkUnitBase.Y + (windowNode->Y + 40) * scale.Y
+            );
 
-        Size = new Vector2(
-            (windowNode->GetWidth() - 16) * scale.X,
-            (windowNode->GetHeight() - 56) * scale.Y
-        );
+            Size = new Vector2(
+                (windowNode->GetWidth() - 16) * scale.X,
+                (windowNode->GetHeight() - 56) * scale.Y
+            );
+        }
+        else if (Type == OverlayType.LeftPane)
+        {
+            var leftPane = GetNode((AtkUnitBase*)AddonBannerEditor, 20);
+            var scale = GetNodeScale(leftPane);
+
+            Position = new Vector2(
+                AddonBannerEditor->AtkUnitBase.X + leftPane->X * scale.X,
+                AddonBannerEditor->AtkUnitBase.Y + leftPane->Y * scale.Y
+            );
+
+            Size = new Vector2(
+                leftPane->GetWidth() * scale.X,
+                leftPane->GetHeight() * scale.Y
+            );
+
+        }
     }
 
     public override void PostDraw()
@@ -73,7 +104,9 @@ public abstract unsafe class Overlay : Window
     {
         var controlsHint = GetNode((AtkUnitBase*)AddonBannerEditor, 2);
         var verticalSeparatorNode = GetNode((AtkUnitBase*)AddonBannerEditor, 135);
+        var leftPane = GetNode((AtkUnitBase*)AddonBannerEditor, 20);
 
+        SetVisibility(leftPane, visible);
         SetVisibility(verticalSeparatorNode, visible);
         SetVisibility(controlsHint, visible);
     }

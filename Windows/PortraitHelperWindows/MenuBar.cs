@@ -112,7 +112,7 @@ public unsafe class MenuBar : Window, IDisposable
         ImGui.SameLine();
         if (Tweak.ClipboardPreset == null)
         {
-            ImGuiUtils.IconButtonDisabled("ViewModeAdvancedImport", FontAwesomeIcon.FilePen, "Toggle Advanced Import Mode");
+            ImGuiUtils.IconButtonDisabled("ViewModeAdvancedImport", FontAwesomeIcon.FileImport, "Toggle Advanced Import Mode");
         }
         else if (Tweak.OverlayViewMode == ViewMode.AdvancedImport)
         {
@@ -120,14 +120,31 @@ public unsafe class MenuBar : Window, IDisposable
             using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
             using var color3 = ImRaii.PushColor(ImGuiCol.ButtonHovered, 0xFFCE8231);
 
-            if (ImGuiUtils.IconButton("ViewModeNormal", FontAwesomeIcon.FilePen, "Toggle Advanced Import Mode"))
+            if (ImGuiUtils.IconButton("ViewModeNormal", FontAwesomeIcon.FileImport, "Toggle Advanced Import Mode"))
             {
                 Tweak.ChangeView(ViewMode.Normal);
             }
         }
-        else if (ImGuiUtils.IconButton("ViewModeAdvancedImport", FontAwesomeIcon.FilePen, "Toggle Advanced Import Mode"))
+        else if (ImGuiUtils.IconButton("ViewModeAdvancedImport", FontAwesomeIcon.FileImport, "Toggle Advanced Import Mode"))
         {
             Tweak.ChangeView(ViewMode.AdvancedImport);
+        }
+
+        ImGui.SameLine();
+        if (Tweak.OverlayViewMode == ViewMode.AdvancedEdit)
+        {
+            using var color1 = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942);
+            using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
+            using var color3 = ImRaii.PushColor(ImGuiCol.ButtonHovered, 0xFFCE8231);
+
+            if (ImGuiUtils.IconButton("ViewModeNormal", FontAwesomeIcon.FilePen, "Toggle Advanced Edit Mode"))
+            {
+                Tweak.ChangeView(ViewMode.Normal);
+            }
+        }
+        else if (ImGuiUtils.IconButton("ViewModeAdvancedEdit", FontAwesomeIcon.FilePen, "Toggle Advanced Edit Mode"))
+        {
+            Tweak.ChangeView(ViewMode.AdvancedEdit);
         }
 
         // ----

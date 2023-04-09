@@ -36,5 +36,9 @@ public unsafe struct AddonBannerEditor
     [FieldOffset(0x460)] public AtkComponentSlider* CameraZoomSlider;
     [FieldOffset(0x468)] public AtkComponentSlider* ImageRotation;
 
+    [FieldOffset(0x4C0)] public AtkResNode* WarningSymbol;
+
     [FieldOffset(0x4CC)] public short NumPresets;
+
+    [FieldOffset(0x4E3)] public bool IsWarningSymbolShown;
 }
