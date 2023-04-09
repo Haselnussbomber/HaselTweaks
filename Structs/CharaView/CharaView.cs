@@ -168,20 +168,18 @@ public unsafe struct CharaViewItem
 }
 
 [StructLayout(LayoutKind.Explicit)]
-public unsafe partial struct CharaViewGameObject // BattleChara?!
+public unsafe partial struct CharaViewGameObject // FFXIVClientStructs.FFXIV.Client.Game.Character.Character
 {
-    // FYI: i have no idea what these should be called. haven't looked into them,
-    // just came up with a name based on a function or 3 that i found
     [FieldOffset(0x1A8)] public CharaViewGameObjectClassJobSettings ClassJobSettings;
     [FieldOffset(0x6D0)] public CharaViewGameObjectDrawDataContainer DrawDataContainer;
-    [FieldOffset(0x8D0)] public CharaViewGameObjectUnk8D0 Unk8D0;
+    [FieldOffset(0x8F0)] public CharaViewGameObjectActionTimelineManager ActionTimelineManager;
 }
 
 [StructLayout(LayoutKind.Explicit)]
 public unsafe partial struct CharaViewGameObjectClassJobSettings
 {
     [MemberFunction("44 0F B6 49 ?? 88 51 38")]
-    public partial void SetPoseClassJob(short classJobId);
+    public partial void SetClassJob(short classJobId);
 }
 
 [StructLayout(LayoutKind.Explicit)]
@@ -198,7 +196,7 @@ public unsafe partial struct CharaViewGameObjectDrawDataContainer
 }
 
 [StructLayout(LayoutKind.Explicit)]
-public unsafe partial struct CharaViewGameObjectUnk8D0
+public unsafe partial struct CharaViewGameObjectActionTimelineManager
 {
     [MemberFunction("48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 10 84 D2")]
     public partial void SetExpression(byte id);

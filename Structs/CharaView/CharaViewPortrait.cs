@@ -120,7 +120,7 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     public partial void SetPoseTimed(ushort id, float time);
 
     [MemberFunction("E8 ?? ?? ?? ?? 84 DB 0F 84 ?? ?? ?? ?? 48 63 87 ?? ?? ?? ?? 45 33 C9")]
-    public partial void SetExpression(byte id); // same as GetGameObject()->Unk8D0.SetExpression(id)
+    public partial void SetExpression(byte id); // same as GetGameObject()->ActionTimelineManager.SetExpression(id)
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 45 F2")]
     public partial nint ExportPortraitData(ExportedPortraitData* output);
