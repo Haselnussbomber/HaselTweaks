@@ -157,6 +157,7 @@ public class PortraitHelper : Tweak
         {
             Plugin.WindowSystem.RemoveWindow(advancedImportOverlay);
             advancedImportOverlay.IsOpen = false;
+            advancedImportOverlay.OnClose();
             advancedImportOverlay = null;
         }
 
@@ -170,6 +171,7 @@ public class PortraitHelper : Tweak
         {
             Plugin.WindowSystem.RemoveWindow(advancedEditOverlay);
             advancedEditOverlay.IsOpen = false;
+            advancedEditOverlay.OnClose();
             advancedEditOverlay = null;
         }
 
@@ -183,6 +185,7 @@ public class PortraitHelper : Tweak
         {
             Plugin.WindowSystem.RemoveWindow(presetBrowserOverlay);
             presetBrowserOverlay.IsOpen = false;
+            presetBrowserOverlay.OnClose();
             presetBrowserOverlay.Dispose();
             presetBrowserOverlay = null;
         }
