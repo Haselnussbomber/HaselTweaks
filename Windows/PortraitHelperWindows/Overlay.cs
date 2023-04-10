@@ -99,11 +99,15 @@ public abstract unsafe class Overlay : Window
     public void ToggleUiVisibility(bool visible)
     {
         var controlsHint = GetNode((AtkUnitBase*)AddonBannerEditor, 2);
-        var verticalSeparatorNode = GetNode((AtkUnitBase*)AddonBannerEditor, 135);
         var leftPane = GetNode((AtkUnitBase*)AddonBannerEditor, 20);
 
         SetVisibility(leftPane, visible);
-        SetVisibility(verticalSeparatorNode, visible);
         SetVisibility(controlsHint, visible);
+
+        if (Type != OverlayType.LeftPane)
+        {
+            var verticalSeparatorNode = GetNode((AtkUnitBase*)AddonBannerEditor, 135);
+            SetVisibility(verticalSeparatorNode, visible);
+        }
     }
 }
