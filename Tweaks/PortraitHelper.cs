@@ -111,21 +111,21 @@ public class PortraitHelper : Tweak
         if (advancedImportOverlay != null)
         {
             Plugin.WindowSystem.RemoveWindow(advancedImportOverlay);
-            advancedImportOverlay.OnClose();
+            advancedImportOverlay.IsOpen = false;
             advancedImportOverlay = null;
         }
 
         if (advancedEditOverlay != null)
         {
             Plugin.WindowSystem.RemoveWindow(advancedEditOverlay);
-            advancedEditOverlay.OnClose();
+            advancedEditOverlay.IsOpen = false;
             advancedEditOverlay = null;
         }
 
         if (presetBrowserOverlay != null)
         {
             Plugin.WindowSystem.RemoveWindow(presetBrowserOverlay);
-            presetBrowserOverlay.OnClose();
+            presetBrowserOverlay.IsOpen = false;
             presetBrowserOverlay.Dispose();
             presetBrowserOverlay = null;
         }
@@ -156,7 +156,7 @@ public class PortraitHelper : Tweak
         else if (viewMode != ViewMode.AdvancedImport && OverlayViewMode == ViewMode.AdvancedImport && advancedImportOverlay != null)
         {
             Plugin.WindowSystem.RemoveWindow(advancedImportOverlay);
-            advancedImportOverlay.OnClose();
+            advancedImportOverlay.IsOpen = false;
             advancedImportOverlay = null;
         }
 
@@ -169,7 +169,7 @@ public class PortraitHelper : Tweak
         else if (viewMode != ViewMode.AdvancedEdit && OverlayViewMode == ViewMode.AdvancedEdit && advancedEditOverlay != null)
         {
             Plugin.WindowSystem.RemoveWindow(advancedEditOverlay);
-            advancedEditOverlay.OnClose();
+            advancedEditOverlay.IsOpen = false;
             advancedEditOverlay = null;
         }
 
@@ -182,7 +182,7 @@ public class PortraitHelper : Tweak
         else if (viewMode != ViewMode.PresetBrowser && OverlayViewMode == ViewMode.PresetBrowser && presetBrowserOverlay != null)
         {
             Plugin.WindowSystem.RemoveWindow(presetBrowserOverlay);
-            presetBrowserOverlay.OnClose();
+            presetBrowserOverlay.IsOpen = false;
             presetBrowserOverlay.Dispose();
             presetBrowserOverlay = null;
         }

@@ -1,6 +1,5 @@
 using System.Numerics;
 using Dalamud.Interface.Windowing;
-using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
@@ -44,17 +43,14 @@ public abstract unsafe class Overlay : Window
         var isContextMenuOpen = *(byte*)((nint)AddonBannerEditor + 0x1A1) != 0;
         var isCloseDialogOpen = AgentBannerEditor->EditorState->CloseDialogAddonId != 0;
 
-        return !isContextMenuOpen && !isCloseDialogOpen;
+        return IsOpen && !isContextMenuOpen && !isCloseDialogOpen;
     }
-
-    public override void OnOpen()
-        => ToggleUiVisibility(false);
 
     public override void OnClose()
-    {
-        ToggleUiVisibility(true);
-        PluginLog.Log("OnOpen");
-    }
+        => ToggleUiVisibility(true);
+
+    public override void Update()
+        => ToggleUiVisibility(!DrawConditions());
 
     public override void PreDraw()
     {
