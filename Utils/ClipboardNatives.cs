@@ -4,12 +4,18 @@ namespace HaselTweaks.Utils;
 
 public static class ClipboardNatives
 {
+    /// <see href="https://learn.microsoft.com/en-us/windows/win32/dataxchg/standard-clipboard-formats" />
     public enum ClipboardFormat : uint
     {
         /// <summary>
         /// Text format. Each line ends with a carriage return/linefeed (CR-LF) combination. A null character signals the end of the data. Use this format for ANSI text.
         /// </summary>
         CF_TEXT = 1,
+
+        /// <summary>
+        /// A memory object containing a BITMAPINFO structure followed by the bitmap bits.
+        /// </summary>
+        CF_DIB = 8,
     }
 
     [DllImport("user32.dll")]

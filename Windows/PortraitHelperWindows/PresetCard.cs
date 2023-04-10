@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Logging;
+using Dalamud.Utility;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -12,6 +13,7 @@ using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using ImGuiNET;
 using ImGuiScene;
+using Lumina.Data.Files;
 using Lumina.Excel.GeneratedSheets;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -199,6 +201,31 @@ public class PresetCard : IDisposable
                 overlay.Tweak.PresetToClipboard(preset.Preset);
             }
 
+            if (image != null && ImGui.BeginMenu("Copy Image"))
+            {
+                if (ImGui.MenuItem("Everything"))
+                {
+                    Task.Run(() => CopyImage());
+                }
+
+                if (ImGui.MenuItem("Without Frame"))
+                {
+                    Task.Run(() => CopyImage(CopyImageFlags.NoFrame));
+                }
+
+                if (ImGui.MenuItem("Without Decoration"))
+                {
+                    Task.Run(() => CopyImage(CopyImageFlags.NoDecoration));
+                }
+
+                if (ImGui.MenuItem("Without Frame and Decoration"))
+                {
+                    Task.Run(() => CopyImage(CopyImageFlags.NoFrame | CopyImageFlags.NoDecoration));
+                }
+
+                ImGui.EndMenu();
+            }
+
             ImGui.Separator();
 
             if (ImGui.MenuItem("Delete Preset"))
@@ -208,6 +235,40 @@ public class PresetCard : IDisposable
 
             ImGui.EndPopup();
         }
+    }
+
+    private void CopyImage(CopyImageFlags flags = CopyImageFlags.None)
+    {
+        if (image == null)
+            return;
+
+        using var tempImage = image.Clone();
+
+        if (!flags.HasFlag(CopyImageFlags.NoFrame) && bannerFrameImage != null)
+        {
+            var iconId = bannerFrameImage.Value;
+            var texture = Service.Data.GetFile<TexFile>($"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex");
+            if (texture != null)
+            {
+                using var image = Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
+                image.Mutate(x => x.Resize(tempImage.Width, tempImage.Height));
+                tempImage.Mutate(x => x.DrawImage(image, 1f));
+            }
+        }
+
+        if (!flags.HasFlag(CopyImageFlags.NoDecoration) && bannerDecorationImage != null)
+        {
+            var iconId = bannerDecorationImage.Value;
+            var texture = Service.Data.GetFile<TexFile>($"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex");
+            if (texture != null)
+            {
+                using var image = Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
+                image.Mutate(x => x.Resize(tempImage.Width, tempImage.Height));
+                tempImage.Mutate(x => x.DrawImage(image, 1f));
+            }
+        }
+
+        overlay.Tweak.WriteImageToClipboard(tempImage);
     }
 
     private void Update(float scale)

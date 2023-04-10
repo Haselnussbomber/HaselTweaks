@@ -286,6 +286,40 @@ public class PortraitHelper : Tweak
         return Image.LoadPixelData<Bgra32>(pixelDataStream.ToArray(), desc.Width, desc.Height);
     }
 
+    public void WriteImageToClipboard(Image<Rgba32> image)
+    {
+        ClipboardNatives.OpenClipboard().Wait();
+
+        unsafe
+        {
+            var data = Marshal.AllocHGlobal(sizeof(BITMAPINFOHEADER) + image.Width * image.Height * sizeof(Bgra32)); // tagBITMAPINFO
+
+            var header = (BITMAPINFOHEADER*)data;
+            header->biSize = sizeof(BITMAPINFOHEADER);
+            header->biWidth = image.Width;
+            header->biHeight = -image.Height;
+            header->biPlanes = 1;
+            header->biBitCount = 32; // bits per pixel
+            header->biCompression = 0; // BI_RGB
+            header->biSizeImage = 0;
+            header->biXPelsPerMeter = 0;
+            header->biYPelsPerMeter = 0;
+            header->biClrUsed = 0;
+            header->biClrImportant = 0;
+
+            var pixelSpan = new Span<Bgra32>((void*)(data + header->biSize), image.Width * image.Height);
+
+            image.CloneAs<Bgra32>().CopyPixelDataTo(pixelSpan);
+
+            foreach (ref var pixel in pixelSpan)
+                pixel.A = 0; // rgbReserved of RGBQUAD "must be zero"
+
+            ClipboardNatives.EmptyClipboard();
+            ClipboardNatives.SetClipboardData(ClipboardNatives.ClipboardFormat.CF_DIB, data); // this transfers ownership of data
+            ClipboardNatives.CloseClipboard();
+        }
+    }
+
     public unsafe PortraitPreset? StateToPreset()
     {
         if (!GetAgent<AgentBannerEditor>(AgentId.BannerEditor, out var agentBannerEditor))
