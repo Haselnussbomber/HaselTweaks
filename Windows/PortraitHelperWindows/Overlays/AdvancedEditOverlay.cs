@@ -1,8 +1,5 @@
 using System.Numerics;
-using Dalamud.Interface;
 using Dalamud.Interface.Raii;
-using FFXIVClientStructs.FFXIV.Client.System.Memory;
-using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -45,81 +42,135 @@ public unsafe class AdvancedEditOverlay : Overlay
         ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, 128);
         ImGui.TableSetupColumn("Value", ImGuiTableColumnFlags.WidthStretch);
 
+        using (ImRaii.PushId("Camera"))
+        {
+            var yaw = state->CharaView->CameraYaw;
+            var pitch = state->CharaView->CameraPitch;
+            var distance = state->CharaView->CameraDistance;
+
+            ImGui.TableNextRow();
+
+            ImGui.TableNextColumn();
+            ImGui.Text("Camera Yaw");
+
+            ImGui.TableNextColumn();
+            ImGui.SetNextItemWidth(-1);
+
+            if (ImGui.DragFloat($"##DragFloatYaw", ref yaw, 0.001f, 0f, 0f, "%.3f", ImGuiSliderFlags.NoInput))
+            {
+                var scale = 100f;
+
+                state->CharaView->SetCameraYawAndPitch(
+                    scale * (yaw - state->CharaView->CameraYaw),
+                    scale * (pitch - state->CharaView->CameraPitch)
+                );
+
+                if (!AgentBannerEditor->EditorState->HasDataChanged)
+                    AgentBannerEditor->EditorState->SetHasChanged(true);
+            }
+
+            ImGui.TableNextRow();
+
+            ImGui.TableNextColumn();
+            ImGui.Text("Camera Pitch");
+
+            ImGui.TableNextColumn();
+            ImGui.SetNextItemWidth(-1);
+
+            if (ImGui.DragFloat($"##DragFloatPitch", ref pitch, 0.001f, 0f, 0f, "%.3f", ImGuiSliderFlags.NoInput))
+            {
+                var scale = 100f;
+
+                state->CharaView->SetCameraYawAndPitch(
+                    scale * (yaw - state->CharaView->CameraYaw),
+                    scale * (pitch - state->CharaView->CameraPitch)
+                );
+
+                if (!AgentBannerEditor->EditorState->HasDataChanged)
+                    AgentBannerEditor->EditorState->SetHasChanged(true);
+            }
+
+            ImGui.TableNextRow();
+
+            ImGui.TableNextColumn();
+            ImGui.Text("Camera Distance");
+
+            ImGui.TableNextColumn();
+            ImGui.SetNextItemWidth(-1);
+
+            if (ImGui.DragFloat($"##DragFloatDistance", ref distance, 0.001f, 0.5f, 2f))
+            {
+                var scale = 100f;
+
+                state->CharaView->SetCameraDistance(
+                    scale * (distance - state->CharaView->CameraDistance)
+                );
+
+                if (!AgentBannerEditor->EditorState->HasDataChanged)
+                    AgentBannerEditor->EditorState->SetHasChanged(true);
+            }
+        }
+
         using (ImRaii.PushId("CameraPosition"))
         {
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.Text("Camera Position");
+            ImGui.Text("Camera X / Y");
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
-            var vec3 = new Vector3(
-                state->CharaView->CameraPosition.X,
-                state->CharaView->CameraPosition.Y,
-                state->CharaView->CameraPosition.Z
+            var pos = new Vector2(
+                state->CharaView->CameraTarget.X,
+                state->CharaView->CameraTarget.Y
             );
-            if (ImGui.DragFloat3($"##DragFloat3", ref vec3, 0.001f))
+            if (ImGui.DragFloat2($"##DragFloat2", ref pos, 0.001f, 0f, 0f, "%.3f", ImGuiSliderFlags.NoInput))
             {
-                var halfVecPosition = (HalfVector4*)IMemorySpace.GetDefaultSpace()->Malloc<HalfVector4>();
-                var halfVecTarget = (HalfVector4*)IMemorySpace.GetDefaultSpace()->Malloc<HalfVector4>();
+                var scale = 1000f;
+                state->CharaView->SetCameraXAndY(
+                    scale * (pos.X - state->CharaView->CameraTarget.X),
+                    scale * (pos.Y - state->CharaView->CameraTarget.Y)
+                );
 
-                halfVecPosition->X = (Half)vec3.X;
-                halfVecPosition->Y = (Half)vec3.Y;
-                halfVecPosition->Z = (Half)vec3.Z;
-                halfVecPosition->W = (Half)state->CharaView->CameraPosition.W;
-
-                halfVecTarget->X = (Half)state->CharaView->CameraTarget.X;
-                halfVecTarget->Y = (Half)state->CharaView->CameraTarget.Y;
-                halfVecTarget->Z = (Half)state->CharaView->CameraTarget.Z;
-                halfVecTarget->W = (Half)state->CharaView->CameraTarget.W;
-
-                state->CharaView->SetCameraPosition(halfVecPosition, halfVecTarget);
-
-                IMemorySpace.Free(halfVecPosition);
-                IMemorySpace.Free(halfVecTarget);
-
-                AgentBannerEditor->EditorState->SetHasChanged(true);
+                if (!AgentBannerEditor->EditorState->HasDataChanged)
+                    AgentBannerEditor->EditorState->SetHasChanged(true);
             }
         }
 
-        using (ImRaii.PushId("CameraTarget"))
+        using (ImRaii.PushId("ZoomRotation"))
         {
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.Text("Camera Target");
+            ImGui.Text("Zoom / Rotation");
 
             ImGui.TableNextColumn();
-            ImGui.SetNextItemWidth(-1);
 
-            var vec3 = new Vector3(
-                state->CharaView->CameraTarget.X,
-                state->CharaView->CameraTarget.Y,
-                state->CharaView->CameraTarget.Z
-            );
-            if (ImGui.DragFloat3($"##DragFloat3", ref vec3, 0.001f))
+            var itemWidth = (ImGui.GetColumnWidth() - style.ItemInnerSpacing.X) / 2f - 0.5f;
+            ImGui.SetNextItemWidth(itemWidth);
+
+            var zoom = (int)state->CharaView->CameraZoom;
+            if (ImGui.DragInt($"##DragFloatZoom", ref zoom, 1, 0, 200))
             {
-                var halfVecPosition = (HalfVector4*)IMemorySpace.GetDefaultSpace()->Malloc<HalfVector4>();
-                var halfVecTarget = (HalfVector4*)IMemorySpace.GetDefaultSpace()->Malloc<HalfVector4>();
+                state->CharaView->SetCameraZoom((byte)zoom);
+                AddonBannerEditor->CameraZoomSlider->SetValue(zoom);
 
-                halfVecPosition->X = (Half)state->CharaView->CameraPosition.X;
-                halfVecPosition->Y = (Half)state->CharaView->CameraPosition.Y;
-                halfVecPosition->Z = (Half)state->CharaView->CameraPosition.Z;
-                halfVecPosition->W = (Half)state->CharaView->CameraPosition.W;
+                if (!AgentBannerEditor->EditorState->HasDataChanged)
+                    AgentBannerEditor->EditorState->SetHasChanged(true);
+            }
 
-                halfVecTarget->X = (Half)vec3.X;
-                halfVecTarget->Y = (Half)vec3.Y;
-                halfVecTarget->Z = (Half)vec3.Z;
-                halfVecTarget->W = (Half)state->CharaView->CameraTarget.W;
+            ImGui.SameLine(0, style.ItemInnerSpacing.X);
+            ImGui.SetNextItemWidth(itemWidth + 0.5f);
 
-                state->CharaView->SetCameraPosition(halfVecPosition, halfVecTarget);
+            var rotation = (int)state->CharaView->ImageRotation;
+            if (ImGui.DragInt($"##DragFloatRotation", ref rotation, 1, -90, 90))
+            {
+                state->CharaView->ImageRotation = (short)rotation;
+                AddonBannerEditor->ImageRotation->SetValue(rotation);
 
-                IMemorySpace.Free(halfVecPosition);
-                IMemorySpace.Free(halfVecTarget);
-
-                AgentBannerEditor->EditorState->SetHasChanged(true);
+                if (!AgentBannerEditor->EditorState->HasDataChanged)
+                    AgentBannerEditor->EditorState->SetHasChanged(true);
             }
         }
 
@@ -142,7 +193,8 @@ public unsafe class AdvancedEditOverlay : Overlay
             {
                 state->CharaView->SetEyeDirection(eyeDirection.X, eyeDirection.Y);
 
-                AgentBannerEditor->EditorState->SetHasChanged(true);
+                if (!AgentBannerEditor->EditorState->HasDataChanged)
+                    AgentBannerEditor->EditorState->SetHasChanged(true);
             }
         }
 
@@ -165,7 +217,8 @@ public unsafe class AdvancedEditOverlay : Overlay
             {
                 state->CharaView->SetHeadDirection(headDirection.X, headDirection.Y);
 
-                AgentBannerEditor->EditorState->SetHasChanged(true);
+                if (!AgentBannerEditor->EditorState->HasDataChanged)
+                    AgentBannerEditor->EditorState->SetHasChanged(true);
             }
         }
 
@@ -194,7 +247,9 @@ public unsafe class AdvancedEditOverlay : Overlay
                 lastTimestamp = timestamp;
                 state->CharaView->SetPoseTimed(gameObject->ActionTimelineManager.BannerTimelineRowId, timestamp);
                 state->CharaView->Base.ToggleAnimationPaused(true);
-                AgentBannerEditor->EditorState->SetHasChanged(true);
+
+                if (!AgentBannerEditor->EditorState->HasDataChanged)
+                    AgentBannerEditor->EditorState->SetHasChanged(true);
             }
 
             ImGui.SetNextItemWidth(-1);

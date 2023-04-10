@@ -12,23 +12,23 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     // not sure on these floats. i think it's a Spherical Camera
     [FieldOffset(0x2D0)] public Vector4 CameraPosition;
     [FieldOffset(0x2E0)] public Vector4 CameraTarget;
+    [FieldOffset(0x2F0)] public float CameraYaw; // automatically calculated
+    [FieldOffset(0x2F4)] public float CameraPitch; // automatically calculated
+    [FieldOffset(0x2F8)] public float CameraDistance; // automatically calculated euclidean distance
+    [FieldOffset(0x2FC)] public short ImageRotation; // -90 to 90
+    [FieldOffset(0x2FE)] public byte CameraZoom; // 0 to 200
 
-    [FieldOffset(0x2FC)] public short ImageRotation;
-    [FieldOffset(0x2FE)] public byte CameraZoom;
-
-    [FieldOffset(0x300)] public float CameraZoomNormalized;
+    [FieldOffset(0x300)] public float CameraZoomNormalized; // automatically calculated
     [FieldOffset(0x304)] public byte DirectionalLightingColorRed;
     [FieldOffset(0x305)] public byte DirectionalLightingColorGreen;
     [FieldOffset(0x306)] public byte DirectionalLightingColorBlue;
     [FieldOffset(0x307)] public byte DirectionalLightingBrightness;
-    [FieldOffset(0x308)] public ushort DirectionalLightingVerticalAngle;
-    [FieldOffset(0x30A)] public ushort DirectionalLightingHorizontalAngle;
+    [FieldOffset(0x308)] public ushort DirectionalLightingVerticalAngle; // -180 to 180
+    [FieldOffset(0x30A)] public ushort DirectionalLightingHorizontalAngle; // -180 to 180
     [FieldOffset(0x304)] public byte AmbientLightingColorRed;
     [FieldOffset(0x30D)] public byte AmbientLightingColorGreen;
     [FieldOffset(0x30E)] public byte AmbientLightingColorBlue;
     [FieldOffset(0x30F)] public byte AmbientLightingBrightness;
-    [FieldOffset(0x308)] public short CameraVerticalAngle;
-    [FieldOffset(0x30A)] public short CameraHorizontalAngle;
 
     [FieldOffset(0x314)] public short PoseClassJob;
     [FieldOffset(0x316)] public short BannerBg;
@@ -64,12 +64,14 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     [VirtualFunction(3)]
     public partial void ResetPositions();
 
-    // vf4?
+    [VirtualFunction(4)]
+    public partial void SetCameraDistance(float deltaDistance);
 
     [VirtualFunction(5)]
-    public partial void SetCameraRotation(float a2, float a3); // maybe?
+    public partial void SetCameraYawAndPitch(float deltaRotation, float deltaPitch);
 
-    // vf6?
+    [VirtualFunction(6)]
+    public partial void SetCameraXAndY(float deltaX, float deltaY);
 
     // vf7? called by Render()
 
