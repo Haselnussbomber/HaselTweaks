@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Portrait Helper
+
+- **Added**: The preset context menu in the Preset Browser has been expanded to include a "Copy Image" function.
+- **Fixed**: To avoid an error when reading the contents of the clipboard, a check has been added to see if any text is present (because you can actually copy other stuff with it, who knew).
+- **Fixed**: Restore UI visibility when in Advanced Edit Mode and a game popup was opened (e.g. the close confirmation window or context menu of title bar).
+
 ## [0.14.2] (2023-04-10)
 
 ### Portrait Helper
