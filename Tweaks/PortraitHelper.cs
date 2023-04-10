@@ -195,6 +195,9 @@ public class PortraitHelper : Tweak
         if (DateTime.Now - lastClipboardCheck <= TimeSpan.FromMilliseconds(100))
             return;
 
+        if (!ClipboardNatives.IsClipboardFormatAvailable(ClipboardNatives.ClipboardFormat.CF_TEXT))
+            return;
+
         var clipboardSequenceNumber = ClipboardNatives.GetClipboardSequenceNumber();
 
         if (lastClipboardSequenceNumber == clipboardSequenceNumber)
