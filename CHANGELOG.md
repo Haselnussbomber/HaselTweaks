@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.14.2] (2023-04-10)
+
+### Portrait Helper
+
+- **Changed**: Instead of raw Camera and Camera Target Positions the Advanced Edit Mode now has Yaw, Pitch, Distance, X and Y controls.
+  - *Note:* Due to a bug, I had to disable the input fields for all of them except for Distance. Dragging the fields while holding down the left mouse button should still be fine enough for accurate positioning, even though values might flicker a bit.
+- **Added**: Zoom and Rotation controls added to Advanced Edit Mode.
+
 ## [0.14.1] (2023-04-09)
 
 ### Portrait Helper
@@ -668,6 +676,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[0.14.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.1...v0.14.2
 [0.14.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.0...v0.14.1
 [0.14.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.7...v0.14.0
 [0.13.7]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.13.6...v0.13.7
