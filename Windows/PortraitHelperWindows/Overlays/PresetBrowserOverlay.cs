@@ -29,8 +29,6 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
     {
         DeleteTagDialog = new(this);
         DeletePresetDialog = new(this);
-
-        base.IsOpen = true;
     }
 
     public void Dispose()

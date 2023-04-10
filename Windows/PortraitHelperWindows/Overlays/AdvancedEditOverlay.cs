@@ -14,10 +14,6 @@ public unsafe class AdvancedEditOverlay : Overlay
 
     public AdvancedEditOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper AdvancedEdit", tweak)
     {
-        base.Flags |= ImGuiWindowFlags.NoSavedSettings;
-        base.Flags |= ImGuiWindowFlags.NoDecoration;
-        base.Flags |= ImGuiWindowFlags.NoMove;
-        base.IsOpen = true;
     }
 
     public override void Draw()
@@ -247,6 +243,7 @@ public unsafe class AdvancedEditOverlay : Overlay
                 lastTimestamp = timestamp;
                 state->CharaView->SetPoseTimed(gameObject->ActionTimelineManager.BannerTimelineRowId, timestamp);
                 state->CharaView->Base.ToggleAnimationPaused(true);
+                AddonBannerEditor->PlayAnimationCheckbox->SetValue(false);
 
                 if (!AgentBannerEditor->EditorState->HasDataChanged)
                     AgentBannerEditor->EditorState->SetHasChanged(true);

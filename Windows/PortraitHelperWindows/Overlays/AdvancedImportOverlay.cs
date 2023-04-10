@@ -15,10 +15,7 @@ public unsafe class AdvancedImportOverlay : Overlay
 {
     public AdvancedImportOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper AdvancedImport", tweak)
     {
-        base.Flags |= ImGuiWindowFlags.NoSavedSettings;
-        base.Flags |= ImGuiWindowFlags.NoDecoration;
-        base.Flags |= ImGuiWindowFlags.NoMove;
-        base.IsOpen = true;
+        base.Flags &= ~ImGuiWindowFlags.NoScrollbar;
     }
 
     public override void Draw()
