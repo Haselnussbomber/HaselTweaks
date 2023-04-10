@@ -125,22 +125,22 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         if (ImGui.BeginPopupContextItem($"##PresetBrowser_SideBar_Tag{tag.Id}Popup"))
         {
-            if (ImGui.Selectable("Create Tag"))
+            if (ImGui.MenuItem("Create Tag"))
             {
                 CreateTagDialog.Open();
             }
 
-            if (ImGui.Selectable("Rename Tag"))
+            if (ImGui.MenuItem("Rename Tag"))
             {
                 RenameTagDialog.Open(tag);
             }
 
-            if (ImGui.Selectable("Remove Tag"))
+            if (ImGui.MenuItem("Remove Tag"))
             {
                 DeleteTagDialog.Open(tag);
             }
 
-            if (ImGui.Selectable("Remove unused Tags"))
+            if (ImGui.MenuItem("Remove unused Tags"))
             {
                 removeUnusedTags = true;
             }
@@ -213,10 +213,10 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         if (ImGui.BeginPopupContextItem("##PresetBrowser_SideBar_AllPopup"))
         {
-            if (ImGui.Selectable("Create Tag"))
+            if (ImGui.MenuItem("Create Tag"))
                 CreateTagDialog.Open();
 
-            if (ImGui.Selectable("Remove unused Tags"))
+            if (ImGui.MenuItem("Remove unused Tags"))
                 removeUnusedTags = true;
 
             ImGui.EndPopup();

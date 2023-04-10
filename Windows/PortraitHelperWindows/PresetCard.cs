@@ -183,25 +183,25 @@ public class PresetCard : IDisposable
 
         if (ImGui.BeginPopupContextItem($"{preset.Id}_Popup"))
         {
-            if (ImGui.Selectable("Load Preset"))
+            if (ImGui.MenuItem("Load Preset"))
             {
                 overlay.Tweak.PresetToState(preset.Preset, ImportFlags.All);
                 overlay.Tweak.ChangeView(ViewMode.Normal);
             }
 
-            if (ImGui.Selectable("Edit Preset"))
+            if (ImGui.MenuItem("Edit Preset"))
             {
                 overlay.EditPresetDialog.Open(preset);
             }
 
-            if (ImGui.Selectable("Export to Clipboard"))
+            if (ImGui.MenuItem("Export to Clipboard"))
             {
                 overlay.Tweak.PresetToClipboard(preset.Preset);
             }
 
             ImGui.Separator();
 
-            if (ImGui.Selectable("Delete Preset"))
+            if (ImGui.MenuItem("Delete Preset"))
             {
                 overlay.DeletePresetDialog.Open(preset);
             }
