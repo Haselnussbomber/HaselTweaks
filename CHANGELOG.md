@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.14.4] (2023-04-11)
+
+### Portrait Helper
+
+- **Fixed**: Apparently copying an image to the clipboard is harder than I thought. Updated the code for better compatibility with programs like Paint and Discord.
+
 ## [0.14.3] (2023-04-11)
 
 ### Portrait Helper
@@ -684,6 +690,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[0.14.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.3...v0.14.4
 [0.14.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.2...v0.14.3
 [0.14.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.1...v0.14.2
 [0.14.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.0...v0.14.1
