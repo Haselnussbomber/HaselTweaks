@@ -205,22 +205,22 @@ public class PresetCard : IDisposable
             {
                 if (ImGui.MenuItem("Everything"))
                 {
-                    Task.Run(() => CopyImage());
+                    Task.Run(async () => await CopyImage());
                 }
 
                 if (ImGui.MenuItem("Without Frame"))
                 {
-                    Task.Run(() => CopyImage(CopyImageFlags.NoFrame));
+                    Task.Run(async () => await CopyImage(CopyImageFlags.NoFrame));
                 }
 
                 if (ImGui.MenuItem("Without Decoration"))
                 {
-                    Task.Run(() => CopyImage(CopyImageFlags.NoDecoration));
+                    Task.Run(async () => await CopyImage(CopyImageFlags.NoDecoration));
                 }
 
                 if (ImGui.MenuItem("Without Frame and Decoration"))
                 {
-                    Task.Run(() => CopyImage(CopyImageFlags.NoFrame | CopyImageFlags.NoDecoration));
+                    Task.Run(async () => await CopyImage(CopyImageFlags.NoFrame | CopyImageFlags.NoDecoration));
                 }
 
                 ImGui.EndMenu();
@@ -237,7 +237,7 @@ public class PresetCard : IDisposable
         }
     }
 
-    private void CopyImage(CopyImageFlags flags = CopyImageFlags.None)
+    private async Task CopyImage(CopyImageFlags flags = CopyImageFlags.None)
     {
         if (image == null)
             return;
@@ -268,7 +268,7 @@ public class PresetCard : IDisposable
             }
         }
 
-        _ = ClipboardUtils.SetClipboardImage(tempImage);
+        await ClipboardUtils.SetClipboardImage(tempImage);
     }
 
     private void Update(float scale)
