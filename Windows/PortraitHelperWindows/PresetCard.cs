@@ -268,7 +268,7 @@ public class PresetCard : IDisposable
             }
         }
 
-        overlay.Tweak.WriteImageToClipboard(tempImage);
+        _ = ClipboardUtils.SetClipboardImage(tempImage);
     }
 
     private void Update(float scale)

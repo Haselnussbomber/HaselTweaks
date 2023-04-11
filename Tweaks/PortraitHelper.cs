@@ -201,20 +201,20 @@ public class PortraitHelper : Tweak
         if (DateTime.Now - lastClipboardCheck <= TimeSpan.FromMilliseconds(100))
             return;
 
-        if (!ClipboardNatives.IsClipboardFormatAvailable(ClipboardNatives.ClipboardFormat.CF_TEXT))
+        if (!ClipboardUtils.IsClipboardFormatAvailable(ClipboardUtils.ClipboardFormat.CF_TEXT))
             return;
 
-        var clipboardSequenceNumber = ClipboardNatives.GetClipboardSequenceNumber();
+        var clipboardSequenceNumber = ClipboardUtils.GetClipboardSequenceNumber();
 
         if (lastClipboardSequenceNumber == clipboardSequenceNumber)
             return;
 
-        if (!ClipboardNatives.OpenClipboard(0))
+        if (!ClipboardUtils.OpenClipboard(0))
             return;
 
         lastClipboardSequenceNumber = clipboardSequenceNumber;
 
-        var data = ClipboardNatives.GetClipboardData(ClipboardNatives.ClipboardFormat.CF_TEXT);
+        var data = ClipboardUtils.GetClipboardData(ClipboardUtils.ClipboardFormat.CF_TEXT);
         if (data != 0)
         {
             var clipboardText = MemoryHelper.ReadString(data, 1024);
@@ -224,7 +224,7 @@ public class PortraitHelper : Tweak
                 Debug($"Parsed ClipboardPreset: {ClipboardPreset}");
         }
 
-        ClipboardNatives.CloseClipboard();
+        ClipboardUtils.CloseClipboard();
 
         lastClipboardCheck = DateTime.Now;
     }
@@ -234,16 +234,16 @@ public class PortraitHelper : Tweak
         if (preset == null)
             return;
 
-        await ClipboardNatives.OpenClipboard();
+        await ClipboardUtils.OpenClipboard();
 
-        if (!ClipboardNatives.EmptyClipboard())
+        if (!ClipboardUtils.EmptyClipboard())
             return;
 
         var clipboardText = Marshal.StringToHGlobalAnsi(preset.ToExportedString());
-        if (ClipboardNatives.SetClipboardData(ClipboardNatives.ClipboardFormat.CF_TEXT, clipboardText) != 0)
+        if (ClipboardUtils.SetClipboardData(ClipboardUtils.ClipboardFormat.CF_TEXT, clipboardText) != 0)
             ClipboardPreset = preset;
 
-        ClipboardNatives.CloseClipboard();
+        ClipboardUtils.CloseClipboard();
     }
 
     public unsafe Image<Bgra32>? GetCurrentCharaViewImage()
@@ -290,40 +290,6 @@ public class PortraitHelper : Tweak
         device.ImmediateContext.UnmapSubresource(stagingTexture, 0);
 
         return Image.LoadPixelData<Bgra32>(pixelDataStream.ToArray(), desc.Width, desc.Height);
-    }
-
-    public void WriteImageToClipboard(Image<Rgba32> image)
-    {
-        ClipboardNatives.OpenClipboard().Wait();
-
-        unsafe
-        {
-            var data = Marshal.AllocHGlobal(sizeof(BITMAPINFOHEADER) + image.Width * image.Height * sizeof(Bgra32)); // tagBITMAPINFO
-
-            var header = (BITMAPINFOHEADER*)data;
-            header->biSize = sizeof(BITMAPINFOHEADER);
-            header->biWidth = image.Width;
-            header->biHeight = -image.Height;
-            header->biPlanes = 1;
-            header->biBitCount = 32; // bits per pixel
-            header->biCompression = 0; // BI_RGB
-            header->biSizeImage = 0;
-            header->biXPelsPerMeter = 0;
-            header->biYPelsPerMeter = 0;
-            header->biClrUsed = 0;
-            header->biClrImportant = 0;
-
-            var pixelSpan = new Span<Bgra32>((void*)(data + header->biSize), image.Width * image.Height);
-
-            image.CloneAs<Bgra32>().CopyPixelDataTo(pixelSpan);
-
-            foreach (ref var pixel in pixelSpan)
-                pixel.A = 0; // rgbReserved of RGBQUAD "must be zero"
-
-            ClipboardNatives.EmptyClipboard();
-            ClipboardNatives.SetClipboardData(ClipboardNatives.ClipboardFormat.CF_DIB, data); // this transfers ownership of data
-            ClipboardNatives.CloseClipboard();
-        }
     }
 
     public unsafe PortraitPreset? StateToPreset()
