@@ -64,14 +64,9 @@ public static class ClipboardUtils
         await OpenClipboard();
 
         EmptyClipboard();
-
-        unsafe
-        {
-            SetDIB(image);
-            SetDIBV5(image);
-            SetPNG(image);
-        }
-
+        SetDIB(image);
+        SetDIBV5(image);
+        SetPNG(image);
         CloseClipboard();
     }
 
