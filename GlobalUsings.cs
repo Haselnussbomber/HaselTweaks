@@ -3,3 +3,4 @@ global using System.Runtime.InteropServices;
 global using FFXIVClientStructs.Interop;
 global using FFXIVClientStructs.Interop.Attributes;
 global using static HaselTweaks.Utils.AtkUtils;
+global using static HaselTweaks.Utils.StringUtils;

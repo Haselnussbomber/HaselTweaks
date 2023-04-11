@@ -56,14 +56,14 @@ public unsafe class MenuBar : Window, IDisposable
 
         if (AgentBannerEditor->EditorState->OpenType == EditorOpenType.AdventurerPlate)
         {
-            PortraitName = StringUtils.GetAddonText(14761) ?? "Adventurer Plate";
+            PortraitName = GetAddonText(14761) ?? "Adventurer Plate";
         }
         else if (AgentBannerEditor->EditorState->GearsetId > -1)
         {
             var gearset = RaptureGearsetModule.Instance()->GetGearset(AgentBannerEditor->EditorState->GearsetId);
             if (gearset != null)
             {
-                PortraitName = $"{StringUtils.GetAddonText(756) ?? "Gear Set"} #{gearset->ID + 1}: {MemoryHelper.ReadString((nint)gearset->Name, 0x2F)}";
+                PortraitName = $"{GetAddonText(756) ?? "Gear Set"} #{gearset->ID + 1}: {MemoryHelper.ReadString((nint)gearset->Name, 0x2F)}";
             }
         }
     }
@@ -81,16 +81,16 @@ public unsafe class MenuBar : Window, IDisposable
 
         if (!AgentBannerEditor->EditorState->HasDataChanged)
         {
-            ImGuiUtils.IconButtonDisabled("Reset", FontAwesomeIcon.Undo, StringUtils.GetAddonText(4830) ?? "Reset");
+            ImGuiUtils.IconButtonDisabled("Reset", FontAwesomeIcon.Undo, GetAddonText(4830) ?? "Reset");
         }
-        else if (ImGuiUtils.IconButton("Reset", FontAwesomeIcon.Undo, StringUtils.GetAddonText(4830) ?? "Reset"))
+        else if (ImGuiUtils.IconButton("Reset", FontAwesomeIcon.Undo, GetAddonText(4830) ?? "Reset"))
         {
             Tweak.PresetToState(InitialPreset, ImportFlags.All);
             AgentBannerEditor->EditorState->SetHasChanged(false);
         }
 
         ImGui.SameLine();
-        if (ImGuiUtils.IconButton("Copy", FontAwesomeIcon.Copy, "Export to Clipboard")) // StringUtils.GetAddonText(100) ?? "Copy"
+        if (ImGuiUtils.IconButton("Copy", FontAwesomeIcon.Copy, "Export to Clipboard")) // GetAddonText(100) ?? "Copy"
         {
             Tweak.PresetToClipboard(Tweak.StateToPreset());
         }
@@ -98,7 +98,7 @@ public unsafe class MenuBar : Window, IDisposable
         ImGui.SameLine();
         if (Tweak.ClipboardPreset == null)
         {
-            ImGuiUtils.IconButtonDisabled("Paste", FontAwesomeIcon.Paste, "Import from Clipboard"); // StringUtils.GetAddonText(101) ?? "Paste"
+            ImGuiUtils.IconButtonDisabled("Paste", FontAwesomeIcon.Paste, "Import from Clipboard"); // GetAddonText(101) ?? "Paste"
         }
         else
         {

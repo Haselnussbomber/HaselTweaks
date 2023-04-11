@@ -27,14 +27,14 @@ public sealed unsafe partial class StringUtils : IDisposable
     }
 
     [Signature("E9 ?? ?? ?? ?? 48 8D 47 30")]
-    private readonly FormatObjectStringDelegate FormatObjectString = null!; // how do you expect me to name things i have no clue about
-    private delegate nint FormatObjectStringDelegate(int mode, uint id, uint idConversionMode, uint a4);
+    internal readonly FormatObjectStringDelegate FormatObjectString = null!; // how do you expect me to name things i have no clue about
+    internal delegate nint FormatObjectStringDelegate(int mode, uint id, uint idConversionMode, uint a4);
 
-    public string GetENpcResidentName(uint npcId)
+    public static string GetENpcResidentName(uint npcId)
     {
         if (!ENpcResidentNameCache.TryGetValue(npcId, out var value))
         {
-            var ptr = FormatObjectString(0, npcId, 3, 1);
+            var ptr = Service.StringUtils.FormatObjectString(0, npcId, 3, 1);
             value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
             ENpcResidentNameCache.Add(npcId, value);
         }
@@ -42,11 +42,11 @@ public sealed unsafe partial class StringUtils : IDisposable
         return value;
     }
 
-    public string GetEObjName(uint objId)
+    public static string GetEObjName(uint objId)
     {
         if (!EObjNameCache.TryGetValue(objId, out var value))
         {
-            var ptr = FormatObjectString(0, objId, 5, 1);
+            var ptr = Service.StringUtils.FormatObjectString(0, objId, 5, 1);
             value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
             EObjNameCache.Add(objId, value);
         }
@@ -54,11 +54,11 @@ public sealed unsafe partial class StringUtils : IDisposable
         return value;
     }
 
-    public string GetItemName(uint itemId)
+    public static string GetItemName(uint itemId)
     {
         if (!ItemNameCache.TryGetValue(itemId, out var value))
         {
-            var ptr = FormatObjectString(1, itemId, 5, 1);
+            var ptr = Service.StringUtils.FormatObjectString(1, itemId, 5, 1);
             value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
             ItemNameCache.Add(itemId, value);
         }

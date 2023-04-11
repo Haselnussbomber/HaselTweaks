@@ -111,7 +111,7 @@ public unsafe class SearchTheMarkets : Tweak
         if (GetAddon<AddonItemSearchResult>("ItemSearchResult", out var itemSearchResult))
             itemSearchResult->Hide2();
 
-        var itemName = Service.StringUtils.GetItemName(ItemId);
+        var itemName = GetItemName(ItemId);
         if (itemName.Length > 40)
             itemName = itemName[..40];
 

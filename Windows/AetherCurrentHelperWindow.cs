@@ -199,8 +199,8 @@ public unsafe class AetherCurrentHelperWindow : Window
 
         // Content
         ImGui.TableNextColumn();
-        ImGui.TextColored(TitleColor, $"[#{index}] {StringUtils.GetQuestName(quest.RowId, true)}");
-        ImGui.Text(GetHumanReadableCoords(quest.IssuerLocation.Value!) + " | " + Service.StringUtils.GetENpcResidentName(quest.IssuerStart));
+        ImGui.TextColored(TitleColor, $"[#{index}] {GetQuestName(quest.RowId, true)}");
+        ImGui.Text(GetHumanReadableCoords(quest.IssuerLocation.Value!) + " | " + GetENpcResidentName(quest.IssuerStart));
 
         // Actions
         ImGui.TableNextColumn();
@@ -230,7 +230,7 @@ public unsafe class AetherCurrentHelperWindow : Window
 
         // Content
         ImGui.TableNextColumn();
-        ImGui.TextColored(TitleColor, $"[#{index}] {Service.StringUtils.GetEObjName(eobj.RowId)}");
+        ImGui.TextColored(TitleColor, $"[#{index}] {GetEObjName(eobj.RowId)}");
         ImGui.Text(GetHumanReadableCoords(level!));
 
         // Actions

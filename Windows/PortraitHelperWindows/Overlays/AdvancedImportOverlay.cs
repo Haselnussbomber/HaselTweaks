@@ -29,17 +29,17 @@ public unsafe class AdvancedImportOverlay : Overlay
         }
 
         var state = AgentBannerEditor->EditorState;
-        var unknown = StringUtils.GetAddonText(624) ?? "Unknown";
+        var unknown = GetAddonText(624) ?? "Unknown";
 
         using (ImRaii.PushColor(ImGuiCol.Text, ImGuiUtils.ColorGrey))
             ImGui.TextWrapped("Only the checked settings will be imported.");
 
-        if (ImGui.Button(StringUtils.GetAddonText(14923) ?? "Select All"))
+        if (ImGui.Button(GetAddonText(14923) ?? "Select All"))
             Tweak.CurrentImportFlags = ImportFlags.All;
 
         ImGui.SameLine();
 
-        if (ImGui.Button(StringUtils.GetAddonText(14924) ?? "Deselect All"))
+        if (ImGui.Button(GetAddonText(14924) ?? "Deselect All"))
             Tweak.CurrentImportFlags = ImportFlags.None;
 
         ImGui.SameLine();
@@ -50,47 +50,47 @@ public unsafe class AdvancedImportOverlay : Overlay
             Tweak.ChangeView(ViewMode.Normal);
         }
 
-        ImGuiUtils.DrawSection(StringUtils.GetAddonText(14684) ?? "Design");
+        ImGuiUtils.DrawSection(GetAddonText(14684) ?? "Design");
 
         DrawImportSetting(
-            StringUtils.GetAddonText(14687) ?? "Background",
+            GetAddonText(14687) ?? "Background",
             ImportFlags.BannerBg,
-            () => ImGui.Text(StringUtils.GetSheetText<BannerBg>(Tweak.ClipboardPreset.BannerBg, "Name") ?? unknown)
+            () => ImGui.Text(GetSheetText<BannerBg>(Tweak.ClipboardPreset.BannerBg, "Name") ?? unknown)
         );
 
         DrawImportSetting(
-            StringUtils.GetAddonText(14688) ?? "Frame",
+            GetAddonText(14688) ?? "Frame",
             ImportFlags.BannerFrame,
-            () => ImGui.Text(StringUtils.GetSheetText<BannerFrame>(Tweak.ClipboardPreset.BannerFrame, "Name") ?? unknown)
+            () => ImGui.Text(GetSheetText<BannerFrame>(Tweak.ClipboardPreset.BannerFrame, "Name") ?? unknown)
         );
 
         DrawImportSetting(
-            StringUtils.GetAddonText(14689) ?? "Accent",
+            GetAddonText(14689) ?? "Accent",
             ImportFlags.BannerDecoration,
-            () => ImGui.Text(StringUtils.GetSheetText<BannerDecoration>(Tweak.ClipboardPreset.BannerDecoration, "Name") ?? unknown)
+            () => ImGui.Text(GetSheetText<BannerDecoration>(Tweak.ClipboardPreset.BannerDecoration, "Name") ?? unknown)
         );
 
         DrawImportSetting(
-            StringUtils.GetAddonText(14711) ?? "Zoom",
+            GetAddonText(14711) ?? "Zoom",
             ImportFlags.CameraZoom,
             () => ImGui.Text(Tweak.ClipboardPreset.CameraZoom.ToString())
         );
 
         DrawImportSetting(
-            StringUtils.GetAddonText(14712) ?? "Rotation",
+            GetAddonText(14712) ?? "Rotation",
             ImportFlags.ImageRotation,
             () => ImGui.Text(Tweak.ClipboardPreset.ImageRotation.ToString())
         );
 
-        ImGuiUtils.DrawSection(StringUtils.GetAddonText(14685) ?? "Character");
+        ImGuiUtils.DrawSection(GetAddonText(14685) ?? "Character");
 
         DrawImportSetting(
-            StringUtils.GetAddonText(14690) ?? "Pose",
+            GetAddonText(14690) ?? "Pose",
             ImportFlags.BannerTimeline,
             () =>
             {
                 var id = Tweak.ClipboardPreset.BannerTimeline;
-                var poseName = StringUtils.GetSheetText<BannerTimeline>(id, "Name");
+                var poseName = GetSheetText<BannerTimeline>(id, "Name");
 
                 if (string.IsNullOrEmpty(poseName))
                 {
@@ -100,12 +100,12 @@ public unsafe class AdvancedImportOverlay : Overlay
                         switch (poseRow.Type)
                         {
                             case 2:
-                                poseName = StringUtils.GetSheetText<Lumina.Excel.GeneratedSheets.Action>(poseRow.AdditionalData, "Name");
+                                poseName = GetSheetText<Lumina.Excel.GeneratedSheets.Action>(poseRow.AdditionalData, "Name");
                                 break;
 
                             case 10:
                             case 11:
-                                poseName = StringUtils.GetSheetText<Emote>(poseRow.AdditionalData, "Name");
+                                poseName = GetSheetText<Emote>(poseRow.AdditionalData, "Name");
                                 break;
 
                             case 20:
@@ -123,7 +123,7 @@ public unsafe class AdvancedImportOverlay : Overlay
         );
 
         DrawImportSetting(
-            StringUtils.GetAddonText(14691) ?? "Expression",
+            GetAddonText(14691) ?? "Expression",
             ImportFlags.Expression,
             () =>
             {
@@ -132,7 +132,7 @@ public unsafe class AdvancedImportOverlay : Overlay
 
                 if (id == 0)
                 {
-                    expressionName = StringUtils.GetAddonText(14727) ?? "None";
+                    expressionName = GetAddonText(14727) ?? "None";
                 }
                 else
                 {
@@ -158,7 +158,7 @@ public unsafe class AdvancedImportOverlay : Overlay
         );
 
         DrawImportSetting(
-            StringUtils.GetAddonText(5972) ?? "Camera Position",
+            GetAddonText(5972) ?? "Camera Position",
             ImportFlags.CameraPosition,
             () => DrawHalfVector4(Tweak.ClipboardPreset.CameraPosition)
         );
@@ -181,10 +181,10 @@ public unsafe class AdvancedImportOverlay : Overlay
             () => DrawHalfVector2(Tweak.ClipboardPreset.EyeDirection)
         );
 
-        ImGuiUtils.DrawSection(StringUtils.GetAddonText(14692) ?? "Ambient Lighting");
+        ImGuiUtils.DrawSection(GetAddonText(14692) ?? "Ambient Lighting");
 
-        var labelBrightness = StringUtils.GetAddonText(14694) ?? "Brightness";
-        var labelColor = StringUtils.GetAddonText(7008) ?? "Color";
+        var labelBrightness = GetAddonText(14694) ?? "Brightness";
+        var labelColor = GetAddonText(7008) ?? "Color";
 
         DrawImportSetting(
             labelBrightness,
@@ -202,7 +202,7 @@ public unsafe class AdvancedImportOverlay : Overlay
             )
         );
 
-        ImGuiUtils.DrawSection(StringUtils.GetAddonText(14693) ?? "Directional Lighting");
+        ImGuiUtils.DrawSection(GetAddonText(14693) ?? "Directional Lighting");
 
         DrawImportSetting(
             labelBrightness,
@@ -221,13 +221,13 @@ public unsafe class AdvancedImportOverlay : Overlay
         );
 
         DrawImportSetting(
-            StringUtils.GetAddonText(14696) ?? "Vertical Angle",
+            GetAddonText(14696) ?? "Vertical Angle",
             ImportFlags.DirectionalLightingVerticalAngle,
             () => ImGui.Text(Tweak.ClipboardPreset.DirectionalLightingVerticalAngle.ToString())
         );
 
         DrawImportSetting(
-            StringUtils.GetAddonText(14695) ?? "Horizontal Angle",
+            GetAddonText(14695) ?? "Horizontal Angle",
             ImportFlags.DirectionalLightingHorizontalAngle,
             () => ImGui.Text(Tweak.ClipboardPreset.DirectionalLightingHorizontalAngle.ToString())
         );
