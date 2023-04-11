@@ -172,7 +172,9 @@ public partial class PluginWindow : Window
 
             if (ImGui.Selectable($"{tweak.Name}##Selectable_{tweak.InternalName}", SelectedTweak == tweak.InternalName))
             {
-                SelectedTweak = tweak.InternalName;
+                SelectedTweak = SelectedTweak != tweak.InternalName
+                    ? tweak.InternalName
+                    : string.Empty;
             }
 
             if (!tweak.Ready || tweak.Outdated || !enabled)
