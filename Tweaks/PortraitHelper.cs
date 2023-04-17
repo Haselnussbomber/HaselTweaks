@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using Dalamud.Game;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
@@ -37,6 +38,21 @@ public class PortraitHelper : Tweak
         [ConfigField(Type = ConfigFieldTypes.Ignore)]
         public List<SavedPresetTag> PresetTags = new();
 
+        [ConfigField(Label = "Show Alignment Tool")]
+        public bool ShowAlignmentTool = false;
+
+        [ConfigField(Label = "Vertical Lines", DependsOn = nameof(ShowAlignmentTool), Min = 0, Max = 10)]
+        public int AlignmentToolVerticalLines = 2;
+
+        [ConfigField(Label = "Vertical Color", DependsOn = nameof(ShowAlignmentTool), Type = ConfigFieldTypes.Color4)]
+        public Vector4 AlignmentToolVerticalColor = new(0, 0, 0, 1f);
+
+        [ConfigField(Label = "Horizontal Lines", DependsOn = nameof(ShowAlignmentTool), Min = 0, Max = 10)]
+        public int AlignmentToolHorizontalLines = 2;
+
+        [ConfigField(Label = "Horizontal Color", DependsOn = nameof(ShowAlignmentTool), Type = ConfigFieldTypes.Color4)]
+        public Vector4 AlignmentToolHorizontalColor = new(0, 0, 0, 1f);
+
         public string GetPortraitThumbnailPath(string hash)
         {
             var portraitsPath = Path.Join(Service.PluginInterface.ConfigDirectory.FullName, "Portraits");
@@ -56,7 +72,7 @@ public class PortraitHelper : Tweak
     private AdvancedImportOverlay? advancedImportOverlay;
     private AdvancedEditOverlay? advancedEditOverlay;
     private PresetBrowserOverlay? presetBrowserOverlay;
-
+    private AlignmentToolSettingsOverlay? alignmentToolSettingsOverlay;
     private DateTime lastClipboardCheck = default;
     private uint lastClipboardSequenceNumber;
 
@@ -133,6 +149,14 @@ public class PortraitHelper : Tweak
             presetBrowserOverlay = null;
         }
 
+        if (alignmentToolSettingsOverlay != null)
+        {
+            Plugin.WindowSystem.RemoveWindow(alignmentToolSettingsOverlay);
+            alignmentToolSettingsOverlay.IsOpen = false;
+            alignmentToolSettingsOverlay.OnClose();
+            alignmentToolSettingsOverlay = null;
+        }
+
         OverlayViewMode = ViewMode.Normal;
     }
 
@@ -191,6 +215,20 @@ public class PortraitHelper : Tweak
             presetBrowserOverlay.OnClose();
             presetBrowserOverlay.Dispose();
             presetBrowserOverlay = null;
+        }
+
+        // open AlignmentToolSettings
+        if (viewMode == ViewMode.AlignmentToolSettings && OverlayViewMode != ViewMode.AlignmentToolSettings)
+        {
+            Plugin.WindowSystem.AddWindow(alignmentToolSettingsOverlay = new(this));
+        }
+        // close AlignmentToolSettings
+        else if (viewMode != ViewMode.AlignmentToolSettings && OverlayViewMode == ViewMode.AlignmentToolSettings && alignmentToolSettingsOverlay != null)
+        {
+            Plugin.WindowSystem.RemoveWindow(alignmentToolSettingsOverlay);
+            alignmentToolSettingsOverlay.IsOpen = false;
+            alignmentToolSettingsOverlay.OnClose();
+            alignmentToolSettingsOverlay = null;
         }
 
         OverlayViewMode = viewMode;

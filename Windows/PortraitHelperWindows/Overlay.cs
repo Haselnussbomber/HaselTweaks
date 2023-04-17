@@ -86,7 +86,6 @@ public abstract unsafe class Overlay : Window
                 leftPane->GetWidth() * scale.X,
                 leftPane->GetHeight() * scale.Y
             );
-
         }
     }
 

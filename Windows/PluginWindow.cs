@@ -341,6 +341,24 @@ public partial class PluginWindow : Window
                     {
                         // hidden
                     }
+                    else if (attr.Type == ConfigFieldTypes.Color4)
+                    {
+                        var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType }))!;
+
+                        data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
+                        data.GetType().GetProperty("Config")!.SetValue(data, config);
+                        data.GetType().GetProperty("Field")!.SetValue(data, field);
+                        data.GetType().GetProperty("Attr")!.SetValue(data, attr);
+
+                        if (field.FieldType.Name == nameof(Vector4))
+                        {
+                            DrawColor4((ConfigDrawData<Vector4>)data);
+                        }
+                        else
+                        {
+                            DrawInvalidType(field);
+                        }
+                    }
                     else if (attr.Type == ConfigFieldTypes.Auto)
                     {
                         var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType }))!;
@@ -354,6 +372,7 @@ public partial class PluginWindow : Window
                         {
                             case nameof(String): DrawString((ConfigDrawData<string>)data); break;
                             case nameof(Single): DrawFloat((ConfigDrawData<float>)data); break;
+                            case nameof(Int32): DrawInt((ConfigDrawData<int>)data); break;
                             case nameof(Boolean): DrawBool((ConfigDrawData<bool>)data); break;
 
                             default: DrawNoDrawingFunctionError(field); break;
@@ -466,6 +485,11 @@ public partial class PluginWindow : Window
         ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorRed, $"Could not find suitable drawing function for field \"{field.Name}\" (Type {field.FieldType.Name}).");
     }
 
+    private static void DrawInvalidType(FieldInfo field)
+    {
+        ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorRed, $"Invalid type for \"{field.Name}\" (Type {field.FieldType.Name}).");
+    }
+
     private static void DrawSingleSelectEnumInt32(ConfigDrawData<int> data, Type enumType)
     {
         var selectedLabel = "Invalid Option";
@@ -559,6 +583,21 @@ public partial class PluginWindow : Window
         DrawResetButton(data);
     }
 
+    private static void DrawInt(ConfigDrawData<int> data)
+    {
+        var min = data.Attr != null ? data.Attr.Min : 0f;
+        var max = data.Attr != null ? data.Attr.Max : 100f;
+
+        var value = data.Value;
+
+        DrawLabel(data);
+
+        if (ImGui.SliderInt(data.Key, ref value, (int)min, (int)max))
+            data.Value = value;
+
+        DrawResetButton(data);
+    }
+
     private static void DrawBool(ConfigDrawData<bool> data)
     {
         var value = data.Value;
@@ -582,6 +621,20 @@ public partial class PluginWindow : Window
             {
                 data.Value = (T)data.Attr!.DefaultValue;
             }
+        }
+    }
+
+    private static void DrawColor4(ConfigDrawData<Vector4> data)
+    {
+        var value = data.Value;
+
+        if (ImGui.ColorEdit4(data.Label + data.Key, ref value))
+            data.Value = value;
+
+        if (!string.IsNullOrEmpty(data.Description))
+        {
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
+            ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
         }
     }
 }

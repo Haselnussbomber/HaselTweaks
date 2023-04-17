@@ -1,8 +1,10 @@
+using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
@@ -176,6 +178,45 @@ public unsafe class MenuBar : Window, IDisposable
             Tweak.ChangeView(ViewMode.PresetBrowser);
         }
 
+        // ----
+
+        ImGuiUtils.VerticalSeparator();
+
+        // ----
+
+        ImGui.SameLine();
+        if (Tweak.OverlayViewMode == ViewMode.AlignmentToolSettings)
+        {
+            using var color1 = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942);
+            using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
+            using var color3 = ImRaii.PushColor(ImGuiCol.ButtonHovered, 0xFFCE8231);
+
+            if (ImGuiUtils.IconButton("ToggleAlignmentToolOff", FontAwesomeIcon.Hashtag, "Toggle Alignment Tool\nShift: Close Settings"))
+            {
+                if (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift))
+                {
+                    Tweak.ChangeView(ViewMode.Normal);
+                }
+                else
+                {
+                    Config.ShowAlignmentTool = !Config.ShowAlignmentTool;
+                    Plugin.Config.Save();
+                }
+            }
+        }
+        else if (ImGuiUtils.IconButton("ToggleAlignmentToolOn", FontAwesomeIcon.Hashtag, "Toggle Alignment Tool\nShift: Open Settings"))
+        {
+            if (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift))
+            {
+                Tweak.ChangeView(ViewMode.AlignmentToolSettings);
+            }
+            else
+            {
+                Config.ShowAlignmentTool = !Config.ShowAlignmentTool;
+                Plugin.Config.Save();
+            }
+        }
+
         if (!string.IsNullOrEmpty(PortraitName))
         {
             ImGuiUtils.VerticalSeparator();
@@ -194,6 +235,63 @@ public unsafe class MenuBar : Window, IDisposable
         );
 
         SaveAsPresetDialog.Draw();
+    }
+
+    public override void PostDraw()
+    {
+        if (IsOpen && DrawConditions() && Config.ShowAlignmentTool)
+        {
+            var rightPanel = GetNode((AtkUnitBase*)AddonBannerEditor, 107);
+            var charaView = GetNode((AtkUnitBase*)AddonBannerEditor, 130);
+            var scale = GetNodeScale(charaView);
+
+            var position = new Vector2(
+                AddonBannerEditor->AtkUnitBase.X + rightPanel->X * scale.X,
+                AddonBannerEditor->AtkUnitBase.Y + rightPanel->Y * scale.Y
+            );
+
+            var size = new Vector2(
+                charaView->GetWidth() * scale.X,
+                charaView->GetHeight() * scale.Y
+            );
+
+            ImGui.SetNextWindowPos(position);
+            ImGui.SetNextWindowSize(size);
+
+            ImGui.Begin("AlignmentTool", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs);
+
+            var drawList = ImGui.GetWindowDrawList();
+
+            if (Config.AlignmentToolVerticalLines > 0)
+            {
+                var x = size.X / (Config.AlignmentToolVerticalLines + 1);
+
+                for (var i = 1; i <= Config.AlignmentToolVerticalLines + 1; i++)
+                {
+                    drawList.AddLine(
+                        position + new Vector2(i * x, 0),
+                        position + new Vector2(i * x, size.Y),
+                        ImGui.ColorConvertFloat4ToU32(Config.AlignmentToolVerticalColor)
+                    );
+                }
+            }
+
+            if (Config.AlignmentToolHorizontalLines > 0)
+            {
+                var y = size.Y / (Config.AlignmentToolHorizontalLines + 1);
+
+                for (var i = 1; i <= Config.AlignmentToolHorizontalLines + 1; i++)
+                {
+                    drawList.AddLine(
+                        position + new Vector2(0, i * y),
+                        position + new Vector2(size.X, i * y),
+                        ImGui.ColorConvertFloat4ToU32(Config.AlignmentToolHorizontalColor)
+                    );
+                }
+            }
+
+            ImGui.End();
+        }
     }
 
     public override void OnClose()

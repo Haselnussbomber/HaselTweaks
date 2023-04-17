@@ -4,7 +4,8 @@ public enum ConfigFieldTypes
 {
     Auto,
     Ignore,
-    SingleSelect
+    SingleSelect,
+    Color4
 }
 
 [AttributeUsage(AttributeTargets.Field)]

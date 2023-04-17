@@ -6,4 +6,5 @@ public enum ViewMode
     AdvancedImport,
     AdvancedEdit,
     PresetBrowser,
+    AlignmentToolSettings,
 }
