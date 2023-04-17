@@ -38,19 +38,19 @@ public class PortraitHelper : Tweak
         [ConfigField(Type = ConfigFieldTypes.Ignore)]
         public List<SavedPresetTag> PresetTags = new();
 
-        [ConfigField(Label = "Show Alignment Tool")]
+        [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Show Alignment Tool")]
         public bool ShowAlignmentTool = false;
 
-        [ConfigField(Label = "Vertical Lines", DependsOn = nameof(ShowAlignmentTool), Min = 0, Max = 10)]
+        [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Vertical Lines"/*, DependsOn = nameof(ShowAlignmentTool), Min = 0, Max = 10*/)]
         public int AlignmentToolVerticalLines = 2;
 
-        [ConfigField(Label = "Vertical Color", DependsOn = nameof(ShowAlignmentTool), Type = ConfigFieldTypes.Color4)]
+        [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Vertical Color"/*, DependsOn = nameof(ShowAlignmentTool), Type = ConfigFieldTypes.Color4*/)]
         public Vector4 AlignmentToolVerticalColor = new(0, 0, 0, 1f);
 
-        [ConfigField(Label = "Horizontal Lines", DependsOn = nameof(ShowAlignmentTool), Min = 0, Max = 10)]
+        [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Horizontal Lines"/*, DependsOn = nameof(ShowAlignmentTool), Min = 0, Max = 10*/)]
         public int AlignmentToolHorizontalLines = 2;
 
-        [ConfigField(Label = "Horizontal Color", DependsOn = nameof(ShowAlignmentTool), Type = ConfigFieldTypes.Color4)]
+        [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Horizontal Color"/*, DependsOn = nameof(ShowAlignmentTool), Type = ConfigFieldTypes.Color4*/)]
         public Vector4 AlignmentToolHorizontalColor = new(0, 0, 0, 1f);
 
         public string GetPortraitThumbnailPath(string hash)
