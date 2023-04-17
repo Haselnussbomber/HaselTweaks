@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.14.5] (2023-04-17)
+
+- **Fixed**: The "Configuration" section title in the Tweak configuration is now hidden when there are no fields to configure.
+
+### Portrait Helper
+
+- **Added**: An Alignment Tool which adds guide lines over the portrait to aid in proper alignment and composition.
+  - Hold Shift when clicking the button to open the settings, where you can change the number and color of the lines.
+
 ## [0.14.4] (2023-04-11)
 
 ### Portrait Helper
@@ -690,6 +699,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[0.14.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.4...v0.14.5
 [0.14.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.3...v0.14.4
 [0.14.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.2...v0.14.3
 [0.14.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.1...v0.14.2
