@@ -316,126 +316,131 @@ public partial class PluginWindow : Window
             var config = Plugin.Config.Tweaks.GetType().GetProperty(tweak.InternalName)?.GetValue(Plugin.Config.Tweaks);
             if (config != null)
             {
-                ImGuiUtils.DrawSection("Configuration");
                 var configType = config.GetType();
+                var configFields = configType.GetFields()
+                    .Select(field =>
+                    {
+                        var attr = (ConfigFieldAttribute?)Attribute.GetCustomAttribute(field, typeof(ConfigFieldAttribute));
+                        return (field, attr);
+                    })
+                    .Where((fa) => fa.attr?.Type != ConfigFieldTypes.Ignore);
 
-                foreach (var field in configType.GetFields())
+                if (configFields.Any())
                 {
-                    var attr = (ConfigFieldAttribute?)Attribute.GetCustomAttribute(field, typeof(ConfigFieldAttribute));
+                    ImGuiUtils.DrawSection("Configuration");
 
-                    var hasDependency = !string.IsNullOrEmpty(attr?.DependsOn);
-                    if (hasDependency)
-                        ImGui.Indent();
-
-                    var isDisabled = hasDependency && (bool?)configType.GetField(attr!.DependsOn)?.GetValue(config) == false;
-                    if (isDisabled)
-                        ImGui.BeginDisabled();
-
-                    if (attr == null)
+                    foreach (var (field, attr) in configFields)
                     {
+                        var hasDependency = !string.IsNullOrEmpty(attr?.DependsOn);
+                        if (hasDependency)
+                            ImGui.Indent();
+
+                        var isDisabled = hasDependency && (bool?)configType.GetField(attr!.DependsOn)?.GetValue(config) == false;
+                        if (isDisabled)
+                            ImGui.BeginDisabled();
+
+                        if (attr == null)
+                        {
 #if DEBUG
-                        ImGui.TextColored(ImGuiUtils.ColorRed, $"No ConfigFieldAttribute for {field.Name}");
+                            ImGui.TextColored(ImGuiUtils.ColorRed, $"No ConfigFieldAttribute for {field.Name}");
 #endif
-                    }
-                    else if (attr.Type == ConfigFieldTypes.Ignore)
-                    {
-                        // hidden
-                    }
-                    else if (attr.Type == ConfigFieldTypes.Color4)
-                    {
-                        var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType }))!;
-
-                        data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
-                        data.GetType().GetProperty("Config")!.SetValue(data, config);
-                        data.GetType().GetProperty("Field")!.SetValue(data, field);
-                        data.GetType().GetProperty("Attr")!.SetValue(data, attr);
-
-                        if (field.FieldType.Name == nameof(Vector4))
-                        {
-                            DrawColor4((ConfigDrawData<Vector4>)data);
                         }
-                        else
+                        else if (attr.Type == ConfigFieldTypes.Color4)
                         {
-                            DrawInvalidType(field);
-                        }
-                    }
-                    else if (attr.Type == ConfigFieldTypes.Auto)
-                    {
-                        var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType }))!;
+                            var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType }))!;
 
-                        data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
-                        data.GetType().GetProperty("Config")!.SetValue(data, config);
-                        data.GetType().GetProperty("Field")!.SetValue(data, field);
-                        data.GetType().GetProperty("Attr")!.SetValue(data, attr);
+                            data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
+                            data.GetType().GetProperty("Config")!.SetValue(data, config);
+                            data.GetType().GetProperty("Field")!.SetValue(data, field);
+                            data.GetType().GetProperty("Attr")!.SetValue(data, attr);
 
-                        switch (field.FieldType.Name)
-                        {
-                            case nameof(String): DrawString((ConfigDrawData<string>)data); break;
-                            case nameof(Single): DrawFloat((ConfigDrawData<float>)data); break;
-                            case nameof(Int32): DrawInt((ConfigDrawData<int>)data); break;
-                            case nameof(Boolean): DrawBool((ConfigDrawData<bool>)data); break;
-
-                            default: DrawNoDrawingFunctionError(field); break;
-                        }
-                    }
-                    else if (attr.Type == ConfigFieldTypes.SingleSelect)
-                    {
-                        if (field.FieldType.IsEnum)
-                        {
-                            var enumType = tweak.GetType().GetNestedType(attr.Options);
-                            if (enumType == null)
+                            if (field.FieldType.Name == nameof(Vector4))
                             {
-                                DrawNoDrawingFunctionError(field);
+                                DrawColor4((ConfigDrawData<Vector4>)data);
                             }
                             else
                             {
-                                var underlyingType = Enum.GetUnderlyingType(enumType);
-                                var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { underlyingType }))!;
+                                DrawInvalidType(field);
+                            }
+                        }
+                        else if (attr.Type == ConfigFieldTypes.Auto)
+                        {
+                            var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType }))!;
 
-                                data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
-                                data.GetType().GetProperty("Config")!.SetValue(data, config);
-                                data.GetType().GetProperty("Field")!.SetValue(data, field);
-                                data.GetType().GetProperty("Attr")!.SetValue(data, attr);
+                            data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
+                            data.GetType().GetProperty("Config")!.SetValue(data, config);
+                            data.GetType().GetProperty("Field")!.SetValue(data, field);
+                            data.GetType().GetProperty("Attr")!.SetValue(data, attr);
 
-                                switch (underlyingType.Name)
+                            switch (field.FieldType.Name)
+                            {
+                                case nameof(String): DrawString((ConfigDrawData<string>)data); break;
+                                case nameof(Single): DrawFloat((ConfigDrawData<float>)data); break;
+                                case nameof(Int32): DrawInt((ConfigDrawData<int>)data); break;
+                                case nameof(Boolean): DrawBool((ConfigDrawData<bool>)data); break;
+
+                                default: DrawNoDrawingFunctionError(field); break;
+                            }
+                        }
+                        else if (attr.Type == ConfigFieldTypes.SingleSelect)
+                        {
+                            if (field.FieldType.IsEnum)
+                            {
+                                var enumType = tweak.GetType().GetNestedType(attr.Options);
+                                if (enumType == null)
                                 {
-                                    case nameof(Int32): DrawSingleSelectEnumInt32((ConfigDrawData<int>)data, enumType); break;
+                                    DrawNoDrawingFunctionError(field);
+                                }
+                                else
+                                {
+                                    var underlyingType = Enum.GetUnderlyingType(enumType);
+                                    var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { underlyingType }))!;
 
-                                    default: DrawNoDrawingFunctionError(field); break;
+                                    data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
+                                    data.GetType().GetProperty("Config")!.SetValue(data, config);
+                                    data.GetType().GetProperty("Field")!.SetValue(data, field);
+                                    data.GetType().GetProperty("Attr")!.SetValue(data, attr);
+
+                                    switch (underlyingType.Name)
+                                    {
+                                        case nameof(Int32): DrawSingleSelectEnumInt32((ConfigDrawData<int>)data, enumType); break;
+
+                                        default: DrawNoDrawingFunctionError(field); break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                var options = tweak.GetType().GetField(attr.Options)?.GetValue(tweak);
+                                if (options is Dictionary<ClientLanguage, List<string>> opts)
+                                {
+                                    var data = new ConfigDrawData<string>()
+                                    {
+                                        Tweak = tweak,
+                                        Config = config,
+                                        Field = field,
+                                        Attr = attr,
+                                    };
+                                    var list = opts[Service.ClientState.ClientLanguage];
+                                    DrawSingleSelect(data, list);
+                                }
+                                else
+                                {
+                                    DrawNoDrawingFunctionError(field);
                                 }
                             }
                         }
                         else
                         {
-                            var options = tweak.GetType().GetField(attr.Options)?.GetValue(tweak);
-                            if (options is Dictionary<ClientLanguage, List<string>> opts)
-                            {
-                                var data = new ConfigDrawData<string>()
-                                {
-                                    Tweak = tweak,
-                                    Config = config,
-                                    Field = field,
-                                    Attr = attr,
-                                };
-                                var list = opts[Service.ClientState.ClientLanguage];
-                                DrawSingleSelect(data, list);
-                            }
-                            else
-                            {
-                                DrawNoDrawingFunctionError(field);
-                            }
+                            DrawNoDrawingFunctionError(field);
                         }
-                    }
-                    else
-                    {
-                        DrawNoDrawingFunctionError(field);
-                    }
 
-                    if (hasDependency)
-                        ImGui.Unindent();
+                        if (hasDependency)
+                            ImGui.Unindent();
 
-                    if (isDisabled)
-                        ImGui.EndDisabled();
+                        if (isDisabled)
+                            ImGui.EndDisabled();
+                    }
                 }
             }
         }
