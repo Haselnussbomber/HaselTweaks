@@ -147,6 +147,7 @@ A helper for editing portraits, featuring:
   - *Note*: The preset list is shared across all tags, but filtered by the selected tag. That means, reordering a preset will change the order across all tags.
   - *Note*: The preview image of a preset is saved as a .png file in the plugins configuration folder.
 - The Advanced Edit Mode lets you to precisely control the camera yaw, pitch, distance, x and y position, as well as zoom and rotation, eye and head direction and the animation timestamp.
+- An Alignment Tool adds guide lines over the portrait to aid in proper alignment and composition.
 
 ### Reveal Duty Requirements
 
