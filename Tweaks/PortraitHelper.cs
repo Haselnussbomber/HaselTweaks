@@ -3,16 +3,20 @@ using System.IO;
 using System.Numerics;
 using Dalamud.Game;
 using Dalamud.Memory;
+using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Extensions;
 using HaselTweaks.Records.PortraitHelper;
+using HaselTweaks.Sheets;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
+using Lumina.Excel.GeneratedSheets;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
@@ -23,7 +27,7 @@ using RenderTargetManager = HaselTweaks.Structs.RenderTargetManager;
 
 namespace HaselTweaks.Tweaks;
 
-public class PortraitHelper : Tweak
+public partial class PortraitHelper : Tweak
 {
     public override string Name => "Portrait Helper";
     public override string Description => "A helper for editing portraits.";
@@ -52,6 +56,9 @@ public class PortraitHelper : Tweak
 
         [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Horizontal Color"/*, DependsOn = nameof(ShowAlignmentTool), Type = ConfigFieldTypes.Color4*/)]
         public Vector4 AlignmentToolHorizontalColor = new(0, 0, 0, 1f);
+
+        [ConfigField(Label = "Auto-update Portrait when Gearset was updated")]
+        public bool AutoUpdatePortraitOnGearsetUpdate = true;
 
         public string GetPortraitThumbnailPath(string hash)
         {
@@ -94,15 +101,27 @@ public class PortraitHelper : Tweak
 
     public override unsafe void OnAddonOpen(string addonName, AtkUnitBase* unitbase)
     {
-        if (addonName != "BannerEditor")
+        if (addonName == "BannerEditor")
+        {
+            GetAgent(AgentId.BannerEditor, out AgentBannerEditor);
+            AddonBannerEditor = (AddonBannerEditor*)unitbase;
+
+            Plugin.WindowSystem.AddWindow(menuBar = new(this));
+
+            isOpen = true;
             return;
+        }
 
-        GetAgent(AgentId.BannerEditor, out AgentBannerEditor);
-        AddonBannerEditor = (AddonBannerEditor*)unitbase;
+        if (addonName == "Character" || addonName == "GearSetList")
+        {
+            var glamourData = GlamourData.Instance();
 
-        Plugin.WindowSystem.AddWindow(menuBar = new(this));
+            // make sure Glamour Plates are loaded
+            if (!glamourData->GlamourPlatesRequested || !glamourData->GlamourPlatesLoaded)
+                glamourData->RequestGlamourPlates();
 
-        isOpen = true;
+            return;
+        }
     }
 
     public override unsafe void OnAddonClose(string addonName, AtkUnitBase* unitbase)
@@ -685,4 +704,114 @@ public class PortraitHelper : Tweak
 
         return 0;
     }
+
+    [SigHook("E8 ?? ?? ?? ?? 8B E8 83 F8 FE 0F 8E ?? ?? ?? ?? 80 BE ?? ?? ?? ?? ??")]
+    public unsafe int RaptureGearsetModule_GearsetUpdate(RaptureGearsetModule* raptureGearsetModule, int gearsetIndex)
+    {
+        var ret = RaptureGearsetModule_GearsetUpdateHook.Original(raptureGearsetModule, gearsetIndex);
+
+        if (!Config.AutoUpdatePortraitOnGearsetUpdate)
+            return ret;
+
+        var gearset = raptureGearsetModule->GetGearset(gearsetIndex);
+        if (gearset == null)
+            return ret;
+
+        var bannerIndex = *(byte*)((nint)gearset + 0x36);
+        if (bannerIndex == 0) // no banner linked
+            return ret;
+
+        var bannerModule = BannerModule.Instance();
+        var bannerId = bannerModule->GetBannerIdByBannerIndex(bannerIndex - 1);
+        if (bannerId < 0) // banner not found
+            return ret;
+
+        var banner = bannerModule->GetBannerById(bannerId);
+        if (banner == null) // banner not found
+            return ret;
+
+        var gearsetClassJobCategoryRowId = Service.Data.GetExcelSheet<ClassJob>()?.GetRow(gearset->ClassJob)?.ClassJobCategory.Row ?? 0;
+        var gearsetClassJobCategory = Service.Data.GetExcelSheet<ExtendedClassJobCategory>()?.GetRow(gearsetClassJobCategoryRowId);
+        if (gearsetClassJobCategory == null)
+            return ret;
+
+        var bannerTimelineClassJobCategory = Service.Data.GetExcelSheet<ExtendedClassJobCategory>()?.GetRow(banner->BannerTimelineClassJobCategory);
+        if (bannerTimelineClassJobCategory == null)
+            return ret;
+
+        if (gearsetClassJobCategory[gearset->ClassJob] != bannerTimelineClassJobCategory[gearset->ClassJob])
+        {
+            Warning("Can't update Portrait because ClassJob classification in ClassJobCategory doesn't match (" +
+                $"ClassJob: {gearset->ClassJob}, " +
+                $"GearSetClassJobCategory: {gearsetClassJobCategoryRowId}, " +
+                $"BannerTimelineClassJobCategory: {banner->BannerTimelineClassJobCategory}" +
+                ")");
+            return ret;
+        }
+
+        Log($"Gearset #{gearsetIndex + 1} updated - updating Portrait");
+
+        const int ItemCount = 14;
+
+        var ptr = Marshal.AllocHGlobal(ItemCount * 4 + ItemCount);
+        var items = new Span<RaptureGearsetModule.GearsetItem>(gearset->ItemsData, ItemCount);
+        var glamourData = GlamourData.Instance();
+
+        for (var i = 0; i < ItemCount; i++)
+        {
+            var item = items[i];
+            var itemId = item.ItemID;
+            var stainId = item.Stain;
+
+            if (item.GlamourId != 0)
+                itemId = item.GlamourId;
+
+            if (glamourData->GlamourPlatesLoaded && gearset->GlamourSetLink > 0)
+            {
+                var glamourPlate = glamourData->GlamourPlatesSpan[gearset->GlamourSetLink - 1];
+
+                var itemIndex = i; // only 12 allowed here, so we have to filter:
+                if (itemIndex > 4) // ignore belt slot
+                    itemIndex -= 1;
+                if (itemIndex < 12) // cut off soulstone
+                {
+                    var glamourItemId = glamourPlate.ItemIds[itemIndex];
+                    if (glamourItemId != 0)
+                    {
+                        itemId = glamourItemId;
+                        stainId = glamourPlate.StainIds[itemIndex];
+                    }
+                }
+            }
+
+            *(uint*)(ptr + i * 4) = itemId;
+            *(byte*)(ptr + ItemCount * 4 + i) = stainId;
+        }
+
+        var gearVisibilityFlag = BannerGearVisibilityFlag.None;
+
+        if (!gearset->Flags.HasFlag(RaptureGearsetModule.GearsetFlag.WeaponsVisible))
+            gearVisibilityFlag |= BannerGearVisibilityFlag.WeaponHidden;
+
+        if (!gearset->Flags.HasFlag(RaptureGearsetModule.GearsetFlag.HeadgearVisible))
+            gearVisibilityFlag |= BannerGearVisibilityFlag.HeadgearHidden;
+
+        if (gearset->Flags.HasFlag(RaptureGearsetModule.GearsetFlag.VisorEnabled))
+            gearVisibilityFlag |= BannerGearVisibilityFlag.VisorClosed;
+
+        var gearsetHash = GenerateGearsetHash((uint*)ptr, (byte*)(ptr + ItemCount * 4), gearVisibilityFlag);
+
+        Marshal.FreeHGlobal(ptr);
+
+        banner->GearsetHash = gearsetHash;
+        banner->LastUpdated = (uint)DateTimeOffset.Now.ToUnixTimeSeconds();
+
+        bannerModule->UserFileEvent.IsSavePending = true;
+
+        return ret;
+    }
+
+    [Signature("E8 ?? ?? ?? ?? 89 43 48 48 83 C4 20")]
+    public readonly GenerateGearsetHashDelegate GenerateGearsetHash = null!;
+    public unsafe delegate uint GenerateGearsetHashDelegate(uint* itemIds, byte* stainIds, BannerGearVisibilityFlag gearVisibilityFlag);
 }

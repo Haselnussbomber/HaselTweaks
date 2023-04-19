@@ -149,6 +149,8 @@ A helper for editing portraits, featuring:
 - The Advanced Edit Mode lets you to precisely control the camera yaw, pitch, distance, x and y position, as well as zoom and rotation, eye and head direction and the animation timestamp.
 - An Alignment Tool adds guide lines over the portrait to aid in proper alignment and composition.
 
+It can also automatically update the gearset hash in the linked portrait when the gearset was updated, so it no longer breaks your portrait when you changed an item.
+
 ### Reveal Duty Requirements
 
 Reveals duty names in duty finder, which were shown as "???" to prevent spoilers. Useful for unlocking Mentor roulette.

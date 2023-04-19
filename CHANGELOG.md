@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Portrait Helper
+
+- **Added**: New config option "Auto-update Portrait when Gearset was updated" (default on).
+  - This updates the gearset hash in the linked portrait when you save your gearset, so it no longer resets to the default portrait when you changed an item.
+
 ## [0.14.5] (2023-04-17)
 
 - **Fixed**: The "Configuration" section title in the Tweak configuration is now hidden when there are no fields to configure.

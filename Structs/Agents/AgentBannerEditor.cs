@@ -59,6 +59,12 @@ public unsafe partial struct AgentBannerEditorState
     [FieldOffset(0x120)] public BannerModuleEntry BannerEntry;
 
     [FieldOffset(0x240)] public fixed uint ItemIds[14];
+    [FieldOffset(0x278)] public fixed byte StainIds[14];
+
+    [FieldOffset(0x288)] public uint GearsetHash;
+    [FieldOffset(0x28C)] public BannerGearVisibilityFlag GearVisibilityFlag;
+    [FieldOffset(0x290)] public byte GearsetIndex;
+    [FieldOffset(0x291)] public byte ClassJobId;
 
     [FieldOffset(0x298)] public AgentBannerEditor* AgentBannerEditor;
     [FieldOffset(0x2A0)] public UIModule* UIModule;
@@ -85,44 +91,3 @@ public unsafe partial struct AgentBannerEditorState
     public partial void SetHasChanged(bool hasDataChanged);
 }
 
-[StructLayout(LayoutKind.Explicit, Size = 0x90)]
-public unsafe struct BannerModuleEntry
-{
-    [FieldOffset(0x00)] public fixed byte BannerTimelineName[64]; // string
-    [FieldOffset(0x40)] public uint Flags; // maybe? unused?
-    [FieldOffset(0x44)] public HalfVector4 CameraPosition;
-    [FieldOffset(0x4C)] public HalfVector4 CameraTarget;
-    [FieldOffset(0x54)] public HalfVector2 HeadDirection;
-    [FieldOffset(0x58)] public HalfVector2 EyeDirection;
-    [FieldOffset(0x5C)] public short DirectionalLightingVerticalAngle;
-    [FieldOffset(0x5E)] public short DirectionalLightingHorizontalAngle;
-    [FieldOffset(0x60)] public byte Race; // CustomizeData[0]
-    [FieldOffset(0x61)] public byte Gender; // CustomizeData[1]
-    [FieldOffset(0x62)] public byte Height; // CustomizeData[3]
-    [FieldOffset(0x63)] public byte Tribe; // CustomizeData[4]
-    [FieldOffset(0x64)] public byte DirectionalLightingColorRed;
-    [FieldOffset(0x65)] public byte DirectionalLightingColorGreen;
-    [FieldOffset(0x66)] public byte DirectionalLightingColorBlue;
-    [FieldOffset(0x67)] public byte AmbientLightingColorRed;
-    [FieldOffset(0x68)] public byte AmbientLightingColorGreen;
-    [FieldOffset(0x69)] public byte AmbientLightingColorBlue;
-    [FieldOffset(0x6C)] public float AnimationProgress;
-    [FieldOffset(0x70)] public uint BannerTimelineIcon;
-    [FieldOffset(0x74)] public uint LastUpdated; // unix timestamp
-    // [FieldOffset(0x78)] public uint N00019C6B; // 140A4AE7D: *(_DWORD *)(0x54i64 * *(int *)(a1 + 0xC8) + *(_QWORD *)(a1 + 0xA8) + 0x48); -- Checksum?
-    [FieldOffset(0x7C)] public ushort BannerBg;
-    [FieldOffset(0x7E)] public ushort BannerFrame;
-    [FieldOffset(0x80)] public ushort BannerDecoration;
-    [FieldOffset(0x82)] public ushort BannerTimeline;
-    [FieldOffset(0x84)] public short ImageRotation;
-    [FieldOffset(0x86)] public byte BannerEntryIndex;
-    [FieldOffset(0x87)] public byte BannerID;
-    [FieldOffset(0x88)] public byte BannerTimelineClassJobCategory;
-    [FieldOffset(0x89)] public byte Expression;
-    [FieldOffset(0x8A)] public byte CameraZoom;
-    [FieldOffset(0x8B)] public byte DirectionalLightingBrightness;
-    [FieldOffset(0x8C)] public byte AmbientLightingBrightness;
-    [FieldOffset(0x8D)] public byte HasBannerTimelineCustomName;
-    // [FieldOffset(0x8E)] public byte N00019BE6;
-    // [FieldOffset(0x8F)] public byte N00019BCA;
-}
