@@ -5,7 +5,11 @@
 ### Portrait Helper
 
 - **Added**: New config option "Auto-update Portrait when Gearset was updated" (default on).
-  - This updates the gearset hash in the linked portrait when you save your gearset, so it no longer resets to the default portrait when you changed an item.
+  - This updates the gearset hash in the linked portrait when you save your gearset, so it no longer resets to the default portrait when you changed an item, glamour or the linked glamour plate.
+
+---
+
+Starting with the next release, the versioning will change to make things clearer. The major version (currently 0) will increase when I add/remove/rework tweaks, the minor version (currently 14) will increase when I add/remove things to existing tweaks, and the patch version (currently 6) will increase when I fix things. So don't get confused if it suddenly becomes v14.6.1, v14.7.0 or v15.0.0. 😄
 
 ## [0.14.5] (2023-04-17)
 
