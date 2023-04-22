@@ -3,8 +3,10 @@ using System.IO;
 using System.Numerics;
 using Dalamud.Game;
 using Dalamud.Memory;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Extensions;
@@ -23,7 +25,7 @@ using RenderTargetManager = HaselTweaks.Structs.RenderTargetManager;
 
 namespace HaselTweaks.Tweaks;
 
-public class PortraitHelper : Tweak
+public partial class PortraitHelper : Tweak
 {
     public override string Name => "Portrait Helper";
     public override string Description => "A helper for editing portraits.";
@@ -52,6 +54,9 @@ public class PortraitHelper : Tweak
 
         [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Horizontal Color"/*, DependsOn = nameof(ShowAlignmentTool), Type = ConfigFieldTypes.Color4*/)]
         public Vector4 AlignmentToolHorizontalColor = new(0, 0, 0, 1f);
+
+        [ConfigField(Label = "Re-equip Gearset when it was updated", Description = "This is to ensure the glamour plate is applied, so your portrait doesn't break. Only works in places where glamour plates are allowed to be applied.")]
+        public bool ReequipGearsetOnUpdate = true;
 
         public string GetPortraitThumbnailPath(string hash)
         {
@@ -701,5 +706,22 @@ public class PortraitHelper : Tweak
         }
 
         return 0;
+    }
+
+    [SigHook("E8 ?? ?? ?? ?? 8B E8 83 F8 FE 0F 8E ?? ?? ?? ?? 80 BE ?? ?? ?? ?? ??")]
+    public unsafe int RaptureGearsetModule_GearsetUpdate(RaptureGearsetModule* raptureGearsetModule, int gearsetIndex)
+    {
+        var ret = RaptureGearsetModule_GearsetUpdateHook.Original(raptureGearsetModule, gearsetIndex);
+
+        if (!Config.ReequipGearsetOnUpdate || !GameMain.IsInSanctuary())
+            return ret;
+
+        var gearset = raptureGearsetModule->GetGearset(gearsetIndex);
+        if (gearset == null)
+            return ret;
+
+        raptureGearsetModule->EquipGearset(gearset->ID, gearset->GlamourSetLink);
+
+        return ret;
     }
 }
