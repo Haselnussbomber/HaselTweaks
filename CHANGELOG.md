@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Portrait Helper
+
+- **Fixed**: Under certain conditions the clipboard didn't get closed, which prevented it from working anywhere in Windows until the game was closed.
+
 ## [0.14.6] (2023-04-20)
 
 ### Portrait Helper

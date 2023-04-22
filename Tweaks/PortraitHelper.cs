@@ -269,21 +269,30 @@ public partial class PortraitHelper : Tweak
         if (!ClipboardUtils.OpenClipboard(0))
             return;
 
-        lastClipboardSequenceNumber = clipboardSequenceNumber;
-
-        var data = ClipboardUtils.GetClipboardData(ClipboardUtils.ClipboardFormat.CF_TEXT);
-        if (data != 0)
+        try
         {
-            var clipboardText = MemoryHelper.ReadString(data, 1024);
-            ClipboardPreset = PortraitPreset.FromExportedString(clipboardText);
+            lastClipboardSequenceNumber = clipboardSequenceNumber;
 
-            if (ClipboardPreset != null)
-                Debug($"Parsed ClipboardPreset: {ClipboardPreset}");
+            var data = ClipboardUtils.GetClipboardData(ClipboardUtils.ClipboardFormat.CF_TEXT);
+            if (data != 0)
+            {
+                var clipboardText = MemoryHelper.ReadString(data, 1024);
+                ClipboardPreset = PortraitPreset.FromExportedString(clipboardText);
+
+                if (ClipboardPreset != null)
+                    Debug($"Parsed ClipboardPreset: {ClipboardPreset}");
+            }
         }
+        catch (Exception e)
+        {
+            Error("Error during CheckClipboard", e);
+        }
+        finally
+        {
+            ClipboardUtils.CloseClipboard();
 
-        ClipboardUtils.CloseClipboard();
-
-        lastClipboardCheck = DateTime.Now;
+            lastClipboardCheck = DateTime.Now;
+        }
     }
 
     public async void PresetToClipboard(PortraitPreset? preset)
@@ -293,14 +302,22 @@ public partial class PortraitHelper : Tweak
 
         await ClipboardUtils.OpenClipboard();
 
-        if (!ClipboardUtils.EmptyClipboard())
-            return;
+        try
+        {
+            ClipboardUtils.EmptyClipboard();
 
-        var clipboardText = Marshal.StringToHGlobalAnsi(preset.ToExportedString());
-        if (ClipboardUtils.SetClipboardData(ClipboardUtils.ClipboardFormat.CF_TEXT, clipboardText) != 0)
-            ClipboardPreset = preset;
-
-        ClipboardUtils.CloseClipboard();
+            var clipboardText = Marshal.StringToHGlobalAnsi(preset.ToExportedString());
+            if (ClipboardUtils.SetClipboardData(ClipboardUtils.ClipboardFormat.CF_TEXT, clipboardText) != 0)
+                ClipboardPreset = preset;
+        }
+        catch (Exception e)
+        {
+            Error("Error during PresetToClipboard", e);
+        }
+        finally
+        {
+            ClipboardUtils.CloseClipboard();
+        }
     }
 
     public unsafe Image<Bgra32>? GetCurrentCharaViewImage()
