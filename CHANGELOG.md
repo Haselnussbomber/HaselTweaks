@@ -1,10 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## [14.7.0] (2023-04-23)
 
 ### Portrait Helper
 
-- **Removed**: "Auto-update Portrait when Gearset was updated" didn't work as expected. Sorry. :(
+- **Removed**: The option "Auto-update Portrait when Gearset was updated", which was added in v0.14.6, didn't work as expected - in fact, it probably did nothing at all. I'm sorry.
 - **Fixed**: Under certain conditions the clipboard didn't get closed, which prevented it from working anywhere in Windows until the game was closed.
 
 ## [0.14.6] (2023-04-20)
@@ -717,6 +717,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[14.7.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.6...v14.7.0
 [0.14.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.5...v0.14.6
 [0.14.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.4...v0.14.5
 [0.14.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.3...v0.14.4
