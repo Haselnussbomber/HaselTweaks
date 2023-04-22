@@ -149,6 +149,10 @@ A helper for editing portraits, featuring:
 - The Advanced Edit Mode lets you to precisely control the camera yaw, pitch, distance, x and y position, as well as zoom and rotation, eye and head direction and the animation timestamp.
 - An Alignment Tool adds guide lines over the portrait to aid in proper alignment and composition.
 
+Configuration options:
+
+ - "Re-equip Gearset when it was updated" (default off to prevent confusion): This option ensures the glamour plate is applied after updating the gearset by re-equipping it, which should help with portrait resetting to default. Of course it only works in places where glamour plates are allowed to be applied.
+
 ### Reveal Duty Requirements
 
 Reveals duty names in duty finder, which were shown as "???" to prevent spoilers. Useful for unlocking Mentor roulette.

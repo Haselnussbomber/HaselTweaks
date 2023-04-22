@@ -7,7 +7,7 @@ Sorry for the quick updates, but I just came up with this solution:
 ### Portrait Helper
 
 - **Added**: "Re-equip Gearset when it was updated" option (default **off** to prevent confusion).
-  - This option ensures the glamour plate is applied after updating the gearset, which should help with portrait resetting to default. Of course it only works in places where glamour plates are allowed to be applied.
+  - This option ensures the glamour plate is applied after updating the gearset by re-equipping it, which should help with portrait resetting to default. Of course it only works in places where glamour plates are allowed to be applied.
 
 ## [14.7.0] (2023-04-23)
 
