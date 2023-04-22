@@ -56,7 +56,7 @@ public partial class PortraitHelper : Tweak
         public Vector4 AlignmentToolHorizontalColor = new(0, 0, 0, 1f);
 
         [ConfigField(Label = "Re-equip Gearset when it was updated", Description = "This is to ensure the glamour plate is applied, so your portrait doesn't break. Only works in places where glamour plates are allowed to be applied.")]
-        public bool ReequipGearsetOnUpdate = true;
+        public bool ReequipGearsetOnUpdate = false;
 
         public string GetPortraitThumbnailPath(string hash)
         {
