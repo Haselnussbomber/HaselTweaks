@@ -55,7 +55,7 @@ public partial class PortraitHelper : Tweak
         [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Horizontal Color"/*, DependsOn = nameof(ShowAlignmentTool), Type = ConfigFieldTypes.Color4*/)]
         public Vector4 AlignmentToolHorizontalColor = new(0, 0, 0, 1f);
 
-        [ConfigField(Label = "Re-equip Gearset when it was updated", Description = "This is to ensure the glamour plate is applied, so your portrait doesn't break. Only works in places where glamour plates are allowed to be applied.")]
+        [ConfigField(Label = "Re-equip Gearset when it was updated", Description = "This option ensures the glamour plate is applied after updating the gearset by re-equipping it, which should help with portrait resetting to default. Of course it only works in places where glamour plates are allowed to be applied, if the gearset actually is linked to a glamour plate and if the glamour plate covers the changed slots.")]
         public bool ReequipGearsetOnUpdate = false;
 
         public string GetPortraitThumbnailPath(string hash)
