@@ -1,5 +1,14 @@
 # Changelog
 
+## [14.8.0] (2023-04-23)
+
+Sorry for the quick updates, but I just came up with this solution:
+
+### Portrait Helper
+
+- **Added**: "Re-equip Gearset when it was updated" option (default **off** to prevent confusion).
+  - This option ensures the glamour plate is applied after updating the gearset, which should help with portrait resetting to default. Of course it only works in places where glamour plates are allowed to be applied.
+
 ## [14.7.0] (2023-04-23)
 
 ### Portrait Helper
@@ -717,6 +726,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[14.8.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.7.0...v14.8.0
 [14.7.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.6...v14.7.0
 [0.14.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.5...v0.14.6
 [0.14.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v0.14.4...v0.14.5
