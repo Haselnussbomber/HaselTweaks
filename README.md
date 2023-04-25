@@ -110,7 +110,7 @@ Hides the Main Scenario Guide when the MSQ is completed. Job quests are still be
 
 ### Keep Screen Awake
 
-Prevents the screen from going into standby. Alternatively one can use [PowerToys Awake](https://docs.microsoft.com/windows/powertoys/).
+Prevents the screen from going into standby. Similar to [PowerToys Awake](https://docs.microsoft.com/windows/powertoys/), but only when the game is active.
 
 ### Lock Window Position
 
