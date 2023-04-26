@@ -151,7 +151,9 @@ A helper for editing portraits, featuring:
 
 Configuration options:
 
- - "Re-equip Gearset when it was updated" (default off to prevent confusion): This option ensures the glamour plate is applied after updating the gearset by re-equipping it, which should help with portrait resetting to default. Of course it only works in places where glamour plates are allowed to be applied, if the gearset actually is linked to a glamour plate and if the glamour plate covers the changed slots.
+ - "Re-equip Gearset when it was updated" (default off to prevent confusion)  
+   If the gearset is linked to a glamour plate and you're in a place where glamour plates are allowed to be applied, this makes the update gearset button to re-equip the gearset afterwards, which reapplies the glamour plate.
+   As a side effect, this may help with the problem of instant portraits being reset to default in duties. Of course, this only works if the glamour plate covers the changed slot(s) and, most importantly, the mainhand/headgear visibility and visor state is the same as saved in the portrait.
 
 ### Reveal Duty Requirements
 
