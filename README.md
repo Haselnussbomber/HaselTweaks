@@ -151,9 +151,8 @@ A helper for editing portraits, featuring:
 
 Configuration options:
 
- - "Re-equip Gearset when it was updated" (default off to prevent confusion)  
-   If the gearset is linked to a glamour plate and you're in a place where glamour plates are allowed to be applied, this makes the update gearset button to re-equip the gearset afterwards, which reapplies the glamour plate.
-   As a side effect, this may help with the problem of instant portraits being reset to default in duties. Of course, this only works if the glamour plate covers the changed slot(s) and, most importantly, the mainhand/headgear visibility and visor state is the same as saved in the portrait.
+- "Notify if appearance and/or gear doesn't match Portait" (default on): Prints a notification in chat which can be clicked to open the Portrait Editor.
+- "Try to fix by automatically re-equipping Gearset to reapply Glamour Plate" (default off, depends on the notification option): Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state.
 
 ### Reveal Duty Requirements
 

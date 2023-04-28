@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Custom Chat Timestamp
+
+- **Fixed**: Errors caused by an invalid format are now caught and don't crash the game anymore.
+
 ### Portrait Helper
 
 The tweak will now display a notification whenever the appearance and/or gear doesn't match what was saved in the portait (can be disabled).
