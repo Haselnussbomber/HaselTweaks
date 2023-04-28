@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased]
+
+### Portrait Helper
+
+The tweak will now display a notification whenever the appearance and/or gear doesn't match what was saved in the portait (can be disabled).
+
+- **Added**: A new option `Notify if appearance and/or gear doesn't match Portait` (default on):
+  - Prints a notification in chat which can be clicked to open the Portrait Editor.
+- **Changed**: The option `Re-equip Gearset when it was updated` was renamed to `Try to fix by automatically reapplying the Glamour Plate` and now depends on the notification option.
+  - Still only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state.
+- **Added**: A new option `Automatically open Portrait Editor` (default off, depends on the notification option).
+  - This can be annoying and/or confusing when the gearset is missing items. Therefore, it is set to off by default.
+
 ## [14.8.0] (2023-04-23)
 
 Sorry for the quick updates, but I just came up with this solution:
