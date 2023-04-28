@@ -133,7 +133,7 @@ public partial class PortraitHelper : Tweak
     private unsafe void OpenPortraitEditChatHandler(uint commandId, SeString message)
     {
         var gearsetId = GetEquippedGearsetId(RaptureGearsetModule.Instance());
-        if (gearsetId > -1)
+        if (gearsetId >= 0 && gearsetId < 101)
         {
             AgentBannerEditor->OpenForGearset(gearsetId);
         }
@@ -767,28 +767,28 @@ public partial class PortraitHelper : Tweak
     }
 
     [SigHook("E8 ?? ?? ?? ?? 8B E8 83 F8 FE 0F 8E ?? ?? ?? ?? 80 BE ?? ?? ?? ?? ??")]
-    public unsafe int RaptureGearsetModule_GearsetUpdate(RaptureGearsetModule* raptureGearsetModule, int gearsetIndex)
+    public unsafe int RaptureGearsetModule_GearsetUpdate(RaptureGearsetModule* raptureGearsetModule, uint gearsetId)
     {
-        var ret = RaptureGearsetModule_GearsetUpdateHook.Original(raptureGearsetModule, gearsetIndex);
+        var ret = RaptureGearsetModule_GearsetUpdateHook.Original(raptureGearsetModule, gearsetId);
 
         jobChangedOrGearsetUpdatedCTS?.Cancel();
         jobChangedOrGearsetUpdatedCTS = new();
 
         Service.Framework.RunOnTick(() =>
         {
-            CheckForGearChecksumMismatch(gearsetIndex);
+            CheckForGearChecksumMismatch(gearsetId);
         }, delay: CheckDelay, cancellationToken: jobChangedOrGearsetUpdatedCTS.Token);
 
         return ret;
     }
 
-    private unsafe void CheckForGearChecksumMismatch(int gearsetIndex, bool disableReequip = false)
+    private unsafe void CheckForGearChecksumMismatch(uint gearsetId, bool disableReequip = false)
     {
-        if (!Config.NotifyGearChecksumMismatch || gearsetIndex == -1 || !GameMain.IsInSanctuary())
+        if (!Config.NotifyGearChecksumMismatch || gearsetId >= 101 || !GameMain.IsInSanctuary())
             return;
 
         var raptureGearsetModule = RaptureGearsetModule.Instance();
-        var gearset = raptureGearsetModule->GetGearset(gearsetIndex);
+        var gearset = raptureGearsetModule->GetGearset((int)gearsetId);
         if (gearset == null)
             return;
 
@@ -855,7 +855,7 @@ public partial class PortraitHelper : Tweak
             .AddUiForeground("\uE078 ", 32);
 
         var gearsetId = GetEquippedGearsetId(RaptureGearsetModule.Instance());
-        if (gearsetId > -1)
+        if (gearsetId >= 0 && gearsetId < 101)
         {
             if (openPortraitEditPayload != null)
             {
@@ -921,5 +921,5 @@ public partial class PortraitHelper : Tweak
 
     [Signature("E8 ?? ?? ?? ?? 3B D8 75 11")]
     public readonly GetEquippedGearsetIdDelegate GetEquippedGearsetId = null!;
-    public unsafe delegate int GetEquippedGearsetIdDelegate(RaptureGearsetModule* module);
+    public unsafe delegate uint GetEquippedGearsetIdDelegate(RaptureGearsetModule* module);
 }
