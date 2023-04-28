@@ -67,9 +67,6 @@ public partial class PortraitHelper : Tweak
         [ConfigField(Label = "Try to fix by automatically reapplying the Glamour Plate", DependsOn = nameof(NotifyGearChecksumMismatch), Description = "Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state.")]
         public bool ReequipGearsetOnUpdate = false;
 
-        [ConfigField(Label = "Automatically open Portrait Editor", DependsOn = nameof(NotifyGearChecksumMismatch), Description = "This may be annoying and/or confusing when the gearset is missing items.")]
-        public bool AutoOpenPortraitEditorAfterGearsetUpdate = false;
-
         public string GetPortraitThumbnailPath(string hash)
         {
             var portraitsPath = Path.Join(Service.PluginInterface.ConfigDirectory.FullName, "Portraits");
@@ -856,11 +853,6 @@ public partial class PortraitHelper : Tweak
             else
             {
                 sb.AddText(text);
-            }
-
-            if (Config.AutoOpenPortraitEditorAfterGearsetUpdate)
-            {
-                AgentBannerEditor->OpenForGearset(gearsetId);
             }
         }
         else
