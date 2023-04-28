@@ -8,10 +8,13 @@ namespace HaselTweaks.Structs;
 // ctor "40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 48 89 03 48 8D 53 30"
 [Agent(AgentId.BannerEditor)]
 [StructLayout(LayoutKind.Explicit, Size = 0x38)]
-public unsafe struct AgentBannerEditor
+public unsafe partial struct AgentBannerEditor
 {
     [FieldOffset(0)] public AgentInterface AgentInterface;
     [FieldOffset(0x28)] public AgentBannerEditorState* EditorState;
+
+    [MemberFunction("48 89 5C 24 ?? 57 48 83 EC 30 48 83 3D ?? ?? ?? ?? ?? 8B FA 48 8B D9 0F 84")]
+    public partial void OpenForGearset(int gearsetId);
 }
 
 [StructLayout(LayoutKind.Explicit, Size = 0x2D8)]

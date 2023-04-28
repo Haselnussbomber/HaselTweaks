@@ -1,9 +1,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
-using Dalamud.Game;
+using System.Threading;
+using Dalamud;
+using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Memory;
+using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -21,6 +26,7 @@ using SharpDX.DXGI;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using static HaselTweaks.Structs.AgentBannerEditorState;
+using DalamudFramework = Dalamud.Game.Framework;
 using RenderTargetManager = HaselTweaks.Structs.RenderTargetManager;
 
 namespace HaselTweaks.Tweaks;
@@ -55,8 +61,17 @@ public partial class PortraitHelper : Tweak
         [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Horizontal Color"/*, DependsOn = nameof(ShowAlignmentTool), Type = ConfigFieldTypes.Color4*/)]
         public Vector4 AlignmentToolHorizontalColor = new(0, 0, 0, 1f);
 
-        [ConfigField(Label = "Re-equip Gearset when it was updated", Description = "If the gearset is linked to a glamour plate and you're in a place where glamour plates are allowed to be applied, this makes the update gearset button to re-equip the gearset afterwards, which reapplies the glamour plate.\nAs a side effect, this may help with the problem of instant portraits being reset to default in duties. Of course, this only works if the glamour plate covers the changed slot(s) and, most importantly, the mainhand/headgear visibility and visor state is the same as saved in the portrait.")]
+        [ConfigField(Label = "Notify if appearance and/or gear doesn't match Portait after updating Gearset", Description = "Prints a notification in chat which can be clicked to open the Portrait Editor.")]
+        public bool NotifyGearChecksumMismatch = true;
+
+        [ConfigField(Label = "Also notify after switching jobs", DependsOn = nameof(NotifyGearChecksumMismatch))]
+        public bool NotifyGearChecksumMismatchAfterJobSwitch = true;
+
+        [ConfigField(Label = "Try to fix with automatically re-equipping Gearset to reapply Glamour Plate", DependsOn = nameof(NotifyGearChecksumMismatch), Description = "Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state.")]
         public bool ReequipGearsetOnUpdate = false;
+
+        [ConfigField(Label = "Automatically open Portrait Editor", DependsOn = nameof(NotifyGearChecksumMismatch), Description = "This may be annoying and/or confusing when the gearset is missing items.")]
+        public bool AutoOpenPortraitEditorAfterGearsetUpdate = false;
 
         public string GetPortraitThumbnailPath(string hash)
         {
@@ -80,6 +95,10 @@ public partial class PortraitHelper : Tweak
     private AlignmentToolSettingsOverlay? alignmentToolSettingsOverlay;
     private DateTime lastClipboardCheck = default;
     private uint lastClipboardSequenceNumber;
+    private CancellationTokenSource? jobChangedOrGearsetUpdatedCTS;
+    private uint lastJob = 0;
+    private DalamudLinkPayload? openPortraitEditPayload;
+    private readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
     public ViewMode OverlayViewMode { get; private set; } = ViewMode.Normal;
     public ImportFlags CurrentImportFlags { get; set; } = ImportFlags.All;
@@ -88,13 +107,29 @@ public partial class PortraitHelper : Tweak
 
     public override unsafe void Enable()
     {
+        lastJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
+        openPortraitEditPayload = Service.PluginInterface.AddChatLinkHandler(1000, OpenPortraitEditChatHandler);
+
+        GetAgent(AgentId.BannerEditor, out AgentBannerEditor);
+
         if (GetAddon(AgentId.BannerEditor, out var addon))
             OnAddonOpen("BannerEditor", addon);
     }
 
     public override void Disable()
     {
+        Service.PluginInterface.RemoveChatLinkHandler(1000);
+
         CloseWindows();
+    }
+
+    private unsafe void OpenPortraitEditChatHandler(uint commandId, SeString message)
+    {
+        var gearsetId = GetEquippedGearsetId(RaptureGearsetModule.Instance());
+        if (gearsetId > -1)
+        {
+            AgentBannerEditor->OpenForGearset(gearsetId);
+        }
     }
 
     public override unsafe void OnAddonOpen(string addonName, AtkUnitBase* unitbase)
@@ -102,7 +137,6 @@ public partial class PortraitHelper : Tweak
         if (addonName != "BannerEditor")
             return;
 
-        GetAgent(AgentId.BannerEditor, out AgentBannerEditor);
         AddonBannerEditor = (AddonBannerEditor*)unitbase;
 
         Plugin.WindowSystem.AddWindow(menuBar = new(this));
@@ -165,8 +199,25 @@ public partial class PortraitHelper : Tweak
         OverlayViewMode = ViewMode.Normal;
     }
 
-    public override void OnFrameworkUpdate(Framework framework)
+    public override unsafe void OnFrameworkUpdate(DalamudFramework framework)
     {
+        var currentJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
+        if (currentJob != lastJob)
+        {
+            jobChangedOrGearsetUpdatedCTS?.Cancel();
+            jobChangedOrGearsetUpdatedCTS = new();
+
+            lastJob = currentJob;
+
+            if (Config.NotifyGearChecksumMismatch && Config.NotifyGearChecksumMismatchAfterJobSwitch)
+            {
+                Service.Framework.RunOnTick(() =>
+                {
+                    CheckForGearChecksumMismatch(GetEquippedGearsetId(RaptureGearsetModule.Instance()), true);
+                }, CheckDelay, cancellationToken: jobChangedOrGearsetUpdatedCTS.Token);
+            }
+        }
+
         if (!isOpen)
             return;
 
@@ -713,15 +764,158 @@ public partial class PortraitHelper : Tweak
     {
         var ret = RaptureGearsetModule_GearsetUpdateHook.Original(raptureGearsetModule, gearsetIndex);
 
-        if (!Config.ReequipGearsetOnUpdate || !GameMain.IsInSanctuary())
-            return ret;
+        jobChangedOrGearsetUpdatedCTS?.Cancel();
+        jobChangedOrGearsetUpdatedCTS = new();
 
-        var gearset = raptureGearsetModule->GetGearset(gearsetIndex);
-        if (gearset == null)
-            return ret;
-
-        raptureGearsetModule->EquipGearset(gearset->ID, gearset->GlamourSetLink);
+        Service.Framework.RunOnTick(() =>
+        {
+            CheckForGearChecksumMismatch(gearsetIndex);
+        }, delay: CheckDelay, cancellationToken: jobChangedOrGearsetUpdatedCTS.Token);
 
         return ret;
     }
+
+    private unsafe void CheckForGearChecksumMismatch(int gearsetIndex, bool disableReequip = false)
+    {
+        if (!Config.NotifyGearChecksumMismatch || gearsetIndex == -1 || !GameMain.IsInSanctuary())
+            return;
+
+        var raptureGearsetModule = RaptureGearsetModule.Instance();
+        var gearset = raptureGearsetModule->GetGearset(gearsetIndex);
+        if (gearset == null)
+            return;
+
+        var bannerIndex = *(byte*)((nint)gearset + 0x36);
+        if (bannerIndex == 0) // no banner linked
+            return;
+
+        var bannerModule = BannerModule.Instance();
+        var bannerId = bannerModule->GetBannerIdByBannerIndex(bannerIndex - 1);
+        if (bannerId < 0) // banner not found
+            return;
+
+        var banner = bannerModule->GetBannerById(bannerId);
+        if (banner == null) // banner not found
+            return;
+
+        if (banner->GearChecksum == GetEquippedGearChecksum())
+        {
+            Log($"Gear checksum matches! (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
+            return;
+        }
+
+        Log($"Gear checksum mismatch detected! (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
+
+        if (!disableReequip && Config.ReequipGearsetOnUpdate && gearset->GlamourSetLink > 0 && openPortraitEditPayload != null)
+        {
+            Log($"Re-equipping Gearset #{gearset->ID + 1} to reapply Glamour Plate");
+            raptureGearsetModule->EquipGearset(gearset->ID, gearset->GlamourSetLink);
+
+            jobChangedOrGearsetUpdatedCTS?.Cancel();
+            jobChangedOrGearsetUpdatedCTS = new();
+
+            Service.Framework.RunOnTick(() =>
+            {
+                if (banner->GearChecksum != GetEquippedGearChecksum())
+                {
+                    Log($"Gear checksum still mismatching (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X}), opening Banner Editor");
+
+                    NotifyMismatchOrOpenPortraitEditor();
+                }
+                else
+                {
+                    Log($"Gear checksum matches now (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
+                }
+            }, delay: CheckDelay, cancellationToken: jobChangedOrGearsetUpdatedCTS.Token); // TODO: find out when it's safe to check again instead of randomly picking a delay. ping may vary
+        }
+        else
+        {
+            NotifyMismatchOrOpenPortraitEditor();
+        }
+    }
+
+    private unsafe void NotifyMismatchOrOpenPortraitEditor()
+    {
+        var text = Service.ClientState.ClientLanguage switch // see LogMessage#5876
+        {
+            ClientLanguage.German => "Momentan angelegte Ausrüstung und Aussehen weichen vom Portrait ab.",
+            ClientLanguage.French => "La tenue que vous portez ou votre apparence ne correspondent pas à celles de votre portrait instantané.",
+            //ClientLanguage.Japanese => "", // I don't speak Japanese and this requires a modification of the text, sorry.
+            _ => "Current appearance and/or gear does not match that shown in portrait.",
+        };
+
+        var sb = new SeStringBuilder()
+            .AddUiForeground("\uE078 ", 32);
+
+        var gearsetId = GetEquippedGearsetId(RaptureGearsetModule.Instance());
+        if (gearsetId > -1)
+        {
+            if (openPortraitEditPayload != null)
+            {
+                sb.Add(openPortraitEditPayload)
+                  .AddText(text)
+                  .Add(RawPayload.LinkTerminator);
+            }
+            else
+            {
+                sb.AddText(text);
+            }
+
+            if (Config.AutoOpenPortraitEditorAfterGearsetUpdate)
+            {
+                AgentBannerEditor->OpenForGearset(gearsetId);
+            }
+        }
+        else
+        {
+            sb.AddText(text);
+        }
+
+        Framework.Instance()->GetUiModule()->ShowErrorText(text, false);
+
+        Service.Chat.PrintError(sb.Build());
+    }
+
+    private unsafe uint GetEquippedGearChecksum()
+    {
+        const int ItemCount = 14;
+
+        var ptr = Marshal.AllocHGlobal(4 * ItemCount + ItemCount);
+        var container = InventoryManager.Instance()->GetInventoryContainer(InventoryType.EquippedItems);
+
+        for (var i = 0; i < ItemCount; i++)
+        {
+            var item = container->Items[i];
+
+            *(uint*)(ptr + i * 4) = item.GlamourID != 0 ? item.GlamourID : item.ItemID;
+            *(byte*)(ptr + ItemCount * 4 + i) = item.Stain;
+        }
+
+        var numberArray = AtkStage.GetSingleton()->GetNumberArrayData()[62];
+
+        var gearVisibilityFlag = BannerGearVisibilityFlag.None;
+
+        if (numberArray->IntArray[268] == 0)
+            gearVisibilityFlag |= BannerGearVisibilityFlag.HeadgearHidden;
+
+        if (numberArray->IntArray[269] == 0)
+            gearVisibilityFlag |= BannerGearVisibilityFlag.WeaponHidden;
+
+        if (numberArray->IntArray[270] == 1)
+            gearVisibilityFlag |= BannerGearVisibilityFlag.VisorClosed;
+
+        var gearsetHash = GenerateGearChecksum((uint*)ptr, (byte*)(ptr + ItemCount * 4), gearVisibilityFlag);
+
+        Marshal.FreeHGlobal(ptr);
+
+        return gearsetHash;
+    }
+
+    [Signature("E8 ?? ?? ?? ?? 89 43 48 48 83 C4 20")]
+    public readonly GenerateGearChecksumDelegate GenerateGearChecksum = null!;
+    public unsafe delegate uint GenerateGearChecksumDelegate(uint* itemIds, byte* stainIds, BannerGearVisibilityFlag gearVisibilityFlag);
+
+    [Signature("E8 ?? ?? ?? ?? 3B D8 75 11")]
+    public readonly GetEquippedGearsetIdDelegate GetEquippedGearsetId = null!;
+    public unsafe delegate int GetEquippedGearsetIdDelegate(RaptureGearsetModule* module);
 }

@@ -46,7 +46,7 @@ public unsafe partial struct BannerModuleData
 public unsafe struct BannerModuleEntry
 {
     [FieldOffset(0x00)] public fixed byte BannerTimelineName[64]; // string
-    [FieldOffset(0x40)] public uint Flags; // maybe? unused?
+    [FieldOffset(0x40)] public uint Flags; // maybe? see "8B C2 4C 8B C9 99"
     [FieldOffset(0x44)] public HalfVector4 CameraPosition;
     [FieldOffset(0x4C)] public HalfVector4 CameraTarget;
     [FieldOffset(0x54)] public HalfVector2 HeadDirection;
@@ -66,7 +66,7 @@ public unsafe struct BannerModuleEntry
     [FieldOffset(0x6C)] public float AnimationProgress;
     [FieldOffset(0x70)] public uint BannerTimelineIcon;
     [FieldOffset(0x74)] public uint LastUpdated; // unix timestamp
-    [FieldOffset(0x78)] public uint GearsetHash; // see "E8 ?? ?? ?? ?? 89 43 48 48 83 C4 20" (BannerModuleEntry is not a parameter of this! the hash is generated when AgentBannerList loads)
+    [FieldOffset(0x78)] public uint GearChecksum; // see "E8 ?? ?? ?? ?? 89 43 48 48 83 C4 20" (BannerModuleEntry is not a parameter of this! the hash is generated when AgentBannerList loads)
     [FieldOffset(0x7C)] public ushort BannerBg;
     [FieldOffset(0x7E)] public ushort BannerFrame;
     [FieldOffset(0x80)] public ushort BannerDecoration;
