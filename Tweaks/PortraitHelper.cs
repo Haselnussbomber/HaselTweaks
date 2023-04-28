@@ -79,6 +79,7 @@ public partial class PortraitHelper : Tweak
     }
 
     public unsafe AgentBannerEditor* AgentBannerEditor;
+    public unsafe AgentStatus* AgentStatus;
     public unsafe AddonBannerEditor* AddonBannerEditor;
 
     private bool isOpen;
@@ -102,9 +103,11 @@ public partial class PortraitHelper : Tweak
     public override unsafe void Enable()
     {
         lastJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
+
         openPortraitEditPayload = Service.PluginInterface.AddChatLinkHandler(1000, OpenPortraitEditChatHandler);
 
         GetAgent(AgentId.BannerEditor, out AgentBannerEditor);
+        GetAgent(AgentId.Status, out AgentStatus);
 
         if (GetAddon(AgentId.BannerEditor, out var addon))
             OnAddonOpen("BannerEditor", addon);
@@ -115,6 +118,11 @@ public partial class PortraitHelper : Tweak
         Service.PluginInterface.RemoveChatLinkHandler(1000);
 
         CloseWindows();
+    }
+
+    public override void OnLogin()
+    {
+        lastJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
     }
 
     public override void OnLogout()
@@ -201,7 +209,7 @@ public partial class PortraitHelper : Tweak
     public override unsafe void OnFrameworkUpdate(DalamudFramework framework)
     {
         var currentJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
-        if (currentJob != lastJob)
+        if (currentJob != 0 && currentJob != lastJob)
         {
             jobChangedOrGearsetUpdatedCTS?.Cancel();
             jobChangedOrGearsetUpdatedCTS = new();
@@ -884,6 +892,8 @@ public partial class PortraitHelper : Tweak
             *(uint*)(ptr + i * 4) = item.GlamourID != 0 ? item.GlamourID : item.ItemID;
             *(byte*)(ptr + ItemCount * 4 + i) = item.Stain;
         }
+
+        AgentStatus->UpdateGearVisibilityInNumberArray();
 
         var numberArray = AtkStage.GetSingleton()->GetNumberArrayData()[62];
 
