@@ -214,6 +214,9 @@ public abstract unsafe class Tweak
     public virtual void Disable() { }
     public virtual void Dispose() { }
     public virtual void OnFrameworkUpdate(Framework framework) { }
+    public virtual void OnLogin() { }
+    public virtual void OnLogout() { }
+    public virtual void OnTerritoryChanged(ushort id) { }
     public virtual void OnAddonOpen(string addonName, AtkUnitBase* unitbase) { }
     public virtual void OnAddonClose(string addonName, AtkUnitBase* unitbase) { }
 

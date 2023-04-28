@@ -93,18 +93,6 @@ public unsafe partial class EnhancedMaterialList : Tweak
         public bool AddSearchForItemByCraftingMethodContextMenuEntry = true; // yep, i spelled it out
     }
 
-    public override void Enable()
-    {
-        Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
-        Service.ClientState.Login += ClientState_Login;
-    }
-
-    public override void Disable()
-    {
-        Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
-        Service.ClientState.Login -= ClientState_Login;
-    }
-
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
         RefreshRecipeMaterialList();
@@ -132,10 +120,10 @@ public unsafe partial class EnhancedMaterialList : Tweak
             RecipeTreeRefreshPending = true;
     }
 
-    private void ClientState_TerritoryChanged(object? sender, ushort e)
+    public override void OnTerritoryChanged(ushort e)
         => RequestRecipeMaterialListRefresh();
 
-    private void ClientState_Login(object? sender, EventArgs e)
+    public override void OnLogin()
     {
         if (Config.RestoreMaterialList &&
             Config.RestoreMaterialListRecipeId != 0 &&

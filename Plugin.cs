@@ -95,6 +95,9 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
         }
 
         Service.Framework.Update += OnFrameworkUpdate;
+        Service.ClientState.Login += ClientState_Login;
+        Service.ClientState.Logout += ClientState_Logout;
+        Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
     }
 
     private void OnFrameworkUpdate(DalamudFramework framework)
@@ -102,6 +105,30 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
         foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
         {
             tweak.OnFrameworkUpdate(framework);
+        }
+    }
+
+    private void ClientState_Login(object? sender, EventArgs e)
+    {
+        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
+        {
+            tweak.OnLogin();
+        }
+    }
+
+    private void ClientState_Logout(object? sender, EventArgs e)
+    {
+        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
+        {
+            tweak.OnLogout();
+        }
+    }
+
+    private void ClientState_TerritoryChanged(object? sender, ushort id)
+    {
+        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
+        {
+            tweak.OnTerritoryChanged(id);
         }
     }
 
@@ -130,6 +157,9 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
     void IDisposable.Dispose()
     {
         Service.Framework.Update -= OnFrameworkUpdate;
+        Service.ClientState.Login -= ClientState_Login;
+        Service.ClientState.Logout -= ClientState_Logout;
+        Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
         Service.PluginInterface.UiBuilder.Draw -= OnDraw;
         Service.PluginInterface.UiBuilder.OpenConfigUi -= OnOpenConfigUi;
 

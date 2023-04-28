@@ -64,7 +64,7 @@ public partial class PortraitHelper : Tweak
         [ConfigField(Label = "Notify if appearance and/or gear doesn't match Portait", Description = "Prints a notification in chat which can be clicked to open the Portrait Editor.")]
         public bool NotifyGearChecksumMismatch = true;
 
-        [ConfigField(Label = "Try to fix by automatically reapplying the Glamour Plate", DependsOn = nameof(NotifyGearChecksumMismatch), Description = "Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state.")]
+        [ConfigField(Label = "Try to fix by automatically re-equipping Gearset to reapply Glamour Plate", DependsOn = nameof(NotifyGearChecksumMismatch), Description = "Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state.")]
         public bool ReequipGearsetOnUpdate = false;
 
         public string GetPortraitThumbnailPath(string hash)
@@ -115,6 +115,11 @@ public partial class PortraitHelper : Tweak
         Service.PluginInterface.RemoveChatLinkHandler(1000);
 
         CloseWindows();
+    }
+
+    public override void OnLogout()
+    {
+        lastJob = 0;
     }
 
     private unsafe void OpenPortraitEditChatHandler(uint commandId, SeString message)
