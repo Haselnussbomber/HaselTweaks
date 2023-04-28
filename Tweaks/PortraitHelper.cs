@@ -61,13 +61,10 @@ public partial class PortraitHelper : Tweak
         [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Horizontal Color"/*, DependsOn = nameof(ShowAlignmentTool), Type = ConfigFieldTypes.Color4*/)]
         public Vector4 AlignmentToolHorizontalColor = new(0, 0, 0, 1f);
 
-        [ConfigField(Label = "Notify if appearance and/or gear doesn't match Portait after updating Gearset", Description = "Prints a notification in chat which can be clicked to open the Portrait Editor.")]
+        [ConfigField(Label = "Notify if appearance and/or gear doesn't match Portait", Description = "Prints a notification in chat which can be clicked to open the Portrait Editor.")]
         public bool NotifyGearChecksumMismatch = true;
 
-        [ConfigField(Label = "Also notify after switching jobs", DependsOn = nameof(NotifyGearChecksumMismatch))]
-        public bool NotifyGearChecksumMismatchAfterJobSwitch = true;
-
-        [ConfigField(Label = "Try to fix with automatically re-equipping Gearset to reapply Glamour Plate", DependsOn = nameof(NotifyGearChecksumMismatch), Description = "Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state.")]
+        [ConfigField(Label = "Try to fix by automatically reapplying the Glamour Plate", DependsOn = nameof(NotifyGearChecksumMismatch), Description = "Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state.")]
         public bool ReequipGearsetOnUpdate = false;
 
         [ConfigField(Label = "Automatically open Portrait Editor", DependsOn = nameof(NotifyGearChecksumMismatch), Description = "This may be annoying and/or confusing when the gearset is missing items.")]
@@ -209,7 +206,7 @@ public partial class PortraitHelper : Tweak
 
             lastJob = currentJob;
 
-            if (Config.NotifyGearChecksumMismatch && Config.NotifyGearChecksumMismatchAfterJobSwitch)
+            if (Config.NotifyGearChecksumMismatch)
             {
                 Service.Framework.RunOnTick(() =>
                 {
