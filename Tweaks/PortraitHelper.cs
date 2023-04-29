@@ -133,7 +133,7 @@ public partial class PortraitHelper : Tweak
     private unsafe void OpenPortraitEditChatHandler(uint commandId, SeString message)
     {
         var gearsetId = GetEquippedGearsetId(RaptureGearsetModule.Instance());
-        if (gearsetId >= 0 && gearsetId < 101)
+        if (gearsetId < 100)
         {
             AgentBannerEditor->OpenForGearset(gearsetId);
         }
@@ -784,7 +784,7 @@ public partial class PortraitHelper : Tweak
 
     private unsafe void CheckForGearChecksumMismatch(uint gearsetId, bool disableReequip = false)
     {
-        if (!Config.NotifyGearChecksumMismatch || gearsetId >= 101 || !GameMain.IsInSanctuary())
+        if (!Config.NotifyGearChecksumMismatch || gearsetId >= 100 || !GameMain.IsInSanctuary())
             return;
 
         var raptureGearsetModule = RaptureGearsetModule.Instance();
@@ -855,7 +855,7 @@ public partial class PortraitHelper : Tweak
             .AddUiForeground("\uE078 ", 32);
 
         var gearsetId = GetEquippedGearsetId(RaptureGearsetModule.Instance());
-        if (gearsetId >= 0 && gearsetId < 101)
+        if (gearsetId < 100)
         {
             if (openPortraitEditPayload != null)
             {

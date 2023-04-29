@@ -7,6 +7,10 @@
 - **Fixed**: Disabled the context menu entry for collectable items.
 - **Fixed**: The HQ symbol is now stripped from the item name.
 
+### Portrait Helper
+
+-- **Fixed**: Added some extra gearset id checks (only allows 1 - 100; the game may return 255 if the gearset is not found).
+
 ## [14.9.0] (2023-04-28)
 
 ### Custom Chat Timestamp
