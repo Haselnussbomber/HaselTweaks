@@ -651,7 +651,7 @@ public partial class PluginWindow : Window
         if (data.Attr?.DefaultValue != null)
         {
             ImGui.SameLine();
-            if (ImGuiUtils.IconButton(FontAwesomeIcon.Undo, $"Reset to Default: {(T)data.Attr!.DefaultValue}"))
+            if (ImGuiUtils.IconButton($"##HaselTweaks_Config_{data.Tweak.InternalName}_{data.Field.Name}_Reset", FontAwesomeIcon.Undo, $"Reset to Default: {(T)data.Attr!.DefaultValue}"))
             {
                 data.Value = (T)data.Attr!.DefaultValue;
             }

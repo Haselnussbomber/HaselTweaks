@@ -7,6 +7,7 @@ Maintenance update.
 - **Changed**: For safety, any drawn text is now drawn with `ImGui.TextUnformatted`.
 - **Changed**: Configuration fields now have consistent indentation.
 - **Changed**: The description for dropdown configuration fields is now correctly below the dropdown.
+- **Fixed**: Reset buttons now work correctly when more than one is displayed.
 
 ### Custom Chat Timestamp
 

@@ -31,7 +31,7 @@ public unsafe partial class CustomChatTimestamp : Tweak
                 Plugin.Config.Save();
             }
             ImGui.SameLine();
-            if (ImGuiUtils.IconButton(FontAwesomeIcon.Undo, "Reset to Default: \"[HH:mm] \""))
+            if (ImGuiUtils.IconButton("##HaselTweaks_CustomChatTimestamp_FormatReset", FontAwesomeIcon.Undo, "Reset to Default: \"[HH:mm] \""))
             {
                 Config.Format = "[HH:mm] ";
                 Plugin.Config.Save();

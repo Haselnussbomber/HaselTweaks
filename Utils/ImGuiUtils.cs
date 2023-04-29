@@ -184,12 +184,6 @@ public static class ImGuiUtils
     public static bool IconButton(string key, FontAwesomeIcon icon)
         => IconButton(key, icon, default);
 
-    public static bool IconButton(FontAwesomeIcon icon, Vector2 size = default)
-        => IconButton("", icon, size);
-
-    public static bool IconButton(FontAwesomeIcon icon, string tooltip, Vector2 size = default)
-        => IconButton("", icon, tooltip, size);
-
     #endregion
 
     #region IconButtonDisabled
