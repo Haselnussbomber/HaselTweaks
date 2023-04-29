@@ -5,6 +5,7 @@
 ### Search the markets
 
 - **Fixed**: Disabled the context menu entry for collectable items.
+- **Fixed**: The HQ symbol is now stripped from the item name.
 
 ## [14.9.0] (2023-04-28)
 
