@@ -17,7 +17,6 @@ public unsafe partial class CustomChatTimestamp : Tweak
 
     public class Configuration
     {
-        [ConfigField(DefaultValue = "[HH:mm] ")]
         public string Format = "[HH:mm] ";
     }
 
@@ -29,6 +28,12 @@ public unsafe partial class CustomChatTimestamp : Tweak
         {
             if (ImGui.InputText("##HaselTweaks_CustomChatTimestamp_Format", ref Config.Format, 50))
             {
+                Plugin.Config.Save();
+            }
+            ImGui.SameLine();
+            if (ImGuiUtils.IconButton(FontAwesomeIcon.Undo, "Reset to Default: \"[HH:mm] \""))
+            {
+                Config.Format = "[HH:mm] ";
                 Plugin.Config.Save();
             }
 
