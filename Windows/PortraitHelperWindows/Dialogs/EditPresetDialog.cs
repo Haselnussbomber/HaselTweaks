@@ -46,7 +46,7 @@ public class EditPresetDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        ImGui.Text("Name:");
+        ImGui.TextUnformatted("Name:");
 
         ImGui.Spacing();
 
@@ -61,7 +61,7 @@ public class EditPresetDialog : ConfirmationDialog
         if (Config.PresetTags.Any())
         {
             ImGui.Spacing();
-            ImGui.Text("Tags:");
+            ImGui.TextUnformatted("Tags:");
 
             var tagNames = tags!
                 .Select(id => Config.PresetTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)

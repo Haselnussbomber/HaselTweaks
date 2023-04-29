@@ -3,6 +3,7 @@ using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
@@ -21,11 +22,11 @@ public unsafe class DTR : Tweak
     public override bool HasDescription => true;
     public override void DrawDescription()
     {
-        ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey, "Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar.");
+        ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar.");
 
         ImGuiUtils.DrawSection("Configuration");
-        ImGui.Text("To enable/disable elements or to change the order go into");
-        ImGui.TextColored(ImGuiColors.DalamudRed, "Dalamud Settings");
+        ImGui.TextUnformatted("To enable/disable elements or to change the order go into");
+        ImGuiUtils.TextUnformattedColored(ImGuiColors.DalamudRed, "Dalamud Settings");
         if (ImGui.IsItemHovered())
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
@@ -45,7 +46,7 @@ public unsafe class DTR : Tweak
             Service.Framework.RunOnTick(OpenSettings, default, 2);
         }
         ImGuiUtils.SameLineSpace();
-        ImGui.Text("> Server Info Bar.");
+        ImGui.TextUnformatted("> Server Info Bar.");
     }
 
     public DtrBarEntry? DtrInstance;

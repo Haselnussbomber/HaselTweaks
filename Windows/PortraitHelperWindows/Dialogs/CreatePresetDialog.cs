@@ -54,7 +54,7 @@ public class CreatePresetDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        ImGui.Text("Enter a name for the new preset:");
+        ImGui.TextUnformatted("Enter a name for the new preset:");
         ImGui.Spacing();
         ImGui.InputText("##PresetName", ref name, 100);
 
@@ -67,7 +67,7 @@ public class CreatePresetDialog : ConfirmationDialog
         if (Config.PresetTags.Any())
         {
             ImGui.Spacing();
-            ImGui.Text("Select Tags (optional):");
+            ImGui.TextUnformatted("Select Tags (optional):");
 
             var tagNames = tags!
                 .Select(id => Config.PresetTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)

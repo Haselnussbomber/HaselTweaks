@@ -89,7 +89,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         {
             if (source != null && source.Success)
             {
-                ImGui.TextUnformatted($"Moving {tag.Name}");
+                ImGuiUtils.TextUnformattedDisabled($"Moving {tag.Name}");
 
                 var idPtr = Marshal.StringToHGlobalAnsi(tag.Id.ToString());
                 ImGui.SetDragDropPayload("MoveTag", idPtr, (uint)MemoryUtils.strlen(idPtr));
@@ -153,7 +153,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         using (ImRaii.PushFont(UiBuilder.IconFont))
         {
-            ImGui.TextUnformatted(FontAwesomeIcon.Tag.ToIconString());
+            ImGuiUtils.TextUnformattedDisabled(FontAwesomeIcon.Tag.ToIconString());
         }
     }
 
@@ -163,7 +163,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         var removeUnusedTags = false;
 
-        ImGui.TextColored(ImGuiUtils.ColorGold, "Tags");
+        ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorGold, "Tags");
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() - style.ItemSpacing.Y + 3);
         ImGui.Separator();
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + style.ItemSpacing.Y);
@@ -227,7 +227,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         using (ImRaii.PushFont(UiBuilder.IconFont))
         {
-            ImGui.TextUnformatted(FontAwesomeIcon.Tags.ToIconString());
+            ImGuiUtils.TextUnformattedDisabled(FontAwesomeIcon.Tags.ToIconString());
         }
     }
 
@@ -258,7 +258,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         var style = ImGui.GetStyle();
 
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + style.ItemSpacing.X);
-        ImGui.TextColored(ImGuiUtils.ColorGold, "Presets");
+        ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorGold, "Presets");
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() - style.ItemSpacing.Y + 3);
         ImGui.Separator();
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + style.ItemSpacing.Y);

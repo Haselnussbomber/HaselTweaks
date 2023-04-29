@@ -98,7 +98,7 @@ public class PresetCard : IDisposable
                 using (ImRaii.PushColor(ImGuiCol.Text, ImGui.ColorConvertFloat4ToU32(ImGuiUtils.ColorRed)))
                 {
                     ImGui.SetCursorPos(center - windowPos - ImGui.CalcTextSize(FontAwesomeIcon.FileImage.ToIconString()) / 2f);
-                    ImGui.TextUnformatted(FontAwesomeIcon.FileImage.ToIconString());
+                    ImGuiUtils.TextUnformattedDisabled(FontAwesomeIcon.FileImage.ToIconString());
                 }
             }
         }

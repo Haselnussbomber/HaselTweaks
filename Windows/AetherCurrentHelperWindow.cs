@@ -71,7 +71,7 @@ public unsafe class AetherCurrentHelperWindow : Window
         ImGui.Dummy(new Vector2(Size!.Value.X, 0)); // set min-width
 
         ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
-        ImGui.Text(placeName);
+        ImGui.TextUnformatted(placeName);
         ImGui.SetCursorPos(startPos + new Vector2(0, textSize.Y + style.ItemSpacing.Y * 4));
 
         using var cellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(4));
@@ -131,7 +131,7 @@ public unsafe class AetherCurrentHelperWindow : Window
             };
             textSize = ImGui.CalcTextSize(text);
             ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
-            ImGui.Text(text);
+            ImGui.TextUnformatted(text);
             ImGui.TableNextColumn();
         }
     }
@@ -199,8 +199,8 @@ public unsafe class AetherCurrentHelperWindow : Window
 
         // Content
         ImGui.TableNextColumn();
-        ImGui.TextColored(TitleColor, $"[#{index}] {GetQuestName(quest.RowId, true)}");
-        ImGui.Text(GetHumanReadableCoords(quest.IssuerLocation.Value!) + " | " + GetENpcResidentName(quest.IssuerStart));
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {GetQuestName(quest.RowId, true)}");
+        ImGui.TextUnformatted(GetHumanReadableCoords(quest.IssuerLocation.Value!) + " | " + GetENpcResidentName(quest.IssuerStart));
 
         // Actions
         ImGui.TableNextColumn();
@@ -230,8 +230,8 @@ public unsafe class AetherCurrentHelperWindow : Window
 
         // Content
         ImGui.TableNextColumn();
-        ImGui.TextColored(TitleColor, $"[#{index}] {GetEObjName(eobj.RowId)}");
-        ImGui.Text(GetHumanReadableCoords(level!));
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {GetEObjName(eobj.RowId)}");
+        ImGui.TextUnformatted(GetHumanReadableCoords(level!));
 
         // Actions
         ImGui.TableNextColumn();
@@ -274,11 +274,11 @@ public unsafe class AetherCurrentHelperWindow : Window
 
                     if (isUnlocked)
                     {
-                        ImGui.TextColored(new Vector4(0, 1, 0, 1), text);
+                        ImGuiUtils.TextUnformattedColored(new Vector4(0, 1, 0, 1), text);
                     }
                     else
                     {
-                        ImGui.Text(text);
+                        ImGui.TextUnformatted(text);
                     }
                 }
             }
@@ -290,7 +290,7 @@ public unsafe class AetherCurrentHelperWindow : Window
             {
                 ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 2);
                 using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
-                ImGui.TextColored(new Vector4(0.3f, 0.3f, 0.3f, 1), FontAwesomeIcon.Times.ToIconString());
+                ImGuiUtils.TextUnformattedColored(new Vector4(0.3f, 0.3f, 0.3f, 1), FontAwesomeIcon.Times.ToIconString());
             }
         }
     }
@@ -305,7 +305,7 @@ public unsafe class AetherCurrentHelperWindow : Window
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(icon).X / 2);
         }
 
-        ImGui.TextColored(new Vector4(0, 1, 0, 1), icon);
+        ImGuiUtils.TextUnformattedColored(new Vector4(0, 1, 0, 1), icon);
     }
 
     private EObj? GetEObjByData(uint aetherCurrentId)

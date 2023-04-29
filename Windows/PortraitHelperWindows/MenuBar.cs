@@ -75,7 +75,7 @@ public unsafe class MenuBar : Window, IDisposable
         if (InitialPreset == null)
         {
             ImGui.SetCursorPosY(ImGui.GetCursorPos().Y + 2);
-            ImGui.Text("Initializing...");
+            ImGui.TextUnformatted("Initializing...");
             return;
         }
 
@@ -221,7 +221,7 @@ public unsafe class MenuBar : Window, IDisposable
         {
             ImGuiUtils.VerticalSeparator();
             ImGui.SameLine();
-            ImGui.Text(PortraitName);
+            ImGui.TextUnformatted(PortraitName);
         }
 
         Position = new(

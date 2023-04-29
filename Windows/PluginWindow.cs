@@ -107,7 +107,7 @@ public partial class PluginWindow : Window
                     using var tooltip = ImRaii.Tooltip();
                     if (tooltip != null && tooltip.Success)
                     {
-                        ImGui.TextColored(color, status);
+                        ImGuiUtils.TextUnformattedColored(color, status);
                     }
                 }
 
@@ -243,7 +243,7 @@ public partial class PluginWindow : Window
         if (tweak == null)
             return;
 
-        ImGui.TextColored(ImGuiUtils.ColorGold, tweak.Name);
+        ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorGold, tweak.Name);
 
         var (status, color) = GetTweakStatus(tweak);
 
@@ -253,7 +253,7 @@ public partial class PluginWindow : Window
 
         ImGui.SameLine(windowX - textSize.X);
 
-        ImGui.TextColored(color, status);
+        ImGuiUtils.TextUnformattedColored(color, status);
 
         if (tweak.HasDescription)
         {
@@ -271,8 +271,8 @@ public partial class PluginWindow : Window
         if (tweak.LastException != null)
         {
             ImGuiUtils.DrawSection("[DEBUG] Exception");
-            ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorRed, tweak.LastException.Message.Replace("HaselTweaks.Tweaks.", ""));
-            ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey2, tweak.LastException.StackTrace ?? "");
+            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorRed, tweak.LastException.Message.Replace("HaselTweaks.Tweaks.", ""));
+            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey2, tweak.LastException.StackTrace ?? "");
         }
 #endif
 
@@ -286,9 +286,9 @@ public partial class PluginWindow : Window
                 if (attr == null || Delegate.CreateDelegate(typeof(HandlerDelegate), tweak, methodInfo, false) == null)
                     continue;
 
-                ImGui.Text("•");
+                ImGui.TextUnformatted("•");
                 ImGui.SameLine();
-                ImGui.Text(attr.Command);
+                ImGui.TextUnformatted(attr.Command);
                 if (ImGui.IsItemHovered())
                 {
                     ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
@@ -301,7 +301,7 @@ public partial class PluginWindow : Window
                 if (!string.IsNullOrEmpty(attr.HelpMessage))
                 {
                     ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetStyle().IndentSpacing);
-                    ImGui.TextColored(ImGuiUtils.ColorGrey, attr.HelpMessage);
+                    ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorGrey, attr.HelpMessage);
                 }
             }
         }
@@ -342,7 +342,7 @@ public partial class PluginWindow : Window
                         if (attr == null)
                         {
 #if DEBUG
-                            ImGui.TextColored(ImGuiUtils.ColorRed, $"No ConfigFieldAttribute for {field.Name}");
+                            ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorRed, $"No ConfigFieldAttribute for {field.Name}");
 #endif
                         }
                         else if (attr.Type == ConfigFieldTypes.Color4)
@@ -476,23 +476,23 @@ public partial class PluginWindow : Window
 
     private static void DrawLabel(IConfigDrawData data)
     {
-        ImGui.Text(data.Label);
+        ImGui.TextUnformatted(data.Label);
 
         if (!string.IsNullOrEmpty(data.Description))
         {
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
-            ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
+            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
         }
     }
 
     private static void DrawNoDrawingFunctionError(FieldInfo field)
     {
-        ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorRed, $"Could not find suitable drawing function for field \"{field.Name}\" (Type {field.FieldType.Name}).");
+        ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorRed, $"Could not find suitable drawing function for field \"{field.Name}\" (Type {field.FieldType.Name}).");
     }
 
     private static void DrawInvalidType(FieldInfo field)
     {
-        ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorRed, $"Invalid type for \"{field.Name}\" (Type {field.FieldType.Name}).");
+        ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorRed, $"Invalid type for \"{field.Name}\" (Type {field.FieldType.Name}).");
     }
 
     private static void DrawSingleSelectEnumInt32(ConfigDrawData<int> data, Type enumType)
@@ -502,14 +502,14 @@ public partial class PluginWindow : Window
         var selectedName = Enum.GetName(enumType, data.Value);
         if (string.IsNullOrEmpty(selectedName))
         {
-            ImGui.TextColored(new Vector4(1, 0, 0, 1), $"Missing Name for Value {data.Value} in {enumType.Name}.");
+            ImGuiUtils.TextUnformattedColored(new Vector4(1, 0, 0, 1), $"Missing Name for Value {data.Value} in {enumType.Name}.");
         }
         else
         {
             var selectedAttr = (EnumOptionAttribute?)enumType.GetField(selectedName)?.GetCustomAttribute(typeof(EnumOptionAttribute));
             if (selectedAttr == null)
             {
-                ImGui.TextColored(new Vector4(1, 0, 0, 1), $"Missing EnumOptionAttribute for {selectedName} in {enumType.Name}.");
+                ImGuiUtils.TextUnformattedColored(new Vector4(1, 0, 0, 1), $"Missing EnumOptionAttribute for {selectedName} in {enumType.Name}.");
             }
             else
             {
@@ -613,7 +613,7 @@ public partial class PluginWindow : Window
         if (!string.IsNullOrEmpty(data.Description))
         {
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
-            ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
+            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
         }
     }
 
@@ -639,7 +639,7 @@ public partial class PluginWindow : Window
         if (!string.IsNullOrEmpty(data.Description))
         {
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
-            ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
+            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
         }
     }
 }

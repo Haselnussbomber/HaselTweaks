@@ -65,7 +65,7 @@ public unsafe partial class LockWindowPosition : Tweak
         ImGuiUtils.DrawPaddedSeparator();
         if (Config.LockedWindows.Any())
         {
-            ImGui.Text("Windows:");
+            ImGui.TextUnformatted("Windows:");
 
             if (!ImGui.BeginTable("##HaselTweaks_LockWindowsTable", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX))
             {
@@ -101,7 +101,7 @@ public unsafe partial class LockWindowPosition : Tweak
                 }
 
                 ImGui.TableNextColumn();
-                ImGui.Text($"{entry.Name}");
+                ImGui.TextUnformatted($"{entry.Name}");
 
                 ImGui.TableNextColumn();
                 if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
@@ -142,7 +142,7 @@ public unsafe partial class LockWindowPosition : Tweak
         }
         else
         {
-            ImGui.TextDisabled("No windows added yet.");
+            ImGuiUtils.TextUnformattedDisabled("No windows added yet.");
             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 4);
         }
 

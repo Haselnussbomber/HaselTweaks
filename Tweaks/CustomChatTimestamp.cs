@@ -26,11 +26,11 @@ public unsafe partial class CustomChatTimestamp : Tweak
         }
 
         ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey);
-        ImGui.Text("This gets passed to C#'s");
+        ImGui.TextUnformatted("This gets passed to C#'s");
         ImGuiUtils.SameLineSpace();
         ImGuiUtils.DrawLink("DateTime.ToString()", "Custom date and time format strings documentation", "https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings");
         ImGuiUtils.SameLineSpace();
-        ImGui.Text("function.");
+        ImGui.TextUnformatted("function.");
         ImGui.PopStyleColor();
     }
 

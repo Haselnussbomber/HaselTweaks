@@ -1,4 +1,5 @@
 using System.Numerics;
+using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
@@ -26,7 +27,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             return;
 
         var style = ImGui.GetStyle();
-        ImGui.TextColored(ImGuiUtils.ColorGold, "Advanced Edit");
+        ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorGold, "Advanced Edit");
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() - style.ItemSpacing.Y + 3);
         ImGui.Separator();
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + style.ItemSpacing.Y);
@@ -47,7 +48,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.Text("Camera Yaw");
+            ImGui.TextUnformatted("Camera Yaw");
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
@@ -68,7 +69,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.Text("Camera Pitch");
+            ImGui.TextUnformatted("Camera Pitch");
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
@@ -89,7 +90,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.Text("Camera Distance");
+            ImGui.TextUnformatted("Camera Distance");
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
@@ -112,7 +113,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.Text("Camera X / Y");
+            ImGui.TextUnformatted("Camera X / Y");
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
@@ -139,7 +140,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.Text("Zoom / Rotation");
+            ImGui.TextUnformatted("Zoom / Rotation");
 
             ImGui.TableNextColumn();
 
@@ -175,7 +176,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.Text("Eye Direction");
+            ImGui.TextUnformatted("Eye Direction");
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
@@ -199,7 +200,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.Text("Head Direction");
+            ImGui.TextUnformatted("Head Direction");
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
@@ -223,7 +224,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.Text("Animation Timestamp");
+            ImGui.TextUnformatted("Animation Timestamp");
 
             ImGui.TableNextColumn();
 
@@ -263,9 +264,9 @@ public unsafe class AdvancedEditOverlay : Overlay
 
         using (ImRaii.PushColor(ImGuiCol.Text, ImGui.ColorConvertFloat4ToU32(ImGuiUtils.ColorGrey)))
         {
-            ImGui.Text("Please note:");
-            ImGui.TextWrapped("The game may verify the values on setting them and/or saving the portrait. If possible, it will automatically adjust them so that they are within a valid range. If not, it will throw an error and you have to fix the values yourself. In any case, if the game adjusts the values, the adjusted values will not be reflected here unless you reopen the window.");
-            ImGui.TextWrapped("Also, setting the Animation Timestamp will restart the animation at the given timestamp, hence the flickering. If the Animation Timestamp is too high, the game will start the next loop, resetting the timestamp to 0.");
+            ImGui.TextUnformatted("Please note:");
+            ImGuiHelpers.SafeTextWrapped("The game may verify the values on setting them and/or saving the portrait. If possible, it will automatically adjust them so that they are within a valid range. If not, it will throw an error and you have to fix the values yourself. In any case, if the game adjusts the values, the adjusted values will not be reflected here unless you reopen the window.");
+            ImGuiHelpers.SafeTextWrapped("Also, setting the Animation Timestamp will restart the animation at the given timestamp, hence the flickering. If the Animation Timestamp is too high, the game will start the next loop, resetting the timestamp to 0.");
         }
     }
 }

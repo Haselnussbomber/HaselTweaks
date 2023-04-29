@@ -36,7 +36,7 @@ public class RenameTagDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        ImGui.Text($"Enter a new name for tag \"{tag!.Name}\":");
+        ImGui.TextUnformatted($"Enter a new name for tag \"{tag!.Name}\":");
 
         ImGui.Spacing();
 

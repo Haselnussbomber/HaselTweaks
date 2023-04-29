@@ -17,7 +17,7 @@ public unsafe class AlignmentToolSettingsOverlay : Overlay
         ImGui.PopStyleVar(); // WindowPadding from PreDraw()
 
         var style = ImGui.GetStyle();
-        ImGui.TextColored(ImGuiUtils.ColorGold, "Alignment Tool Settings");
+        ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorGold, "Alignment Tool Settings");
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() - style.ItemSpacing.Y + 3);
         ImGui.Separator();
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + style.ItemSpacing.Y);
@@ -34,14 +34,14 @@ public unsafe class AlignmentToolSettingsOverlay : Overlay
         ImGui.Separator();
         ImGui.Spacing();
 
-        ImGui.Text("Vertical Lines");
+        ImGui.TextUnformatted("Vertical Lines");
         ImGui.Indent();
 
         changed |= ImGui.SliderInt("##Vertical Lines", ref Config.AlignmentToolVerticalLines, 0, 10);
         changed |= ImGui.ColorEdit4("##Vertical Color", ref Config.AlignmentToolVerticalColor);
 
         ImGui.Unindent();
-        ImGui.Text("Horizontal Lines");
+        ImGui.TextUnformatted("Horizontal Lines");
         ImGui.Indent();
 
         changed |= ImGui.SliderInt("##Horizontal Lines", ref Config.AlignmentToolHorizontalLines, 0, 10);

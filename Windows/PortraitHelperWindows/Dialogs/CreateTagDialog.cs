@@ -35,7 +35,7 @@ public class CreateTagDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        ImGui.Text("Enter a name for the new tag:");
+        ImGui.TextUnformatted("Enter a name for the new tag:");
 
         ImGui.Spacing();
 

@@ -2,6 +2,7 @@ using System.Linq;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
+using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using ImGuiNET;
 
@@ -42,7 +43,7 @@ public class DeleteTagDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        ImGui.TextUnformatted($"Do you really want to delete the tag \"{tag!.Name}\"?");
+        ImGuiUtils.TextUnformattedDisabled($"Do you really want to delete the tag \"{tag!.Name}\"?");
         ImGui.Spacing();
         ImGui.Checkbox("Delete portraits too", ref deletePortraits);
     }

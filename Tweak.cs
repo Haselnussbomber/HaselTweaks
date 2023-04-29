@@ -4,6 +4,7 @@ using System.Reflection;
 using Dalamud.Game;
 using Dalamud.Game.Command;
 using Dalamud.Hooking;
+using Dalamud.Interface;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -20,7 +21,7 @@ public abstract unsafe class Tweak
 
     public virtual string Description => string.Empty;
     public virtual bool HasDescription => !string.IsNullOrEmpty(Description);
-    public virtual void DrawDescription() => ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey2, Description);
+    public virtual void DrawDescription() => ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey2, Description);
 
     public virtual string IncompatibilityWarning => string.Empty;
     public virtual bool HasIncompatibilityWarning => !string.IsNullOrEmpty(IncompatibilityWarning);
@@ -28,7 +29,7 @@ public abstract unsafe class Tweak
     {
         ImGuiUtils.DrawIcon(60073, 24, 24);
         ImGui.SameLine();
-        ImGuiUtils.TextColoredWrapped(ImGuiUtils.ColorGrey2, IncompatibilityWarning);
+        ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey2, IncompatibilityWarning);
     }
 
     public virtual bool HasCustomConfig => false;

@@ -78,7 +78,7 @@ public abstract class ConfirmationDialog
         }
         catch (Exception ex)
         {
-            ImGui.TextColored(ImGuiUtils.ColorRed, ex.Message);
+            ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorRed, ex.Message);
         }
 
         ImGui.Spacing();

@@ -51,7 +51,7 @@ public static class ImGuiUtils
     {
         // push down a bit
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y * 2);
-        ImGui.TextColored(ColorGold, label);
+        ImGuiUtils.TextUnformattedColored(ColorGold, label);
         // pull up the separator
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() - ImGui.GetStyle().ItemSpacing.Y + 3);
         ImGui.Separator();
@@ -60,7 +60,7 @@ public static class ImGuiUtils
 
     public static void DrawLink(string label, string title, string url)
     {
-        ImGui.Text(label);
+        ImGui.TextUnformatted(label);
 
         if (ImGui.IsItemHovered())
         {
@@ -69,7 +69,7 @@ public static class ImGuiUtils
             using var tooltip = ImRaii.Tooltip();
             if (tooltip != null && tooltip.Success)
             {
-                ImGui.TextColored(ColorWhite, title);
+                ImGuiUtils.TextUnformattedColored(ColorWhite, title);
 
                 var pos = ImGui.GetCursorPos();
                 ImGui.GetWindowDrawList().AddText(
@@ -79,7 +79,7 @@ public static class ImGuiUtils
                     FontAwesomeIcon.ExternalLinkAlt.ToIconString()
                 );
                 ImGui.SetCursorPos(pos + new Vector2(20, 0));
-                ImGui.TextColored(ColorGrey, url);
+                ImGuiUtils.TextUnformattedColored(ColorGrey, url);
             }
         }
 
@@ -92,7 +92,7 @@ public static class ImGuiUtils
     public static void BulletSeparator()
     {
         ImGui.SameLine();
-        ImGui.Text("•");
+        ImGui.TextUnformatted("•");
         ImGui.SameLine();
     }
 
@@ -140,10 +140,16 @@ public static class ImGuiUtils
         }
     }
 
-    public static void TextColoredWrapped(Vector4 col, string text)
+    public static void TextUnformattedDisabled(string text)
     {
-        using var textCol = ImRaii.PushColor(ImGuiCol.Text, col);
-        ImGui.TextWrapped(text);
+        using (ImRaii.Disabled())
+            ImGui.TextUnformatted(text);
+    }
+
+    public static void TextUnformattedColored(Vector4 col, string text)
+    {
+        using (ImRaii.PushColor(ImGuiCol.Text, col))
+            ImGui.TextUnformatted(text);
     }
 
     public static unsafe bool ButtonDisabled(string label, Vector2 size = default)
