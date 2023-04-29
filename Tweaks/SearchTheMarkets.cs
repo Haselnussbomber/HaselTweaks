@@ -21,7 +21,14 @@ public unsafe class SearchTheMarkets : Tweak
 
     private uint ItemId;
 
-    private bool IsInvalidState => ItemId == 0 || Service.Data.GetExcelSheet<Item>()?.GetRow(ItemId)?.IsUntradable == true || GetAddon(AgentId.ItemSearch) == null;
+    private bool IsInvalidState
+    {
+        get
+        {
+            var item = Service.Data.GetExcelSheet<Item>()?.GetRow(ItemId);
+            return ItemId == 0 || item == null || item.IsUntradable || item.IsCollectable || GetAddon(AgentId.ItemSearch) == null;
+        }
+    }
 
     public override void Setup()
     {

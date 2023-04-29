@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Search the markets
+
+- **Fixed**: Disabled the context menu entry for collectable items.
+
 ## [14.9.0] (2023-04-28)
 
 ### Custom Chat Timestamp
