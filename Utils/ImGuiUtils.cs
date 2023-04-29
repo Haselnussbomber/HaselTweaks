@@ -51,7 +51,7 @@ public static class ImGuiUtils
     {
         // push down a bit
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y * 2);
-        ImGuiUtils.TextUnformattedColored(ColorGold, label);
+        TextUnformattedColored(ColorGold, label);
         // pull up the separator
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() - ImGui.GetStyle().ItemSpacing.Y + 3);
         ImGui.Separator();
@@ -69,7 +69,7 @@ public static class ImGuiUtils
             using var tooltip = ImRaii.Tooltip();
             if (tooltip != null && tooltip.Success)
             {
-                ImGuiUtils.TextUnformattedColored(ColorWhite, title);
+                TextUnformattedColored(ColorWhite, title);
 
                 var pos = ImGui.GetCursorPos();
                 ImGui.GetWindowDrawList().AddText(
@@ -79,7 +79,7 @@ public static class ImGuiUtils
                     FontAwesomeIcon.ExternalLinkAlt.ToIconString()
                 );
                 ImGui.SetCursorPos(pos + new Vector2(20, 0));
-                ImGuiUtils.TextUnformattedColored(ColorGrey, url);
+                TextUnformattedColored(ColorGrey, url);
             }
         }
 

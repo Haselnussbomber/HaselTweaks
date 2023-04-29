@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Custom Chat Timestamp
+
+- **Added**: The configuration now shows the result of the current format with an example message.
+- **Added**: The configuration now shows an error if the format is invalid.
+- **Fixed**: The timestamp will not be modified if the format field is empty.
+
 ## [14.9.1] (2023-04-29)
 
 ### Portrait Helper
