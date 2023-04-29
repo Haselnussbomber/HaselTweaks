@@ -58,6 +58,8 @@ public static class ImGuiUtils
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y * 2 - 1);
     }
 
+    public static ImRaii.Indent ConfigIndent() => ImRaii.PushIndent(ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X / 2f);
+
     public static void DrawLink(string label, string title, string url)
     {
         ImGui.TextUnformatted(label);

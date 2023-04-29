@@ -24,8 +24,8 @@ public unsafe partial class CustomChatTimestamp : Tweak
     public override bool HasCustomConfig => true;
     public override void DrawCustomConfig()
     {
-        ImGui.TextUnformatted("Format:");
-        using (ImRaii.PushIndent())
+        ImGui.TextUnformatted("Format");
+        using (ImGuiUtils.ConfigIndent())
         {
             if (ImGui.InputText("##HaselTweaks_CustomChatTimestamp_Format", ref Config.Format, 50))
             {

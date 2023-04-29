@@ -300,8 +300,10 @@ public partial class PluginWindow : Window
 
                 if (!string.IsNullOrEmpty(attr.HelpMessage))
                 {
-                    ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetStyle().IndentSpacing);
-                    ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorGrey, attr.HelpMessage);
+                    using (ImGuiUtils.ConfigIndent())
+                    {
+                        ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorGrey, attr.HelpMessage);
+                    }
                 }
             }
         }
@@ -332,12 +334,9 @@ public partial class PluginWindow : Window
                     foreach (var (field, attr) in configFields)
                     {
                         var hasDependency = !string.IsNullOrEmpty(attr?.DependsOn);
-                        if (hasDependency)
-                            ImGui.Indent();
-
                         var isDisabled = hasDependency && (bool?)configType.GetField(attr!.DependsOn)?.GetValue(config) == false;
-                        if (isDisabled)
-                            ImGui.BeginDisabled();
+                        var indent = hasDependency ? ImGuiUtils.ConfigIndent() : null;
+                        var disabled = isDisabled ? ImRaii.Disabled() : null;
 
                         if (attr == null)
                         {
@@ -435,11 +434,8 @@ public partial class PluginWindow : Window
                             DrawNoDrawingFunctionError(field);
                         }
 
-                        if (hasDependency)
-                            ImGui.Unindent();
-
-                        if (isDisabled)
-                            ImGui.EndDisabled();
+                        disabled?.Dispose();
+                        indent?.Dispose();
                     }
                 }
             }
@@ -474,17 +470,6 @@ public partial class PluginWindow : Window
         return (status, color);
     }
 
-    private static void DrawLabel(IConfigDrawData data)
-    {
-        ImGui.TextUnformatted(data.Label);
-
-        if (!string.IsNullOrEmpty(data.Description))
-        {
-            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
-            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
-        }
-    }
-
     private static void DrawNoDrawingFunctionError(FieldInfo field)
     {
         ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorRed, $"Could not find suitable drawing function for field \"{field.Name}\" (Type {field.FieldType.Name}).");
@@ -517,47 +502,67 @@ public partial class PluginWindow : Window
             }
         }
 
-        DrawLabel(data);
+        ImGui.TextUnformatted(data.Label);
 
-        using var combo = ImRaii.Combo(data.Key, selectedLabel);
-        if (!combo || !combo.Success)
-            return;
-
-        var names = Enum.GetNames(enumType)
-            .Select(name => (
-                Name: name,
-                Attr: (EnumOptionAttribute?)enumType.GetField(name)?.GetCustomAttribute(typeof(EnumOptionAttribute))
-            ))
-            .Where(tuple => tuple.Attr != null)
-            .OrderBy((tuple) => tuple.Attr == null ? "" : tuple.Attr.Label);
-
-        foreach (var (Name, Attr) in names)
+        using (ImGuiUtils.ConfigIndent())
         {
-            var value = (int)Enum.Parse(enumType, Name);
+            using (var combo = ImRaii.Combo(data.Key, selectedLabel))
+            {
+                if (combo != null && combo.Success)
+                {
+                    var names = Enum.GetNames(enumType)
+                        .Select(name => (
+                            Name: name,
+                            Attr: (EnumOptionAttribute?)enumType.GetField(name)?.GetCustomAttribute(typeof(EnumOptionAttribute))
+                        ))
+                        .Where(tuple => tuple.Attr != null)
+                        .OrderBy((tuple) => tuple.Attr == null ? "" : tuple.Attr.Label);
 
-            if (ImGui.Selectable(Attr!.Label, data.Value == value))
-                data.Value = value;
+                    foreach (var (Name, Attr) in names)
+                    {
+                        var value = (int)Enum.Parse(enumType, Name);
 
-            if (data.Value == value)
-                ImGui.SetItemDefaultFocus();
+                        if (ImGui.Selectable(Attr!.Label, data.Value == value))
+                            data.Value = value;
+
+                        if (data.Value == value)
+                            ImGui.SetItemDefaultFocus();
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(data.Description))
+            {
+                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
+            }
         }
     }
 
     private static void DrawSingleSelect(ConfigDrawData<string> data, List<string> options)
     {
-        DrawLabel(data);
+        ImGui.TextUnformatted(data.Label);
 
-        using var combo = ImRaii.Combo(data.Key, data.Value ?? "");
-        if (!combo || !combo.Success)
-            return;
-
-        foreach (var item in options)
+        using (ImGuiUtils.ConfigIndent())
         {
-            if (ImGui.Selectable(item, data.Value == item))
-                data.Value = item;
+            using (var combo = ImRaii.Combo(data.Key, data.Value ?? ""))
+            {
+                if (combo != null && combo.Success)
+                {
+                    foreach (var item in options)
+                    {
+                        if (ImGui.Selectable(item, data.Value == item))
+                            data.Value = item;
 
-            if (data.Value == item)
-                ImGui.SetItemDefaultFocus();
+                        if (data.Value == item)
+                            ImGui.SetItemDefaultFocus();
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(data.Description))
+            {
+                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
+            }
         }
     }
 
@@ -565,12 +570,20 @@ public partial class PluginWindow : Window
     {
         var value = data.Value;
 
-        DrawLabel(data);
+        ImGui.TextUnformatted(data.Label);
 
-        if (ImGui.InputText(data.Key, ref value, 50))
-            data.Value = value;
+        using (ImGuiUtils.ConfigIndent())
+        {
+            if (ImGui.InputText(data.Key, ref value, 50))
+                data.Value = value;
 
-        DrawResetButton(data);
+            DrawResetButton(data);
+
+            if (!string.IsNullOrEmpty(data.Description))
+            {
+                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
+            }
+        }
     }
 
     private static void DrawFloat(ConfigDrawData<float> data)
@@ -580,12 +593,20 @@ public partial class PluginWindow : Window
 
         var value = data.Value;
 
-        DrawLabel(data);
+        ImGui.TextUnformatted(data.Label);
 
-        if (ImGui.SliderFloat(data.Key, ref value, min, max))
-            data.Value = value;
+        using (ImGuiUtils.ConfigIndent())
+        {
+            if (ImGui.SliderFloat(data.Key, ref value, min, max))
+                data.Value = value;
 
-        DrawResetButton(data);
+            DrawResetButton(data);
+
+            if (!string.IsNullOrEmpty(data.Description))
+            {
+                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
+            }
+        }
     }
 
     private static void DrawInt(ConfigDrawData<int> data)
@@ -595,12 +616,20 @@ public partial class PluginWindow : Window
 
         var value = data.Value;
 
-        DrawLabel(data);
+        ImGui.TextUnformatted(data.Label);
 
-        if (ImGui.SliderInt(data.Key, ref value, (int)min, (int)max))
-            data.Value = value;
+        using (ImGuiUtils.ConfigIndent())
+        {
+            if (ImGui.SliderInt(data.Key, ref value, (int)min, (int)max))
+                data.Value = value;
 
-        DrawResetButton(data);
+            DrawResetButton(data);
+
+            if (!string.IsNullOrEmpty(data.Description))
+            {
+                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
+            }
+        }
     }
 
     private static void DrawBool(ConfigDrawData<bool> data)
@@ -612,8 +641,8 @@ public partial class PluginWindow : Window
 
         if (!string.IsNullOrEmpty(data.Description))
         {
-            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
-            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
+            using (ImGuiUtils.ConfigIndent())
+                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
         }
     }
 
@@ -638,8 +667,8 @@ public partial class PluginWindow : Window
 
         if (!string.IsNullOrEmpty(data.Description))
         {
-            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X);
-            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
+            using (ImGuiUtils.ConfigIndent())
+                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
         }
     }
 }
