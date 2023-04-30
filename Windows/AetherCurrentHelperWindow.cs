@@ -199,7 +199,7 @@ public unsafe class AetherCurrentHelperWindow : Window
 
         // Content
         ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {GetQuestName(quest.RowId, true)}");
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {GetSheetText<Quest>(quest.RowId, "Name", true)}");
         ImGui.TextUnformatted(GetHumanReadableCoords(quest.IssuerLocation.Value!) + " | " + GetENpcResidentName(quest.IssuerStart));
 
         // Actions

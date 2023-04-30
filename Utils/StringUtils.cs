@@ -2,106 +2,73 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Memory;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using HaselTweaks.Structs;
 using Lumina.Excel;
-using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Utils;
 
-public sealed unsafe partial class StringUtils : IDisposable
+public sealed unsafe partial class StringUtils
 {
     [GeneratedRegex("^[\\ue000-\\uf8ff]+ ")]
     private static partial Regex Utf8PrivateUseAreaRegex();
 
-    private static Dictionary<uint, string> ENpcResidentNameCache = new();
-    private static Dictionary<uint, string> EObjNameCache = new();
-    private static Dictionary<uint, string> ItemNameCache = new();
     private static Dictionary<uint, string> QuestCache = new();
     private static Dictionary<uint, string> AddonCache = new();
+    private static Dictionary<FormatterMode, Dictionary<FormatterType, Dictionary<uint, string>>> ObjectCache = new(); // ObjectCache[mode][type][id]
     private static Dictionary<string, Dictionary<uint, Dictionary<string, string>>> SheetCache = new(); // SheetCache[sheetName][rowId][columnName]
 
-    public StringUtils()
+    public static string FormatObject(FormatterMode formatter, uint id, FormatterType type)
     {
-        SignatureHelper.Initialise(this);
-    }
-
-    [Signature("E9 ?? ?? ?? ?? 48 8D 47 30")]
-    internal readonly FormatObjectStringDelegate FormatObjectString = null!; // how do you expect me to name things i have no clue about
-    internal delegate nint FormatObjectStringDelegate(int mode, uint id, uint idConversionMode, uint a4);
-
-    public static string GetENpcResidentName(uint npcId)
-    {
-        if (!ENpcResidentNameCache.TryGetValue(npcId, out var value))
+        if (!ObjectCache.TryGetValue(formatter, out var formatterDict))
         {
-            var ptr = Service.StringUtils.FormatObjectString(0, npcId, 3, 1);
-            value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
-            ENpcResidentNameCache.Add(npcId, value);
+            formatterDict = new();
+            ObjectCache.Add(formatter, formatterDict);
         }
 
-        return value;
-    }
-
-    public static string GetEObjName(uint objId)
-    {
-        if (!EObjNameCache.TryGetValue(objId, out var value))
+        if (!formatterDict.TryGetValue(type, out var typeDict))
         {
-            var ptr = Service.StringUtils.FormatObjectString(0, objId, 5, 1);
-            value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
-            EObjNameCache.Add(objId, value);
+            typeDict = new();
+            formatterDict.Add(type, typeDict);
         }
 
-        return value;
-    }
-
-    public static string GetItemName(uint itemId)
-    {
-        if (!ItemNameCache.TryGetValue(itemId, out var value))
+        if (!typeDict.TryGetValue(id, out var value))
         {
-            var ptr = Service.StringUtils.FormatObjectString(1, itemId, 5, 1);
-            value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
-            ItemNameCache.Add(itemId, value);
+            var ptr = Formatter.FormatObjectName(formatter, id, type, 1);
+            if (ptr != 0)
+            {
+                value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
+                typeDict.Add(id, value);
+            }
         }
 
-        return value;
+        return value ?? $"[{Enum.GetName(typeof(FormatterType), type)}#{id}]";
     }
 
-    public static string GetQuestName(uint questId, bool clean)
-    {
-        if (!QuestCache.TryGetValue(questId, out var value))
-        {
-            var quest = Service.Data.GetExcelSheet<Quest>()?.GetRow(questId);
-            if (quest == null)
-                return string.Empty;
-
-            value = SeString.Parse(quest.Name.RawData).ToString();
-
-            if (clean)
-                value = Utf8PrivateUseAreaRegex().Replace(value, "");
-
-            QuestCache.Add(questId, value);
-        }
-
-        return value;
-    }
+    public static string GetENpcResidentName(uint npcId) => FormatObject(FormatterMode.ObjStr, npcId, FormatterType.ENpcResident);
+    public static string GetEObjName(uint objId) => FormatObject(FormatterMode.ObjStr, objId, FormatterType.EObjName);
+    public static string GetItemName(uint itemId) => FormatObject(FormatterMode.Item, itemId, FormatterType.None);
 
     public static string? GetAddonText(uint rowId)
     {
         if (!AddonCache.TryGetValue(rowId, out var value))
         {
             var ptr = (nint)Framework.Instance()->GetUiModule()->GetRaptureTextModule()->GetAddonText(rowId);
-            value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
+            if (ptr != 0)
+            {
+                value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
 
-            if (string.IsNullOrWhiteSpace(value))
-                return null;
+                if (string.IsNullOrWhiteSpace(value))
+                    return null;
 
-            AddonCache.Add(rowId, value);
+                AddonCache.Add(rowId, value);
+            }
         }
 
         return value;
     }
 
-    public static string GetSheetText<T>(uint rowId, string columnName) where T : ExcelRow
+    public static string GetSheetText<T>(uint rowId, string columnName, bool noPrivateUseCharacters = false) where T : ExcelRow
     {
         var sheetType = typeof(T);
         var sheetName = sheetType.Name;
@@ -133,19 +100,28 @@ public sealed unsafe partial class StringUtils : IDisposable
                 return string.Empty;
 
             column = SeString.Parse(value.RawData).ToString();
+
+            if (noPrivateUseCharacters)
+                column = Utf8PrivateUseAreaRegex().Replace(column, "");
+
             row.Add(columnName, column);
         }
 
         return column;
     }
 
-    void IDisposable.Dispose()
+    internal static void DisposeStringUtils()
     {
-        ENpcResidentNameCache = null!;
-        EObjNameCache = null!;
-        ItemNameCache = null!;
+        QuestCache.Clear();
         QuestCache = null!;
+
+        AddonCache.Clear();
         AddonCache = null!;
+
+        ObjectCache.Clear();
+        ObjectCache = null!;
+
+        SheetCache.Clear();
         SheetCache = null!;
     }
 }

@@ -209,8 +209,7 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
 
         ImGuiUtils.IconCache.Clear();
 
-        ((IDisposable)Service.StringUtils).Dispose();
-        Service.StringUtils = null!;
+        DisposeStringUtils();
     }
 
     [SigHook("E8 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? C1 E8 14")]

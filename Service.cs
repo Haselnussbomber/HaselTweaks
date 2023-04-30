@@ -11,14 +11,11 @@ using Dalamud.Game.Gui;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.IoC;
 using Dalamud.Plugin;
-using HaselTweaks.Utils;
 
 namespace HaselTweaks;
 
 public class Service
 {
-    public static StringUtils StringUtils { get; internal set; } = new();
-
     [PluginService] public static DalamudPluginInterface PluginInterface { get; private set; } = null!;
     [PluginService] public static SigScanner SigScanner { get; private set; } = null!;
     [PluginService] public static ChatGui Chat { get; private set; } = null!;
