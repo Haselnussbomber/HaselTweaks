@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Text.RegularExpressions;
 using Dalamud;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface;
@@ -18,7 +19,7 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Windows;
 
-public unsafe class AetherCurrentHelperWindow : Window
+public unsafe partial class AetherCurrentHelperWindow : Window
 {
     private readonly AgentAetherCurrent* agentAetherCurrent;
     private readonly Dictionary<uint, EObj?> EObjCache = new(); // key is AetherCurrent.RowId
@@ -27,6 +28,9 @@ public unsafe class AetherCurrentHelperWindow : Window
     private bool hideUnlocked = true;
 
     private readonly Vector4 TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f, 1);
+
+    [GeneratedRegex("^[\\ue000-\\uf8ff]+ ")]
+    private static partial Regex Utf8PrivateUseAreaRegex();
 
     public static AetherCurrentHelper.Configuration Config => Plugin.Config.Tweaks.AetherCurrentHelper;
 
@@ -199,7 +203,7 @@ public unsafe class AetherCurrentHelperWindow : Window
 
         // Content
         ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {GetSheetText<Quest>(quest.RowId, "Name", true)}");
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {Utf8PrivateUseAreaRegex().Replace(GetSheetText<Quest>(quest.RowId, "Name"), "")}");
         ImGui.TextUnformatted(GetHumanReadableCoords(quest.IssuerLocation.Value!) + " | " + GetENpcResidentName(quest.IssuerStart));
 
         // Actions

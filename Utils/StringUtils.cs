@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
@@ -10,9 +9,6 @@ namespace HaselTweaks.Utils;
 
 public sealed unsafe partial class StringUtils
 {
-    [GeneratedRegex("^[\\ue000-\\uf8ff]+ ")]
-    private static partial Regex Utf8PrivateUseAreaRegex();
-
     private static Dictionary<uint, string> QuestCache = new();
     private static Dictionary<uint, string> AddonCache = new();
     private static Dictionary<FormatterMode, Dictionary<FormatterType, Dictionary<uint, string>>> ObjectCache = new(); // ObjectCache[mode][type][id]
@@ -68,7 +64,7 @@ public sealed unsafe partial class StringUtils
         return value;
     }
 
-    public static string GetSheetText<T>(uint rowId, string columnName, bool noPrivateUseCharacters = false) where T : ExcelRow
+    public static string GetSheetText<T>(uint rowId, string columnName) where T : ExcelRow
     {
         var sheetType = typeof(T);
         var sheetName = sheetType.Name;
@@ -100,9 +96,6 @@ public sealed unsafe partial class StringUtils
                 return string.Empty;
 
             column = SeString.Parse(value.RawData).ToString();
-
-            if (noPrivateUseCharacters)
-                column = Utf8PrivateUseAreaRegex().Replace(column, "");
 
             row.Add(columnName, column);
         }
