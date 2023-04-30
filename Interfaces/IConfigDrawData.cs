@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace HaselTweaks;
+namespace HaselTweaks.Interfaces;
 
 public interface IConfigDrawData
 {

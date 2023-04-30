@@ -1,8 +1,9 @@
 using System.Reflection;
+using HaselTweaks.Interfaces;
 
-namespace HaselTweaks;
+namespace HaselTweaks.Records;
 
-internal class ConfigDrawData<T> : IConfigDrawData
+internal record ConfigDrawData<T> : IConfigDrawData
 {
     public Tweak Tweak { get; init; } = null!;
 

@@ -8,6 +8,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.GameFonts;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
+using HaselTweaks.Records;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using static Dalamud.Game.Command.CommandInfo;
