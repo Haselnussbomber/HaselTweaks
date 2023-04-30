@@ -2,6 +2,7 @@ using System.Text;
 using Dalamud;
 using Dalamud.ContextMenu;
 using Dalamud.Game.Text.SeStringHandling;
+using HaselTweaks.Caches;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 using AgentId = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentId;
@@ -118,7 +119,7 @@ public unsafe class SearchTheMarkets : Tweak
         if (GetAddon<AddonItemSearchResult>("ItemSearchResult", out var itemSearchResult))
             itemSearchResult->Hide2();
 
-        var itemName = GetItemName(ItemId % 1000000);
+        var itemName = StringCache.GetItemName(ItemId % 1000000);
         if (itemName.Length > 40)
             itemName = itemName[..40];
 

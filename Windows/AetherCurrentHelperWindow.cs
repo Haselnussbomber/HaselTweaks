@@ -11,6 +11,7 @@ using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Caches;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
@@ -24,6 +25,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
     private readonly AgentAetherCurrent* agentAetherCurrent;
     private readonly Dictionary<uint, EObj?> EObjCache = new(); // key is AetherCurrent.RowId
     private readonly Dictionary<uint, Level?> LevelCache = new(); // key is Level.RowId
+    private readonly Dictionary<uint, string> QuestNameCache = new(); // key is Quest.RowId, value is stripped from private use utf8 chars
     private AetherCurrentCompFlgSet? compFlgSet;
     private bool hideUnlocked = true;
 
@@ -203,8 +205,13 @@ public unsafe partial class AetherCurrentHelperWindow : Window
 
         // Content
         ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {Utf8PrivateUseAreaRegex().Replace(GetSheetText<Quest>(quest.RowId, "Name"), "")}");
-        ImGui.TextUnformatted(GetHumanReadableCoords(quest.IssuerLocation.Value!) + " | " + GetENpcResidentName(quest.IssuerStart));
+        if (!QuestNameCache.TryGetValue(quest.RowId, out var questName))
+        {
+            questName = Utf8PrivateUseAreaRegex().Replace(StringCache.GetSheetText<Quest>(quest.RowId, "Name"), "");
+            QuestNameCache.Add(quest.RowId, questName);
+        }
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {questName}");
+        ImGui.TextUnformatted(GetHumanReadableCoords(quest.IssuerLocation.Value!) + " | " + StringCache.GetENpcResidentName(quest.IssuerStart));
 
         // Actions
         ImGui.TableNextColumn();
@@ -234,7 +241,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
 
         // Content
         ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {GetEObjName(eobj.RowId)}");
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {StringCache.GetEObjName(eobj.RowId)}");
         ImGui.TextUnformatted(GetHumanReadableCoords(level!));
 
         // Actions

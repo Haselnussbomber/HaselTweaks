@@ -8,6 +8,7 @@ using Dalamud.Plugin;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Caches;
 using HaselTweaks.Utils;
 using HaselTweaks.Windows;
 using DalamudFramework = Dalamud.Game.Framework;
@@ -209,7 +210,7 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
 
         ImGuiUtils.IconCache.Clear();
 
-        DisposeStringUtils();
+        StringCache.Dispose();
     }
 
     [SigHook("E8 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? C1 E8 14")]

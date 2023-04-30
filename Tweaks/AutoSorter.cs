@@ -7,6 +7,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Caches;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -95,7 +96,7 @@ public unsafe class AutoSorter : Tweak
 
     public static string GetLocalizedParam(uint rowId, string? fallback = null)
     {
-        var param = GetSheetText<TextCommandParam>(rowId, "Param");
+        var param = StringCache.GetSheetText<TextCommandParam>(rowId, "Param");
         return string.IsNullOrEmpty(param) ? fallback ?? "" : param.ToLower();
     }
 
@@ -105,7 +106,7 @@ public unsafe class AutoSorter : Tweak
 
         if (!string.IsNullOrEmpty(key) && dict.TryGetValue(key, out var rowId))
         {
-            var param = GetSheetText<TextCommandParam>(rowId, "Param");
+            var param = StringCache.GetSheetText<TextCommandParam>(rowId, "Param");
 
             if (!string.IsNullOrEmpty(param))
             {
