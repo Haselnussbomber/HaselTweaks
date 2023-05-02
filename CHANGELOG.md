@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Experience Bar
+
+- **Fixed**: Exiting the Duty Recorder would crash the game, because the experience bar is not immediately set up after the zone change.
+
 ## [14.9.2] (2023-04-30)
 
 Maintenance update with some internal restructuring and bug fixes.

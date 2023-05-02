@@ -13,7 +13,12 @@ public static unsafe class AtkUtils
     #region GetAddon
 
     public static AtkUnitBase* GetAddon(string name, int index = 1)
-        => (AtkUnitBase*)Service.GameGui.GetAddonByName(name, index);
+    {
+        var ptr = (nint)AtkStage.GetSingleton()->RaptureAtkUnitManager->GetAddonByName(name, index);
+        return ptr != 0 && (*(byte*)(ptr + 0x189) & 1) == 1 // IsAddonReady
+            ? (AtkUnitBase*)ptr
+            : null;
+    }
 
     public static bool GetAddon(string name, int index, out AtkUnitBase* addon)
         => (addon = GetAddon(name, index)) != null;
