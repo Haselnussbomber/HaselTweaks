@@ -21,7 +21,7 @@ public unsafe partial struct NameFormatter
         // ObjStr_Mount = 8, // does not work?
         ObjStr_Companion = 9,
         // 10-11 unused
-        ObjStr_Item = 12,
+        // ObjStr_Item = 12, // does not work?
 
         // Item
         Item = 0,
@@ -29,7 +29,7 @@ public unsafe partial struct NameFormatter
         // ActStr
         ActStr_Trait = 0,
         ActStr_Action = 1,
-        ActStr_Item = 2,
+        // ActStr_Item = 2, // does not work?
         // ActStr_EventItem = 3, // does not work?
         ActStr_EventAction = 4,
         // ActStr_EObjName = 5, // does not work?

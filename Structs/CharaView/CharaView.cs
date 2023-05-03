@@ -12,6 +12,7 @@ namespace HaselTweaks.Structs;
  *  2 used in TryOn, GearSetPreview
  *  3 used in Colorant
  *  4 used in BannerList, BannerEdit
+ *  0 - 7 used in BannerParty
  */
 
 public enum CharaViewState : uint

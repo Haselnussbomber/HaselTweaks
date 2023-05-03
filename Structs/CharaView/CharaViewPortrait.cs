@@ -56,7 +56,7 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     */
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 8B 43 10 C6 80 ?? ?? ?? ?? ?? 48 8B 4B 10")]
-    public partial void Initialize(int clientObjectId, CharaViewCharacterData* characterData, long a4, int a5, long a6); // a4 is set to +0x378, a5 is set to +0x380, a6 is set to +0x388
+    public partial void Initialize(int clientObjectId, CharaViewCharacterData* characterData, long a4, int a5, long a6); // a4 is set to +0x3A8, a5 is set to +0x3B0, a6 is set to +0x3B8
 
     [VirtualFunction(2)]
     public partial void Release();
