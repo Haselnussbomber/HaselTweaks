@@ -21,7 +21,7 @@ public unsafe partial class EnhancedExpBar : Tweak
 - The PvP Series Bar shows series rank and experience. A little * after the rank indicates a claimable rank-up reward.
 
 - The Sanctuary Bar shows sanctuary level and island experience.";
-    public override bool HasIncompatibilityWarning => Service.PluginInterface.PluginInternalNames.Contains("SimpleTweaksPlugin");
+    public override bool HasIncompatibilityWarning => Service.PluginInterface.InstalledPlugins.Any(p => p.InternalName == "SimpleTweaksPlugin" && p.IsLoaded);
     public override string IncompatibilityWarning => "In order for this tweak to work properly, please make sure \"Show Experience Percentage\" is disabled in Simple Tweaks.";
 
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedExpBar;
