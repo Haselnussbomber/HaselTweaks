@@ -847,7 +847,7 @@ public partial class PortraitHelper : Tweak
         {
             ClientLanguage.German => "Momentan angelegte Ausrüstung und Aussehen weichen vom Portrait ab.",
             ClientLanguage.French => "La tenue que vous portez ou votre apparence ne correspondent pas à celles de votre portrait instantané.",
-            //ClientLanguage.Japanese => "", // I don't speak Japanese and this requires a modification of the text, sorry.
+            ClientLanguage.Japanese => "現在の外見や装備がポートレートと一致していません。",
             _ => "Current appearance and/or gear does not match that shown in portrait.",
         };
 

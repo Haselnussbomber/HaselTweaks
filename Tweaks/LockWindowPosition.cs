@@ -346,8 +346,8 @@ public unsafe partial class LockWindowPosition : Tweak
                             var title = Service.ClientState.ClientLanguage switch
                             {
                                 ClientLanguage.German => "Position entsperren",
-                                // ClientLanguage.French => "",
-                                // ClientLanguage.Japanese => "",
+                                ClientLanguage.French => "Déverrouiller la position",
+                                ClientLanguage.Japanese => "ポジションのロック解除",
                                 _ => "Unlock Position"
                             };
 
@@ -361,8 +361,8 @@ public unsafe partial class LockWindowPosition : Tweak
                             var title = Service.ClientState.ClientLanguage switch
                             {
                                 ClientLanguage.German => "Position sperren",
-                                // ClientLanguage.French => "",
-                                // ClientLanguage.Japanese => "",
+                                ClientLanguage.French => "Verrouiller la position",
+                                ClientLanguage.Japanese => "ポジションをロックする",
                                 _ => "Lock Position"
                             };
 

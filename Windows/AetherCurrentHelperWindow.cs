@@ -130,9 +130,9 @@ public unsafe partial class AetherCurrentHelperWindow : Window
             startPos = ImGui.GetCursorPos() + new Vector2(-startPos.X - 4, 0);
             var text = Service.ClientState.ClientLanguage switch
             {
-                // ClientLanguage.Japanese => "",
                 ClientLanguage.German => "Alle Windätherquellen gebündelt!",
-                // ClientLanguage.French => "",
+                ClientLanguage.French => "Toutes les sources d'éther sont réunies !",
+                ClientLanguage.Japanese => "すべてのエーテル風車を結集！",
                 _ => "All aether currents attuned!"
             };
             textSize = ImGui.CalcTextSize(text);

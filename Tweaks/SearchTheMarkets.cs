@@ -38,8 +38,8 @@ public unsafe class SearchTheMarkets : Tweak
             .AddText(Service.ClientState.ClientLanguage switch
             {
                 ClientLanguage.German => "Auf den M\u00e4rkten suchen",
-                // ClientLanguage.French => "",
-                // ClientLanguage.Japanese => "",
+                ClientLanguage.French => "Rechercher sur les marchés",
+                ClientLanguage.Japanese => "市場で検索する",
                 _ => "Search the markets"
             })
             .BuiltString;
