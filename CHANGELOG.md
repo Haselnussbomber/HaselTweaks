@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [14.10.0] (2023-05-20)
 
 Some text has been translated into French and Japanese by using ChatGPT (commit [2d24063](https://github.com/Haselnussbomber/HaselTweaks/commit/2d24063)).  
 Please file a bug if any translation is incorrect.
@@ -786,6 +786,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[14.10.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.9.3...v14.10.0
 [14.9.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.9.2...v14.9.3
 [14.9.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.9.1...v14.9.2
 [14.9.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.9.0...v14.9.1
