@@ -1,4 +1,5 @@
 using Dalamud.Game.Config;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -24,6 +25,9 @@ public unsafe partial class ScrollableTabs : Tweak
 
         [ConfigField(Label = "Enable in Armoury Chest")]
         public bool HandleArmouryBoard = true;
+
+        [ConfigField(Label = "Enable in Chocobo Saddlebag")]
+        public bool HandleInventoryBuddy = true;
 
         [ConfigField(Label = "Enable in Currency")]
         public bool HandleCurrency = true;
@@ -122,6 +126,7 @@ public unsafe partial class ScrollableTabs : Tweak
             case "AdventureNoteBook":      // Sightseeing Log
             case "MJIMinionNoteBook":      // Island Minion Guide
             case "Currency":               // Currency
+            case "InventoryBuddy":         // Chocobo Saddlebag
                 break;
 
             // used by Inventory
@@ -273,6 +278,10 @@ public unsafe partial class ScrollableTabs : Tweak
         else if (Config.HandleCurrency && name == "Currency")
         {
             UpdateCurrency(unitBase);
+        }
+        else if (Config.HandleInventoryBuddy && name == "InventoryBuddy")
+        {
+            UpdateInventoryBuddy((AddonInventoryBuddy*)unitBase);
         }
 
         ResetWheelState:
@@ -525,5 +534,12 @@ public unsafe partial class ScrollableTabs : Tweak
         if (currentTab == newTab) return;
         numberArray->SetValue(0, newTab);
         addon->OnUpdate(atkStage->GetNumberArrayData(), atkStage->GetStringArrayData());
+    }
+
+    private void UpdateInventoryBuddy(AddonInventoryBuddy* addon)
+    {
+        var tabIndex = GetTabIndex(addon->TabIndex, PlayerState.Instance()->HasPremiumSaddlebag ? 2 : 1);
+        if (addon->TabIndex == tabIndex) return;
+        addon->SetTab((byte)tabIndex);
     }
 }
