@@ -1,3 +1,4 @@
+using Dalamud.Game.Config;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -133,7 +134,7 @@ public unsafe partial class ScrollableTabs : Tweak
             // used by InventoryLarge or InventoryExpansion
             case "InventoryCrystalGrid":
                 name = "InventoryLarge";
-                if (GetAddon(name) == null)
+                if (Service.GameConfig.TryGet(UiConfigOption.ItemInventryWindowSizeType, out uint itemInventryWindowSizeType) && itemInventryWindowSizeType == 2)
                     name = "InventoryExpansion";
                 break;
 
