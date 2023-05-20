@@ -2,9 +2,13 @@
 
 ## [Unreleased]
 
+Some text has been translated into French and Japanese by using ChatGPT (commit [2d24063](https://github.com/Haselnussbomber/HaselTweaks/commit/2d24063)).  
+Please file a bug if any translation is incorrect.
+
 ### Scrollable Tabs
 
-- **Added**: Support for the Chocobo Saddlebag window (in case you're subscribed to the Companion Premium Service).
+- **Added**: Support for the Chocobo Saddlebag window.
+  - The second tab requires a subscription to the Companion Premium Service.
 - **Added**: Support for the Currency window.
 - **Fixed**: In the "Open All" Inventory, scrolling over the crystal grid now correctly switches tabs.
 
