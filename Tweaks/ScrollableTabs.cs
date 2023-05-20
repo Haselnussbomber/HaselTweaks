@@ -25,6 +25,9 @@ public unsafe partial class ScrollableTabs : Tweak
         [ConfigField(Label = "Enable in Armoury Chest")]
         public bool HandleArmouryBoard = true;
 
+        [ConfigField(Label = "Enable in Currency")]
+        public bool HandleCurrency = true;
+
         [ConfigField(Label = "Enable in Blue Magic Spellbook")]
         public bool HandleAOZNotebook = true;
 
@@ -118,6 +121,7 @@ public unsafe partial class ScrollableTabs : Tweak
             case "FateProgress":           // Shared FATE
             case "AdventureNoteBook":      // Sightseeing Log
             case "MJIMinionNoteBook":      // Island Minion Guide
+            case "Currency":               // Currency
                 break;
 
             // used by Inventory
@@ -265,6 +269,10 @@ public unsafe partial class ScrollableTabs : Tweak
         else if (Config.HandleMJIMinionNoteBook && name == "MJIMinionNoteBook")
         {
             UpdateMJIMountMinion((AddonMJIMinionNoteBook*)unitBase);
+        }
+        else if (Config.HandleCurrency && name == "Currency")
+        {
+            UpdateCurrency(unitBase);
         }
 
         ResetWheelState:
@@ -506,5 +514,16 @@ public unsafe partial class ScrollableTabs : Tweak
 
             agent->UpdateTabFlags(0x40B);
         }
+    }
+
+    private void UpdateCurrency(AtkUnitBase* addon)
+    {
+        var atkStage = AtkStage.GetSingleton();
+        var numberArray = atkStage->GetNumberArrayData()[79];
+        var currentTab = numberArray->IntArray[0];
+        var newTab = GetTabIndex(currentTab, 4);
+        if (currentTab == newTab) return;
+        numberArray->SetValue(0, newTab);
+        addon->OnUpdate(atkStage->GetNumberArrayData(), atkStage->GetStringArrayData());
     }
 }
