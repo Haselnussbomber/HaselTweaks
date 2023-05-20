@@ -26,7 +26,7 @@ public unsafe partial class ScrollableTabs : Tweak
         [ConfigField(Label = "Enable in Armoury Chest")]
         public bool HandleArmouryBoard = true;
 
-        [ConfigField(Label = "Enable in Chocobo Saddlebag")]
+        [ConfigField(Label = "Enable in Chocobo Saddlebag", Description = "The second tab requires a subscription to the Companion Premium Service")]
         public bool HandleInventoryBuddy = true;
 
         [ConfigField(Label = "Enable in Currency")]
@@ -538,7 +538,9 @@ public unsafe partial class ScrollableTabs : Tweak
 
     private void UpdateInventoryBuddy(AddonInventoryBuddy* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, PlayerState.Instance()->HasPremiumSaddlebag ? 2 : 1);
+        if (!PlayerState.Instance()->HasPremiumSaddlebag)
+            return;
+        var tabIndex = GetTabIndex(addon->TabIndex, 2);
         if (addon->TabIndex == tabIndex) return;
         addon->SetTab((byte)tabIndex);
     }

@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Scrollable Tabs
+
+- **Added**: Support for the Chocobo Saddlebag window (in case you're subscribed to the Companion Premium Service).
+- **Added**: Support for the Currency window.
+- **Fixed**: In the "Open All" Inventory, scrolling over the crystal grid now correctly switches tabs.
+
 ## [14.9.3] (2023-05-03)
 
 ### Enhanced Experience Bar
@@ -103,7 +111,7 @@ Starting with the next release, the versioning will change to make things cleare
 ### Portrait Helper
 
 - **Changed**: Instead of raw Camera and Camera Target Positions the Advanced Edit Mode now has Yaw, Pitch, Distance, X and Y controls.
-  - *Note:* Due to a bug, I had to disable the input fields for all of them except for Distance. Dragging the fields while holding down the left mouse button should still be fine enough for accurate positioning, even though values might flicker a bit.
+  - _Note:_ Due to a bug, I had to disable the input fields for all of them except for Distance. Dragging the fields while holding down the left mouse button should still be fine enough for accurate positioning, even though values might flicker a bit.
 - **Added**: Zoom and Rotation controls added to Advanced Edit Mode.
 
 ## [0.14.1] (2023-04-09)
@@ -121,7 +129,7 @@ Updated UI and features!
 
 - **Added**: A reset button has been added. This returns the portrait to the state it was in when the window was opened.
 - **Added**: Its now possible to save portraits into presets. Use the brand-new preset browser to load presets and organize them using tags. A double click on the preset will load it and you can drag and drop them to easily change their order or add them to tags!
-  - *Please note:* As the list of presets is shared by all tags, but filtered by the selected tag, reordering a preset will change the order across all tags.
+  - _Please note:_ As the list of presets is shared by all tags, but filtered by the selected tag, reordering a preset will change the order across all tags.
 - **Changed**: The copy and paste buttons have been replaced by export and import buttons, which make use of the clipboard and export the portrait as a short base64-encoded string.
 
 ### Enhanced Material List
