@@ -160,14 +160,18 @@ Reveals duty names in duty finder, which were shown as "???" to prevent spoilers
 
 ### Scrollable Tabs
 
-Enables mouse wheel to switch tabs (like with LB/RB on controllers) in the following windows:
+Allows the mouse wheel to switch tabs (like with LB/RB on controllers) in the following windows, each of which can be toggled separately:
 
 - Aether Currents
 - Armoury Chest
 - Blue Magic Spellbook
+- Character
+- Character -> Classes/Jobs
+- Character -> Reputation
 - Chocobo Saddlebag
 - Currency
 - Fashion Accessories
+- Field Records
 - Fish Guide
 - Gold Saucer -> Card List
 - Gold Saucer -> Decks -> Edit Deck

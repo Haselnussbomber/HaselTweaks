@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Scrollable Tabs
+
+- **Added**: Support for the Character window, including Classes/Jobs and Reputation tabs.
+
 ## [14.10.0] (2023-05-20)
 
 Some text has been translated into French and Japanese by using ChatGPT (commit [2d24063](https://github.com/Haselnussbomber/HaselTweaks/commit/2d24063)).  

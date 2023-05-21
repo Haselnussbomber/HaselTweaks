@@ -19,6 +19,11 @@ public unsafe partial struct AddonCharacterClass
     [FixedSizeArray<ClassEntry>(31)]
     [FieldOffset(0x340)] public fixed byte ClassEntries[0x28 * 31];
 
+    [FieldOffset(0x828)] public int TabIndex;
+
+    [MemberFunction("E8 ?? ?? ?? ?? 48 8B 8F ?? ?? ?? ?? 48 8B 01 FF 50 78 48 89 87")]
+    public partial void SetTab(int tab);
+
     [StructLayout(LayoutKind.Explicit, Size = 0x28)]
     public struct ClassEntry
     {

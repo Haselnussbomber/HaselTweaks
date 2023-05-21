@@ -26,14 +26,23 @@ public unsafe partial class ScrollableTabs : Tweak
         [ConfigField(Label = "Enable in Armoury Chest")]
         public bool HandleArmouryBoard = true;
 
+        [ConfigField(Label = "Enable in Blue Magic Spellbook")]
+        public bool HandleAOZNotebook = true;
+
+        [ConfigField(Label = "Enable in Character")]
+        public bool HandleCharacter = true;
+
+        [ConfigField(Label = "Enable in Character -> Classes/Jobs")]
+        public bool HandleCharacterClass = true;
+
+        [ConfigField(Label = "Enable in Character -> Reputation")]
+        public bool HandleCharacterRepute = true;
+
         [ConfigField(Label = "Enable in Chocobo Saddlebag", Description = "The second tab requires a subscription to the Companion Premium Service")]
         public bool HandleInventoryBuddy = true;
 
         [ConfigField(Label = "Enable in Currency")]
         public bool HandleCurrency = true;
-
-        [ConfigField(Label = "Enable in Blue Magic Spellbook")]
-        public bool HandleAOZNotebook = true;
 
         [ConfigField(Label = "Enable in Fashion Accessories")]
         public bool HandleOrnamentNoteBook = true;
@@ -94,7 +103,9 @@ public unsafe partial class ScrollableTabs : Tweak
         if (wheelState == 0)
             return;
 
-        var hoveredUnitBase = Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.IntersectingAddon;
+        var atkModule = Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule;
+
+        var hoveredUnitBase = atkModule.IntersectingAddon;
         if (hoveredUnitBase == null)
             goto ResetWheelState;
 
@@ -127,6 +138,9 @@ public unsafe partial class ScrollableTabs : Tweak
             case "MJIMinionNoteBook":      // Island Minion Guide
             case "Currency":               // Currency
             case "InventoryBuddy":         // Chocobo Saddlebag
+            case "Character":              // Character
+            case "CharacterClass":         // Character -> Classes/Jobs
+            case "CharacterRepute":        // Character -> Reputation
                 break;
 
             // used by Inventory
@@ -181,6 +195,12 @@ public unsafe partial class ScrollableTabs : Tweak
             case "RetainerGrid3":
             case "RetainerGrid4":
                 name = "InventoryRetainerLarge";
+                break;
+
+            // embedded addons of Character
+            case "CharacterStatus":   // Character -> Attributes
+            case "CharacterProfile":  // Character -> Profile
+                name = "Character";
                 break;
 
             default:
@@ -283,15 +303,45 @@ public unsafe partial class ScrollableTabs : Tweak
         {
             UpdateInventoryBuddy((AddonInventoryBuddy*)unitBase);
         }
+        else if (name is "Character" or "CharacterClass" or "CharacterRepute")
+        {
+            var addonCharacter = (AddonCharacter*)(name == "Character" ? unitBase : GetAddon("Character"));
+
+            if (addonCharacter == null)
+                goto ResetWheelState;
+
+            if (!addonCharacter->EmbeddedAddonLoaded)
+                goto ResetWheelState;
+
+            if (atkModule.IntersectingCollisionNode == addonCharacter->CharacterPreviewCollisionNode)
+                goto ResetWheelState;
+
+            switch (name)
+            {
+                case "Character" when Config.HandleCharacter:
+                    UpdateCharacter(addonCharacter);
+                    break;
+                case "CharacterClass" when Config.HandleCharacter && !Config.HandleCharacterClass:
+                    UpdateCharacter(addonCharacter);
+                    break;
+                case "CharacterClass" when Config.HandleCharacterClass:
+                    UpdateCharacterClass(addonCharacter, (AddonCharacterClass*)unitBase);
+                    break;
+                case "CharacterRepute" when Config.HandleCharacter && !Config.HandleCharacterRepute:
+                    UpdateCharacter(addonCharacter);
+                    break;
+                case "CharacterRepute" when Config.HandleCharacterRepute:
+                    UpdateCharacterRepute(addonCharacter, (AddonCharacterRepute*)unitBase);
+                    break;
+            }
+        }
 
         ResetWheelState:
         wheelState = 0;
     }
 
     private int GetTabIndex(int currentTabIndex, int numTabs)
-    {
-        return Math.Clamp(currentTabIndex + wheelState, 0, numTabs - 1);
-    }
+        => Math.Clamp(currentTabIndex + wheelState, 0, numTabs - 1);
 
     private void UpdateArmouryBoard(AddonArmouryBoard* addon)
     {
@@ -530,8 +580,12 @@ public unsafe partial class ScrollableTabs : Tweak
         var atkStage = AtkStage.GetSingleton();
         var numberArray = atkStage->GetNumberArrayData()[79];
         var currentTab = numberArray->IntArray[0];
+
         var newTab = GetTabIndex(currentTab, 4);
-        if (currentTab == newTab) return;
+
+        if (currentTab == newTab)
+            return;
+
         numberArray->SetValue(0, newTab);
         addon->OnUpdate(atkStage->GetNumberArrayData(), atkStage->GetStringArrayData());
     }
@@ -540,8 +594,68 @@ public unsafe partial class ScrollableTabs : Tweak
     {
         if (!PlayerState.Instance()->HasPremiumSaddlebag)
             return;
+
         var tabIndex = GetTabIndex(addon->TabIndex, 2);
-        if (addon->TabIndex == tabIndex) return;
+
+        if (addon->TabIndex == tabIndex)
+            return;
+
         addon->SetTab((byte)tabIndex);
+    }
+
+    private void UpdateCharacter(AddonCharacter* addon)
+    {
+        var tabIndex = GetTabIndex(addon->TabIndex, addon->TabCount);
+
+        if (addon->TabIndex == tabIndex)
+            return;
+
+        addon->SetTab(tabIndex);
+
+        for (var i = 0; i < addon->TabCount; i++)
+        {
+            var button = addon->RadioButtonsSpan[i];
+            if (button.Value != null)
+            {
+                button.Value->SetSelected(i == addon->TabIndex);
+            }
+        }
+    }
+
+    private void UpdateCharacterClass(AddonCharacter* addonCharacter, AddonCharacterClass* addon)
+    {
+        // prev or next embedded addon
+        if (Config.HandleCharacter && (addon->TabIndex + wheelState < 0 || addon->TabIndex + wheelState > 1))
+        {
+            UpdateCharacter(addonCharacter);
+            return;
+        }
+
+        var tabIndex = GetTabIndex(addon->TabIndex, 2);
+
+        if (addon->TabIndex == tabIndex)
+            return;
+
+        addon->SetTab(tabIndex);
+    }
+
+    private void UpdateCharacterRepute(AddonCharacter* addonCharacter, AddonCharacterRepute* addon)
+    {
+        // prev embedded addon
+        if (Config.HandleCharacter && (addon->SelectedExpansion + wheelState < 0))
+        {
+            UpdateCharacter(addonCharacter);
+            return;
+        }
+
+        var tabIndex = GetTabIndex(addon->SelectedExpansion, addon->ExpansionsCount);
+
+        if (addon->SelectedExpansion == tabIndex)
+            return;
+
+        addon->SelectedExpansion = tabIndex;
+
+        var atkStage = AtkStage.GetSingleton();
+        addon->UpdateDisplay(atkStage->GetNumberArrayData()[62], atkStage->GetStringArrayData()[57]);
     }
 }
