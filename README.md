@@ -165,6 +165,8 @@ Enables mouse wheel to switch tabs (like with LB/RB on controllers) in the follo
 - Aether Currents
 - Armoury Chest
 - Blue Magic Spellbook
+- Chocobo Saddlebag
+- Currency
 - Fashion Accessories
 - Fish Guide
 - Gold Saucer -> Card List
