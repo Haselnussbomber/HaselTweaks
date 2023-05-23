@@ -173,9 +173,9 @@ public unsafe struct CharaViewItem
 public unsafe partial struct CharaViewGameObject // FFXIVClientStructs.FFXIV.Client.Game.Character.Character
 {
     [FieldOffset(0x1A8)] public CharaViewGameObjectClassJobSettings ClassJobSettings;
-    [FieldOffset(0xC30)] public CharaViewGameObjectFacialAnimationManager FacialAnimationManager; // name not set in stone
-    [FieldOffset(0x6D0)] public CharaViewGameObjectDrawDataContainer DrawDataContainer;
-    [FieldOffset(0x8F0)] public CharaViewGameObjectActionTimelineManager ActionTimelineManager;
+    [FieldOffset(0xC60)] public CharaViewGameObjectFacialAnimationManager FacialAnimationManager; // name not set in stone
+    [FieldOffset(0x6E8)] public CharaViewGameObjectDrawDataContainer DrawDataContainer;
+    [FieldOffset(0x920)] public CharaViewGameObjectActionTimelineManager ActionTimelineManager;
 }
 
 [StructLayout(LayoutKind.Explicit)]

@@ -6,7 +6,7 @@ namespace HaselTweaks.Structs;
 [StructLayout(LayoutKind.Explicit, Size = 0x48)]
 public unsafe partial struct BannerModule
 {
-    public static BannerModule* Instance() => (BannerModule*)((nint)Framework.Instance()->GetUiModule() + 0x9EB90); // vf58 = GetBannerModule()
+    public static BannerModule* Instance() => (BannerModule*)((nint)Framework.Instance()->GetUiModule() + 0x9F250); // vf58 = GetBannerModule()
 
     [FieldOffset(0)] public UserFileEvent UserFileEvent;
     [FieldOffset(0x40)] public BannerModuleData* Data;
