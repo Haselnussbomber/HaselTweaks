@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Structs;
 
-// ctor "40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 48 C7 43 ?? ?? ?? ?? ?? 48 89 03 48 8B C3 C6 43 30 00 48 83 C4 20 5B C3 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 48 8D 05 ?? ?? ?? ?? 48 89 01 E9 ?? ?? ?? ?? CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 48 89 5C 24 ??"
+// ctor "40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 48 89 03 33 C0 48 89 43 28 48 89 43 30 88 43 38"
 [Agent(AgentId.MJICraftSchedule)]
 [StructLayout(LayoutKind.Explicit, Size = 0x38)]
 public unsafe struct AgentMJICraftSchedule

@@ -36,7 +36,7 @@ public unsafe partial class MaterialAllocation : Tweak
     }
 
     // vf48 = OnOpen?
-    [SigHook("BA ?? ?? ?? ?? E9 ?? ?? ?? ?? CC CC CC CC CC CC 40 57 48 83 EC 20 48 8B F9 85 D2 7E 51")]
+    [SigHook("BA ?? ?? ?? ?? E9 ?? ?? ?? ?? CC CC CC CC CC CC 40 55 41 57 48 83 EC 28")]
     public nint AddonMJICraftMaterialConfirmation_vf48(AddonMJICraftMaterialConfirmation* addon, int numAtkValues, nint atkValues)
     {
         if (Config.SaveLastSelectedTab && GetAgent<AgentMJICraftSchedule>(AgentId.MJICraftSchedule, out var agentMJICraftSchedule))
@@ -72,7 +72,7 @@ public unsafe partial class MaterialAllocation : Tweak
         }
     }
 
-    [SigHook("40 53 48 83 EC 20 48 8B 51 28 48 8B D9 8B 0A 83 E9 01 74 39")]
+    [SigHook("40 53 48 83 EC 20 48 8B 51 28 48 8B D9 8B 0A 83 E9 01 74 35")]
     public bool AgentMJIGatheringNoteBook_OnUpdate(AgentMJIGatheringNoteBook* agent)
     {
         var handleUpdate = Config.OpenGatheringLogOnItemClick
