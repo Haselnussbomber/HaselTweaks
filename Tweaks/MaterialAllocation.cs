@@ -111,7 +111,7 @@ public unsafe partial class MaterialAllocation : Tweak
             //var itemRenderer = *(AtkComponentListItemRenderer**)a5;
             var index = *(int*)(a5 + 0x10);
             //var list = *(HaselTweaks.Structs.AtkComponentList**)(a5 + 0x150);
-            var id = addon->AtkUnitBase.AtkValues[index + 2].UInt; // MJIItemPouch RowId
+            var id = addon->AtkUnitBase.AtkValues[index + 4].UInt; // MJIItemPouch RowId
 
             var pouchRow = sheetMJIItemPouch.GetRow(id);
             if (pouchRow == null || pouchRow.Item.Row == 0)
@@ -175,22 +175,15 @@ public unsafe partial class MaterialAllocation : Tweak
 
     private void UpdateGatheringNoteBookItem(AgentMJIGatheringNoteBook* agent, uint itemId)
     {
-        var sheetMJIItemPouch = Service.Data.GetExcelSheet<MJIItemPouch>();
-        if (sheetMJIItemPouch == null)
-            return;
-
-        var index = 0u;
-        for (; index < sheetMJIItemPouch.RowCount; index++)
+        for (var index = 0u; index < agent->Data->ItemCount; index++)
         {
             var gatherItem = agent->Data->GatherItemPtrs[index];
-            if (gatherItem != null && gatherItem->ItemId == itemId)
-                break; // found
-        }
+            if (gatherItem == null || gatherItem->ItemId != itemId)
+                continue;
 
-        if (index > 0)
-        {
             agent->Data->SelectedItemIndex = index;
             agent->Data->Flags |= 2;
+            break;
         }
     }
 }

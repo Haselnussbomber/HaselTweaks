@@ -20,15 +20,15 @@ public unsafe struct AgentMJIGatheringNoteBook_Data
 {
     [FieldOffset(0)] public uint Status;
 
-    [FieldOffset(0x80)] public AgentMJIGatheringNoteBook_Data_GatherItem* GatherItems;
+    [FieldOffset(0x70)] public uint ItemCount;
 
-    [FieldOffset(0x98)] public AgentMJIGatheringNoteBook_Data_GatherItem** GatherItemPtrs; // sorted
+    [FieldOffset(0xC0)] public AgentMJIGatheringNoteBook_Data_GatherItem** GatherItemPtrs; // sorted
 
-    [FieldOffset(0x198)] public uint SelectedItemIndex;
-    [FieldOffset(0x19C)] public byte Flags;
+    [FieldOffset(0x1C8)] public uint SelectedItemIndex;
+    [FieldOffset(0x1CC)] public byte Flags;
 }
 
-[StructLayout(LayoutKind.Explicit, Size = 0x88)]
+[StructLayout(LayoutKind.Explicit, Size = 0x80)]
 public unsafe struct AgentMJIGatheringNoteBook_Data_GatherItem
 {
     [FieldOffset(0x00)] public ushort Radius;

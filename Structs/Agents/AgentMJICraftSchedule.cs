@@ -12,7 +12,8 @@ public unsafe struct AgentMJICraftSchedule
     [FieldOffset(0)] public AgentInterface AgentInterface;
 
     [FieldOffset(0x28)] public MJICraftScheduleData* Data;
-    [FieldOffset(0x30)] public byte TabIndex;
+
+    [FieldOffset(0x38)] public byte TabIndex;
 
     // ctor "E8 ?? ?? ?? ?? 48 89 43 28 48 85 C0 74 26"
     [StructLayout(LayoutKind.Explicit, Size = 0x850)]
