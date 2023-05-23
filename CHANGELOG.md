@@ -4,8 +4,6 @@
 
 Preliminary update for Patch 6.4.
 
-- Material Allocation is outdated until I can figure out what happened to it.
-
 ### Scrollable Tabs
 
 - **Added**: Support for the Character window, including Classes/Jobs and Reputation tabs.
