@@ -3,7 +3,6 @@ using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
-using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -16,7 +15,6 @@ public unsafe partial class AutoOpenRecipe : Tweak
 {
     public override string Name => "Auto-open Recipe";
     public override string Description => "When a new daily/tribal quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe.";
-    public override bool Outdated => true;
 
     // for older quests that don't return the item id in GetTodoArgs
     private readonly record struct QuestTodo(ushort QuestId, byte TodoIndex, string ScriptArgName = "RITEM1");
@@ -135,14 +133,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
             if (todoOffset < 0 || todoOffset >= quest.ToDoQty.Length)
                 goto originalUpdateQuestWork;
 
-            var control = Control.Instance();
-            if (control == null)
-            {
-                Warning("Could not resolve Control");
-                goto originalUpdateQuestWork;
-            }
-
-            var localPlayer = control->LocalPlayer;
+            var localPlayer = (BattleChara*)(Service.ClientState.LocalPlayer?.Address ?? 0);
             if (localPlayer == null)
                 goto originalUpdateQuestWork;
 

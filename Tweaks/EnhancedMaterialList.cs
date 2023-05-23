@@ -5,7 +5,7 @@ using Dalamud.Memory;
 using Dalamud.Utility;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.Game.Control;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.String;
@@ -339,8 +339,8 @@ public unsafe partial class EnhancedMaterialList : Tweak
         if (agentRecipeMaterialList->Recipe == null || agentRecipeMaterialList->Recipe->ResultItemId != itemId)
             goto originalAddItemContextMenuEntries;
 
-        var control = Control.Instance();
-        if (control == null || control->LocalPlayer == null || control->LocalPlayer->Character.EventState == 5)
+        var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? 0);
+        if (localPlayer == null || localPlayer->EventState == 5)
             goto originalAddItemContextMenuEntries;
 
         flags |= 2;

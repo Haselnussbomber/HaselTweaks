@@ -6,7 +6,6 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Utility;
-using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
@@ -128,8 +127,8 @@ public unsafe class DTR : Tweak
         if (DtrBusy == null)
             return;
 
-        var character = (Character*)(Service.ClientState.LocalPlayer?.Address ?? 0);
-        if (character == null || character->OnlineStatus != 12) // 12 = Busy
+        var onlineStatus = Service.ClientState.LocalPlayer?.OnlineStatus.Id;
+        if (onlineStatus != 12) // 12 = Busy
         {
             if (DtrBusy.Shown)
                 DtrBusy.Shown = false;
