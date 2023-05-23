@@ -16,6 +16,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
 {
     public override string Name => "Auto-open Recipe";
     public override string Description => "When a new daily/tribal quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe.";
+    public override bool Outdated => true;
 
     // for older quests that don't return the item id in GetTodoArgs
     private readonly record struct QuestTodo(ushort QuestId, byte TodoIndex, string ScriptArgName = "RITEM1");
