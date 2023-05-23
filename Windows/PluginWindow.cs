@@ -95,7 +95,7 @@ public partial class PluginWindow : Window
             {
                 var startPos = ImGui.GetCursorPos();
                 var drawList = ImGui.GetWindowDrawList();
-                var pos = ImGui.GetWindowPos() + startPos;
+                var pos = ImGui.GetWindowPos() + startPos - new Vector2(0, ImGui.GetScrollY());
                 var frameHeight = ImGui.GetFrameHeight();
 
                 var size = new Vector2(frameHeight);
