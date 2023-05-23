@@ -224,7 +224,7 @@ public unsafe partial class LockWindowPosition : Tweak
     }
 
     // block GearSetList from moving when opened by Character
-    [SigHook("40 53 56 57 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 48 89 AC 24 ?? ?? ?? ??")]
+    [SigHook("4C 8B DC 53 55 57 41 56 48 81 EC")]
     public nint AddonGearSetList_OnSetup(AddonGearSetList* addon, int numAtkValues, AtkValue* atkValues)
     {
         var result = AddonGearSetList_OnSetupHook.Original(addon, numAtkValues, atkValues);
@@ -240,7 +240,7 @@ public unsafe partial class LockWindowPosition : Tweak
         return result;
     }
 
-    [SigHook("E8 ?? ?? ?? ?? 0F BF 8C 24 ?? ?? ?? ?? 01 8F ?? ?? ?? ??")]
+    [SigHook("E8 ?? ?? ?? ?? 0F BF 8C 24 ?? ?? ?? ?? 01 8F")]
     public bool Move(AtkUnitBase* atkUnitBase, nint xDelta, nint yDelta)
     {
         if (atkUnitBase != null)
@@ -300,7 +300,7 @@ public unsafe partial class LockWindowPosition : Tweak
         return RaptureAtkUnitManager_Vf6Hook.Original(self, a2);
     }
 
-    [SigHook("E8 ?? ?? ?? ?? 44 8D 4E 0C")]
+    [SigHook("E8 ?? ?? ?? ?? 44 8D 4E 0B")]
     public nint AgentContext_ClearMenu(AgentContext* agent)
     {
         if (EventIndexToDisable != 0)
@@ -309,7 +309,7 @@ public unsafe partial class LockWindowPosition : Tweak
         return AgentContext_ClearMenuHook.Original(agent);
     }
 
-    [SigHook("E8 ?? ?? ?? ?? 3B F6")]
+    [SigHook("E8 ?? ?? ?? ?? 48 8D 46 28")]
     public nint AgentContext_AddMenuItem2(AgentContext* agent, uint addonRowId, nint handlerPtr, long handlerParam, int disabled, int submenu)
     {
         if (addonRowId == 8660 && agent->ContextMenuIndex == 0) // "Return to Default Position"

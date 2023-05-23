@@ -10,6 +10,6 @@ public partial struct AtkComponentGaugeBar
     [MemberFunction("E8 ?? ?? ?? ?? 41 3B 1E")]
     public partial uint SetValue(uint value, uint a3, bool skipAnimation);
 
-    [MemberFunction("48 8D 81 ?? ?? ?? ?? 89 54 24 10")]
+    [MemberFunction("E8 ?? ?? ?? ?? 89 AF ?? ?? ?? ?? 48 8B 46 20")]
     public partial uint SetSecondaryValue(uint value);
 }

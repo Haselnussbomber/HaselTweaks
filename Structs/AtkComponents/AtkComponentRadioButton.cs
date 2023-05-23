@@ -10,6 +10,6 @@ public partial struct AtkComponentRadioButton
 
     public bool IsSelected => (AtkComponentButton.Flags & 0x40000) != 0;
 
-    [MemberFunction("E8 ?? ?? ?? ?? EB 82")]
+    [MemberFunction("E8 ?? ?? ?? ?? 0F B7 DD")]
     public partial void SetSelected(bool isSelected);
 }

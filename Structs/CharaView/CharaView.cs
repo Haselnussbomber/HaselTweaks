@@ -181,7 +181,7 @@ public unsafe partial struct CharaViewGameObject // FFXIVClientStructs.FFXIV.Cli
 [StructLayout(LayoutKind.Explicit)]
 public unsafe partial struct CharaViewGameObjectClassJobSettings
 {
-    [MemberFunction("44 0F B6 49 ?? 88 51 38")]
+    [MemberFunction("44 0F B6 49 ?? 88 51 3A")]
     public partial void SetClassJob(short classJobId);
 }
 
