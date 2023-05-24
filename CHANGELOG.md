@@ -1,10 +1,23 @@
 # Changelog
 
+## [14.11.1] (2023-05-24)
+
+Another update for Patch 6.4 (staging).
+
+- **Search the markets**: Enabled again, because Dalamud.ContextMenu has been updated.
+
+### Known Issues
+
+- **DTR:** Busy status and Instance number are not showing until ClientStructs is updated and shipped with a new Dalamud version.
+
 ## [14.11.0] (2023-05-24)
 
 Preliminary update for Patch 6.4 (staging).
 
-- **Outdated:** Search the markets disabled until Dalamud.ContextMenu is updated.
+### Known Issues
+
+- **DTR:** Busy status and Instance number are not showing until ClientStructs is updated and shipped with a new Dalamud version.
+- **Search the markets**: Currently disabled until Dalamud.ContextMenu is updated.
 
 ### Scrollable Tabs
 
@@ -796,6 +809,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[14.11.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.11.0...v14.11.1
 [14.11.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.10.0...v14.11.0
 [14.10.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.9.3...v14.10.0
 [14.9.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.9.2...v14.9.3
