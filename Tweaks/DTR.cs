@@ -7,6 +7,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using HaselTweaks.Extensions;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -101,25 +102,19 @@ public unsafe class DTR : Tweak
         var uiState = UIState.Instance();
         if (uiState == null)
         {
-            if (DtrInstance.Shown)
-                DtrInstance.Shown = false;
+            DtrInstance.SetVisibility(false);
             return;
         }
 
         var instanceId = uiState->AreaInstance.Instance;
         if (instanceId <= 0 || instanceId >= 10)
         {
-            if (DtrInstance.Shown)
-                DtrInstance.Shown = false;
+            DtrInstance.SetVisibility(false);
             return;
         }
 
-        var text = ((char)(SeIconChar.Instance1 + (byte)(instanceId - 1))).ToString();
-        if (DtrInstance.Text?.TextValue != text)
-            DtrInstance.Text = text;
-
-        if (!DtrInstance.Shown)
-            DtrInstance.Shown = true;
+        DtrInstance.SetText(((char)(SeIconChar.Instance1 + (byte)(instanceId - 1))).ToString());
+        DtrInstance.SetVisibility(true);
     }
 
     private void UpdateBusy()
@@ -128,16 +123,7 @@ public unsafe class DTR : Tweak
             return;
 
         var onlineStatus = Service.ClientState.LocalPlayer?.OnlineStatus.Id;
-        if (onlineStatus != 12) // 12 = Busy
-        {
-            if (DtrBusy.Shown)
-                DtrBusy.Shown = false;
-        }
-        else
-        {
-            if (!DtrBusy.Shown)
-                DtrBusy.Shown = true;
-        }
+        DtrBusy.SetVisibility(onlineStatus == 12);
     }
 
     private void UpdateFPS()
@@ -148,16 +134,11 @@ public unsafe class DTR : Tweak
         var gameFramework = GameFramework.Instance();
         if (gameFramework == null)
         {
-            if (DtrFPS.Shown)
-                DtrFPS.Shown = false;
+            DtrFPS.SetVisibility(false);
             return;
         }
 
-        var text = $"{gameFramework->FrameRate:0} fps";
-        if (DtrFPS.Text?.TextValue != text)
-            DtrFPS.Text = text;
-
-        if (!DtrFPS.Shown)
-            DtrFPS.Shown = true;
+        DtrFPS.SetText($"{gameFramework->FrameRate:0} fps");
+        DtrFPS.SetVisibility(true);
     }
 }
