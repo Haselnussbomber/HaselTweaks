@@ -107,7 +107,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     public override void OnAddonClose(string addonName, AtkUnitBase* unitBase)
     {
-        if (addonName is "Synthesis" or "SynthesisSimple" or "Gathering" or "ItemSearchResult" or "InclusionShop" or "Shop" or "ShopExchangeItem")
+        if (addonName is "Synthesis" or "SynthesisSimple" or "Gathering" or "ItemSearchResult" or "InclusionShop" or "Shop" or "ShopExchangeCurrency" or "ShopExchangeItem")
             RequestRefresh();
     }
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Material List
+
+- **Added**: Refresh after "Currency Exchange" window closes.
+
 ## [14.11.1] (2023-05-24)
 
 Another update for Patch 6.4 (staging).
