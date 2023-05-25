@@ -5,6 +5,7 @@
 ### Enhanced Material List
 
 - **Added**: Refresh after "Currency Exchange" window closes.
+- **Fixed**: "Search for Item by Crafting Method" context menu entry wasn't shown due to wrong offsets.
 
 ## [14.11.1] (2023-05-24)
 

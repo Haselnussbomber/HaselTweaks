@@ -21,11 +21,11 @@ public unsafe partial struct AgentRecipeMaterialList
     [StructLayout(LayoutKind.Explicit)]
     public struct RecipeData
     {
-        [FieldOffset(0x90)] public uint RecipeId;
-        [FieldOffset(0x94)] public uint ResultItemId;
-        [FieldOffset(0x98)] public uint ResultAmount;
-        [FieldOffset(0x9C)] public uint ResultItemIconId;
-        [FieldOffset(0xA0)] public Utf8String ItemName;
+        [FieldOffset(0xB8)] public uint RecipeId;
+        [FieldOffset(0xBC)] public uint ResultItemId;
+        [FieldOffset(0xC0)] public uint ResultAmount;
+        [FieldOffset(0xC4)] public uint ResultItemIconId;
+        [FieldOffset(0xC8)] public Utf8String ItemName;
     }
 
     [MemberFunction("E8 ?? ?? ?? ?? EB B1 48 8B 4B 28")]
