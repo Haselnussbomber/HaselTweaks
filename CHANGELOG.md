@@ -1,10 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## [14.11.2] (2023-05-26)
 
 ### Enhanced Material List
 
-- **Added**: Refresh after "Currency Exchange" window closes.
+- **Fixed**: After closing the "Currency Exchange" window the material list didn't refresh, because I simply forgot to check for this window.
 - **Fixed**: "Search for Item by Crafting Method" context menu entry wasn't shown due to wrong offsets.
 
 ## [14.11.1] (2023-05-24)
@@ -816,6 +816,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[14.11.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.11.1...v14.11.2
 [14.11.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.11.0...v14.11.1
 [14.11.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.10.0...v14.11.0
 [14.10.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.9.3...v14.10.0
