@@ -9,7 +9,6 @@ namespace HaselTweaks.Caches;
 
 public sealed unsafe partial class StringCache
 {
-    private static Dictionary<uint, string> QuestCache = new();
     private static Dictionary<uint, string> AddonCache = new();
     private static Dictionary<(NameFormatter.Placeholder, NameFormatter.IdConverter, uint), string> NameCache = new(); // NameCache[(placeholder, idConverter, id)]
     private static Dictionary<(string, uint, string), string> SheetCache = new(); // SheetCache[(sheetName, rowId, columnName)]
@@ -145,9 +144,6 @@ public sealed unsafe partial class StringCache
 
     internal static void Dispose()
     {
-        QuestCache.Clear();
-        QuestCache = null!;
-
         AddonCache.Clear();
         AddonCache = null!;
 
