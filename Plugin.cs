@@ -33,12 +33,6 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
         AddonSetupHook?.Enable();
         AddonFinalizeHook?.Enable();
 
-        // ensure Framework is set up
-        Service.Framework.RunOnFrameworkThread(Setup);
-    }
-
-    private unsafe void Setup()
-    {
         var gameVersion = Framework.Instance()->GameVersion.Base;
         if (string.IsNullOrEmpty(gameVersion))
             throw new Exception("Unable to read game version.");
