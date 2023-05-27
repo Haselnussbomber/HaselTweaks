@@ -63,7 +63,7 @@ public unsafe partial class LockWindowPosition : Tweak
             Plugin.Config.Save();
         }
 
-        var isWindowFocussed = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
+        var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
 
         ImGuiUtils.DrawPaddedSeparator();
         if (Config.LockedWindows.Any())
@@ -107,7 +107,7 @@ public unsafe partial class LockWindowPosition : Tweak
                 ImGui.TextUnformatted(entry.Name);
 
                 ImGui.TableNextColumn();
-                if (isWindowFocussed && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
+                if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
                 {
                     if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, "Delete"))
                     {
@@ -119,7 +119,7 @@ public unsafe partial class LockWindowPosition : Tweak
                     ImGuiUtils.IconButtonDisabled(
                         key + "_Delete",
                         FontAwesomeIcon.Trash,
-                        isWindowFocussed
+                        isWindowFocused
                             ? "Hold shift to delete"
                             : "Focus window and hold shift to delete");
                 }

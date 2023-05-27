@@ -187,7 +187,7 @@ public unsafe class AutoSorter : Tweak
         ImGui.TableSetupColumn("Order", ImGuiTableColumnFlags.WidthStretch);
         ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, Enabled ? 120 : 85);
 
-        var isWindowFocussed = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
+        var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
         var lang = Service.ClientState.ClientLanguage;
         var preview = "";
         var i = 0;
@@ -309,7 +309,7 @@ public unsafe class AutoSorter : Tweak
 
             ImGui.SameLine();
 
-            if (isWindowFocussed && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
+            if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
             {
                 if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, "Delete rule"))
                 {
@@ -321,7 +321,7 @@ public unsafe class AutoSorter : Tweak
                 ImGuiUtils.IconButtonDisabled(
                     key + "_Delete",
                     FontAwesomeIcon.Trash,
-                    isWindowFocussed
+                    isWindowFocused
                         ? "Hold shift to delete rule"
                         : "Focus window and hold shift to delete rule");
             }

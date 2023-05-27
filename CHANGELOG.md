@@ -1,17 +1,29 @@
 # Changelog
 
+## [Unreleased]
+
+Maintenance update with optimizations and bug fixes.
+
+- **Fixed:** Disabled buttons now display their intended tooltips again.
+- **Optimized:** Multiple hooks now use cached addresses for signatures, which makes the plugin start a bit faster due to less scanning.
+- **Optimized:** The FPS display in the DTR tweak now only updates when the frame rate has changed to avoid formatting a number into a string on every frame.
+
+### Scrollable Tabs
+
+- **Fixed:** It was possible to scroll in windows when they were the last thing the cursor hovered before tabbing out. Now scrolling is disabled when the game isn't focused.
+
 ## [14.11.2] (2023-05-26)
 
 ### Enhanced Material List
 
-- **Fixed**: After closing the "Currency Exchange" window the material list didn't refresh, because I simply forgot to check for this window.
-- **Fixed**: "Search for Item by Crafting Method" context menu entry wasn't shown due to wrong offsets.
+- **Fixed:** After closing the "Currency Exchange" window the material list didn't refresh, because I simply forgot to check for this window.
+- **Fixed:** "Search for Item by Crafting Method" context menu entry wasn't shown due to wrong offsets.
 
 ## [14.11.1] (2023-05-24)
 
 Another update for Patch 6.4 (staging).
 
-- **Search the markets**: Enabled again, because Dalamud.ContextMenu has been updated.
+- **Search the markets:** Enabled again, because Dalamud.ContextMenu has been updated.
 
 ### Known Issues
 
@@ -24,11 +36,11 @@ Preliminary update for Patch 6.4 (staging).
 ### Known Issues
 
 - **DTR:** Busy status and Instance number are not showing until ClientStructs is updated and shipped with a new Dalamud version.
-- **Search the markets**: Currently disabled until Dalamud.ContextMenu is updated.
+- **Search the markets:** Currently disabled until Dalamud.ContextMenu is updated.
 
 ### Scrollable Tabs
 
-- **Added**: Support for the Character window, including Classes/Jobs and Reputation tabs.
+- **Added:** Support for the Character window, including Classes/Jobs and Reputation tabs.
 
 ## [14.10.0] (2023-05-20)
 
@@ -37,57 +49,57 @@ Please file a bug if any translation is incorrect.
 
 ### Scrollable Tabs
 
-- **Added**: Support for the Chocobo Saddlebag window.
+- **Added:** Support for the Chocobo Saddlebag window.
   - The second tab requires a subscription to the Companion Premium Service.
-- **Added**: Support for the Currency window.
-- **Fixed**: In the "Open All" Inventory, scrolling over the crystal grid now correctly switches tabs.
+- **Added:** Support for the Currency window.
+- **Fixed:** In the "Open All" Inventory, scrolling over the crystal grid now correctly switches tabs.
 
 ## [14.9.3] (2023-05-03)
 
 ### Enhanced Experience Bar
 
-- **Fixed**: Exiting the Duty Recorder would crash the game, because the experience bar is used immediately after the zone change before it's fully set up.
+- **Fixed:** Exiting the Duty Recorder would crash the game, because the experience bar is used immediately after the zone change before it's fully set up.
 
 ## [14.9.2] (2023-04-30)
 
 Maintenance update with some internal restructuring and bug fixes.
 
-- **Changed**: For safety, any drawn text is now drawn with `ImGui.TextUnformatted`.
-- **Changed**: Configuration fields now have consistent indentation.
-- **Changed**: The description for dropdown configuration fields is now correctly below the dropdown.
-- **Fixed**: Reset buttons now work correctly when more than one is displayed.
+- **Changed:** For safety, any drawn text is now drawn with `ImGui.TextUnformatted`.
+- **Changed:** Configuration fields now have consistent indentation.
+- **Changed:** The description for dropdown configuration fields is now correctly below the dropdown.
+- **Fixed:** Reset buttons now work correctly when more than one is displayed.
 
 ### Custom Chat Timestamp
 
-- **Added**: The configuration now shows the result of the current format with an example message.
-- **Added**: The configuration now shows an error if the format is invalid.
-- **Added**: The format field in the configuration now has a reset to default button.
-- **Fixed**: The timestamp will not be modified if the format field is empty.
+- **Added:** The configuration now shows the result of the current format with an example message.
+- **Added:** The configuration now shows an error if the format is invalid.
+- **Added:** The format field in the configuration now has a reset to default button.
+- **Fixed:** The timestamp will not be modified if the format field is empty.
 
 ## [14.9.1] (2023-04-29)
 
 ### Portrait Helper
 
-- **Fixed**: Added some extra gearset id checks (only allows 0 - 99; the game may return 255 if the gearset is not found).
+- **Fixed:** Added some extra gearset id checks (only allows 0 - 99; the game may return 255 if the gearset is not found).
 
 ### Search the markets
 
-- **Fixed**: Disabled the context menu entry for collectable items.
-- **Fixed**: The HQ symbol is now stripped from the item name.
+- **Fixed:** Disabled the context menu entry for collectable items.
+- **Fixed:** The HQ symbol is now stripped from the item name.
 
 ## [14.9.0] (2023-04-28)
 
 ### Custom Chat Timestamp
 
-- **Fixed**: Errors caused by an invalid format are now caught and don't crash the game anymore.
+- **Fixed:** Errors caused by an invalid format are now caught and don't crash the game anymore.
 
 ### Portrait Helper
 
 The tweak will now display a notification whenever the appearance and/or gear doesn't match what was saved in the portait (can be disabled).
 
-- **Added**: A new option `Notify if appearance and/or gear doesn't match Portait` (default on):
+- **Added:** A new option `Notify if appearance and/or gear doesn't match Portait` (default on):
   - Prints a notification in chat which can be clicked to open the Portrait Editor.
-- **Changed**: The option `Re-equip Gearset when it was updated` was renamed to `Try to fix by automatically re-equipping Gearset to reapply Glamour Plate` and now depends on the notification option.
+- **Changed:** The option `Re-equip Gearset when it was updated` was renamed to `Try to fix by automatically re-equipping Gearset to reapply Glamour Plate` and now depends on the notification option.
   - The functionality was not changed. Still only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state.
 
 ## [14.8.0] (2023-04-23)
@@ -96,21 +108,21 @@ Sorry for the quick updates, but I just came up with this solution:
 
 ### Portrait Helper
 
-- **Added**: "Re-equip Gearset when it was updated" option (default **off** to prevent confusion).
+- **Added:** "Re-equip Gearset when it was updated" option (default **off** to prevent confusion).
   - This option ensures the glamour plate is applied after updating the gearset by re-equipping it, which should help with portrait resetting to default. Of course it only works in places where glamour plates are allowed to be applied, if the gearset actually is linked to a glamour plate and if the glamour plate covers the changed slots.
 
 ## [14.7.0] (2023-04-23)
 
 ### Portrait Helper
 
-- **Removed**: The option "Auto-update Portrait when Gearset was updated", which was added in v0.14.6, didn't work as expected - in fact, it probably did nothing at all. I'm sorry.
-- **Fixed**: Under certain conditions the clipboard didn't get closed, which prevented it from working anywhere in Windows until the game was closed.
+- **Removed:** The option "Auto-update Portrait when Gearset was updated", which was added in v0.14.6, didn't work as expected - in fact, it probably did nothing at all. I'm sorry.
+- **Fixed:** Under certain conditions the clipboard didn't get closed, which prevented it from working anywhere in Windows until the game was closed.
 
 ## [0.14.6] (2023-04-20)
 
 ### Portrait Helper
 
-- **Added**: New config option "Auto-update Portrait when Gearset was updated" (default on).
+- **Added:** New config option "Auto-update Portrait when Gearset was updated" (default on).
   - This updates the gearset hash in the linked portrait when you save your gearset, so it no longer resets to the default portrait when you changed an item, glamour or the linked glamour plate.
 
 ---
@@ -119,41 +131,41 @@ Starting with the next release, the versioning will change to make things cleare
 
 ## [0.14.5] (2023-04-17)
 
-- **Fixed**: The "Configuration" section title in the Tweak configuration is now hidden when there are no fields to configure.
+- **Fixed:** The "Configuration" section title in the Tweak configuration is now hidden when there are no fields to configure.
 
 ### Portrait Helper
 
-- **Added**: An Alignment Tool which adds guide lines over the portrait to aid in proper alignment and composition.
+- **Added:** An Alignment Tool which adds guide lines over the portrait to aid in proper alignment and composition.
   - Hold Shift when clicking the button to open the settings, where you can change the number and color of the lines.
 
 ## [0.14.4] (2023-04-11)
 
 ### Portrait Helper
 
-- **Fixed**: Apparently copying an image to the clipboard is harder than I thought. Updated the code for better compatibility with programs like Paint and Discord.
+- **Fixed:** Apparently copying an image to the clipboard is harder than I thought. Updated the code for better compatibility with programs like Paint and Discord.
 
 ## [0.14.3] (2023-04-11)
 
 ### Portrait Helper
 
-- **Added**: The preset context menu in the Preset Browser has been expanded to include a "Copy Image" function.
-- **Fixed**: To avoid an error when reading the contents of the clipboard, a check has been added to see if any text is present (because you can actually copy other stuff with it, who knew).
-- **Fixed**: Restore UI visibility when in Advanced Edit Mode and a game popup was opened (e.g. the close confirmation window or context menu of title bar).
+- **Added:** The preset context menu in the Preset Browser has been expanded to include a "Copy Image" function.
+- **Fixed:** To avoid an error when reading the contents of the clipboard, a check has been added to see if any text is present (because you can actually copy other stuff with it, who knew).
+- **Fixed:** Restore UI visibility when in Advanced Edit Mode and a game popup was opened (e.g. the close confirmation window or context menu of title bar).
 
 ## [0.14.2] (2023-04-10)
 
 ### Portrait Helper
 
-- **Changed**: Instead of raw Camera and Camera Target Positions the Advanced Edit Mode now has Yaw, Pitch, Distance, X and Y controls.
+- **Changed:** Instead of raw Camera and Camera Target Positions the Advanced Edit Mode now has Yaw, Pitch, Distance, X and Y controls.
   - _Note:_ Due to a bug, I had to disable the input fields for all of them except for Distance. Dragging the fields while holding down the left mouse button should still be fine enough for accurate positioning, even though values might flicker a bit.
-- **Added**: Zoom and Rotation controls added to Advanced Edit Mode.
+- **Added:** Zoom and Rotation controls added to Advanced Edit Mode.
 
 ## [0.14.1] (2023-04-09)
 
 ### Portrait Helper
 
-- **Added**: An Advanced Edit Mode to precisely set camera position and target, eye and head directions and the animation timestamp, but don't get your hopes up too high - I think the camera uses a spherical coordinate system. Good luck!
-- **Fixed**: Some game UI elements did not reappear after closing the Advanced Import or Preset Browser.
+- **Added:** An Advanced Edit Mode to precisely set camera position and target, eye and head directions and the animation timestamp, but don't get your hopes up too high - I think the camera uses a spherical coordinate system. Good luck!
+- **Fixed:** Some game UI elements did not reappear after closing the Advanced Import or Preset Browser.
 
 ## [0.14.0] (2023-04-09)
 
@@ -161,18 +173,18 @@ Starting with the next release, the versioning will change to make things cleare
 
 Updated UI and features!
 
-- **Added**: A reset button has been added. This returns the portrait to the state it was in when the window was opened.
-- **Added**: Its now possible to save portraits into presets. Use the brand-new preset browser to load presets and organize them using tags. A double click on the preset will load it and you can drag and drop them to easily change their order or add them to tags!
+- **Added:** A reset button has been added. This returns the portrait to the state it was in when the window was opened.
+- **Added:** Its now possible to save portraits into presets. Use the brand-new preset browser to load presets and organize them using tags. A double click on the preset will load it and you can drag and drop them to easily change their order or add them to tags!
   - _Please note:_ As the list of presets is shared by all tags, but filtered by the selected tag, reordering a preset will change the order across all tags.
-- **Changed**: The copy and paste buttons have been replaced by export and import buttons, which make use of the clipboard and export the portrait as a short base64-encoded string.
+- **Changed:** The copy and paste buttons have been replaced by export and import buttons, which make use of the clipboard and export the portrait as a short base64-encoded string.
 
 ### Enhanced Material List
 
-- **Fixed**: Due to a condition check being evaluated too late, some gatherable items did not have a zone name.
+- **Fixed:** Due to a condition check being evaluated too late, some gatherable items did not have a zone name.
 
 ### Material Allocation
 
-- **Fixed**: Restored a hook to correctly switch tabs when opening the window. Since v0.13.3, it looked like it changed the tabs, but it only updated the buttons, not the content.
+- **Fixed:** Restored a hook to correctly switch tabs when opening the window. Since v0.13.3, it looked like it changed the tabs, but it only updated the buttons, not the content.
 
 ## [0.13.7] (2023-04-01)
 
