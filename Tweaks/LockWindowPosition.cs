@@ -10,6 +10,7 @@ using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Enums;
 using HaselTweaks.Structs.Addons;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -224,7 +225,7 @@ public unsafe partial class LockWindowPosition : Tweak
     }
 
     // block GearSetList from moving when opened by Character
-    [SigHook("4C 8B DC 53 55 57 41 56 48 81 EC")]
+    [VTableHook<AddonGearSetList>((int)AtkResNodeVfs.OnSetup)]
     public nint AddonGearSetList_OnSetup(AddonGearSetList* addon, int numAtkValues, AtkValue* atkValues)
     {
         var result = AddonGearSetList_OnSetupHook.Original(addon, numAtkValues, atkValues);
@@ -300,7 +301,7 @@ public unsafe partial class LockWindowPosition : Tweak
         return RaptureAtkUnitManager_Vf6Hook.Original(self, a2);
     }
 
-    [SigHook("E8 ?? ?? ?? ?? 44 8D 4E 0B")]
+    [AddressHook<AgentContext>(nameof(AgentContext.Addresses.ClearMenu))]
     public nint AgentContext_ClearMenu(AgentContext* agent)
     {
         if (EventIndexToDisable != 0)
@@ -309,7 +310,7 @@ public unsafe partial class LockWindowPosition : Tweak
         return AgentContext_ClearMenuHook.Original(agent);
     }
 
-    [SigHook("E8 ?? ?? ?? ?? 48 8D 46 28")]
+    [AddressHook<AgentContext>(nameof(AgentContext.Addresses.AddMenuItem2))]
     public nint AgentContext_AddMenuItem2(AgentContext* agent, uint addonRowId, nint handlerPtr, long handlerParam, int disabled, int submenu)
     {
         if (addonRowId == 8660 && agent->ContextMenuIndex == 0) // "Return to Default Position"
@@ -320,7 +321,7 @@ public unsafe partial class LockWindowPosition : Tweak
         return AgentContext_AddMenuItem2Hook.Original(agent, addonRowId, handlerPtr, handlerParam, disabled, submenu);
     }
 
-    [SigHook("E8 ?? ?? ?? ?? 66 89 6F 44")]
+    [AddressHook<AgentContext>(nameof(AgentContext.Addresses.OpenContextMenuForAddon))]
     public nint AgentContext_OpenContextMenuForAddon(AgentContext* agent, uint addonId, bool bindToOwner)
     {
         if (EventIndexToDisable == 7 && agent->ContextMenuIndex == 0)

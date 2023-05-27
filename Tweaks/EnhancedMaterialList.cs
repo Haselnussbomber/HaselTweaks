@@ -12,6 +12,7 @@ using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;
@@ -208,7 +209,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         Plugin.Config.Save();
     }
 
-    [SigHook("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 48 8B D9 49 8B F0 49 8B C8 48 8B FA E8 ?? ?? ?? ?? 48 83 7C 24 ?? ??")]
+    [VTableHook<AgentRecipeMaterialList>((int)AgentInterfaceVfs.ReceiveEvent)]
     public nint AgentRecipeMaterialList_ReceiveEvent(AgentRecipeMaterialList* agent, nint a2, nint a3, nint a4, nint a5)
     {
         var ret = AgentRecipeMaterialList_ReceiveEventHook.Original(agent, a2, a3, a4, a5);
@@ -216,7 +217,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         return ret;
     }
 
-    [SigHook("40 55 53 56 57 48 8D 6C 24 ?? 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 1F 0F B7 C2 41 8B D8 48 8B F1 83 F8 19 0F 84 ?? ?? ?? ?? 83 F8 1B")]
+    [VTableHook<AddonRecipeMaterialList>((int)AtkResNodeVfs.ReceiveEvent)]
     public void AddonRecipeMaterialList_ReceiveEvent(AddonRecipeMaterialList* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
         AddonRecipeMaterialList_ReceiveEventHook.Original(addon, eventType, eventParam, atkEvent, a5);
@@ -249,7 +250,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         OpenMapWithGatheringPoint(point, item);
     }
 
-    [SigHook("48 89 5C 24 ?? 48 89 54 24 ?? 48 89 4C 24 ?? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 50 49 8B 08")]
+    [AddressHook<AddonRecipeMaterialList>(nameof(AddonRecipeMaterialList.Addresses.SetupRow))]
     public void AddonRecipeMaterialList_SetupRow(AddonRecipeMaterialList* addon, nint a2, nint a3)
     {
         AddonRecipeMaterialList_SetupRowHook.Original(addon, a2, a3);
@@ -312,15 +313,15 @@ public unsafe partial class EnhancedMaterialList : Tweak
         nameNode->SetText(sb.Encode());
     }
 
-    [SigHook("48 89 5C 24 ?? 57 48 83 EC 20 BA ?? ?? ?? ?? 48 8B D9 E8 ?? ?? ?? ?? 48 8B F8 48 85 C0 74 5A")]
+    [AddressHook<AgentRecipeMaterialList>(nameof(AgentRecipeMaterialList.Addresses.OpenRecipeResultItemContextMenu))]
     public nint AgentRecipeMaterialList_OpenRecipeResultItemContextMenu(AgentRecipeMaterialList* agent)
     {
         HandleRecipeResultItemContextMenu = true;
         return AgentRecipeMaterialList_OpenRecipeResultItemContextMenuHook.Original(agent);
     }
 
-    [SigHook("E8 ?? ?? ?? ?? 45 8B C4 41 8B D7")]
-    public nint AddItemContextMenuEntries(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
+    [AddressHook<AgentRecipeItemContext>(nameof(AgentRecipeItemContext.Addresses.AddItemContextMenuEntries))]
+    public nint AgentRecipeItemContext_AddItemContextMenuEntries(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
     {
         if (!HandleRecipeResultItemContextMenu)
             goto originalAddItemContextMenuEntries;
@@ -346,7 +347,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         flags |= 2;
 
         originalAddItemContextMenuEntries:
-        return AddItemContextMenuEntriesHook.Original(agent, itemId, flags, itemName);
+        return AgentRecipeItemContext_AddItemContextMenuEntriesHook.Original(agent, itemId, flags, itemName);
     }
 
     private (int, GatheringPoint, uint, bool, SeString)? GetPointForItem(uint itemId)

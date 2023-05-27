@@ -4,6 +4,7 @@ using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 
@@ -86,11 +87,10 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         return id >= 20 && id <= 27;
     }
 
-    // AddonCharacterClass_OnSetup (vf47)
-    [SigHook("48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC ?? ?? ?? ?? 0F 29 70 C8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 17 F3 0F 10 35 ?? ?? ?? ?? 45 33 C9 45 33 C0 F3 0F 11 74 24 ?? 0F 57 C9 48 8B F9 E8")]
-    private nint OnSetup(AddonCharacterClass* addon, int a2)
+    [VTableHook<AddonCharacterClass>((int)AtkResNodeVfs.OnSetup)]
+    private nint AddonCharacterClass_OnSetup(AddonCharacterClass* addon, int a2)
     {
-        var result = OnSetupHook!.Original(addon, a2);
+        var result = AddonCharacterClass_OnSetupHook!.Original(addon, a2);
         var eventListener = &addon->AtkUnitBase.AtkEventListener;
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
@@ -111,11 +111,10 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         return result;
     }
 
-    // AddonCharacterClass_OnUpdate (vf50)
-    [SigHook("4C 8B DC 53 55 56 57 41 55 41 56")]
-    private void OnUpdate(AddonCharacterClass* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
+    [VTableHook<AddonCharacterClass>((int)AtkResNodeVfs.OnUpdate)]
+    private void AddonCharacterClass_OnUpdate(AddonCharacterClass* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        OnUpdateHook.Original(addon, numberArrayData, stringArrayData);
+        AddonCharacterClass_OnUpdateHook.Original(addon, numberArrayData, stringArrayData);
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
         {
@@ -146,8 +145,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         }
     }
 
-    // AddonCharacterClass_ReceiveEvent (vf2)
-    [SigHook("48 89 5C 24 ?? 57 48 83 EC 20 48 8B D9 4D 8B D1")]
+    [VTableHook<AddonCharacterClass>((int)AtkResNodeVfs.ReceiveEvent)]
     private nint AddonCharacterClass_ReceiveEvent(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
         // skip events for tabs
@@ -189,11 +187,11 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         return AddonCharacterClass_ReceiveEventHook.Original(addon, eventType, eventParam, atkEvent, a5);
     }
 
-    // AddonPvPCharacter_OnSetup (first fn in vf47)
-    [SigHook("E8 ?? ?? ?? ?? 48 8B 83 ?? ?? ?? ?? 45 33 FF 41 8B CF 48 85 C0 74 07 48 8B 88 ?? ?? ?? ?? 45 33 C0")]
-    private nint OnPvPSetup(AddonPvPCharacter* addon)
+    [VTableHook<AddonPvPCharacter>((int)AtkResNodeVfs.OnSetup)]
+    private void AddonPvPCharacter_OnSetup(AddonPvPCharacter* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        var result = OnPvPSetupHook.Original(addon);
+        AddonPvPCharacter_OnSetupHook.Original(addon, numberArrayData, stringArrayData);
+
         var eventListener = &addon->AtkUnitBase.AtkEventListener;
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
@@ -207,15 +205,12 @@ public unsafe partial class CharacterClassSwitcher : Tweak
             collisionNode->AtkResNode.AddEvent(AtkEventType.MouseClick, (uint)i | 0x10000, eventListener, null, false);
             collisionNode->AtkResNode.AddEvent(AtkEventType.InputReceived, (uint)i | 0x10000, eventListener, null, false);
         }
-
-        return result;
     }
 
-    // AddonPvPCharacter_OnUpdate (second fn in vf50)
-    [SigHook("48 8B C4 48 89 58 20 55 56 57 41 56 41 57 48 81 EC")]
-    private void OnPvPUpdate(AddonPvPCharacter* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
+    [AddressHook<AddonPvPCharacter>(nameof(AddonPvPCharacter.Addresses.UpdateClasses))]
+    private void AddonPvPCharacter_UpdateClasses(AddonPvPCharacter* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        OnPvPUpdateHook.Original(addon, numberArrayData, stringArrayData);
+        AddonPvPCharacter_UpdateClassesHook.Original(addon, numberArrayData, stringArrayData);
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
@@ -235,8 +230,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         }
     }
 
-    // AddonPvPCharacter_ReceiveEvent (vf2)
-    [SigHook("48 89 5C 24 ?? 57 48 83 EC 30 0F B7 C2 4D 8B D1 83 C0 FD")]
+    [VTableHook<AddonPvPCharacter>((int)AtkResNodeVfs.ReceiveEvent)]
     private nint AddonPvPCharacter_ReceiveEvent(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
         if ((eventParam & 0xFFFF0000) != 0x10000)

@@ -4,6 +4,7 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Structs.Agents;
 using Lumina.Excel.GeneratedSheets;
@@ -35,8 +36,7 @@ public unsafe partial class MaterialAllocation : Tweak
         nextMJIGatheringNoteBookItemId = 0;
     }
 
-    // vf48 = OnOpen?
-    [SigHook("BA ?? ?? ?? ?? E9 ?? ?? ?? ?? CC CC CC CC CC CC 40 55 41 57 48 83 EC 28")]
+    [VTableHook<AddonMJICraftMaterialConfirmation>(48)]
     public nint AddonMJICraftMaterialConfirmation_vf48(AddonMJICraftMaterialConfirmation* addon, int numAtkValues, nint atkValues)
     {
         if (Config.SaveLastSelectedTab && GetAgent<AgentMJICraftSchedule>(AgentId.MJICraftSchedule, out var agentMJICraftSchedule))
@@ -72,8 +72,8 @@ public unsafe partial class MaterialAllocation : Tweak
         }
     }
 
-    [SigHook("40 53 48 83 EC 20 48 8B 51 28 48 8B D9 8B 0A 83 E9 01 74 35")]
-    public bool AgentMJIGatheringNoteBook_OnUpdate(AgentMJIGatheringNoteBook* agent)
+    [VTableHook<AgentMJIGatheringNoteBook>((int)AgentInterfaceVfs.Update)]
+    public void AgentMJIGatheringNoteBook_Update(AgentMJIGatheringNoteBook* agent)
     {
         var handleUpdate = Config.OpenGatheringLogOnItemClick
             && nextMJIGatheringNoteBookItemId != 0
@@ -82,18 +82,16 @@ public unsafe partial class MaterialAllocation : Tweak
             && (agent->Data->Flags & 2) != 2 // refresh pending
             && agent->Data->GatherItemPtrs != null;
 
-        var ret = AgentMJIGatheringNoteBook_OnUpdateHook.Original(agent);
+        AgentMJIGatheringNoteBook_UpdateHook.Original(agent);
 
         if (handleUpdate)
         {
             UpdateGatheringNoteBookItem(agent, nextMJIGatheringNoteBookItemId);
             nextMJIGatheringNoteBookItemId = 0;
         }
-
-        return ret;
     }
 
-    [SigHook("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 60 41 8D 40 FF")]
+    [VTableHook<AddonMJICraftMaterialConfirmation>((int)AtkResNodeVfs.ReceiveEvent)]
     public void AddonMJICraftMaterialConfirmation_ReceiveEvent(AddonMJICraftMaterialConfirmation* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
         if (eventParam is > 0 and < 4 && Config.SaveLastSelectedTab)

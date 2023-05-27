@@ -766,10 +766,10 @@ public partial class PortraitHelper : Tweak
         return 0;
     }
 
-    [SigHook("E8 ?? ?? ?? ?? 8B E8 83 F8 FE 0F 8E ?? ?? ?? ?? 80 BE ?? ?? ?? ?? ??")]
-    public unsafe int RaptureGearsetModule_GearsetUpdate(RaptureGearsetModule* raptureGearsetModule, uint gearsetId)
+    [AddressHook<RaptureGearsetModule>(nameof(RaptureGearsetModule.Addresses.UpdateGearset))]
+    public unsafe int RaptureGearsetModule_UpdateGearset(RaptureGearsetModule* raptureGearsetModule, uint gearsetId)
     {
-        var ret = RaptureGearsetModule_GearsetUpdateHook.Original(raptureGearsetModule, gearsetId);
+        var ret = RaptureGearsetModule_UpdateGearsetHook.Original(raptureGearsetModule, gearsetId);
 
         jobChangedOrGearsetUpdatedCTS?.Cancel();
         jobChangedOrGearsetUpdatedCTS = new();

@@ -7,6 +7,7 @@ namespace HaselTweaks.Structs;
 
 // ctor "40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 48 C7 43 ?? ?? ?? ?? ?? 48 89 03 33 C0 89 43 28"
 [Agent(AgentId.RecipeMaterialList)]
+[VTableAddress("48 8D 05 ?? ?? ?? ?? 48 C7 43 ?? ?? ?? ?? ?? 48 89 03 33 C0 89 43 28", 3)]
 [StructLayout(LayoutKind.Explicit, Size = 0x40)]
 public unsafe partial struct AgentRecipeMaterialList
 {
@@ -30,4 +31,7 @@ public unsafe partial struct AgentRecipeMaterialList
 
     [MemberFunction("E8 ?? ?? ?? ?? EB B1 48 8B 4B 28")]
     public partial void OpenByRecipeId(uint recipeId, uint amount = 1);
+
+    [MemberFunction("48 89 5C 24 ?? 57 48 83 EC 20 BA ?? ?? ?? ?? 48 8B D9 E8 ?? ?? ?? ?? 48 8B F8 48 85 C0 74 5A")]
+    public partial nint OpenRecipeResultItemContextMenu();
 }

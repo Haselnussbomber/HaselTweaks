@@ -1,5 +1,6 @@
 using Dalamud.Game.ClientState.Keys;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows;
 using Lumina.Excel.GeneratedSheets;
@@ -33,8 +34,8 @@ public unsafe partial class AetherCurrentHelper : Tweak
         Plugin.WindowSystem.RemoveWindow(Window);
     }
 
-    [SigHook("40 53 55 56 57 41 56 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 48 8B D9 49 8B F8")]
-    private AtkValue* AgentAetherCurrent_ReceiveEvent(AgentAetherCurrent* agent, AtkValue* result, AtkValue* atkValue)
+    [VTableHook<AgentAetherCurrent>((int)AgentInterfaceVfs.ReceiveEvent)]
+    private AtkValue* AgentAetherCurrent_ReceiveEvent(AgentAetherCurrent* agent, AtkValue* eventData, AtkValue* atkValue, uint valueCount, nint eventKind)
     {
         if (Service.KeyState[VirtualKey.SHIFT])
             goto OriginalCode;
@@ -61,11 +62,11 @@ public unsafe partial class AetherCurrentHelper : Tweak
             Window.Toggle();
 
         // handled, just like in the original code
-        result->Type = ValueType.Bool;
-        result->Byte = 0;
-        return result;
+        eventData->Type = ValueType.Bool;
+        eventData->Byte = 0;
+        return eventData;
 
         OriginalCode:
-        return AgentAetherCurrent_ReceiveEventHook.Original(agent, result, atkValue);
+        return AgentAetherCurrent_ReceiveEventHook.Original(agent, eventData, atkValue, valueCount, eventKind);
     }
 }
