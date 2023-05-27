@@ -52,6 +52,7 @@ public unsafe class DTR : Tweak
     public DtrBarEntry? DtrInstance;
     public DtrBarEntry? DtrFPS;
     public DtrBarEntry? DtrBusy;
+    private int lastFrameRate;
 
     public override void Enable()
     {
@@ -122,8 +123,7 @@ public unsafe class DTR : Tweak
         if (DtrBusy == null)
             return;
 
-        var onlineStatus = Service.ClientState.LocalPlayer?.OnlineStatus.Id;
-        DtrBusy.SetVisibility(onlineStatus == 12);
+        DtrBusy.SetVisibility(Service.ClientState.LocalPlayer?.OnlineStatus.Id == 12);
     }
 
     private void UpdateFPS()
@@ -138,7 +138,12 @@ public unsafe class DTR : Tweak
             return;
         }
 
-        DtrFPS.SetText($"{gameFramework->FrameRate:0} fps");
-        DtrFPS.SetVisibility(true);
+        var frameRate = (int)(gameFramework->FrameRate + 0.5f);
+        if (lastFrameRate != frameRate)
+        {
+            DtrFPS.SetText(((int)gameFramework->FrameRate).ToString("0") + " fps");
+            DtrFPS.SetVisibility(true);
+            lastFrameRate = frameRate;
+        }
     }
 }
