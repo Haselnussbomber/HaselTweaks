@@ -197,7 +197,12 @@ public static class ImGuiUtils
 
     public static bool IconButtonDisabled(string key, FontAwesomeIcon icon, string tooltip, Vector2 size = default)
     {
-        var pressed = IconButtonDisabled(key, icon, size);
+        var pressed = false;
+
+        using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetStyle().Colors[(int)ImGuiCol.TextDisabled]))
+        using (ImRaii.PushColor(ImGuiCol.ButtonActive, ImGui.GetStyle().Colors[(int)ImGuiCol.Button]))
+        using (ImRaii.PushColor(ImGuiCol.ButtonHovered, ImGui.GetStyle().Colors[(int)ImGuiCol.Button]))
+            pressed = IconButton(key, icon, size);
 
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip(tooltip);

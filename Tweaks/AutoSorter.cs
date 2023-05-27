@@ -3,6 +3,7 @@ using System.Linq;
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Interface;
+using Dalamud.Interface.Raii;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
@@ -186,6 +187,7 @@ public unsafe class AutoSorter : Tweak
         ImGui.TableSetupColumn("Order", ImGuiTableColumnFlags.WidthStretch);
         ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, Enabled ? 120 : 85);
 
+        var isWindowFocussed = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
         var lang = Service.ClientState.ClientLanguage;
         var preview = "";
         var i = 0;
@@ -281,13 +283,9 @@ public unsafe class AutoSorter : Tweak
             ImGui.TableNextColumn();
             if (i > 0)
             {
-                if (ImGuiUtils.IconButton(key + "_Up", FontAwesomeIcon.ArrowUp))
+                if (ImGuiUtils.IconButton(key + "_Up", FontAwesomeIcon.ArrowUp, "Move up"))
                 {
                     entryToMoveUp = i;
-                }
-                if (ImGui.IsItemHovered())
-                {
-                    ImGui.SetTooltip("Move up");
                 }
             }
             else
@@ -299,13 +297,9 @@ public unsafe class AutoSorter : Tweak
 
             if (i < Config.Settings.Count - 1)
             {
-                if (ImGuiUtils.IconButton(key + "_Down", FontAwesomeIcon.ArrowDown))
+                if (ImGuiUtils.IconButton(key + "_Down", FontAwesomeIcon.ArrowDown, "Move down"))
                 {
                     entryToMoveDown = i;
-                }
-                if (ImGui.IsItemHovered())
-                {
-                    ImGui.SetTooltip("Move down");
                 }
             }
             else
@@ -315,7 +309,7 @@ public unsafe class AutoSorter : Tweak
 
             ImGui.SameLine();
 
-            if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
+            if (isWindowFocussed && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
             {
                 if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, "Delete rule"))
                 {
@@ -324,15 +318,12 @@ public unsafe class AutoSorter : Tweak
             }
             else
             {
-                ImGuiUtils.IconButtonDisabled(key + "_Delete", FontAwesomeIcon.Trash);
-
-                if (ImGui.IsItemHovered())
-                {
-                    if (!ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows))
-                        ImGui.SetTooltip("Focus window and hold shift to delete rule");
-                    else
-                        ImGui.SetTooltip("Hold shift to delete rule");
-                }
+                ImGuiUtils.IconButtonDisabled(
+                    key + "_Delete",
+                    FontAwesomeIcon.Trash,
+                    isWindowFocussed
+                        ? "Hold shift to delete rule"
+                        : "Focus window and hold shift to delete rule");
             }
 
             ImGui.SameLine();
@@ -364,43 +355,31 @@ public unsafe class AutoSorter : Tweak
 
                     if (disabledReasons != null)
                     {
-                        ImGuiUtils.IconButtonDisabled(key + "_Execute", FontAwesomeIcon.Terminal);
-
-                        if (ImGui.IsItemHovered())
-                        {
-                            if (disabledReasons.Count > 1)
-                                ImGui.SetTooltip("- " + string.Join("\n- ", disabledReasons));
-                            else
-                                ImGui.SetTooltip(disabledReasons.First());
-                        }
+                        ImGuiUtils.IconButtonDisabled(
+                            key + "_Execute",
+                            FontAwesomeIcon.Terminal,
+                            disabledReasons.Count > 1
+                                ? "- " + string.Join("\n- ", disabledReasons)
+                                : disabledReasons.First());
                     }
                     else
                     {
                         var errors = entry.GetErrors(this, usedCategories);
                         if (errors != null)
                         {
-                            ImGui.PushStyleColor(ImGuiCol.Text, 0xff02d2ee); // safety yellow
-                            ImGuiUtils.IconButtonDisabled(FontAwesomeIcon.ExclamationTriangle);
-                            ImGui.PopStyleColor();
-
-                            if (ImGui.IsItemHovered())
+                            using (ImRaii.PushColor(ImGuiCol.Text, 0xff02d2ee)) // safety yellow
                             {
-                                if (errors.Count > 1)
-                                    ImGui.SetTooltip("- " + string.Join("\n- ", errors));
-                                else
-                                    ImGui.SetTooltip(errors.First());
+                                ImGuiUtils.IconButton(
+                                    key + "_Execute",
+                                    FontAwesomeIcon.ExclamationTriangle,
+                                    errors.Count > 1
+                                        ? "- " + string.Join("\n- ", errors)
+                                        : errors.First());
                             }
                         }
-                        else
+                        else if (ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, "Execute this rule"))
                         {
-                            if (ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal))
-                            {
-                                entryToExecute = i;
-                            }
-                            if (ImGui.IsItemHovered())
-                            {
-                                ImGui.SetTooltip("Execute this rule");
-                            }
+                            entryToExecute = i;
                         }
                     }
                 }

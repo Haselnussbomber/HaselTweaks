@@ -63,6 +63,8 @@ public unsafe partial class LockWindowPosition : Tweak
             Plugin.Config.Save();
         }
 
+        var isWindowFocussed = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
+
         ImGuiUtils.DrawPaddedSeparator();
         if (Config.LockedWindows.Any())
         {
@@ -102,32 +104,24 @@ public unsafe partial class LockWindowPosition : Tweak
                 }
 
                 ImGui.TableNextColumn();
-                ImGui.TextUnformatted($"{entry.Name}");
+                ImGui.TextUnformatted(entry.Name);
 
                 ImGui.TableNextColumn();
-                if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
+                if (isWindowFocussed && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
                 {
-                    if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash))
+                    if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, "Delete"))
                     {
                         entryToRemove = i;
-                    }
-
-                    if (ImGui.IsItemHovered())
-                    {
-                        ImGui.SetTooltip("Delete");
                     }
                 }
                 else
                 {
-                    ImGuiUtils.IconButtonDisabled(key + "_Delete", FontAwesomeIcon.Trash);
-
-                    if (ImGui.IsItemHovered())
-                    {
-                        if (!ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows))
-                            ImGui.SetTooltip("Focus window and hold shift to delete");
-                        else
-                            ImGui.SetTooltip("Hold shift to delete");
-                    }
+                    ImGuiUtils.IconButtonDisabled(
+                        key + "_Delete",
+                        FontAwesomeIcon.Trash,
+                        isWindowFocussed
+                            ? "Hold shift to delete"
+                            : "Focus window and hold shift to delete");
                 }
 
                 i++;
