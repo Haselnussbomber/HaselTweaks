@@ -82,6 +82,17 @@ public abstract unsafe class Tweak
 
         try
         {
+            SetupAddressHooks();
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during SetupAddressHooks");
+            LastException = ex;
+            return;
+        }
+
+        try
+        {
             SetupVTableHooks();
         }
         catch (Exception ex)
@@ -210,6 +221,7 @@ public abstract unsafe class Tweak
     }
 
     public virtual void Setup() { }
+    public virtual void SetupAddressHooks() { }
     public virtual void SetupVTableHooks() { }
     public virtual void Enable() { }
     public virtual void Disable() { }
