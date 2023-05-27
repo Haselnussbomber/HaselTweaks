@@ -89,10 +89,13 @@ public unsafe partial class ScrollableTabs : Tweak
 
     private short wheelState;
 
+    [LibraryImport("user32.dll")]
+    public static partial nint GetActiveWindow();
+
     [SigHook("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 49 8B F8 C6 05")]
     private ulong WindowProcHandler(nint hwnd, int uMsg, int wParam)
     {
-        if (uMsg == WM_MOUSEWHEEL)
+        if (hwnd == GetActiveWindow() && uMsg == WM_MOUSEWHEEL)
             wheelState = (short)Math.Clamp((wParam >> 16) / WHEEL_DELTA * (Config.Invert ? -1 : 1), -1, 1);
 
         return WindowProcHandlerHook.Original(hwnd, uMsg, wParam);
