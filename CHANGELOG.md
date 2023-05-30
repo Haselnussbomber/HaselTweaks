@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### DTR
+
+- **Fixed:** Framerate number now correctly rounds up.
+
+### Scrollable Tabs
+
+- **Added:** Support for the Companion window.
+
 ## [14.11.3] (2023-05-28)
 
 Maintenance update with optimizations and bug fixes.

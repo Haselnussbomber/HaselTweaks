@@ -38,6 +38,9 @@ public unsafe partial class ScrollableTabs : Tweak
         [ConfigField(Label = "Enable in Character -> Reputation")]
         public bool HandleCharacterRepute = true;
 
+        [ConfigField(Label = "Enable in Companion")]
+        public bool HandleBuddy = true;
+
         [ConfigField(Label = "Enable in Chocobo Saddlebag", Description = "The second tab requires a subscription to the Companion Premium Service")]
         public bool HandleInventoryBuddy = true;
 
@@ -144,6 +147,7 @@ public unsafe partial class ScrollableTabs : Tweak
             case "Character":              // Character
             case "CharacterClass":         // Character -> Classes/Jobs
             case "CharacterRepute":        // Character -> Reputation
+            case "Buddy":                  // Companion
                 break;
 
             // used by Inventory
@@ -204,6 +208,13 @@ public unsafe partial class ScrollableTabs : Tweak
             case "CharacterStatus":   // Character -> Attributes
             case "CharacterProfile":  // Character -> Profile
                 name = "Character";
+                break;
+
+            // embedded addons of Buddy
+            case "BuddyAction":     // Companion -> Actions
+            case "BuddySkill":      // Companion -> Skills
+            case "BuddyAppearance": // Companion -> Appearance
+                name = "Buddy";
                 break;
 
             default:
@@ -305,6 +316,10 @@ public unsafe partial class ScrollableTabs : Tweak
         else if (Config.HandleInventoryBuddy && name == "InventoryBuddy")
         {
             UpdateInventoryBuddy((AddonInventoryBuddy*)unitBase);
+        }
+        else if (Config.HandleBuddy && name == "Buddy")
+        {
+            UpdateBuddy((AddonBuddy*)unitBase);
         }
         else if (name is "Character" or "CharacterClass" or "CharacterRepute")
         {
@@ -604,6 +619,25 @@ public unsafe partial class ScrollableTabs : Tweak
             return;
 
         addon->SetTab((byte)tabIndex);
+    }
+
+    private void UpdateBuddy(AddonBuddy* addon)
+    {
+        var tabIndex = GetTabIndex(addon->TabIndex, AddonBuddy.NUM_TABS);
+
+        if (addon->TabIndex == tabIndex)
+            return;
+
+        addon->SetTab(tabIndex);
+
+        for (var i = 0; i < AddonBuddy.NUM_TABS; i++)
+        {
+            var button = addon->RadioButtonsSpan[i];
+            if (button.Value != null)
+            {
+                button.Value->SetSelected(i == addon->TabIndex);
+            }
+        }
     }
 
     private void UpdateCharacter(AddonCharacter* addon)
