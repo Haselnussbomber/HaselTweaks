@@ -141,7 +141,7 @@ public unsafe class DTR : Tweak
         var frameRate = (int)(gameFramework->FrameRate + 0.5f);
         if (lastFrameRate != frameRate)
         {
-            DtrFPS.SetText(((int)gameFramework->FrameRate).ToString("0") + " fps");
+            DtrFPS.SetText(frameRate.ToString("0") + " fps");
             DtrFPS.SetVisibility(true);
             lastFrameRate = frameRate;
         }
