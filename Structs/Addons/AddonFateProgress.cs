@@ -8,7 +8,7 @@ public unsafe partial struct AddonFateProgress
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x230)] public byte NumTabs;
+    [FieldOffset(0x230)] public byte TabCount;
     [FieldOffset(0x231)] public byte TabIndex;
     [FieldOffset(0x232)] public bool Loaded;
 

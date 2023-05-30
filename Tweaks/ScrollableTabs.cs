@@ -432,12 +432,12 @@ public unsafe partial class ScrollableTabs : Tweak
 
     private void UpdateTabSwitcher(nint addon, TabSwitcher* tabSwitcher)
     {
-        var tabIndex = GetTabIndex(tabSwitcher->CurrentTabIndex, tabSwitcher->NumTabs);
+        var tabIndex = GetTabIndex(tabSwitcher->TabIndex, tabSwitcher->TabCount);
 
-        if (tabSwitcher->CurrentTabIndex == tabIndex)
+        if (tabSwitcher->TabIndex == tabIndex)
             return;
 
-        tabSwitcher->CurrentTabIndex = tabIndex;
+        tabSwitcher->TabIndex = tabIndex;
 
         if (tabSwitcher->CallbackPtr == 0)
             return;
@@ -447,7 +447,7 @@ public unsafe partial class ScrollableTabs : Tweak
 
     private void UpdateAOZNotebook(AddonAOZNotebook* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, addon->NumTabs);
+        var tabIndex = GetTabIndex(addon->TabIndex, addon->TabCount);
 
         if (addon->TabIndex == tabIndex)
             return;
@@ -457,13 +457,13 @@ public unsafe partial class ScrollableTabs : Tweak
 
     private void UpdateAetherCurrent(AddonAetherCurrent* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, addon->NumTabs);
+        var tabIndex = GetTabIndex(addon->TabIndex, addon->TabCount);
         if (addon->TabIndex == tabIndex) return;
 
         addon->SetTab(tabIndex);
 
         var tabs = (nint)addon + 0x228;
-        for (var i = 0; i < addon->NumTabs; i++)
+        for (var i = 0; i < addon->TabCount; i++)
         {
             // WAYTOODANK, this is basically like writing addon->Tabs[i]
             // but because this is dynamic (depending on NumTabs), we can't do that... thanks, C#!
@@ -474,7 +474,7 @@ public unsafe partial class ScrollableTabs : Tweak
 
     private void UpdateFateProgress(AddonFateProgress* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, addon->NumTabs);
+        var tabIndex = GetTabIndex(addon->TabIndex, addon->TabCount);
         if (!addon->Loaded || addon->TabIndex == tabIndex)
             return;
 
@@ -521,7 +521,7 @@ public unsafe partial class ScrollableTabs : Tweak
     {
         if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Normal)
         {
-            if (addon->TabSwitcher.CurrentTabIndex == 0 && wheelState < 0)
+            if (addon->TabSwitcher.TabIndex == 0 && wheelState < 0)
             {
                 addon->SwitchToFavorites();
             }
@@ -545,7 +545,7 @@ public unsafe partial class ScrollableTabs : Tweak
 
         if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Normal)
         {
-            if (addon->Unk220.TabSwitcher.CurrentTabIndex == 0 && wheelState < 0)
+            if (addon->Unk220.TabSwitcher.TabIndex == 0 && wheelState < 0)
             {
                 agent->CurrentView = AgentMJIMinionNoteBook.ViewType.Favorites;
                 agent->SelectedFavoriteMinion.TabIndex = 0;
@@ -568,7 +568,7 @@ public unsafe partial class ScrollableTabs : Tweak
             agent->SelectedNormalMinion.MinionId = agent->GetSelectedMinionId();
             agent->SelectedMinion = &agent->SelectedNormalMinion;
 
-            addon->Unk220.TabSwitcher.CurrentTabIndex = 0;
+            addon->Unk220.TabSwitcher.TabIndex = 0;
 
             var callbackAddress = addon->Unk220.TabSwitcher.CallbackPtr;
             if (callbackAddress != 0)

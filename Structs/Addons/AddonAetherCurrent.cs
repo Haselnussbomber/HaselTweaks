@@ -11,7 +11,7 @@ public unsafe partial struct AddonAetherCurrent
     [FieldOffset(0x228)] public AtkComponentRadioButton* Tabs; // Tabs[NumTabs]
 
     [FieldOffset(0x254)] public int TabIndex;
-    [FieldOffset(0x258)] public int NumTabs;
+    [FieldOffset(0x258)] public int TabCount;
 
     // called in AetherCurrent vf55
     [MemberFunction("E8 ?? ?? ?? ?? 84 C0 74 65 39 9D")]
