@@ -2,9 +2,9 @@ using Dalamud.Game.Config;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
-using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
+using AgentId = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentId;
 using HaselAtkComponentRadioButton = HaselTweaks.Structs.AtkComponentRadioButton;
 
 namespace HaselTweaks.Tweaks;
@@ -38,11 +38,11 @@ public unsafe partial class ScrollableTabs : Tweak
         [ConfigField(Label = "Enable in Character -> Reputation")]
         public bool HandleCharacterRepute = true;
 
-        [ConfigField(Label = "Enable in Companion")]
-        public bool HandleBuddy = true;
-
         [ConfigField(Label = "Enable in Chocobo Saddlebag", Description = "The second tab requires a subscription to the Companion Premium Service")]
         public bool HandleInventoryBuddy = true;
+
+        [ConfigField(Label = "Enable in Companion")]
+        public bool HandleBuddy = true;
 
         [ConfigField(Label = "Enable in Currency")]
         public bool HandleCurrency = true;
@@ -55,6 +55,9 @@ public unsafe partial class ScrollableTabs : Tweak
 
         [ConfigField(Label = "Enable in Fish Guide")]
         public bool HandleFishGuide = true;
+
+        [ConfigField(Label = "Enable in Glamour Dresser", Description = "Scrolls pages, not tabs.")]
+        public bool HandleMiragePrismPrismBox = true;
 
         [ConfigField(Label = "Enable in Gold Saucer -> Card List")]
         public bool HandleGoldSaucerCardList = true;
@@ -104,14 +107,24 @@ public unsafe partial class ScrollableTabs : Tweak
         return WindowProcHandlerHook.Original(hwnd, uMsg, wParam);
     }
 
+    private AtkUnitBase* IntersectingAddon
+        => Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.IntersectingAddon;
+
+    private AtkCollisionNode* IntersectingCollisionNode
+        => Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.IntersectingCollisionNode;
+
+    private bool IsNext
+        => wheelState == (!Config.Invert ? 1 : -1);
+
+    private bool IsPrev
+        => wheelState == (!Config.Invert ? -1 : 1);
+
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
         if (wheelState == 0)
             return;
 
-        var atkModule = Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule;
-
-        var hoveredUnitBase = atkModule.IntersectingAddon;
+        var hoveredUnitBase = IntersectingAddon;
         if (hoveredUnitBase == null)
             goto ResetWheelState;
 
@@ -148,6 +161,7 @@ public unsafe partial class ScrollableTabs : Tweak
             case "CharacterClass":         // Character -> Classes/Jobs
             case "CharacterRepute":        // Character -> Reputation
             case "Buddy":                  // Companion
+            case "MiragePrismPrismBox":    // Glamours
                 break;
 
             // used by Inventory
@@ -321,6 +335,10 @@ public unsafe partial class ScrollableTabs : Tweak
         {
             UpdateBuddy((AddonBuddy*)unitBase);
         }
+        else if (Config.HandleMiragePrismPrismBox && name == "MiragePrismPrismBox")
+        {
+            UpdateMiragePrismPrismBox((AddonMiragePrismPrismBox*)unitBase);
+        }
         else if (name is "Character" or "CharacterClass" or "CharacterRepute")
         {
             var addonCharacter = (AddonCharacter*)(name == "Character" ? unitBase : GetAddon("Character"));
@@ -331,7 +349,7 @@ public unsafe partial class ScrollableTabs : Tweak
             if (!addonCharacter->EmbeddedAddonLoaded)
                 goto ResetWheelState;
 
-            if (atkModule.IntersectingCollisionNode == addonCharacter->CharacterPreviewCollisionNode)
+            if (IntersectingCollisionNode == addonCharacter->CharacterPreviewCollisionNode)
                 goto ResetWheelState;
 
             switch (name)
@@ -501,7 +519,7 @@ public unsafe partial class ScrollableTabs : Tweak
 
     private void UpdateFieldNotes(AddonMYCWarResultNotebook* addon)
     {
-        if (Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.IntersectingCollisionNode == addon->DescriptionCollisionNode)
+        if (IntersectingCollisionNode == addon->DescriptionCollisionNode)
             return;
 
         var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
@@ -638,6 +656,43 @@ public unsafe partial class ScrollableTabs : Tweak
                 button.Value->SetSelected(i == addon->TabIndex);
             }
         }
+    }
+
+    private void UpdateMiragePrismPrismBox(AddonMiragePrismPrismBox* addon)
+    {
+        if (addon->JobDropdown == null ||
+            addon->JobDropdown->List == null ||
+            addon->JobDropdown->List->AtkComponentBase.OwnerNode == null ||
+            addon->JobDropdown->List->AtkComponentBase.OwnerNode->AtkResNode.IsVisible)
+        {
+            return;
+        }
+
+        if (addon->OrderDropdown == null ||
+            addon->OrderDropdown->List == null ||
+            addon->OrderDropdown->List->AtkComponentBase.OwnerNode == null ||
+            addon->OrderDropdown->List->AtkComponentBase.OwnerNode->AtkResNode.IsVisible)
+        {
+            return;
+        }
+
+        var prevButton = !Config.Invert ? addon->PrevButton : addon->NextButton;
+        var nextButton = !Config.Invert ? addon->NextButton : addon->PrevButton;
+
+        if (prevButton == null || (IsPrev && !prevButton->IsEnabled))
+            return;
+
+        if (nextButton == null || (IsNext && !nextButton->IsEnabled))
+            return;
+
+        if (GetAddon("MiragePrismPrismBoxFilter") != null)
+            return;
+
+        if (!GetAgent(AgentId.MiragePrismPrismBox, out AgentMiragePrismPrismBox* agent))
+            return;
+
+        agent->PageIndex += (byte)wheelState;
+        agent->UpdateItems(false, false);
     }
 
     private void UpdateCharacter(AddonCharacter* addon)

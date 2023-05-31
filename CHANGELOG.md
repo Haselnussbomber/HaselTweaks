@@ -9,6 +9,7 @@
 ### Scrollable Tabs
 
 - **Added:** Support for the Companion window.
+- **Added:** Support for the Glamour Dresser window (scrolls pages, not tabs).
 
 ## [14.11.3] (2023-05-28)
 

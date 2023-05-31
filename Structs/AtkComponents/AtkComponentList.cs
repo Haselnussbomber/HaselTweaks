@@ -7,6 +7,9 @@ namespace HaselTweaks.Structs;
 public unsafe partial struct AtkComponentList
 {
     [FieldOffset(0)] public AtkComponentBase AtkComponentBase;
+
+    [FieldOffset(0x148)] public AtkCollisionNode* HoveredItemCollisionNode;
+
     [FieldOffset(0x118)] public uint ListLength;
 
     [VirtualFunction(35)]

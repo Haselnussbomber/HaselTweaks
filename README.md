@@ -169,10 +169,12 @@ Allows the mouse wheel to switch tabs (like with LB/RB on controllers) in the fo
 - Character -> Classes/Jobs
 - Character -> Reputation
 - Chocobo Saddlebag
+- Companion
 - Currency
 - Fashion Accessories
 - Field Records
 - Fish Guide
+- Glamour Dresser (scrolls pages, not tabs)
 - Gold Saucer -> Card List
 - Gold Saucer -> Decks -> Edit Deck
 - Gold Saucer -> Lord of Verminion -> Minion Hotbar
