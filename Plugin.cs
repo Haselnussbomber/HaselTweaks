@@ -105,7 +105,7 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
     {
         foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
         {
-            tweak.OnFrameworkUpdate(framework);
+            tweak.OnFrameworkUpdateInternal(framework);
         }
     }
 
@@ -113,7 +113,7 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
     {
         foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
         {
-            tweak.OnLogin();
+            tweak.OnLoginInternal();
         }
     }
 
@@ -121,7 +121,7 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
     {
         foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
         {
-            tweak.OnLogout();
+            tweak.OnLogoutInternal();
         }
     }
 
@@ -129,7 +129,7 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
     {
         foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
         {
-            tweak.OnTerritoryChanged(id);
+            tweak.OnTerritoryChangedInternal(id);
         }
     }
 

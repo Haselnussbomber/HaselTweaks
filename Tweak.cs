@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dalamud.Game;
-using Dalamud.Game.Command;
 using Dalamud.Hooking;
 using Dalamud.Interface;
 using Dalamud.Logging;
@@ -10,7 +9,6 @@ using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Utils;
 using ImGuiNET;
-using static Dalamud.Game.Command.CommandInfo;
 
 namespace HaselTweaks;
 
@@ -162,6 +160,62 @@ public abstract unsafe class Tweak
         }
 
         Ready = false;
+    }
+
+    internal void OnFrameworkUpdateInternal(Framework framework)
+    {
+        try
+        {
+            OnFrameworkUpdate(framework);
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during OnFrameworkUpdate");
+            LastException = ex;
+            return;
+        }
+    }
+
+    internal void OnLoginInternal()
+    {
+        try
+        {
+            OnLogin();
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during OnLogin");
+            LastException = ex;
+            return;
+        }
+    }
+
+    internal void OnLogoutInternal()
+    {
+        try
+        {
+            OnLogout();
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during OnLogout");
+            LastException = ex;
+            return;
+        }
+    }
+
+    internal void OnTerritoryChangedInternal(ushort id)
+    {
+        try
+        {
+            OnTerritoryChanged(id);
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during OnTerritoryChanged");
+            LastException = ex;
+            return;
+        }
     }
 
     internal void OnAddonOpenInternal(string addonName, AtkUnitBase* unitbase)
