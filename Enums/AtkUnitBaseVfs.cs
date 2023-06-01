@@ -1,0 +1,31 @@
+namespace HaselTweaks.Enums;
+
+public enum AtkUnitBaseVfs
+{
+    Open = 3,
+    Close = 4,
+    Show = 5,
+    Hide = 6,
+    SetPosition = 7,
+    SetX = 8,
+    SetY = 9,
+    GetX = 10,
+    GetY = 11,
+    GetPosition = 12,
+    SetAlpha = 13,
+    SetScale = 14,
+    GetSizeScaled = 15,
+    Hide2 = 16,
+    SetScaleToHudLayoutScale = 17,
+    ShouldCollideWithWindow = 18,
+    Initialize = 39,
+    Finalize = 40,
+    Update = 41,
+    Draw = 42,
+    LoadUldResourceHandle = 44,
+    OnSetup = 47,
+    OnRefresh = 49,
+    OnRequestedUpdate = 50,
+    OnMouseOver = 60,
+    OnMouseOut = 61,
+}

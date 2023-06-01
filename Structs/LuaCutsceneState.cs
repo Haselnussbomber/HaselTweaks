@@ -10,7 +10,7 @@ public unsafe partial struct LuaCutsceneState
     [FieldOffset(0x00)] public void* vtbl;
     [FieldOffset(0x08)] public uint Unk8;
     [FieldOffset(0x0C)] public ushort UnkC;
-    // 3 unknown/unused bytes
+    // 4 unknown/unused bytes?!
     [FieldOffset(0x10)] public Utf8String Path;
     [FieldOffset(0x78)] public uint Id;
     [FieldOffset(0x7C)] public uint a4;
@@ -21,4 +21,7 @@ public unsafe partial struct LuaCutsceneState
     [FieldOffset(0x8D)] public byte Unk8D;
     [FieldOffset(0x8E)] public byte a3;
     [FieldOffset(0x8F)] public byte Unk8F;
+
+    [MemberFunction("E8 ?? ?? ?? ?? 48 8B F0 48 89 45 0F")]
+    public partial void Ctor();
 }

@@ -23,7 +23,7 @@ public unsafe partial class ForcedCutsceneMusic : Tweak
         set => Service.GameConfig.Set(SystemConfigOption.IsSndBgm, value);
     }
 
-    [SigHook("E8 ?? ?? ?? ?? 48 8B F0 48 89 45 0F")]
+    [AddressHook<LuaCutsceneState>(nameof(LuaCutsceneState.Addresses.Ctor))]
     public LuaCutsceneState* CutsceneStateCtor(LuaCutsceneState* self, uint cutsceneId, byte a3, int a4, int a5, int a6, int a7)
     {
         var ret = CutsceneStateCtorHook.Original(self, cutsceneId, a3, a4, a5, a6, a7);

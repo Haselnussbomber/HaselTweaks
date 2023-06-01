@@ -5,9 +5,10 @@ using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Caches;
+using HaselTweaks.Enums;
+using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
 
@@ -148,7 +149,7 @@ public unsafe partial class EnhancedExpBar : Tweak
         );
     }
 
-    [SigHook("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 41 56 41 57 48 83 EC 30 48 8B 72 18")]
+    [VTableHook<AddonExp>((int)AtkUnitBaseVfs.OnRequestedUpdate)]
     private nint AddonExp_OnRequestedUpdate(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
         var gaugeBarNode = GetNode<AtkComponentNode>((AtkUnitBase*)addon, 6);
