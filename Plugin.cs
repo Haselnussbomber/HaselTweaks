@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
@@ -28,7 +29,11 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
     public Plugin(DalamudPluginInterface pluginInterface)
     {
         pluginInterface.Create<Service>();
+        Task.Run(Setup);
+    }
 
+    private unsafe void Setup()
+    {
         SignatureHelper.Initialise(this);
         AddonSetupHook?.Enable();
         AddonFinalizeHook?.Enable();
