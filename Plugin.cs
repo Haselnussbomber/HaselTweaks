@@ -65,6 +65,7 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
         Service.PluginInterface.UiBuilder.Draw += OnDraw;
         Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
 
+        Service.Commands.RemoveHandler("/haseltweaks");
         Service.Commands.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
         {
             HelpMessage = "Show Window"

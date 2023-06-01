@@ -45,8 +45,9 @@ public unsafe class Commands : Tweak
 
     private static void EnableCommands()
     {
-        if (Config.EnableItemLinkCommand && !Service.Commands.Commands.ContainsKey(ItemLinkCommand))
+        if (Config.EnableItemLinkCommand)
         {
+            Service.Commands.RemoveHandler(ItemLinkCommand);
             Service.Commands.AddHandler(ItemLinkCommand, new CommandInfo(OnItemLinkCommand)
             {
                 HelpMessage = $"Usage: {ItemLinkCommand} <id>",
@@ -54,8 +55,9 @@ public unsafe class Commands : Tweak
             });
         }
 
-        if (Config.EnableWhatMountCommand && !Service.Commands.Commands.ContainsKey(WhatMountCommand))
+        if (Config.EnableWhatMountCommand)
         {
+            Service.Commands.RemoveHandler(WhatMountCommand);
             Service.Commands.AddHandler(WhatMountCommand, new CommandInfo(OnWhatMountCommand)
             {
                 HelpMessage = $"Usage: {WhatMountCommand}",
@@ -66,12 +68,12 @@ public unsafe class Commands : Tweak
 
     private static void DisableCommands(bool removeAll = false)
     {
-        if ((!Config.EnableItemLinkCommand || removeAll) && Service.Commands.Commands.ContainsKey(ItemLinkCommand))
+        if (!Config.EnableItemLinkCommand || removeAll)
         {
             Service.Commands.RemoveHandler(ItemLinkCommand);
         }
 
-        if ((!Config.EnableWhatMountCommand || removeAll) && Service.Commands.Commands.ContainsKey(WhatMountCommand))
+        if (!Config.EnableWhatMountCommand || removeAll)
         {
             Service.Commands.RemoveHandler(WhatMountCommand);
         }
