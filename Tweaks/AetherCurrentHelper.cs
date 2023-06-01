@@ -22,16 +22,12 @@ public unsafe partial class AetherCurrentHelper : Tweak
         public bool CenterDistance = true;
     }
 
-    private readonly AetherCurrentHelperWindow Window = new();
-
-    public override void Enable()
-    {
-        Plugin.WindowSystem.AddWindow(Window);
-    }
+    private AetherCurrentHelperWindow? Window;
 
     public override void Disable()
     {
-        Plugin.WindowSystem.RemoveWindow(Window);
+        if (Window != null)
+            Plugin.WindowSystem.RemoveWindow(Window);
     }
 
     [VTableHook<AgentAetherCurrent>((int)AgentInterfaceVfs.ReceiveEvent)]
@@ -55,6 +51,9 @@ public unsafe partial class AetherCurrentHelper : Tweak
         var compFlgSet = Service.Data.GetExcelSheet<AetherCurrentCompFlgSet>()?.GetRow(index + 1);
         if (compFlgSet == null)
             goto OriginalCode;
+
+        if (Window == null)
+            Plugin.WindowSystem.AddWindow(Window = new());
 
         Window.SetCompFlgSet(compFlgSet);
 
