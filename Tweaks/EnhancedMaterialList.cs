@@ -6,6 +6,7 @@ using Dalamud.Utility;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.String;
@@ -384,7 +385,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         {
             foreach (var p in gatheringPoints)
             {
-                var thisCost = CalculateTeleportCost(currentTerritoryTypeId, p!.TerritoryType.Row, false, false, false);
+                var thisCost = (uint)Telepo.GetTeleportCost((ushort)currentTerritoryTypeId, (ushort)p!.TerritoryType.Row, false, false, false);
                 if (cost == 0 || thisCost < cost)
                 {
                     cost = thisCost;
@@ -399,11 +400,6 @@ public unsafe partial class EnhancedMaterialList : Tweak
         var placeName = point.TerritoryType.Value?.PlaceName.Value?.Name.ToDalamudString();
         return placeName == null ? null : (gatheringPoints.Count, point, cost, isSameZone, placeName);
     }
-
-
-    [Signature("66 89 54 24 ?? 66 89 4C 24 ?? 53")]
-    public readonly CalculateTeleportCostDelegate CalculateTeleportCost = null!;
-    public delegate uint CalculateTeleportCostDelegate(uint fromTerritoryTypeId, uint toTerritoryTypeId, bool a3, bool a4, bool a5);
 
     [Signature("80 F9 07 77 10")]
     public readonly IsGatheringPointTypeOffDelegate IsGatheringPointRare = null!;
