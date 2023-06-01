@@ -225,13 +225,15 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
     }
 
     [SigHook("E8 ?? ?? ?? ?? 48 8B 7C 24 ?? 41 8B C6")]
-    public void AddonFinalize(AtkUnitManager* unitManager, AtkUnitBase** unitBase)
+    public void AddonFinalize(AtkUnitManager* unitManager, AtkUnitBase** unitBasePtr)
     {
+        var unitBase = *unitBasePtr;
+
         foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
         {
-            tweak.OnAddonCloseInternal(GetAddonName(*unitBase), *unitBase);
+            tweak.OnAddonCloseInternal(GetAddonName(unitBase), unitBase);
         }
 
-        AddonFinalizeHook.Original(unitManager, unitBase);
+        AddonFinalizeHook.Original(unitManager, unitBasePtr);
     }
 }
