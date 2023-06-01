@@ -277,38 +277,6 @@ public partial class PluginWindow : Window
         }
 #endif
 
-        if (tweak.SlashCommands.Any())
-        {
-            ImGuiUtils.DrawSection("Slash Commands");
-
-            foreach (var methodInfo in tweak.SlashCommands)
-            {
-                var attr = (SlashCommandAttribute?)methodInfo.GetCustomAttribute(typeof(SlashCommandAttribute));
-                if (attr == null || Delegate.CreateDelegate(typeof(HandlerDelegate), tweak, methodInfo, false) == null)
-                    continue;
-
-                ImGui.TextUnformatted("•");
-                ImGui.SameLine();
-                ImGui.TextUnformatted(attr.Command);
-                if (ImGui.IsItemHovered())
-                {
-                    ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-                }
-                if (ImGui.IsItemClicked())
-                {
-                    methodInfo.Invoke(tweak, new string[] { attr.Command, "" });
-                }
-
-                if (!string.IsNullOrEmpty(attr.HelpMessage))
-                {
-                    using (ImGuiUtils.ConfigIndent())
-                    {
-                        ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorGrey, attr.HelpMessage);
-                    }
-                }
-            }
-        }
-
         if (tweak.HasCustomConfig)
         {
             ImGuiUtils.DrawSection("Configuration");

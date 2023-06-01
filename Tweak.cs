@@ -48,10 +48,6 @@ public abstract unsafe class Tweak
             prop.PropertyType.GetGenericTypeDefinition() == typeof(Hook<>)
         );
 
-    internal IEnumerable<MethodInfo> SlashCommands => GetType()
-        .GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
-        .Where(method => method.CustomAttributes.Any(ca => ca.AttributeType == typeof(SlashCommandAttribute)));
-
     protected void CallHooks(string methodName)
     {
         foreach (var property in Hooks)
@@ -131,21 +127,6 @@ public abstract unsafe class Tweak
             LastException = ex;
         }
 
-        foreach (var methodInfo in SlashCommands)
-        {
-            var attr = (SlashCommandAttribute?)methodInfo.GetCustomAttribute(typeof(SlashCommandAttribute));
-            if (attr == null || Delegate.CreateDelegate(typeof(HandlerDelegate), this, methodInfo, false) == null)
-                continue;
-
-            Service.Commands.AddHandler(attr.Command, new CommandInfo((string command, string argument) => // HandlerDelegate
-            {
-                methodInfo.Invoke(this, new string[] { command, argument });
-            })
-            {
-                HelpMessage = attr.HelpMessage
-            });
-        }
-
         Enabled = true;
     }
 
@@ -162,15 +143,6 @@ public abstract unsafe class Tweak
         {
             Error(ex, "Unexpected error during Disable");
             LastException = ex;
-        }
-
-        foreach (var methodInfo in SlashCommands)
-        {
-            var attr = (SlashCommandAttribute?)methodInfo.GetCustomAttribute(typeof(SlashCommandAttribute));
-            if (attr == null || Delegate.CreateDelegate(typeof(HandlerDelegate), this, methodInfo, false) == null)
-                continue;
-
-            Service.Commands.RemoveHandler(attr.Command);
         }
 
         Enabled = false;
