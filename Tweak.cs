@@ -76,22 +76,22 @@ public abstract unsafe class Tweak
 
         try
         {
-            SetupAddressHooks();
+            SetupVTableHooks(); // before SetupAddressHooks!
         }
         catch (Exception ex)
         {
-            Error(ex, "Unexpected error during SetupAddressHooks");
+            Error(ex, "Unexpected error during SetupAutoHooks");
             LastException = ex;
             return;
         }
 
         try
         {
-            SetupVTableHooks();
+            SetupAddressHooks();
         }
         catch (Exception ex)
         {
-            Error(ex, "Unexpected error during SetupAutoHooks");
+            Error(ex, "Unexpected error during SetupAddressHooks");
             LastException = ex;
             return;
         }
