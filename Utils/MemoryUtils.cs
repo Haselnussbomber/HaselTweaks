@@ -10,9 +10,9 @@ public static unsafe class MemoryUtils
     {
         var originalBytes = MemoryHelper.ReadRaw(address, data.Length);
 
-        var oldProtection = MemoryHelper.ChangePermission(address, data.Length, MemoryProtection.ExecuteReadWrite);
+        MemoryHelper.ChangePermission(address, data.Length, MemoryProtection.ExecuteReadWrite, out var oldPermissions);
         MemoryHelper.WriteRaw(address, data);
-        MemoryHelper.ChangePermission(address, data.Length, oldProtection);
+        MemoryHelper.ChangePermission(address, data.Length, oldPermissions);
 
         return originalBytes;
     }
