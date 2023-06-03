@@ -2,6 +2,9 @@ namespace HaselTweaks.Enums;
 
 public enum AtkUnitBaseVfs
 {
+    Dtor = 0,
+    ReceiveGlobalEvent = 1,
+    ReceiveEvent = 2,
     Open = 3,
     Close = 4,
     Show = 5,
