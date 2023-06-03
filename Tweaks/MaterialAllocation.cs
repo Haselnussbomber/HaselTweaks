@@ -56,7 +56,7 @@ public unsafe partial class MaterialAllocation : Tweak
             }
         }
 
-        return AddonMJICraftMaterialConfirmation_vf48Hook.Original(addon, numAtkValues, atkValues);
+        return AddonMJICraftMaterialConfirmation_vf48Hook.OriginalDisposeSafe(addon, numAtkValues, atkValues);
     }
 
     public override unsafe void OnAddonOpen(string addonName, AtkUnitBase* unitbase)
@@ -82,7 +82,7 @@ public unsafe partial class MaterialAllocation : Tweak
             && (agent->Data->Flags & 2) != 2 // refresh pending
             && agent->Data->GatherItemPtrs != null;
 
-        AgentMJIGatheringNoteBook_UpdateHook.Original(agent);
+        AgentMJIGatheringNoteBook_UpdateHook.OriginalDisposeSafe(agent);
 
         if (handleUpdate)
         {
@@ -168,7 +168,7 @@ public unsafe partial class MaterialAllocation : Tweak
             return;
         }
 
-        AddonMJICraftMaterialConfirmation_ReceiveEventHook.Original(addon, eventType, eventParam, atkEvent, a5);
+        AddonMJICraftMaterialConfirmation_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
     }
 
     private void UpdateGatheringNoteBookItem(AgentMJIGatheringNoteBook* agent, uint itemId)

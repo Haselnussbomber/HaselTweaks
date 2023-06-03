@@ -769,7 +769,7 @@ public partial class PortraitHelper : Tweak
     [AddressHook<RaptureGearsetModule>(nameof(RaptureGearsetModule.Addresses.UpdateGearset))]
     public unsafe int RaptureGearsetModule_UpdateGearset(RaptureGearsetModule* raptureGearsetModule, uint gearsetId)
     {
-        var ret = RaptureGearsetModule_UpdateGearsetHook.Original(raptureGearsetModule, gearsetId);
+        var ret = RaptureGearsetModule_UpdateGearsetHook.OriginalDisposeSafe(raptureGearsetModule, gearsetId);
 
         jobChangedOrGearsetUpdatedCTS?.Cancel();
         jobChangedOrGearsetUpdatedCTS = new();

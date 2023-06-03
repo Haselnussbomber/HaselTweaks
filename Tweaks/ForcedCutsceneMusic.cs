@@ -26,7 +26,7 @@ public unsafe partial class ForcedCutsceneMusic : Tweak
     [AddressHook<LuaCutsceneState>(nameof(LuaCutsceneState.Addresses.Ctor))]
     public LuaCutsceneState* CutsceneStateCtor(LuaCutsceneState* self, uint cutsceneId, byte a3, int a4, int a5, int a6, int a7)
     {
-        var ret = CutsceneStateCtorHook.Original(self, cutsceneId, a3, a4, a5, a6, a7);
+        var ret = CutsceneStateCtorHook.OriginalDisposeSafe(self, cutsceneId, a3, a4, a5, a6, a7);
 
         Log($"Cutscene {cutsceneId} started");
 
@@ -45,7 +45,7 @@ public unsafe partial class ForcedCutsceneMusic : Tweak
     {
         Log($"Cutscene {self->Id} ended");
 
-        var ret = CutsceneStateDtorHook.Original(self, a2);
+        var ret = CutsceneStateDtorHook.OriginalDisposeSafe(self, a2);
 
         if (wasBgmMuted && Config.Restore)
             IsBgmMuted = true;

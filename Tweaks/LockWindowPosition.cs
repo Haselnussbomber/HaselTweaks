@@ -222,7 +222,7 @@ public unsafe partial class LockWindowPosition : Tweak
     [VTableHook<AddonGearSetList>((int)AtkResNodeVfs.OnSetup)]
     public nint AddonGearSetList_OnSetup(AddonGearSetList* addon, int numAtkValues, AtkValue* atkValues)
     {
-        var result = AddonGearSetList_OnSetupHook.Original(addon, numAtkValues, atkValues);
+        var result = AddonGearSetList_OnSetupHook.OriginalDisposeSafe(addon, numAtkValues, atkValues);
 
         var isLocked = Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == "GearSetList");
 
@@ -250,7 +250,7 @@ public unsafe partial class LockWindowPosition : Tweak
                 return false;
         }
 
-        return MoveHook.Original(atkUnitBase, xDelta, yDelta);
+        return MoveHook.OriginalDisposeSafe(atkUnitBase, xDelta, yDelta);
     }
 
     [SigHook("48 89 5C 24 ?? 48 89 6C 24 ?? 57 48 83 EC 30 80 7A 37 00")]
@@ -292,7 +292,7 @@ public unsafe partial class LockWindowPosition : Tweak
             return false;
         }
 
-        return RaptureAtkUnitManager_Vf6Hook.Original(self, a2);
+        return RaptureAtkUnitManager_Vf6Hook.OriginalDisposeSafe(self, a2);
     }
 
     [AddressHook<AgentContext>(nameof(AgentContext.Addresses.ClearMenu))]
@@ -301,7 +301,7 @@ public unsafe partial class LockWindowPosition : Tweak
         if (EventIndexToDisable != 0)
             EventIndexToDisable = 0;
 
-        return AgentContext_ClearMenuHook.Original(agent);
+        return AgentContext_ClearMenuHook.OriginalDisposeSafe(agent);
     }
 
     [AddressHook<AgentContext>(nameof(AgentContext.Addresses.AddMenuItem2))]
@@ -312,7 +312,7 @@ public unsafe partial class LockWindowPosition : Tweak
             EventIndexToDisable = agent->CurrentContextMenu->CurrentEventIndex;
         }
 
-        return AgentContext_AddMenuItem2Hook.Original(agent, addonRowId, handlerPtr, handlerParam, disabled, submenu);
+        return AgentContext_AddMenuItem2Hook.OriginalDisposeSafe(agent, addonRowId, handlerPtr, handlerParam, disabled, submenu);
     }
 
     [AddressHook<AgentContext>(nameof(AgentContext.Addresses.OpenContextMenuForAddon))]
@@ -368,7 +368,7 @@ public unsafe partial class LockWindowPosition : Tweak
             }
         }
 
-        return AgentContext_OpenContextMenuForAddonHook.Original(agent, addonId, bindToOwner);
+        return AgentContext_OpenContextMenuForAddonHook.OriginalDisposeSafe(agent, addonId, bindToOwner);
     }
 
     [SigHook("48 89 6C 24 ?? 48 89 54 24 ?? 56 41 54")]
@@ -412,7 +412,7 @@ public unsafe partial class LockWindowPosition : Tweak
         if (EventIndexToDisable != 0)
             EventIndexToDisable = 0;
 
-        return WindowContextMenuEventHandlerHook.Original(self, result, a3, a4, eventParam);
+        return WindowContextMenuEventHandlerHook.OriginalDisposeSafe(self, result, a3, a4, eventParam);
     }
 
     private void AddMenuEntry(string text, int eventParam)

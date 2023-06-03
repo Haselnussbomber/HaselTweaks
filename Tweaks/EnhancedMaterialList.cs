@@ -213,7 +213,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
     [VTableHook<AgentRecipeMaterialList>((int)AgentInterfaceVfs.ReceiveEvent)]
     public nint AgentRecipeMaterialList_ReceiveEvent(AgentRecipeMaterialList* agent, nint a2, nint a3, nint a4, nint a5)
     {
-        var ret = AgentRecipeMaterialList_ReceiveEventHook.Original(agent, a2, a3, a4, a5);
+        var ret = AgentRecipeMaterialList_ReceiveEventHook.OriginalDisposeSafe(agent, a2, a3, a4, a5);
         SaveRestoreMaterialList();
         return ret;
     }
@@ -221,7 +221,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
     [VTableHook<AddonRecipeMaterialList>((int)AtkResNodeVfs.ReceiveEvent)]
     public void AddonRecipeMaterialList_ReceiveEvent(AddonRecipeMaterialList* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
-        AddonRecipeMaterialList_ReceiveEventHook.Original(addon, eventType, eventParam, atkEvent, a5);
+        AddonRecipeMaterialList_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
 
         if (!Config.ClickToOpenMap)
             return;
@@ -254,7 +254,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
     [AddressHook<AddonRecipeMaterialList>(nameof(AddonRecipeMaterialList.Addresses.SetupRow))]
     public void AddonRecipeMaterialList_SetupRow(AddonRecipeMaterialList* addon, nint a2, nint a3)
     {
-        AddonRecipeMaterialList_SetupRowHook.Original(addon, a2, a3);
+        AddonRecipeMaterialList_SetupRowHook.OriginalDisposeSafe(addon, a2, a3);
 
         if (!Config.EnableZoneNames)
             return;
@@ -318,7 +318,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
     public nint AgentRecipeMaterialList_OpenRecipeResultItemContextMenu(AgentRecipeMaterialList* agent)
     {
         HandleRecipeResultItemContextMenu = true;
-        return AgentRecipeMaterialList_OpenRecipeResultItemContextMenuHook.Original(agent);
+        return AgentRecipeMaterialList_OpenRecipeResultItemContextMenuHook.OriginalDisposeSafe(agent);
     }
 
     [AddressHook<AgentRecipeItemContext>(nameof(AgentRecipeItemContext.Addresses.AddItemContextMenuEntries))]
@@ -348,7 +348,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         flags |= 2;
 
         originalAddItemContextMenuEntries:
-        return AgentRecipeItemContext_AddItemContextMenuEntriesHook.Original(agent, itemId, flags, itemName);
+        return AgentRecipeItemContext_AddItemContextMenuEntriesHook.OriginalDisposeSafe(agent, itemId, flags, itemName);
     }
 
     private (int, GatheringPoint, uint, bool, SeString)? GetPointForItem(uint itemId)

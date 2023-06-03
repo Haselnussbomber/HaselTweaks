@@ -104,7 +104,7 @@ public unsafe partial class ScrollableTabs : Tweak
         if (hwnd == GetActiveWindow() && uMsg == WM_MOUSEWHEEL)
             wheelState = (short)Math.Clamp((wParam >> 16) / WHEEL_DELTA * (Config.Invert ? -1 : 1), -1, 1);
 
-        return WindowProcHandlerHook.Original(hwnd, uMsg, wParam);
+        return WindowProcHandlerHook.OriginalDisposeSafe(hwnd, uMsg, wParam);
     }
 
     private AtkUnitBase* IntersectingAddon

@@ -122,6 +122,6 @@ public unsafe partial class CustomChatTimestamp : Tweak
             }
         }
 
-        return FormatAddonHook.Original(a1, addonRowId, value);
+        return FormatAddonHook.OriginalDisposeSafe(a1, addonRowId, value);
     }
 }

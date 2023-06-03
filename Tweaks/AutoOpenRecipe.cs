@@ -180,7 +180,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
         }
 
         originalUpdateQuestWork:
-        return UpdateQuestWorkHook.Original(index, questData, a3, a4, a5);
+        return UpdateQuestWorkHook.OriginalDisposeSafe(index, questData, a3, a4, a5);
     }
 
     [Signature("E8 ?? ?? ?? ?? 8B 44 24 78 89 44 24 44")]

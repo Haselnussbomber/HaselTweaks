@@ -90,7 +90,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
     [VTableHook<AddonCharacterClass>((int)AtkResNodeVfs.OnSetup)]
     private nint AddonCharacterClass_OnSetup(AddonCharacterClass* addon, int a2)
     {
-        var result = AddonCharacterClass_OnSetupHook!.Original(addon, a2);
+        var result = AddonCharacterClass_OnSetupHook!.OriginalDisposeSafe(addon, a2);
         var eventListener = &addon->AtkUnitBase.AtkEventListener;
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
@@ -114,7 +114,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
     [VTableHook<AddonCharacterClass>((int)AtkResNodeVfs.OnUpdate)]
     private void AddonCharacterClass_OnUpdate(AddonCharacterClass* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        AddonCharacterClass_OnUpdateHook.Original(addon, numberArrayData, stringArrayData);
+        AddonCharacterClass_OnUpdateHook.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
         {
@@ -184,13 +184,13 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         }
 
         OriginalReceiveEventCode:
-        return AddonCharacterClass_ReceiveEventHook.Original(addon, eventType, eventParam, atkEvent, a5);
+        return AddonCharacterClass_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
     }
 
     [VTableHook<AddonPvPCharacter>((int)AtkResNodeVfs.OnSetup)]
     private void AddonPvPCharacter_OnSetup(AddonPvPCharacter* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        AddonPvPCharacter_OnSetupHook.Original(addon, numberArrayData, stringArrayData);
+        AddonPvPCharacter_OnSetupHook.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
 
         var eventListener = &addon->AtkUnitBase.AtkEventListener;
 
@@ -210,7 +210,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
     [AddressHook<AddonPvPCharacter>(nameof(AddonPvPCharacter.Addresses.UpdateClasses))]
     private void AddonPvPCharacter_UpdateClasses(AddonPvPCharacter* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        AddonPvPCharacter_UpdateClassesHook.Original(addon, numberArrayData, stringArrayData);
+        AddonPvPCharacter_UpdateClassesHook.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
@@ -254,7 +254,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
             return 0;
 
         OriginalPvPReceiveEventCode:
-        return AddonPvPCharacter_ReceiveEventHook.Original(addon, eventType, eventParam, atkEvent, a5);
+        return AddonPvPCharacter_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
     }
 
     /// <returns>Boolean whether original code should be skipped (true) or not (false)</returns>

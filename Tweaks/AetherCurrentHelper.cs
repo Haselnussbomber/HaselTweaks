@@ -78,6 +78,6 @@ public unsafe partial class AetherCurrentHelper : Tweak
         return eventData;
 
         OriginalCode:
-        return AgentAetherCurrent_ReceiveEventHook.Original(agent, eventData, atkValue, valueCount, eventKind);
+        return AgentAetherCurrent_ReceiveEventHook.OriginalDisposeSafe(agent, eventData, atkValue, valueCount, eventKind);
     }
 }

@@ -216,7 +216,7 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
     [SigHook("E8 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? C1 E8 14")]
     public void AddonSetup(AtkUnitBase* unitBase)
     {
-        AddonSetupHook.Original(unitBase);
+        AddonSetupHook.OriginalDisposeSafe(unitBase);
 
         foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
         {
@@ -234,6 +234,6 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
             tweak.OnAddonCloseInternal(GetAddonName(unitBase), unitBase);
         }
 
-        AddonFinalizeHook.Original(unitManager, unitBasePtr);
+        AddonFinalizeHook.OriginalDisposeSafe(unitManager, unitBasePtr);
     }
 }

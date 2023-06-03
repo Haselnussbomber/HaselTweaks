@@ -171,7 +171,7 @@ public unsafe partial class EnhancedExpBar : Tweak
         if (leftText == null)
             goto OriginalOnRequestedUpdateWithColorReset;
 
-        var ret = AddonExp_OnRequestedUpdateHook!.Original(addon, numberArrayData, stringArrayData);
+        var ret = AddonExp_OnRequestedUpdateHook!.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
 
         string job, levelLabel, level;
         uint requiredExperience;
@@ -290,7 +290,7 @@ public unsafe partial class EnhancedExpBar : Tweak
         ResetColor(nineGridNode);
 
         OriginalOnRequestedUpdate:
-        return AddonExp_OnRequestedUpdateHook!.Original(addon, numberArrayData, stringArrayData);
+        return AddonExp_OnRequestedUpdateHook!.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
     }
 
     private void ResetColor(AtkNineGridNode* nineGridNode)
