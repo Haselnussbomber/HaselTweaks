@@ -22,11 +22,12 @@ namespace HaselTweaks.Windows;
 
 public unsafe partial class AetherCurrentHelperWindow : Window
 {
+    private readonly AetherCurrentHelper AetherCurrentHelper;
+    private AetherCurrentCompFlgSet CompFlgSet;
     private readonly AgentAetherCurrent* agentAetherCurrent;
     private readonly Dictionary<uint, EObj?> EObjCache = new(); // key is AetherCurrent.RowId
     private readonly Dictionary<uint, Level?> LevelCache = new(); // key is Level.RowId
     private readonly Dictionary<uint, string> QuestNameCache = new(); // key is Quest.RowId, value is stripped from private use utf8 chars
-    private AetherCurrentCompFlgSet? compFlgSet;
     private bool hideUnlocked = true;
 
     private readonly Vector4 TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f, 1);
@@ -36,8 +37,11 @@ public unsafe partial class AetherCurrentHelperWindow : Window
 
     public static AetherCurrentHelper.Configuration Config => Plugin.Config.Tweaks.AetherCurrentHelper;
 
-    public AetherCurrentHelperWindow() : base("[HaselTweaks] Aether Current Helper")
+    public AetherCurrentHelperWindow(AetherCurrentHelper aetherCurrentHelper, AetherCurrentCompFlgSet compFlgSet) : base("[HaselTweaks] Aether Current Helper")
     {
+        AetherCurrentHelper = aetherCurrentHelper;
+        CompFlgSet = compFlgSet;
+
         base.Size = new Vector2(300, 350);
         base.SizeCondition = ImGuiCond.Appearing;
 
@@ -48,20 +52,19 @@ public unsafe partial class AetherCurrentHelperWindow : Window
     }
 
     public void SetCompFlgSet(AetherCurrentCompFlgSet compFlgSet)
-    {
-        this.compFlgSet = compFlgSet;
-    }
+        => CompFlgSet = compFlgSet;
+
+    public override void OnClose()
+        => AetherCurrentHelper.CloseWindow();
 
     public override bool DrawConditions()
-    {
-        return Service.ClientState.IsLoggedIn && compFlgSet != null;
-    }
+        => Service.ClientState.IsLoggedIn;
 
     public override unsafe void Draw()
     {
         DrawMainCommandButton();
 
-        var placeName = compFlgSet!.Territory.Value!.PlaceName.Value!.Name;
+        var placeName = CompFlgSet.Territory.Value!.PlaceName.Value!.Name;
 
         var textSize = ImGui.CalcTextSize(placeName);
         var availableSize = ImGui.GetContentRegionAvail();
@@ -93,7 +96,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         var type = 0;
         var linesDisplayed = 0;
         var playerState = PlayerState.Instance();
-        foreach (var aetherCurrent in compFlgSet.AetherCurrent)
+        foreach (var aetherCurrent in CompFlgSet.AetherCurrent)
         {
             if (aetherCurrent.Row == 0) continue;
 

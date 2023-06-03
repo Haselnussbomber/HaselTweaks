@@ -25,9 +25,27 @@ public unsafe partial class AetherCurrentHelper : Tweak
     private AetherCurrentHelperWindow? Window;
 
     public override void Disable()
+        => CloseWindow();
+
+    public void OpenWindow(AetherCurrentCompFlgSet compFlgSet)
     {
         if (Window != null)
-            Plugin.WindowSystem.RemoveWindow(Window);
+        {
+            Window.SetCompFlgSet(compFlgSet);
+            return;
+        }
+
+        Plugin.WindowSystem.AddWindow(Window = new(this, compFlgSet));
+        Window.IsOpen = true;
+    }
+
+    public void CloseWindow()
+    {
+        if (Window == null)
+            return;
+
+        Plugin.WindowSystem.RemoveWindow(Window);
+        Window = null;
     }
 
     [VTableHook<AgentAetherCurrent>((int)AgentInterfaceVfs.ReceiveEvent)]
@@ -52,13 +70,7 @@ public unsafe partial class AetherCurrentHelper : Tweak
         if (compFlgSet == null)
             goto OriginalCode;
 
-        if (Window == null)
-            Plugin.WindowSystem.AddWindow(Window = new());
-
-        Window.SetCompFlgSet(compFlgSet);
-
-        if (!Window.IsOpen)
-            Window.Toggle();
+        OpenWindow(compFlgSet);
 
         // handled, just like in the original code
         eventData->Type = ValueType.Bool;
