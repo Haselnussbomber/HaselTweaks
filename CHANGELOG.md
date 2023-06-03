@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [14.12.0] (2023-06-03)
 
 ### HaselTweaks
 
@@ -22,6 +22,8 @@
 ## [14.11.3] (2023-05-28)
 
 Maintenance update with optimizations and bug fixes.
+
+### HaselTweaks
 
 - **Fixed:** Disabled buttons now display their intended tooltips again.
 - **Optimized:** Multiple hooks now use cached addresses for signatures, which makes the plugin start a bit faster due to less scanning.
@@ -82,6 +84,8 @@ Please file a bug if any translation is incorrect.
 ## [14.9.2] (2023-04-30)
 
 Maintenance update with some internal restructuring and bug fixes.
+
+### HaselTweaks
 
 - **Changed:** For safety, any drawn text is now drawn with `ImGui.TextUnformatted`.
 - **Changed:** Configuration fields now have consistent indentation.
@@ -847,6 +851,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[14.12.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.11.3...v14.12.0
 [14.11.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.11.2...v14.11.3
 [14.11.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.11.1...v14.11.2
 [14.11.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.11.0...v14.11.1
