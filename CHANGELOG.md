@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### HaselTweaks
+
+- **Optimized:** The plugins setup function is now run in an asynchronous thread to reduce startup lag.
+
+### Aether Current Helper
+
+- **Optimized:** The window is now created on demand.
+
 ### DTR
 
 - **Fixed:** Framerate number now correctly rounds up.
