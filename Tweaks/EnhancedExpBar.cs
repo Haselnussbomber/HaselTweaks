@@ -90,8 +90,8 @@ public unsafe partial class EnhancedExpBar : Tweak
         RunUpdate();
     }
 
-    // probably the laziest way to detect if xp has changed
     private ushort LastSeriesXp = 0;
+    private byte LastSeriesClaimedRank = 0;
     private uint LastIslandExperience = 0;
     private ushort LastSyncedFateId = 0;
 
@@ -100,10 +100,11 @@ public unsafe partial class EnhancedExpBar : Tweak
         var shouldUpdate = false;
 
         var pvpProfile = PvPProfile.Instance();
-        if (pvpProfile != null && pvpProfile->IsLoaded == 0x01 && LastSeriesXp != pvpProfile->SeriesExperience)
+        if (pvpProfile != null && pvpProfile->IsLoaded == 0x01 && (LastSeriesXp != pvpProfile->SeriesExperience || LastSeriesClaimedRank != pvpProfile->SeriesClaimedRank))
         {
             shouldUpdate = true;
             LastSeriesXp = pvpProfile->SeriesExperience;
+            LastSeriesClaimedRank = pvpProfile->SeriesClaimedRank;
         }
 
         var mjiManager = MJIManager.Instance();

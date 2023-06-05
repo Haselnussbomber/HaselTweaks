@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Experience Bar
+
+- **Fixed:** The PvP Series Bar will now update after claiming a rank to clean the claimable rank indicator.
+
 ## [14.12.0] (2023-06-03)
 
 ### HaselTweaks
