@@ -11,21 +11,6 @@ public unsafe partial struct AgentMJIMinionNoteBook
 {
     [FieldOffset(0)] public AgentInterface AgentInterface;
 
-    public enum ViewType : byte
-    {
-        Favorites = 1,
-        Normal,
-        Search,
-    }
-
-    [StructLayout(LayoutKind.Explicit, Size = 0x4)]
-    public unsafe partial struct SelectedMinionInfo
-    {
-        [FieldOffset(0)] public ushort MinionId;
-        [FieldOffset(2)] public byte TabIndex;
-        [FieldOffset(3)] public byte SlotIndex;
-    }
-
     [FieldOffset(0x1DC)] public SelectedMinionInfo SelectedFavoriteMinion;
     [FieldOffset(0x1E0)] public SelectedMinionInfo SelectedNormalMinion;
     [FieldOffset(0x1E0)] public SelectedMinionInfo SelectedSearchMinion;
@@ -40,12 +25,7 @@ public unsafe partial struct AgentMJIMinionNoteBook
     // ViewType 2 = 0x40B
     // ViewType 3 = 0x413
     public void UpdateTabFlags(int flags)
-    {
-        var ptr = (int*)Marshal.AllocHGlobal(4);
-        *ptr = flags;
-        UpdateTabFlags(ptr);
-        Marshal.FreeHGlobal((nint)ptr);
-    }
+        => UpdateTabFlags(&flags);
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 D8 85 DB")]
     public partial ushort GetSelectedMinionId(byte* viewType, byte* currentTabIndex, byte* currentSlotIndex);
@@ -68,5 +48,20 @@ public unsafe partial struct AgentMJIMinionNoteBook
         }
 
         return 0;
+    }
+
+    public enum ViewType : byte
+    {
+        Favorites = 1,
+        Normal,
+        Search,
+    }
+
+    [StructLayout(LayoutKind.Explicit, Size = 0x4)]
+    public struct SelectedMinionInfo
+    {
+        [FieldOffset(0)] public ushort MinionId;
+        [FieldOffset(2)] public byte TabIndex;
+        [FieldOffset(3)] public byte SlotIndex;
     }
 }
