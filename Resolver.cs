@@ -118,7 +118,7 @@ public sealed partial class Resolver
             if (sigCache!.TryGetValue(str, out var offset))
             {
                 address.Value = (nuint)(offset + _baseAddress);
-                PluginLog.Debug($"[SigCache] Using cached address {address.Value:X} (ffxiv_dx11.exe+{address.Value - (nuint)_baseAddress:X}) for {address.String}");
+                PluginLog.Debug($"[SigCache] Using cached address {address.Value:X} (ffxiv_dx11.exe+{address.Value - (nuint)_baseAddress:X}) for {str}");
                 byte firstByte = (byte)address.Bytes[0];
                 _preResolveArray[firstByte]!.Remove(address);
                 if (_preResolveArray[firstByte]!.Count == 0)
@@ -153,7 +153,7 @@ public sealed partial class Resolver
         {
             if (_preResolveArray[targetSpan[location]] is not null)
             {
-                List<Address> availableAddresses = _preResolveArray[targetSpan[location]]!;
+                List<Address> availableAddresses = _preResolveArray[targetSpan[location]]!.ToList();
 
                 ReadOnlySpan<ulong> targetLocationAsUlong = MemoryMarshal.Cast<byte, ulong>(targetSpan[location..]);
 
@@ -191,13 +191,18 @@ public sealed partial class Resolver
                         }
 
                         address.Value = (nuint)(_baseAddress + _textSectionOffset + outLocation);
-                        PluginLog.Debug($"[SigCache] Caching address {address.Value:X} (ffxiv_dx11.exe+{address.Value - (nuint)_baseAddress:X}) for {address.String}");
+
                         var str = address is StaticAddress sAddress
                             ? $"{sAddress.String}+0x{sAddress.Offset:X}"
                             : address.String;
+
+                        PluginLog.Debug($"[SigCache] Caching address {address.Value:X} (ffxiv_dx11.exe+{address.Value - (nuint)_baseAddress:X}) for {str}");
+
                         if (sigCache!.TryAdd(str, outLocation + _textSectionOffset) == true)
                             cacheChanged = true;
-                        availableAddresses.Remove(address);
+
+                        _preResolveArray[targetSpan[location]].Remove(address);
+
                         if (availableAddresses.Count == 0)
                         {
                             _preResolveArray[targetSpan[location]] = null;
@@ -205,8 +210,6 @@ public sealed partial class Resolver
                             if (_totalBuckets == 0)
                                 goto outLoop;
                         }
-
-                        break;
                     }
                 }
             }
