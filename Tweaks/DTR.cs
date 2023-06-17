@@ -37,13 +37,13 @@ public unsafe class DTR : Tweak
             {
                 if (ImGui.IsMouseDown(ImGuiMouseButton.Left))
                 {
-                    Service.Framework.RunOnTick(OpenSettings, default, 2);
+                    Service.Framework.RunOnTick(OpenSettings, delayTicks: 2);
                     return;
                 }
 
                 Chat.SendMessage("/xlsettings");
             }
-            Service.Framework.RunOnTick(OpenSettings, default, 2);
+            Service.Framework.RunOnTick(OpenSettings, delayTicks: 2);
         }
         ImGuiUtils.SameLineSpace();
         ImGui.TextUnformatted("> Server Info Bar.");
