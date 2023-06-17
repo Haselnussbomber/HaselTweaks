@@ -14,7 +14,7 @@ namespace HaselTweaks.Structs;
 public unsafe partial struct Chat
 {
     [MemberFunction("48 89 5C 24 ?? 57 48 83 EC 20 48 8B FA 48 8B D9 45 84 C9")]
-    public static partial void* ProcessChatBox(UIModule* uiModule, nint message, nint unused, byte a4);
+    public static partial void* ProcessChatBox(UIModule* uiModule, Utf8String* message, nint a3 = 0, bool a4 = false);
 
     [MemberFunction("E8 ?? ?? ?? ?? EB 0A 48 8D 4C 24 ?? E8 ?? ?? ?? ?? 48 8D 8D")]
     public static partial void* SanitiseString(Utf8String* a1, int a2, nint a3);
@@ -24,37 +24,7 @@ public unsafe partial struct Chat
     /// Send a given message to the chat box. <b>This can send chat to the server.</b>
     /// </para>
     /// <para>
-    /// <b>This method is unsafe.</b> This method does no checking on your input and
-    /// may send content to the server that the normal client could not. You must
-    /// verify what you're sending and handle content and length to properly use
-    /// this.
-    /// </para>
-    /// </summary>
-    /// <param name="message">Message to send</param>
-    /// <exception cref="InvalidOperationException">If the signature for this function could not be found</exception>
-    public static unsafe void SendMessageUnsafe(byte[] message)
-    {
-        if (ProcessChatBox == null)
-        {
-            throw new InvalidOperationException("Could not find signature for chat sending");
-        }
-
-        using var payload = new ChatPayload(message);
-        var mem1 = Marshal.AllocHGlobal(400);
-        Marshal.StructureToPtr(payload, mem1, false);
-
-        ProcessChatBox(Framework.Instance()->GetUiModule(), mem1, 0, 0);
-
-        Marshal.FreeHGlobal(mem1);
-    }
-
-    /// <summary>
-    /// <para>
-    /// Send a given message to the chat box. <b>This can send chat to the server.</b>
-    /// </para>
-    /// <para>
-    /// This method is slightly less unsafe than <see cref="SendMessageUnsafe"/>. It
-    /// will throw exceptions for certain inputs that the client can't normally send,
+    /// It will throw exceptions for certain inputs that the client can't normally send,
     /// but it is still possible to make mistakes. Use with caution.
     /// </para>
     /// </summary>
@@ -79,7 +49,12 @@ public unsafe partial struct Chat
             throw new ArgumentException("message contained invalid characters", nameof(message));
         }
 
-        SendMessageUnsafe(bytes);
+        var payload = Utf8String.FromString(message);
+
+        ProcessChatBox(Framework.Instance()->GetUiModule(), payload);
+
+        payload->Dtor();
+        IMemorySpace.Free(payload);
     }
 
     /// <summary>
@@ -111,38 +86,5 @@ public unsafe partial struct Chat
         IMemorySpace.Free(uText);
 
         return sanitised;
-    }
-
-    [StructLayout(LayoutKind.Explicit)]
-    private readonly struct ChatPayload : IDisposable
-    {
-        [FieldOffset(0)]
-        private readonly nint textPtr;
-
-        [FieldOffset(16)]
-        private readonly ulong textLen;
-
-        [FieldOffset(8)]
-        private readonly ulong unk1;
-
-        [FieldOffset(24)]
-        private readonly ulong unk2;
-
-        internal ChatPayload(byte[] stringBytes)
-        {
-            textPtr = Marshal.AllocHGlobal(stringBytes.Length + 30);
-            Marshal.Copy(stringBytes, 0, textPtr, stringBytes.Length);
-            Marshal.WriteByte(textPtr + stringBytes.Length, 0);
-
-            textLen = (ulong)(stringBytes.Length + 1);
-
-            unk1 = 64;
-            unk2 = 0;
-        }
-
-        public void Dispose()
-        {
-            Marshal.FreeHGlobal(textPtr);
-        }
     }
 }
