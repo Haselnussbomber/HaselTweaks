@@ -2,12 +2,13 @@
   <img src="https://user-images.githubusercontent.com/96642047/220611506-da811a05-6c84-41da-89b3-498f5450db84.svg" width="580px" alt="HaselTweaks">
 </p>
 
-Just some tweaks I wrote. :)
+**HaselTweaks** is an all-in-one plugin for all my tweaks and helpers (well, with the exception of [LeveHelper](https://github.com/Haselnussbomber/LeveHelper) 😜).
 
-Open config with `/haseltweaks`.
-
-Repo for auto-updates:  
+You will not find this plugin in the official plugin repository.  
+However, you're free to add my custom repository to get updates whenever I release a new version:  
 https://raw.githubusercontent.com/Haselnussbomber/MyDalamudPlugins/main/repo.json
+
+To get started, open the configuration with `/haseltweaks` and enable the tweaks you like.
 
 ## Tweaks
 
@@ -23,7 +24,7 @@ Uses the games `/itemsort` command for sorting.
 
 ### Auto-open Recipe
 
-When a new daily/tribal quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe.
+If a new daily/tribal quest objective requires you to craft an item, and you have all the materials for it in your inventory at that moment, this tweak will automatically open the recipe, saving you a whopping 4-5 clicks.
 
 ### Character Class Switcher
 
@@ -46,7 +47,7 @@ Features:
 
 ### Commands
 
-A variety of useful chat commands. Each command is separately toggleable.
+A couple of useful chat commands. Each command is separately toggleable.
 
 Available Commands:
 
@@ -57,18 +58,20 @@ Available Commands:
 
 ### Custom Chat Timestamp
 
-As it says, configurable chat timestamp format. Uses C#'s <a href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings" target="_blank" rel="noreferrer noopener">`DateTime.ToString()`</a> to format.
+Let's you customize the chat timestamp format using C#'s [`DateTime.ToString()`](https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings).
 
 ### DTR
 
-Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar. To enable/disable elements or to change the order go into Dalamud Settings > Server Info Bar.
+Shows Instance number (only if the current zone is instanced), FPS and Busy status (only if busy) in the DTR bar.
+
+To enable/disable elements or to change the order go into Dalamud Settings > Server Info Bar.
 
 ### Enhanced Experience Bar
 
-Enhances the Experience Bar with the following modes:
+Depending on the settings, the experience bar can be transformed into one of the following bars:
 
-- The PvP Series Bar shows series rank and experience. A little \* after the rank indicates a claimable rank-up reward.
-- The Sanctuary Bar shows sanctuary level and island experience.
+- The PvP Series Bar displays your series rank and experience. If there is a \* symbol next to your rank, it means a rank-up reward is claimable.
+- The Sanctuary Bar displays your sanctuary level and island experience.
 
 Available options include:
 
@@ -84,7 +87,7 @@ Available options include:
 
 ### Enhanced Material List
 
-Enhances the Material List (and Recipe Tree) with the following options:
+Available options include:
 
 - Enable Zone Names: Displays a zone name underneath the item name indicating where it can be gathered. Only the zone with the lowest teleportation cost is displayed. If the name is green it means it's the current zone. Since space is limited it has to shorten the item and zone name.
   - An option is available to disable this for Crystals.
