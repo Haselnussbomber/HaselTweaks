@@ -6,7 +6,7 @@ internal static class DtrBarEntryExtension
 {
     public static void SetText(this DtrBarEntry entry, string text)
     {
-        if (entry.Text?.TextValue != text)
+        if (entry.Text == null || entry.Text.TextValue != text)
             entry.Text = text;
     }
 
