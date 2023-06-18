@@ -8,10 +8,10 @@ using Dalamud.Interface;
 using Dalamud.Interface.GameFonts;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Records;
 using HaselTweaks.Utils;
 using ImGuiNET;
-using static Dalamud.Game.Command.CommandInfo;
 
 namespace HaselTweaks.Windows;
 
@@ -500,10 +500,7 @@ public partial class PluginWindow : Window
                 }
             }
 
-            if (!string.IsNullOrEmpty(data.Description))
-            {
-                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
-            }
+            DrawSettingsDescription(data);
         }
     }
 
@@ -528,10 +525,7 @@ public partial class PluginWindow : Window
                 }
             }
 
-            if (!string.IsNullOrEmpty(data.Description))
-            {
-                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
-            }
+            DrawSettingsDescription(data);
         }
     }
 
@@ -547,11 +541,7 @@ public partial class PluginWindow : Window
                 data.Value = value;
 
             DrawResetButton(data);
-
-            if (!string.IsNullOrEmpty(data.Description))
-            {
-                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
-            }
+            DrawSettingsDescription(data);
         }
     }
 
@@ -570,11 +560,7 @@ public partial class PluginWindow : Window
                 data.Value = value;
 
             DrawResetButton(data);
-
-            if (!string.IsNullOrEmpty(data.Description))
-            {
-                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
-            }
+            DrawSettingsDescription(data);
         }
     }
 
@@ -593,11 +579,7 @@ public partial class PluginWindow : Window
                 data.Value = value;
 
             DrawResetButton(data);
-
-            if (!string.IsNullOrEmpty(data.Description))
-            {
-                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
-            }
+            DrawSettingsDescription(data);
         }
     }
 
@@ -608,11 +590,7 @@ public partial class PluginWindow : Window
         if (ImGui.Checkbox(data.Label + data.Key, ref value))
             data.Value = value;
 
-        if (!string.IsNullOrEmpty(data.Description))
-        {
-            using (ImGuiUtils.ConfigIndent())
-                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
-        }
+        DrawSettingsDescription(data, true);
     }
 
     private static void DrawResetButton<T>(ConfigDrawData<T> data)
@@ -634,10 +612,20 @@ public partial class PluginWindow : Window
         if (ImGui.ColorEdit4(data.Label + data.Key, ref value))
             data.Value = value;
 
-        if (!string.IsNullOrEmpty(data.Description))
-        {
-            using (ImGuiUtils.ConfigIndent())
-                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
-        }
+        DrawSettingsDescription(data, true);
+    }
+
+    private static void DrawSettingsDescription(IConfigDrawData data, bool indent = false)
+    {
+        if (string.IsNullOrEmpty(data.Description))
+            return;
+
+        var _indent = indent ? ImGuiUtils.ConfigIndent() : null;
+
+        ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
+
+        _indent?.Dispose();
+
+        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
     }
 }
