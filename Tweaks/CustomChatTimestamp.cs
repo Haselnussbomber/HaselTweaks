@@ -1,5 +1,4 @@
 using System.Numerics;
-using Dalamud.Game.Config;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Memory;
@@ -60,7 +59,7 @@ public unsafe partial class CustomChatTimestamp : Tweak
             ImGui.Spacing();
             ImGui.TextUnformatted("Example with the current format:");
 
-            if (!Service.GameConfig.TryGet(UiConfigOption.ColorParty, out uint colorParty))
+            if (!Service.GameConfig.UiConfig.TryGet("ColorParty", out uint colorParty))
             {
                 colorParty = 0xFFFFE666;
             }

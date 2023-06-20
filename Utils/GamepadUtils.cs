@@ -1,17 +1,16 @@
 using Dalamud.Game.ClientState.GamePad;
-using Dalamud.Game.Config;
 
 namespace HaselTweaks.Utils;
 
 public static unsafe class GamepadUtils
 {
     // Mapping between SystemConfigOption and Dalamuds GamepadButtons
-    private static readonly (SystemConfigOption, GamepadButtons)[] Mapping = new[]
+    private static readonly (string, GamepadButtons)[] Mapping = new[]
     {
-        (SystemConfigOption.PadButton_Triangle, GamepadButtons.North),
-        (SystemConfigOption.PadButton_Circle, GamepadButtons.East),
-        (SystemConfigOption.PadButton_Cross, GamepadButtons.South),
-        (SystemConfigOption.PadButton_Square, GamepadButtons.West)
+        ("PadButton_Triangle", GamepadButtons.North),
+        ("PadButton_Circle", GamepadButtons.East),
+        ("PadButton_Cross", GamepadButtons.South),
+        ("PadButton_Square", GamepadButtons.West)
     };
 
     public enum GamepadBinding
@@ -30,7 +29,7 @@ public static unsafe class GamepadUtils
 
         foreach (var (configOption, gamepadButton) in Mapping)
         {
-            if (!Service.GameConfig.TryGet(configOption, out string value))
+            if (!Service.GameConfig.System.TryGet(configOption, out string value))
                 continue;
 
             if (value == bindingName)

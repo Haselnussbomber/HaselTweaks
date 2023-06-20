@@ -1,4 +1,3 @@
-using Dalamud.Game.Config;
 using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
@@ -19,8 +18,8 @@ public unsafe partial class ForcedCutsceneMusic : Tweak
 
     private static bool IsBgmMuted
     {
-        get => Service.GameConfig.TryGet(SystemConfigOption.IsSndBgm, out bool value) && value;
-        set => Service.GameConfig.Set(SystemConfigOption.IsSndBgm, value);
+        get => Service.GameConfig.System.TryGet("IsSndBgm", out bool value) && value;
+        set => Service.GameConfig.System.Set("IsSndBgm", value);
     }
 
     [AddressHook<LuaCutsceneState>(nameof(LuaCutsceneState.Addresses.Ctor))]
