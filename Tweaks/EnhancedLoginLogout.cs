@@ -52,7 +52,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         }
         using (ImGuiUtils.ConfigIndent())
         {
-            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Shows Arcanist/Scholar/Summoner pets next to your character. In order to apply the pet glamor settings, you must have logged in at least once.");
+            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Displays a carbuncle for Arcanist/Summoner and a fairy for Scholar next to your character. In order to apply the pet glamor settings, you must have logged in at least once.");
             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
         }
 
@@ -74,7 +74,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         }
 
         showPetsDisabled?.Dispose();
-        // TODO: reset button
 
         // PreloadTerritory
         ImGui.Checkbox($"Preload territory when queued##HaselTweaks_Config_{InternalName}_PreloadTerritory", ref Config.PreloadTerritory);
