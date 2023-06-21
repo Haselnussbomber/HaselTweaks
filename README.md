@@ -85,6 +85,21 @@ Available options include:
 > **Note**
 > In order for this tweak to work properly, please make sure "Show Experience Percentage" is disabled in Simple Tweaks.
 
+### Enhanced Login/Logout
+
+Login options:
+
+- Show pets in character selection: Shows Arcanist/Scholar/Summoner pets next to your character. Position is adjustable.
+  > **Note**
+  > In order to apply the pet glamor settings, you must have logged in at least once.
+- Preload territory when queued: When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.  
+  > **Note**
+  > Since I only have SSDs, I don't really know if this works at all.
+
+Logout options:
+
+- Clear tell history on logout
+
 ### Enhanced Material List
 
 Available options include:

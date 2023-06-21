@@ -1,5 +1,26 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Enhanced Login/Logout
+
+Login options:
+
+- Show pets in character selection: Shows Arcanist/Scholar/Summoner pets next to your character. Position is adjustable.
+  > **Note**
+  > In order to apply the pet glamor settings, you must have logged in at least once.
+- Preload territory when queued: When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.  
+  > **Note**
+  > Since I only have SSDs, I don't really know if this works at all.
+
+Logout options:
+
+- Clear tell history on logout
+
+### DTR
+
+- **Fixed:** Sometimes text would not be set, resulting in an empty DTR entry.
+
 ## [14.12.1] (2023-06-06)
 
 ### HaselTweaks

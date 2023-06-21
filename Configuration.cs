@@ -39,6 +39,7 @@ public class TweakConfigs
     public MaterialAllocation.Configuration MaterialAllocation { get; init; } = new();
     public EnhancedMaterialList.Configuration EnhancedMaterialList { get; init; } = new();
     public PortraitHelper.Configuration PortraitHelper { get; init; } = new();
+    public EnhancedLoginLogout.Configuration EnhancedLoginLogout { get; init; } = new();
 }
 
 internal partial class Configuration
