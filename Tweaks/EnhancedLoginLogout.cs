@@ -279,18 +279,25 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         ushort territoryId = charaSelectCharacterTerritoryId switch
         {
-            282 => 339, // Private Cottage - Mist                 => Mist
-            283 => 339, // Private House - Mist                   => Mist
-            284 => 339, // Private Mansion - Mist                 => Mist
-            342 => 340, // Private Cottage - The Lavender Beds    => The Lavender Beds
-            343 => 340, // Private House - The Lavender Beds      => The Lavender Beds
-            344 => 340, // Private Mansion - The Lavender Beds    => The Lavender Beds
-            345 => 341, // Private Cottage - The Goblet           => The Goblet
-            346 => 341, // Private House - The Goblet             => The Goblet
-            347 => 341, // Private Mansion - The Goblet           => The Goblet
-            384 => 339, // Private Chambers - Mist                => Mist
-            385 => 340, // Private Chambers - The Lavender Beds   => The Lavender Beds
-            386 => 341, // Private Chambers - The Goblet          => The Goblet
+                282  // Private Cottage - Mist
+             or 283  // Private House - Mist
+             or 284  // Private Mansion - Mist
+             or 384  // Private Chambers - Mist
+             => 339, // Mist
+
+                342  // Private Cottage - The Lavender Beds
+             or 343  // Private House - The Lavender Beds
+             or 344  // Private Mansion - The Lavender Beds
+             or 385  // Private Chambers - The Lavender Beds
+             => 340, // The Lavender Beds
+
+
+                345  // Private Cottage - The Goblet
+             or 346  // Private House - The Goblet
+             or 347  // Private Mansion - The Goblet
+             or 386  // Private Chambers - The Goblet
+             => 341, // The Goblet
+
             _ => charaSelectCharacterTerritoryId
         };
 
