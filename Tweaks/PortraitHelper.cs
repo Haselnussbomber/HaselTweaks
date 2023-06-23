@@ -9,7 +9,6 @@ using Dalamud.Memory;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
-using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -418,10 +417,9 @@ public partial class PortraitHelper : Tweak
         var state = agentBannerEditor->EditorState;
         var preset = new PortraitPreset();
 
-        var portraitData = (ExportedPortraitData*)IMemorySpace.GetDefaultSpace()->Malloc<ExportedPortraitData>();
+        using var portraitData = new DisposableStruct<ExportedPortraitData>();
         state->CharaView->ExportPortraitData(portraitData);
         preset.ReadExportedPortraitData(portraitData);
-        IMemorySpace.Free(portraitData);
 
         preset.BannerFrame = state->BannerEntry.BannerFrame;
         preset.BannerDecoration = state->BannerEntry.BannerDecoration;
@@ -446,7 +444,9 @@ public partial class PortraitHelper : Tweak
         var bannerEntry = state->BannerEntry;
 
         // read current portrait and then overwrite what the flags allow below
-        var tempPortraitData = (ExportedPortraitData*)IMemorySpace.GetDefaultSpace()->Malloc<ExportedPortraitData>();
+        using var tempPortraitDataHolder = new DisposableStruct<ExportedPortraitData>();
+        var tempPortraitData = tempPortraitDataHolder.Ptr;
+
         state->CharaView->ExportPortraitData(tempPortraitData);
 
         var hasBgChanged =
@@ -732,8 +732,6 @@ public partial class PortraitHelper : Tweak
             hasCameraZoomChanged ||
             hasImageRotationChanged
         );
-
-        IMemorySpace.Free(tempPortraitData);
 
         Debug("Import complete");
     }

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using Dalamud;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface;
@@ -423,15 +422,13 @@ public unsafe partial class LockWindowPosition : Tweak
         var bytes = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
             .AddText(text)
+            .Append("\0")
             .Encode();
 
-        var textPtr = Marshal.AllocHGlobal(bytes.Length + 1);
-        Unsafe.InitBlock((void*)textPtr, 0, (uint)bytes.Length + 1);
-        MemoryHelper.WriteRaw(textPtr, bytes);
-
         var handler = (nint)AtkStage.GetSingleton()->RaptureAtkUnitManager + 0x9C88; // see vtbl ptr in ctor
-        agentContext->AddMenuItem((byte*)textPtr, (void*)handler, eventParam);
-
-        Marshal.FreeHGlobal(textPtr);
+        fixed (byte* ptr = &bytes[0])
+        {
+            agentContext->AddMenuItem(ptr, (void*)handler, eventParam);
+        }
     }
 }

@@ -1,6 +1,6 @@
-using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
+using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
@@ -14,8 +14,7 @@ public unsafe class ExpertDeliveries : Tweak
         if (addonName != "GrandCompanySupplyList")
             return;
 
-        var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
+        using var atkEvent = new DisposableStruct<AtkEvent>();
         ((AddonGrandCompanySupplyList*)unitBase)->ReceiveEvent(AtkEventType.ButtonClick, 4, atkEvent, 0);
-        IMemorySpace.Free(atkEvent);
     }
 }
