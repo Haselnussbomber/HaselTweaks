@@ -14,5 +14,5 @@ public unsafe partial struct AddonFateProgress
 
     // called via FateProgress vf68
     [MemberFunction("83 FA 01 0F 87 ?? ?? ?? ?? 48 89 5C 24 ?? 48 89 6C 24")]
-    public partial void SetTab(int tab, nint atkEvent);
+    public partial void SetTab(int tab, AtkEvent* atkEvent);
 }

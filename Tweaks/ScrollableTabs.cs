@@ -511,9 +511,9 @@ public unsafe partial class ScrollableTabs : Tweak
             return;
 
         // fake event, so it can call SetEventIsHandled
-        var atkEvent = Marshal.AllocHGlobal(30);
+        var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
         addon->SetTab(tabIndex, atkEvent);
-        Marshal.FreeHGlobal(atkEvent);
+        IMemorySpace.Free(atkEvent);
     }
 
     private void UpdateFieldNotes(AddonMYCWarResultNotebook* addon)
