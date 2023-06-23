@@ -422,7 +422,6 @@ public unsafe partial class LockWindowPosition : Tweak
         var bytes = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
             .AddText(text)
-            .Append("\0")
             .Encode();
 
         var handler = (nint)AtkStage.GetSingleton()->RaptureAtkUnitManager + 0x9C88; // see vtbl ptr in ctor
