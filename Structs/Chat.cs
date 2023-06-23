@@ -75,6 +75,6 @@ public unsafe partial struct Chat
 
         using var uText = new DisposableUtf8String(text);
         SanitiseString(uText, 0x27F, 0);
-        return uText.Ptr->ToString();
+        return uText.ToString();
     }
 }
