@@ -89,6 +89,7 @@ public unsafe partial class EnhancedExpBar : Tweak
     {
         Service.ClientState.LeavePvP += ClientState_LeavePvP;
         Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
+        IsEnabled = true;
         RunUpdate();
     }
 
@@ -96,9 +97,11 @@ public unsafe partial class EnhancedExpBar : Tweak
     {
         Service.ClientState.LeavePvP -= ClientState_LeavePvP;
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
+        IsEnabled = false;
         RunUpdate();
     }
 
+    private bool IsEnabled = false;
     private ushort LastSeriesXp = 0;
     private byte LastSeriesClaimedRank = 0;
     private uint LastBuddyXp;
@@ -174,6 +177,9 @@ public unsafe partial class EnhancedExpBar : Tweak
     [VTableHook<AddonExp>((int)AtkUnitBaseVfs.OnRequestedUpdate)]
     private nint AddonExp_OnRequestedUpdate(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
+        if (!IsEnabled)
+            goto OriginalOnRequestedUpdate;
+
         var gaugeBarNode = GetNode<AtkComponentNode>((AtkUnitBase*)addon, 6);
         if (gaugeBarNode == null)
             goto OriginalOnRequestedUpdate;
