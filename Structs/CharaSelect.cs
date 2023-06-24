@@ -4,7 +4,7 @@ namespace HaselTweaks.Structs;
 
 public unsafe partial struct CharaSelect
 {
-    [StaticAddress("48 89 2D ?? ?? ?? ?? 48 8B 6C 24", 3)]
+    [StaticAddress("48 89 2D ?? ?? ?? ?? 48 8B 6C 24", 3, true)]
     public static partial BattleChara* GetCurrentCharacter();
 
     [StaticAddress("4C 8D 3D ?? ?? ?? ?? 48 8B DA", 3)]
