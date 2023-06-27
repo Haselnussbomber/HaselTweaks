@@ -507,12 +507,6 @@ public unsafe class AutoSorter : Tweak
             case "ArmouryBoard":
                 OnOpenArmoury();
                 break;
-            // TODO: Inventories are created on login
-            //case "Inventory":
-            //case "InventoryLarge":
-            //case "InventoryExpansion":
-            //    OnOpenInventory();
-            //    break;
             case "InventoryBuddy":
                 OnOpenInventoryBuddy();
                 break;

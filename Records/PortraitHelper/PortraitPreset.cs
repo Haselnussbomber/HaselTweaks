@@ -10,7 +10,7 @@ namespace HaselTweaks.Records.PortraitHelper;
 [JsonConverter(typeof(PortraitPresetConverter))]
 public sealed record PortraitPreset
 {
-    public static int Magic = 0x53505448; // HTPS => HaselTweaks Preset String
+    public const int Magic = 0x53505448; // HTPS => HaselTweaks Preset String
     public ushort Version = 1;
 
     public HalfVector4 CameraPosition;

@@ -8,8 +8,6 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class DeletePresetDialog : ConfirmationDialog
 {
-    private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
-
     private readonly PresetBrowserOverlay presetBrowserOverlay;
 
     private SavedPreset? preset;

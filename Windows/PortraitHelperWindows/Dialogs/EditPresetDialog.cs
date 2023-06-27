@@ -70,24 +70,22 @@ public class EditPresetDialog : ConfirmationDialog
             var preview = tagNames.Any() ? string.Join(", ", tagNames) : "None";
 
             ImGui.Spacing();
-            using (var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge))
+            using var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge);
+            if (tagsCombo != null && tagsCombo.Success)
             {
-                if (tagsCombo != null && tagsCombo.Success)
+                foreach (var tag in Config.PresetTags)
                 {
-                    foreach (var tag in Config.PresetTags)
-                    {
-                        var isSelected = tags!.Contains(tag.Id);
+                    var isSelected = tags!.Contains(tag.Id);
 
-                        if (ImGui.Selectable($"{tag.Name}##PresetTag{tag.Id}", isSelected))
+                    if (ImGui.Selectable($"{tag.Name}##PresetTag{tag.Id}", isSelected))
+                    {
+                        if (isSelected)
                         {
-                            if (isSelected)
-                            {
-                                tags.Remove(tag.Id);
-                            }
-                            else
-                            {
-                                tags.Add(tag.Id);
-                            }
+                            tags.Remove(tag.Id);
+                        }
+                        else
+                        {
+                            tags.Add(tag.Id);
                         }
                     }
                 }
