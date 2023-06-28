@@ -170,12 +170,17 @@ public unsafe class AutoSorter : Tweak
     public class Configuration
     {
         public List<SortingRule> Settings = new();
+        public bool SortArmouryOnJobChange = true;
     }
 
     public override bool HasCustomConfig => true;
     public override void DrawCustomConfig()
     {
-        if (!ImGui.BeginTable("##HaselTweaks_AutoSortSettings", 5, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.NoPadOuterX))
+        ImGui.Checkbox("Sort armoury on job change", ref Config.SortArmouryOnJobChange);
+
+        ImGuiUtils.DrawPaddedSeparator();
+
+        if (!ImGui.BeginTable("##HaselTweaks_AutoSortSettings", 5, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX))
         {
             ImGui.PopStyleVar();
             return;
@@ -458,6 +463,7 @@ public unsafe class AutoSorter : Tweak
 
     private readonly Queue<IGrouping<string, SortingRule>> queue = new();
     private bool IsBusy = false;
+    private uint LastClassJobId = 0;
 
     public static bool IsRetainerInventoryOpen => GetAddon("InventoryRetainer") != null || GetAddon("InventoryRetainerLarge") != null;
     public static bool IsInventoryBuddyOpen => GetAddon("InventoryBuddy") != null;
@@ -469,6 +475,11 @@ public unsafe class AutoSorter : Tweak
         ["InventoryExpansion"] = false
     };
 
+    public override void OnLogin()
+    {
+        LastClassJobId = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
+    }
+
     public override void Disable()
     {
         queue.Clear();
@@ -476,23 +487,38 @@ public unsafe class AutoSorter : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        if (Service.ClientState.IsLoggedIn && !(Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInCutSceneEvent]))
+        if (Service.ClientState.IsLoggedIn)
         {
-            foreach (var (name, wasVisible) in InventoryAddons)
+            if (!(Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInCutSceneEvent]))
             {
-                if (GetAddon(name, out var unitBase))
+                foreach (var (name, wasVisible) in InventoryAddons)
                 {
-                    var isVisible = unitBase->IsVisible;
-
-                    if (wasVisible != isVisible)
+                    if (GetAddon(name, out var unitBase))
                     {
-                        InventoryAddons[name] = isVisible;
+                        var isVisible = unitBase->IsVisible;
 
-                        if (isVisible)
+                        if (wasVisible != isVisible)
                         {
-                            OnOpenInventory();
+                            InventoryAddons[name] = isVisible;
+
+                            if (isVisible)
+                            {
+                                OnOpenInventory();
+                            }
                         }
                     }
+                }
+            }
+
+            if (Config.SortArmouryOnJobChange &&
+                Service.ClientState.LocalPlayer != null &&
+                LastClassJobId != Service.ClientState.LocalPlayer.ClassJob.Id)
+            {
+                LastClassJobId = Service.ClientState.LocalPlayer.ClassJob.Id;
+
+                if (GetAddon("ArmouryBoard", out var unitBase))
+                {
+                    OnOpenArmoury();
                 }
             }
         }
