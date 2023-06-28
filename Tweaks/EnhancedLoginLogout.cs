@@ -119,7 +119,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     private TextureManager? TextureManager;
     private bool IsRecordingEmote;
-    private readonly uint[] AllowedChangePoseEmoteIds = new uint[] { 91, 92, 93, 107, 108, 218, 219, };
+    private readonly uint[] ChangePoseEmoteIds = new uint[] { 91, 92, 93, 107, 108, 218, 219, };
     private readonly List<uint> ExcludedEmotes = new() { /* Sit */ 50, };
 
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedLoginLogout;
@@ -167,7 +167,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
             if (ActiveContentId != 0)
             {
                 if (!Config.PetMirageSettings.ContainsKey(ActiveContentId))
-                    ImGui.TextColored(ImGuiUtils.ColorRed, "Pet Glamor settings for this character not cached! Please log in once.");
+                    ImGui.TextColored(ImGuiUtils.ColorRed, "Pet glamour settings for this character not cached! Please log in.");
             }
 
             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
@@ -207,26 +207,16 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         using (ImGuiUtils.ConfigIndent())
         {
             ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Let your character dance, strike a pose or blow you a kiss!");
-            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Emote settings are per-character.");
+            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Emote settings are per character.");
             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
 
             if (Config.EnableCharaSelectEmote)
             {
                 if (ActiveContentId != 0)
                 {
-                    /*
-#if DEBUG
-                    ImGui.Text($"Current Character: {selectedCharacterName}");
-                    if (ImGui.IsItemHovered())
-                        ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-                    if (ImGui.IsItemClicked())
-                        ImGui.SetClipboardText($"{(nint)character:X}");
-#endif
-                    */
-
                     if (!Config.VoiceCache.ContainsKey(ActiveContentId))
                     {
-                        ImGui.TextColored(ImGuiUtils.ColorRed, "Voice ID for this character not cached! Please log in once.");
+                        ImGui.TextColored(ImGuiUtils.ColorRed, "Voice ID for this character not cached. Please log in.");
                         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
                     }
 
@@ -245,8 +235,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
                         var entry = Service.Data.GetExcelSheet<Emote>()!
                             .Select(row => (
-                                IsChangePose: AllowedChangePoseEmoteIds.Contains(row.RowId),
-                                Name: AllowedChangePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name.ToDalamudString()} ({changePoseIndex++})" : $"{row.Name.ToDalamudString()}",
+                                IsChangePose: ChangePoseEmoteIds.Contains(row.RowId),
+                                Name: ChangePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name.ToDalamudString()} ({changePoseIndex++})" : $"{row.Name.ToDalamudString()}",
                                 Emote: row
                             ) as (bool IsChangePose, string Name, Emote Emote)?)
                             .FirstOrDefault(entry => entry != null && entry.Value.Emote.RowId == selectedEmoteId, null);
@@ -273,7 +263,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
                         if (IsRecordingEmote)
                         {
-                            if (ImGui.Button("Stop recording"))
+                            if (ImGui.Button("Stop Recording"))
                             {
                                 IsRecordingEmote = false;
                             }
@@ -298,7 +288,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                     }
                     else
                     {
-                        ImGui.Text("Log in to set an emote.");
+                        ImGui.Text("Please log in to set an emote.");
                     }
                 }
             }
@@ -583,7 +573,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         var changePoseIndexBefore = PlayerState.Instance()->SelectedPoses[0];
         var success = SomeDoEmoteFunctionHook.OriginalDisposeSafe(a1, emoteId, a3);
 
-
         if (IsRecordingEmote && success && Service.ClientState.IsLoggedIn && !ExcludedEmotes.Contains(emoteId))
         {
             // special case for Change Pose
@@ -592,9 +581,9 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                 var changePoseIndex = PlayerState.Instance()->SelectedPoses[0];
                 if (changePoseIndexBefore != changePoseIndex) // only process if standing pose was changed
                 {
-                    if (changePoseIndex >= 0 && changePoseIndex < AllowedChangePoseEmoteIds.Length)
+                    if (changePoseIndex >= 0 && changePoseIndex < ChangePoseEmoteIds.Length)
                     {
-                        SaveEmote(AllowedChangePoseEmoteIds[changePoseIndex]);
+                        SaveEmote(ChangePoseEmoteIds[changePoseIndex]);
                     }
                     else
                     {
