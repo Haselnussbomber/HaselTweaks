@@ -4,13 +4,14 @@
 
 ### Auto Sorter
 
-- **Added:** An option "Sort armoury on job change" (on by default). Well, it sorts the armoury when it's open and you change your job.
+- **Added:** An option "Sort armoury on job change" (on by default). Sorts only when the armory is open.
 
 ### Enhanced Login/Logout
 
 - **Added:** An option "Play emote in character selection" (off by default). Have your character greet you with an emote!  
-  To set an emote, you'll need to log in, click the "Change" button, then perform the emote you want to use, and finally click the "Stop Recording" button.  
-  Note: Emote settings are per character and not all emotes are supported (e.g. sitting or underwater emotes). What is supported, however, are alternative standing idle poses.
+  To set an emote, you'll need to log in, click the "Change" button, then perform the emote you want to use, and finally click the "Stop Recording" button.
+  > **Note**
+  > Emote settings are per character and not all emotes are supported (e.g. sitting or underwater emotes). What is supported, however, are alternative standing idle poses.
 
 ## [15.0.0] (2023-06-21)
 
