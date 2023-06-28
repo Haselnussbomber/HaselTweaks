@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### HaselTweaks
+
+- **Fixed:** Various UI elements now respect Dalamuds Global Font Scale setting.
+  > **Note**
+  > Portrait Helper overlays will open as windows instead if the global font scale is greater than 12pt.
+
 ### Auto Sorter
 
 - **Added:** An option "Sort armoury on job change" (on by default). Sorts only when the armory is open.
