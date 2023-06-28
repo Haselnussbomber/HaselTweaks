@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [15.1.0] (2023-06-29)
 
 ### HaselTweaks
 
@@ -901,6 +901,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[15.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.0.0...v15.1.0
 [15.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.12.1...v15.0.0
 [14.12.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.12.0...v14.12.1
 [14.12.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.11.3...v14.12.0
