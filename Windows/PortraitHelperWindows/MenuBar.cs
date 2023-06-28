@@ -225,14 +225,18 @@ public unsafe class MenuBar : Window, IDisposable
             ImGui.TextUnformatted(PortraitName);
         }
 
+        var scale = ImGui.GetIO().FontGlobalScale;
+        var scaledown = 1 / scale;
+        var height = (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y * 2 + ImGui.GetStyle().WindowPadding.Y * 2) * scaledown;
+
         Position = new(
             AddonBannerEditor->AtkUnitBase.X + 4,
-            AddonBannerEditor->AtkUnitBase.Y + 3 - 40
+            AddonBannerEditor->AtkUnitBase.Y + 3 - height * scale
         );
 
         Size = new(
-            AddonBannerEditor->AtkUnitBase.GetScaledWidth(true) - 8,
-            40
+            (AddonBannerEditor->AtkUnitBase.GetScaledWidth(true) - 8) * scaledown,
+            height
         );
 
         SaveAsPresetDialog.Draw();

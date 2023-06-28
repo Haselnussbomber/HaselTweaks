@@ -8,8 +8,14 @@ public unsafe class AlignmentToolSettingsOverlay : Overlay
 {
     protected override OverlayType Type => OverlayType.LeftPane;
 
-    public AlignmentToolSettingsOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper AlignmentToolSettings", tweak)
+    public AlignmentToolSettingsOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper: Alignment Tool Settings", tweak)
     {
+    }
+
+    public override void OnClose()
+    {
+        base.OnClose();
+        Tweak.CloseAlignmentToolSettingsOverlay(false);
     }
 
     public override void Draw()

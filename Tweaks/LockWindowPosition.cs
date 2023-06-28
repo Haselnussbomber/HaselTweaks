@@ -76,7 +76,7 @@ public unsafe partial class LockWindowPosition : Tweak
 
             ImGui.TableSetupColumn("Enabled", ImGuiTableColumnFlags.WidthFixed);
             ImGui.TableSetupColumn("Name");
-            ImGui.TableSetupColumn("Action", ImGuiTableColumnFlags.WidthFixed, 24);
+            ImGui.TableSetupColumn("Action", ImGuiTableColumnFlags.WidthFixed, ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Trash).X);
 
             var entryToRemove = -1;
             var i = 0;

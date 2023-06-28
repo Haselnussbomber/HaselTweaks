@@ -176,6 +176,12 @@ public unsafe class AutoSorter : Tweak
     public override bool HasCustomConfig => true;
     public override void DrawCustomConfig()
     {
+        var ItemSpacing = ImGui.GetStyle().ItemSpacing;
+        var ArrowUpButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.ArrowUp);
+        var ArrowDownButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.ArrowDown);
+        var TrashButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Trash);
+        var TerminalButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Terminal);
+
         ImGui.Checkbox("Sort armoury on job change", ref Config.SortArmouryOnJobChange);
 
         ImGuiUtils.DrawPaddedSeparator();
@@ -190,7 +196,13 @@ public unsafe class AutoSorter : Tweak
         ImGui.TableSetupColumn("Category", ImGuiTableColumnFlags.WidthStretch);
         ImGui.TableSetupColumn("Condition", ImGuiTableColumnFlags.WidthStretch);
         ImGui.TableSetupColumn("Order", ImGuiTableColumnFlags.WidthStretch);
-        ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, Enabled ? 120 : 85);
+        ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed,
+            ArrowUpButtonSize.X +
+            ItemSpacing.X +
+            ArrowDownButtonSize.X +
+            ItemSpacing.X +
+            TrashButtonSize.X +
+            (Enabled ? ItemSpacing.X + TerminalButtonSize.X : 0));
 
         var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
         var lang = Service.ClientState.ClientLanguage;
@@ -295,7 +307,7 @@ public unsafe class AutoSorter : Tweak
             }
             else
             {
-                ImGui.Dummy(new(22, 22));
+                ImGui.Dummy(ArrowUpButtonSize);
             }
 
             ImGui.SameLine();
@@ -309,7 +321,7 @@ public unsafe class AutoSorter : Tweak
             }
             else
             {
-                ImGui.Dummy(new(22, 22));
+                ImGui.Dummy(ArrowDownButtonSize);
             }
 
             ImGui.SameLine();

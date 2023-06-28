@@ -26,10 +26,22 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
     private int reorderTagOldIndex = -1;
     private int reorderTagNewIndex = -1;
 
-    public PresetBrowserOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper PresetBrowser", tweak)
+    public PresetBrowserOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper: Preset Browser", tweak)
     {
         DeleteTagDialog = new(this);
         DeletePresetDialog = new(this);
+
+        SizeConstraints = new WindowSizeConstraints
+        {
+            MinimumSize = new Vector2(600, 500),
+            MaximumSize = new Vector2(4069),
+        };
+    }
+
+    public override void OnClose()
+    {
+        base.OnClose();
+        Tweak.ClosePresetBrowserOverlay(false);
     }
 
     public void Dispose()

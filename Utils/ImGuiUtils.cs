@@ -83,15 +83,15 @@ public static partial class ImGuiUtils
     {
         ImGui.SameLine();
 
-        var region = ImGui.GetContentRegionAvail();
+        var height = ImGui.GetFrameHeight();
         var pos = ImGui.GetWindowPos() + ImGui.GetCursorPos();
 
         ImGui.GetWindowDrawList().AddLine(
             pos + new Vector2(3f, 0f),
-            pos + new Vector2(3f, region.Y),
+            pos + new Vector2(3f, height),
             ImGui.GetColorU32(color)
         );
-        ImGui.Dummy(new(7, region.Y));
+        ImGui.Dummy(new(7, height));
     }
 
     public static unsafe void VerticalSeparator()
@@ -103,10 +103,10 @@ public static partial class ImGuiUtils
         ImGui.SameLine();
     }
 
-    public static void PushCursorX(int x)
+    public static void PushCursorX(float x)
         => ImGui.SetCursorPosX(ImGui.GetCursorPosX() + x);
 
-    public static void PushCursorY(int y)
+    public static void PushCursorY(float y)
         => ImGui.SetCursorPosY(ImGui.GetCursorPosY() + y);
 
     [LibraryImport("user32.dll")]
@@ -155,6 +155,12 @@ public static partial class ImGuiUtils
     }
 
     #region IconButton
+
+    public static Vector2 GetIconButtonSize(FontAwesomeIcon icon)
+    {
+        using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
+        return ImGui.CalcTextSize(icon.ToIconString()) + ImGui.GetStyle().FramePadding * 2;
+    }
 
     public static bool IconButton(string key, FontAwesomeIcon icon, Vector2 size)
     {

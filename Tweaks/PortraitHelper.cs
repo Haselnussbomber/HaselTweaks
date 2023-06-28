@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Dalamud;
@@ -94,7 +95,7 @@ public partial class PortraitHelper : Tweak
     private DalamudLinkPayload? openPortraitEditPayload;
     private readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
-    public ViewMode OverlayViewMode { get; private set; } = ViewMode.Normal;
+    public ViewMode OverlayViewMode { get; set; } = ViewMode.Normal;
     public ImportFlags CurrentImportFlags { get; set; } = ImportFlags.All;
 
     public PortraitPreset? ClipboardPreset { get; private set; }
@@ -116,6 +117,7 @@ public partial class PortraitHelper : Tweak
     {
         Service.PluginInterface.RemoveChatLinkHandler(1000);
 
+        CloseMenuBar();
         CloseWindows();
     }
 
@@ -155,12 +157,21 @@ public partial class PortraitHelper : Tweak
         if (addonName != "BannerEditor")
             return;
 
+        CloseMenuBar();
         CloseWindows();
 
         isOpen = false;
     }
 
-    private void CloseWindows()
+    public void CloseWindows()
+    {
+        CloseAdvancedImportOverlay();
+        CloseAdvancedEditOverlay();
+        ClosePresetBrowserOverlay();
+        CloseAlignmentToolSettingsOverlay();
+    }
+
+    public void CloseMenuBar()
     {
         if (menuBar != null)
         {
@@ -168,41 +179,79 @@ public partial class PortraitHelper : Tweak
             menuBar.Dispose();
             menuBar = null;
         }
+    }
 
+    public void CloseAdvancedImportOverlay(bool callOnClose = true)
+    {
         if (advancedImportOverlay != null)
         {
-            Plugin.WindowSystem.RemoveWindow(advancedImportOverlay);
-            advancedImportOverlay.IsOpen = false;
-            advancedImportOverlay.OnClose();
-            advancedImportOverlay = null;
-        }
+            if (Plugin.WindowSystem.Windows.Contains(advancedImportOverlay))
+                Plugin.WindowSystem.RemoveWindow(advancedImportOverlay);
 
+            advancedImportOverlay.IsOpen = false;
+
+            if (callOnClose)
+                advancedImportOverlay.OnClose();
+
+            advancedImportOverlay = null;
+
+            OverlayViewMode = ViewMode.Normal;
+        }
+    }
+
+    public void CloseAdvancedEditOverlay(bool callOnClose = true)
+    {
         if (advancedEditOverlay != null)
         {
-            Plugin.WindowSystem.RemoveWindow(advancedEditOverlay);
-            advancedEditOverlay.IsOpen = false;
-            advancedEditOverlay.OnClose();
-            advancedEditOverlay = null;
-        }
+            if (Plugin.WindowSystem.Windows.Contains(advancedEditOverlay))
+                Plugin.WindowSystem.RemoveWindow(advancedEditOverlay);
 
+            advancedEditOverlay.IsOpen = false;
+
+            if (callOnClose)
+                advancedEditOverlay.OnClose();
+
+            advancedEditOverlay = null;
+
+            OverlayViewMode = ViewMode.Normal;
+        }
+    }
+
+    public void ClosePresetBrowserOverlay(bool callOnClose = true)
+    {
         if (presetBrowserOverlay != null)
         {
-            Plugin.WindowSystem.RemoveWindow(presetBrowserOverlay);
+            if (Plugin.WindowSystem.Windows.Contains(presetBrowserOverlay))
+                Plugin.WindowSystem.RemoveWindow(presetBrowserOverlay);
+
             presetBrowserOverlay.IsOpen = false;
-            presetBrowserOverlay.OnClose();
+
+            if (callOnClose)
+                presetBrowserOverlay.OnClose();
+
             presetBrowserOverlay.Dispose();
             presetBrowserOverlay = null;
-        }
 
+            OverlayViewMode = ViewMode.Normal;
+        }
+    }
+
+    public void CloseAlignmentToolSettingsOverlay(bool callOnClose = true)
+    {
         if (alignmentToolSettingsOverlay != null)
         {
-            Plugin.WindowSystem.RemoveWindow(alignmentToolSettingsOverlay);
-            alignmentToolSettingsOverlay.IsOpen = false;
-            alignmentToolSettingsOverlay.OnClose();
-            alignmentToolSettingsOverlay = null;
-        }
+            if (Plugin.WindowSystem.Windows.Contains(alignmentToolSettingsOverlay))
+                Plugin.WindowSystem.RemoveWindow(alignmentToolSettingsOverlay);
 
-        OverlayViewMode = ViewMode.Normal;
+            alignmentToolSettingsOverlay.IsOpen = false;
+
+            if (callOnClose)
+                alignmentToolSettingsOverlay.OnClose();
+
+            alignmentToolSettingsOverlay = null;
+
+            OverlayViewMode = ViewMode.Normal;
+        }
     }
 
     public override unsafe void OnFrameworkUpdate(DalamudFramework framework)
@@ -244,10 +293,7 @@ public partial class PortraitHelper : Tweak
         // close AdvancedImport
         else if (viewMode != ViewMode.AdvancedImport && OverlayViewMode == ViewMode.AdvancedImport && advancedImportOverlay != null)
         {
-            Plugin.WindowSystem.RemoveWindow(advancedImportOverlay);
             advancedImportOverlay.IsOpen = false;
-            advancedImportOverlay.OnClose();
-            advancedImportOverlay = null;
         }
 
         // open AdvancedEdit
@@ -258,10 +304,7 @@ public partial class PortraitHelper : Tweak
         // close AdvancedEdit
         else if (viewMode != ViewMode.AdvancedEdit && OverlayViewMode == ViewMode.AdvancedEdit && advancedEditOverlay != null)
         {
-            Plugin.WindowSystem.RemoveWindow(advancedEditOverlay);
             advancedEditOverlay.IsOpen = false;
-            advancedEditOverlay.OnClose();
-            advancedEditOverlay = null;
         }
 
         // open PresetBrowser
@@ -272,11 +315,7 @@ public partial class PortraitHelper : Tweak
         // close PresetBrowser
         else if (viewMode != ViewMode.PresetBrowser && OverlayViewMode == ViewMode.PresetBrowser && presetBrowserOverlay != null)
         {
-            Plugin.WindowSystem.RemoveWindow(presetBrowserOverlay);
             presetBrowserOverlay.IsOpen = false;
-            presetBrowserOverlay.OnClose();
-            presetBrowserOverlay.Dispose();
-            presetBrowserOverlay = null;
         }
 
         // open AlignmentToolSettings
@@ -287,10 +326,7 @@ public partial class PortraitHelper : Tweak
         // close AlignmentToolSettings
         else if (viewMode != ViewMode.AlignmentToolSettings && OverlayViewMode == ViewMode.AlignmentToolSettings && alignmentToolSettingsOverlay != null)
         {
-            Plugin.WindowSystem.RemoveWindow(alignmentToolSettingsOverlay);
             alignmentToolSettingsOverlay.IsOpen = false;
-            alignmentToolSettingsOverlay.OnClose();
-            alignmentToolSettingsOverlay = null;
         }
 
         OverlayViewMode = viewMode;

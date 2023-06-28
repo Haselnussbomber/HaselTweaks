@@ -29,7 +29,8 @@ public partial class PluginWindow : Window, IDisposable
 
     public PluginWindow() : base("HaselTweaks")
     {
-        var width = SidebarWidth + ConfigWidth + ImGui.GetStyle().ItemSpacing.X + ImGui.GetStyle().FramePadding.X * 2;
+        var style = ImGui.GetStyle();
+        var width = SidebarWidth + ConfigWidth + style.ItemSpacing.X + style.FramePadding.X * 2;
 
         Size = new Vector2(width, 600);
         SizeConstraints = new()
@@ -87,7 +88,8 @@ public partial class PluginWindow : Window, IDisposable
 
     private void DrawSidebar()
     {
-        using var child = ImRaii.Child("##HaselTweaks_Sidebar", new Vector2(SidebarWidth, -1), true);
+        var scale = ImGui.GetIO().FontGlobalScale;
+        using var child = ImRaii.Child("##HaselTweaks_Sidebar", new Vector2(SidebarWidth * scale, -1), true);
         if (!child || !child.Success)
             return;
 
@@ -202,7 +204,8 @@ public partial class PluginWindow : Window, IDisposable
 
     private void DrawConfig()
     {
-        using var child = ImRaii.Child("##HaselTweaks_Config", new Vector2(ConfigWidth, -1), true);
+        var scale = ImGui.GetIO().FontGlobalScale;
+        using var child = ImRaii.Child("##HaselTweaks_Config", new Vector2(ConfigWidth * scale, -1), true);
         if (!child || !child.Success)
             return;
 

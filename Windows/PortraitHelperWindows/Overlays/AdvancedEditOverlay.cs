@@ -13,8 +13,14 @@ public unsafe class AdvancedEditOverlay : Overlay
 
     private float lastTimestamp;
 
-    public AdvancedEditOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper AdvancedEdit", tweak)
+    public AdvancedEditOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper: Advanced Edit", tweak)
     {
+    }
+
+    public override void OnClose()
+    {
+        base.OnClose();
+        Tweak.CloseAdvancedEditOverlay(false);
     }
 
     public override void Draw()
@@ -36,7 +42,7 @@ public unsafe class AdvancedEditOverlay : Overlay
         if (!table.Success)
             return;
 
-        ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, 128);
+        ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, 128 * ImGui.GetIO().FontGlobalScale);
         ImGui.TableSetupColumn("Value", ImGuiTableColumnFlags.WidthStretch);
 
         using (ImRaii.PushId("Camera"))

@@ -149,8 +149,11 @@ public unsafe partial class EnhancedLoginLogout : Tweak
     {
         TextureManager ??= new();
 
+        var scale = ImGui.GetIO().FontGlobalScale;
+        var verticalTextPadding = 3;
+
         ImGui.TextUnformatted("Login options:");
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
+        ImGuiUtils.PushCursorY(verticalTextPadding);
 
         // ShowPets
         if (ImGui.Checkbox($"Show pets in character selection##HaselTweaks_Config_{InternalName}_ShowPets", ref Config.ShowPets))
@@ -220,7 +223,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
                     }
 
-                    ImGuiUtils.PushCursorY(3);
+                    ImGuiUtils.PushCursorY(verticalTextPadding);
                     ImGui.Text("Current Emote:");
                     ImGui.SameLine();
 
@@ -244,8 +247,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                         if (entry.HasValue)
                         {
                             var (isChangePose, name, emote) = entry.Value;
-                            ImGuiUtils.PushCursorY(-3);
-                            TextureManager.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(new(24));
+                            ImGuiUtils.PushCursorY(-verticalTextPadding);
+                            TextureManager.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(new(24 * scale));
                             ImGui.SameLine();
                             ImGui.Text(name);
                         }
@@ -259,7 +262,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                     {
                         ImGui.SameLine();
 
-                        ImGuiUtils.PushCursorY(-3);
+                        ImGuiUtils.PushCursorY(-verticalTextPadding);
 
                         if (IsRecordingEmote)
                         {
@@ -286,7 +289,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                         {
                             ImGui.SameLine();
 
-                            ImGuiUtils.PushCursorY(-3);
+                            ImGuiUtils.PushCursorY(-verticalTextPadding);
                             if (ImGui.Button("Unset"))
                             {
                                 SaveEmote(0);
@@ -296,7 +299,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                         if (IsRecordingEmote)
                         {
                             ImGui.TextColored(ImGuiUtils.ColorGold, "Perform an emote now to set it for this character!");
-                            ImGuiUtils.PushCursorY(3);
+                            ImGuiUtils.PushCursorY(verticalTextPadding);
                         }
                     }
                     else
@@ -314,12 +317,12 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         using (ImGuiUtils.ConfigIndent())
         {
             ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.");
-            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
+            ImGuiUtils.PushCursorY(verticalTextPadding);
         }
 
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
+        ImGuiUtils.PushCursorY(verticalTextPadding);
         ImGui.TextUnformatted("Logout options:");
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
+        ImGuiUtils.PushCursorY(verticalTextPadding);
 
         // ClearTellHistory
         ImGui.Checkbox($"Clear tell history on logout##HaselTweaks_Config_{InternalName}_ClearTellHistory", ref Config.ClearTellHistory);
