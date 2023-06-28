@@ -249,14 +249,24 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                         }
                         else
                         {
-                            // TODO: Change Pose stuff
-                            var emote = Service.Data.GetExcelSheet<Emote>()!.GetRow(selectedEmoteId);
-                            if (emote != null)
+                            var defaultIdlePoseEmote = Service.Data.GetExcelSheet<Emote>()!.GetRow(90)!; // first "Change Pose"
+                            var changePoseIndex = 1;
+
+                            var entry = Service.Data.GetExcelSheet<Emote>()!
+                                .Select(row => (
+                                    IsChangePose: AllowedChangePoseEmoteIds.Contains(row.RowId),
+                                    Name: AllowedChangePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name.ToDalamudString()} ({changePoseIndex++})" : $"{row.Name.ToDalamudString()}",
+                                    Emote: row
+                                ) as (bool IsChangePose, string Name, Emote Emote)?)
+                                .FirstOrDefault(entry => entry != null && entry.Value.Emote.RowId == selectedEmoteId, null);
+
+                            if (entry.HasValue)
                             {
-                                TextureManager.GetIcon(emote.Icon).Draw(new(24));
+                                var (isChangePose, name, emote) = entry.Value;
+                                TextureManager.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(new(24));
                                 ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
                                 ImGuiUtils.PushCursorY(3);
-                                ImGui.Text(emote.Name.ToDalamudString().ToString());
+                                ImGui.Text(name);
                             }
                             else
                             {
