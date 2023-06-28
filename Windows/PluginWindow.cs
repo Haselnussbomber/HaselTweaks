@@ -15,13 +15,14 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows;
 
-public partial class PluginWindow : Window
+public partial class PluginWindow : Window, IDisposable
 {
     private const uint SidebarWidth = 250;
     private const uint ConfigWidth = SidebarWidth * 2;
 
     private string SelectedTweak = string.Empty;
     private readonly GameFontHandle FontAxis36;
+    public TextureManager? TextureManager { get; private set; }
 
     [GeneratedRegex("\\.0$")]
     private static partial Regex VersionPatchZeroRegex();
@@ -45,9 +46,23 @@ public partial class PluginWindow : Window
         FontAxis36 = Service.PluginInterface.UiBuilder.GetGameFontHandle(new GameFontStyle(GameFontFamilyAndSize.Axis36));
     }
 
+    public void Dispose()
+    {
+        TextureManager?.Dispose();
+        TextureManager = null;
+    }
+
+    public override void OnOpen()
+    {
+        TextureManager ??= new();
+    }
+
     public override void OnClose()
     {
         SelectedTweak = string.Empty;
+
+        TextureManager?.Dispose();
+        TextureManager = null;
 
         foreach (var tweak in Plugin.Tweaks)
         {
@@ -265,7 +280,7 @@ public partial class PluginWindow : Window
         if (tweak.HasIncompatibilityWarning)
         {
             ImGuiUtils.DrawSection("Incompatibility Warning");
-            tweak.DrawIncompatibilityWarning();
+            tweak.DrawIncompatibilityWarning(this);
         }
 
 #if DEBUG

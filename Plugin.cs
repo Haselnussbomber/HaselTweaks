@@ -10,7 +10,6 @@ using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Caches;
-using HaselTweaks.Utils;
 using HaselTweaks.Windows;
 using DalamudFramework = Dalamud.Game.Framework;
 
@@ -195,6 +194,9 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
         WindowSystem.RemoveAllWindows();
         WindowSystem = null!;
 
+        PluginWindow?.Dispose();
+        PluginWindow = null;
+
         Tweaks = null!;
 
         AddonSetupHook?.Dispose();
@@ -202,13 +204,6 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
 
         Config.Save();
         Config = null!;
-
-        foreach (var kv in ImGuiUtils.IconCache)
-        {
-            kv.Value?.Dispose();
-        }
-
-        ImGuiUtils.IconCache.Clear();
 
         StringCache.Dispose();
     }

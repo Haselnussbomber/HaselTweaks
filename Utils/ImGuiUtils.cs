@@ -1,15 +1,15 @@
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 using System.Threading.Tasks;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Utility;
 using ImGuiNET;
-using ImGuiScene;
 
 namespace HaselTweaks.Utils;
 
-public static class ImGuiUtils
+// TODO: cleanup (well, thats a project-wide task tbh)
+public static partial class ImGuiUtils
 {
     public static Vector4 ColorTransparent { get; } = Vector4.Zero;
     public static Vector4 ColorWhite { get; } = Vector4.One;
@@ -20,25 +20,6 @@ public static class ImGuiUtils
     public static Vector4 ColorGrey { get; } = new(0.73f, 0.73f, 0.73f, 1f);
     public static Vector4 ColorGrey2 { get; } = new(0.87f, 0.87f, 0.87f, 1f);
     public static Vector4 ColorGrey3 { get; } = new(0.6f, 0.6f, 0.6f, 1f);
-
-    public static readonly Dictionary<int, TextureWrap?> IconCache = new();
-
-    public static void DrawIcon(int iconId, float width = -1, float height = -1)
-    {
-        if (!IconCache.TryGetValue(iconId, out var tex))
-        {
-            tex = Service.Data.GetImGuiTexture($"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex");
-            IconCache[iconId] = tex;
-        }
-
-        if (tex == null || tex.ImGuiHandle == 0)
-            return;
-
-        ImGui.Image(tex.ImGuiHandle, new(width == -1 ? tex.Width : width, height == -1 ? tex.Height : height));
-    }
-
-    public static void DrawIcon(int iconId, Vector2 size)
-        => DrawIcon(iconId, size.X, size.Y);
 
     public static void DrawPaddedSeparator()
     {
@@ -121,6 +102,17 @@ public static class ImGuiUtils
         using var itemSpacing = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, new Vector2(ImGui.CalcTextSize(" ").X, 0));
         ImGui.SameLine();
     }
+
+    public static void PushCursorX(int x)
+        => ImGui.SetCursorPosX(ImGui.GetCursorPosX() + x);
+
+    public static void PushCursorY(int y)
+        => ImGui.SetCursorPosY(ImGui.GetCursorPosY() + y);
+
+    [LibraryImport("user32.dll")]
+    private static partial nint GetForegroundWindow();
+    public static readonly nint MainWindowHandle = Process.GetCurrentProcess().MainWindowHandle;
+    public static bool IsGameWindowFocused() => MainWindowHandle == GetForegroundWindow();
 
     public static void DrawLoadingSpinner(Vector2 center, float radius = 10f)
     {

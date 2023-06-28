@@ -31,6 +31,7 @@ public class PresetCard : IDisposable
 
     private readonly PresetBrowserOverlay overlay;
     private readonly SavedPreset preset;
+    private readonly TextureManager TextureManager = new();
 
     private bool isImageLoading;
     private bool doesImageFileExist;
@@ -69,6 +70,8 @@ public class PresetCard : IDisposable
         textureWrap?.Dispose();
         textureWrap = null;
 
+        TextureManager.Dispose();
+
         isDisposed = true;
     }
 
@@ -86,6 +89,9 @@ public class PresetCard : IDisposable
         var windowPos = ImGui.GetWindowPos();
         var cursorPos = ImGui.GetCursorPos();
         var center = windowPos + cursorPos + PortraitSize * scale / 2f - new Vector2(0, ImGui.GetScrollY());
+
+        overlay.TextureManager.GetIcon(190009).Draw(PortraitSize * scale);
+        ImGui.SetCursorPos(cursorPos);
 
         if (isImageLoading)
         {
@@ -111,13 +117,13 @@ public class PresetCard : IDisposable
         if (bannerFrameImage != null)
         {
             ImGui.SetCursorPos(cursorPos);
-            ImGuiUtils.DrawIcon(bannerFrameImage.Value, PortraitSize * scale);
+            TextureManager.GetIcon(bannerFrameImage.Value).Draw(PortraitSize * scale);
         }
 
         if (bannerDecorationImage != null)
         {
             ImGui.SetCursorPos(cursorPos);
-            ImGuiUtils.DrawIcon(bannerDecorationImage.Value, PortraitSize * scale);
+            TextureManager.GetIcon(bannerDecorationImage.Value).Draw(PortraitSize * scale);
         }
 
         ImGui.SetCursorPos(cursorPos);

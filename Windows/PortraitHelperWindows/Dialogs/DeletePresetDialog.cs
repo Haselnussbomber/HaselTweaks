@@ -1,6 +1,5 @@
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
-using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 

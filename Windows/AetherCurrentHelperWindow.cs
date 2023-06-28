@@ -20,7 +20,7 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Windows;
 
-public unsafe partial class AetherCurrentHelperWindow : Window
+public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 {
     private readonly AetherCurrentHelper AetherCurrentHelper;
     private AetherCurrentCompFlgSet CompFlgSet;
@@ -28,6 +28,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
     private readonly Dictionary<uint, EObj?> EObjCache = new(); // key is AetherCurrent.RowId
     private readonly Dictionary<uint, Level?> LevelCache = new(); // key is Level.RowId
     private readonly Dictionary<uint, string> QuestNameCache = new(); // key is Quest.RowId, value is stripped from private use utf8 chars
+    private readonly TextureManager TextureManager = new();
     private bool hideUnlocked = true;
 
     private readonly Vector4 TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f, 1);
@@ -49,6 +50,11 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         base.Flags |= ImGuiWindowFlags.AlwaysAutoResize;
 
         GetAgent(AgentId.AetherCurrent, out agentAetherCurrent);
+    }
+
+    public void Dispose()
+    {
+        TextureManager.Dispose();
     }
 
     public void SetCompFlgSet(AetherCurrentCompFlgSet compFlgSet)
@@ -157,7 +163,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
 
         ImGui.SetCursorPos(new Vector2(windowSize.X + style.WindowPadding.X - iconSize - 1, iconSize + style.ItemSpacing.Y));
 
-        ImGuiUtils.DrawIcon(64, iconSize, iconSize);
+        TextureManager.GetIcon(64)?.Draw(new(iconSize));
 
         if (ImGui.IsItemHovered())
         {
@@ -204,7 +210,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
 
         // Icon
         ImGui.TableNextColumn();
-        ImGuiUtils.DrawIcon(quest.JournalGenre.Value!.Icon, 40, 40);
+        TextureManager.GetIcon(quest.JournalGenre.Value!.Icon).Draw(new(40));
 
         // Content
         ImGui.TableNextColumn();
@@ -240,7 +246,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
 
         // Icon
         ImGui.TableNextColumn();
-        ImGuiUtils.DrawIcon(60033, 40, 40);
+        TextureManager.GetIcon(60033).Draw(new(40));
 
         // Content
         ImGui.TableNextColumn();
