@@ -11,6 +11,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Common.Configuration;
 using HaselTweaks.Records;
 using HaselTweaks.Structs;
@@ -30,11 +31,17 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     #region Core
 
+    public override void Setup() => UpdateExcludedEmotes();
     public override void Enable() => UpdateCharacterSettings();
     public override void OnLogin() => UpdateCharacterSettings();
+    public override void OnLogout() => IsRecordingEmote = false;
     public override void Disable() => CleanupCharaSelect();
-    public override void Dispose() => Service.Framework.RunOnFrameworkThread(UnloadTextures);
-    public override void OnConfigWindowClose() => Service.Framework.RunOnFrameworkThread(UnloadTextures);
+    public override void Dispose() => UnloadTextures();
+    public override void OnConfigWindowClose()
+    {
+        IsRecordingEmote = false;
+        UnloadTextures();
+    }
 
     private CharaSelectCharacter? CurrentEntry = null;
     private ulong ActiveContentId => CurrentEntry?.ContentId ?? Service.ClientState.LocalContentId;
@@ -43,16 +50,12 @@ public unsafe partial class EnhancedLoginLogout : Tweak
     {
         UpdatePetMirageSettings();
         UpdateVoiceCache();
-        UpdateUnlockedEmotes();
     }
 
     public void UnloadTextures()
     {
         TextureManager?.Dispose();
         TextureManager = null;
-        EmoteCategoryTexture = null;
-        BgPartsTexture = null;
-        EmoteTexture = null;
     }
 
     private void CleanupCharaSelect()
@@ -115,14 +118,9 @@ public unsafe partial class EnhancedLoginLogout : Tweak
     #region Config
 
     private TextureManager? TextureManager;
-    private Texture? EmoteCategoryTexture;
-    private Texture? BgPartsTexture;
-    private Texture? EmoteTexture;
-    private uint SelectedEmoteCategory = 1;
-    private string EmoteSearchInput = string.Empty;
-    private uint HoverEmote;
+    private bool IsRecordingEmote;
     private readonly uint[] AllowedChangePoseEmoteIds = new uint[] { 91, 92, 93, 107, 108, 218, 219, };
-    private readonly uint[] ExcludedEmotes = new uint[] { /* Sit */ 50, };
+    private readonly List<uint> ExcludedEmotes = new() { /* Sit */ 50, };
 
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedLoginLogout;
 
@@ -137,7 +135,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         public Dictionary<ulong, PetMirageSetting> PetMirageSettings = new();
         public Dictionary<ulong, uint> SelectedEmotes = new();
-        public Dictionary<ulong, List<uint>> UnlockedEmotes = new();
         public Dictionary<ulong, ushort> VoiceCache = new();
 
         public class PetMirageSetting
@@ -232,67 +229,76 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                         ImGui.TextColored(ImGuiUtils.ColorRed, "Voice ID for this character not cached! Please log in once.");
                         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
                     }
-                    
-                    if (!Config.UnlockedEmotes.TryGetValue(ActiveContentId, out var unlockedEmotes))
+
+                    ImGuiUtils.PushCursorY(3);
+                    ImGui.Text("Current Emote:");
+                    ImGui.SameLine();
+
+                    if (!Config.SelectedEmotes.TryGetValue(ActiveContentId, out var selectedEmoteId) || selectedEmoteId == 0)
                     {
-                        ImGui.TextColored(ImGuiUtils.ColorRed, "Unlocked emotes for this character not cached! Please log in once.");
-                        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
+                        ImGui.Text("None");
                     }
                     else
                     {
-                        ImGui.Text("Current Emote:");
-                        ImGui.SameLine();
+                        var defaultIdlePoseEmote = Service.Data.GetExcelSheet<Emote>()!.GetRow(90)!; // first "Change Pose"
+                        var changePoseIndex = 1;
 
-                        if (!Config.SelectedEmotes.TryGetValue(ActiveContentId, out var selectedEmoteId) || selectedEmoteId == 0)
+                        var entry = Service.Data.GetExcelSheet<Emote>()!
+                            .Select(row => (
+                                IsChangePose: AllowedChangePoseEmoteIds.Contains(row.RowId),
+                                Name: AllowedChangePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name.ToDalamudString()} ({changePoseIndex++})" : $"{row.Name.ToDalamudString()}",
+                                Emote: row
+                            ) as (bool IsChangePose, string Name, Emote Emote)?)
+                            .FirstOrDefault(entry => entry != null && entry.Value.Emote.RowId == selectedEmoteId, null);
+
+                        if (entry.HasValue)
                         {
-                            ImGui.Text("None");
+                            var (isChangePose, name, emote) = entry.Value;
+                            ImGuiUtils.PushCursorY(-3);
+                            TextureManager.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(new(24));
+                            ImGui.SameLine();
+                            ImGui.Text(name);
                         }
                         else
                         {
-                            var defaultIdlePoseEmote = Service.Data.GetExcelSheet<Emote>()!.GetRow(90)!; // first "Change Pose"
-                            var changePoseIndex = 1;
-
-                            var entry = Service.Data.GetExcelSheet<Emote>()!
-                                .Select(row => (
-                                    IsChangePose: AllowedChangePoseEmoteIds.Contains(row.RowId),
-                                    Name: AllowedChangePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name.ToDalamudString()} ({changePoseIndex++})" : $"{row.Name.ToDalamudString()}",
-                                    Emote: row
-                                ) as (bool IsChangePose, string Name, Emote Emote)?)
-                                .FirstOrDefault(entry => entry != null && entry.Value.Emote.RowId == selectedEmoteId, null);
-
-                            if (entry.HasValue)
-                            {
-                                var (isChangePose, name, emote) = entry.Value;
-                                TextureManager.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(new(24));
-                                ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
-                                ImGuiUtils.PushCursorY(3);
-                                ImGui.Text(name);
-                            }
-                            else
-                            {
-                                ImGui.Text("Unknown");
-                            }
+                            ImGui.Text("Unknown");
                         }
+                    }
 
-                        if (ImGui.Button("Select Emote"))
+                    if (Service.ClientState.IsLoggedIn)
+                    {
+                        ImGui.SameLine();
+
+                        ImGuiUtils.PushCursorY(-3);
+
+                        if (IsRecordingEmote)
                         {
-                            EmoteSearchInput = string.Empty;
-                            ImGui.OpenPopup("##EmotePicker");
-                            UIModule.PlaySound(23, 0, 0, 0);
-                        }
-
-                        if (selectedEmoteId > 0)
-                        {
-                            ImGui.SameLine();
-
-                            if (ImGuiUtils.IconButton("##EmoteReset", FontAwesomeIcon.Undo, "Reset"))
+                            if (ImGui.Button("Stop recording"))
                             {
-                                selectedEmoteId = 0;
-                                SaveEmote(0);
+                                IsRecordingEmote = false;
+                            }
+
+                            ImGui.TextColored(ImGuiUtils.ColorGold, "Do an emote now!");
+                            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Please note that not all emotes are supported (e.g. sitting or underwater emotes).");
+                            ImGuiUtils.PushCursorY(3);
+                        }
+                        else
+                        {
+                            if (ImGui.Button("Change"))
+                            {
+                                IsRecordingEmote = true;
+
+                                var agentEmote = AgentModule.Instance()->GetAgentByInternalId(AgentId.Emote);
+                                if (!agentEmote->IsAgentActive())
+                                {
+                                    agentEmote->Show();
+                                }
                             }
                         }
-
-                        DrawEmotePopup(selectedEmoteId, unlockedEmotes);
+                    }
+                    else
+                    {
+                        ImGui.Text("Log in to set an emote.");
                     }
                 }
             }
@@ -314,158 +320,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         // ClearTellHistory
         ImGui.Checkbox($"Clear tell history on logout##HaselTweaks_Config_{InternalName}_ClearTellHistory", ref Config.ClearTellHistory);
-    }
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046")]
-    private void DrawEmotePopup(uint selectedEmoteId, List<uint> unlockedEmotes)
-    {
-        using var borderSize = ImRaii.PushStyle(ImGuiStyleVar.PopupBorderSize, 1);
-        using var borderRadius = ImRaii.PushStyle(ImGuiStyleVar.PopupRounding, 5);
-        using var borderColor = ImRaii.PushColor(ImGuiCol.Border, ImGui.ColorConvertFloat4ToU32(ImGuiUtils.ColorGold));
-
-        using var popup = ImRaii.Popup("##EmotePicker", ImGuiWindowFlags.NoMove);
-        if (!popup.Success)
-            return;
-
-        borderSize?.Dispose();
-        borderRadius?.Dispose();
-        borderColor?.Dispose();
-
-        EmoteCategoryTexture ??= TextureManager?.GetTexture("ui/uld/EmoteCategory.tex");
-        BgPartsTexture ??= TextureManager?.GetTexture("ui/uld/BgParts.tex");
-        EmoteTexture ??= TextureManager?.GetTexture("ui/uld/Emote.tex");
-
-        ImGuiUtils.PushCursorY(3);
-
-        var isSearching = !string.IsNullOrEmpty(EmoteSearchInput);
-        var tabsDisable = !isSearching ? null : ImRaii.Disabled();
-
-        foreach (var emoteCategory in Service.Data.GetExcelSheet<EmoteCategory>()!)
-        {
-            if (emoteCategory.RowId == 0 || string.IsNullOrEmpty(emoteCategory.Name))
-                continue;
-
-            ImGui.SameLine(0, 0);
-
-            var pos = ImGui.GetCursorPos();
-            EmoteCategoryTexture?.DrawPart(new Vector2(36 * emoteCategory.RowId, 0), new Vector2(36), new(36));
-            if (ImGui.IsItemHovered())
-            {
-                ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-                ImGui.SetTooltip(emoteCategory.Name);
-            }
-
-            if (!isSearching && SelectedEmoteCategory == emoteCategory.RowId)
-            {
-                ImGui.SetCursorPos(pos);
-                BgPartsTexture?.DrawPart(new Vector2(69, 1), new Vector2(36), new(36));
-            }
-
-            if (ImGui.IsItemClicked())
-            {
-                UIModule.PlaySound(1, 0, 0, 0);
-                SelectedEmoteCategory = emoteCategory.RowId;
-            }
-        }
-
-        tabsDisable?.Dispose();
-
-        ImGui.SameLine();
-        ImGuiUtils.PushCursorY(6);
-        ImGui.InputTextWithHint("##EmoteSearch", "Search...", ref EmoteSearchInput, 100, ImGuiInputTextFlags.AutoSelectAll);
-        if (ImGui.IsItemActivated())
-        {
-            UIModule.PlaySound(35, 0, 0, 0);
-        }
-        if (ImGui.IsItemDeactivated())
-        {
-            UIModule.PlaySound(3, 0, 0, 0);
-        }
-
-        ImGuiUtils.PushCursorY(3);
-        using var child = ImRaii.Child("##EmoteTableWrapper", new(400, 300), true);
-        if (!child.Success)
-            return;
-
-        using var table = ImRaii.Table("##EmoteTable", 2, ImGuiTableFlags.NoSavedSettings);
-        if (!table.Success)
-            return;
-
-        ImGui.TableSetupColumn("Icon", ImGuiTableColumnFlags.WidthFixed, 24);
-        ImGui.TableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch);
-
-        var defaultIdlePoseEmote = Service.Data.GetExcelSheet<Emote>()!.GetRow(90)!; // first "Change Pose"
-        var changePoseIndex = 1;
-
-        var sortedEmotes = Service.Data.GetExcelSheet<Emote>()!
-            .Select(row => (Name: AllowedChangePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name.ToDalamudString()} ({changePoseIndex++})" : $"{row.Name.ToDalamudString()}", row))
-            .Where(entry =>
-            {
-                var row = entry.row;
-
-                if (row.RowId == defaultIdlePoseEmote.RowId || AllowedChangePoseEmoteIds.Contains(row.RowId))
-                    return true;
-
-                if (row.Order == 0)
-                    return false;
-
-                // Check if usable under normal conditions
-                // part of E8 ?? ?? ?? ?? 84 C0 74 C5
-                if (!(row.RowId - 60 > 1 && row.ActionTimeline[0].Row != 0))
-                    return false;
-
-                return !ExcludedEmotes.Contains(row.RowId);
-            })
-            .OrderBy(entry => entry.Name)
-            .ToArray();
-
-        foreach (var entry in sortedEmotes)
-        {
-            var emote = entry.row;
-            var isAlternativeChangePoseEmote = AllowedChangePoseEmoteIds.Contains(emote.RowId);
-
-            if (isAlternativeChangePoseEmote && SelectedEmoteCategory != 1)
-                continue;
-
-            if (!isSearching && !isAlternativeChangePoseEmote && emote.EmoteCategory.Row != SelectedEmoteCategory)
-                continue;
-
-            if (!isAlternativeChangePoseEmote && !unlockedEmotes!.Contains(emote.RowId))
-                continue;
-
-            var effectiveEmote = emote;
-            var effectiveEmoteId = emote.RowId;
-
-            if (isAlternativeChangePoseEmote)
-                effectiveEmote = defaultIdlePoseEmote;
-
-            var emoteName = entry.Name;
-
-            if (!string.IsNullOrEmpty(EmoteSearchInput) && !emoteName.ToLower().Contains(EmoteSearchInput.ToLower()))
-                continue;
-
-            ImGui.TableNextRow();
-
-            ImGui.TableNextColumn();
-            TextureManager?.GetIcon(effectiveEmote.Icon).Draw(new(24));
-
-            ImGui.TableNextColumn();
-            if (ImGui.Selectable($"##Emote_{effectiveEmoteId}", selectedEmoteId == effectiveEmoteId, ImGuiSelectableFlags.None, new(0, 24)))
-            {
-                UIModule.PlaySound(1, 0, 0, 0);
-                ResetEmoteMode();
-                SaveEmote(effectiveEmoteId);
-                ImGui.CloseCurrentPopup();
-            }
-            if (ImGuiUtils.IsGameWindowFocused() && ImGui.IsItemHovered() && HoverEmote != effectiveEmoteId)
-            {
-                PlayEmote(effectiveEmoteId);
-                HoverEmote = effectiveEmoteId;
-            }
-            ImGui.SameLine(0, 0);
-            ImGuiUtils.PushCursorY(3);
-            ImGui.Text(emoteName);
-        }
     }
 
     #endregion
@@ -601,6 +455,20 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     #region Login: Play emote in character selection
 
+    private void UpdateExcludedEmotes()
+    {
+        foreach (var emote in Service.Data.GetExcelSheet<Emote>()!)
+        {
+            if (emote.RowId == 90) // allow Change Pose
+                continue;
+
+            if (emote.RowId != 0 && emote.Icon != 0 && !(emote.ActionTimeline[0].Row == 0 && emote.ActionTimeline[1].Row == 0))
+                continue;
+
+            ExcludedEmotes.Add(emote.RowId);
+        }
+    }
+
     private void UpdateVoiceCache()
     {
         var playerState = PlayerState.Instance();
@@ -626,55 +494,10 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         Debug($"Updated voice id: {voiceId}");
     }
 
-    private void UpdateUnlockedEmotes()
-    {
-        var uiState = UIState.Instance();
-        if (uiState == null)
-            return;
-
-        var playerState = uiState->PlayerState;
-        if (playerState.IsLoaded != 0x01)
-            return;
-
-        var contentId = playerState.ContentId;
-        if (contentId == 0)
-            return;
-
-        var list = new List<uint>();
-
-        foreach (var emote in Service.Data.GetExcelSheet<Emote>()!)
-        {
-            if (emote.RowId == 0 || emote.Icon == 0)
-                continue;
-
-            // Storm Salute
-            if (emote.RowId == 55 && playerState.GrandCompany != 1)
-                continue;
-
-            // Serpent Salute
-            if (emote.RowId == 56 && playerState.GrandCompany != 2)
-                continue;
-
-            // Flame Salute
-            if (emote.RowId == 57 && playerState.GrandCompany != 3)
-                continue;
-
-            if (emote.UnlockLink != 0 && !uiState->IsUnlockLinkUnlockedOrQuestCompleted(emote.UnlockLink))
-                continue;
-
-            list.Add(emote.RowId);
-        }
-
-        if (!Config.UnlockedEmotes.ContainsKey(contentId))
-            Config.UnlockedEmotes.Add(contentId, list);
-        else
-            Config.UnlockedEmotes[contentId] = list;
-
-        Debug($"Updated unlocked emotes: {string.Join(", ", list)}");
-    }
-
     private void SaveEmote(uint emoteId)
     {
+        Log($"Saving Emote #{emoteId} => {Service.Data.GetExcelSheet<Emote>()?.GetRow(emoteId)?.Name ?? ""}");
+
         if (!Config.SelectedEmotes.ContainsKey(ActiveContentId))
             Config.SelectedEmotes.Add(ActiveContentId, emoteId);
         else
@@ -752,6 +575,40 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         Debug("Resetting Character Mode");
         CurrentEntry.Character->SetMode(CharacterModes.Normal, 0);
+    }
+
+    [SigHook("E8 ?? ?? ?? ?? 40 84 ED 74 18")]
+    public bool SomeDoEmoteFunction(nint a1, ushort emoteId, nint a3)
+    {
+        var changePoseIndexBefore = PlayerState.Instance()->SelectedPoses[0];
+        var success = SomeDoEmoteFunctionHook.OriginalDisposeSafe(a1, emoteId, a3);
+
+
+        if (IsRecordingEmote && success && Service.ClientState.IsLoggedIn && !ExcludedEmotes.Contains(emoteId))
+        {
+            // special case for Change Pose
+            if (emoteId == 90)
+            {
+                var changePoseIndex = PlayerState.Instance()->SelectedPoses[0];
+                if (changePoseIndexBefore != changePoseIndex) // only process if standing pose was changed
+                {
+                    if (changePoseIndex >= 0 && changePoseIndex < AllowedChangePoseEmoteIds.Length)
+                    {
+                        SaveEmote(AllowedChangePoseEmoteIds[changePoseIndex]);
+                    }
+                    else
+                    {
+                        SaveEmote(emoteId);
+                    }
+                }
+            }
+            else
+            {
+                SaveEmote(emoteId);
+            }
+        }
+
+        return success;
     }
 
     #endregion
