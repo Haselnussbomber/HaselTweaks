@@ -206,8 +206,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         using (ImGuiUtils.ConfigIndent())
         {
-            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Let your character dance, strike a pose or blow you a kiss!");
-            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Emote settings are per character.");
+            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Have your character greet you with an emote!");
+            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Note: Emote settings are per character and not all emotes are supported (e.g. sitting or underwater emotes). What is supported, however, are alternative standing idle poses.");
             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
 
             if (Config.EnableCharaSelectEmote)
@@ -267,10 +267,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                             {
                                 IsRecordingEmote = false;
                             }
-
-                            ImGui.TextColored(ImGuiUtils.ColorGold, "Do an emote now!");
-                            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Please note that not all emotes are supported (e.g. sitting or underwater emotes).");
-                            ImGuiUtils.PushCursorY(3);
                         }
                         else
                         {
@@ -284,6 +280,23 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                                     agentEmote->Show();
                                 }
                             }
+                        }
+
+                        if (selectedEmoteId != 0)
+                        {
+                            ImGui.SameLine();
+
+                            ImGuiUtils.PushCursorY(-3);
+                            if (ImGui.Button("Unset"))
+                            {
+                                SaveEmote(0);
+                            }
+                        }
+
+                        if (IsRecordingEmote)
+                        {
+                            ImGui.TextColored(ImGuiUtils.ColorGold, "Perform an emote now to set it for this character!");
+                            ImGuiUtils.PushCursorY(3);
                         }
                     }
                     else
