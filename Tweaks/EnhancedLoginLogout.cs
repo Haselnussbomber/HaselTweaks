@@ -423,15 +423,14 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         {
             var emote = entry.row;
             var isAlternativeChangePoseEmote = AllowedChangePoseEmoteIds.Contains(emote.RowId);
-            var isChangePoseEmote = emote.RowId == defaultIdlePoseEmote.RowId || isAlternativeChangePoseEmote;
 
-            if (isChangePoseEmote && SelectedEmoteCategory != 1)
+            if (isAlternativeChangePoseEmote && SelectedEmoteCategory != 1)
                 continue;
 
-            if (!isSearching && !isChangePoseEmote && emote.EmoteCategory.Row != SelectedEmoteCategory)
+            if (!isSearching && !isAlternativeChangePoseEmote && emote.EmoteCategory.Row != SelectedEmoteCategory)
                 continue;
 
-            if (!isChangePoseEmote && !(emote.UnlockLink == 0 || (emote.UnlockLink != 0 && unlockedEmotes!.Contains(emote.RowId))))
+            if (!isAlternativeChangePoseEmote && !unlockedEmotes!.Contains(emote.RowId))
                 continue;
 
             var effectiveEmote = emote;
@@ -645,12 +644,22 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         foreach (var emote in Service.Data.GetExcelSheet<Emote>()!)
         {
-            if (emote.RowId == 0 || emote.Icon == 0 || emote.UnlockLink == 0)
+            if (emote.RowId == 0 || emote.Icon == 0)
                 continue;
 
-            // TODO: handle GC emotes
+            // Storm Salute
+            if (emote.RowId == 55 && playerState.GrandCompany != 1)
+                continue;
 
-            if (!uiState->IsUnlockLinkUnlockedOrQuestCompleted(emote.UnlockLink))
+            // Serpent Salute
+            if (emote.RowId == 56 && playerState.GrandCompany != 2)
+                continue;
+
+            // Flame Salute
+            if (emote.RowId == 57 && playerState.GrandCompany != 3)
+                continue;
+
+            if (emote.UnlockLink != 0 && !uiState->IsUnlockLinkUnlockedOrQuestCompleted(emote.UnlockLink))
                 continue;
 
             list.Add(emote.RowId);
