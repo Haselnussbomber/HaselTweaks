@@ -13,8 +13,14 @@ public unsafe class AdvancedEditOverlay : Overlay
 
     private float lastTimestamp;
 
-    public AdvancedEditOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper AdvancedEdit", tweak)
+    public AdvancedEditOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper: Advanced Edit", tweak)
     {
+    }
+
+    public override void OnClose()
+    {
+        base.OnClose();
+        Tweak.CloseAdvancedEditOverlay(false);
     }
 
     public override void Draw()
@@ -22,8 +28,8 @@ public unsafe class AdvancedEditOverlay : Overlay
         ImGui.PopStyleVar(); // WindowPadding from PreDraw()
 
         var state = AgentBannerEditor->EditorState;
-        var gameObject = state->CharaView->Base.GetGameObject();
-        if (gameObject == null)
+        var character = state->CharaView->Base.GetCharacter();
+        if (character == null)
             return;
 
         var style = ImGui.GetStyle();
@@ -36,7 +42,7 @@ public unsafe class AdvancedEditOverlay : Overlay
         if (!table.Success)
             return;
 
-        ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, 128);
+        ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, 128 * ImGui.GetIO().FontGlobalScale);
         ImGui.TableSetupColumn("Value", ImGuiTableColumnFlags.WidthStretch);
 
         using (ImRaii.PushId("Camera"))
@@ -182,8 +188,8 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.SetNextItemWidth(-1);
 
             var eyeDirection = new Vector2(
-                gameObject->FacialAnimationManager.EyeDirection.X,
-                gameObject->FacialAnimationManager.EyeDirection.Y
+                character->FacialAnimationManager.EyeDirection.X,
+                character->FacialAnimationManager.EyeDirection.Y
             );
 
             if (ImGui.DragFloat2($"##DragFloat2", ref eyeDirection, 0.001f))
@@ -206,8 +212,8 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.SetNextItemWidth(-1);
 
             var headDirection = new Vector2(
-                gameObject->FacialAnimationManager.HeadDirection.X,
-                gameObject->FacialAnimationManager.HeadDirection.Y
+                character->FacialAnimationManager.HeadDirection.X,
+                character->FacialAnimationManager.HeadDirection.Y
             );
 
             if (ImGui.DragFloat2($"##DragFloat2", ref headDirection, 0.001f))
@@ -228,7 +234,7 @@ public unsafe class AdvancedEditOverlay : Overlay
 
             ImGui.TableNextColumn();
 
-            var animation = gameObject->ActionTimelineManager.BaseAnimation;
+            var animation = character->ActionTimelineManager.BaseAnimation;
             var timeline = (animation != null && *animation != null) ? *animation : null;
             var timestamp = timeline == null ? lastTimestamp : state->CharaView->GetAnimationTime();
 
@@ -242,7 +248,7 @@ public unsafe class AdvancedEditOverlay : Overlay
 
                 timeline->CurrentTimestamp = timestamp;
                 lastTimestamp = timestamp;
-                state->CharaView->SetPoseTimed(gameObject->ActionTimelineManager.BannerTimelineRowId, timestamp);
+                state->CharaView->SetPoseTimed(character->ActionTimelineManager.BannerTimelineRowId, timestamp);
                 state->CharaView->Base.ToggleAnimationPaused(true);
                 AddonBannerEditor->PlayAnimationCheckbox->SetValue(false);
 

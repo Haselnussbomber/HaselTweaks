@@ -5,11 +5,8 @@ using Dalamud.Memory;
 using Dalamud.Utility;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
-using FFXIVClientStructs.FFXIV.Client.System.Memory;
-using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -161,9 +158,8 @@ public unsafe partial class EnhancedMaterialList : Tweak
         if (RecipeMaterialListRefreshPending)
         {
             Log("Refreshing RecipeMaterialList");
-            var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
+            using var atkEvent = new DisposableStruct<AtkEvent>();
             recipeMaterialList->ReceiveEvent(AtkEventType.ButtonClick, 1, atkEvent, 0);
-            IMemorySpace.Free(atkEvent);
 
             RecipeMaterialListRefreshPending = false;
         }
@@ -192,9 +188,8 @@ public unsafe partial class EnhancedMaterialList : Tweak
         }
 
         Log("Refreshing RecipeTree");
-        var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
+        using var atkEvent = new DisposableStruct<AtkEvent>();
         recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, atkEvent, 0);
-        IMemorySpace.Free(atkEvent);
 
         LastRecipeTreeRefresh = DateTime.Now;
         RecipeTreeRefreshPending = false;
@@ -446,9 +441,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
             exportedPoint.GatheringPointType
         );
 
-        var tooltipPtr = MemoryUtils.strconcat(levelText, space, gatheringPointName);
-        var tooltip = IMemorySpace.GetDefaultSpace()->Create<Utf8String>();
-        tooltip->SetString(tooltipPtr);
+        using var tooltip = new DisposableUtf8String(MemoryUtils.strconcat(levelText, space, gatheringPointName));
 
         var iconId = !IsGatheringPointRare(exportedPoint.GatheringPointType)
             ? gatheringType.IconMain
@@ -475,23 +468,16 @@ public unsafe partial class EnhancedMaterialList : Tweak
                 .AddUiGlowOff()
                 .AddUiForegroundOff();
         }
-        var titlePtr = MemoryUtils.FromByteArray(titleBuilder.BuiltString.Encode());
-        var title = IMemorySpace.GetDefaultSpace()->Create<Utf8String>();
-        title->SetString(titlePtr);
+
+        using var title = new DisposableUtf8String(titleBuilder.BuiltString);
 
         var mapInfo = stackalloc OpenMapInfo[1];
         mapInfo->Type = FFXIVClientStructs.FFXIV.Client.UI.Agent.MapType.GatheringLog;
         mapInfo->MapId = territoryType.Map.Row;
         mapInfo->TerritoryId = territoryType.RowId;
-        mapInfo->TitleString = *title;
+        mapInfo->TitleString = *title.Ptr;
         agentMap->OpenMap(mapInfo);
-        title->Dtor();
-        IMemorySpace.Free(title);
-        Marshal.FreeHGlobal((nint)titlePtr);
 
-        tooltip->Dtor();
-        IMemorySpace.Free(tooltip);
-        Marshal.FreeHGlobal((nint)tooltipPtr);
         Marshal.FreeHGlobal((nint)space);
 
         return true;

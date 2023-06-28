@@ -35,6 +35,9 @@ public unsafe partial class EnhancedExpBar : Tweak
         [EnumOption("PvP Series Bar")]
         PvPSeriesBar,
 
+        [EnumOption("Companion Bar")]
+        CompanionBar,
+
         // Disabled because data is only available once loaded into the island. Sadge.
         //[EnumOption("Sanctuary Bar")]
         //SanctuaryBar
@@ -53,6 +56,12 @@ public unsafe partial class EnhancedExpBar : Tweak
             OnChange = nameof(RunUpdate)
         )]
         public bool ForceSanctuaryBar = true;
+
+        [ConfigField(
+            Label = "Always show Companion Bar when chocobo companion summoned",
+            OnChange = nameof(RunUpdate)
+        )]
+        public bool ForceCompanionBar = true;
 
         [ConfigField(
             Label = "Hide Job on Sanctuary Bar",
@@ -80,6 +89,7 @@ public unsafe partial class EnhancedExpBar : Tweak
     {
         Service.ClientState.LeavePvP += ClientState_LeavePvP;
         Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
+        IsEnabled = true;
         RunUpdate();
     }
 
@@ -87,11 +97,16 @@ public unsafe partial class EnhancedExpBar : Tweak
     {
         Service.ClientState.LeavePvP -= ClientState_LeavePvP;
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
+        IsEnabled = false;
         RunUpdate();
     }
 
+    private bool IsEnabled = false;
     private ushort LastSeriesXp = 0;
     private byte LastSeriesClaimedRank = 0;
+    private uint LastBuddyXp;
+    private byte LastBuddyRank;
+    private uint LastBuddyObjectID;
     private uint LastIslandExperience = 0;
     private ushort LastSyncedFateId = 0;
 
@@ -105,6 +120,15 @@ public unsafe partial class EnhancedExpBar : Tweak
             shouldUpdate = true;
             LastSeriesXp = pvpProfile->SeriesExperience;
             LastSeriesClaimedRank = pvpProfile->SeriesClaimedRank;
+        }
+
+        var buddy = UIState.Instance()->Buddy;
+        if (LastBuddyXp != buddy.CurrentXP || LastBuddyRank != buddy.Rank || LastBuddyObjectID != buddy.Companion.ObjectID)
+        {
+            shouldUpdate = true;
+            LastBuddyXp = buddy.CurrentXP;
+            LastBuddyRank = buddy.Rank;
+            LastBuddyObjectID = buddy.Companion.ObjectID;
         }
 
         var mjiManager = MJIManager.Instance();
@@ -153,6 +177,9 @@ public unsafe partial class EnhancedExpBar : Tweak
     [VTableHook<AddonExp>((int)AtkUnitBaseVfs.OnRequestedUpdate)]
     private nint AddonExp_OnRequestedUpdate(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
+        if (!IsEnabled)
+            goto OriginalOnRequestedUpdate;
+
         var gaugeBarNode = GetNode<AtkComponentNode>((AtkUnitBase*)addon, 6);
         if (gaugeBarNode == null)
             goto OriginalOnRequestedUpdate;
@@ -179,6 +206,9 @@ public unsafe partial class EnhancedExpBar : Tweak
 
         // --- forced bars in certain locations
 
+        if (Config.ForceCompanionBar && UIState.Instance()->Buddy.Companion.ObjectID != 0xE0000000)
+            goto CompanionBar;
+
         if (Config.ForcePvPSeriesBar && GameMain.IsInPvPArea()) // TODO: only when PvP Series is active
             goto PvPBar;
 
@@ -191,6 +221,9 @@ public unsafe partial class EnhancedExpBar : Tweak
         {
             if (Config.MaxLevelOverride == MaxLevelOverrideType.PvPSeriesBar)
                 goto PvPBar;
+
+            if (Config.MaxLevelOverride == MaxLevelOverrideType.CompanionBar)
+                goto CompanionBar;
 
             //if (Config.MaxLevelOverride == MaxLevelOverrideType.SanctuaryBar)
             //    goto SanctuaryBar;
@@ -239,6 +272,34 @@ public unsafe partial class EnhancedExpBar : Tweak
             {
                 ResetColor(nineGridNode);
             }
+
+            return ret;
+        }
+
+        CompanionBar:
+        {
+            var buddy = UIState.Instance()->Buddy;
+
+            var BuddyRankSheet = Service.Data.GetExcelSheet<BuddyRank>();
+            if (BuddyRankSheet == null || buddy.Rank > BuddyRankSheet.Count() - 1)
+                goto OriginalOnRequestedUpdateWithColorReset;
+
+            var currentRank = buddy.Rank;
+
+            job = Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation;
+            levelLabel = (StringCache.GetAddonText(4968) ?? "Rank").Trim().Replace(":", "");
+            var rank = currentRank > 20 ? 20 : currentRank;
+            level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
+            requiredExperience = BuddyRankSheet.GetRow(currentRank)!.ExpRequired;
+
+            leftText->SetText($"{job}  {levelLabel} {level}   {buddy.CurrentXP}/{requiredExperience}");
+
+            gaugeBar->SetSecondaryValue(0); // rested experience bar
+
+            // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
+            gaugeBar->SetValue((uint)(buddy.CurrentXP / (float)requiredExperience * 10000), 0, false);
+
+            ResetColor(nineGridNode);
 
             return ret;
         }

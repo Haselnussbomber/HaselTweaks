@@ -20,7 +20,7 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Windows;
 
-public unsafe partial class AetherCurrentHelperWindow : Window
+public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 {
     private readonly AetherCurrentHelper AetherCurrentHelper;
     private AetherCurrentCompFlgSet CompFlgSet;
@@ -28,6 +28,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
     private readonly Dictionary<uint, EObj?> EObjCache = new(); // key is AetherCurrent.RowId
     private readonly Dictionary<uint, Level?> LevelCache = new(); // key is Level.RowId
     private readonly Dictionary<uint, string> QuestNameCache = new(); // key is Quest.RowId, value is stripped from private use utf8 chars
+    private readonly TextureManager TextureManager = new();
     private bool hideUnlocked = true;
 
     private readonly Vector4 TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f, 1);
@@ -42,13 +43,20 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         AetherCurrentHelper = aetherCurrentHelper;
         CompFlgSet = compFlgSet;
 
-        base.Size = new Vector2(300, 350);
         base.SizeCondition = ImGuiCond.Appearing;
-
-        base.Flags |= ImGuiWindowFlags.NoSavedSettings;
-        base.Flags |= ImGuiWindowFlags.AlwaysAutoResize;
+        base.Size = new Vector2(350);
+        base.SizeConstraints = new WindowSizeConstraints
+        {
+            MinimumSize = new Vector2(300, 200),
+            MaximumSize = new Vector2(4096),
+        };
 
         GetAgent(AgentId.AetherCurrent, out agentAetherCurrent);
+    }
+
+    public void Dispose()
+    {
+        TextureManager.Dispose();
     }
 
     public void SetCompFlgSet(AetherCurrentCompFlgSet compFlgSet)
@@ -76,8 +84,6 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         {
             ImGui.SetTooltip("Check to hide unlocked Aether Currents");
         }
-
-        ImGui.Dummy(new Vector2(Size!.Value.X, 0)); // set min-width
 
         ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
         ImGui.TextUnformatted(placeName);
@@ -153,11 +159,11 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         var startPos = ImGui.GetCursorPos();
         var windowSize = ImGui.GetContentRegionAvail();
         var style = ImGui.GetStyle();
-        var iconSize = 26;
+        var iconSize = ImGui.GetFrameHeight();
 
-        ImGui.SetCursorPos(new Vector2(windowSize.X + style.WindowPadding.X - iconSize - 1, iconSize + style.ItemSpacing.Y));
+        ImGui.SetCursorPosX(windowSize.X + style.WindowPadding.X - iconSize - 1);
 
-        ImGuiUtils.DrawIcon(64, iconSize, iconSize);
+        TextureManager.GetIcon(64)?.Draw(new(iconSize));
 
         if (ImGui.IsItemHovered())
         {
@@ -204,7 +210,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
 
         // Icon
         ImGui.TableNextColumn();
-        ImGuiUtils.DrawIcon(quest.JournalGenre.Value!.Icon, 40, 40);
+        TextureManager.GetIcon(quest.JournalGenre.Value!.Icon).Draw(new(40));
 
         // Content
         ImGui.TableNextColumn();
@@ -219,7 +225,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         // Actions
         ImGui.TableNextColumn();
         var selected = false;
-        ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, 40));
+        ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y) * 2));
         if (selected)
         {
             OpenMapLocation(quest.IssuerLocation.Value);
@@ -240,7 +246,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
 
         // Icon
         ImGui.TableNextColumn();
-        ImGuiUtils.DrawIcon(60033, 40, 40);
+        TextureManager.GetIcon(60033).Draw(new(40));
 
         // Content
         ImGui.TableNextColumn();
@@ -250,7 +256,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         // Actions
         ImGui.TableNextColumn();
         var selected = false;
-        ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, 40));
+        ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y) * 2));
         if (selected)
         {
             OpenMapLocation(level);

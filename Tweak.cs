@@ -8,6 +8,7 @@ using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Utils;
+using HaselTweaks.Windows;
 using ImGuiNET;
 
 namespace HaselTweaks;
@@ -23,9 +24,9 @@ public abstract unsafe class Tweak
 
     public virtual string IncompatibilityWarning => string.Empty;
     public virtual bool HasIncompatibilityWarning => !string.IsNullOrEmpty(IncompatibilityWarning);
-    public virtual void DrawIncompatibilityWarning()
+    public virtual void DrawIncompatibilityWarning(PluginWindow pluginWindow)
     {
-        ImGuiUtils.DrawIcon(60073, 24, 24);
+        pluginWindow.TextureManager?.GetIcon(60073).Draw(new(24));
         ImGui.SameLine();
         ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey2, IncompatibilityWarning);
     }

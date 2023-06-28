@@ -1,11 +1,11 @@
-using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using CSCharacter = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Structs;
 
 public unsafe partial struct CharaSelect
 {
-    [StaticAddress("48 89 2D ?? ?? ?? ?? 48 8B 6C 24", 3)]
-    public static partial BattleChara* GetCurrentCharacter();
+    [StaticAddress("48 89 2D ?? ?? ?? ?? 48 8B 6C 24", 3, true)]
+    public static partial CSCharacter* GetCurrentCharacter();
 
     [StaticAddress("4C 8D 3D ?? ?? ?? ?? 48 8B DA", 3)]
     public static partial CharaSelectCharacters* GetCharacterList();

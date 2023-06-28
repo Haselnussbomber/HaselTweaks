@@ -50,11 +50,6 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     [VirtualFunction(0)]
     public partial void Dtor(bool freeMemory);
 
-    /* This is the base CharaView initializer. Use the other one below.
-    [VirtualFunction(1)]
-    public partial void Initialize(CharaViewCharacterData* characterData, int objectIndex, nint agentCallbackReady);
-    */
-
     [MemberFunction("E8 ?? ?? ?? ?? 48 8B 43 10 C6 80 ?? ?? ?? ?? ?? 48 8B 4B 10")]
     public partial void Initialize(int clientObjectId, CharaViewCharacterData* characterData, long a4, int a5, long a6); // a4 is set to +0x3A8, a5 is set to +0x3B0, a6 is set to +0x3B8
 
@@ -83,7 +78,7 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     public partial void Update();
 
     [VirtualFunction(11)]
-    public partial bool Vf11(CharaViewGameObject* obj);
+    public partial bool Vf11(CharaViewCharacter* obj);
 
     [MemberFunction("E8 ?? ?? ?? ?? 49 8B 4C 24 ?? 48 8B 01 FF 90")]
     public partial void ResetCamera(); // sets position, target, zoom etc.
@@ -92,7 +87,7 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     public partial void SetCameraPosition(HalfVector4* cam, HalfVector4* target);
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 93 ?? ?? ?? ?? 0F 28 D0")]
-    public partial float GetAnimationTime(); // as Vector3?
+    public partial float GetAnimationTime();
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B6 96 ?? ?? ?? ?? 48 8B 8E ?? ?? ?? ?? E8 ?? ?? ?? ?? BB")]
     public partial void SetAmbientLightingColor(uint red, uint green, uint blue);
@@ -130,9 +125,8 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     [MemberFunction("E8 ?? ?? ?? ?? 83 BE ?? ?? ?? ?? ?? 4C 8B B4 24 ?? ?? ?? ?? 74 2D")]
     public partial nint ImportPortraitData(ExportedPortraitData* input);
 
-    /// <summary>Use this after manually setting camera positions.</summary>
     [MemberFunction("E8 ?? ?? ?? ?? F3 0F 10 53 ?? 48 8B CF")]
-    public partial void ApplyCameraPositions();
+    public partial void ApplyCameraPositions(); // use this after manually setting camera positions
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 43 24 66 85 C0 75 05 0F 28 D6 EB 35 0F B7 D0 8B CA 8B C2 C1 E9 0A 81 E2 ?? ?? ?? ?? 83 E1 1F C1 E0 10 C1 E1 17 25 ?? ?? ?? ?? 81 C1 ?? ?? ?? ?? C1 E2 0D 0B C8 0B CA 89 4C 24 40")]
     public partial void SetHeadDirection(float a2, float a3);

@@ -1,7 +1,7 @@
 using System.Text;
-using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using HaselTweaks.Utils;
 using Framework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 
 namespace HaselTweaks.Structs;
@@ -49,12 +49,8 @@ public unsafe partial struct Chat
             throw new ArgumentException("message contained invalid characters", nameof(message));
         }
 
-        var payload = Utf8String.FromString(message);
-
+        using var payload = new DisposableUtf8String(message);
         ProcessChatBox(Framework.Instance()->GetUiModule(), payload);
-
-        payload->Dtor();
-        IMemorySpace.Free(payload);
     }
 
     /// <summary>
@@ -77,14 +73,8 @@ public unsafe partial struct Chat
             throw new InvalidOperationException("Could not find signature for chat sanitisation");
         }
 
-        var uText = Utf8String.FromString(text);
-
+        using var uText = new DisposableUtf8String(text);
         SanitiseString(uText, 0x27F, 0);
-        var sanitised = uText->ToString();
-
-        uText->Dtor();
-        IMemorySpace.Free(uText);
-
-        return sanitised;
+        return uText.ToString();
     }
 }

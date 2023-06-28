@@ -1,12 +1,13 @@
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Graphics.Scene;
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Common.Math;
-using Lumina.Data.Parsing;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Structs;
 
 /*
- * clientObjectId:
+ * ClientObjectIndex:
  *  0 used in Character, PvPCharacter
  *  1 used in Inspect, CharaCard
  *  2 used in TryOn, GearSetPreview
@@ -14,11 +15,6 @@ namespace HaselTweaks.Structs;
  *  4 used in BannerList, BannerEdit
  *  0 - 7 used in BannerParty
  */
-
-public enum CharaViewState : uint
-{
-    Ready = 6
-}
 
 [StructLayout(LayoutKind.Explicit, Size = 0x2C8)]
 public unsafe partial struct CharaView : ICreatable
@@ -28,16 +24,16 @@ public unsafe partial struct CharaView : ICreatable
     [FieldOffset(0x10)] public uint ClientObjectIndex;
     [FieldOffset(0x14)] public uint CameraType; // turns portrait ambient/directional lighting on/off
     [FieldOffset(0x18)] public nint CameraManager;
-    [FieldOffset(0x20)] public nint Camera;
-    [FieldOffset(0x28)] public nint Unk28;
-    [FieldOffset(0x30)] public nint Agent; // for example: AgentTryOn
-    [FieldOffset(0x38)] public nint AgentCallbackReady; // if set, called when State changes to Ready
-    [FieldOffset(0x40)] public nint AgentCallback; // not investigated, used inside vf7 and vf11
+    [FieldOffset(0x20)] public Camera* Camera;
+    //[FieldOffset(0x28)] public nint Unk28;
+    [FieldOffset(0x30)] public AgentInterface* Agent; // for example: AgentTryOn
+    //[FieldOffset(0x38)] public nint AgentCallbackReady; // if set, called when State changes to Ready
+    //[FieldOffset(0x40)] public nint AgentCallback; // not investigated, used inside vf7 and vf11
     [FieldOffset(0x48)] public CharaViewCharacterData CharacterData;
 
-    [FieldOffset(0xB8)] public uint UnkB8;
-    [FieldOffset(0xBC)] public uint UnkBC;
-    [FieldOffset(0xC0)] public float UnkC0;
+    //[FieldOffset(0xB8)] public uint UnkB8;
+    //[FieldOffset(0xBC)] public uint UnkBC;
+    //[FieldOffset(0xC0)] public float UnkC0;
     [FieldOffset(0xC4)] public float ZoomRatio;
 
     [FixedSizeArray<CharaViewItem>(14)]
@@ -47,9 +43,7 @@ public unsafe partial struct CharaView : ICreatable
     [FieldOffset(0x2B9)] public bool CharacterLoaded;
 
     public static CharaView* Create()
-    {
-        return IMemorySpace.GetUISpace()->Create<CharaView>();
-    }
+        => IMemorySpace.GetUISpace()->Create<CharaView>();
 
     [MemberFunction("E8 ?? ?? ?? ?? 41 80 A6 ?? ?? ?? ?? ?? 48 8D 05")]
     public partial void Ctor();
@@ -88,7 +82,7 @@ public unsafe partial struct CharaView : ICreatable
     public partial void Vf10(); // noop
 
     [VirtualFunction(11)]
-    public partial bool Vf11(CharaViewGameObject* obj);
+    public partial bool Vf11(CharaViewCharacter* obj);
 
     [VirtualFunction(12)]
     public partial float Vf12(int a2, int a3);
@@ -100,7 +94,7 @@ public unsafe partial struct CharaView : ICreatable
     public partial void Render(uint frameIndex);
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 85 C0 75 05 0F 57 C9")]
-    public partial CharaViewGameObject* GetGameObject();
+    public partial CharaViewCharacter* GetCharacter();
 
     [MemberFunction("E8 ?? ?? ?? ?? 49 8D 4F 10 88 85")]
     public partial bool IsAnimationPaused();
@@ -118,25 +112,28 @@ public unsafe partial struct CharaView : ICreatable
     public partial void ToggleDrawWeapon(bool drawn);
 }
 
+public enum CharaViewState : uint
+{
+    Ready = 6
+}
+
 [StructLayout(LayoutKind.Explicit, Size = 0x68)]
 public unsafe partial struct CharaViewCharacterData : ICreatable
 {
     [FieldOffset(0)] public CustomizeData CustomizeData; // see Glamourer.Customization.CharacterCustomization
-    [FieldOffset(0x1A)] public byte Unk1A;
-    [FieldOffset(0x1B)] public byte Unk1B;
+    //[FieldOffset(0x1A)] public byte Unk1A;
+    //[FieldOffset(0x1B)] public byte Unk1B;
     [FieldOffset(0x1C)] public fixed uint ItemIds[14];
     [FieldOffset(0x54)] public fixed byte ItemStains[14];
     [FieldOffset(0x62)] public byte ClassJobId;
     [FieldOffset(0x63)] public bool VisorHidden;
     [FieldOffset(0x64)] public bool WeaponHidden;
     [FieldOffset(0x65)] public bool VisorClosed;
-    [FieldOffset(0x66)] public byte Unk66;
-    [FieldOffset(0x67)] public byte Unk67;
+    //[FieldOffset(0x66)] public byte Unk66;
+    //[FieldOffset(0x67)] public byte Unk67;
 
     public static CharaViewCharacterData* Create()
-    {
-        return IMemorySpace.GetUISpace()->Create<CharaViewCharacterData>();
-    }
+        => IMemorySpace.GetUISpace()->Create<CharaViewCharacterData>();
 
     public static CharaViewCharacterData* CreateFromLocalPlayer()
     {
@@ -157,36 +154,36 @@ public unsafe struct CharaViewItem
 {
     [FieldOffset(0x0)] public byte SlotId;
     [FieldOffset(0x1)] public byte EquipSlotCategory;
-    [FieldOffset(0x2)] public byte EquipSlotCategory2;
-    [FieldOffset(0x3)] public byte Stain;
-    [FieldOffset(0x4)] public byte Stain2;
-    [FieldOffset(0x5)] public byte Unk5;
-    [FieldOffset(0x6)] public byte Unk6;
-    [FieldOffset(0x7)] public byte Unk7;
+    [FieldOffset(0x2)] public byte GlamourEquipSlotCategory;
+    [FieldOffset(0x3)] public byte StainId;
+    [FieldOffset(0x4)] public byte GlamourStainId;
+    //[FieldOffset(0x5)] public byte Unk5;
+    //[FieldOffset(0x6)] public byte Unk6;
+    //[FieldOffset(0x7)] public byte Unk7;
     [FieldOffset(0x8)] public uint ItemId;
-    [FieldOffset(0xC)] public uint ItemId2;
-    [FieldOffset(0x10)] public Quad ModelMain;
-    [FieldOffset(0x18)] public Quad ModelSub;
+    [FieldOffset(0xC)] public uint GlamourItemId;
+    [FieldOffset(0x10)] public fixed short ModelMain[4];
+    [FieldOffset(0x18)] public fixed short ModelSub[4];
 }
 
 [StructLayout(LayoutKind.Explicit)]
-public unsafe partial struct CharaViewGameObject // FFXIVClientStructs.FFXIV.Client.Game.Character.Character
+public unsafe partial struct CharaViewCharacter // FFXIVClientStructs.FFXIV.Client.Game.Character.Character
 {
-    [FieldOffset(0x1A8)] public CharaViewGameObjectClassJobSettings ClassJobSettings;
-    [FieldOffset(0xC60)] public CharaViewGameObjectFacialAnimationManager FacialAnimationManager; // name not set in stone
-    [FieldOffset(0x6E8)] public CharaViewGameObjectDrawDataContainer DrawDataContainer;
-    [FieldOffset(0x920)] public CharaViewGameObjectActionTimelineManager ActionTimelineManager;
+    [FieldOffset(0x1A8)] public CharaViewCharacterCharacterData CharacterData;
+    [FieldOffset(0x6E8)] public DrawDataContainer DrawDataContainer;
+    [FieldOffset(0x920)] public CharaViewCharacterActionTimelineManager ActionTimelineManager;
+    [FieldOffset(0xC60)] public CharaViewCharacterFacialAnimationManager FacialAnimationManager; // name not set in stone
 }
 
 [StructLayout(LayoutKind.Explicit)]
-public unsafe partial struct CharaViewGameObjectClassJobSettings
+public unsafe partial struct CharaViewCharacterCharacterData
 {
     [MemberFunction("44 0F B6 49 ?? 88 51 3A")]
     public partial void SetClassJob(short classJobId);
 }
 
 [StructLayout(LayoutKind.Explicit)]
-public unsafe partial struct CharaViewGameObjectFacialAnimationManager
+public unsafe partial struct CharaViewCharacterFacialAnimationManager
 {
     [FieldOffset(0x604)] public Vector2 HeadDirection;
     [FieldOffset(0x60C)] public Vector2 EyeDirection;
@@ -199,20 +196,7 @@ public unsafe partial struct CharaViewGameObjectFacialAnimationManager
 }
 
 [StructLayout(LayoutKind.Explicit)]
-public unsafe partial struct CharaViewGameObjectDrawDataContainer
-{
-    [MemberFunction("E8 ?? ?? ?? ?? EB 14 40 80 FE 08")]
-    public partial void ToggleVisorVisibility(uint a2, bool isHidden); // a2 = 0
-
-    [MemberFunction("E8 ?? ?? ?? ?? 0F B7 2D")]
-    public partial void ToggleVisorClosed(bool isClosed);
-
-    [MemberFunction("E8 ?? ?? ?? ?? 4C 8B 6C 24 ?? 0F BA E5 0A")]
-    public partial void ToggleWeaponVisibility(bool isHidden);
-}
-
-[StructLayout(LayoutKind.Explicit)]
-public unsafe partial struct CharaViewGameObjectActionTimelineManager
+public unsafe partial struct CharaViewCharacterActionTimelineManager
 {
     [FieldOffset(0x80)] public CharaViewGameObjectSchedulerTimeline** BaseAnimation;
 

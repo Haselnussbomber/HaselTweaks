@@ -15,9 +15,15 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
 public unsafe class AdvancedImportOverlay : Overlay
 {
-    public AdvancedImportOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper AdvancedImport", tweak)
+    public AdvancedImportOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper: Advanced Import", tweak)
     {
         base.Flags &= ~ImGuiWindowFlags.NoScrollbar;
+    }
+
+    public override void OnClose()
+    {
+        base.OnClose();
+        Tweak.CloseAdvancedImportOverlay(false);
     }
 
     public override void Draw()

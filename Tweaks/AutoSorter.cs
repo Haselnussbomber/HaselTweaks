@@ -170,12 +170,23 @@ public unsafe class AutoSorter : Tweak
     public class Configuration
     {
         public List<SortingRule> Settings = new();
+        public bool SortArmouryOnJobChange = true;
     }
 
     public override bool HasCustomConfig => true;
     public override void DrawCustomConfig()
     {
-        if (!ImGui.BeginTable("##HaselTweaks_AutoSortSettings", 5, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.NoPadOuterX))
+        var ItemSpacing = ImGui.GetStyle().ItemSpacing;
+        var ArrowUpButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.ArrowUp);
+        var ArrowDownButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.ArrowDown);
+        var TrashButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Trash);
+        var TerminalButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Terminal);
+
+        ImGui.Checkbox("Sort armoury on job change", ref Config.SortArmouryOnJobChange);
+
+        ImGuiUtils.DrawPaddedSeparator();
+
+        if (!ImGui.BeginTable("##HaselTweaks_AutoSortSettings", 5, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX))
         {
             ImGui.PopStyleVar();
             return;
@@ -185,7 +196,13 @@ public unsafe class AutoSorter : Tweak
         ImGui.TableSetupColumn("Category", ImGuiTableColumnFlags.WidthStretch);
         ImGui.TableSetupColumn("Condition", ImGuiTableColumnFlags.WidthStretch);
         ImGui.TableSetupColumn("Order", ImGuiTableColumnFlags.WidthStretch);
-        ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, Enabled ? 120 : 85);
+        ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed,
+            ArrowUpButtonSize.X +
+            ItemSpacing.X +
+            ArrowDownButtonSize.X +
+            ItemSpacing.X +
+            TrashButtonSize.X +
+            (Enabled ? ItemSpacing.X + TerminalButtonSize.X : 0));
 
         var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
         var lang = Service.ClientState.ClientLanguage;
@@ -290,7 +307,7 @@ public unsafe class AutoSorter : Tweak
             }
             else
             {
-                ImGui.Dummy(new(22, 22));
+                ImGui.Dummy(ArrowUpButtonSize);
             }
 
             ImGui.SameLine();
@@ -304,7 +321,7 @@ public unsafe class AutoSorter : Tweak
             }
             else
             {
-                ImGui.Dummy(new(22, 22));
+                ImGui.Dummy(ArrowDownButtonSize);
             }
 
             ImGui.SameLine();
@@ -458,6 +475,7 @@ public unsafe class AutoSorter : Tweak
 
     private readonly Queue<IGrouping<string, SortingRule>> queue = new();
     private bool IsBusy = false;
+    private uint LastClassJobId = 0;
 
     public static bool IsRetainerInventoryOpen => GetAddon("InventoryRetainer") != null || GetAddon("InventoryRetainerLarge") != null;
     public static bool IsInventoryBuddyOpen => GetAddon("InventoryBuddy") != null;
@@ -469,6 +487,11 @@ public unsafe class AutoSorter : Tweak
         ["InventoryExpansion"] = false
     };
 
+    public override void OnLogin()
+    {
+        LastClassJobId = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
+    }
+
     public override void Disable()
     {
         queue.Clear();
@@ -476,23 +499,38 @@ public unsafe class AutoSorter : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        if (Service.ClientState.IsLoggedIn && !(Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInCutSceneEvent]))
+        if (Service.ClientState.IsLoggedIn)
         {
-            foreach (var (name, wasVisible) in InventoryAddons)
+            if (!(Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInCutSceneEvent]))
             {
-                if (GetAddon(name, out var unitBase))
+                foreach (var (name, wasVisible) in InventoryAddons)
                 {
-                    var isVisible = unitBase->IsVisible;
-
-                    if (wasVisible != isVisible)
+                    if (GetAddon(name, out var unitBase))
                     {
-                        InventoryAddons[name] = isVisible;
+                        var isVisible = unitBase->IsVisible;
 
-                        if (isVisible)
+                        if (wasVisible != isVisible)
                         {
-                            OnOpenInventory();
+                            InventoryAddons[name] = isVisible;
+
+                            if (isVisible)
+                            {
+                                OnOpenInventory();
+                            }
                         }
                     }
+                }
+            }
+
+            if (Config.SortArmouryOnJobChange &&
+                Service.ClientState.LocalPlayer != null &&
+                LastClassJobId != Service.ClientState.LocalPlayer.ClassJob.Id)
+            {
+                LastClassJobId = Service.ClientState.LocalPlayer.ClassJob.Id;
+
+                if (GetAddon("ArmouryBoard", out var unitBase))
+                {
+                    OnOpenArmoury();
                 }
             }
         }
@@ -507,12 +545,6 @@ public unsafe class AutoSorter : Tweak
             case "ArmouryBoard":
                 OnOpenArmoury();
                 break;
-            // TODO: Inventories are created on login
-            //case "Inventory":
-            //case "InventoryLarge":
-            //case "InventoryExpansion":
-            //    OnOpenInventory();
-            //    break;
             case "InventoryBuddy":
                 OnOpenInventoryBuddy();
                 break;

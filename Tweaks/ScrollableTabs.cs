@@ -1,8 +1,8 @@
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
-using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
+using HaselTweaks.Utils;
 using AgentId = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentId;
 using HaselAtkComponentRadioButton = HaselTweaks.Structs.AtkComponentRadioButton;
 
@@ -511,9 +511,8 @@ public unsafe partial class ScrollableTabs : Tweak
             return;
 
         // fake event, so it can call SetEventIsHandled
-        var atkEvent = Marshal.AllocHGlobal(30);
+        using var atkEvent = new DisposableStruct<AtkEvent>();
         addon->SetTab(tabIndex, atkEvent);
-        Marshal.FreeHGlobal(atkEvent);
     }
 
     private void UpdateFieldNotes(AddonMYCWarResultNotebook* addon)
@@ -521,7 +520,7 @@ public unsafe partial class ScrollableTabs : Tweak
         if (IntersectingCollisionNode == addon->DescriptionCollisionNode)
             return;
 
-        var atkEvent = (AtkEvent*)IMemorySpace.GetUISpace()->Malloc<AtkEvent>();
+        using var atkEvent = new DisposableStruct<AtkEvent>();
         var eventParam = Math.Clamp(addon->CurrentNoteIndex % 10 + wheelState, -1, addon->MaxNoteIndex - 1);
 
         if (eventParam == -1)
@@ -545,8 +544,6 @@ public unsafe partial class ScrollableTabs : Tweak
         {
             addon->ReceiveEvent(AtkEventType.ButtonClick, eventParam, atkEvent, 0);
         }
-
-        IMemorySpace.Free(atkEvent);
     }
 
     private void UpdateMountMinion(MountMinionNoteBookBase* addon)

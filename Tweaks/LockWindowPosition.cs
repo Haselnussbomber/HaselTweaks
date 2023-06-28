@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using Dalamud;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface;
@@ -77,7 +76,7 @@ public unsafe partial class LockWindowPosition : Tweak
 
             ImGui.TableSetupColumn("Enabled", ImGuiTableColumnFlags.WidthFixed);
             ImGui.TableSetupColumn("Name");
-            ImGui.TableSetupColumn("Action", ImGuiTableColumnFlags.WidthFixed, 24);
+            ImGui.TableSetupColumn("Action", ImGuiTableColumnFlags.WidthFixed, ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Trash).X);
 
             var entryToRemove = -1;
             var i = 0;
@@ -425,13 +424,10 @@ public unsafe partial class LockWindowPosition : Tweak
             .AddText(text)
             .Encode();
 
-        var textPtr = Marshal.AllocHGlobal(bytes.Length + 1);
-        Unsafe.InitBlock((void*)textPtr, 0, (uint)bytes.Length + 1);
-        MemoryHelper.WriteRaw(textPtr, bytes);
-
         var handler = (nint)AtkStage.GetSingleton()->RaptureAtkUnitManager + 0x9C88; // see vtbl ptr in ctor
-        agentContext->AddMenuItem((byte*)textPtr, (void*)handler, eventParam);
-
-        Marshal.FreeHGlobal(textPtr);
+        fixed (byte* ptr = &bytes[0])
+        {
+            agentContext->AddMenuItem(ptr, (void*)handler, eventParam);
+        }
     }
 }

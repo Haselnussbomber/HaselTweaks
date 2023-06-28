@@ -28,9 +28,22 @@ public abstract unsafe class Overlay : Window
     {
         Tweak = tweak;
 
-        base.Flags |= ImGuiWindowFlags.NoSavedSettings;
-        base.Flags |= ImGuiWindowFlags.NoDecoration;
-        base.Flags |= ImGuiWindowFlags.NoMove;
+        if (ImGui.GetIO().FontGlobalScale <= 1)
+        {
+            base.Flags |= ImGuiWindowFlags.NoSavedSettings;
+            base.Flags |= ImGuiWindowFlags.NoDecoration;
+            base.Flags |= ImGuiWindowFlags.NoMove;
+        }
+        else
+        {
+            SizeCondition = ImGuiCond.Appearing;
+            SizeConstraints = new WindowSizeConstraints
+            {
+                MinimumSize = new Vector2(400, 500),
+                MaximumSize = new Vector2(4069),
+            };
+        }
+
         base.RespectCloseHotkey = false;
         base.IsOpen = true;
     }
@@ -57,35 +70,38 @@ public abstract unsafe class Overlay : Window
         ImGui.PushStyleColor(ImGuiCol.WindowBg, 0xFF313131);
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10, 4));
 
-        if (Type == OverlayType.Window)
+        if (ImGui.GetIO().FontGlobalScale <= 1)
         {
-            var windowNode = (AtkResNode*)((AtkUnitBase*)AddonBannerEditor)->WindowNode;
-            var scale = GetNodeScale(windowNode);
+            if (Type == OverlayType.Window)
+            {
+                var windowNode = (AtkResNode*)((AtkUnitBase*)AddonBannerEditor)->WindowNode;
+                var scale = GetNodeScale(windowNode);
 
-            Position = new Vector2(
-                AddonBannerEditor->AtkUnitBase.X + (windowNode->X + 8) * scale.X,
-                AddonBannerEditor->AtkUnitBase.Y + (windowNode->Y + 40) * scale.Y
-            );
+                Position = new Vector2(
+                    AddonBannerEditor->AtkUnitBase.X + (windowNode->X + 8) * scale.X,
+                    AddonBannerEditor->AtkUnitBase.Y + (windowNode->Y + 40) * scale.Y
+                );
 
-            Size = new Vector2(
-                (windowNode->GetWidth() - 16) * scale.X,
-                (windowNode->GetHeight() - 56) * scale.Y
-            );
-        }
-        else if (Type == OverlayType.LeftPane)
-        {
-            var leftPane = GetNode((AtkUnitBase*)AddonBannerEditor, 20);
-            var scale = GetNodeScale(leftPane);
+                Size = new Vector2(
+                    (windowNode->GetWidth() - 16) * scale.X,
+                    (windowNode->GetHeight() - 56) * scale.Y
+                );
+            }
+            else if (Type == OverlayType.LeftPane)
+            {
+                var leftPane = GetNode((AtkUnitBase*)AddonBannerEditor, 20);
+                var scale = GetNodeScale(leftPane);
 
-            Position = new Vector2(
-                AddonBannerEditor->AtkUnitBase.X + leftPane->X * scale.X,
-                AddonBannerEditor->AtkUnitBase.Y + leftPane->Y * scale.Y
-            );
+                Position = new Vector2(
+                    AddonBannerEditor->AtkUnitBase.X + leftPane->X * scale.X,
+                    AddonBannerEditor->AtkUnitBase.Y + leftPane->Y * scale.Y
+                );
 
-            Size = new Vector2(
-                leftPane->GetWidth() * scale.X,
-                leftPane->GetHeight() * scale.Y
-            );
+                Size = new Vector2(
+                    leftPane->GetWidth() * scale.X,
+                    leftPane->GetHeight() * scale.Y
+                );
+            }
         }
     }
 
@@ -97,16 +113,19 @@ public abstract unsafe class Overlay : Window
 
     public void ToggleUiVisibility(bool visible)
     {
-        var leftPane = GetNode((AtkUnitBase*)AddonBannerEditor, 20);
-        SetVisibility(leftPane, visible);
-
-        if (Type != OverlayType.LeftPane)
+        if (visible || ImGui.GetIO().FontGlobalScale <= 1)
         {
-            var verticalSeparatorNode = GetNode((AtkUnitBase*)AddonBannerEditor, 135);
-            SetVisibility(verticalSeparatorNode, visible);
+            var leftPane = GetNode((AtkUnitBase*)AddonBannerEditor, 20);
+            SetVisibility(leftPane, visible);
 
-            var controlsHint = GetNode((AtkUnitBase*)AddonBannerEditor, 2);
-            SetVisibility(controlsHint, visible);
+            if (Type != OverlayType.LeftPane)
+            {
+                var verticalSeparatorNode = GetNode((AtkUnitBase*)AddonBannerEditor, 135);
+                SetVisibility(verticalSeparatorNode, visible);
+
+                var controlsHint = GetNode((AtkUnitBase*)AddonBannerEditor, 2);
+                SetVisibility(controlsHint, visible);
+            }
         }
     }
 }
