@@ -10,10 +10,9 @@ public unsafe partial struct AddonInventory
 
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x31C)] public int TabIndex;
+    [FieldOffset(0x228)] public int Unk228;
 
-    [MemberFunction("E9 ?? ?? ?? ?? CC CC CC CC CC CC CC CC CC CC 48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 44 88 44 24")]
-    public readonly partial void SwitchToInventoryEvent(byte a2);
+    [FieldOffset(0x31C)] public int TabIndex;
 
     // called via Inventory vf68
     [MemberFunction("E9 ?? ?? ?? ?? 83 FD 11")]

@@ -6,6 +6,7 @@ using HaselTweaks.Utils;
 using Windows.Win32;
 using AgentId = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentId;
 using HaselAtkComponentRadioButton = HaselTweaks.Structs.AtkComponentRadioButton;
+using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
@@ -387,7 +388,19 @@ public unsafe partial class ScrollableTabs : Tweak
     {
         if (addon->TabIndex == AddonInventory.NUM_TABS - 1 && wheelState > 0)
         {
-            addon->SwitchToInventoryEvent(0);
+            // inside "48 89 6C 24 ?? 56 48 83 EC 20 0F B7 C2", a3 != 17
+            using var values = new DisposableStructArray<AtkValue>(3);
+
+            values[0]->ChangeType(ValueType.Int);
+            values[0]->Int = 22;
+
+            values[1]->ChangeType(ValueType.Int);
+            values[1]->Int = addon->Unk228;
+
+            values[2]->ChangeType(ValueType.UInt);
+            values[2]->UInt = 0;
+
+            addon->AtkUnitBase.FireCallback(3, values);
         }
         else
         {
@@ -404,7 +417,19 @@ public unsafe partial class ScrollableTabs : Tweak
     {
         if (addon->TabIndex == 0 && wheelState < 0)
         {
-            addon->SwitchToInventory(0);
+            // inside Vf68, fn call before return with a2 being 2
+            using var values = new DisposableStructArray<AtkValue>(3);
+
+            values[0]->ChangeType(ValueType.Int);
+            values[0]->Int = 22;
+
+            values[1]->ChangeType(ValueType.Int);
+            values[1]->Int = addon->Unk280;
+
+            values[2]->ChangeType(ValueType.UInt);
+            values[2]->UInt = 2;
+
+            addon->AtkUnitBase.FireCallback(3, values);
         }
         else
         {

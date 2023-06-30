@@ -187,12 +187,6 @@ public unsafe partial struct CharaViewCharacterFacialAnimationManager
 {
     [FieldOffset(0x604)] public Vector2 HeadDirection;
     [FieldOffset(0x60C)] public Vector2 EyeDirection;
-
-    [MemberFunction("48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 10 F3 0F 11 89 ?? ?? ?? ?? F3 0F 11 91 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 09 33 C0 48 89 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC CC 48 8B 41 08")]
-    public readonly partial void SetHeadDirection(float x, float y);
-
-    [MemberFunction("48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 10 F3 0F 11 89 ?? ?? ?? ?? F3 0F 11 91 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 09 33 C0 48 89 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC CC 48 89 5C 24")]
-    public readonly partial void SetEyeDirection(float x, float y);
 }
 
 [StructLayout(LayoutKind.Explicit)]
