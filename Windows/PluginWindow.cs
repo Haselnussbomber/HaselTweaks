@@ -111,7 +111,7 @@ public partial class PluginWindow : Window, IDisposable
                 using var memoryStream = new MemoryStream();
                 bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
                 memoryStream.Seek(0, SeekOrigin.Begin);
-                var image = Image.Load<Rgba32>(memoryStream);
+                using var image = Image.Load<Rgba32>(memoryStream);
 
                 var data = new byte[4 * image.Width * image.Height];
                 image.CopyPixelDataTo(data);
