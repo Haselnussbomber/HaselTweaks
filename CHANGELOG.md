@@ -1,5 +1,12 @@
 # Changelog
 
+## [15.1.1] (2023-06-30)
+
+### HaselTweaks
+
+- **Optimized:** Replaced the logo with an SVG, which eliminates the startup lag caused by rebuilding fonts.
+- **Fixed:** Logo now also respects Dalamuds Global Font Scale setting.
+
 ## [15.1.0] (2023-06-29)
 
 ### HaselTweaks
