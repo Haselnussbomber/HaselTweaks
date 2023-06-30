@@ -272,7 +272,7 @@ public unsafe class AdvancedEditOverlay : Overlay
         {
             ImGui.TextUnformatted("Please note:");
             ImGuiHelpers.SafeTextWrapped("The game may verify the values on setting them and/or saving the portrait. If possible, it will automatically adjust them so that they are within a valid range. If not, it will throw an error and you have to fix the values yourself. In any case, if the game adjusts the values, the adjusted values will not be reflected here unless you reopen the window.");
-            ImGuiHelpers.SafeTextWrapped("Also, setting the Animation Timestamp will restart the animation at the given timestamp, hence the flickering. If the Animation Timestamp is too high, the game will start the next loop, resetting the timestamp to 0.");
+            ImGuiHelpers.SafeTextWrapped("Also, setting the Animation Timestamp will restart the animation at the specified timestamp, causing some flickering. If the Animation Timestamp is too high, the game will start the next loop, resetting the timestamp to 0.");
         }
     }
 }

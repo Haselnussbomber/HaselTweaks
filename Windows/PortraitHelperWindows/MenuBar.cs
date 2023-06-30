@@ -84,7 +84,7 @@ public unsafe class MenuBar : Window, IDisposable
 
         if (!AgentBannerEditor->EditorState->HasDataChanged)
         {
-            ImGuiUtils.IconButtonDisabled("Reset", FontAwesomeIcon.Undo, StringCache.GetAddonText(4830) ?? "Reset");
+            ImGuiUtils.IconButton("Reset", FontAwesomeIcon.Undo, StringCache.GetAddonText(4830) ?? "Reset", disabled: true);
         }
         else if (ImGuiUtils.IconButton("Reset", FontAwesomeIcon.Undo, StringCache.GetAddonText(4830) ?? "Reset"))
         {
@@ -101,7 +101,7 @@ public unsafe class MenuBar : Window, IDisposable
         ImGui.SameLine();
         if (Tweak.ClipboardPreset == null)
         {
-            ImGuiUtils.IconButtonDisabled("Paste", FontAwesomeIcon.Paste, "Import from Clipboard"); // GetAddonText(101) ?? "Paste"
+            ImGuiUtils.IconButton("Paste", FontAwesomeIcon.Paste, "Import from Clipboard", disabled: true); // GetAddonText(101) ?? "Paste"
         }
         else
         {
@@ -115,7 +115,7 @@ public unsafe class MenuBar : Window, IDisposable
         ImGui.SameLine();
         if (Tweak.ClipboardPreset == null)
         {
-            ImGuiUtils.IconButtonDisabled("ViewModeAdvancedImport", FontAwesomeIcon.FileImport, "Toggle Advanced Import Mode");
+            ImGuiUtils.IconButton("ViewModeAdvancedImport", FontAwesomeIcon.FileImport, "Toggle Advanced Import Mode", disabled: true);
         }
         else if (Tweak.OverlayViewMode == ViewMode.AdvancedImport)
         {

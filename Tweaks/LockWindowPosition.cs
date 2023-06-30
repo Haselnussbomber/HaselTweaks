@@ -115,12 +115,13 @@ public unsafe partial class LockWindowPosition : Tweak
                 }
                 else
                 {
-                    ImGuiUtils.IconButtonDisabled(
+                    ImGuiUtils.IconButton(
                         key + "_Delete",
                         FontAwesomeIcon.Trash,
                         isWindowFocused
                             ? "Hold shift to delete"
-                            : "Focus window and hold shift to delete");
+                            : "Focus window and hold shift to delete",
+                        disabled: true);
                 }
 
                 i++;

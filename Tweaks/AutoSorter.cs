@@ -335,12 +335,13 @@ public unsafe class AutoSorter : Tweak
             }
             else
             {
-                ImGuiUtils.IconButtonDisabled(
+                ImGuiUtils.IconButton(
                     key + "_Delete",
                     FontAwesomeIcon.Trash,
                     isWindowFocused
                         ? "Hold shift to delete rule"
-                        : "Focus window and hold shift to delete rule");
+                        : "Focus window and hold shift to delete rule",
+                    disabled: true);
             }
 
             ImGui.SameLine();
@@ -350,7 +351,7 @@ public unsafe class AutoSorter : Tweak
                 if (IsBusy || queue.Any())
                 {
                     ImGui.SameLine();
-                    ImGuiUtils.IconButtonDisabled(FontAwesomeIcon.Terminal, "Sorting in progress. Please wait.");
+                    ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, "Sorting in progress. Please wait.", disabled: true);
                 }
                 else
                 {
@@ -372,12 +373,13 @@ public unsafe class AutoSorter : Tweak
 
                     if (disabledReasons != null)
                     {
-                        ImGuiUtils.IconButtonDisabled(
+                        ImGuiUtils.IconButton(
                             key + "_Execute",
                             FontAwesomeIcon.Terminal,
                             disabledReasons.Count > 1
                                 ? "- " + string.Join("\n- ", disabledReasons)
-                                : disabledReasons.First());
+                                : disabledReasons.First(),
+                            disabled: true);
                     }
                     else
                     {
@@ -436,11 +438,11 @@ public unsafe class AutoSorter : Tweak
             }
             else
             {
-                ImGuiUtils.ButtonDisabled("Run All##HaselTweaks_AutoSortSettings_RunAll");
+                using (ImRaii.Disabled())
+                    ImGui.Button("Run All##HaselTweaks_AutoSortSettings_RunAll");
+
                 if (ImGui.IsItemHovered())
-                {
                     ImGui.SetTooltip("Sorting in progress. Please wait.");
-                }
             }
         }
 

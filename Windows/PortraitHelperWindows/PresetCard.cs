@@ -96,7 +96,7 @@ public class PresetCard : IDisposable
 
         if (isImageLoading)
         {
-            ImGuiUtils.DrawLoadingSpinner(center);
+            DrawLoadingSpinner(center);
         }
         else if (!doesImageFileExist)
         {
@@ -231,6 +231,29 @@ public class PresetCard : IDisposable
             }
 
             ImGui.EndPopup();
+        }
+    }
+
+    public static void DrawLoadingSpinner(Vector2 center, float radius = 10f)
+    {
+        var angle = 0.0f;
+        var numSegments = 10;
+        var angleStep = (float)(Math.PI * 2.0f / numSegments);
+        var time = ImGui.GetTime();
+        var drawList = ImGui.GetWindowDrawList();
+
+        for (var i = 0; i < numSegments; i++)
+        {
+            var pos = center + new Vector2(
+                radius * (float)Math.Cos(angle),
+                radius * (float)Math.Sin(angle));
+
+            var t = (float)(-angle / (float)Math.PI / 2f + time) % 1f;
+            var color = new Vector4(1f, 1f, 1f, 1 - t);
+
+            drawList.AddCircleFilled(pos, 2f, ImGui.ColorConvertFloat4ToU32(color));
+
+            angle += angleStep;
         }
     }
 
