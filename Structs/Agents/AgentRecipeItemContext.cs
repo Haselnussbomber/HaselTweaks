@@ -13,5 +13,5 @@ public unsafe partial struct AgentRecipeItemContext
     [FieldOffset(0x28)] public uint ResultItemId;
 
     [MemberFunction("E8 ?? ?? ?? ?? 45 8B C4 41 8B D7")]
-    public partial nint AddItemContextMenuEntries(uint itemId, byte flags, byte* itemName);
+    public readonly partial nint AddItemContextMenuEntries(uint itemId, byte flags, byte* itemName);
 }

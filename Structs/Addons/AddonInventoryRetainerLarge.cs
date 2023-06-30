@@ -15,5 +15,5 @@ public unsafe partial struct AddonInventoryRetainerLarge
 
     // called via RetainerInventoryLarge vf68
     [MemberFunction("E9 ?? ?? ?? ?? 33 D2 E8 ?? ?? ?? ?? 48 83 C4 48")]
-    public partial void SetTab(int tab);
+    public readonly partial void SetTab(int tab);
 }

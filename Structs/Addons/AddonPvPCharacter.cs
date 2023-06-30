@@ -24,5 +24,5 @@ public unsafe partial struct AddonPvPCharacter
     }
 
     [MemberFunction("48 8B C4 48 89 58 20 55 56 57 41 56 41 57 48 81 EC")]
-    public partial void UpdateClasses(NumberArrayData** numberArrayData, StringArrayData** stringArrayData);
+    public readonly partial void UpdateClasses(NumberArrayData** numberArrayData, StringArrayData** stringArrayData);
 }

@@ -15,5 +15,5 @@ public partial struct AgentMiragePrismPrismBox
     [FieldOffset(0x3A)] public byte PageIndex;
 
     [MemberFunction("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 0F B6 43 3A")]
-    public partial void UpdateItems(bool resetTabIndex, bool a2);
+    public readonly partial void UpdateItems(bool resetTabIndex, bool a2);
 }

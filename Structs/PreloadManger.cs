@@ -8,5 +8,5 @@ public unsafe partial struct PreloadManger
 
     [MemberFunction("E8 ?? ?? ?? ?? 41 80 7F ?? ?? 75 16")]
     [GenerateCStrOverloads]
-    public partial void PreloadTerritory(int a2, byte* bg, byte a4, uint level, uint territoryType);
+    public readonly partial void PreloadTerritory(int a2, byte* bg, byte a4, uint level, uint territoryType);
 }

@@ -13,11 +13,11 @@ public unsafe partial struct AtkComponentList
     [FieldOffset(0x118)] public uint ListLength;
 
     [VirtualFunction(35)]
-    public partial uint GetListLength();
+    public readonly partial uint GetListLength();
 
     [MemberFunction("E8 ?? ?? ?? ?? 41 FE 85")]
-    public partial nint SetListLength(short value);
+    public readonly partial nint SetListLength(short value);
 
     [MemberFunction("E8 ?? ?? ?? ?? 45 38 A4 3E")]
-    public partial void SetEntryText(uint index, byte* text);
+    public readonly partial void SetEntryText(uint index, byte* text);
 }

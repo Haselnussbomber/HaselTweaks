@@ -12,8 +12,8 @@ public unsafe partial struct AddonInventoryEvent
     [FieldOffset(0x308)] public int TabIndex;
 
     [MemberFunction("E8 ?? ?? ?? ?? B0 01 EB 02 32 C0 48 8B 5C 24 ?? 48 8B 6C 24 ?? 48 8B 74 24 ?? 48 83 C4 30 41 5F 41 5E 41 5D 41 5C 5F C3 CC CC CC CC CC CC CC")]
-    public partial void SwitchToInventory(byte a2);
+    public readonly partial void SwitchToInventory(byte a2);
 
     [MemberFunction("E8 ?? ?? ?? ?? EB 09 83 FF 01")]
-    public partial void SetTab(int tab);
+    public readonly partial void SetTab(int tab);
 }

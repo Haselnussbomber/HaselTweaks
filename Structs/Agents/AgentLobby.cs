@@ -21,8 +21,8 @@ public unsafe partial struct AgentLobby
     public static partial void CleanupCharaSelectCharacters();
 
     [MemberFunction("E8 ?? ?? ?? ?? 84 C0 74 07 C6 87 ?? ?? ?? ?? ?? 48 8B 4C 24")]
-    public partial void UpdateCharaSelectDisplay(sbyte index, bool a2);
+    public readonly partial void UpdateCharaSelectDisplay(sbyte index, bool a2);
 
     [MemberFunction("E8 ?? ?? ?? ?? EB 4A 84 C0")]
-    public partial void OpenLoginWaitDialog(int position);
+    public readonly partial void OpenLoginWaitDialog(int position);
 }

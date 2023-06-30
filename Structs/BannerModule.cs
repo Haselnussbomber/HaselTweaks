@@ -12,19 +12,19 @@ public unsafe partial struct BannerModule
     [FieldOffset(0x40)] public BannerModuleData* Data;
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 8B F8 48 85 C0 74 47 41 8B D6")]
-    public partial BannerModuleEntry* CreateBanner();
+    public readonly partial BannerModuleEntry* CreateBanner();
 
     [MemberFunction("E8 ?? ?? ?? ?? 40 0A F0 FF C3 48 FF C7 83 FB 6E 72 D6 40 0F B6 C6 48 8B 8C 24 ?? ?? ?? ?? 48 33 CC E8 ?? ?? ?? ?? 4C 8D 9C 24 ?? ?? ?? ?? 49 8B 5B 18 49 8B 6B 20 49 8B 73 28 49 8B E3 5F C3 CC CC")]
-    public partial bool DeleteBanner();
+    public readonly partial bool DeleteBanner();
 
     [MemberFunction("E8 ?? ?? ?? ?? 83 F8 6E 7C 15")]
-    public partial uint GetNextId();
+    public readonly partial uint GetNextId();
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 40 7E")]
-    public partial BannerModuleEntry* GetBannerById(int id);
+    public readonly partial BannerModuleEntry* GetBannerById(int id);
 
     [MemberFunction("E8 ?? ?? ?? ?? 85 C0 79 0C")]
-    public partial int GetBannerIdByBannerIndex(int index);
+    public readonly partial int GetBannerIdByBannerIndex(int index);
 }
 
 [StructLayout(LayoutKind.Explicit, Size = 0x38B8)]
@@ -36,10 +36,10 @@ public unsafe partial struct BannerModuleData
     [FieldOffset(0x38A4)] public byte NextId;
 
     [MemberFunction("40 56 48 83 EC 20 80 B9 ?? ?? ?? ?? ?? 48 8B F1 7C 08")]
-    public partial BannerModuleEntry* CreateBanner();
+    public readonly partial BannerModuleEntry* CreateBanner();
 
     [MemberFunction("48 89 5C 24 ?? 57 48 83 EC 20 48 63 FA 48 8B D9 85 D2 0F 88 ?? ?? ?? ??")]
-    public partial bool DeleteBanner(int index);
+    public readonly partial bool DeleteBanner(int index);
 }
 
 [StructLayout(LayoutKind.Explicit, Size = 0x90)]

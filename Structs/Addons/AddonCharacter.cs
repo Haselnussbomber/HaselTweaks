@@ -19,5 +19,5 @@ public unsafe partial struct AddonCharacter
     [FieldOffset(0xBA8)] public AtkCollisionNode* CharacterPreviewCollisionNode;
 
     [MemberFunction("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 83 C6 EE")]
-    public partial void SetTab(int tab);
+    public readonly partial void SetTab(int tab);
 }

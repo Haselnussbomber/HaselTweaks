@@ -9,5 +9,5 @@ public unsafe partial struct AddonGrandCompanySupplyList
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
     [VirtualFunction(2)]
-    public partial void ReceiveEvent(AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5);
+    public readonly partial void ReceiveEvent(AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5);
 }

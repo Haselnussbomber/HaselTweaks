@@ -8,8 +8,8 @@ public partial struct AtkComponentGaugeBar
     [FieldOffset(0x0)] public AtkComponentNode AtkComponentNode;
 
     [MemberFunction("E8 ?? ?? ?? ?? 41 3B 1E")]
-    public partial uint SetValue(uint value, uint a3, bool skipAnimation);
+    public readonly partial uint SetValue(uint value, uint a3, bool skipAnimation);
 
     [MemberFunction("E8 ?? ?? ?? ?? 89 AF ?? ?? ?? ?? 48 8B 46 20")]
-    public partial uint SetSecondaryValue(uint value);
+    public readonly partial uint SetSecondaryValue(uint value);
 }

@@ -45,28 +45,28 @@ public unsafe partial struct CharaViewPortrait : ICreatable
         => IMemorySpace.GetUISpace()->Create<CharaViewPortrait>();
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 89 83 ?? ?? ?? ?? EB 0B")]
-    public partial void Ctor();
+    public readonly partial void Ctor();
 
     [VirtualFunction(0)]
-    public partial void Dtor(bool freeMemory);
+    public readonly partial void Dtor(bool freeMemory);
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 8B 43 10 C6 80 ?? ?? ?? ?? ?? 48 8B 4B 10")]
-    public partial void Initialize(int clientObjectId, CharaViewCharacterData* characterData, long a4, int a5, long a6); // a4 is set to +0x3A8, a5 is set to +0x3B0, a6 is set to +0x3B8
+    public readonly partial void Initialize(int clientObjectId, CharaViewCharacterData* characterData, long a4, int a5, long a6); // a4 is set to +0x3A8, a5 is set to +0x3B0, a6 is set to +0x3B8
 
     [VirtualFunction(2)]
-    public partial void Release();
+    public readonly partial void Release();
 
     [VirtualFunction(3)]
-    public partial void ResetPositions();
+    public readonly partial void ResetPositions();
 
     [VirtualFunction(4)]
-    public partial void SetCameraDistance(float deltaDistance);
+    public readonly partial void SetCameraDistance(float deltaDistance);
 
     [VirtualFunction(5)]
-    public partial void SetCameraYawAndPitch(float deltaRotation, float deltaPitch);
+    public readonly partial void SetCameraYawAndPitch(float deltaRotation, float deltaPitch);
 
     [VirtualFunction(6)]
-    public partial void SetCameraXAndY(float deltaX, float deltaY);
+    public readonly partial void SetCameraXAndY(float deltaX, float deltaY);
 
     // vf7? called by Render()
 
@@ -75,76 +75,76 @@ public unsafe partial struct CharaViewPortrait : ICreatable
     // vf9?
 
     [VirtualFunction(10)]
-    public partial void Update();
+    public readonly partial void Update();
 
     [VirtualFunction(11)]
-    public partial bool Vf11(CharaViewCharacter* obj);
+    public readonly partial bool Vf11(CharaViewCharacter* obj);
 
     [MemberFunction("E8 ?? ?? ?? ?? 49 8B 4C 24 ?? 48 8B 01 FF 90")]
-    public partial void ResetCamera(); // sets position, target, zoom etc.
+    public readonly partial void ResetCamera(); // sets position, target, zoom etc.
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 43 10 48 8D 4C 24")]
-    public partial void SetCameraPosition(HalfVector4* cam, HalfVector4* target);
+    public readonly partial void SetCameraPosition(HalfVector4* cam, HalfVector4* target);
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 93 ?? ?? ?? ?? 0F 28 D0")]
-    public partial float GetAnimationTime();
+    public readonly partial float GetAnimationTime();
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B6 96 ?? ?? ?? ?? 48 8B 8E ?? ?? ?? ?? E8 ?? ?? ?? ?? BB")]
-    public partial void SetAmbientLightingColor(uint red, uint green, uint blue);
+    public readonly partial void SetAmbientLightingColor(uint red, uint green, uint blue);
 
     [MemberFunction("E8 ?? ?? ?? ?? BB ?? ?? ?? ?? 48 8D 45 C7 8B D3 33 C9 0F 1F 40 00")]
-    public partial void SetAmbientLightingBrightness(byte brightness);
+    public readonly partial void SetAmbientLightingBrightness(byte brightness);
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B6 96 ?? ?? ?? ?? 48 8B 8E ?? ?? ?? ?? E8 ?? ?? ?? ?? 44 0F B7 86")]
-    public partial void SetDirectionalLightingColor(uint red, uint green, uint blue);
+    public readonly partial void SetDirectionalLightingColor(uint red, uint green, uint blue);
 
     [MemberFunction("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 48 8D 4F 20 E8 ?? ?? ?? ?? 44 0F B7 83")]
-    public partial void SetDirectionalLightingBrightness(byte brightness);
+    public readonly partial void SetDirectionalLightingBrightness(byte brightness);
 
     [MemberFunction("E8 ?? ?? ?? ?? EB 5A 48 8D 4F 20")]
-    public partial void SetDirectionalLightingAngle(short vertical, short horizontal);
+    public readonly partial void SetDirectionalLightingAngle(short vertical, short horizontal);
 
     [MemberFunction("E8 ?? ?? ?? ?? EB 17 48 8D 4F 20")]
-    public partial void SetCameraZoom(byte zoom);
+    public readonly partial void SetCameraZoom(byte zoom);
 
     [MemberFunction("E8 ?? ?? ?? ?? 41 B5 01 49 63 46 48")]
-    public partial void SetBackground(ushort id);
+    public readonly partial void SetBackground(ushort id);
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 89 BC 24 ?? ?? ?? ?? 84 DB")]
-    public partial void SetPose(ushort id);
+    public readonly partial void SetPose(ushort id);
 
     [MemberFunction("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 0F B7 93")]
-    public partial void SetPoseTimed(ushort id, float time);
+    public readonly partial void SetPoseTimed(ushort id, float time);
 
     [MemberFunction("E8 ?? ?? ?? ?? 84 DB 0F 84 ?? ?? ?? ?? 48 63 87 ?? ?? ?? ?? 45 33 C9")]
-    public partial void SetExpression(byte id); // same as GetGameObject()->ActionTimelineManager.SetExpression(id)
+    public readonly partial void SetExpression(byte id); // same as GetGameObject()->ActionTimelineManager.SetExpression(id)
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 45 F2")]
-    public partial nint ExportPortraitData(ExportedPortraitData* output);
+    public readonly partial nint ExportPortraitData(ExportedPortraitData* output);
 
     [MemberFunction("E8 ?? ?? ?? ?? 83 BE ?? ?? ?? ?? ?? 4C 8B B4 24 ?? ?? ?? ?? 74 2D")]
-    public partial nint ImportPortraitData(ExportedPortraitData* input);
+    public readonly partial nint ImportPortraitData(ExportedPortraitData* input);
 
     [MemberFunction("E8 ?? ?? ?? ?? F3 0F 10 53 ?? 48 8B CF")]
-    public partial void ApplyCameraPositions(); // use this after manually setting camera positions
+    public readonly partial void ApplyCameraPositions(); // use this after manually setting camera positions
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 43 24 66 85 C0 75 05 0F 28 D6 EB 35 0F B7 D0 8B CA 8B C2 C1 E9 0A 81 E2 ?? ?? ?? ?? 83 E1 1F C1 E0 10 C1 E1 17 25 ?? ?? ?? ?? 81 C1 ?? ?? ?? ?? C1 E2 0D 0B C8 0B CA 89 4C 24 40")]
-    public partial void SetHeadDirection(float a2, float a3);
+    public readonly partial void SetHeadDirection(float a2, float a3);
 
     [MemberFunction("E8 ?? ?? ?? ?? 44 0F B6 4B ?? 48 8B CF 44 0F B6 43 ?? 0F B6 53 26 E8 ?? ?? ?? ?? 48 8B 4F 18 0F B6 43 29 F3 0F 10 35 ?? ?? ?? ?? 88 87 ?? ?? ?? ?? 48 85 C9 74 13 0F B6 C0 66 0F 6E C8 0F 5B C9 F3 0F 5E CE E8 ?? ?? ?? ?? 0F B7 43 2C 0F B7 53 2A 48 8B 4F 18 66 89 97 ?? ?? ?? ?? 66 89 87 ?? ?? ?? ?? 48 85 C9 74 17 98 66 0F 6E D0 0F BF C2 0F 5B D2 66 0F 6E C8 0F 5B C9 E8 ?? ?? ?? ?? 44 0F B6 4B ?? 48 8B CF 44 0F B6 43 ?? 0F B6 53 2E E8 ?? ?? ?? ?? 48 8B 4F 18 0F B6 43 31 88 87 ?? ?? ?? ?? 48 85 C9 74 13 0F B6 C0 66 0F 6E C8 0F 5B C9 F3 0F 5E CE E8 ?? ?? ?? ?? 0F B7 43 32 48 8B 5C 24")]
-    public partial void SetEyeDirection(float a2, float a3);
+    public readonly partial void SetEyeDirection(float a2, float a3);
 
     [MemberFunction("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 48 8B 8E ?? ?? ?? ?? 48 8B 01")]
-    public partial void ResetEyeDirection();
+    public readonly partial void ResetEyeDirection();
 
     [MemberFunction("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 48 8B 8E ?? ?? ?? ?? E8 ?? ?? ?? ?? E9 ?? ?? ?? ??")]
-    public partial void ResetHeadDirection();
+    public readonly partial void ResetHeadDirection();
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 8B DD BA ?? ?? ?? ?? 48 C1 E3 04 49 03 DE")]
-    public partial void ToggleCharacterVisibility(bool visible);
+    public readonly partial void ToggleCharacterVisibility(bool visible);
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B6 45 92 C7 83")]
-    public partial void ToggleGearVisibility(bool hideVisor, bool hideWeapon, bool closeVisor);
+    public readonly partial void ToggleGearVisibility(bool hideVisor, bool hideWeapon, bool closeVisor);
 }
 
 // exported by "E8 ?? ?? ?? ?? 0F B7 45 F2"

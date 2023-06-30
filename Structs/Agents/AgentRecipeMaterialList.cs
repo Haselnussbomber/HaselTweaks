@@ -30,8 +30,8 @@ public unsafe partial struct AgentRecipeMaterialList
     }
 
     [MemberFunction("E8 ?? ?? ?? ?? EB B1 48 8B 4B 28")]
-    public partial void OpenByRecipeId(uint recipeId, uint amount = 1);
+    public readonly partial void OpenByRecipeId(uint recipeId, uint amount = 1);
 
     [MemberFunction("48 89 5C 24 ?? 57 48 83 EC 20 BA ?? ?? ?? ?? 48 8B D9 E8 ?? ?? ?? ?? 48 8B F8 48 85 C0 74 5A")]
-    public partial nint OpenRecipeResultItemContextMenu();
+    public readonly partial nint OpenRecipeResultItemContextMenu();
 }

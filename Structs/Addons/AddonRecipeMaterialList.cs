@@ -12,11 +12,11 @@ public unsafe partial struct AddonRecipeMaterialList
     [FieldOffset(0x228)] public AtkComponentButton* RefreshButton;
 
     [VirtualFunction(2)]
-    public partial void ReceiveEvent(AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5);
+    public readonly partial void ReceiveEvent(AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5);
 
     [MemberFunction("E8 ?? ?? ?? ?? BB ?? ?? ?? ?? C7 45 ?? ?? ?? ?? ?? 8B D3 C7 45")]
-    public partial void SetWindowLock(bool locked);
+    public readonly partial void SetWindowLock(bool locked);
 
     [MemberFunction("48 89 5C 24 ?? 48 89 54 24 ?? 48 89 4C 24 ?? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 50 49 8B 08")]
-    public partial void SetupRow(nint a2, nint a3);
+    public readonly partial void SetupRow(nint a2, nint a3);
 }

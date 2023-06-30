@@ -12,5 +12,5 @@ public unsafe partial struct AgentStatus
     [FieldOffset(0)] public AgentInterface AgentInterface;
 
     [MemberFunction("E8 ?? ?? ?? ?? 49 8B CD E8 ?? ?? ?? ?? E8 ?? ?? ?? ??")]
-    public partial void UpdateGearVisibilityInNumberArray();
+    public readonly partial void UpdateGearVisibilityInNumberArray();
 }

@@ -22,5 +22,5 @@ public unsafe partial struct AddonMJICraftMaterialConfirmation
     // public partial void* SwitchTab(uint tabIndex); // note: this fires events wich result in network communication
 
     [VirtualFunction(47)]
-    public partial void OnSetup(AddonMJICraftMaterialConfirmation* addon, int numAtkValues, AtkValue* atkValues);
+    public readonly partial void OnSetup(AddonMJICraftMaterialConfirmation* addon, int numAtkValues, AtkValue* atkValues);
 }

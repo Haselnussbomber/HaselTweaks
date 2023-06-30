@@ -8,5 +8,5 @@ public unsafe partial struct AcquaintanceModule
         => (AcquaintanceModule*)Framework.Instance()->GetUiModule()->GetAcquaintanceModule();
 
     [MemberFunction("E8 ?? ?? ?? ?? 49 8B 45 00 49 8B CD FF 50 48")]
-    public partial void ClearTellHistory(bool save = true);
+    public readonly partial void ClearTellHistory(bool save = true);
 }

@@ -14,9 +14,9 @@ public unsafe partial struct AddonArmouryBoard
 
     // called via ArmouryBoard_ReceiveEvent event/case 12 -> case a4 == 16
     [MemberFunction("E8 ?? ?? ?? ?? EB E0 84 C9")]
-    public partial void NextTab(byte a2);
+    public readonly partial void NextTab(byte a2);
 
     // called via ArmouryBoard_ReceiveEvent event/case 12 -> after switch (a4 == 17)
     [MemberFunction("40 53 48 83 EC 20 80 B9 ?? ?? ?? ?? ?? 48 8B D9 75 11")]
-    public partial void PreviousTab(byte a2);
+    public readonly partial void PreviousTab(byte a2);
 }

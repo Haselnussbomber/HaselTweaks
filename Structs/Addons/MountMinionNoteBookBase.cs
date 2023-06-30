@@ -21,5 +21,5 @@ public unsafe partial struct MountMinionNoteBookBase
     [FieldOffset(0x8C0)] public ViewType CurrentView;
 
     [MemberFunction("E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 8D 42 D3 83 F8 08")]
-    public partial void SwitchToFavorites();
+    public readonly partial void SwitchToFavorites();
 }

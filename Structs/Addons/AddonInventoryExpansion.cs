@@ -14,5 +14,5 @@ public unsafe partial struct AddonInventoryExpansion
 
     // called via InventoryExpansion vf68
     [MemberFunction("E8 ?? ?? ?? ?? BB ?? ?? ?? ?? 83 EB 01")]
-    public partial void SetTab(int tab, bool force);
+    public readonly partial void SetTab(int tab, bool force);
 }

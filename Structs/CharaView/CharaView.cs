@@ -46,70 +46,70 @@ public unsafe partial struct CharaView : ICreatable
         => IMemorySpace.GetUISpace()->Create<CharaView>();
 
     [MemberFunction("E8 ?? ?? ?? ?? 41 80 A6 ?? ?? ?? ?? ?? 48 8D 05")]
-    public partial void Ctor();
+    public readonly partial void Ctor();
 
     [VirtualFunction(0)]
-    public partial void Dtor(bool freeMemory);
+    public readonly partial void Dtor(bool freeMemory);
 
     [VirtualFunction(1)]
-    public partial void Initialize(nint agent, int clientObjectId, nint agentCallbackReady);
+    public readonly partial void Initialize(nint agent, int clientObjectId, nint agentCallbackReady);
 
     [VirtualFunction(2)]
-    public partial void Release();
+    public readonly partial void Release();
 
     [VirtualFunction(3)]
-    public partial void ResetPositions();
+    public readonly partial void ResetPositions();
 
     [VirtualFunction(4)]
-    public partial void Vf4(float a2);
+    public readonly partial void Vf4(float a2);
 
     [VirtualFunction(5)]
-    public partial void Vf5(float a2);
+    public readonly partial void Vf5(float a2);
 
     [VirtualFunction(6)]
-    public partial void Vf6(float a2, float a3);
+    public readonly partial void Vf6(float a2, float a3);
 
     [VirtualFunction(7)]
-    public partial byte Vf7(nint a2); // called by Render()
+    public readonly partial byte Vf7(nint a2); // called by Render()
 
     [VirtualFunction(8)]
-    public partial void Vf8(); // noop
+    public readonly partial void Vf8(); // noop
 
     [VirtualFunction(9)]
-    public partial void Vf9(); // noop
+    public readonly partial void Vf9(); // noop
 
     [VirtualFunction(10)]
-    public partial void Vf10(); // noop
+    public readonly partial void Vf10(); // noop
 
     [VirtualFunction(11)]
-    public partial bool Vf11(CharaViewCharacter* obj);
+    public readonly partial bool Vf11(CharaViewCharacter* obj);
 
     [VirtualFunction(12)]
-    public partial float Vf12(int a2, int a3);
+    public readonly partial float Vf12(int a2, int a3);
 
     [MemberFunction("0F 10 02 0F 11 41 48")]
-    public partial void SetCustomizeData(CharaViewCharacterData* data);
+    public readonly partial void SetCustomizeData(CharaViewCharacterData* data);
 
     [MemberFunction("E8 ?? ?? ?? ?? EB 27 8B D6")]
-    public partial void Render(uint frameIndex);
+    public readonly partial void Render(uint frameIndex);
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 85 C0 75 05 0F 57 C9")]
-    public partial CharaViewCharacter* GetCharacter();
+    public readonly partial CharaViewCharacter* GetCharacter();
 
     [MemberFunction("E8 ?? ?? ?? ?? 49 8D 4F 10 88 85")]
-    public partial bool IsAnimationPaused();
+    public readonly partial bool IsAnimationPaused();
 
     [MemberFunction("E8 ?? ?? ?? ?? B2 01 48 8B CE E8 ?? ?? ?? ?? 32 C0")]
-    public partial void ToggleAnimationPaused(bool paused);
+    public readonly partial void ToggleAnimationPaused(bool paused);
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 8B 47 28 BA")]
-    public partial void UnequipGear(bool hasCharacterData = false, bool characterLoaded = true);
+    public readonly partial void UnequipGear(bool hasCharacterData = false, bool characterLoaded = true);
 
     [MemberFunction("E8 ?? ?? ?? ?? 45 33 DB FF C3")]
-    public partial void SetItemSlotData(byte slotId, uint itemId, byte stain, int a5 = 0, byte a6 = 1); // maybe a5 is glamour id and a6 is a boolean that it should use glamour?
+    public readonly partial void SetItemSlotData(byte slotId, uint itemId, byte stain, int a5 = 0, byte a6 = 1); // maybe a5 is glamour id and a6 is a boolean that it should use glamour?
 
     [MemberFunction("E8 ?? ?? ?? ?? B1 01 0F B6 86")]
-    public partial void ToggleDrawWeapon(bool drawn);
+    public readonly partial void ToggleDrawWeapon(bool drawn);
 }
 
 public enum CharaViewState : uint
@@ -143,10 +143,10 @@ public unsafe partial struct CharaViewCharacterData : ICreatable
     }
 
     [MemberFunction("E8 ?? ?? ?? ?? 4C 8D 45 10 48 8B CF")]
-    public partial void Ctor();
+    public readonly partial void Ctor();
 
     [MemberFunction("E9 ?? ?? ?? ?? 41 0F B6 40 ?? 88 42 62")]
-    public partial void ImportLocalPlayerEquipment();
+    public readonly partial void ImportLocalPlayerEquipment();
 }
 
 [StructLayout(LayoutKind.Explicit, Size = 0x20)]
@@ -179,7 +179,7 @@ public unsafe partial struct CharaViewCharacter // FFXIVClientStructs.FFXIV.Clie
 public unsafe partial struct CharaViewCharacterCharacterData
 {
     [MemberFunction("44 0F B6 49 ?? 88 51 3A")]
-    public partial void SetClassJob(short classJobId);
+    public readonly partial void SetClassJob(short classJobId);
 }
 
 [StructLayout(LayoutKind.Explicit)]
@@ -189,10 +189,10 @@ public unsafe partial struct CharaViewCharacterFacialAnimationManager
     [FieldOffset(0x60C)] public Vector2 EyeDirection;
 
     [MemberFunction("48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 10 F3 0F 11 89 ?? ?? ?? ?? F3 0F 11 91 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 09 33 C0 48 89 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC CC 48 8B 41 08")]
-    public partial void SetHeadDirection(float x, float y);
+    public readonly partial void SetHeadDirection(float x, float y);
 
     [MemberFunction("48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 10 F3 0F 11 89 ?? ?? ?? ?? F3 0F 11 91 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 09 33 C0 48 89 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC CC 48 89 5C 24 ??")]
-    public partial void SetEyeDirection(float x, float y);
+    public readonly partial void SetEyeDirection(float x, float y);
 }
 
 [StructLayout(LayoutKind.Explicit)]
@@ -210,7 +210,7 @@ public unsafe partial struct CharaViewCharacterActionTimelineManager
     [FieldOffset(0x338)] public byte BannerTimelineType;
 
     [MemberFunction("48 8B 41 08 F6 80 ?? ?? ?? ?? ?? 74 10 84 D2")]
-    public partial void SetExpression(byte id);
+    public readonly partial void SetExpression(byte id);
 }
 
 [StructLayout(LayoutKind.Explicit)]

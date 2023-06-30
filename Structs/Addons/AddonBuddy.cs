@@ -16,5 +16,5 @@ public unsafe partial struct AddonBuddy
     [FieldOffset(0x1BD8)] public fixed byte RadioButtons[8 * 3];
 
     [MemberFunction("E8 ?? ?? ?? ?? 3B AF ?? ?? ?? ?? 74 27")]
-    public partial void SetTab(int tab);
+    public readonly partial void SetTab(int tab);
 }

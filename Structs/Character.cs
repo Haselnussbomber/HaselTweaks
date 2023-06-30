@@ -12,8 +12,8 @@ public unsafe partial struct Character
     // public partial void Rotate(float value);
 
     [MemberFunction("E8 ?? ?? ?? ?? 83 4B 70 01")]
-    public partial void SetPosition(float x, float y, float z);
+    public readonly partial void SetPosition(float x, float y, float z);
 
     [MemberFunction("E8 ?? ?? ?? ?? 45 0F B6 86 ?? ?? ?? ?? 33 D2")]
-    public partial void SetupBNpc(uint bNpcBaseId, uint bNpcName = 0);
+    public readonly partial void SetupBNpc(uint bNpcBaseId, uint bNpcName = 0);
 }

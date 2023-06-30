@@ -9,5 +9,5 @@ public unsafe partial struct RenderTargetManager
     public static partial RenderTargetManager* Instance();
 
     [MemberFunction("48 8B 05 ?? ?? ?? ?? 8B CA 48 8B 84 C8 ?? ?? ?? ??")]
-    public partial Texture* GetCharaViewTexture(uint id);
+    public readonly partial Texture* GetCharaViewTexture(uint id);
 }

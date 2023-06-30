@@ -9,5 +9,5 @@ public unsafe partial struct AddonItemSearchResult
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
     [VirtualFunction(16)]
-    public partial void Hide2();
+    public readonly partial void Hide2();
 }

@@ -8,6 +8,6 @@ public unsafe partial struct HalfVector4
     [FieldOffset(0x4)] public Half Z;
     [FieldOffset(0x6)] public Half W;
 
-    public override string ToString()
+    public override readonly string ToString()
         => $"HalfVector4 {{ X = {X}, Y = {Y}, Z = {Z}, W = {W} }}";
 }

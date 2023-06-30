@@ -8,8 +8,8 @@ public partial struct AtkComponentRadioButton
 {
     [FieldOffset(0)] public AtkComponentButton AtkComponentButton;
 
-    public bool IsSelected => (AtkComponentButton.Flags & 0x40000) != 0;
+    public readonly bool IsSelected => (AtkComponentButton.Flags & 0x40000) != 0;
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 DD")]
-    public partial void SetSelected(bool isSelected);
+    public readonly partial void SetSelected(bool isSelected);
 }

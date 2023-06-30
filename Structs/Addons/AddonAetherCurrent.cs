@@ -15,5 +15,5 @@ public unsafe partial struct AddonAetherCurrent
 
     // called in AetherCurrent vf55
     [MemberFunction("E8 ?? ?? ?? ?? 84 C0 74 65 39 9D")]
-    public partial void SetTab(int tab);
+    public readonly partial void SetTab(int tab);
 }

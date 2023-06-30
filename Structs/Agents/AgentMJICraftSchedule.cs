@@ -21,6 +21,6 @@ public unsafe struct AgentMJICraftSchedule
     {
         [FieldOffset(0x84C)] public byte Flags;
 
-        public bool IsLoading => (Flags & 0x40) != 0;
+        public readonly bool IsLoading => (Flags & 0x40) != 0;
     }
 }

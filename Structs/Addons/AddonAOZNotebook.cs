@@ -13,5 +13,5 @@ public unsafe partial struct AddonAOZNotebook
 
     // called via AOZNotebook vf68
     [MemberFunction("E8 ?? ?? ?? ?? 33 D2 48 8B CD E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 41 8D 40 F7")]
-    public partial void SetTab(int tab, bool a3);
+    public readonly partial void SetTab(int tab, bool a3);
 }

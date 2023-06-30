@@ -18,19 +18,19 @@ public unsafe partial struct AgentMJIMinionNoteBook
     [FieldOffset(0x1F0)] public ViewType CurrentView;
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 8B 86 ?? ?? ?? ?? 88 58 03")]
-    public partial void UpdateTabFlags(int* flags);
+    public readonly partial void UpdateTabFlags(int* flags);
 
     // from Update (vf6):
     // ViewType 1 = 0x407
     // ViewType 2 = 0x40B
     // ViewType 3 = 0x413
-    public void UpdateTabFlags(int flags)
+    public readonly void UpdateTabFlags(int flags)
         => UpdateTabFlags(&flags);
 
     [MemberFunction("E8 ?? ?? ?? ?? 0F B7 D8 85 DB")]
-    public partial ushort GetSelectedMinionId(byte* viewType, byte* currentTabIndex, byte* currentSlotIndex);
+    public readonly partial ushort GetSelectedMinionId(byte* viewType, byte* currentTabIndex, byte* currentSlotIndex);
 
-    public ushort GetSelectedMinionId()
+    public readonly ushort GetSelectedMinionId()
     {
         if (SelectedMinion != null)
         {
