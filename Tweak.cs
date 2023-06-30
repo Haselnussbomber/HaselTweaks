@@ -20,7 +20,7 @@ public abstract unsafe class Tweak
 
     public virtual string Description => string.Empty;
     public virtual bool HasDescription => !string.IsNullOrEmpty(Description);
-    public virtual void DrawDescription() => ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey2, Description);
+    public virtual void DrawDescription() => ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, Description);
 
     public virtual string IncompatibilityWarning => string.Empty;
     public virtual bool HasIncompatibilityWarning => !string.IsNullOrEmpty(IncompatibilityWarning);
@@ -28,7 +28,7 @@ public abstract unsafe class Tweak
     {
         pluginWindow.TextureManager?.GetIcon(60073).Draw(new(24));
         ImGui.SameLine();
-        ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey2, IncompatibilityWarning);
+        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, IncompatibilityWarning);
     }
 
     public virtual bool HasCustomConfig => false;

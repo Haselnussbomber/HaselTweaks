@@ -23,10 +23,10 @@ public unsafe class AlignmentToolSettingsOverlay : Overlay
         ImGui.PopStyleVar(); // WindowPadding from PreDraw()
 
         var style = ImGui.GetStyle();
-        ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorGold, "Alignment Tool Settings");
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() - style.ItemSpacing.Y + 3);
+        ImGuiUtils.TextUnformattedColored(Colors.Gold, "Alignment Tool Settings");
+        ImGuiUtils.PushCursorY(-style.ItemSpacing.Y + 3);
         ImGui.Separator();
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + style.ItemSpacing.Y);
+        ImGuiUtils.PushCursorY(style.ItemSpacing.Y);
 
         var changed = false;
 

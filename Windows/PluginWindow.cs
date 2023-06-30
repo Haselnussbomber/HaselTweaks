@@ -18,6 +18,7 @@ using ImGuiScene;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Svg;
+using ImColor = HaselTweaks.Structs.ImColor;
 
 namespace HaselTweaks.Windows;
 
@@ -204,11 +205,11 @@ public partial class PluginWindow : Window, IDisposable
 
                 drawList.PathLineTo(pos);
                 drawList.PathLineTo(pos + size);
-                drawList.PathStroke(ImGui.GetColorU32(ImGuiUtils.ColorRed), ImDrawFlags.None, frameHeight / 5f * 0.5f);
+                drawList.PathStroke(Colors.Red, ImDrawFlags.None, frameHeight / 5f * 0.5f);
 
                 drawList.PathLineTo(pos + new Vector2(0, size.Y));
                 drawList.PathLineTo(pos + new Vector2(size.X, 0));
-                drawList.PathStroke(ImGui.GetColorU32(ImGuiUtils.ColorRed), ImDrawFlags.None, frameHeight / 5f * 0.5f);
+                drawList.PathStroke(Colors.Red, ImDrawFlags.None, frameHeight / 5f * 0.5f);
 
                 fixY = true;
             }
@@ -243,16 +244,16 @@ public partial class PluginWindow : Window, IDisposable
 
             if (fixY)
             {
-                ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3); // if i only knew why this happens
+                ImGuiUtils.PushCursorY(3); // if i only knew why this happens
             }
 
             if (!tweak.Ready || tweak.Outdated)
             {
-                ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorRed);
+                ImGui.PushStyleColor(ImGuiCol.Text, (uint)Colors.Red);
             }
             else if (!enabled)
             {
-                ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey);
+                ImGui.PushStyleColor(ImGuiCol.Text, (uint)Colors.Grey);
             }
 
             if (ImGui.Selectable($"{tweak.Name}##Selectable_{tweak.InternalName}", SelectedTweak == tweak.InternalName))
@@ -290,7 +291,9 @@ public partial class PluginWindow : Window, IDisposable
             // links, bottom left
             ImGui.SetCursorPos(cursorPos + new Vector2(0, contentAvail.Y - ImGui.CalcTextSize(" ").Y));
             ImGuiUtils.DrawLink("GitHub", "Visit the HaselTweaks GitHub Repository", "https://github.com/Haselnussbomber/HaselTweaks");
-            ImGuiUtils.BulletSeparator();
+            ImGui.SameLine();
+            ImGui.TextUnformatted("•");
+            ImGui.SameLine();
             ImGuiUtils.DrawLink("Ko-fi", "Support me on Ko-fi", "https://ko-fi.com/haselnussbomber");
 
             // version, bottom right
@@ -314,7 +317,7 @@ public partial class PluginWindow : Window, IDisposable
         if (tweak == null)
             return;
 
-        ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorGold, tweak.Name);
+        ImGuiUtils.TextUnformattedColored(Colors.Gold, tweak.Name);
 
         var (status, color) = GetTweakStatus(tweak);
 
@@ -342,8 +345,8 @@ public partial class PluginWindow : Window, IDisposable
         if (tweak.LastException != null)
         {
             ImGuiUtils.DrawSection("[DEBUG] Exception");
-            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorRed, tweak.LastException.Message.Replace("HaselTweaks.Tweaks.", ""));
-            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey2, tweak.LastException.StackTrace ?? "");
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, tweak.LastException.Message.Replace("HaselTweaks.Tweaks.", ""));
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, tweak.LastException.StackTrace ?? "");
         }
 #endif
 
@@ -380,7 +383,7 @@ public partial class PluginWindow : Window, IDisposable
                         if (attr == null)
                         {
 #if DEBUG
-                            ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorRed, $"No ConfigFieldAttribute for {field.Name}");
+                            ImGuiUtils.TextUnformattedColored(Colors.Red, $"No ConfigFieldAttribute for {field.Name}");
 #endif
                         }
                         else if (attr.Type == ConfigFieldTypes.Color4)
@@ -481,25 +484,25 @@ public partial class PluginWindow : Window, IDisposable
         }
     }
 
-    private static (string, Vector4) GetTweakStatus(Tweak tweak)
+    private static (string, ImColor) GetTweakStatus(Tweak tweak)
     {
         var status = "???";
-        var color = ImGuiUtils.ColorGrey3;
+        var color = Colors.Grey3;
 
         if (tweak.Outdated)
         {
             status = "Outdated";
-            color = ImGuiUtils.ColorRed;
+            color = Colors.Red;
         }
         else if (!tweak.Ready)
         {
             status = "Initialization failed";
-            color = ImGuiUtils.ColorRed;
+            color = Colors.Red;
         }
         else if (tweak.Enabled)
         {
             status = "Enabled";
-            color = ImGuiUtils.ColorGreen;
+            color = Colors.Green;
         }
         else if (!tweak.Enabled)
         {
@@ -511,12 +514,12 @@ public partial class PluginWindow : Window, IDisposable
 
     private static void DrawNoDrawingFunctionError(FieldInfo field)
     {
-        ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorRed, $"Could not find suitable drawing function for field \"{field.Name}\" (Type {field.FieldType.Name}).");
+        ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, $"Could not find suitable drawing function for field \"{field.Name}\" (Type {field.FieldType.Name}).");
     }
 
     private static void DrawInvalidType(FieldInfo field)
     {
-        ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorRed, $"Invalid type for \"{field.Name}\" (Type {field.FieldType.Name}).");
+        ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, $"Invalid type for \"{field.Name}\" (Type {field.FieldType.Name}).");
     }
 
     private static void DrawSingleSelectEnumInt32(ConfigDrawData<int> data, Type enumType)
@@ -526,14 +529,14 @@ public partial class PluginWindow : Window, IDisposable
         var selectedName = Enum.GetName(enumType, data.Value);
         if (string.IsNullOrEmpty(selectedName))
         {
-            ImGuiUtils.TextUnformattedColored(new Vector4(1, 0, 0, 1), $"Missing Name for Value {data.Value} in {enumType.Name}.");
+            ImGuiUtils.TextUnformattedColored(Colors.Red, $"Missing Name for Value {data.Value} in {enumType.Name}.");
         }
         else
         {
             var selectedAttr = (EnumOptionAttribute?)enumType.GetField(selectedName)?.GetCustomAttribute(typeof(EnumOptionAttribute));
             if (selectedAttr == null)
             {
-                ImGuiUtils.TextUnformattedColored(new Vector4(1, 0, 0, 1), $"Missing EnumOptionAttribute for {selectedName} in {enumType.Name}.");
+                ImGuiUtils.TextUnformattedColored(Colors.Red, $"Missing EnumOptionAttribute for {selectedName} in {enumType.Name}.");
             }
             else
             {
@@ -692,10 +695,10 @@ public partial class PluginWindow : Window, IDisposable
 
         var _indent = indent ? ImGuiUtils.ConfigIndent() : null;
 
-        ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, data.Description);
+        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, data.Description);
 
         _indent?.Dispose();
 
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
+        ImGuiUtils.PushCursorY(3);
     }
 }

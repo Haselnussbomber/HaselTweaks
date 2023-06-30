@@ -33,10 +33,10 @@ public unsafe class AdvancedEditOverlay : Overlay
             return;
 
         var style = ImGui.GetStyle();
-        ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorGold, "Advanced Edit");
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() - style.ItemSpacing.Y + 3);
+        ImGuiUtils.TextUnformattedColored(Colors.Gold, "Advanced Edit");
+        ImGuiUtils.PushCursorY(-style.ItemSpacing.Y + 3);
         ImGui.Separator();
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + style.ItemSpacing.Y);
+        ImGuiUtils.PushCursorY(style.ItemSpacing.Y);
 
         using var table = ImRaii.Table("##Table", 2);
         if (!table.Success)
@@ -268,7 +268,7 @@ public unsafe class AdvancedEditOverlay : Overlay
 
         table?.Dispose();
 
-        using (ImRaii.PushColor(ImGuiCol.Text, ImGui.ColorConvertFloat4ToU32(ImGuiUtils.ColorGrey)))
+        using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Grey))
         {
             ImGui.TextUnformatted("Please note:");
             ImGuiHelpers.SafeTextWrapped("The game may verify the values on setting them and/or saving the portrait. If possible, it will automatically adjust them so that they are within a valid range. If not, it will throw an error and you have to fix the values yourself. In any case, if the game adjusts the values, the adjusted values will not be reflected here unless you reopen the window.");

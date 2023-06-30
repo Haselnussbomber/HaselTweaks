@@ -6,41 +6,35 @@ using Dalamud.Interface.Raii;
 using Dalamud.Utility;
 using ImGuiNET;
 using Windows.Win32;
+using HaselTweaks.Extensions;
 
 namespace HaselTweaks.Utils;
 
 // TODO: cleanup (well, thats a project-wide task tbh)
 public static partial class ImGuiUtils
 {
-    public static Vector4 ColorTransparent { get; } = Vector4.Zero;
-    public static Vector4 ColorWhite { get; } = Vector4.One;
-    public static Vector4 ColorOrange { get; } = new(1f, 0.6f, 0f, 1f);
-    public static Vector4 ColorGold { get; } = new(0.847f, 0.733f, 0.49f, 1f);
-    public static Vector4 ColorGreen { get; } = new(0f, 1f, 0f, 1f);
-    public static Vector4 ColorRed { get; } = new(1f, 0f, 0f, 1f);
-    public static Vector4 ColorGrey { get; } = new(0.73f, 0.73f, 0.73f, 1f);
-    public static Vector4 ColorGrey2 { get; } = new(0.87f, 0.87f, 0.87f, 1f);
-    public static Vector4 ColorGrey3 { get; } = new(0.6f, 0.6f, 0.6f, 1f);
-
     public static void DrawPaddedSeparator()
     {
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y);
+        var style = ImGui.GetStyle();
+        PushCursorY(style.ItemSpacing.Y);
         ImGui.Separator();
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y - 1);
+        PushCursorY(style.ItemSpacing.Y - 1);
     }
 
     public static void DrawSection(string label)
     {
+        var style = ImGui.GetStyle();
         // push down a bit
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y * 2);
-        TextUnformattedColored(ColorGold, label);
+        PushCursorY(style.ItemSpacing.Y * 2);
+        TextUnformattedColored(Colors.Gold, label);
         // pull up the separator
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() - ImGui.GetStyle().ItemSpacing.Y + 3);
+        PushCursorY(-style.ItemSpacing.Y + 3);
         ImGui.Separator();
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y * 2 - 1);
+        PushCursorY(style.ItemSpacing.Y * 2 - 1);
     }
 
-    public static ImRaii.Indent ConfigIndent() => ImRaii.PushIndent(ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X / 2f);
+    public static ImRaii.Indent ConfigIndent()
+        => ImRaii.PushIndent(ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.X / 2f);
 
     public static void DrawLink(string label, string title, string url)
     {
@@ -53,17 +47,17 @@ public static partial class ImGuiUtils
             using var tooltip = ImRaii.Tooltip();
             if (tooltip != null && tooltip.Success)
             {
-                TextUnformattedColored(ColorWhite, title);
+                TextUnformattedColored(Colors.White, title);
 
                 var pos = ImGui.GetCursorPos();
                 ImGui.GetWindowDrawList().AddText(
                     UiBuilder.IconFont, 12,
                     ImGui.GetWindowPos() + pos + new Vector2(2),
-                    ImGui.GetColorU32(ColorGrey),
+                    Colors.Grey,
                     FontAwesomeIcon.ExternalLinkAlt.ToIconString()
                 );
                 ImGui.SetCursorPos(pos + new Vector2(20, 0));
-                TextUnformattedColored(ColorGrey, url);
+                TextUnformattedColored(Colors.Grey, url);
             }
         }
 
@@ -71,13 +65,6 @@ public static partial class ImGuiUtils
         {
             Task.Run(() => Util.OpenLink(url));
         }
-    }
-
-    public static void BulletSeparator()
-    {
-        ImGui.SameLine();
-        ImGui.TextUnformatted("•");
-        ImGui.SameLine();
     }
 
     public static unsafe void VerticalSeparator(Vector4 color)
@@ -96,7 +83,7 @@ public static partial class ImGuiUtils
     }
 
     public static unsafe void VerticalSeparator()
-        => VerticalSeparator(ColorGrey3);
+        => VerticalSeparator(Colors.Grey3);
 
     public static void SameLineSpace()
     {
@@ -118,16 +105,19 @@ public static partial class ImGuiUtils
         var angle = 0.0f;
         var numSegments = 10;
         var angleStep = (float)(Math.PI * 2.0f / numSegments);
+        var time = ImGui.GetTime();
+        var drawList = ImGui.GetWindowDrawList();
 
         for (var i = 0; i < numSegments; i++)
         {
-            var x = center.X + radius * (float)Math.Cos(angle);
-            var y = center.Y + radius * (float)Math.Sin(angle);
+            var pos = center + new Vector2(
+                radius * (float)Math.Cos(angle),
+                radius * (float)Math.Sin(angle));
 
-            var t = (float)(-angle / (float)Math.PI / 2f + ImGui.GetTime()) % 1f;
+            var t = (float)(-angle / (float)Math.PI / 2f + time) % 1f;
             var color = new Vector4(1f, 1f, 1f, 1 - t);
 
-            ImGui.GetWindowDrawList().AddCircleFilled(new Vector2(x, y), 2f, ImGui.ColorConvertFloat4ToU32(color));
+            drawList.AddCircleFilled(pos, 2f, ImGui.ColorConvertFloat4ToU32(color));
 
             angle += angleStep;
         }
@@ -139,7 +129,7 @@ public static partial class ImGuiUtils
             ImGui.TextUnformatted(text);
     }
 
-    public static void TextUnformattedColored(Vector4 col, string text)
+    public static void TextUnformattedColored(uint col, string text)
     {
         using (ImRaii.PushColor(ImGuiCol.Text, col))
             ImGui.TextUnformatted(text);

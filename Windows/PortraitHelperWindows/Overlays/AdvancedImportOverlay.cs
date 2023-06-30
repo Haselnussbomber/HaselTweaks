@@ -39,7 +39,7 @@ public unsafe class AdvancedImportOverlay : Overlay
         var state = AgentBannerEditor->EditorState;
         var unknown = GetAddonText(624) ?? "Unknown";
 
-        using (ImRaii.PushColor(ImGuiCol.Text, ImGuiUtils.ColorGrey))
+        using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Grey))
             ImGuiHelpers.SafeTextWrapped("Only the checked settings will be imported.");
 
         if (ImGui.Button(GetAddonText(14923) ?? "Select All"))

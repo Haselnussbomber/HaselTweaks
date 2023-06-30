@@ -22,11 +22,11 @@ public unsafe class DTR : Tweak
     public override bool HasDescription => true;
     public override void DrawDescription()
     {
-        ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar.");
+        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar.");
 
         ImGuiUtils.DrawSection("Configuration");
         ImGui.TextUnformatted("To enable/disable elements or to change the order go into");
-        ImGuiUtils.TextUnformattedColored(ImGuiColors.DalamudRed, "Dalamud Settings");
+        ImGuiUtils.TextUnformattedColored((Structs.ImColor)ImGuiColors.DalamudRed, "Dalamud Settings");
         if (ImGui.IsItemHovered())
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);

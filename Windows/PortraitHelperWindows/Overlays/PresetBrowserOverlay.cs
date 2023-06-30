@@ -177,10 +177,10 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         var removeUnusedTags = false;
 
-        ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorGold, "Tags");
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() - style.ItemSpacing.Y + 3);
+        ImGuiUtils.TextUnformattedColored(Colors.Gold, "Tags");
+        ImGuiUtils.PushCursorY(-style.ItemSpacing.Y + 3);
         ImGui.Separator();
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + style.ItemSpacing.Y);
+        ImGuiUtils.PushCursorY(style.ItemSpacing.Y);
 
         using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var child = ImRaii.Child("##PresetBrowser_SideBar", ImGui.GetContentRegionAvail() - style.ItemInnerSpacing);
@@ -271,11 +271,11 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
     {
         var style = ImGui.GetStyle();
 
-        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + style.ItemSpacing.X);
-        ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorGold, "Presets");
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() - style.ItemSpacing.Y + 3);
+        ImGuiUtils.PushCursorX(style.ItemSpacing.X);
+        ImGuiUtils.TextUnformattedColored(Colors.Gold, "Presets");
+        ImGuiUtils.PushCursorY(-style.ItemSpacing.Y + 3);
         ImGui.Separator();
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + style.ItemSpacing.Y);
+        ImGuiUtils.PushCursorY(style.ItemSpacing.Y);
 
         using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var child = ImRaii.Child("##PresetBrowser_Content", ImGui.GetContentRegionAvail());
@@ -283,7 +283,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             return;
         framePadding?.Dispose();
 
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + style.ItemSpacing.Y);
+        ImGuiUtils.PushCursorY(style.ItemSpacing.Y);
         ImGui.Indent(style.ItemSpacing.X);
 
         var presetCards = Config.Presets

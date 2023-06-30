@@ -18,6 +18,7 @@ using Lumina.Excel.GeneratedSheets;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using Color = HaselTweaks.Structs.ImColor;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
@@ -99,14 +100,10 @@ public class PresetCard : IDisposable
         }
         else if (!doesImageFileExist)
         {
-            using (ImRaii.PushFont(UiBuilder.IconFont))
-            {
-                using (ImRaii.PushColor(ImGuiCol.Text, ImGui.ColorConvertFloat4ToU32(ImGuiUtils.ColorRed)))
-                {
-                    ImGui.SetCursorPos(center - windowPos - ImGui.CalcTextSize(FontAwesomeIcon.FileImage.ToIconString()) / 2f);
-                    ImGuiUtils.TextUnformattedDisabled(FontAwesomeIcon.FileImage.ToIconString());
-                }
-            }
+            using var a = ImRaii.PushFont(UiBuilder.IconFont);
+            using var b = ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red);
+            ImGui.SetCursorPos(center - windowPos - ImGui.CalcTextSize(FontAwesomeIcon.FileImage.ToIconString()) / 2f);
+            ImGuiUtils.TextUnformattedDisabled(FontAwesomeIcon.FileImage.ToIconString());
         }
         else if (textureWrap != null)
         {
@@ -128,18 +125,12 @@ public class PresetCard : IDisposable
 
         ImGui.SetCursorPos(cursorPos);
 
-        using (ImRaii.PushColor(ImGuiCol.Button, ImGui.ColorConvertFloat4ToU32(ImGuiUtils.ColorTransparent)))
         {
-            using (ImRaii.PushColor(ImGuiCol.ButtonActive, ImGui.ColorConvertFloat4ToU32(new(1, 1, 1, 0.3f))))
-            {
-                using (ImRaii.PushColor(ImGuiCol.ButtonHovered, ImGui.ColorConvertFloat4ToU32(new(1, 1, 1, 0.2f))))
-                {
-                    using (ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0))
-                    {
-                        ImGui.Button($"##{preset.Id}_Button", PortraitSize * scale);
-                    }
-                }
-            }
+            using var a = ImRaii.PushColor(ImGuiCol.Button, (uint)Colors.Transparent);
+            using var b = ImRaii.PushColor(ImGuiCol.ButtonActive, (uint)new Color { A = 0.3f });
+            using var c = ImRaii.PushColor(ImGuiCol.ButtonHovered, (uint)new Color { A = 0.2f });
+            using var d = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0);
+            ImGui.Button($"##{preset.Id}_Button", PortraitSize * scale);
         }
 
         using (var source = ImRaii.DragDropSource())
@@ -188,7 +179,7 @@ public class PresetCard : IDisposable
                 overlay.Tweak.ChangeView(ViewMode.Normal);
             }
         }
-
+        
         if (ImGui.BeginPopupContextItem($"{preset.Id}_Popup"))
         {
             if (ImGui.MenuItem("Load Preset"))

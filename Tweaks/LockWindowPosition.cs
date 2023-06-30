@@ -137,7 +137,7 @@ public unsafe partial class LockWindowPosition : Tweak
         else
         {
             ImGuiUtils.TextUnformattedDisabled("No windows added yet.");
-            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 4);
+            ImGuiUtils.PushCursorY(4);
         }
 
         if (ShowPicker)
@@ -178,15 +178,15 @@ public unsafe partial class LockWindowPosition : Tweak
             ImGui.SetNextWindowSize(HoveredWindowSize);
 
             using var windowBorderSize = ImRaii.PushStyle(ImGuiStyleVar.WindowBorderSize, 1.0f);
-            using var borderColor = ImRaii.PushColor(ImGuiCol.Border, ImGuiUtils.ColorGold);
+            using var borderColor = ImRaii.PushColor(ImGuiCol.Border, (uint)Colors.Gold);
             using var windowBgColor = ImRaii.PushColor(ImGuiCol.WindowBg, new Vector4(0.847f, 0.733f, 0.49f, 0.33f));
 
             if (ImGui.Begin("Lock Windows Picker", ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize))
             {
                 var drawList = ImGui.GetForegroundDrawList();
                 var textPos = HoveredWindowPos + new Vector2(0, -ImGui.GetTextLineHeight());
-                drawList.AddText(textPos + Vector2.One, 0xFF000000, HoveredWindowName);
-                drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(ImGuiUtils.ColorGold), HoveredWindowName);
+                drawList.AddText(textPos + Vector2.One, Colors.Black, HoveredWindowName);
+                drawList.AddText(textPos, Colors.Gold, HoveredWindowName);
 
                 ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
 

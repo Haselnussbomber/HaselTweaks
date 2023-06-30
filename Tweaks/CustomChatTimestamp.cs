@@ -36,10 +36,10 @@ public unsafe partial class CustomChatTimestamp : Tweak
                 Plugin.Config.Save();
             }
 
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiUtils.ColorGrey);
+            ImGui.PushStyleColor(ImGuiCol.Text, (uint)Colors.Grey);
             ImGui.TextUnformatted("This gets passed to C#'s");
             ImGuiUtils.SameLineSpace();
-            using (ImRaii.PushColor(ImGuiCol.Text, ImGuiUtils.ColorWhite))
+            using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.White))
             {
                 ImGuiUtils.DrawLink("DateTime.ToString()", "Custom date and time format strings documentation", "https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings");
             }
@@ -78,22 +78,22 @@ public unsafe partial class CustomChatTimestamp : Tweak
             if (!child || !child.Success)
                 return;
 
-            ImGuiUtils.TextUnformattedColored(ImGuiUtils.ColorWhite, formatted);
+            ImGuiUtils.TextUnformattedColored(Colors.White, formatted);
             ImGui.SameLine(0, 0);
-            ImGuiUtils.TextUnformattedColored(ImGui.ColorConvertU32ToFloat4(colorParty), $"(\uE090Player Name) This is a test message.");
+            ImGuiUtils.TextUnformattedColored(colorParty, $"(\uE090Player Name) This is a test message.");
         }
         catch (FormatException)
         {
             using (ImRaii.PushIndent())
             {
-                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorRed, "The current format is not valid.");
+                ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, "The current format is not valid.");
             }
         }
         catch (Exception e)
         {
             using (ImRaii.PushIndent())
             {
-                ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorRed, e.Message);
+                ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, e.Message);
             }
         }
     }

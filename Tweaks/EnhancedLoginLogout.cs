@@ -165,15 +165,15 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         }
         using (ImGuiUtils.ConfigIndent())
         {
-            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Displays a carbuncle (Arcanist/Summoner) or a fairy (Scholar) next to your character.");
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "Displays a carbuncle (Arcanist/Summoner) or a fairy (Scholar) next to your character.");
 
             if (ActiveContentId != 0)
             {
                 if (!Config.PetMirageSettings.ContainsKey(ActiveContentId))
-                    ImGui.TextColored(ImGuiUtils.ColorRed, "Pet glamour settings for this character not cached! Please log in.");
+                    ImGui.TextColored(Colors.Red, "Pet glamour settings for this character not cached! Please log in.");
             }
 
-            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
+            ImGuiUtils.PushCursorY(3);
         }
 
         // PetPosition
@@ -209,9 +209,9 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         using (ImGuiUtils.ConfigIndent())
         {
-            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Have your character greet you with an emote!");
-            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "Note: Emote settings are per character and not all emotes are supported (e.g. sitting or underwater emotes). What is supported, however, are alternative standing idle poses.");
-            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "Have your character greet you with an emote!");
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "Note: Emote settings are per character and not all emotes are supported (e.g. sitting or underwater emotes). What is supported, however, are alternative standing idle poses.");
+            ImGuiUtils.PushCursorY(3);
 
             if (Config.EnableCharaSelectEmote)
             {
@@ -219,8 +219,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                 {
                     if (!Config.VoiceCache.ContainsKey(ActiveContentId))
                     {
-                        ImGui.TextColored(ImGuiUtils.ColorRed, "Voice ID for this character not cached. Please log in.");
-                        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
+                        ImGui.TextColored(Colors.Red, "Voice ID for this character not cached. Please log in.");
+                        ImGuiUtils.PushCursorY(3);
                     }
 
                     ImGuiUtils.PushCursorY(verticalTextPadding);
@@ -298,7 +298,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
                         if (IsRecordingEmote)
                         {
-                            ImGui.TextColored(ImGuiUtils.ColorGold, "Perform an emote now to set it for this character!");
+                            ImGui.TextColored(Colors.Gold, "Perform an emote now to set it for this character!");
                             ImGuiUtils.PushCursorY(verticalTextPadding);
                         }
                     }
@@ -316,7 +316,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         ImGui.Checkbox($"Preload territory when queued##HaselTweaks_Config_{InternalName}_PreloadTerritory", ref Config.PreloadTerritory);
         using (ImGuiUtils.ConfigIndent())
         {
-            ImGuiHelpers.SafeTextColoredWrapped(ImGuiUtils.ColorGrey, "When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.");
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.");
             ImGuiUtils.PushCursorY(verticalTextPadding);
         }
 

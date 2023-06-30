@@ -31,7 +31,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
     private readonly TextureManager TextureManager = new();
     private bool hideUnlocked = true;
 
-    private readonly Vector4 TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f, 1);
+    private readonly Structs.ImColor TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
 
     [GeneratedRegex("^[\\ue000-\\uf8ff]+ ")]
     private static partial Regex Utf8PrivateUseAreaRegex();
@@ -271,7 +271,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
     private void DrawUnlockStatus(bool isUnlocked, Level? level)
     {
         var isSameTerritory = level?.Territory.Row == Service.ClientState.TerritoryType;
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 11);
+        ImGuiUtils.PushCursorY(11);
 
         if (isUnlocked && !Config.AlwaysShowDistance)
         {
@@ -289,12 +289,12 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 
                     if (Config.CenterDistance)
                     {
-                        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
+                        ImGuiUtils.PushCursorX(ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
                     }
 
                     if (isUnlocked)
                     {
-                        ImGuiUtils.TextUnformattedColored(new Vector4(0, 1, 0, 1), text);
+                        ImGuiUtils.TextUnformattedColored(Colors.Green, text);
                     }
                     else
                     {
@@ -308,9 +308,9 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
             }
             else
             {
-                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 2);
+                ImGuiUtils.PushCursorX(2);
                 using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
-                ImGuiUtils.TextUnformattedColored(new Vector4(0.3f, 0.3f, 0.3f, 1), FontAwesomeIcon.Times.ToIconString());
+                ImGuiUtils.TextUnformattedColored(Colors.Grey4, FontAwesomeIcon.Times.ToIconString());
             }
         }
     }
@@ -322,10 +322,10 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 
         if (isSameTerritory && Config.CenterDistance)
         {
-            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(icon).X / 2);
+            ImGuiUtils.PushCursorX(ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(icon).X / 2);
         }
 
-        ImGuiUtils.TextUnformattedColored(new Vector4(0, 1, 0, 1), icon);
+        ImGuiUtils.TextUnformattedColored(Colors.Green, icon);
     }
 
     private EObj? GetEObjByData(uint aetherCurrentId)
