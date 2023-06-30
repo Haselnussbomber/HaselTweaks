@@ -38,7 +38,7 @@ public unsafe partial struct BannerModuleData
     [MemberFunction("40 56 48 83 EC 20 80 B9 ?? ?? ?? ?? ?? 48 8B F1 7C 08")]
     public readonly partial BannerModuleEntry* CreateBanner();
 
-    [MemberFunction("48 89 5C 24 ?? 57 48 83 EC 20 48 63 FA 48 8B D9 85 D2 0F 88 ?? ?? ?? ??")]
+    [MemberFunction("48 89 5C 24 ?? 57 48 83 EC 20 48 63 FA 48 8B D9 85 D2 0F 88")]
     public readonly partial bool DeleteBanner(int index);
 }
 
