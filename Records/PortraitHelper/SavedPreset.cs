@@ -42,9 +42,9 @@ public record SavedPreset
             {
                 File.Delete(thumbPath);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                PluginLog.Error($"Could not delete \"{thumbPath}\"", e);
+                PluginLog.Error(ex, $"Could not delete \"{thumbPath}\"");
             }
         }
 

@@ -57,9 +57,9 @@ internal partial class Configuration
 
             config = JObject.Parse(jsonData);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            PluginLog.Error(e, "Could not load configuration, creating a new one");
+            PluginLog.Error(ex, "Could not load configuration, creating a new one");
 
             Service.PluginInterface.UiBuilder.AddNotification(
                 "Could not load the configuration file. Creating a new one.",
@@ -145,9 +145,9 @@ internal partial class Configuration
                 config[nameof(Version)] = CURRENT_CONFIG_VERSION;
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            PluginLog.Error(e, "Could not migrate configuration");
+            PluginLog.Error(ex, "Could not migrate configuration");
             // continue, for now
         }
 

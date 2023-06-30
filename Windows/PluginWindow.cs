@@ -29,7 +29,7 @@ public partial class PluginWindow : Window, IDisposable
 
     private string SelectedTweak = string.Empty;
 
-    private bool IsImageLoading;
+    private bool IsLogoLoading;
     private TextureWrap? LogoTextureWrap;
     private readonly Point LogoSize = new(580, 180);
     private Point RenderedLogoSize = new(0, 0);
@@ -78,7 +78,7 @@ public partial class PluginWindow : Window, IDisposable
 
     private void UpdateLogo()
     {
-        if (IsImageLoading)
+        if (IsLogoLoading)
             return;
 
         RenderedLogoSize.X = (int)(LogoSize.X * (LogoSize.X / ConfigWidth * 0.6f) * ImGui.GetIO().FontGlobalScale);
@@ -90,7 +90,7 @@ public partial class PluginWindow : Window, IDisposable
         if (LogoTextureWrap != null && LogoTextureWrap.Width == RenderedLogoSize.X && LogoTextureWrap.Height == RenderedLogoSize.Y)
             return;
 
-        IsImageLoading = true;
+        IsLogoLoading = true;
 
         Task.Run(() =>
         {
@@ -119,13 +119,13 @@ public partial class PluginWindow : Window, IDisposable
                 LogoTextureWrap?.Dispose();
                 LogoTextureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, image.Width, image.Height, 4);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                PluginLog.Error("Error while loading logo", e);
+                PluginLog.Error(ex, "Error while loading logo");
             }
             finally
             {
-                IsImageLoading = false;
+                IsLogoLoading = false;
             }
         });
     }
@@ -289,7 +289,7 @@ public partial class PluginWindow : Window, IDisposable
             var pluginNameSize = new Vector2(88, 18) * fontScale;
             var spacing = new Vector2(0, 28) * fontScale;
 
-            if (!IsImageLoading && LogoTextureWrap != null && LogoTextureWrap.ImGuiHandle != 0)
+            if (!IsLogoLoading && LogoTextureWrap != null && LogoTextureWrap.ImGuiHandle != 0)
             {
                 ImGui.SetCursorPos(contentAvail / 2 - RenderedLogoSize / 2);
                 ImGui.Image(LogoTextureWrap.ImGuiHandle, RenderedLogoSize);

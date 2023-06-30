@@ -195,9 +195,9 @@ public sealed record PortraitPreset
 
             return preset;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            PluginLog.Error($"Error reading Preset: {e.Message}", e);
+            PluginLog.Error(ex, $"Error reading Preset: {ex.Message}");
         }
 
         return null;

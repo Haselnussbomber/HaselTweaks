@@ -314,9 +314,9 @@ public class PresetCard : IDisposable
                             isImageUpdatePending = true;
                             doesImageFileExist = true;
                         }
-                        catch (Exception e)
+                        catch (Exception ex)
                         {
-                            PluginLog.Error("Error while loading thumbnail", e);
+                            PluginLog.Error(ex, "Error while loading thumbnail");
                             isImageLoading = false;
                             doesImageFileExist = false;
                         }
@@ -364,9 +364,9 @@ public class PresetCard : IDisposable
 
                     textureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, scaledImage.Width, scaledImage.Height, 4);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    PluginLog.Error("Error while resizing/loading thumbnail", e);
+                    PluginLog.Error(ex, "Error while resizing/loading thumbnail");
                 }
                 finally
                 {
