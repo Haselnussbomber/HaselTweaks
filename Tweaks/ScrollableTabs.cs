@@ -3,6 +3,7 @@ using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
+using Windows.Win32;
 using AgentId = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentId;
 using HaselAtkComponentRadioButton = HaselTweaks.Structs.AtkComponentRadioButton;
 
@@ -89,19 +90,13 @@ public unsafe partial class ScrollableTabs : Tweak
         public bool HandleAdventureNoteBook = true;
     }
 
-    private const uint WM_MOUSEWHEEL = 0x020A;
-    private const uint WHEEL_DELTA = 120;
-
     private short wheelState;
-
-    [LibraryImport("user32.dll")]
-    public static partial nint GetActiveWindow();
 
     [SigHook("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 49 8B F8 C6 05")]
     private ulong WindowProcHandler(nint hwnd, int uMsg, int wParam)
     {
-        if (hwnd == GetActiveWindow() && uMsg == WM_MOUSEWHEEL)
-            wheelState = (short)Math.Clamp((wParam >> 16) / WHEEL_DELTA * (Config.Invert ? -1 : 1), -1, 1);
+        if (hwnd == PInvoke.GetActiveWindow() && uMsg == PInvoke.WM_MOUSEWHEEL)
+            wheelState = (short)Math.Clamp((wParam >> 16) / PInvoke.WHEEL_DELTA * (Config.Invert ? -1 : 1), -1, 1);
 
         return WindowProcHandlerHook.OriginalDisposeSafe(hwnd, uMsg, wParam);
     }

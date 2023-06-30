@@ -3,57 +3,17 @@ using System.Threading.Tasks;
 using HaselTweaks.Structs;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.System.Ole;
 
 namespace HaselTweaks.Utils;
 
 public static class ClipboardUtils
 {
-    /// <see href="https://learn.microsoft.com/en-us/windows/win32/dataxchg/standard-clipboard-formats" />
-    public enum ClipboardFormat : uint
-    {
-        /// <summary>
-        /// Text format. Each line ends with a carriage return/linefeed (CR-LF) combination. A null character signals the end of the data. Use this format for ANSI text.
-        /// </summary>
-        CF_TEXT = 1,
-
-        /// <summary>
-        /// A memory object containing a BITMAPINFO structure followed by the bitmap bits.
-        /// </summary>
-        CF_DIB = 8,
-
-        /// <summary>
-        /// A memory object containing a BITMAPV5HEADER structure followed by the bitmap color space information and the bitmap bits.
-        /// </summary>
-        CF_DIBV5 = 17,
-    }
-
-    [DllImport("user32.dll")]
-    public static extern uint GetClipboardSequenceNumber();
-
-    [DllImport("user32.dll")]
-    public static extern bool IsClipboardFormatAvailable(ClipboardFormat uFormat);
-
-    [DllImport("user32.dll", SetLastError = true)]
-    public static extern bool OpenClipboard(nint hWndOwner);
-
-    [DllImport("user32.dll", SetLastError = true)]
-    public static extern bool CloseClipboard();
-
-    [DllImport("user32.dll")]
-    public static extern bool EmptyClipboard();
-
-    [DllImport("user32.dll")]
-    public static extern nint GetClipboardData(ClipboardFormat uFormat);
-
-    [DllImport("user32.dll")]
-    public static extern nint SetClipboardData(ClipboardFormat uFormat, nint hMem);
-
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-    public static extern ClipboardFormat RegisterClipboardFormat(string lpszFormat);
-
     public static async Task OpenClipboard()
     {
-        while (!OpenClipboard(0))
+        while (!PInvoke.OpenClipboard(HWND.Null))
         {
             await Task.Delay(100);
         }
@@ -63,11 +23,11 @@ public static class ClipboardUtils
     {
         await OpenClipboard();
 
-        EmptyClipboard();
+        PInvoke.EmptyClipboard();
         SetDIB(image);
         SetDIBV5(image);
         SetPNG(image);
-        CloseClipboard();
+        PInvoke.CloseClipboard();
     }
 
     private static unsafe void SetDIB(Image<Rgba32> image)
@@ -93,7 +53,7 @@ public static class ClipboardUtils
         foreach (ref var pixel in pixelSpan)
             pixel.A = 0; // rgbReserved of RGBQUAD "must be zero"
 
-        SetClipboardData(ClipboardFormat.CF_DIB, data);
+        PInvoke.SetClipboardData((uint)CLIPBOARD_FORMAT.CF_DIB, (HANDLE)data);
     }
 
     private static unsafe void SetDIBV5(Image<Rgba32> image)
@@ -132,7 +92,7 @@ public static class ClipboardUtils
         foreach (ref var pixel in pixelSpan)
             pixel.A = 0; // rgbReserved of RGBQUAD "must be zero"
 
-        SetClipboardData(ClipboardFormat.CF_DIBV5, data);
+        PInvoke.SetClipboardData((uint)CLIPBOARD_FORMAT.CF_DIBV5, (HANDLE)data);
     }
 
     private static unsafe void SetPNG(Image<Rgba32> image)
@@ -140,6 +100,6 @@ public static class ClipboardUtils
         using var ms = new MemoryStream();
         image.SaveAsPng(ms);
         var ptr = (nint)MemoryUtils.FromByteArray(ms.ToArray());
-        SetClipboardData(RegisterClipboardFormat("PNG"), ptr);
+        PInvoke.SetClipboardData(PInvoke.RegisterClipboardFormat("PNG"), (HANDLE)ptr);
     }
 }

@@ -25,6 +25,9 @@ using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.System.Ole;
 using static HaselTweaks.Structs.AgentBannerEditorState;
 using DalamudFramework = Dalamud.Game.Framework;
 using RenderTargetManager = HaselTweaks.Structs.RenderTargetManager;
@@ -337,22 +340,22 @@ public partial class PortraitHelper : Tweak
         if (DateTime.Now - lastClipboardCheck <= TimeSpan.FromMilliseconds(100))
             return;
 
-        if (!ClipboardUtils.IsClipboardFormatAvailable(ClipboardUtils.ClipboardFormat.CF_TEXT))
+        if (!PInvoke.IsClipboardFormatAvailable((uint)CLIPBOARD_FORMAT.CF_TEXT))
             return;
 
-        var clipboardSequenceNumber = ClipboardUtils.GetClipboardSequenceNumber();
+        var clipboardSequenceNumber = PInvoke.GetClipboardSequenceNumber();
 
         if (lastClipboardSequenceNumber == clipboardSequenceNumber)
             return;
 
-        if (!ClipboardUtils.OpenClipboard(0))
+        if (!PInvoke.OpenClipboard(HWND.Null))
             return;
 
         try
         {
             lastClipboardSequenceNumber = clipboardSequenceNumber;
 
-            var data = ClipboardUtils.GetClipboardData(ClipboardUtils.ClipboardFormat.CF_TEXT);
+            var data = PInvoke.GetClipboardData((uint)CLIPBOARD_FORMAT.CF_TEXT);
             if (data != 0)
             {
                 var clipboardText = MemoryHelper.ReadString(data, 1024);
@@ -368,7 +371,7 @@ public partial class PortraitHelper : Tweak
         }
         finally
         {
-            ClipboardUtils.CloseClipboard();
+            PInvoke.CloseClipboard();
 
             lastClipboardCheck = DateTime.Now;
         }
@@ -383,10 +386,10 @@ public partial class PortraitHelper : Tweak
 
         try
         {
-            ClipboardUtils.EmptyClipboard();
+            PInvoke.EmptyClipboard();
 
             var clipboardText = Marshal.StringToHGlobalAnsi(preset.ToExportedString());
-            if (ClipboardUtils.SetClipboardData(ClipboardUtils.ClipboardFormat.CF_TEXT, clipboardText) != 0)
+            if (PInvoke.SetClipboardData((uint)CLIPBOARD_FORMAT.CF_TEXT, (HANDLE)clipboardText) != 0)
                 ClipboardPreset = preset;
         }
         catch (Exception e)
@@ -395,7 +398,7 @@ public partial class PortraitHelper : Tweak
         }
         finally
         {
-            ClipboardUtils.CloseClipboard();
+            PInvoke.CloseClipboard();
         }
     }
 
