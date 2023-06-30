@@ -1,17 +1,23 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Dalamud;
 using Dalamud.Interface;
-using Dalamud.Interface.GameFonts;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
+using Dalamud.Logging;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Records;
 using HaselTweaks.Utils;
 using ImGuiNET;
+using ImGuiScene;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using Svg;
 
 namespace HaselTweaks.Windows;
 
@@ -19,9 +25,15 @@ public partial class PluginWindow : Window, IDisposable
 {
     private const uint SidebarWidth = 250;
     private const uint ConfigWidth = SidebarWidth * 2;
+    private const string LogoManifestResource = "HaselTweaks.Assets.Logo.svg";
 
     private string SelectedTweak = string.Empty;
-    private readonly GameFontHandle FontAxis36;
+
+    private bool IsImageLoading;
+    private TextureWrap? LogoTextureWrap;
+    private readonly Point LogoSize = new(580, 180);
+    private Point RenderedLogoSize = new(0, 0);
+
     public TextureManager? TextureManager { get; private set; }
 
     [GeneratedRegex("\\.0$")]
@@ -44,11 +56,12 @@ public partial class PluginWindow : Window, IDisposable
         Flags |= ImGuiWindowFlags.AlwaysAutoResize;
         Flags |= ImGuiWindowFlags.NoSavedSettings;
 
-        FontAxis36 = Service.PluginInterface.UiBuilder.GetGameFontHandle(new GameFontStyle(GameFontFamilyAndSize.Axis36));
+        UpdateLogo();
     }
 
     public void Dispose()
     {
+        LogoTextureWrap?.Dispose();
         TextureManager?.Dispose();
         TextureManager = null;
     }
@@ -56,6 +69,65 @@ public partial class PluginWindow : Window, IDisposable
     public override void OnOpen()
     {
         TextureManager ??= new();
+    }
+
+    public override void Update()
+    {
+        UpdateLogo();
+    }
+
+    private void UpdateLogo()
+    {
+        if (IsImageLoading)
+            return;
+
+        RenderedLogoSize.X = (int)(LogoSize.X * (LogoSize.X / ConfigWidth * 0.6f) * ImGui.GetIO().FontGlobalScale);
+        RenderedLogoSize.Y = (int)(LogoSize.Y * (RenderedLogoSize.X / (float)LogoSize.X));
+
+        if (RenderedLogoSize.X <= 0 || RenderedLogoSize.Y <= 0)
+            return;
+
+        if (LogoTextureWrap != null && LogoTextureWrap.Width == RenderedLogoSize.X && LogoTextureWrap.Height == RenderedLogoSize.Y)
+            return;
+
+        IsImageLoading = true;
+
+        Task.Run(() =>
+        {
+            try
+            {
+                using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(LogoManifestResource);
+                if (stream == null)
+                {
+                    PluginLog.Error($"ManifestResource {LogoManifestResource} not found");
+                    return;
+                }
+
+                using var reader = new StreamReader(stream);
+
+                var svgDocument = SvgDocument.FromSvg<SvgDocument>(reader.ReadToEnd());
+
+                using var bitmap = svgDocument.Draw(RenderedLogoSize.X, RenderedLogoSize.Y);
+                using var memoryStream = new MemoryStream();
+                bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                var image = Image.Load<Rgba32>(memoryStream);
+
+                var data = new byte[4 * image.Width * image.Height];
+                image.CopyPixelDataTo(data);
+
+                LogoTextureWrap?.Dispose();
+                LogoTextureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, image.Width, image.Height, 4);
+            }
+            catch (Exception e)
+            {
+                PluginLog.Error("Error while loading logo", e);
+            }
+            finally
+            {
+                IsImageLoading = false;
+            }
+        });
     }
 
     public override void OnClose()
@@ -72,11 +144,6 @@ public partial class PluginWindow : Window, IDisposable
                 tweak.OnConfigWindowClose();
             }
         }
-    }
-
-    public override bool DrawConditions()
-    {
-        return FontAxis36.Available;
     }
 
     public override void Draw()
@@ -212,28 +279,21 @@ public partial class PluginWindow : Window, IDisposable
         if (string.IsNullOrEmpty(SelectedTweak))
         {
             var drawList = ImGui.GetWindowDrawList();
-            var font = FontAxis36.ImFont;
             var cursorPos = ImGui.GetCursorPos();
             var absolutePos = ImGui.GetWindowPos() + cursorPos;
             var contentAvail = ImGui.GetContentRegionAvail();
+            var fontScale = ImGui.GetIO().FontGlobalScale;
 
             // I miss CSS...
-            var offset = new Vector2(0, -8);
-            var pluginNameSize = new Vector2(88, 18);
-            var spacing = new Vector2(0, 28);
+            var offset = new Vector2(0, -8) * fontScale;
+            var pluginNameSize = new Vector2(88, 18) * fontScale;
+            var spacing = new Vector2(0, 28) * fontScale;
 
-            drawList.AddText(
-                font, 34,
-                absolutePos + contentAvail / 2 - pluginNameSize - spacing / 2 + offset,
-                ImGui.GetColorU32(ImGuiUtils.ColorWhite),
-                "HaselTweaks"
-            );
-
-            drawList.AddLine(
-                absolutePos + new Vector2(contentAvail.X / 5, contentAvail.Y / 2) + spacing / 2 + offset,
-                absolutePos + new Vector2(contentAvail.X / 5 * 4, contentAvail.Y / 2) + spacing / 2 + offset,
-                ImGui.GetColorU32(ImGuiUtils.ColorOrange)
-            );
+            if (!IsImageLoading && LogoTextureWrap != null && LogoTextureWrap.ImGuiHandle != 0)
+            {
+                ImGui.SetCursorPos(contentAvail / 2 - RenderedLogoSize / 2);
+                ImGui.Image(LogoTextureWrap.ImGuiHandle, RenderedLogoSize);
+            }
 
             // links, bottom left
             ImGui.SetCursorPos(cursorPos + new Vector2(0, contentAvail.Y - ImGui.CalcTextSize(" ").Y));

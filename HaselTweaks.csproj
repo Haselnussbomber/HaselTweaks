@@ -43,6 +43,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Logo.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Logo.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Dalamud" Private="false" />
     <Reference Include="Dalamud.Interface" Private="false" />
     <Reference Include="FFXIVClientStructs" Private="false" />
@@ -61,6 +69,7 @@
     <PackageReference Include="Dalamud.ContextMenu" Version="1.2.3" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
+    <PackageReference Include="Svg" Version="3.4.4" />
     <PackageReference Include="System.IO.Hashing" Version="7.0.0" />
   </ItemGroup>
 
