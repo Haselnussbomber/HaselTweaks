@@ -5,6 +5,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Utility;
 using ImGuiNET;
+using Windows.Win32;
 
 namespace HaselTweaks.Utils;
 
@@ -109,10 +110,8 @@ public static partial class ImGuiUtils
     public static void PushCursorY(float y)
         => ImGui.SetCursorPosY(ImGui.GetCursorPosY() + y);
 
-    [LibraryImport("user32.dll")]
-    private static partial nint GetForegroundWindow();
-    public static readonly nint MainWindowHandle = Process.GetCurrentProcess().MainWindowHandle;
-    public static bool IsGameWindowFocused() => MainWindowHandle == GetForegroundWindow();
+    public static bool IsGameWindowFocused()
+        => Process.GetCurrentProcess().MainWindowHandle == PInvoke.GetForegroundWindow();
 
     public static void DrawLoadingSpinner(Vector2 center, float radius = 10f)
     {
