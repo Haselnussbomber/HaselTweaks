@@ -104,15 +104,15 @@ public partial class PluginWindow : Window, IDisposable
                 }
 
                 using var reader = new StreamReader(stream);
-
                 var svgDocument = SvgDocument.FromSvg<SvgDocument>(reader.ReadToEnd());
 
                 using var bitmap = svgDocument.Draw(RenderedLogoSize.X, RenderedLogoSize.Y);
                 using var memoryStream = new MemoryStream();
+
                 bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
                 memoryStream.Seek(0, SeekOrigin.Begin);
-                using var image = Image.Load<Rgba32>(memoryStream);
 
+                using var image = Image.Load<Rgba32>(memoryStream);
                 var data = new byte[4 * image.Width * image.Height];
                 image.CopyPixelDataTo(data);
 
@@ -278,16 +278,8 @@ public partial class PluginWindow : Window, IDisposable
 
         if (string.IsNullOrEmpty(SelectedTweak))
         {
-            var drawList = ImGui.GetWindowDrawList();
             var cursorPos = ImGui.GetCursorPos();
-            var absolutePos = ImGui.GetWindowPos() + cursorPos;
             var contentAvail = ImGui.GetContentRegionAvail();
-            var fontScale = ImGui.GetIO().FontGlobalScale;
-
-            // I miss CSS...
-            var offset = new Vector2(0, -8) * fontScale;
-            var pluginNameSize = new Vector2(88, 18) * fontScale;
-            var spacing = new Vector2(0, 28) * fontScale;
 
             if (!IsLogoLoading && LogoTextureWrap != null && LogoTextureWrap.ImGuiHandle != 0)
             {
