@@ -127,8 +127,8 @@ public class PresetCard : IDisposable
 
         {
             using var a = ImRaii.PushColor(ImGuiCol.Button, (uint)Colors.Transparent);
-            using var b = ImRaii.PushColor(ImGuiCol.ButtonActive, (uint)new Color { A = 0.3f });
-            using var c = ImRaii.PushColor(ImGuiCol.ButtonHovered, (uint)new Color { A = 0.2f });
+            using var b = ImRaii.PushColor(ImGuiCol.ButtonActive, (uint)new Color(1, 1, 1, 0.3f));
+            using var c = ImRaii.PushColor(ImGuiCol.ButtonHovered, (uint)new Color(1, 1, 1, 0.2f));
             using var d = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0);
             ImGui.Button($"##{preset.Id}_Button", PortraitSize * scale);
         }
