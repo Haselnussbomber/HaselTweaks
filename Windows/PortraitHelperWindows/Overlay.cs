@@ -11,6 +11,8 @@ public abstract unsafe class Overlay : Window
 {
     public PortraitHelper Tweak { get; init; }
 
+    private bool? IsWindow { get; set; } = null;
+
     public AgentBannerEditor* AgentBannerEditor => Tweak.AgentBannerEditor;
     public AddonBannerEditor* AddonBannerEditor => Tweak.AddonBannerEditor;
 
@@ -28,24 +30,7 @@ public abstract unsafe class Overlay : Window
     {
         Tweak = tweak;
 
-        if (ImGui.GetIO().FontGlobalScale <= 1)
-        {
-            base.Flags |= ImGuiWindowFlags.NoSavedSettings;
-            base.Flags |= ImGuiWindowFlags.NoDecoration;
-            base.Flags |= ImGuiWindowFlags.NoMove;
-        }
-        else
-        {
-            SizeCondition = ImGuiCond.Appearing;
-            SizeConstraints = new WindowSizeConstraints
-            {
-                MinimumSize = new Vector2(400, 500),
-                MaximumSize = new Vector2(4069),
-            };
-        }
-
         base.RespectCloseHotkey = false;
-        base.IsOpen = true;
     }
 
     public override bool DrawConditions()
@@ -60,49 +45,80 @@ public abstract unsafe class Overlay : Window
     }
 
     public override void OnClose()
-        => ToggleUiVisibility(true);
+    {
+        ToggleUiVisibility(true);
+    }
 
     public override void Update()
-        => ToggleUiVisibility(!DrawConditions());
+    {
+        var isWindow = ImGui.GetIO().FontGlobalScale > 1;
+
+        ToggleUiVisibility(!DrawConditions() || isWindow);
+
+        if (IsWindow == null || IsWindow != isWindow)
+        {
+            if (!isWindow)
+            {
+                base.Flags |= ImGuiWindowFlags.NoSavedSettings;
+                base.Flags |= ImGuiWindowFlags.NoDecoration;
+                base.Flags |= ImGuiWindowFlags.NoMove;
+
+                if (Type == OverlayType.Window)
+                {
+                    var windowNode = (AtkResNode*)((AtkUnitBase*)AddonBannerEditor)->WindowNode;
+                    var scale = GetNodeScale(windowNode);
+
+                    Position = new Vector2(
+                        AddonBannerEditor->AtkUnitBase.X + (windowNode->X + 8) * scale.X,
+                        AddonBannerEditor->AtkUnitBase.Y + (windowNode->Y + 40) * scale.Y
+                    );
+
+                    Size = new Vector2(
+                        (windowNode->GetWidth() - 16) * scale.X,
+                        (windowNode->GetHeight() - 56) * scale.Y
+                    );
+                }
+                else if (Type == OverlayType.LeftPane)
+                {
+                    var leftPane = GetNode((AtkUnitBase*)AddonBannerEditor, 20);
+                    var scale = GetNodeScale(leftPane);
+
+                    Position = new Vector2(
+                        AddonBannerEditor->AtkUnitBase.X + leftPane->X * scale.X,
+                        AddonBannerEditor->AtkUnitBase.Y + leftPane->Y * scale.Y
+                    );
+
+                    Size = new Vector2(
+                        leftPane->GetWidth() * scale.X,
+                        leftPane->GetHeight() * scale.Y
+                    );
+                }
+            }
+            else
+            {
+                base.Flags &= ImGuiWindowFlags.NoSavedSettings;
+                base.Flags &= ImGuiWindowFlags.NoDecoration;
+                base.Flags &= ImGuiWindowFlags.NoMove;
+
+                SizeCondition = ImGuiCond.Appearing;
+                SizeConstraints = new WindowSizeConstraints
+                {
+                    MinimumSize = new Vector2(400, 500),
+                    MaximumSize = new Vector2(4069),
+                };
+
+                Position = null;
+                Size = null;
+            }
+
+            IsWindow = isWindow;
+        }
+    }
 
     public override void PreDraw()
     {
         ImGui.PushStyleColor(ImGuiCol.WindowBg, 0xFF313131);
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10, 4));
-
-        if (ImGui.GetIO().FontGlobalScale <= 1)
-        {
-            if (Type == OverlayType.Window)
-            {
-                var windowNode = (AtkResNode*)((AtkUnitBase*)AddonBannerEditor)->WindowNode;
-                var scale = GetNodeScale(windowNode);
-
-                Position = new Vector2(
-                    AddonBannerEditor->AtkUnitBase.X + (windowNode->X + 8) * scale.X,
-                    AddonBannerEditor->AtkUnitBase.Y + (windowNode->Y + 40) * scale.Y
-                );
-
-                Size = new Vector2(
-                    (windowNode->GetWidth() - 16) * scale.X,
-                    (windowNode->GetHeight() - 56) * scale.Y
-                );
-            }
-            else if (Type == OverlayType.LeftPane)
-            {
-                var leftPane = GetNode((AtkUnitBase*)AddonBannerEditor, 20);
-                var scale = GetNodeScale(leftPane);
-
-                Position = new Vector2(
-                    AddonBannerEditor->AtkUnitBase.X + leftPane->X * scale.X,
-                    AddonBannerEditor->AtkUnitBase.Y + leftPane->Y * scale.Y
-                );
-
-                Size = new Vector2(
-                    leftPane->GetWidth() * scale.X,
-                    leftPane->GetHeight() * scale.Y
-                );
-            }
-        }
     }
 
     public override void PostDraw()

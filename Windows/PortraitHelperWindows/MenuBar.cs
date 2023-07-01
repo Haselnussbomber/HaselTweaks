@@ -108,7 +108,7 @@ public unsafe class MenuBar : Window, IDisposable
             if (ImGuiUtils.IconButton("Paste", FontAwesomeIcon.Paste, "Import from Clipboard (All Settings)"))
             {
                 Tweak.PresetToState(Tweak.ClipboardPreset, ImportFlags.All);
-                Tweak.ChangeView(ViewMode.Normal);
+                Tweak.CloseWindows();
             }
         }
 
@@ -117,7 +117,7 @@ public unsafe class MenuBar : Window, IDisposable
         {
             ImGuiUtils.IconButton("ViewModeAdvancedImport", FontAwesomeIcon.FileImport, "Toggle Advanced Import Mode", disabled: true);
         }
-        else if (Tweak.OverlayViewMode == ViewMode.AdvancedImport)
+        else if (Tweak.AdvancedImportOverlay != null && Tweak.AdvancedImportOverlay.IsOpen)
         {
             using var color1 = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942);
             using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
@@ -125,16 +125,20 @@ public unsafe class MenuBar : Window, IDisposable
 
             if (ImGuiUtils.IconButton("ViewModeNormal", FontAwesomeIcon.FileImport, "Toggle Advanced Import Mode"))
             {
-                Tweak.ChangeView(ViewMode.Normal);
+                Tweak.AdvancedImportOverlay.IsOpen = false;
             }
         }
         else if (ImGuiUtils.IconButton("ViewModeAdvancedImport", FontAwesomeIcon.FileImport, "Toggle Advanced Import Mode"))
         {
-            Tweak.ChangeView(ViewMode.AdvancedImport);
+            if (Tweak.AdvancedImportOverlay == null)
+                Plugin.WindowSystem.AddWindow(Tweak.AdvancedImportOverlay = new(Tweak));
+
+            Tweak.CloseWindows();
+            Tweak.AdvancedImportOverlay.IsOpen = true;
         }
 
         ImGui.SameLine();
-        if (Tweak.OverlayViewMode == ViewMode.AdvancedEdit)
+        if (Tweak.AdvancedEditOverlay != null && Tweak.AdvancedEditOverlay.IsOpen)
         {
             using var color1 = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942);
             using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
@@ -142,12 +146,16 @@ public unsafe class MenuBar : Window, IDisposable
 
             if (ImGuiUtils.IconButton("ViewModeNormal", FontAwesomeIcon.FilePen, "Toggle Advanced Edit Mode"))
             {
-                Tweak.ChangeView(ViewMode.Normal);
+                Tweak.AdvancedEditOverlay.IsOpen = false;
             }
         }
         else if (ImGuiUtils.IconButton("ViewModeAdvancedEdit", FontAwesomeIcon.FilePen, "Toggle Advanced Edit Mode"))
         {
-            Tweak.ChangeView(ViewMode.AdvancedEdit);
+            if (Tweak.AdvancedEditOverlay == null)
+                Plugin.WindowSystem.AddWindow(Tweak.AdvancedEditOverlay = new(Tweak));
+
+            Tweak.CloseWindows();
+            Tweak.AdvancedEditOverlay.IsOpen = true;
         }
 
         // ----
@@ -163,7 +171,7 @@ public unsafe class MenuBar : Window, IDisposable
         }
 
         ImGui.SameLine();
-        if (Tweak.OverlayViewMode == ViewMode.PresetBrowser)
+        if (Tweak.PresetBrowserOverlay != null && Tweak.PresetBrowserOverlay.IsOpen)
         {
             using var color1 = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942);
             using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
@@ -171,12 +179,16 @@ public unsafe class MenuBar : Window, IDisposable
 
             if (ImGuiUtils.IconButton("ViewModeNormal2", FontAwesomeIcon.List, "Toggle Preset Browser"))
             {
-                Tweak.ChangeView(ViewMode.Normal);
+                Tweak.PresetBrowserOverlay.IsOpen = false;
             }
         }
         else if (ImGuiUtils.IconButton("ViewModePresetBrowser", FontAwesomeIcon.List, "Toggle Preset Browser"))
         {
-            Tweak.ChangeView(ViewMode.PresetBrowser);
+            if (Tweak.PresetBrowserOverlay == null)
+                Plugin.WindowSystem.AddWindow(Tweak.PresetBrowserOverlay = new(Tweak));
+
+            Tweak.CloseWindows();
+            Tweak.PresetBrowserOverlay.IsOpen = true;
         }
 
         // ----
@@ -186,7 +198,7 @@ public unsafe class MenuBar : Window, IDisposable
         // ----
 
         ImGui.SameLine();
-        if (Tweak.OverlayViewMode == ViewMode.AlignmentToolSettings)
+        if (Tweak.AlignmentToolSettingsOverlay != null && Tweak.AlignmentToolSettingsOverlay.IsOpen)
         {
             using var color1 = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942);
             using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
@@ -196,7 +208,7 @@ public unsafe class MenuBar : Window, IDisposable
             {
                 if (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift))
                 {
-                    Tweak.ChangeView(ViewMode.Normal);
+                    Tweak.AlignmentToolSettingsOverlay.IsOpen = false;
                 }
                 else
                 {
@@ -209,7 +221,11 @@ public unsafe class MenuBar : Window, IDisposable
         {
             if (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift))
             {
-                Tweak.ChangeView(ViewMode.AlignmentToolSettings);
+                if (Tweak.AlignmentToolSettingsOverlay == null)
+                    Plugin.WindowSystem.AddWindow(Tweak.AlignmentToolSettingsOverlay = new(Tweak));
+
+                Tweak.CloseWindows();
+                Tweak.AlignmentToolSettingsOverlay.IsOpen = true;
             }
             else
             {
@@ -263,39 +279,42 @@ public unsafe class MenuBar : Window, IDisposable
             ImGui.SetNextWindowPos(position);
             ImGui.SetNextWindowSize(size);
 
-            ImGui.Begin("AlignmentTool", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs);
-
-            var drawList = ImGui.GetWindowDrawList();
-
-            if (Config.AlignmentToolVerticalLines > 0)
+            if (!(ImGui.GetIO().FontGlobalScale <= 1 && ((Tweak.AdvancedImportOverlay != null && Tweak.AdvancedImportOverlay.IsOpen) || (Tweak.PresetBrowserOverlay != null && Tweak.PresetBrowserOverlay.IsOpen))))
             {
-                var x = size.X / (Config.AlignmentToolVerticalLines + 1);
+                ImGui.Begin("AlignmentTool", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs);
 
-                for (var i = 1; i <= Config.AlignmentToolVerticalLines + 1; i++)
+                var drawList = ImGui.GetWindowDrawList();
+
+                if (Config.AlignmentToolVerticalLines > 0)
                 {
-                    drawList.AddLine(
-                        position + new Vector2(i * x, 0),
-                        position + new Vector2(i * x, size.Y),
-                        ImGui.ColorConvertFloat4ToU32(Config.AlignmentToolVerticalColor)
-                    );
+                    var x = size.X / (Config.AlignmentToolVerticalLines + 1);
+
+                    for (var i = 1; i <= Config.AlignmentToolVerticalLines + 1; i++)
+                    {
+                        drawList.AddLine(
+                            position + new Vector2(i * x, 0),
+                            position + new Vector2(i * x, size.Y),
+                            ImGui.ColorConvertFloat4ToU32(Config.AlignmentToolVerticalColor)
+                        );
+                    }
                 }
-            }
 
-            if (Config.AlignmentToolHorizontalLines > 0)
-            {
-                var y = size.Y / (Config.AlignmentToolHorizontalLines + 1);
-
-                for (var i = 1; i <= Config.AlignmentToolHorizontalLines + 1; i++)
+                if (Config.AlignmentToolHorizontalLines > 0)
                 {
-                    drawList.AddLine(
-                        position + new Vector2(0, i * y),
-                        position + new Vector2(size.X, i * y),
-                        ImGui.ColorConvertFloat4ToU32(Config.AlignmentToolHorizontalColor)
-                    );
-                }
-            }
+                    var y = size.Y / (Config.AlignmentToolHorizontalLines + 1);
 
-            ImGui.End();
+                    for (var i = 1; i <= Config.AlignmentToolHorizontalLines + 1; i++)
+                    {
+                        drawList.AddLine(
+                            position + new Vector2(0, i * y),
+                            position + new Vector2(size.X, i * y),
+                            ImGui.ColorConvertFloat4ToU32(Config.AlignmentToolHorizontalColor)
+                        );
+                    }
+                }
+
+                ImGui.End();
+            }
         }
     }
 

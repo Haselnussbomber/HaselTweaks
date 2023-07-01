@@ -176,7 +176,7 @@ public class PresetCard : IDisposable
             if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
             {
                 overlay.Tweak.PresetToState(preset.Preset, ImportFlags.All);
-                overlay.Tweak.ChangeView(ViewMode.Normal);
+                overlay.Tweak.CloseWindows();
             }
         }
         
@@ -185,7 +185,7 @@ public class PresetCard : IDisposable
             if (ImGui.MenuItem("Load Preset"))
             {
                 overlay.Tweak.PresetToState(preset.Preset, ImportFlags.All);
-                overlay.Tweak.ChangeView(ViewMode.Normal);
+                overlay.Tweak.CloseWindows();
             }
 
             if (ImGui.MenuItem("Edit Preset"))

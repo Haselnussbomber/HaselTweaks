@@ -38,12 +38,6 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         };
     }
 
-    public override void OnClose()
-    {
-        base.OnClose();
-        Tweak.ClosePresetBrowserOverlay(false);
-    }
-
     public void Dispose()
     {
         foreach (var (_, card) in PresetCards)

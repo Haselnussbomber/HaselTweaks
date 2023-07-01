@@ -17,12 +17,6 @@ public unsafe class AdvancedEditOverlay : Overlay
     {
     }
 
-    public override void OnClose()
-    {
-        base.OnClose();
-        Tweak.CloseAdvancedEditOverlay(false);
-    }
-
     public override void Draw()
     {
         ImGui.PopStyleVar(); // WindowPadding from PreDraw()

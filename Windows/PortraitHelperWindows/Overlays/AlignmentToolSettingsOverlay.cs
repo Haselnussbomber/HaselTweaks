@@ -12,12 +12,6 @@ public unsafe class AlignmentToolSettingsOverlay : Overlay
     {
     }
 
-    public override void OnClose()
-    {
-        base.OnClose();
-        Tweak.CloseAlignmentToolSettingsOverlay(false);
-    }
-
     public override void Draw()
     {
         ImGui.PopStyleVar(); // WindowPadding from PreDraw()

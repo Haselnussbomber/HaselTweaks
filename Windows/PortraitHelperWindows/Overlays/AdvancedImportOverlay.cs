@@ -20,19 +20,13 @@ public unsafe class AdvancedImportOverlay : Overlay
         base.Flags &= ~ImGuiWindowFlags.NoScrollbar;
     }
 
-    public override void OnClose()
-    {
-        base.OnClose();
-        Tweak.CloseAdvancedImportOverlay(false);
-    }
-
     public override void Draw()
     {
         ImGui.PopStyleVar(); // WindowPadding from PreDraw()
 
         if (Tweak.ClipboardPreset == null)
         {
-            Tweak.ChangeView(ViewMode.Normal);
+            IsOpen = false;
             return;
         }
 
@@ -55,7 +49,7 @@ public unsafe class AdvancedImportOverlay : Overlay
         if (ImGui.Button("Import Selected Settings"))
         {
             Tweak.PresetToState(Tweak.ClipboardPreset, Tweak.CurrentImportFlags);
-            Tweak.ChangeView(ViewMode.Normal);
+            Tweak.CloseWindows();
         }
 
         ImGuiUtils.DrawSection(GetAddonText(14684) ?? "Design");
