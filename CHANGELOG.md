@@ -1,5 +1,15 @@
 # Changelog
 
+## [15.1.2] (2023-07-01)
+
+### Character Class Switcher
+
+- **Changed:** The message "Couldn't find a suitable gearset." has been translated into German, and using ChatGPT into French and Japanese. Please file a bug if the translation is incorrect.
+
+### Portrait Helper
+
+- **Fixed:** The changes in v15.1.0 broke the logic of the menu bar, so I reworked the way it handles the overlays/windows. Hopefully it's bug-free now.
+
 ## [15.1.1] (2023-06-30)
 
 ### HaselTweaks
@@ -908,6 +918,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[15.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.1.1...v15.1.2
+[15.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.1.0...v15.1.1
 [15.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.0.0...v15.1.0
 [15.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.12.1...v15.0.0
 [14.12.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v14.12.0...v14.12.1
