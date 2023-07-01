@@ -101,7 +101,7 @@ public unsafe partial class CustomChatTimestamp : Tweak
     [SigHook("E8 ?? ?? ?? ?? 48 8B D0 48 8B CB E8 ?? ?? ?? ?? 4C 8D 87")]
     private byte* FormatAddon(nint a1, ulong addonRowId, ulong value)
     {
-        if (addonRowId == 7840 && !string.IsNullOrWhiteSpace(Config.Format))
+        if (addonRowId is 7840 or 7841 && !string.IsNullOrWhiteSpace(Config.Format))
         {
             try
             {
