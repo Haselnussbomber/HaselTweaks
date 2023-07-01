@@ -1,4 +1,5 @@
 using System.Linq;
+using Dalamud;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -329,8 +330,13 @@ public unsafe partial class CharacterClassSwitcher : Tweak
 
         if (selectedGearset.Index == -1)
         {
-            // TODO: localize
-            Service.Chat.PrintError("Couldn't find a suitable gearset.");
+            Service.Chat.PrintError(Service.ClientState.ClientLanguage switch
+            {
+                ClientLanguage.German => "Konnte kein passendes Ausrüstungsset finden.",
+                ClientLanguage.French => "Impossible de trouver un ensemble d'équipement adapté.",
+                ClientLanguage.Japanese => "適切なギアセットが見つかりませんでした。",
+                _ => "Couldn't find a suitable gearset."
+            });
             return;
         }
 
