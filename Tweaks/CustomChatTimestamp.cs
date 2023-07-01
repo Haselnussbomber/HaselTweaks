@@ -3,6 +3,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.String;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselTweaks.Utils;
 using ImGuiNET;
 
@@ -28,12 +29,14 @@ public unsafe partial class CustomChatTimestamp : Tweak
             if (ImGui.InputText("##HaselTweaks_CustomChatTimestamp_Format", ref Config.Format, 50))
             {
                 Plugin.Config.Save();
+                ReloadChat();
             }
             ImGui.SameLine();
             if (ImGuiUtils.IconButton("##HaselTweaks_CustomChatTimestamp_FormatReset", FontAwesomeIcon.Undo, "Reset to Default: \"[HH:mm] \""))
             {
                 Config.Format = "[HH:mm] ";
                 Plugin.Config.Save();
+                ReloadChat();
             }
 
             ImGui.PushStyleColor(ImGuiCol.Text, (uint)Colors.Grey);
@@ -98,6 +101,16 @@ public unsafe partial class CustomChatTimestamp : Tweak
         }
     }
 
+    public override void Enable()
+    {
+        ReloadChat();
+    }
+
+    public override void Disable()
+    {
+        ReloadChat();
+    }
+
     [SigHook("E8 ?? ?? ?? ?? 48 8B D0 48 8B CB E8 ?? ?? ?? ?? 4C 8D 87")]
     private byte* FormatAddon(nint a1, ulong addonRowId, ulong value)
     {
@@ -122,5 +135,11 @@ public unsafe partial class CustomChatTimestamp : Tweak
         }
 
         return FormatAddonHook.OriginalDisposeSafe(a1, addonRowId, value);
+    }
+
+    public void ReloadChat()
+    {
+        for (var i = 0; i < 4; i++)
+            *(bool*)((nint)RaptureLogModule.Instance() + 0x33E8 + i) = true;
     }
 }
