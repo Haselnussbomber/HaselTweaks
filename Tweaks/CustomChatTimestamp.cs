@@ -1,7 +1,6 @@
 using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
-using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselTweaks.Utils;
@@ -118,14 +117,11 @@ public unsafe partial class CustomChatTimestamp : Tweak
         {
             try
             {
-                var str = (Utf8String*)(a1 + 0x9C0);
                 var time = DateTime.UnixEpoch.AddSeconds(value).ToLocalTime();
                 var formatted = time.ToString(Config.Format);
 
-                MemoryHelper.WriteString((nint)str->StringPtr, formatted);
-                str->BufUsed = formatted.Length + 1;
-                str->StringLength = formatted.Length;
-
+                var str = (Utf8String*)(a1 + 0x9C0);
+                str->SetString(formatted);
                 return str->StringPtr;
             }
             catch (Exception e)
@@ -139,6 +135,7 @@ public unsafe partial class CustomChatTimestamp : Tweak
 
     public void ReloadChat()
     {
+        // see "E8 ?? ?? ?? ?? BD ?? ?? ?? ?? 49 8B 0E"
         for (var i = 0; i < 4; i++)
             *(bool*)((nint)RaptureLogModule.Instance() + 0x33E8 + i) = true;
     }
