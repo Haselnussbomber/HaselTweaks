@@ -22,6 +22,10 @@ Sorts items inside various containers when they are opened. Rules can be configu
 
 Uses the games `/itemsort` command for sorting.
 
+Options:
+
+- Sort armoury on job change
+
 ### Auto-open Recipe
 
 If a new daily/tribal quest objective requires you to craft an item, and you have all the materials for it in your inventory at that moment, this tweak will automatically open the recipe, saving you a whopping 4-5 clicks.
@@ -92,6 +96,9 @@ Login options:
 - Show pets in character selection: Displays a carbuncle for Arcanist/Summoner and a fairy for Scholar next to your character. Position is adjustable.
   > **Note**
   > In order to apply the pet glamor settings, you must have logged in at least once.
+- Play emote in character selection: Have your character greet you with an emote!  
+  > **Note**
+  > Emote settings are per character and not all emotes are supported (e.g. sitting or underwater emotes). What is supported, however, are alternative standing idle poses.
 - Preload territory when queued: When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.  
   > **Note**
   > Since I only have SSDs, I don't really know if this works at all.
