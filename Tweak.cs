@@ -142,6 +142,8 @@ public abstract unsafe class Tweak
 
     internal void DisposeInternal()
     {
+        DisableInternal();
+
         try
         {
             CallHooks("Dispose");

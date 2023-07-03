@@ -176,20 +176,17 @@ public sealed partial class Plugin : IDalamudPlugin
 
         Service.Commands.RemoveHandler("/haseltweaks");
 
-        foreach (var tweak in Tweaks.ToArray())
-        {
-            if (tweak.Enabled)
-            {
-                try
-                {
-                    tweak.DisableInternal();
-                }
-                catch (Exception ex)
-                {
-                    PluginLog.Error(ex, $"Failed unloading tweak '{tweak.Name}'.");
-                }
-            }
+        AddonSetupHook?.Dispose();
+        AddonFinalizeHook?.Dispose();
 
+        WindowSystem.RemoveAllWindows();
+        WindowSystem = null!;
+
+        _pluginWindow?.Dispose();
+        _pluginWindow = null;
+
+        foreach (var tweak in Tweaks)
+        {
             try
             {
                 tweak.DisposeInternal();
@@ -198,20 +195,10 @@ public sealed partial class Plugin : IDalamudPlugin
             {
                 PluginLog.Error(ex, $"Failed disposing tweak '{tweak.Name}'.");
             }
-
-            Tweaks.Remove(tweak);
         }
 
-        WindowSystem.RemoveAllWindows();
-        WindowSystem = null!;
-
-        _pluginWindow?.Dispose();
-        _pluginWindow = null;
-
+        Tweaks.Clear();
         Tweaks = null!;
-
-        AddonSetupHook?.Dispose();
-        AddonFinalizeHook?.Dispose();
 
         Config?.Save();
         Config = null!;
