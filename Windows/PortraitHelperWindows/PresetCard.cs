@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Logging;
+using Dalamud.Memory;
 using Dalamud.Utility;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
@@ -139,9 +140,14 @@ public class PresetCard : IDisposable
             {
                 ImGui.TextUnformatted($"Moving {_preset.Name}");
 
-                var idPtr = Marshal.StringToHGlobalAnsi(_preset.Id.ToString());
-                ImGui.SetDragDropPayload("MovePresetCard", idPtr, (uint)MemoryUtils.Strlen(idPtr));
-                Marshal.FreeHGlobal(idPtr);
+                unsafe
+                {
+                    var bytes = _preset.Id.ToByteArray();
+                    fixed (byte* ptr = bytes)
+                    {
+                        ImGui.SetDragDropPayload("MovePresetCard", (nint)ptr, (uint)bytes.Length);
+                    }
+                }
             }
         }
 
@@ -154,7 +160,7 @@ public class PresetCard : IDisposable
                 {
                     if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
                     {
-                        var presetId = Marshal.PtrToStringAnsi(payload.Data, payload.DataSize);
+                        var presetId = MemoryHelper.Read<Guid>(payload.Data).ToString();
                         var oldIndex = Config.Presets.IndexOf((preset) => preset.Id.ToString() == presetId);
                         var newIndex = Config.Presets.IndexOf(_preset);
                         var item = Config.Presets[oldIndex];

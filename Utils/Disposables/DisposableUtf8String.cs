@@ -1,4 +1,5 @@
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 
 namespace HaselTweaks.Utils;
@@ -40,6 +41,18 @@ public unsafe class DisposableUtf8String : DisposableCreatable<Utf8String>, IDis
 
     public void SetString(SeString text)
         => SetString(text.Encode());
+
+    public void AppendString(byte* text)
+        => Ptr->SetString(ToSeString().Append(MemoryHelper.ReadSeStringNullTerminated((nint)text)).Encode());
+
+    public void AppendString(byte[] text)
+        => Ptr->SetString(ToSeString().Append(SeString.Parse(text)).Encode());
+
+    public void AppendString(string text)
+        => Ptr->SetString(ToSeString().Append(text).Encode());
+
+    public void AppendString(SeString text)
+        => Ptr->SetString(ToSeString().Append(text).Encode());
 
     public new string ToString()
         => Ptr->ToString();

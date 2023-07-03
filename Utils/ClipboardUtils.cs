@@ -99,7 +99,9 @@ public static class ClipboardUtils
     {
         using var ms = new MemoryStream();
         image.SaveAsPng(ms);
-        var ptr = (nint)MemoryUtils.FromByteArray(ms.ToArray());
+        var bytes = ms.ToArray();
+        var ptr = Marshal.AllocHGlobal(bytes.Length);
+        Marshal.Copy(bytes, 0, ptr, bytes.Length);
         PInvoke.SetClipboardData(PInvoke.RegisterClipboardFormat("PNG"), (HANDLE)ptr);
     }
 }

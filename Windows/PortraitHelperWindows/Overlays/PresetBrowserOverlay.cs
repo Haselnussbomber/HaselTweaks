@@ -3,6 +3,7 @@ using System.Linq;
 using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
+using Dalamud.Memory;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
@@ -99,9 +100,11 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             {
                 ImGuiUtils.TextUnformattedDisabled($"Moving {tag.Name}");
 
-                var idPtr = Marshal.StringToHGlobalAnsi(tag.Id.ToString());
-                ImGui.SetDragDropPayload("MoveTag", idPtr, (uint)MemoryUtils.Strlen(idPtr));
-                Marshal.FreeHGlobal(idPtr);
+                var bytes = tag.Id.ToByteArray();
+                fixed (byte* ptr = bytes)
+                {
+                    ImGui.SetDragDropPayload("MoveTag", (nint)ptr, (uint)bytes.Length);
+                }
             }
         }
 
@@ -112,7 +115,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
                 var payload = ImGui.AcceptDragDropPayload("MoveTag");
                 if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
                 {
-                    var tagId = Marshal.PtrToStringAnsi(payload.Data, payload.DataSize);
+                    var tagId = MemoryHelper.Read<Guid>(payload.Data).ToString();
                     _reorderTagOldIndex = Config.PresetTags.IndexOf((tag) => tag.Id.ToString() == tagId);
                     _reorderTagNewIndex = Config.PresetTags.IndexOf(tag);
                 }
@@ -120,7 +123,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
                 payload = ImGui.AcceptDragDropPayload("MovePresetCard");
                 if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
                 {
-                    var presetId = Marshal.PtrToStringAnsi(payload.Data, payload.DataSize);
+                    var presetId = MemoryHelper.Read<Guid>(payload.Data).ToString();
                     var preset = Config.Presets.FirstOrDefault((preset) => preset?.Id.ToString() == presetId, null);
                     if (preset != null)
                     {

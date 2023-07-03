@@ -434,14 +434,15 @@ originalAddItemContextMenuEntries:
         var levelText = gatheringPointBase.GatheringLevel == 1
             ? raptureTextModule->GetAddonText(242) // "Lv. ???"
             : raptureTextModule->FormatAddonText2(35, gatheringPointBase.GatheringLevel, 0);
-        var space = MemoryUtils.FromString(" ");
         var gatheringPointName = GetGatheringPointName(
             &raptureTextModule,
             (byte)exportedPoint.GatheringType.Row,
             exportedPoint.GatheringPointType
         );
 
-        using var tooltip = new DisposableUtf8String(MemoryUtils.Strconcat(levelText, space, gatheringPointName));
+        using var tooltip = new DisposableUtf8String(levelText);
+        tooltip.AppendString(" ");
+        tooltip.AppendString(gatheringPointName);
 
         var iconId = !IsGatheringPointRare(exportedPoint.GatheringPointType)
             ? gatheringType.IconMain
@@ -477,8 +478,6 @@ originalAddItemContextMenuEntries:
         mapInfo->TerritoryId = territoryType.RowId;
         mapInfo->TitleString = *title.Ptr;
         agentMap->OpenMap(mapInfo);
-
-        Marshal.FreeHGlobal((nint)space);
 
         return true;
     }
