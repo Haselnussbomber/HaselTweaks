@@ -3,11 +3,12 @@ using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Reveal Duty Requirements",
+    Description: "Reveals duty names in duty finder, which were shown as \"???\". Useful for unlocking Mentor roulette."
+)]
 public class RevealDutyRequirements : Tweak
 {
-    public override string Name => "Reveal Duty Requirements";
-    public override string Description => "Reveals duty names in duty finder, which were shown as \"???\". Useful for unlocking Mentor roulette.";
-
     /*
         48 8B C8   mov     rcx, rax
         48 8B D8   mov     rbx, rax

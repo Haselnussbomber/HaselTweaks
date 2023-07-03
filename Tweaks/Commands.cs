@@ -9,10 +9,12 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Commands",
+    Description: "A variety of useful chat commands."
+)]
 public unsafe class Commands : Tweak
 {
-    public override string Name => "Commands";
-    public override string Description => "A variety of useful chat commands.";
     public static Configuration Config => Plugin.Config.Tweaks.Commands;
 
     private const string ItemLinkCommand = "/itemlink";

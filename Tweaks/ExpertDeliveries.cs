@@ -4,11 +4,12 @@ using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Expert Deliveries",
+    Description: "Always opens the \"Grand Company Delivery Missions\" window on the \"Expert Delivery\" tab."
+)]
 public unsafe class ExpertDeliveries : Tweak
 {
-    public override string Name => "Expert Deliveries";
-    public override string Description => "Always opens the \"Grand Company Delivery Missions\" window on the \"Expert Delivery\" tab.";
-
     public override void OnAddonOpen(string addonName, AtkUnitBase* unitBase)
     {
         if (addonName != "GrandCompanySupplyList")

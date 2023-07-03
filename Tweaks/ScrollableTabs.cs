@@ -10,10 +10,12 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Scrollable Tabs",
+    Description: "Enables mouse wheel to switch tabs (like with LB/RB on controllers)."
+)]
 public unsafe partial class ScrollableTabs : Tweak
 {
-    public override string Name => "Scrollable Tabs";
-    public override string Description => "Enables mouse wheel to switch tabs (like with LB/RB on controllers).";
     public static Configuration Config => Plugin.Config.Tweaks.ScrollableTabs;
 
     public class Configuration

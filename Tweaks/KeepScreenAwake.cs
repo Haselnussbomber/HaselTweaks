@@ -2,11 +2,12 @@ using System.Timers;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Keep Screen Awake",
+    Description: "Prevents the screen from going into standby."
+)]
 public partial class KeepScreenAwake : Tweak
 {
-    public override string Name => "Keep Screen Awake";
-    public override string Description => "Prevents the screen from going into standby.";
-
     private Timer? _timer;
 
     [Flags]

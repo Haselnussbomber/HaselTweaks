@@ -4,11 +4,12 @@ using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Hide MSQ Complete",
+    Description: "Hides the Main Scenario Guide when the MSQ is completed. Job quests are still being displayed."
+)]
 public unsafe class HideMSQComplete : Tweak
 {
-    public override string Name => "Hide MSQ Complete";
-    public override string Description => "Hides the Main Scenario Guide when the MSQ is completed. Job quests are still being displayed.";
-
     public override void Disable()
     {
         UpdateVisibility(true);

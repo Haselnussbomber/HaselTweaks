@@ -34,11 +34,12 @@ using RenderTargetManager = HaselTweaks.Structs.RenderTargetManager;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Portrait Helper",
+    Description: "A helper for editing portraits."
+)]
 public partial class PortraitHelper : Tweak
 {
-    public override string Name => "Portrait Helper";
-    public override string Description => "A helper for editing portraits.";
-
     public static Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
 
     public class Configuration

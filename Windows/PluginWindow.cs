@@ -28,14 +28,12 @@ public partial class PluginWindow : Window, IDisposable
     private const uint ConfigWidth = SidebarWidth * 2;
     private const string LogoManifestResource = "HaselTweaks.Assets.Logo.svg";
 
+    private TextureManager? _textureManager;
     private string _selectedTweak = string.Empty;
-
     private bool _isLogoLoading;
     private TextureWrap? _logoTextureWrap;
     private readonly Point _logoSize = new(580, 180);
     private Point _renderedLogoSize = new(0, 0);
-
-    public TextureManager? TextureManager { get; private set; }
 
     [GeneratedRegex("\\.0$")]
     private static partial Regex VersionPatchZeroRegex();
@@ -63,13 +61,13 @@ public partial class PluginWindow : Window, IDisposable
     public void Dispose()
     {
         _logoTextureWrap?.Dispose();
-        TextureManager?.Dispose();
-        TextureManager = null;
+        _textureManager?.Dispose();
+        _textureManager = null;
     }
 
     public override void OnOpen()
     {
-        TextureManager ??= new();
+        _textureManager ??= new();
     }
 
     public override void Update()
@@ -135,8 +133,8 @@ public partial class PluginWindow : Window, IDisposable
     {
         _selectedTweak = string.Empty;
 
-        TextureManager?.Dispose();
-        TextureManager = null;
+        _textureManager?.Dispose();
+        _textureManager = null;
 
         foreach (var tweak in Plugin.Tweaks)
         {
@@ -329,16 +327,61 @@ public partial class PluginWindow : Window, IDisposable
 
         ImGuiUtils.TextUnformattedColored(color, status);
 
-        if (tweak.HasDescription)
+        if (!string.IsNullOrEmpty(tweak.Description))
         {
             ImGuiUtils.DrawPaddedSeparator();
-            tweak.DrawDescription();
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, tweak.Description);
         }
 
-        if (tweak.HasIncompatibilityWarning)
+        if (tweak.IncompatibilityWarnings.Any(entry => entry.IsLoaded))
         {
             ImGuiUtils.DrawSection("Incompatibility Warning");
-            tweak.DrawIncompatibilityWarning(this);
+            _textureManager?.GetIcon(60073).Draw(new(24));
+            ImGui.SameLine();
+            var cursorPosX = ImGui.GetCursorPosX();
+
+            if (tweak.IncompatibilityWarnings.Length == 1)
+            {
+                var entry = tweak.IncompatibilityWarnings[0];
+                if (entry.IsLoaded)
+                {
+                    if (entry.ConfigNames.Length == 0)
+                    {
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, $"In order for this tweak to work properly, please make sure {entry.Name} is disabled.");
+                    }
+                    else if (entry.ConfigNames.Length == 1)
+                    {
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, $"In order for this tweak to work properly, please make sure {entry.ConfigNames[0]} is disabled in {entry.Name}.");
+                    }
+                    else if (entry.ConfigNames.Length > 1)
+                    {
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, $"In order for this tweak to work properly, please make sure the following settings are disabled in {entry.Name}:\n- {string.Join("\n- ", entry.ConfigNames)}");
+                    }
+                }
+            }
+            else if (tweak.IncompatibilityWarnings.Length > 1)
+            {
+                ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, $"In order for this tweak to work properly, please make sure");
+
+                foreach (var entry in tweak.IncompatibilityWarnings.Where(entry => entry.IsLoaded))
+                {
+                    if (entry.ConfigNames.Length == 0)
+                    {
+                        ImGui.SetCursorPosX(cursorPosX);
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, $"- {entry.Name} is disabled");
+                    }
+                    else if (entry.ConfigNames.Length == 1)
+                    {
+                        ImGui.SetCursorPosX(cursorPosX);
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, $"- {entry.ConfigNames[0]} is disabled in {entry.Name}");
+                    }
+                    else if (entry.ConfigNames.Length > 1)
+                    {
+                        ImGui.SetCursorPosX(cursorPosX);
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, $"- the following settings are disabled in {entry.Name}:\n    - {string.Join("\n    - ", entry.ConfigNames)}");
+                    }
+                }
+            }
         }
 
 #if DEBUG

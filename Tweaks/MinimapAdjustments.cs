@@ -3,11 +3,12 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Minimap Adjustments",
+    Description: "Mini changes for the Minimap. :)"
+)]
 public unsafe class MinimapAdjustments : Tweak
 {
-    public override string Name => "Minimap Adjustments";
-    public override string Description => "Mini changes for the Minimap. :)";
-
     public static Configuration Config => Plugin.Config.Tweaks.MinimapAdjustments;
 
     public class Configuration

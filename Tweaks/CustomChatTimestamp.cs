@@ -8,10 +8,13 @@ using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Custom Chat Timestamp",
+    Description: "As it says, configurable chat timestamp format.",
+    HasCustomConfig: true
+)]
 public unsafe partial class CustomChatTimestamp : Tweak
 {
-    public override string Name => "Custom Chat Timestamp";
-    public override string Description => "As it says, configurable chat timestamp format.";
     public static Configuration Config => Plugin.Config.Tweaks.CustomChatTimestamp;
 
     public class Configuration
@@ -19,7 +22,6 @@ public unsafe partial class CustomChatTimestamp : Tweak
         public string Format = "[HH:mm] ";
     }
 
-    public override bool HasCustomConfig => true;
     public override void DrawCustomConfig()
     {
         ImGui.TextUnformatted("Format");

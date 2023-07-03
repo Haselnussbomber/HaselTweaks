@@ -14,17 +14,17 @@ using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe partial class EnhancedExpBar : Tweak
-{
-    public override string Name => "Enhanced Experience Bar";
-    public override string Description => @"Enhances the Experience Bar with the following modes:
+[Tweak(
+    Name: "Enhanced Experience Bar",
+    Description: @"Enhances the Experience Bar with the following modes:
 
 - The PvP Series Bar shows series rank and experience. A little * after the rank indicates a claimable rank-up reward.
 
-- The Sanctuary Bar shows sanctuary level and island experience.";
-    public override bool HasIncompatibilityWarning => Service.PluginInterface.InstalledPlugins.Any(p => p.InternalName == "SimpleTweaksPlugin" && p.IsLoaded);
-    public override string IncompatibilityWarning => "In order for this tweak to work properly, please make sure \"Show Experience Percentage\" is disabled in Simple Tweaks.";
-
+- The Sanctuary Bar shows sanctuary level and island experience."
+)]
+[IncompatibilityWarning("SimpleTweaksPlugin", "Simple Tweaks", "Show Experience Percentage")]
+public unsafe partial class EnhancedExpBar : Tweak
+{
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedExpBar;
 
     public enum MaxLevelOverrideType

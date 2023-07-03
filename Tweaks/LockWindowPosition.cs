@@ -16,10 +16,13 @@ using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Lock Window Position",
+    Description: "Lock window positions so they can't move.",
+    HasCustomConfig: true
+)]
 public unsafe partial class LockWindowPosition : Tweak
 {
-    public override string Name => "Lock Window Position";
-    public override string Description => "Lock window positions so they can't move.";
     public static Configuration Config => Plugin.Config.Tweaks.LockWindowPosition;
 
     public record LockedWindowSetting
@@ -47,7 +50,6 @@ public unsafe partial class LockWindowPosition : Tweak
     private Vector2 _hoveredWindowSize;
     private int _eventIndexToDisable = 0;
 
-    public override bool HasCustomConfig => true;
     public override void DrawCustomConfig()
     {
         ImGui.Checkbox("Invert logic (locks all windows)##HaselTweaks_LockWindows_Inverted", ref Config.Inverted);

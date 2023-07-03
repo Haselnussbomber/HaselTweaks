@@ -24,11 +24,12 @@ using HaselCharacter = HaselTweaks.Structs.Character;
 
 namespace HaselTweaks.Tweaks;
 
-// things went downhill fast...
+[Tweak(
+    Name: "Enhanced Login/Logout",
+    HasCustomConfig: true
+)]
 public unsafe partial class EnhancedLoginLogout : Tweak
 {
-    public override string Name => "Enhanced Login/Logout";
-
     #region Core
 
     public override void Setup() => UpdateExcludedEmotes();
@@ -144,7 +145,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         }
     }
 
-    public override bool HasCustomConfig => true;
     public override void DrawCustomConfig()
     {
         _textureManager ??= new();

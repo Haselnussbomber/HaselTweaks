@@ -11,13 +11,13 @@ using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Character Class Switcher",
+    Description: "Clicking on a class/job in the character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window."
+)]
+[IncompatibilityWarning("SimpleTweaksPlugin", "Simple Tweaks", "Character Window Job Switcher")]
 public unsafe partial class CharacterClassSwitcher : Tweak
 {
-    public override string Name => "Character Class Switcher";
-    public override string Description => "Clicking on a class/job in the character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window.";
-    public override bool HasIncompatibilityWarning => Service.PluginInterface.InstalledPlugins.Any(p => p.InternalName == "SimpleTweaksPlugin" && p.IsLoaded);
-    public override string IncompatibilityWarning => "In order for this tweak to work properly, please make sure \"Character Window Job Switcher\" is disabled in Simple Tweaks.";
-
     public static Configuration Config => Plugin.Config.Tweaks.CharacterClassSwitcher;
 
     public class Configuration

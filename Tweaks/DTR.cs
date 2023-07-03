@@ -3,7 +3,6 @@ using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
@@ -16,15 +15,15 @@ using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "DTR",
+    Description: "Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar.",
+    HasCustomConfig: true
+)]
 public unsafe class DTR : Tweak
 {
-    public override string Name => "DTR";
-    public override bool HasDescription => true;
-    public override void DrawDescription()
+    public override void DrawCustomConfig()
     {
-        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar.");
-
-        ImGuiUtils.DrawSection("Configuration");
         ImGui.TextUnformatted("To enable/disable elements or to change the order go into");
         ImGuiUtils.TextUnformattedColored((Structs.ImColor)ImGuiColors.DalamudRed, "Dalamud Settings");
         if (ImGui.IsItemHovered())

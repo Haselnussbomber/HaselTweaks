@@ -16,10 +16,13 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Auto Sorter",
+    Description: "Sorts items inside various containers when they are opened.",
+    HasCustomConfig: true
+)]
 public unsafe class AutoSorter : Tweak
 {
-    public override string Name => "Auto Sorter";
-    public override string Description => "Sorts items inside various containers when they are opened.";
     public static Configuration Config => Plugin.Config.Tweaks.AutoSorter;
 
     public static readonly Dictionary<string, uint> CategorySet = new()
@@ -173,7 +176,6 @@ public unsafe class AutoSorter : Tweak
         public bool SortArmouryOnJobChange = true;
     }
 
-    public override bool HasCustomConfig => true;
     public override void DrawCustomConfig()
     {
         var ItemSpacing = ImGui.GetStyle().ItemSpacing;

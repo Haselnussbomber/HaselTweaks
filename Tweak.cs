@@ -3,35 +3,39 @@ using System.Linq;
 using System.Reflection;
 using Dalamud.Game;
 using Dalamud.Hooking;
-using Dalamud.Interface;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Utils;
-using HaselTweaks.Windows;
-using ImGuiNET;
 
 namespace HaselTweaks;
 
 public abstract unsafe class Tweak
 {
-    public string InternalName => GetType().Name;
-    public abstract string Name { get; }
+    private Type? _type = null;
+    private string? _internalName = null;
+    private string? _name = null;
+    private string? _description = null;
+    private bool? _hasCustomConfig = null;
+    private IncompatibilityWarning[]? _incompatibilityWarnings = null;
 
-    public virtual string Description => string.Empty;
-    public virtual bool HasDescription => !string.IsNullOrEmpty(Description);
-    public virtual void DrawDescription() => ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, Description);
+    public Type CachedType
+        => _type ??= GetType();
 
-    public virtual string IncompatibilityWarning => string.Empty;
-    public virtual bool HasIncompatibilityWarning => !string.IsNullOrEmpty(IncompatibilityWarning);
-    public virtual void DrawIncompatibilityWarning(PluginWindow pluginWindow)
-    {
-        pluginWindow.TextureManager?.GetIcon(60073).Draw(new(24));
-        ImGui.SameLine();
-        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, IncompatibilityWarning);
-    }
+    public string InternalName
+        => _internalName ??= CachedType.Name;
 
-    public virtual bool HasCustomConfig => false;
+    public string Name
+        => _name ??= CachedType.GetCustomAttribute<TweakAttribute>()?.Name ?? "";
+
+    public string Description
+        => _description ??= CachedType.GetCustomAttribute<TweakAttribute>()?.Description ?? "";
+
+    public bool HasCustomConfig
+        => _hasCustomConfig ??= CachedType.GetCustomAttribute<TweakAttribute>()?.HasCustomConfig ?? false;
+
+    public IncompatibilityWarning[] IncompatibilityWarnings
+        => _incompatibilityWarnings ??= CachedType.GetCustomAttributes<IncompatibilityWarning>().ToArray();
+
     public virtual void DrawCustomConfig() { }
     public virtual void OnConfigWindowClose() { }
 
@@ -40,7 +44,7 @@ public abstract unsafe class Tweak
     public virtual bool Enabled { get; protected set; }
     public virtual Exception? LastException { get; protected set; }
 
-    protected IEnumerable<PropertyInfo> Hooks => GetType()
+    protected IEnumerable<PropertyInfo> Hooks => CachedType
         .GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)
         .Where(prop =>
             prop.PropertyType.IsGenericType &&

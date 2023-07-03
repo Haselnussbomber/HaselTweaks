@@ -30,7 +30,7 @@ internal record ConfigDrawData<T> : IConfigDrawData
     {
         if (Attr == null || string.IsNullOrEmpty(Attr.OnChange)) return;
 
-        var method = Tweak.GetType().GetMethod(Attr.OnChange, BindingFlags.Instance | BindingFlags.NonPublic);
+        var method = Tweak.CachedType.GetMethod(Attr.OnChange, BindingFlags.Instance | BindingFlags.NonPublic);
         if (method == null) return;
 
         method.Invoke(Tweak, null); // TODO: add event parameters

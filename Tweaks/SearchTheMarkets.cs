@@ -11,11 +11,12 @@ using HaselAtkComponentTextInput = HaselTweaks.Structs.AtkComponentTextInput;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Search the markets",
+    Description: "Adds a context menu entry to items in Chat, Crafting Log, Inventory, Materials List and Recipe Tree to quickly search for the item on the Market Board. Only visible when Market Board is open."
+)]
 public unsafe class SearchTheMarkets : Tweak
 {
-    public override string Name => "Search the markets";
-    public override string Description => "Adds a context menu entry to items in Chat, Crafting Log, Inventory, Materials List and Recipe Tree to quickly search for the item on the Market Board. Only visible when Market Board is open.";
-
     private readonly DalamudContextMenu _contextMenu = new();
     private GameObjectContextMenuItem _contextMenuItemGame = null!;
     private InventoryContextMenuItem _contextMenuItemInventory = null!;

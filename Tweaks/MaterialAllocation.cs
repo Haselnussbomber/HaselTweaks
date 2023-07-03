@@ -11,10 +11,12 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Material Allocation",
+    Description: "Enhances the Island Sanctuarys \"Material Allocation\" window."
+)]
 public unsafe partial class MaterialAllocation : Tweak
 {
-    public override string Name => "Material Allocation";
-    public override string Description => "Enhances the Island Sanctuarys \"Material Allocation\" window.";
     public static Configuration Config => Plugin.Config.Tweaks.MaterialAllocation;
 
     private uint _nextMJIGatheringNoteBookItemId;

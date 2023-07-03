@@ -18,10 +18,12 @@ using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Tweaks;
 
+[Tweak(
+    Name: "Enhanced Material List",
+    Description: "Enhances the Material List (and Recipe Tree)."
+)]
 public unsafe partial class EnhancedMaterialList : Tweak
 {
-    public override string Name => "Enhanced Material List";
-    public override string Description => "Enhances the Material List (and Recipe Tree).";
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedMaterialList;
 
     private DateTime _lastRecipeMaterialListRefresh = DateTime.Now;
