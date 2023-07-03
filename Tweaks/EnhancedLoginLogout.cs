@@ -358,7 +358,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         }
         catch (Exception e)
         {
-            Error("Error reading pet glamours", e);
+            Error(e, "Error reading pet glamours");
         }
 
         try
@@ -367,7 +367,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         }
         catch (Exception e)
         {
-            Error("Error reading pet glamours", e);
+            Error(e, "Error reading pet glamours");
         }
 
         Debug($"Updated PetMirageSettings: CarbuncleType {petMirageSettings.CarbuncleType}, FairyType {petMirageSettings.FairyType}");

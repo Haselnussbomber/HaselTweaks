@@ -277,7 +277,7 @@ public partial class PortraitHelper : Tweak
         }
         catch (Exception e)
         {
-            Error("Error during CheckClipboard", e);
+            Error(e, "Error during CheckClipboard");
         }
         finally
         {
@@ -304,7 +304,7 @@ public partial class PortraitHelper : Tweak
         }
         catch (Exception e)
         {
-            Error("Error during PresetToClipboard", e);
+            Error(e, "Error during PresetToClipboard");
         }
         finally
         {
