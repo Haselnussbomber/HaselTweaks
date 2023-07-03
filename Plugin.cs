@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
 
     internal static WindowSystem WindowSystem = new("HaselTweaks");
     internal static List<Tweak> Tweaks = new();
-    internal static Configuration Config = null!;
+    internal static Configuration? Config = null!;
 
     private PluginWindow? _pluginWindow;
 
@@ -40,7 +41,7 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
         var gameVersion = Framework.Instance()->GameVersion.Base;
         if (string.IsNullOrEmpty(gameVersion))
             throw new Exception("Unable to read game version.");
-
+        
         foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(Tweak)) && !t.IsAbstract))
         {
             try
@@ -55,7 +56,20 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
 
         Config = Configuration.Load(Tweaks.Select(t => t.InternalName).ToArray(), gameVersion);
 
-        Interop.Resolver.GetInstance.SetupSearchSpace(Service.SigScanner.SearchBase);
+        var currentSigCacheName = $"SigCache_{gameVersion}.json";
+
+        // delete old sig caches
+        foreach (var file in Service.PluginInterface.ConfigDirectory.EnumerateFiles()
+            .Where(fi => fi.Name.StartsWith("SigCache_") && fi.Name != currentSigCacheName))
+        {
+            try { file.Delete(); }
+            catch { }
+        }
+
+        Interop.Resolver.GetInstance.SetupSearchSpace(
+            Service.SigScanner.SearchBase,
+            new FileInfo(Path.Join(Service.PluginInterface.ConfigDirectory.FullName, currentSigCacheName)));
+
         Interop.Resolver.GetInstance.Resolve();
 
         _pluginWindow = new PluginWindow();
@@ -202,7 +216,7 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
         AddonSetupHook?.Dispose();
         AddonFinalizeHook?.Dispose();
 
-        Config.Save();
+        Config?.Save();
         Config = null!;
 
         StringCache.Dispose();

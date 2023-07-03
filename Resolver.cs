@@ -24,9 +24,12 @@ SOFTWARE.
 
 // Based on https://github.com/aers/FFXIVClientStructs/blob/main/FFXIVClientStructs/Interop/Resolver.cs
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using Dalamud.Logging;
 
 namespace HaselTweaks.Interop;
@@ -47,6 +50,10 @@ public sealed partial class Resolver
     private readonly List<Address> _addresses = new();
     public IReadOnlyList<Address> Addresses => _addresses.AsReadOnly();
 
+    private ConcurrentDictionary<string, long>? _textCache;
+    private FileInfo? _cacheFile;
+    private bool _cacheChanged = false;
+
     private nint _baseAddress;
 
     private nint _targetSpace;
@@ -56,9 +63,11 @@ public sealed partial class Resolver
     private int _textSectionSize;
 
     private bool _hasResolved = false;
+    private bool _isSetup = false;
 
-    public void SetupSearchSpace(nint moduleCopy = 0)
+    public void SetupSearchSpace(nint moduleCopy = 0, FileInfo? cacheFile = null)
     {
+        if (_isSetup) return;
         ProcessModule? module = Process.GetCurrentProcess().MainModule;
         if (module == null)
             throw new Exception("[HaselTweaks.Resolver] Unable to access process module.");
@@ -68,7 +77,12 @@ public sealed partial class Resolver
         _targetSpace = moduleCopy == 0 ? _baseAddress : moduleCopy;
         _targetLength = module.ModuleMemorySize;
 
+        _cacheFile = cacheFile;
+        if (_cacheFile is not null)
+            LoadCache();
+
         SetupSections();
+        _isSetup = true;
     }
 
     // adapted from Dalamud SigScanner
@@ -107,15 +121,45 @@ public sealed partial class Resolver
         }
     }
 
+    private void LoadCache()
+    {
+        if (_cacheFile is not { Exists: true })
+        {
+            _textCache = new ConcurrentDictionary<string, long>();
+            return;
+        }
+
+        try
+        {
+            var json = File.ReadAllText(_cacheFile.FullName);
+            _textCache = JsonSerializer.Deserialize<ConcurrentDictionary<string, long>>(json) ?? new ConcurrentDictionary<string, long>();
+        }
+        catch
+        {
+            _textCache = new ConcurrentDictionary<string, long>();
+        }
+    }
+
+    private void SaveCache()
+    {
+        if (_cacheFile == null || _textCache == null || _cacheChanged == false)
+            return;
+        var json = JsonSerializer.Serialize(_textCache, new JsonSerializerOptions { WriteIndented = true });
+        if (string.IsNullOrWhiteSpace(json))
+            return;
+        if (_cacheFile.Directory is { Exists: false })
+            Directory.CreateDirectory(_cacheFile.Directory.FullName);
+        File.WriteAllText(_cacheFile.FullName, json);
+    }
+
     private bool ResolveFromCache()
     {
-        var sigCache = Plugin.Config.SigCache;
         foreach (Address address in _addresses)
         {
             var str = address is StaticAddress sAddress
                 ? $"{sAddress.String}+0x{sAddress.Offset:X}"
                 : address.String;
-            if (sigCache!.TryGetValue(str, out var offset))
+            if (_textCache!.TryGetValue(str, out var offset))
             {
                 address.Value = (nuint)(offset + _baseAddress);
                 PluginLog.Debug($"[SigCache] Using cached address {address.Value:X} (ffxiv_dx11.exe+{address.Value - (nuint)_baseAddress:X}) for {str}");
@@ -141,13 +185,13 @@ public sealed partial class Resolver
         if (_targetSpace == 0)
             throw new Exception("[HaselTweaks.Resolver] Attempted to call Resolve() without initializing the search space.");
 
-        if (ResolveFromCache())
-            return;
+        if (_textCache is not null)
+        {
+            if (ResolveFromCache())
+                return;
+        }
 
         ReadOnlySpan<byte> targetSpan = new ReadOnlySpan<byte>(_targetSpace.ToPointer(), _targetLength)[_textSectionOffset..];
-
-        var sigCache = Plugin.Config.SigCache;
-        var cacheChanged = false;
 
         for (int location = 0; location < _textSectionSize; location++)
         {
@@ -198,8 +242,8 @@ public sealed partial class Resolver
 
                         PluginLog.Debug($"[SigCache] Caching address {address.Value:X} (ffxiv_dx11.exe+{address.Value - (nuint)_baseAddress:X}) for {str}");
 
-                        if (sigCache!.TryAdd(str, outLocation + _textSectionOffset) == true)
-                            cacheChanged = true;
+                        if (_textCache!.TryAdd(str, outLocation + _textSectionOffset) == true)
+                            _cacheChanged = true;
 
                         _preResolveArray[targetSpan[location]].Remove(address);
 
@@ -216,9 +260,7 @@ public sealed partial class Resolver
         }
 outLoop:;
 
-        if (cacheChanged)
-            Plugin.Config.Save();
-
+        SaveCache();
         _hasResolved = true;
     }
 

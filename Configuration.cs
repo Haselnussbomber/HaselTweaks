@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,8 +19,6 @@ internal partial class Configuration : IPluginConfiguration
     public int Version { get; set; } = CURRENT_CONFIG_VERSION;
     public HashSet<string> EnabledTweaks { get; private set; } = new();
     public TweakConfigs Tweaks { get; init; } = new();
-    public string SigCacheVersion { get; init; } = string.Empty;
-    public ConcurrentDictionary<string, long>? SigCache { get; init; } = new();
 }
 
 public class TweakConfigs
@@ -129,15 +126,6 @@ internal partial class Configuration
             {
                 tweakConfigs["EnhancedExpBar"]!["ForcePvPSeriesBar"] = tweakConfigs["EnhancedExpBar"]!["ForcePvPSeasonBar"];
                 ((JObject?)tweakConfigs["EnhancedExpBar"]!).Remove("ForcePvPSeasonBar");
-            }
-
-            if (version < CURRENT_CONFIG_VERSION || gameVersion == null || (string?)config[nameof(SigCacheVersion)] != gameVersion)
-            {
-                if ((string?)config[nameof(SigCacheVersion)] != null)
-                    PluginLog.Information($"SigCache outdated: {(string?)config[nameof(SigCacheVersion)]} => {gameVersion}");
-
-                config[nameof(SigCacheVersion)] = gameVersion;
-                config.Remove(nameof(SigCache));
             }
 
             if (version < CURRENT_CONFIG_VERSION)
