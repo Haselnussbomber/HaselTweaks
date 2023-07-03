@@ -44,28 +44,7 @@ public abstract unsafe class Tweak
     public virtual bool Enabled { get; protected set; }
     public virtual Exception? LastException { get; protected set; }
 
-    protected IEnumerable<PropertyInfo> Hooks => CachedType
-        .GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)
-        .Where(prop =>
-            prop.PropertyType.IsGenericType &&
-            prop.PropertyType.GetGenericTypeDefinition() == typeof(Hook<>)
-        );
-
-    protected void CallHooks(string methodName)
-    {
-        foreach (var property in Hooks)
-        {
-            var hook = property.GetValue(this);
-            if (hook == null) continue;
-
-            typeof(Hook<>)
-                .MakeGenericType(property.PropertyType.GetGenericArguments().First())
-                .GetMethod(methodName)?
-                .Invoke(hook, null);
-        }
-    }
-
-    internal void SetupInternal()
+    public Tweak()
     {
         try
         {
@@ -85,7 +64,7 @@ public abstract unsafe class Tweak
         }
         catch (Exception ex)
         {
-            Error(ex, "Unexpected error during SetupAutoHooks");
+            Error(ex, "Unexpected error during SetupVTableHooks");
             LastException = ex;
             return;
         }
@@ -101,18 +80,28 @@ public abstract unsafe class Tweak
             return;
         }
 
-        try
-        {
-            Setup();
-        }
-        catch (Exception ex)
-        {
-            Error(ex, "Unexpected error during Setup");
-            LastException = ex;
-            return;
-        }
-
         Ready = true;
+    }
+
+    protected IEnumerable<PropertyInfo> Hooks => CachedType
+        .GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)
+        .Where(prop =>
+            prop.PropertyType.IsGenericType &&
+            prop.PropertyType.GetGenericTypeDefinition() == typeof(Hook<>)
+        );
+
+    protected void CallHooks(string methodName)
+    {
+        foreach (var property in Hooks)
+        {
+            var hook = property.GetValue(this);
+            if (hook == null) continue;
+
+            typeof(Hook<>)
+                .MakeGenericType(property.PropertyType.GetGenericArguments().First())
+                .GetMethod(methodName)?
+                .Invoke(hook, null);
+        }
     }
 
     internal void EnableInternal()
@@ -251,7 +240,6 @@ public abstract unsafe class Tweak
         }
     }
 
-    public virtual void Setup() { }
     public virtual void SetupAddressHooks() { }
     public virtual void SetupVTableHooks() { }
     public virtual void Enable() { }

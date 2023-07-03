@@ -30,9 +30,13 @@ namespace HaselTweaks.Tweaks;
 )]
 public unsafe partial class EnhancedLoginLogout : Tweak
 {
+    public EnhancedLoginLogout()
+    {
+        UpdateExcludedEmotes();
+    }
+
     #region Core
 
-    public override void Setup() => UpdateExcludedEmotes();
     public override void Enable() => UpdateCharacterSettings();
     public override void OnLogin() => UpdateCharacterSettings();
     public override void OnLogout() => _isRecordingEmote = false;

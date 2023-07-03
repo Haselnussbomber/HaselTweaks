@@ -16,13 +16,13 @@ using DalamudFramework = Dalamud.Game.Framework;
 
 namespace HaselTweaks;
 
-public sealed unsafe partial class Plugin : IDalamudPlugin
+public sealed partial class Plugin : IDalamudPlugin
 {
     public string Name => "HaselTweaks";
 
     internal static WindowSystem WindowSystem = new("HaselTweaks");
     internal static List<Tweak> Tweaks = new();
-    internal static Configuration? Config = null!;
+    internal static Configuration Config = null!;
 
     private PluginWindow? _pluginWindow;
 
@@ -32,29 +32,67 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
         Task.Run(Setup);
     }
 
-    private unsafe void Setup()
+    private void Setup()
     {
         SignatureHelper.Initialise(this);
         AddonSetupHook?.Enable();
         AddonFinalizeHook?.Enable();
 
-        var gameVersion = Framework.Instance()->GameVersion.Base;
-        if (string.IsNullOrEmpty(gameVersion))
-            throw new Exception("Unable to read game version.");
-        
-        foreach (var t in Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(Tweak)) && !t.IsAbstract))
+        InitializeResolver();
+
+        var tweakTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(Tweak)) && !t.IsAbstract);
+
+        Config = Configuration.Load(tweakTypes.Select(t => t.Name).ToArray());
+
+        foreach (var type in tweakTypes)
         {
             try
             {
-                Tweaks.Add((Tweak)Activator.CreateInstance(t)!);
+                var tweak = (Tweak)Activator.CreateInstance(type)!;
+
+                Tweaks.Add(tweak);
+
+                if (Config.EnabledTweaks.Contains(tweak.InternalName))
+                {
+                    try
+                    {
+                        tweak.EnableInternal();
+                    }
+                    catch (Exception ex)
+                    {
+                        PluginLog.Error(ex, $"Failed enabling tweak '{tweak.InternalName}'.");
+                    }
+                }
             }
             catch (Exception ex)
             {
-                PluginLog.Error(ex, $"Failed initializing tweak '{t.Name}'.");
+                PluginLog.Error(ex, $"Failed initializing tweak '{type.Name}'.");
             }
         }
 
-        Config = Configuration.Load(Tweaks.Select(t => t.InternalName).ToArray(), gameVersion);
+        Service.Framework.Update += OnFrameworkUpdate;
+        Service.ClientState.Login += ClientState_Login;
+        Service.ClientState.Logout += ClientState_Logout;
+        Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
+
+        Service.PluginInterface.UiBuilder.Draw += OnDraw;
+        Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
+
+        Service.Commands.RemoveHandler("/haseltweaks");
+        Service.Commands.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
+        {
+            HelpMessage = "Show Window"
+        });
+
+        WindowSystem.AddWindow(_pluginWindow = new PluginWindow());
+    }
+
+    private static void InitializeResolver()
+    {
+        string gameVersion;
+        unsafe { gameVersion = Framework.Instance()->GameVersion.Base; }
+        if (string.IsNullOrEmpty(gameVersion))
+            throw new Exception("Unable to read game version.");
 
         var currentSigCacheName = $"SigCache_{gameVersion}.json";
 
@@ -71,47 +109,6 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
             new FileInfo(Path.Join(Service.PluginInterface.ConfigDirectory.FullName, currentSigCacheName)));
 
         Interop.Resolver.GetInstance.Resolve();
-
-        _pluginWindow = new PluginWindow();
-        WindowSystem.AddWindow(_pluginWindow);
-
-        Service.PluginInterface.UiBuilder.Draw += OnDraw;
-        Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
-
-        Service.Commands.RemoveHandler("/haseltweaks");
-        Service.Commands.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
-        {
-            HelpMessage = "Show Window"
-        });
-
-        foreach (var tweak in Tweaks)
-        {
-            try
-            {
-                tweak.SetupInternal();
-            }
-            catch (Exception ex)
-            {
-                PluginLog.Error(ex, $"Failed setting up tweak '{tweak.InternalName}'.");
-            }
-
-            if (Config.EnabledTweaks.Contains(tweak.InternalName))
-            {
-                try
-                {
-                    tweak.EnableInternal();
-                }
-                catch (Exception ex)
-                {
-                    PluginLog.Error(ex, $"Failed enabling tweak '{tweak.InternalName}'.");
-                }
-            }
-        }
-
-        Service.Framework.Update += OnFrameworkUpdate;
-        Service.ClientState.Login += ClientState_Login;
-        Service.ClientState.Logout += ClientState_Logout;
-        Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
     }
 
     private void OnFrameworkUpdate(DalamudFramework framework)
@@ -223,7 +220,7 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
     }
 
     [SigHook("E8 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? C1 E8 14")]
-    public void AddonSetup(AtkUnitBase* unitBase)
+    public unsafe void AddonSetup(AtkUnitBase* unitBase)
     {
         AddonSetupHook.OriginalDisposeSafe(unitBase);
 
@@ -234,7 +231,7 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
     }
 
     [SigHook("E8 ?? ?? ?? ?? 48 8B 7C 24 ?? 41 8B C6")]
-    public void AddonFinalize(AtkUnitManager* unitManager, AtkUnitBase** unitBasePtr)
+    public unsafe void AddonFinalize(AtkUnitManager* unitManager, AtkUnitBase** unitBasePtr)
     {
         var unitBase = *unitBasePtr;
 

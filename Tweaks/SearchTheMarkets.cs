@@ -18,21 +18,12 @@ namespace HaselTweaks.Tweaks;
 public unsafe class SearchTheMarkets : Tweak
 {
     private readonly DalamudContextMenu _contextMenu = new();
-    private GameObjectContextMenuItem _contextMenuItemGame = null!;
-    private InventoryContextMenuItem _contextMenuItemInventory = null!;
+    private readonly GameObjectContextMenuItem _contextMenuItemGame = null!;
+    private readonly InventoryContextMenuItem _contextMenuItemInventory = null!;
 
     private uint _itemId;
 
-    private bool IsInvalidState
-    {
-        get
-        {
-            var item = Service.Data.GetExcelSheet<Item>()?.GetRow(_itemId);
-            return _itemId == 0 || item == null || item.IsUntradable || item.IsCollectable || GetAddon(AgentId.ItemSearch) == null;
-        }
-    }
-
-    public override void Setup()
+    public SearchTheMarkets()
     {
         var text = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
@@ -47,6 +38,15 @@ public unsafe class SearchTheMarkets : Tweak
 
         _contextMenuItemGame = new(text, (_) => Search(), false);
         _contextMenuItemInventory = new(text, (_) => Search(), false);
+    }
+
+    private bool IsInvalidState
+    {
+        get
+        {
+            var item = Service.Data.GetExcelSheet<Item>()?.GetRow(_itemId);
+            return _itemId == 0 || item == null || item.IsUntradable || item.IsCollectable || GetAddon(AgentId.ItemSearch) == null;
+        }
     }
 
     public override void Enable()

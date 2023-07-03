@@ -41,7 +41,7 @@ public class TweakConfigs
 
 internal partial class Configuration
 {
-    internal static Configuration Load(string[] tweakNames, string? gameVersion)
+    internal static Configuration Load(string[] tweakNames)
     {
         var configPath = Service.PluginInterface.ConfigFile.FullName;
         JObject? config = null;

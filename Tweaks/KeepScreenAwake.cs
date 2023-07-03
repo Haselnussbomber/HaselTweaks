@@ -8,7 +8,13 @@ namespace HaselTweaks.Tweaks;
 )]
 public partial class KeepScreenAwake : Tweak
 {
-    private Timer? _timer;
+    private readonly Timer _timer = new();
+
+    public KeepScreenAwake()
+    {
+        _timer.Elapsed += Timer_Elapsed;
+        _timer.Interval = 10000; // every 10 seconds
+    }
 
     [Flags]
     public enum EXECUTION_STATE : uint
@@ -21,27 +27,20 @@ public partial class KeepScreenAwake : Tweak
     [LibraryImport("kernel32.dll", SetLastError = true)]
     private static partial EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
 
-    public override void Setup()
-    {
-        _timer = new Timer();
-        _timer.Elapsed += Timer_Elapsed;
-        _timer.Interval = 10000; // every 10 seconds
-    }
-
     public override void Enable()
     {
-        _timer?.Start();
+        _timer.Start();
     }
 
     public override void Disable()
     {
         SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
-        _timer?.Stop();
+        _timer.Stop();
     }
 
     public override void Dispose()
     {
-        _timer?.Dispose();
+        _timer.Dispose();
     }
 
     private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)
