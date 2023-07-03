@@ -162,7 +162,7 @@ public sealed partial class Resolver
             if (_textCache!.TryGetValue(str, out var offset))
             {
                 address.Value = (nuint)(offset + _baseAddress);
-                PluginLog.Debug($"[SigCache] Using cached address {address.Value:X} (ffxiv_dx11.exe+{address.Value - (nuint)_baseAddress:X}) for {str}");
+                PluginLog.Verbose($"[SigCache] Using cached address {address.Value:X} (ffxiv_dx11.exe+{address.Value - (nuint)_baseAddress:X}) for {str}");
                 byte firstByte = (byte)address.Bytes[0];
                 _preResolveArray[firstByte]!.Remove(address);
                 if (_preResolveArray[firstByte]!.Count == 0)
@@ -240,7 +240,7 @@ public sealed partial class Resolver
                             ? $"{sAddress.String}+0x{sAddress.Offset:X}"
                             : address.String;
 
-                        PluginLog.Debug($"[SigCache] Caching address {address.Value:X} (ffxiv_dx11.exe+{address.Value - (nuint)_baseAddress:X}) for {str}");
+                        PluginLog.Verbose($"[SigCache] Caching address {address.Value:X} (ffxiv_dx11.exe+{address.Value - (nuint)_baseAddress:X}) for {str}");
 
                         if (_textCache!.TryAdd(str, outLocation + _textSectionOffset) == true)
                             _cacheChanged = true;
