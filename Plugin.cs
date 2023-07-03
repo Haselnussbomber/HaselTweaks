@@ -23,7 +23,7 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
     internal static List<Tweak> Tweaks = new();
     internal static Configuration Config = null!;
 
-    private PluginWindow? PluginWindow;
+    private PluginWindow? _pluginWindow;
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
@@ -58,8 +58,8 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
         Interop.Resolver.GetInstance.SetupSearchSpace(Service.SigScanner.SearchBase);
         Interop.Resolver.GetInstance.Resolve();
 
-        PluginWindow = new PluginWindow();
-        WindowSystem.AddWindow(PluginWindow);
+        _pluginWindow = new PluginWindow();
+        WindowSystem.AddWindow(_pluginWindow);
 
         Service.PluginInterface.UiBuilder.Draw += OnDraw;
         Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
@@ -146,12 +146,12 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
 
     private void OnOpenConfigUi()
     {
-        PluginWindow!.Toggle();
+        _pluginWindow!.Toggle();
     }
 
     private void OnCommand(string command, string args)
     {
-        PluginWindow!.Toggle();
+        _pluginWindow!.Toggle();
     }
 
     void IDisposable.Dispose()
@@ -194,8 +194,8 @@ public sealed unsafe partial class Plugin : IDalamudPlugin
         WindowSystem.RemoveAllWindows();
         WindowSystem = null!;
 
-        PluginWindow?.Dispose();
-        PluginWindow = null;
+        _pluginWindow?.Dispose();
+        _pluginWindow = null;
 
         Tweaks = null!;
 

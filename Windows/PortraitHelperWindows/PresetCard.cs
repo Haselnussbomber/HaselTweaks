@@ -27,100 +27,100 @@ public class PresetCard : IDisposable
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
     public static Vector2 PortraitSize { get; } = new(576, 960); // native texture size
 
-    private bool isDisposed;
-    private readonly CancellationTokenSource closeTokenSource = new();
+    private bool _isDisposed;
+    private readonly CancellationTokenSource _closeTokenSource = new();
 
-    private readonly PresetBrowserOverlay overlay;
-    private readonly SavedPreset preset;
-    private readonly TextureManager TextureManager = new();
+    private readonly PresetBrowserOverlay _overlay;
+    private readonly SavedPreset _preset;
+    private readonly TextureManager _textureManager = new();
 
-    private bool isImageLoading;
-    private bool doesImageFileExist;
-    private bool isImageUpdatePending;
+    private bool _isImageLoading;
+    private bool _doesImageFileExist;
+    private bool _isImageUpdatePending;
 
-    private string? textureHash;
-    private Image<Rgba32>? image;
-    private TextureWrap? textureWrap;
-    private DateTime lastTextureCheck = DateTime.MinValue;
+    private string? _textureHash;
+    private Image<Rgba32>? _image;
+    private TextureWrap? _textureWrap;
+    private DateTime _lastTextureCheck = DateTime.MinValue;
 
-    private float lastScale;
+    private float _lastScale;
 
-    private ushort bannerFrame;
-    private int? bannerFrameImage;
+    private ushort _bannerFrame;
+    private int? _bannerFrameImage;
 
-    private ushort bannerDecoration;
-    private int? bannerDecorationImage;
+    private ushort _bannerDecoration;
+    private int? _bannerDecorationImage;
 
     public PresetCard(PresetBrowserOverlay overlay, SavedPreset preset)
     {
-        this.overlay = overlay;
-        this.preset = preset;
+        _overlay = overlay;
+        _preset = preset;
     }
 
     public void Dispose()
     {
-        if (isDisposed)
+        if (_isDisposed)
             return;
 
-        closeTokenSource.Cancel();
-        closeTokenSource.Dispose();
+        _closeTokenSource.Cancel();
+        _closeTokenSource.Dispose();
 
-        image?.Dispose();
-        image = null;
+        _image?.Dispose();
+        _image = null;
 
-        textureWrap?.Dispose();
-        textureWrap = null;
+        _textureWrap?.Dispose();
+        _textureWrap = null;
 
-        TextureManager.Dispose();
+        _textureManager.Dispose();
 
-        isDisposed = true;
+        _isDisposed = true;
     }
 
     public void Draw(float scale)
     {
-        if (isDisposed)
+        if (_isDisposed)
             return;
 
         Update(scale);
 
         var style = ImGui.GetStyle();
 
-        using var _id = ImRaii.PushId(preset.Id.ToString());
+        using var _id = ImRaii.PushId(_preset.Id.ToString());
 
         var windowPos = ImGui.GetWindowPos();
         var cursorPos = ImGui.GetCursorPos();
         var center = windowPos + cursorPos + PortraitSize * scale / 2f - new Vector2(0, ImGui.GetScrollY());
 
-        overlay.TextureManager.GetIcon(190009).Draw(PortraitSize * scale);
+        _overlay.TextureManager.GetIcon(190009).Draw(PortraitSize * scale);
         ImGui.SetCursorPos(cursorPos);
 
-        if (isImageLoading)
+        if (_isImageLoading)
         {
             DrawLoadingSpinner(center);
         }
-        else if (!doesImageFileExist)
+        else if (!_doesImageFileExist)
         {
             using var a = ImRaii.PushFont(UiBuilder.IconFont);
             using var b = ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red);
             ImGui.SetCursorPos(center - windowPos - ImGui.CalcTextSize(FontAwesomeIcon.FileImage.ToIconString()) / 2f);
             ImGuiUtils.TextUnformattedDisabled(FontAwesomeIcon.FileImage.ToIconString());
         }
-        else if (textureWrap != null)
+        else if (_textureWrap != null)
         {
             ImGui.SetCursorPos(cursorPos);
-            ImGui.Image(textureWrap.ImGuiHandle, PortraitSize * scale);
+            ImGui.Image(_textureWrap.ImGuiHandle, PortraitSize * scale);
         }
 
-        if (bannerFrameImage != null)
+        if (_bannerFrameImage != null)
         {
             ImGui.SetCursorPos(cursorPos);
-            TextureManager.GetIcon(bannerFrameImage.Value).Draw(PortraitSize * scale);
+            _textureManager.GetIcon(_bannerFrameImage.Value).Draw(PortraitSize * scale);
         }
 
-        if (bannerDecorationImage != null)
+        if (_bannerDecorationImage != null)
         {
             ImGui.SetCursorPos(cursorPos);
-            TextureManager.GetIcon(bannerDecorationImage.Value).Draw(PortraitSize * scale);
+            _textureManager.GetIcon(_bannerDecorationImage.Value).Draw(PortraitSize * scale);
         }
 
         ImGui.SetCursorPos(cursorPos);
@@ -130,17 +130,17 @@ public class PresetCard : IDisposable
             using var b = ImRaii.PushColor(ImGuiCol.ButtonActive, (uint)new Color(1, 1, 1, 0.3f));
             using var c = ImRaii.PushColor(ImGuiCol.ButtonHovered, (uint)new Color(1, 1, 1, 0.2f));
             using var d = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0);
-            ImGui.Button($"##{preset.Id}_Button", PortraitSize * scale);
+            ImGui.Button($"##{_preset.Id}_Button", PortraitSize * scale);
         }
 
         using (var source = ImRaii.DragDropSource())
         {
             if (source != null && source.Success)
             {
-                ImGui.TextUnformatted($"Moving {preset.Name}");
+                ImGui.TextUnformatted($"Moving {_preset.Name}");
 
-                var idPtr = Marshal.StringToHGlobalAnsi(preset.Id.ToString());
-                ImGui.SetDragDropPayload("MovePresetCard", idPtr, (uint)MemoryUtils.strlen(idPtr));
+                var idPtr = Marshal.StringToHGlobalAnsi(_preset.Id.ToString());
+                ImGui.SetDragDropPayload("MovePresetCard", idPtr, (uint)MemoryUtils.Strlen(idPtr));
                 Marshal.FreeHGlobal(idPtr);
             }
         }
@@ -156,7 +156,7 @@ public class PresetCard : IDisposable
                     {
                         var presetId = Marshal.PtrToStringAnsi(payload.Data, payload.DataSize);
                         var oldIndex = Config.Presets.IndexOf((preset) => preset.Id.ToString() == presetId);
-                        var newIndex = Config.Presets.IndexOf(preset);
+                        var newIndex = Config.Presets.IndexOf(_preset);
                         var item = Config.Presets[oldIndex];
                         Config.Presets.RemoveAt(oldIndex);
                         Config.Presets.Insert(newIndex, item);
@@ -170,35 +170,35 @@ public class PresetCard : IDisposable
         {
             using (ImRaii.Tooltip())
             {
-                ImGui.TextUnformatted(preset.Name);
+                ImGui.TextUnformatted(_preset.Name);
             }
 
             if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
             {
-                overlay.Tweak.PresetToState(preset.Preset, ImportFlags.All);
-                overlay.Tweak.CloseWindows();
+                _overlay.Tweak.PresetToState(_preset.Preset, ImportFlags.All);
+                _overlay.Tweak.CloseWindows();
             }
         }
-        
-        if (ImGui.BeginPopupContextItem($"{preset.Id}_Popup"))
+
+        if (ImGui.BeginPopupContextItem($"{_preset.Id}_Popup"))
         {
             if (ImGui.MenuItem("Load Preset"))
             {
-                overlay.Tweak.PresetToState(preset.Preset, ImportFlags.All);
-                overlay.Tweak.CloseWindows();
+                _overlay.Tweak.PresetToState(_preset.Preset, ImportFlags.All);
+                _overlay.Tweak.CloseWindows();
             }
 
             if (ImGui.MenuItem("Edit Preset"))
             {
-                overlay.EditPresetDialog.Open(preset);
+                _overlay.EditPresetDialog.Open(_preset);
             }
 
             if (ImGui.MenuItem("Export to Clipboard"))
             {
-                overlay.Tweak.PresetToClipboard(preset.Preset);
+                _overlay.Tweak.PresetToClipboard(_preset.Preset);
             }
 
-            if (image != null && ImGui.BeginMenu("Copy Image"))
+            if (_image != null && ImGui.BeginMenu("Copy Image"))
             {
                 if (ImGui.MenuItem("Everything"))
                 {
@@ -227,7 +227,7 @@ public class PresetCard : IDisposable
 
             if (ImGui.MenuItem("Delete Preset"))
             {
-                overlay.DeletePresetDialog.Open(preset);
+                _overlay.DeletePresetDialog.Open(_preset);
             }
 
             ImGui.EndPopup();
@@ -259,14 +259,14 @@ public class PresetCard : IDisposable
 
     private async Task CopyImage(CopyImageFlags flags = CopyImageFlags.None)
     {
-        if (image == null)
+        if (_image == null)
             return;
 
-        using var tempImage = image.Clone();
+        using var tempImage = _image.Clone();
 
-        if (!flags.HasFlag(CopyImageFlags.NoFrame) && bannerFrameImage != null)
+        if (!flags.HasFlag(CopyImageFlags.NoFrame) && _bannerFrameImage != null)
         {
-            var iconId = bannerFrameImage.Value;
+            var iconId = _bannerFrameImage.Value;
             var texture = Service.Data.GetFile<TexFile>($"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex");
             if (texture != null)
             {
@@ -276,9 +276,9 @@ public class PresetCard : IDisposable
             }
         }
 
-        if (!flags.HasFlag(CopyImageFlags.NoDecoration) && bannerDecorationImage != null)
+        if (!flags.HasFlag(CopyImageFlags.NoDecoration) && _bannerDecorationImage != null)
         {
-            var iconId = bannerDecorationImage.Value;
+            var iconId = _bannerDecorationImage.Value;
             var texture = Service.Data.GetFile<TexFile>($"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex");
             if (texture != null)
             {
@@ -293,90 +293,90 @@ public class PresetCard : IDisposable
 
     private void Update(float scale)
     {
-        if (preset.Preset!.BannerFrame != bannerFrame)
+        if (_preset.Preset!.BannerFrame != _bannerFrame)
         {
-            bannerFrame = preset.Preset.BannerFrame;
-            bannerFrameImage = Service.Data.GetExcelSheet<BannerFrame>()?.GetRow(bannerFrame)?.Image;
+            _bannerFrame = _preset.Preset.BannerFrame;
+            _bannerFrameImage = Service.Data.GetExcelSheet<BannerFrame>()?.GetRow(_bannerFrame)?.Image;
         }
 
-        if (preset.Preset.BannerDecoration != bannerDecoration)
+        if (_preset.Preset.BannerDecoration != _bannerDecoration)
         {
-            bannerDecoration = preset.Preset.BannerDecoration;
-            bannerDecorationImage = Service.Data.GetExcelSheet<BannerDecoration>()?.GetRow(bannerDecoration)?.Image;
+            _bannerDecoration = _preset.Preset.BannerDecoration;
+            _bannerDecorationImage = Service.Data.GetExcelSheet<BannerDecoration>()?.GetRow(_bannerDecoration)?.Image;
         }
 
-        if (!isImageLoading && preset.TextureHash != textureHash)
+        if (!_isImageLoading && _preset.TextureHash != _textureHash)
         {
-            image?.Dispose();
-            image = null;
+            _image?.Dispose();
+            _image = null;
 
-            textureWrap?.Dispose();
-            textureWrap = null;
+            _textureWrap?.Dispose();
+            _textureWrap = null;
 
-            if (!string.IsNullOrEmpty(preset.TextureHash) && DateTime.Now - lastTextureCheck > TimeSpan.FromSeconds(1))
+            if (!string.IsNullOrEmpty(_preset.TextureHash) && DateTime.Now - _lastTextureCheck > TimeSpan.FromSeconds(1))
             {
-                var thumbPath = Config.GetPortraitThumbnailPath(preset.TextureHash);
+                var thumbPath = Config.GetPortraitThumbnailPath(_preset.TextureHash);
 
                 if (File.Exists(thumbPath))
                 {
-                    isImageLoading = true;
+                    _isImageLoading = true;
                     Task.Run(async () =>
                     {
                         try
                         {
-                            image = await Image.LoadAsync<Rgba32>(thumbPath, closeTokenSource.Token);
-                            isImageUpdatePending = true;
-                            doesImageFileExist = true;
+                            _image = await Image.LoadAsync<Rgba32>(thumbPath, _closeTokenSource.Token);
+                            _isImageUpdatePending = true;
+                            _doesImageFileExist = true;
                         }
                         catch (Exception ex)
                         {
                             PluginLog.Error(ex, "Error while loading thumbnail");
-                            isImageLoading = false;
-                            doesImageFileExist = false;
+                            _isImageLoading = false;
+                            _doesImageFileExist = false;
                         }
                         finally
                         {
-                            textureHash = preset.TextureHash;
+                            _textureHash = _preset.TextureHash;
                         }
-                    }, closeTokenSource.Token);
+                    }, _closeTokenSource.Token);
                 }
 
-                lastTextureCheck = DateTime.Now;
+                _lastTextureCheck = DateTime.Now;
             }
         }
 
-        if (scale != lastScale)
+        if (scale != _lastScale)
         {
-            isImageUpdatePending = true;
-            lastScale = scale;
+            _isImageUpdatePending = true;
+            _lastScale = scale;
         }
 
-        if (image != null && isImageUpdatePending)
+        if (_image != null && _isImageUpdatePending)
         {
-            textureWrap?.Dispose();
-            isImageUpdatePending = false;
+            _textureWrap?.Dispose();
+            _isImageUpdatePending = false;
 
             Task.Run(() =>
             {
                 try
                 {
-                    var scaledImage = image.Clone();
+                    var scaledImage = _image.Clone();
 
-                    if (closeTokenSource.IsCancellationRequested)
+                    if (_closeTokenSource.IsCancellationRequested)
                         return;
 
                     scaledImage.Mutate(i => i.Resize((int)(PortraitSize.X * scale), (int)(PortraitSize.Y * scale), KnownResamplers.Lanczos3));
 
-                    if (closeTokenSource.IsCancellationRequested)
+                    if (_closeTokenSource.IsCancellationRequested)
                         return;
 
                     var data = new byte[4 * scaledImage.Width * scaledImage.Height];
                     scaledImage.CopyPixelDataTo(data);
 
-                    if (closeTokenSource.IsCancellationRequested)
+                    if (_closeTokenSource.IsCancellationRequested)
                         return;
 
-                    textureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, scaledImage.Width, scaledImage.Height, 4);
+                    _textureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, scaledImage.Width, scaledImage.Height, 4);
                 }
                 catch (Exception ex)
                 {
@@ -384,9 +384,9 @@ public class PresetCard : IDisposable
                 }
                 finally
                 {
-                    isImageLoading = false;
+                    _isImageLoading = false;
                 }
-            }, closeTokenSource.Token);
+            }, _closeTokenSource.Token);
         }
     }
 }

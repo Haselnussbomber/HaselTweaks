@@ -28,12 +28,12 @@ public partial class PluginWindow : Window, IDisposable
     private const uint ConfigWidth = SidebarWidth * 2;
     private const string LogoManifestResource = "HaselTweaks.Assets.Logo.svg";
 
-    private string SelectedTweak = string.Empty;
+    private string _selectedTweak = string.Empty;
 
-    private bool IsLogoLoading;
-    private TextureWrap? LogoTextureWrap;
-    private readonly Point LogoSize = new(580, 180);
-    private Point RenderedLogoSize = new(0, 0);
+    private bool _isLogoLoading;
+    private TextureWrap? _logoTextureWrap;
+    private readonly Point _logoSize = new(580, 180);
+    private Point _renderedLogoSize = new(0, 0);
 
     public TextureManager? TextureManager { get; private set; }
 
@@ -62,7 +62,7 @@ public partial class PluginWindow : Window, IDisposable
 
     public void Dispose()
     {
-        LogoTextureWrap?.Dispose();
+        _logoTextureWrap?.Dispose();
         TextureManager?.Dispose();
         TextureManager = null;
     }
@@ -79,19 +79,19 @@ public partial class PluginWindow : Window, IDisposable
 
     private void UpdateLogo()
     {
-        if (IsLogoLoading)
+        if (_isLogoLoading)
             return;
 
-        RenderedLogoSize.X = (int)(LogoSize.X * (LogoSize.X / ConfigWidth * 0.6f) * ImGui.GetIO().FontGlobalScale);
-        RenderedLogoSize.Y = (int)(LogoSize.Y * (RenderedLogoSize.X / (float)LogoSize.X));
+        _renderedLogoSize.X = (int)(_logoSize.X * (_logoSize.X / ConfigWidth * 0.6f) * ImGui.GetIO().FontGlobalScale);
+        _renderedLogoSize.Y = (int)(_logoSize.Y * (_renderedLogoSize.X / (float)_logoSize.X));
 
-        if (RenderedLogoSize.X <= 0 || RenderedLogoSize.Y <= 0)
+        if (_renderedLogoSize.X <= 0 || _renderedLogoSize.Y <= 0)
             return;
 
-        if (LogoTextureWrap != null && LogoTextureWrap.Width == RenderedLogoSize.X && LogoTextureWrap.Height == RenderedLogoSize.Y)
+        if (_logoTextureWrap != null && _logoTextureWrap.Width == _renderedLogoSize.X && _logoTextureWrap.Height == _renderedLogoSize.Y)
             return;
 
-        IsLogoLoading = true;
+        _isLogoLoading = true;
 
         Task.Run(() =>
         {
@@ -107,7 +107,7 @@ public partial class PluginWindow : Window, IDisposable
                 using var reader = new StreamReader(stream);
                 var svgDocument = SvgDocument.FromSvg<SvgDocument>(reader.ReadToEnd());
 
-                using var bitmap = svgDocument.Draw(RenderedLogoSize.X, RenderedLogoSize.Y);
+                using var bitmap = svgDocument.Draw(_renderedLogoSize.X, _renderedLogoSize.Y);
                 using var memoryStream = new MemoryStream();
 
                 bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
@@ -117,8 +117,8 @@ public partial class PluginWindow : Window, IDisposable
                 var data = new byte[4 * image.Width * image.Height];
                 image.CopyPixelDataTo(data);
 
-                LogoTextureWrap?.Dispose();
-                LogoTextureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, image.Width, image.Height, 4);
+                _logoTextureWrap?.Dispose();
+                _logoTextureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, image.Width, image.Height, 4);
             }
             catch (Exception ex)
             {
@@ -126,14 +126,14 @@ public partial class PluginWindow : Window, IDisposable
             }
             finally
             {
-                IsLogoLoading = false;
+                _isLogoLoading = false;
             }
         });
     }
 
     public override void OnClose()
     {
-        SelectedTweak = string.Empty;
+        _selectedTweak = string.Empty;
 
         TextureManager?.Dispose();
         TextureManager = null;
@@ -256,9 +256,9 @@ public partial class PluginWindow : Window, IDisposable
                 ImGui.PushStyleColor(ImGuiCol.Text, (uint)Colors.Grey);
             }
 
-            if (ImGui.Selectable($"{tweak.Name}##Selectable_{tweak.InternalName}", SelectedTweak == tweak.InternalName))
+            if (ImGui.Selectable($"{tweak.Name}##Selectable_{tweak.InternalName}", _selectedTweak == tweak.InternalName))
             {
-                SelectedTweak = SelectedTweak != tweak.InternalName
+                _selectedTweak = _selectedTweak != tweak.InternalName
                     ? tweak.InternalName
                     : string.Empty;
             }
@@ -277,15 +277,15 @@ public partial class PluginWindow : Window, IDisposable
         if (!child || !child.Success)
             return;
 
-        if (string.IsNullOrEmpty(SelectedTweak))
+        if (string.IsNullOrEmpty(_selectedTweak))
         {
             var cursorPos = ImGui.GetCursorPos();
             var contentAvail = ImGui.GetContentRegionAvail();
 
-            if (!IsLogoLoading && LogoTextureWrap != null && LogoTextureWrap.ImGuiHandle != 0)
+            if (!_isLogoLoading && _logoTextureWrap != null && _logoTextureWrap.ImGuiHandle != 0)
             {
-                ImGui.SetCursorPos(contentAvail / 2 - RenderedLogoSize / 2);
-                ImGui.Image(LogoTextureWrap.ImGuiHandle, RenderedLogoSize);
+                ImGui.SetCursorPos(contentAvail / 2 - _renderedLogoSize / 2);
+                ImGui.Image(_logoTextureWrap.ImGuiHandle, _renderedLogoSize);
             }
 
             // links, bottom left
@@ -313,7 +313,7 @@ public partial class PluginWindow : Window, IDisposable
             return;
         }
 
-        var tweak = Plugin.Tweaks.FirstOrDefault(t => t.InternalName == SelectedTweak);
+        var tweak = Plugin.Tweaks.FirstOrDefault(t => t.InternalName == _selectedTweak);
         if (tweak == null)
             return;
 

@@ -17,7 +17,7 @@ public unsafe partial class MaterialAllocation : Tweak
     public override string Description => "Enhances the Island Sanctuarys \"Material Allocation\" window.";
     public static Configuration Config => Plugin.Config.Tweaks.MaterialAllocation;
 
-    private uint nextMJIGatheringNoteBookItemId;
+    private uint _nextMJIGatheringNoteBookItemId;
 
     public class Configuration
     {
@@ -33,7 +33,7 @@ public unsafe partial class MaterialAllocation : Tweak
 
     public override void Enable()
     {
-        nextMJIGatheringNoteBookItemId = 0;
+        _nextMJIGatheringNoteBookItemId = 0;
     }
 
     [VTableHook<AddonMJICraftMaterialConfirmation>(48)]
@@ -76,7 +76,7 @@ public unsafe partial class MaterialAllocation : Tweak
     public void AgentMJIGatheringNoteBook_Update(AgentMJIGatheringNoteBook* agent)
     {
         var handleUpdate = Config.OpenGatheringLogOnItemClick
-            && nextMJIGatheringNoteBookItemId != 0
+            && _nextMJIGatheringNoteBookItemId != 0
             && agent->Data != null
             && agent->Data->Status == 3
             && (agent->Data->Flags & 2) != 2 // refresh pending
@@ -86,8 +86,8 @@ public unsafe partial class MaterialAllocation : Tweak
 
         if (handleUpdate)
         {
-            UpdateGatheringNoteBookItem(agent, nextMJIGatheringNoteBookItemId);
-            nextMJIGatheringNoteBookItemId = 0;
+            UpdateGatheringNoteBookItem(agent, _nextMJIGatheringNoteBookItemId);
+            _nextMJIGatheringNoteBookItemId = 0;
         }
     }
 
@@ -154,16 +154,16 @@ public unsafe partial class MaterialAllocation : Tweak
             {
                 // just switch item
                 UpdateGatheringNoteBookItem(agentMJIGatheringNoteBook, itemId);
-                nextMJIGatheringNoteBookItemId = 0;
+                _nextMJIGatheringNoteBookItemId = 0;
             }
             else
             {
                 // open with item
-                nextMJIGatheringNoteBookItemId = itemId;
+                _nextMJIGatheringNoteBookItemId = itemId;
                 agentMJIGatheringNoteBook->AgentInterface.Show();
             }
 
-            handled:
+handled:
             atkEvent->SetEventIsHandled();
             return;
         }

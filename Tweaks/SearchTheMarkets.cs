@@ -16,18 +16,18 @@ public unsafe class SearchTheMarkets : Tweak
     public override string Name => "Search the markets";
     public override string Description => "Adds a context menu entry to items in Chat, Crafting Log, Inventory, Materials List and Recipe Tree to quickly search for the item on the Market Board. Only visible when Market Board is open.";
 
-    private readonly DalamudContextMenu ContextMenu = new();
-    private GameObjectContextMenuItem ContextMenuItemGame = null!;
-    private InventoryContextMenuItem ContextMenuItemInventory = null!;
+    private readonly DalamudContextMenu _contextMenu = new();
+    private GameObjectContextMenuItem _contextMenuItemGame = null!;
+    private InventoryContextMenuItem _contextMenuItemInventory = null!;
 
-    private uint ItemId;
+    private uint _itemId;
 
     private bool IsInvalidState
     {
         get
         {
-            var item = Service.Data.GetExcelSheet<Item>()?.GetRow(ItemId);
-            return ItemId == 0 || item == null || item.IsUntradable || item.IsCollectable || GetAddon(AgentId.ItemSearch) == null;
+            var item = Service.Data.GetExcelSheet<Item>()?.GetRow(_itemId);
+            return _itemId == 0 || item == null || item.IsUntradable || item.IsCollectable || GetAddon(AgentId.ItemSearch) == null;
         }
     }
 
@@ -44,25 +44,25 @@ public unsafe class SearchTheMarkets : Tweak
             })
             .BuiltString;
 
-        ContextMenuItemGame = new(text, (_) => Search(), false);
-        ContextMenuItemInventory = new(text, (_) => Search(), false);
+        _contextMenuItemGame = new(text, (_) => Search(), false);
+        _contextMenuItemInventory = new(text, (_) => Search(), false);
     }
 
     public override void Enable()
     {
-        ContextMenu.OnOpenGameObjectContextMenu += ContextMenu_OnOpenGameObjectContextMenu;
-        ContextMenu.OnOpenInventoryContextMenu += ContextMenu_OnOpenInventoryContextMenu;
+        _contextMenu.OnOpenGameObjectContextMenu += ContextMenu_OnOpenGameObjectContextMenu;
+        _contextMenu.OnOpenInventoryContextMenu += ContextMenu_OnOpenInventoryContextMenu;
     }
 
     public override void Disable()
     {
-        ContextMenu.OnOpenGameObjectContextMenu -= ContextMenu_OnOpenGameObjectContextMenu;
-        ContextMenu.OnOpenInventoryContextMenu -= ContextMenu_OnOpenInventoryContextMenu;
+        _contextMenu.OnOpenGameObjectContextMenu -= ContextMenu_OnOpenGameObjectContextMenu;
+        _contextMenu.OnOpenInventoryContextMenu -= ContextMenu_OnOpenInventoryContextMenu;
     }
 
     public override void Dispose()
     {
-        ContextMenu.Dispose();
+        _contextMenu.Dispose();
     }
 
     private void ContextMenu_OnOpenGameObjectContextMenu(GameObjectContextMenuOpenArgs args)
@@ -70,42 +70,42 @@ public unsafe class SearchTheMarkets : Tweak
         if (args.ParentAddonName is not ("RecipeNote" or "RecipeMaterialList" or "RecipeTree" or "ChatLog"))
             return;
 
-        ItemId = 0u;
+        _itemId = 0u;
 
         switch (args.ParentAddonName)
         {
             case "RecipeNote":
                 if (GetAgent<AgentRecipeNote>(AgentId.RecipeNote, out var agentRecipeNote))
-                    ItemId = agentRecipeNote->ContextMenuResultItemId;
+                    _itemId = agentRecipeNote->ContextMenuResultItemId;
                 break;
 
             case "RecipeTree":
             case "RecipeMaterialList":
                 // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
                 if (GetAgent<AgentRecipeItemContext>(AgentId.RecipeItemContext, out var agentRecipeItemContext))
-                    ItemId = agentRecipeItemContext->ResultItemId;
+                    _itemId = agentRecipeItemContext->ResultItemId;
                 break;
 
             case "ChatLog":
                 if (GetAgent<AgentChatLog>(AgentId.ChatLog, out var agentChatLog))
-                    ItemId = agentChatLog->ContextItemId;
+                    _itemId = agentChatLog->ContextItemId;
                 break;
         }
 
         if (IsInvalidState)
             return;
 
-        args.AddCustomItem(ContextMenuItemGame);
+        args.AddCustomItem(_contextMenuItemGame);
     }
 
     private void ContextMenu_OnOpenInventoryContextMenu(InventoryContextMenuOpenArgs args)
     {
-        ItemId = args.ItemId;
+        _itemId = args.ItemId;
 
         if (IsInvalidState)
             return;
 
-        args.AddCustomItem(ContextMenuItemInventory);
+        args.AddCustomItem(_contextMenuItemInventory);
     }
 
     private void Search()
@@ -119,7 +119,7 @@ public unsafe class SearchTheMarkets : Tweak
         if (GetAddon<AddonItemSearchResult>("ItemSearchResult", out var itemSearchResult))
             itemSearchResult->Hide2();
 
-        var itemName = StringCache.GetItemName(ItemId % 1000000);
+        var itemName = StringCache.GetItemName(_itemId % 1000000);
         if (itemName.Length > 40)
             itemName = itemName[..40];
 
@@ -136,6 +136,6 @@ public unsafe class SearchTheMarkets : Tweak
         ((HaselAtkComponentTextInput*)addon->TextInput)->TriggerRedraw();
         addon->RunSearch(false);
 
-        ItemId = 0;
+        _itemId = 0;
     }
 }

@@ -26,7 +26,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         public bool DisableTooltips = false;
     }
 
-    private bool TooltipPatchApplied;
+    private bool _tooltipPatchApplied;
 
     /* Address for AddonCharacterClass Tooltip Patch
 
@@ -67,19 +67,19 @@ public unsafe partial class CharacterClassSwitcher : Tweak
 
     private void ApplyTooltipPatch(bool enable)
     {
-        if (enable && !TooltipPatchApplied)
+        if (enable && !_tooltipPatchApplied)
         {
             MemoryUtils.ReplaceRaw(TooltipAddress + 8, new byte[] { 0xEB }); // jmp rel8
             MemoryUtils.ReplaceRaw(PvPTooltipAddress, new byte[] { 0xEB, 0x63 }); // jmp rel8
 
-            TooltipPatchApplied = true;
+            _tooltipPatchApplied = true;
         }
-        else if (!enable && TooltipPatchApplied)
+        else if (!enable && _tooltipPatchApplied)
         {
             MemoryUtils.ReplaceRaw(TooltipAddress + 8, new byte[] { 0x7D }); // jge rel8
             MemoryUtils.ReplaceRaw(PvPTooltipAddress, new byte[] { 0x48, 0x8D }); // original bytes (see signature)
 
-            TooltipPatchApplied = false;
+            _tooltipPatchApplied = false;
         }
     }
 
@@ -184,7 +184,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
             return 0;
         }
 
-        OriginalReceiveEventCode:
+OriginalReceiveEventCode:
         return AddonCharacterClass_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
     }
 
@@ -254,7 +254,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         if (ProcessEvents(entry.Base->OwnerNode, entry.Icon, eventType))
             return 0;
 
-        OriginalPvPReceiveEventCode:
+OriginalPvPReceiveEventCode:
         return AddonPvPCharacter_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
     }
 

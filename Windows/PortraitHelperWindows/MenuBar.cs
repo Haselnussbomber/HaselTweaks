@@ -26,10 +26,10 @@ public unsafe class MenuBar : Window, IDisposable
     private AddonBannerEditor* AddonBannerEditor => Tweak.AddonBannerEditor;
 
     // Menu Bar
-    private PortraitPreset? InitialPreset;
-    private string PortraitName = string.Empty;
+    private PortraitPreset? _initialPreset;
+    private string _portraitName = string.Empty;
 
-    private readonly CreatePresetDialog SaveAsPresetDialog = new();
+    private readonly CreatePresetDialog _saveAsPresetDialog = new();
 
     public MenuBar(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper MenuBar")
     {
@@ -52,28 +52,28 @@ public unsafe class MenuBar : Window, IDisposable
 
     public override void PreDraw()
     {
-        if (InitialPreset != null || !AgentBannerEditor->EditorState->CharaView->CharacterLoaded)
+        if (_initialPreset != null || !AgentBannerEditor->EditorState->CharaView->CharacterLoaded)
             return;
 
-        InitialPreset = Tweak.StateToPreset();
+        _initialPreset = Tweak.StateToPreset();
 
         if (AgentBannerEditor->EditorState->OpenType == EditorOpenType.AdventurerPlate)
         {
-            PortraitName = StringCache.GetAddonText(14761) ?? "Adventurer Plate";
+            _portraitName = StringCache.GetAddonText(14761) ?? "Adventurer Plate";
         }
         else if (AgentBannerEditor->EditorState->GearsetId > -1)
         {
             var gearset = RaptureGearsetModule.Instance()->GetGearset(AgentBannerEditor->EditorState->GearsetId);
             if (gearset != null)
             {
-                PortraitName = $"{StringCache.GetAddonText(756) ?? "Gear Set"} #{gearset->ID + 1}: {MemoryHelper.ReadString((nint)gearset->Name, 0x2F)}";
+                _portraitName = $"{StringCache.GetAddonText(756) ?? "Gear Set"} #{gearset->ID + 1}: {MemoryHelper.ReadString((nint)gearset->Name, 0x2F)}";
             }
         }
     }
 
     public override void Draw()
     {
-        if (InitialPreset == null)
+        if (_initialPreset == null)
         {
             ImGui.SetCursorPosY(ImGui.GetCursorPos().Y + 2);
             ImGui.TextUnformatted("Initializing...");
@@ -88,7 +88,7 @@ public unsafe class MenuBar : Window, IDisposable
         }
         else if (ImGuiUtils.IconButton("Reset", FontAwesomeIcon.Undo, StringCache.GetAddonText(4830) ?? "Reset"))
         {
-            Tweak.PresetToState(InitialPreset, ImportFlags.All);
+            Tweak.PresetToState(_initialPreset, ImportFlags.All);
             AgentBannerEditor->EditorState->SetHasChanged(false);
         }
 
@@ -167,7 +167,7 @@ public unsafe class MenuBar : Window, IDisposable
         ImGui.SameLine();
         if (ImGuiUtils.IconButton("SaveAsPreset", FontAwesomeIcon.Download, "Save as Preset"))
         {
-            SaveAsPresetDialog.Open(PortraitName, Tweak.StateToPreset(), Tweak.GetCurrentCharaViewImage());
+            _saveAsPresetDialog.Open(_portraitName, Tweak.StateToPreset(), Tweak.GetCurrentCharaViewImage());
         }
 
         ImGui.SameLine();
@@ -234,11 +234,11 @@ public unsafe class MenuBar : Window, IDisposable
             }
         }
 
-        if (!string.IsNullOrEmpty(PortraitName))
+        if (!string.IsNullOrEmpty(_portraitName))
         {
             ImGuiUtils.VerticalSeparator();
             ImGui.SameLine();
-            ImGui.TextUnformatted(PortraitName);
+            ImGui.TextUnformatted(_portraitName);
         }
 
         var scale = ImGui.GetIO().FontGlobalScale;
@@ -255,7 +255,7 @@ public unsafe class MenuBar : Window, IDisposable
             height
         );
 
-        SaveAsPresetDialog.Draw();
+        _saveAsPresetDialog.Draw();
     }
 
     public override void PostDraw()
@@ -320,6 +320,6 @@ public unsafe class MenuBar : Window, IDisposable
 
     public override void OnClose()
     {
-        SaveAsPresetDialog.Hide();
+        _saveAsPresetDialog.Hide();
     }
 }

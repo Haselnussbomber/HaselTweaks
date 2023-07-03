@@ -7,13 +7,13 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class DeletePresetDialog : ConfirmationDialog
 {
-    private readonly PresetBrowserOverlay presetBrowserOverlay;
+    private readonly PresetBrowserOverlay _presetBrowserOverlay;
 
-    private SavedPreset? preset;
+    private SavedPreset? _preset;
 
     public DeletePresetDialog(PresetBrowserOverlay presetBrowserOverlay) : base("Delete Preset")
     {
-        this.presetBrowserOverlay = presetBrowserOverlay;
+        _presetBrowserOverlay = presetBrowserOverlay;
 
         AddButton(new ConfirmationButton("Delete", OnDelete));
         AddButton(new ConfirmationButton("Cancel", Close));
@@ -21,37 +21,37 @@ public class DeletePresetDialog : ConfirmationDialog
 
     public void Open(SavedPreset? preset)
     {
-        this.preset = preset;
+        _preset = preset;
         Show();
     }
 
     public void Close()
     {
         Hide();
-        preset = null;
+        _preset = null;
     }
 
     public override bool DrawCondition()
-        => base.DrawCondition() && preset != null;
+        => base.DrawCondition() && _preset != null;
 
     public override void InnerDraw()
-        => ImGuiUtils.TextUnformattedDisabled($"Do you really want to delete the preset \"{preset!.Name}\"?");
+        => ImGuiUtils.TextUnformattedDisabled($"Do you really want to delete the preset \"{_preset!.Name}\"?");
 
     private void OnDelete()
     {
-        if (preset == null)
+        if (_preset == null)
         {
             Close();
             return;
         }
 
-        if (presetBrowserOverlay.PresetCards.TryGetValue(preset.Id, out var card))
+        if (_presetBrowserOverlay.PresetCards.TryGetValue(_preset.Id, out var card))
         {
-            presetBrowserOverlay.PresetCards.Remove(preset.Id);
+            _presetBrowserOverlay.PresetCards.Remove(_preset.Id);
             card.Dispose();
         }
 
-        preset.Delete();
+        _preset.Delete();
 
         Close();
     }

@@ -14,7 +14,7 @@ public unsafe partial class ForcedCutsceneMusic : Tweak
         public bool Restore = true;
     }
 
-    private bool wasBgmMuted;
+    private bool _wasBgmMuted;
 
     private static bool IsBgmMuted
     {
@@ -31,7 +31,7 @@ public unsafe partial class ForcedCutsceneMusic : Tweak
 
         var isBgmMuted = IsBgmMuted;
 
-        wasBgmMuted = isBgmMuted;
+        _wasBgmMuted = isBgmMuted;
 
         if (isBgmMuted)
             IsBgmMuted = false;
@@ -46,7 +46,7 @@ public unsafe partial class ForcedCutsceneMusic : Tweak
 
         var ret = CutsceneStateDtorHook.OriginalDisposeSafe(self, a2);
 
-        if (wasBgmMuted && Config.Restore)
+        if (_wasBgmMuted && Config.Restore)
             IsBgmMuted = true;
 
         return ret;

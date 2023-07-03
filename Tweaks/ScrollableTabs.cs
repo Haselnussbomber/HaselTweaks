@@ -91,13 +91,13 @@ public unsafe partial class ScrollableTabs : Tweak
         public bool HandleAdventureNoteBook = true;
     }
 
-    private short wheelState;
+    private short _wheelState;
 
     [SigHook("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 49 8B F8 C6 05")]
     private ulong WindowProcHandler(nint hwnd, int uMsg, int wParam)
     {
         if (hwnd == PInvoke.GetActiveWindow() && uMsg == PInvoke.WM_MOUSEWHEEL)
-            wheelState = (short)Math.Clamp((wParam >> 16) / PInvoke.WHEEL_DELTA * (Config.Invert ? -1 : 1), -1, 1);
+            _wheelState = (short)Math.Clamp((wParam >> 16) / PInvoke.WHEEL_DELTA * (Config.Invert ? -1 : 1), -1, 1);
 
         return WindowProcHandlerHook.OriginalDisposeSafe(hwnd, uMsg, wParam);
     }
@@ -109,14 +109,14 @@ public unsafe partial class ScrollableTabs : Tweak
         => Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.IntersectingCollisionNode;
 
     private bool IsNext
-        => wheelState == (!Config.Invert ? 1 : -1);
+        => _wheelState == (!Config.Invert ? 1 : -1);
 
     private bool IsPrev
-        => wheelState == (!Config.Invert ? -1 : 1);
+        => _wheelState == (!Config.Invert ? -1 : 1);
 
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
-        if (wheelState == 0)
+        if (_wheelState == 0)
             return;
 
         var hoveredUnitBase = IntersectingAddon;
@@ -367,12 +367,12 @@ public unsafe partial class ScrollableTabs : Tweak
             }
         }
 
-        ResetWheelState:
-        wheelState = 0;
+ResetWheelState:
+        _wheelState = 0;
     }
 
     private int GetTabIndex(int currentTabIndex, int numTabs)
-        => Math.Clamp(currentTabIndex + wheelState, 0, numTabs - 1);
+        => Math.Clamp(currentTabIndex + _wheelState, 0, numTabs - 1);
 
     private void UpdateArmouryBoard(AddonArmouryBoard* addon)
     {
@@ -386,7 +386,7 @@ public unsafe partial class ScrollableTabs : Tweak
 
     private void UpdateInventory(AddonInventory* addon)
     {
-        if (addon->TabIndex == AddonInventory.NUM_TABS - 1 && wheelState > 0)
+        if (addon->TabIndex == AddonInventory.NUM_TABS - 1 && _wheelState > 0)
         {
             // inside "48 89 6C 24 ?? 56 48 83 EC 20 0F B7 C2", a3 != 17
             using var values = new DisposableStructArray<AtkValue>(3);
@@ -415,7 +415,7 @@ public unsafe partial class ScrollableTabs : Tweak
 
     private void UpdateInventoryEvent(AddonInventoryEvent* addon)
     {
-        if (addon->TabIndex == 0 && wheelState < 0)
+        if (addon->TabIndex == 0 && _wheelState < 0)
         {
             // inside Vf68, fn call before return with a2 being 2
             using var values = new DisposableStructArray<AtkValue>(3);
@@ -541,7 +541,7 @@ public unsafe partial class ScrollableTabs : Tweak
             return;
 
         using var atkEvent = new DisposableStruct<AtkEvent>();
-        var eventParam = Math.Clamp(addon->CurrentNoteIndex % 10 + wheelState, -1, addon->MaxNoteIndex - 1);
+        var eventParam = Math.Clamp(addon->CurrentNoteIndex % 10 + _wheelState, -1, addon->MaxNoteIndex - 1);
 
         if (eventParam == -1)
         {
@@ -570,7 +570,7 @@ public unsafe partial class ScrollableTabs : Tweak
     {
         if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Normal)
         {
-            if (addon->TabSwitcher.TabIndex == 0 && wheelState < 0)
+            if (addon->TabSwitcher.TabIndex == 0 && _wheelState < 0)
             {
                 addon->SwitchToFavorites();
             }
@@ -579,7 +579,7 @@ public unsafe partial class ScrollableTabs : Tweak
                 UpdateTabSwitcher((nint)addon, &addon->TabSwitcher);
             }
         }
-        else if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Favorites && wheelState > 0)
+        else if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Favorites && _wheelState > 0)
         {
             var callbackAddress = addon->TabSwitcher.CallbackPtr;
             if (callbackAddress != 0)
@@ -594,7 +594,7 @@ public unsafe partial class ScrollableTabs : Tweak
 
         if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Normal)
         {
-            if (addon->Unk220.TabSwitcher.TabIndex == 0 && wheelState < 0)
+            if (addon->Unk220.TabSwitcher.TabIndex == 0 && _wheelState < 0)
             {
                 agent->CurrentView = AgentMJIMinionNoteBook.ViewType.Favorites;
                 agent->SelectedFavoriteMinion.TabIndex = 0;
@@ -609,7 +609,7 @@ public unsafe partial class ScrollableTabs : Tweak
                 agent->UpdateTabFlags(0x40B);
             }
         }
-        else if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Favorites && wheelState > 0)
+        else if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Favorites && _wheelState > 0)
         {
             agent->CurrentView = AgentMJIMinionNoteBook.ViewType.Normal;
             agent->SelectedNormalMinion.TabIndex = 0;
@@ -707,7 +707,7 @@ public unsafe partial class ScrollableTabs : Tweak
         if (!GetAgent(AgentId.MiragePrismPrismBox, out AgentMiragePrismPrismBox* agent))
             return;
 
-        agent->PageIndex += (byte)wheelState;
+        agent->PageIndex += (byte)_wheelState;
         agent->UpdateItems(false, false);
     }
 
@@ -733,7 +733,7 @@ public unsafe partial class ScrollableTabs : Tweak
     private void UpdateCharacterClass(AddonCharacter* addonCharacter, AddonCharacterClass* addon)
     {
         // prev or next embedded addon
-        if (Config.HandleCharacter && (addon->TabIndex + wheelState < 0 || addon->TabIndex + wheelState > 1))
+        if (Config.HandleCharacter && (addon->TabIndex + _wheelState < 0 || addon->TabIndex + _wheelState > 1))
         {
             UpdateCharacter(addonCharacter);
             return;
@@ -750,7 +750,7 @@ public unsafe partial class ScrollableTabs : Tweak
     private void UpdateCharacterRepute(AddonCharacter* addonCharacter, AddonCharacterRepute* addon)
     {
         // prev embedded addon
-        if (Config.HandleCharacter && (addon->SelectedExpansion + wheelState < 0))
+        if (Config.HandleCharacter && (addon->SelectedExpansion + _wheelState < 0))
         {
             UpdateCharacter(addonCharacter);
             return;

@@ -12,22 +12,22 @@ public class EditPresetDialog : ConfirmationDialog
 {
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
 
-    private readonly ConfirmationButton saveButton;
+    private readonly ConfirmationButton _saveButton;
 
-    private string? name;
-    private SavedPreset? preset;
+    private string? _name;
+    private SavedPreset? _preset;
     public readonly List<Guid> tags = new();
 
     public EditPresetDialog() : base("Edit Preset")
     {
-        AddButton(saveButton = new ConfirmationButton("Save", OnSave));
+        AddButton(_saveButton = new ConfirmationButton("Save", OnSave));
         AddButton(new ConfirmationButton("Cancel", Close));
     }
 
     public void Open(SavedPreset preset)
     {
-        this.preset = preset;
-        name = preset.Name;
+        _preset = preset;
+        _name = preset.Name;
         tags.Clear();
         tags.AddRange(preset.Tags);
         Show();
@@ -36,13 +36,13 @@ public class EditPresetDialog : ConfirmationDialog
     public void Close()
     {
         Hide();
-        name = null;
-        preset = null;
+        _name = null;
+        _preset = null;
         tags.Clear();
     }
 
     public override bool DrawCondition()
-        => base.DrawCondition() && name != null && preset != null;
+        => base.DrawCondition() && _name != null && _preset != null;
 
     public override void InnerDraw()
     {
@@ -50,9 +50,9 @@ public class EditPresetDialog : ConfirmationDialog
 
         ImGui.Spacing();
 
-        ImGui.InputText("##PresetName", ref name, 30);
+        ImGui.InputText("##PresetName", ref _name, 30);
 
-        var disabled = string.IsNullOrEmpty(name.Trim());
+        var disabled = string.IsNullOrEmpty(_name.Trim());
         if (!disabled && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter)))
         {
             OnSave();
@@ -92,22 +92,22 @@ public class EditPresetDialog : ConfirmationDialog
             }
         }
 
-        saveButton.Disabled = disabled;
+        _saveButton.Disabled = disabled;
     }
 
     private void OnSave()
     {
-        if (preset == null || string.IsNullOrEmpty(name?.Trim()))
+        if (_preset == null || string.IsNullOrEmpty(_name?.Trim()))
         {
             Close();
             return;
         }
 
-        preset.Name = name.Trim();
-        preset.Tags.Clear();
+        _preset.Name = _name.Trim();
+        _preset.Tags.Clear();
 
         foreach (var tag in tags)
-            preset.Tags.Add(tag);
+            _preset.Tags.Add(tag);
 
         Plugin.Config.Save();
 

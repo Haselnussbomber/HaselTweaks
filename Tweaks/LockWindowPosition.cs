@@ -37,15 +37,15 @@ public unsafe partial class LockWindowPosition : Tweak
 
     private const int EventParamLock = 9901;
     private const int EventParamUnlock = 9902;
-    private readonly string[] IgnoredAddons = new[] {
+    private static readonly string[] IgnoredAddons = new[] {
         "CharaCardEditMenu", // always opens docked to CharaCard (OnSetup)
     };
 
-    private bool ShowPicker = false;
-    private string HoveredWindowName = "";
-    private Vector2 HoveredWindowPos;
-    private Vector2 HoveredWindowSize;
-    private int EventIndexToDisable = 0;
+    private bool _showPicker = false;
+    private string _hoveredWindowName = "";
+    private Vector2 _hoveredWindowPos;
+    private Vector2 _hoveredWindowSize;
+    private int _eventIndexToDisable = 0;
 
     public override bool HasCustomConfig => true;
     public override void DrawCustomConfig()
@@ -141,21 +141,21 @@ public unsafe partial class LockWindowPosition : Tweak
             ImGuiUtils.PushCursorY(4);
         }
 
-        if (ShowPicker)
+        if (_showPicker)
         {
             if (ImGui.Button("Cancel"))
             {
-                ShowPicker = false;
+                _showPicker = false;
             }
         }
         else
         {
             if (ImGui.Button("Pick Window"))
             {
-                HoveredWindowName = "";
-                HoveredWindowPos = default;
-                HoveredWindowSize = default;
-                ShowPicker = true;
+                _hoveredWindowName = "";
+                _hoveredWindowPos = default;
+                _hoveredWindowSize = default;
+                _showPicker = true;
             }
         }
 
@@ -173,10 +173,10 @@ public unsafe partial class LockWindowPosition : Tweak
             }
         }
 
-        if (ShowPicker && HoveredWindowPos != default)
+        if (_showPicker && _hoveredWindowPos != default)
         {
-            ImGui.SetNextWindowPos(HoveredWindowPos);
-            ImGui.SetNextWindowSize(HoveredWindowSize);
+            ImGui.SetNextWindowPos(_hoveredWindowPos);
+            ImGui.SetNextWindowSize(_hoveredWindowSize);
 
             using var windowBorderSize = ImRaii.PushStyle(ImGuiStyleVar.WindowBorderSize, 1.0f);
             using var borderColor = ImRaii.PushColor(ImGuiCol.Border, (uint)Colors.Gold);
@@ -185,21 +185,21 @@ public unsafe partial class LockWindowPosition : Tweak
             if (ImGui.Begin("Lock Windows Picker", ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize))
             {
                 var drawList = ImGui.GetForegroundDrawList();
-                var textPos = HoveredWindowPos + new Vector2(0, -ImGui.GetTextLineHeight());
-                drawList.AddText(textPos + Vector2.One, Colors.Black, HoveredWindowName);
-                drawList.AddText(textPos, Colors.Gold, HoveredWindowName);
+                var textPos = _hoveredWindowPos + new Vector2(0, -ImGui.GetTextLineHeight());
+                drawList.AddText(textPos + Vector2.One, Colors.Black, _hoveredWindowName);
+                drawList.AddText(textPos, Colors.Gold, _hoveredWindowName);
 
                 ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
 
                 if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
                 {
-                    ShowPicker = false;
+                    _showPicker = false;
 
-                    if (HoveredWindowName != "" && !Config.LockedWindows.Any(entry => entry.Name == HoveredWindowName))
+                    if (_hoveredWindowName != "" && !Config.LockedWindows.Any(entry => entry.Name == _hoveredWindowName))
                     {
                         Config.LockedWindows.Add(new()
                         {
-                            Name = HoveredWindowName
+                            Name = _hoveredWindowName
                         });
                         Plugin.Config.Save();
                     }
@@ -212,10 +212,10 @@ public unsafe partial class LockWindowPosition : Tweak
 
     public override void OnConfigWindowClose()
     {
-        HoveredWindowName = "";
-        HoveredWindowPos = default;
-        HoveredWindowSize = default;
-        ShowPicker = false;
+        _hoveredWindowName = "";
+        _hoveredWindowPos = default;
+        _hoveredWindowSize = default;
+        _showPicker = false;
     }
 
     // block GearSetList from moving when opened by Character
@@ -256,7 +256,7 @@ public unsafe partial class LockWindowPosition : Tweak
     [SigHook("48 89 5C 24 ?? 48 89 6C 24 ?? 57 48 83 EC 30 80 7A 37 00")]
     public bool RaptureAtkUnitManager_Vf6(RaptureAtkUnitManager* self, nint a2)
     {
-        if (ShowPicker)
+        if (_showPicker)
         {
             if (a2 != 0)
             {
@@ -266,27 +266,27 @@ public unsafe partial class LockWindowPosition : Tweak
                     var name = MemoryHelper.ReadStringNullTerminated((nint)atkUnitBase->Name);
                     if (!IgnoredAddons.Contains(name))
                     {
-                        HoveredWindowName = name;
-                        HoveredWindowPos = new(atkUnitBase->X, atkUnitBase->Y);
-                        HoveredWindowSize = new(atkUnitBase->WindowNode->AtkResNode.Width, atkUnitBase->WindowNode->AtkResNode.Height - 7);
+                        _hoveredWindowName = name;
+                        _hoveredWindowPos = new(atkUnitBase->X, atkUnitBase->Y);
+                        _hoveredWindowSize = new(atkUnitBase->WindowNode->AtkResNode.Width, atkUnitBase->WindowNode->AtkResNode.Height - 7);
                     }
                     else
                     {
-                        HoveredWindowName = "";
-                        HoveredWindowPos = default;
-                        HoveredWindowSize = default;
+                        _hoveredWindowName = "";
+                        _hoveredWindowPos = default;
+                        _hoveredWindowSize = default;
                     }
                 }
                 else
                 {
-                    HoveredWindowName = "";
-                    HoveredWindowPos = default;
-                    HoveredWindowSize = default;
+                    _hoveredWindowName = "";
+                    _hoveredWindowPos = default;
+                    _hoveredWindowSize = default;
                 }
             }
             else
             {
-                ShowPicker = false;
+                _showPicker = false;
             }
 
             return false;
@@ -298,8 +298,8 @@ public unsafe partial class LockWindowPosition : Tweak
     [AddressHook<AgentContext>(nameof(AgentContext.Addresses.ClearMenu))]
     public nint AgentContext_ClearMenu(AgentContext* agent)
     {
-        if (EventIndexToDisable != 0)
-            EventIndexToDisable = 0;
+        if (_eventIndexToDisable != 0)
+            _eventIndexToDisable = 0;
 
         return AgentContext_ClearMenuHook.OriginalDisposeSafe(agent);
     }
@@ -309,7 +309,7 @@ public unsafe partial class LockWindowPosition : Tweak
     {
         if (addonRowId == 8660 && agent->ContextMenuIndex == 0) // "Return to Default Position"
         {
-            EventIndexToDisable = agent->CurrentContextMenu->CurrentEventIndex;
+            _eventIndexToDisable = agent->CurrentContextMenu->CurrentEventIndex;
         }
 
         return AgentContext_AddMenuItem2Hook.OriginalDisposeSafe(agent, addonRowId, handlerPtr, handlerParam, disabled, submenu);
@@ -318,7 +318,7 @@ public unsafe partial class LockWindowPosition : Tweak
     [AddressHook<AgentContext>(nameof(AgentContext.Addresses.OpenContextMenuForAddon))]
     public nint AgentContext_OpenContextMenuForAddon(AgentContext* agent, uint addonId, bool bindToOwner)
     {
-        if (EventIndexToDisable == 7 && agent->ContextMenuIndex == 0)
+        if (_eventIndexToDisable == 7 && agent->ContextMenuIndex == 0)
         {
             var addon = GetAddon(addonId);
             if (addon != null)
@@ -374,7 +374,7 @@ public unsafe partial class LockWindowPosition : Tweak
     [SigHook("48 89 6C 24 ?? 48 89 54 24 ?? 56 41 54")]
     public AtkValue* WindowContextMenuEventHandler(nint self, AtkValue* result, nint a3, long a4, long eventParam)
     {
-        if (EventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock && GetAgent<AgentContext>(AgentId.Context, out var agentContext))
+        if (_eventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock && GetAgent<AgentContext>(AgentId.Context, out var agentContext))
         {
             if (GetAddon(agentContext->OwnerAddon, out var addon))
             {
@@ -402,15 +402,15 @@ public unsafe partial class LockWindowPosition : Tweak
                 Plugin.Config.Save();
             }
 
-            EventIndexToDisable = 0;
+            _eventIndexToDisable = 0;
 
             result->Type = FFXIVClientStructs.FFXIV.Component.GUI.ValueType.Bool;
             result->Byte = 0;
             return result;
         }
 
-        if (EventIndexToDisable != 0)
-            EventIndexToDisable = 0;
+        if (_eventIndexToDisable != 0)
+            _eventIndexToDisable = 0;
 
         return WindowContextMenuEventHandlerHook.OriginalDisposeSafe(self, result, a3, a4, eventParam);
     }

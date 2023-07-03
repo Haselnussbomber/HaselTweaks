@@ -34,17 +34,17 @@ public unsafe partial class EnhancedLoginLogout : Tweak
     public override void Setup() => UpdateExcludedEmotes();
     public override void Enable() => UpdateCharacterSettings();
     public override void OnLogin() => UpdateCharacterSettings();
-    public override void OnLogout() => IsRecordingEmote = false;
+    public override void OnLogout() => _isRecordingEmote = false;
     public override void Disable() => CleanupCharaSelect();
     public override void Dispose() => UnloadTextures();
     public override void OnConfigWindowClose()
     {
-        IsRecordingEmote = false;
+        _isRecordingEmote = false;
         UnloadTextures();
     }
 
-    private CharaSelectCharacter? CurrentEntry = null;
-    private ulong ActiveContentId => CurrentEntry?.ContentId ?? Service.ClientState.LocalContentId;
+    private CharaSelectCharacter? _currentEntry = null;
+    private ulong ActiveContentId => _currentEntry?.ContentId ?? Service.ClientState.LocalContentId;
 
     private void UpdateCharacterSettings()
     {
@@ -54,18 +54,18 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     public void UnloadTextures()
     {
-        TextureManager?.Dispose();
-        TextureManager = null;
+        _textureManager?.Dispose();
+        _textureManager = null;
     }
 
     private void CleanupCharaSelect()
     {
         DespawnPet();
-        CurrentEntry = null;
+        _currentEntry = null;
     }
 
     [Signature("E8 ?? ?? ?? ?? 48 8B 48 08 49 89 8C 24")]
-    private readonly GetCharacterEntryByIndexDelegate GetCharacterEntryByIndex = null!;
+    private readonly GetCharacterEntryByIndexDelegate _getCharacterEntryByIndex = null!;
     private delegate CharaSelectCharacterEntry* GetCharacterEntryByIndexDelegate(nint a1, int a2, int a3, int index);
 
     // called every frame
@@ -83,21 +83,21 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         if (index >= 100)
             index -= 100;
 
-        var entry = GetCharacterEntryByIndex((nint)agent + 0x40, 0, agent->Unk10F2, index); // what a headache
+        var entry = _getCharacterEntryByIndex((nint)agent + 0x40, 0, agent->Unk10F2, index); // what a headache
         if (entry == null)
         {
             CleanupCharaSelect();
             return;
         }
 
-        if (CurrentEntry?.ContentId == entry->ContentId)
+        if (_currentEntry?.ContentId == entry->ContentId)
             return;
 
         var character = CharaSelect.GetCurrentCharacter();
         if (character == null)
             return;
 
-        CurrentEntry = new(character, entry);
+        _currentEntry = new(character, entry);
 
         SpawnPet();
         SetVoice();
@@ -117,10 +117,10 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     #region Config
 
-    private TextureManager? TextureManager;
-    private bool IsRecordingEmote;
-    private readonly uint[] ChangePoseEmoteIds = new uint[] { 91, 92, 93, 107, 108, 218, 219, };
-    private readonly List<uint> ExcludedEmotes = new() { /* Sit */ 50, };
+    private TextureManager? _textureManager;
+    private bool _isRecordingEmote;
+    private readonly uint[] _changePoseEmoteIds = new uint[] { 91, 92, 93, 107, 108, 218, 219, };
+    private readonly List<uint> _excludedEmotes = new() { /* Sit */ 50, };
 
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedLoginLogout;
 
@@ -147,7 +147,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
     public override bool HasCustomConfig => true;
     public override void DrawCustomConfig()
     {
-        TextureManager ??= new();
+        _textureManager ??= new();
 
         var scale = ImGui.GetIO().FontGlobalScale;
         var verticalTextPadding = 3;
@@ -198,10 +198,10 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         // PlayEmote
         if (ImGui.Checkbox($"Play emote in character selection##HaselTweaks_Config_{InternalName}_PlayEmote", ref Config.EnableCharaSelectEmote))
         {
-            if (!Config.EnableCharaSelectEmote && CurrentEntry != null && CurrentEntry.Character != null)
+            if (!Config.EnableCharaSelectEmote && _currentEntry != null && _currentEntry.Character != null)
             {
                 ResetEmoteMode();
-                CurrentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(3);
+                _currentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(3);
             }
         }
 
@@ -238,8 +238,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
                         var entry = Service.Data.GetExcelSheet<Emote>()!
                             .Select(row => (
-                                IsChangePose: ChangePoseEmoteIds.Contains(row.RowId),
-                                Name: ChangePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name.ToDalamudString()} ({changePoseIndex++})" : $"{row.Name.ToDalamudString()}",
+                                IsChangePose: _changePoseEmoteIds.Contains(row.RowId),
+                                Name: _changePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name.ToDalamudString()} ({changePoseIndex++})" : $"{row.Name.ToDalamudString()}",
                                 Emote: row
                             ) as (bool IsChangePose, string Name, Emote Emote)?)
                             .FirstOrDefault(entry => entry != null && entry.Value.Emote.RowId == selectedEmoteId, null);
@@ -248,7 +248,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                         {
                             var (isChangePose, name, emote) = entry.Value;
                             ImGuiUtils.PushCursorY(-verticalTextPadding);
-                            TextureManager.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(new(24 * scale));
+                            _textureManager.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(new(24 * scale));
                             ImGui.SameLine();
                             ImGui.Text(name);
                         }
@@ -264,18 +264,18 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
                         ImGuiUtils.PushCursorY(-verticalTextPadding);
 
-                        if (IsRecordingEmote)
+                        if (_isRecordingEmote)
                         {
                             if (ImGui.Button("Stop Recording"))
                             {
-                                IsRecordingEmote = false;
+                                _isRecordingEmote = false;
                             }
                         }
                         else
                         {
                             if (ImGui.Button("Change"))
                             {
-                                IsRecordingEmote = true;
+                                _isRecordingEmote = true;
 
                                 var agentEmote = AgentModule.Instance()->GetAgentByInternalId(AgentId.Emote);
                                 if (!agentEmote->IsAgentActive())
@@ -296,7 +296,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                             }
                         }
 
-                        if (IsRecordingEmote)
+                        if (_isRecordingEmote)
                         {
                             ImGui.TextColored(Colors.Gold, "Perform an emote now to set it for this character!");
                             ImGuiUtils.PushCursorY(verticalTextPadding);
@@ -332,8 +332,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     #region Login: Show pets in character selection
 
-    private BattleChara* Pet = null;
-    private short PetIndex = -1;
+    private BattleChara* _pet = null;
+    private short _petIndex = -1;
 
     private void UpdatePetMirageSettings()
     {
@@ -383,22 +383,22 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     public void SpawnPet()
     {
-        if (!Config.ShowPets || CurrentEntry == null)
+        if (!Config.ShowPets || _currentEntry == null)
             return;
 
-        if (!(CurrentEntry.ClassJobId is 26 or 27 or 28)) // Arcanist, Summoner, Scholar (Machinist: 31)
+        if (!(_currentEntry.ClassJobId is 26 or 27 or 28)) // Arcanist, Summoner, Scholar (Machinist: 31)
         {
             DespawnPet();
             return;
         }
 
-        if (Pet != null)
+        if (_pet != null)
             return;
 
         if (!Config.PetMirageSettings.TryGetValue(ActiveContentId, out var petMirageSettings))
             return;
 
-        var bNpcId = CurrentEntry.ClassJobId switch
+        var bNpcId = _currentEntry.ClassJobId switch
         {
             26 => 13498u + petMirageSettings.CarbuncleType, // Arcanist
             27 => 13498u + petMirageSettings.CarbuncleType, // Summoner
@@ -413,48 +413,48 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         if (clientObjectManager == null)
             return;
 
-        if (Pet == null)
+        if (_pet == null)
         {
-            PetIndex = (short)clientObjectManager->CreateBattleCharacter();
-            if (PetIndex == -1)
+            _petIndex = (short)clientObjectManager->CreateBattleCharacter();
+            if (_petIndex == -1)
                 return;
 
-            Pet = (BattleChara*)clientObjectManager->GetObjectByIndex((ushort)PetIndex);
+            _pet = (BattleChara*)clientObjectManager->GetObjectByIndex((ushort)_petIndex);
 
-            Debug($"Pet with index {PetIndex} spanwed ({(nint)Pet:X})");
+            Debug($"Pet with index {_petIndex} spanwed ({(nint)_pet:X})");
         }
 
-        if (Pet == null)
+        if (_pet == null)
         {
-            PetIndex = -1;
+            _petIndex = -1;
             return;
         }
 
-        ((HaselCharacter*)Pet)->SetupBNpc(bNpcId);
+        ((HaselCharacter*)_pet)->SetupBNpc(bNpcId);
 
         ApplyPetPosition();
 
-        Pet->Character.GameObject.EnableDraw();
+        _pet->Character.GameObject.EnableDraw();
     }
 
     public void DespawnPet()
     {
-        if (PetIndex < 0)
+        if (_petIndex < 0)
             return;
 
-        ClientObjectManager.Instance()->DeleteObjectByIndex((ushort)PetIndex, 0);
-        Debug($"Pet with index {PetIndex} despawned");
-        PetIndex = -1;
-        Pet = null;
+        ClientObjectManager.Instance()->DeleteObjectByIndex((ushort)_petIndex, 0);
+        Debug($"Pet with index {_petIndex} despawned");
+        _petIndex = -1;
+        _pet = null;
     }
 
     // easier than setting position, lel
     public void ApplyPetPosition()
     {
-        if (Pet == null)
+        if (_pet == null)
             return;
 
-        ((HaselCharacter*)Pet)->SetPosition(Config.PetPosition.X, Config.PetPosition.Y, Config.PetPosition.Z);
+        ((HaselCharacter*)_pet)->SetPosition(Config.PetPosition.X, Config.PetPosition.Y, Config.PetPosition.Z);
     }
 
     #endregion
@@ -471,7 +471,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
             if (emote.RowId != 0 && emote.Icon != 0 && !(emote.ActionTimeline[0].Row == 0 && emote.ActionTimeline[1].Row == 0))
                 continue;
 
-            ExcludedEmotes.Add(emote.RowId);
+            _excludedEmotes.Add(emote.RowId);
         }
     }
 
@@ -512,11 +512,11 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     private void SetVoice()
     {
-        if (CurrentEntry == null || CurrentEntry.Character == null)
+        if (_currentEntry == null || _currentEntry.Character == null)
             return;
 
         if (Config.VoiceCache.TryGetValue(ActiveContentId, out var voiceId))
-            CurrentEntry.HaselCharacter->VoiceId = voiceId;
+            _currentEntry.HaselCharacter->VoiceId = voiceId;
     }
 
     private void PlayEmote(uint emoteId)
@@ -524,7 +524,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         if (!Config.EnableCharaSelectEmote)
             return;
 
-        if (CurrentEntry == null || CurrentEntry.Character == null)
+        if (_currentEntry == null || _currentEntry.Character == null)
             return;
 
         if (emoteId == 0)
@@ -548,7 +548,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         if (emote.EmoteMode.Row != 0)
         {
             Debug($"EmoteMode: {emote.EmoteMode.Row}");
-            CurrentEntry.Character->SetMode((CharacterModes)emote.EmoteMode.Value!.ConditionMode, (byte)emote.EmoteMode.Row);
+            _currentEntry.Character->SetMode((CharacterModes)emote.EmoteMode.Value!.ConditionMode, (byte)emote.EmoteMode.Row);
         }
         else
         {
@@ -557,30 +557,30 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         if (intro != 0 && loop != 0)
         {
-            CurrentEntry.HaselCharacter->ActionTimelineManager.PlayActionTimeline(intro, loop);
+            _currentEntry.HaselCharacter->ActionTimelineManager.PlayActionTimeline(intro, loop);
         }
         else if (loop != 0)
         {
-            CurrentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(loop);
+            _currentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(loop);
         }
         else if (intro != 0)
         {
-            CurrentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(intro);
+            _currentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(intro);
         }
         else
         {
             Debug("No intro or loop, resetting to idle pose (timeline 3)");
-            CurrentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(3);
+            _currentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(3);
         }
     }
 
     private void ResetEmoteMode()
     {
-        if (CurrentEntry == null || CurrentEntry.Character == null)
+        if (_currentEntry == null || _currentEntry.Character == null)
             return;
 
         Debug("Resetting Character Mode");
-        CurrentEntry.Character->SetMode(CharacterModes.Normal, 0);
+        _currentEntry.Character->SetMode(CharacterModes.Normal, 0);
     }
 
     [SigHook("E8 ?? ?? ?? ?? 40 84 ED 74 18")]
@@ -589,7 +589,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         var changePoseIndexBefore = PlayerState.Instance()->SelectedPoses[0];
         var success = SomeDoEmoteFunctionHook.OriginalDisposeSafe(a1, emoteId, a3);
 
-        if (IsRecordingEmote && success && Service.ClientState.IsLoggedIn && !ExcludedEmotes.Contains(emoteId))
+        if (_isRecordingEmote && success && Service.ClientState.IsLoggedIn && !_excludedEmotes.Contains(emoteId))
         {
             // special case for Change Pose
             if (emoteId == 90)
@@ -597,9 +597,9 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                 var changePoseIndex = PlayerState.Instance()->SelectedPoses[0];
                 if (changePoseIndexBefore != changePoseIndex) // only process if standing pose was changed
                 {
-                    if (changePoseIndex >= 0 && changePoseIndex < ChangePoseEmoteIds.Length)
+                    if (changePoseIndex >= 0 && changePoseIndex < _changePoseEmoteIds.Length)
                     {
-                        SaveEmote(ChangePoseEmoteIds[changePoseIndex]);
+                        SaveEmote(_changePoseEmoteIds[changePoseIndex]);
                     }
                     else
                     {
@@ -625,31 +625,31 @@ public unsafe partial class EnhancedLoginLogout : Tweak
     {
         OpenLoginWaitDialogHook.OriginalDisposeSafe(agent, position);
 
-        if (CurrentEntry == null)
+        if (_currentEntry == null)
             return;
 
-        ushort territoryId = CurrentEntry.TerritoryId switch
+        ushort territoryId = _currentEntry.TerritoryId switch
         {
-               282  // Private Cottage - Mist
-            or 283  // Private House - Mist
-            or 284  // Private Mansion - Mist
-            or 384  // Private Chambers - Mist
-            => 339, // Mist
+            282  // Private Cottage - Mist
+         or 283  // Private House - Mist
+         or 284  // Private Mansion - Mist
+         or 384  // Private Chambers - Mist
+         => 339, // Mist
 
-               342  // Private Cottage - The Lavender Beds
-            or 343  // Private House - The Lavender Beds
-            or 344  // Private Mansion - The Lavender Beds
-            or 385  // Private Chambers - The Lavender Beds
-            => 340, // The Lavender Beds
+            342  // Private Cottage - The Lavender Beds
+         or 343  // Private House - The Lavender Beds
+         or 344  // Private Mansion - The Lavender Beds
+         or 385  // Private Chambers - The Lavender Beds
+         => 340, // The Lavender Beds
 
 
-               345  // Private Cottage - The Goblet
-            or 346  // Private House - The Goblet
-            or 347  // Private Mansion - The Goblet
-            or 386  // Private Chambers - The Goblet
-            => 341, // The Goblet
+            345  // Private Cottage - The Goblet
+         or 346  // Private House - The Goblet
+         or 347  // Private Mansion - The Goblet
+         or 386  // Private Chambers - The Goblet
+         => 341, // The Goblet
 
-            _ => CurrentEntry.TerritoryId
+            _ => _currentEntry.TerritoryId
         };
 
         if (territoryId <= 0)

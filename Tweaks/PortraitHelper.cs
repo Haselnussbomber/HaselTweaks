@@ -91,12 +91,13 @@ public partial class PortraitHelper : Tweak
     public PresetBrowserOverlay? PresetBrowserOverlay { get; set; }
     public AlignmentToolSettingsOverlay? AlignmentToolSettingsOverlay { get; set; }
 
-    private DateTime lastClipboardCheck = default;
-    private uint lastClipboardSequenceNumber;
-    private CancellationTokenSource? jobChangedOrGearsetUpdatedCTS;
-    private uint lastJob = 0;
-    private DalamudLinkPayload? openPortraitEditPayload;
-    private readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
+    private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
+
+    private DateTime _lastClipboardCheck = default;
+    private uint _lastClipboardSequenceNumber;
+    private CancellationTokenSource? _jobChangedOrGearsetUpdatedCTS;
+    private uint _lastJob = 0;
+    private DalamudLinkPayload? _openPortraitEditPayload;
 
     public ImportFlags CurrentImportFlags { get; set; } = ImportFlags.All;
 
@@ -104,9 +105,9 @@ public partial class PortraitHelper : Tweak
 
     public override unsafe void Enable()
     {
-        lastJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
+        _lastJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
 
-        openPortraitEditPayload = Service.PluginInterface.AddChatLinkHandler(1000, OpenPortraitEditChatHandler);
+        _openPortraitEditPayload = Service.PluginInterface.AddChatLinkHandler(1000, OpenPortraitEditChatHandler);
 
         GetAgent(AgentId.BannerEditor, out AgentBannerEditor);
         GetAgent(AgentId.Status, out AgentStatus);
@@ -162,12 +163,12 @@ public partial class PortraitHelper : Tweak
 
     public override void OnLogin()
     {
-        lastJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
+        _lastJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
     }
 
     public override void OnLogout()
     {
-        lastJob = 0;
+        _lastJob = 0;
     }
 
     private unsafe void OpenPortraitEditChatHandler(uint commandId, SeString message)
@@ -221,19 +222,19 @@ public partial class PortraitHelper : Tweak
     public override unsafe void OnFrameworkUpdate(DalamudFramework framework)
     {
         var currentJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
-        if (currentJob != 0 && currentJob != lastJob)
+        if (currentJob != 0 && currentJob != _lastJob)
         {
-            jobChangedOrGearsetUpdatedCTS?.Cancel();
-            jobChangedOrGearsetUpdatedCTS = new();
+            _jobChangedOrGearsetUpdatedCTS?.Cancel();
+            _jobChangedOrGearsetUpdatedCTS = new();
 
-            lastJob = currentJob;
+            _lastJob = currentJob;
 
             if (Config.NotifyGearChecksumMismatch)
             {
                 Service.Framework.RunOnTick(() =>
                 {
                     CheckForGearChecksumMismatch(GetEquippedGearsetId(RaptureGearsetModule.Instance()), true);
-                }, CheckDelay, cancellationToken: jobChangedOrGearsetUpdatedCTS.Token);
+                }, CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token);
             }
         }
 
@@ -245,7 +246,7 @@ public partial class PortraitHelper : Tweak
 
     public void CheckClipboard()
     {
-        if (DateTime.Now - lastClipboardCheck <= TimeSpan.FromMilliseconds(100))
+        if (DateTime.Now - _lastClipboardCheck <= TimeSpan.FromMilliseconds(100))
             return;
 
         if (!PInvoke.IsClipboardFormatAvailable((uint)CLIPBOARD_FORMAT.CF_TEXT))
@@ -253,7 +254,7 @@ public partial class PortraitHelper : Tweak
 
         var clipboardSequenceNumber = PInvoke.GetClipboardSequenceNumber();
 
-        if (lastClipboardSequenceNumber == clipboardSequenceNumber)
+        if (_lastClipboardSequenceNumber == clipboardSequenceNumber)
             return;
 
         if (!PInvoke.OpenClipboard(HWND.Null))
@@ -261,7 +262,7 @@ public partial class PortraitHelper : Tweak
 
         try
         {
-            lastClipboardSequenceNumber = clipboardSequenceNumber;
+            _lastClipboardSequenceNumber = clipboardSequenceNumber;
 
             var data = PInvoke.GetClipboardData((uint)CLIPBOARD_FORMAT.CF_TEXT);
             if (data != 0)
@@ -281,7 +282,7 @@ public partial class PortraitHelper : Tweak
         {
             PInvoke.CloseClipboard();
 
-            lastClipboardCheck = DateTime.Now;
+            _lastClipboardCheck = DateTime.Now;
         }
     }
 
@@ -716,13 +717,13 @@ public partial class PortraitHelper : Tweak
     {
         var ret = RaptureGearsetModule_UpdateGearsetHook.OriginalDisposeSafe(raptureGearsetModule, gearsetId);
 
-        jobChangedOrGearsetUpdatedCTS?.Cancel();
-        jobChangedOrGearsetUpdatedCTS = new();
+        _jobChangedOrGearsetUpdatedCTS?.Cancel();
+        _jobChangedOrGearsetUpdatedCTS = new();
 
         Service.Framework.RunOnTick(() =>
         {
             CheckForGearChecksumMismatch(gearsetId);
-        }, delay: CheckDelay, cancellationToken: jobChangedOrGearsetUpdatedCTS.Token);
+        }, delay: CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token);
 
         return ret;
     }
@@ -763,8 +764,8 @@ public partial class PortraitHelper : Tweak
             Log($"Re-equipping Gearset #{gearset->ID + 1} to reapply Glamour Plate");
             raptureGearsetModule->EquipGearset(gearset->ID, gearset->GlamourSetLink);
 
-            jobChangedOrGearsetUpdatedCTS?.Cancel();
-            jobChangedOrGearsetUpdatedCTS = new();
+            _jobChangedOrGearsetUpdatedCTS?.Cancel();
+            _jobChangedOrGearsetUpdatedCTS = new();
 
             Service.Framework.RunOnTick(() =>
             {
@@ -778,7 +779,7 @@ public partial class PortraitHelper : Tweak
                 {
                     Log($"Gear checksum matches now (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
                 }
-            }, delay: CheckDelay, cancellationToken: jobChangedOrGearsetUpdatedCTS.Token); // TODO: find out when it's safe to check again instead of randomly picking a delay. ping may vary
+            }, delay: CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token); // TODO: find out when it's safe to check again instead of randomly picking a delay. ping may vary
         }
         else
         {
@@ -802,9 +803,9 @@ public partial class PortraitHelper : Tweak
         var gearsetId = GetEquippedGearsetId(RaptureGearsetModule.Instance());
         if (gearsetId < 100)
         {
-            if (openPortraitEditPayload != null)
+            if (_openPortraitEditPayload != null)
             {
-                sb.Add(openPortraitEditPayload)
+                sb.Add(_openPortraitEditPayload)
                   .AddText(text)
                   .Add(RawPayload.LinkTerminator);
             }

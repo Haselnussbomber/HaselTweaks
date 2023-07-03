@@ -7,7 +7,7 @@ public partial class KeepScreenAwake : Tweak
     public override string Name => "Keep Screen Awake";
     public override string Description => "Prevents the screen from going into standby.";
 
-    private Timer? timer;
+    private Timer? _timer;
 
     [Flags]
     public enum EXECUTION_STATE : uint
@@ -22,25 +22,25 @@ public partial class KeepScreenAwake : Tweak
 
     public override void Setup()
     {
-        timer = new Timer();
-        timer.Elapsed += Timer_Elapsed;
-        timer.Interval = 10000; // every 10 seconds
+        _timer = new Timer();
+        _timer.Elapsed += Timer_Elapsed;
+        _timer.Interval = 10000; // every 10 seconds
     }
 
     public override void Enable()
     {
-        timer?.Start();
+        _timer?.Start();
     }
 
     public override void Disable()
     {
         SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
-        timer?.Stop();
+        _timer?.Stop();
     }
 
     public override void Dispose()
     {
-        timer?.Dispose();
+        _timer?.Dispose();
     }
 
     private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)

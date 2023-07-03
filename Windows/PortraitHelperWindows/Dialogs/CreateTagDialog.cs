@@ -8,30 +8,30 @@ public class CreateTagDialog : ConfirmationDialog
 {
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
 
-    private readonly ConfirmationButton saveButton;
+    private readonly ConfirmationButton _saveButton;
 
-    private string? name;
+    private string? _name;
 
     public CreateTagDialog() : base("Create Tag")
     {
-        AddButton(saveButton = new ConfirmationButton("Save", OnSave));
+        AddButton(_saveButton = new ConfirmationButton("Save", OnSave));
         AddButton(new ConfirmationButton("Cancel", Close));
     }
 
     public void Open()
     {
-        name = string.Empty;
+        _name = string.Empty;
         Show();
     }
 
     public void Close()
     {
         Hide();
-        name = null;
+        _name = null;
     }
 
     public override bool DrawCondition()
-        => base.DrawCondition() && name != null;
+        => base.DrawCondition() && _name != null;
 
     public override void InnerDraw()
     {
@@ -39,11 +39,11 @@ public class CreateTagDialog : ConfirmationDialog
 
         ImGui.Spacing();
 
-        ImGui.InputText("##TagName", ref name, 30);
+        ImGui.InputText("##TagName", ref _name, 30);
 
-        var disabled = string.IsNullOrEmpty(name.Trim());
+        var disabled = string.IsNullOrEmpty(_name.Trim());
 
-        saveButton.Disabled = disabled;
+        _saveButton.Disabled = disabled;
 
         if (!disabled && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter)))
         {
@@ -53,13 +53,13 @@ public class CreateTagDialog : ConfirmationDialog
 
     private void OnSave()
     {
-        if (string.IsNullOrEmpty(name?.Trim()))
+        if (string.IsNullOrEmpty(_name?.Trim()))
         {
             Close();
             return;
         }
 
-        Config.PresetTags.Add(new(name.Trim()));
+        Config.PresetTags.Add(new(_name.Trim()));
         Plugin.Config.Save();
 
         Close();

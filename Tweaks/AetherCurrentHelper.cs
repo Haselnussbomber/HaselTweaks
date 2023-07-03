@@ -22,30 +22,30 @@ public unsafe partial class AetherCurrentHelper : Tweak
         public bool CenterDistance = true;
     }
 
-    private AetherCurrentHelperWindow? Window;
+    private AetherCurrentHelperWindow? _window;
 
     public override void Disable()
         => CloseWindow();
 
     public void OpenWindow(AetherCurrentCompFlgSet compFlgSet)
     {
-        if (Window != null)
+        if (_window != null)
         {
-            Window.SetCompFlgSet(compFlgSet);
+            _window.SetCompFlgSet(compFlgSet);
             return;
         }
 
-        Plugin.WindowSystem.AddWindow(Window = new(this, compFlgSet));
-        Window.IsOpen = true;
+        Plugin.WindowSystem.AddWindow(_window = new(this, compFlgSet));
+        _window.IsOpen = true;
     }
 
     public void CloseWindow()
     {
-        if (Window == null)
+        if (_window == null)
             return;
 
-        Plugin.WindowSystem.RemoveWindow(Window);
-        Window = null;
+        Plugin.WindowSystem.RemoveWindow(_window);
+        _window = null;
     }
 
     [VTableHook<AgentAetherCurrent>((int)AgentInterfaceVfs.ReceiveEvent)]
@@ -77,7 +77,7 @@ public unsafe partial class AetherCurrentHelper : Tweak
         eventData->Byte = 0;
         return eventData;
 
-        OriginalCode:
+OriginalCode:
         return AgentAetherCurrent_ReceiveEventHook.OriginalDisposeSafe(agent, eventData, atkValue, valueCount, eventKind);
     }
 }

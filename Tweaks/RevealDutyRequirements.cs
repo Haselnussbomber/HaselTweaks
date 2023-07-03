@@ -20,17 +20,17 @@ public class RevealDutyRequirements : Tweak
      */
     [Signature("48 8B C8 48 8B D8 48 8B 10 FF 52 68 84 C0 74 1B")]
     private nint Address { get; init; }
-    private byte[]? OriginalBytes;
+    private byte[]? _originalBytes;
 
     private const int Offset = 14;
 
     public override void Enable()
     {
-        OriginalBytes = MemoryUtils.ReplaceRaw(Address + Offset, new byte[] { 0x90, 0x90 }); // the two nop commands
+        _originalBytes = MemoryUtils.ReplaceRaw(Address + Offset, new byte[] { 0x90, 0x90 }); // the two nop commands
     }
 
     public override void Disable()
     {
-        MemoryUtils.ReplaceRaw(Address + Offset, OriginalBytes!);
+        MemoryUtils.ReplaceRaw(Address + Offset, _originalBytes!);
     }
 }

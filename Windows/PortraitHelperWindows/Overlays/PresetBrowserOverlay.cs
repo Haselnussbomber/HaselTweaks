@@ -23,8 +23,8 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
     public TextureManager TextureManager { get; init; } = new();
     public EditPresetDialog EditPresetDialog { get; init; } = new();
 
-    private int reorderTagOldIndex = -1;
-    private int reorderTagNewIndex = -1;
+    private int _reorderTagOldIndex = -1;
+    private int _reorderTagNewIndex = -1;
 
     public PresetBrowserOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper: Preset Browser", tweak)
     {
@@ -100,7 +100,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
                 ImGuiUtils.TextUnformattedDisabled($"Moving {tag.Name}");
 
                 var idPtr = Marshal.StringToHGlobalAnsi(tag.Id.ToString());
-                ImGui.SetDragDropPayload("MoveTag", idPtr, (uint)MemoryUtils.strlen(idPtr));
+                ImGui.SetDragDropPayload("MoveTag", idPtr, (uint)MemoryUtils.Strlen(idPtr));
                 Marshal.FreeHGlobal(idPtr);
             }
         }
@@ -113,8 +113,8 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
                 if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
                 {
                     var tagId = Marshal.PtrToStringAnsi(payload.Data, payload.DataSize);
-                    reorderTagOldIndex = Config.PresetTags.IndexOf((tag) => tag.Id.ToString() == tagId);
-                    reorderTagNewIndex = Config.PresetTags.IndexOf(tag);
+                    _reorderTagOldIndex = Config.PresetTags.IndexOf((tag) => tag.Id.ToString() == tagId);
+                    _reorderTagNewIndex = Config.PresetTags.IndexOf(tag);
                 }
 
                 payload = ImGui.AcceptDragDropPayload("MovePresetCard");
@@ -189,14 +189,14 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             DrawSidebarTag(tag, ref removeUnusedTags);
         }
 
-        if (reorderTagOldIndex > -1 && reorderTagOldIndex < Config.PresetTags.Count && reorderTagNewIndex > -1 && reorderTagNewIndex < Config.PresetTags.Count)
+        if (_reorderTagOldIndex > -1 && _reorderTagOldIndex < Config.PresetTags.Count && _reorderTagNewIndex > -1 && _reorderTagNewIndex < Config.PresetTags.Count)
         {
-            var item = Config.PresetTags[reorderTagOldIndex];
-            Config.PresetTags.RemoveAt(reorderTagOldIndex);
-            Config.PresetTags.Insert(reorderTagNewIndex, item);
+            var item = Config.PresetTags[_reorderTagOldIndex];
+            Config.PresetTags.RemoveAt(_reorderTagOldIndex);
+            Config.PresetTags.Insert(_reorderTagNewIndex, item);
             Plugin.Config.Save();
-            reorderTagOldIndex = -1;
-            reorderTagNewIndex = -1;
+            _reorderTagOldIndex = -1;
+            _reorderTagNewIndex = -1;
         }
 
         if (removeUnusedTags)

@@ -35,24 +35,24 @@ public static unsafe class MemoryUtils
         return (byte*)ptr;
     }
 
-    public static int strlen(byte* ptr)
-        => strlen((nint)ptr);
+    public static int Strlen(byte* ptr)
+        => Strlen((nint)ptr);
 
-    public static int strlen(nint ptr)
+    public static int Strlen(nint ptr)
     {
         int i;
         for (i = 0; *(bool*)(ptr + i); i++) ;
         return i;
     }
 
-    public static byte* strconcat(params byte*[] ptrs)
+    public static byte* Strconcat(params byte*[] ptrs)
     {
         var lengths = new int[ptrs.Length];
         var totalLength = 0;
 
         for (var i = 0; i < ptrs.Length; i++)
         {
-            var len = strlen(ptrs[i]);
+            var len = Strlen(ptrs[i]);
             lengths[i] = len;
             totalLength += len;
         }

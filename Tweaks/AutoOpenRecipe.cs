@@ -18,7 +18,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
 
     // for older quests that don't return the item id in GetTodoArgs
     private readonly record struct QuestTodo(ushort QuestId, byte TodoIndex, string ScriptArgName = "RITEM1");
-    private readonly QuestTodo[] QuestTodos = new QuestTodo[] {
+    private static readonly QuestTodo[] QuestTodos = new QuestTodo[] {
         // Ixal
         new(1494, 3),
         new(1495, 3),
@@ -152,7 +152,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
             for (var todoIndex = todoOffset; todoIndex < todoOffset + todoCount; todoIndex++)
             {
                 uint numHave, numNeeded, itemId;
-                GetTodoArgs(questEventHandler, localPlayer, todoIndex, &numHave, &numNeeded, &itemId);
+                _getTodoArgs(questEventHandler, localPlayer, todoIndex, &numHave, &numNeeded, &itemId);
                 Debug($"TodoArgs #{todoIndex}: {numHave}/{numNeeded} of {itemId}");
 
                 if (itemId == 0)
@@ -179,12 +179,12 @@ public unsafe partial class AutoOpenRecipe : Tweak
             }
         }
 
-        originalUpdateQuestWork:
+originalUpdateQuestWork:
         return UpdateQuestWorkHook.OriginalDisposeSafe(index, questData, a3, a4, a5);
     }
 
     [Signature("E8 ?? ?? ?? ?? 8B 44 24 78 89 44 24 44")]
-    private readonly GetTodoArgsDelegate GetTodoArgs = null!;
+    private readonly GetTodoArgsDelegate _getTodoArgs = null!;
     private delegate void GetTodoArgsDelegate(EventHandler* questEventHandler, BattleChara* localPlayer, int i, uint* numHave, uint* numNeeded, uint* itemId);
 
     private void OpenRecipe(uint resultItemId, uint amount)

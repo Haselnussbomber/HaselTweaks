@@ -348,7 +348,7 @@ public unsafe class AutoSorter : Tweak
 
             if (Enabled)
             {
-                if (IsBusy || queue.Any())
+                if (_isBusy || _queue.Any())
                 {
                     ImGui.SameLine();
                     ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, "Sorting in progress. Please wait.", disabled: true);
@@ -422,7 +422,7 @@ public unsafe class AutoSorter : Tweak
         {
             ImGui.SameLine();
 
-            if (!IsBusy && !queue.Any())
+            if (!_isBusy && !_queue.Any())
             {
                 if (ImGui.Button("Run All##HaselTweaks_AutoSortSettings_RunAll"))
                 {
@@ -432,7 +432,7 @@ public unsafe class AutoSorter : Tweak
 
                     foreach (var group in groups)
                     {
-                        queue.Enqueue(group);
+                        _queue.Enqueue(group);
                     }
                 }
             }
@@ -471,18 +471,18 @@ public unsafe class AutoSorter : Tweak
         if (entryToExecute != -1)
         {
             var entry = Config.Settings[entryToExecute];
-            queue.Enqueue(new[] { entry }.GroupBy(entry => entry.Category!).First());
+            _queue.Enqueue(new[] { entry }.GroupBy(entry => entry.Category!).First());
         }
     }
 
-    private readonly Queue<IGrouping<string, SortingRule>> queue = new();
-    private bool IsBusy = false;
-    private uint LastClassJobId = 0;
+    private readonly Queue<IGrouping<string, SortingRule>> _queue = new();
+    private bool _isBusy = false;
+    private uint _lastClassJobId = 0;
 
     public static bool IsRetainerInventoryOpen => GetAddon("InventoryRetainer") != null || GetAddon("InventoryRetainerLarge") != null;
     public static bool IsInventoryBuddyOpen => GetAddon("InventoryBuddy") != null;
 
-    private readonly Dictionary<string, bool> InventoryAddons = new()
+    private readonly Dictionary<string, bool> _inventoryAddons = new()
     {
         ["Inventory"] = false,
         ["InventoryLarge"] = false,
@@ -491,12 +491,12 @@ public unsafe class AutoSorter : Tweak
 
     public override void OnLogin()
     {
-        LastClassJobId = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
+        _lastClassJobId = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
     }
 
     public override void Disable()
     {
-        queue.Clear();
+        _queue.Clear();
     }
 
     public override void OnFrameworkUpdate(Framework framework)
@@ -505,7 +505,7 @@ public unsafe class AutoSorter : Tweak
         {
             if (!(Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInCutSceneEvent]))
             {
-                foreach (var (name, wasVisible) in InventoryAddons)
+                foreach (var (name, wasVisible) in _inventoryAddons)
                 {
                     if (GetAddon(name, out var unitBase))
                     {
@@ -513,7 +513,7 @@ public unsafe class AutoSorter : Tweak
 
                         if (wasVisible != isVisible)
                         {
-                            InventoryAddons[name] = isVisible;
+                            _inventoryAddons[name] = isVisible;
 
                             if (isVisible)
                             {
@@ -526,9 +526,9 @@ public unsafe class AutoSorter : Tweak
 
             if (Config.SortArmouryOnJobChange &&
                 Service.ClientState.LocalPlayer != null &&
-                LastClassJobId != Service.ClientState.LocalPlayer.ClassJob.Id)
+                _lastClassJobId != Service.ClientState.LocalPlayer.ClassJob.Id)
             {
-                LastClassJobId = Service.ClientState.LocalPlayer.ClassJob.Id;
+                _lastClassJobId = Service.ClientState.LocalPlayer.ClassJob.Id;
 
                 if (GetAddon("ArmouryBoard", out var unitBase))
                 {
@@ -565,7 +565,7 @@ public unsafe class AutoSorter : Tweak
 
         foreach (var group in groups)
         {
-            queue.Enqueue(group);
+            _queue.Enqueue(group);
         }
     }
 
@@ -577,7 +577,7 @@ public unsafe class AutoSorter : Tweak
 
         foreach (var group in groups)
         {
-            queue.Enqueue(group);
+            _queue.Enqueue(group);
         }
     }
 
@@ -589,7 +589,7 @@ public unsafe class AutoSorter : Tweak
 
         foreach (var group in groups)
         {
-            queue.Enqueue(group);
+            _queue.Enqueue(group);
         }
     }
 
@@ -601,16 +601,16 @@ public unsafe class AutoSorter : Tweak
 
         foreach (var group in groups)
         {
-            queue.Enqueue(group);
+            _queue.Enqueue(group);
         }
     }
 
     private void ProcessQueue()
     {
-        if (IsBusy || !queue.Any())
+        if (_isBusy || !_queue.Any())
             return;
 
-        var nextGroup = queue.Peek();
+        var nextGroup = _queue.Peek();
         if (nextGroup == null)
             return;
 
@@ -638,11 +638,11 @@ public unsafe class AutoSorter : Tweak
             }
         }
 
-        IsBusy = true;
+        _isBusy = true;
 
         try
         {
-            var group = queue.Dequeue();
+            var group = _queue.Dequeue();
 
             if (!group.Any())
                 return;
@@ -734,7 +734,7 @@ public unsafe class AutoSorter : Tweak
         }
         finally
         {
-            IsBusy = false;
+            _isBusy = false;
         }
     }
 }

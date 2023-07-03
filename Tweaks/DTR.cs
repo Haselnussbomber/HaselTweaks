@@ -52,7 +52,7 @@ public unsafe class DTR : Tweak
     public DtrBarEntry? DtrInstance;
     public DtrBarEntry? DtrFPS;
     public DtrBarEntry? DtrBusy;
-    private int lastFrameRate;
+    private int _lastFrameRate;
 
     public override void Enable()
     {
@@ -139,11 +139,11 @@ public unsafe class DTR : Tweak
         }
 
         var frameRate = (int)(gameFramework->FrameRate + 0.5f);
-        if (lastFrameRate != frameRate)
+        if (_lastFrameRate != frameRate)
         {
             DtrFPS.SetText(frameRate.ToString("0") + " fps");
             DtrFPS.SetVisibility(true);
-            lastFrameRate = frameRate;
+            _lastFrameRate = frameRate;
         }
     }
 }

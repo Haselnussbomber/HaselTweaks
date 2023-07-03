@@ -6,45 +6,45 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class RenameTagDialog : ConfirmationDialog
 {
-    private readonly ConfirmationButton saveButton;
+    private readonly ConfirmationButton _saveButton;
 
-    private SavedPresetTag? tag = null;
-    private string? name;
+    private SavedPresetTag? _tag = null;
+    private string? _name;
 
     public RenameTagDialog() : base("Rename Tag")
     {
-        AddButton(saveButton = new ConfirmationButton("Save", OnSave));
+        AddButton(_saveButton = new ConfirmationButton("Save", OnSave));
         AddButton(new ConfirmationButton("Cancel", Close));
     }
 
     public void Open(SavedPresetTag tag)
     {
-        this.tag = tag;
-        name = tag.Name;
+        _tag = tag;
+        _name = tag.Name;
         Show();
     }
 
     public void Close()
     {
         Hide();
-        tag = null;
-        name = null;
+        _tag = null;
+        _name = null;
     }
 
     public override bool DrawCondition()
-        => base.DrawCondition() && tag != null && name != null;
+        => base.DrawCondition() && _tag != null && _name != null;
 
     public override void InnerDraw()
     {
-        ImGui.TextUnformatted($"Enter a new name for tag \"{tag!.Name}\":");
+        ImGui.TextUnformatted($"Enter a new name for tag \"{_tag!.Name}\":");
 
         ImGui.Spacing();
 
-        ImGui.InputText("##TagName", ref name, 30);
+        ImGui.InputText("##TagName", ref _name, 30);
 
-        var disabled = string.IsNullOrEmpty(name.Trim()) && name.Trim() != tag.Name.Trim();
+        var disabled = string.IsNullOrEmpty(_name.Trim()) && _name.Trim() != _tag.Name.Trim();
 
-        saveButton.Disabled = disabled;
+        _saveButton.Disabled = disabled;
 
         if (!disabled && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter)))
         {
@@ -54,13 +54,13 @@ public class RenameTagDialog : ConfirmationDialog
 
     private void OnSave()
     {
-        if (tag == null || string.IsNullOrEmpty(name?.Trim()))
+        if (_tag == null || string.IsNullOrEmpty(_name?.Trim()))
         {
             Close();
             return;
         }
 
-        tag.Name = name.Trim();
+        _tag.Name = _name.Trim();
         Plugin.Config.Save();
 
         Close();

@@ -24,14 +24,14 @@ public unsafe partial class EnhancedMaterialList : Tweak
     public override string Description => "Enhances the Material List (and Recipe Tree).";
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedMaterialList;
 
-    private DateTime LastRecipeMaterialListRefresh = DateTime.Now;
-    private bool RecipeMaterialListRefreshPending = false;
-    private bool RecipeMaterialListLockPending = false;
+    private DateTime _lastRecipeMaterialListRefresh = DateTime.Now;
+    private bool _recipeMaterialListRefreshPending = false;
+    private bool _recipeMaterialListLockPending = false;
 
-    private DateTime LastRecipeTreeRefresh = DateTime.Now;
-    private bool RecipeTreeRefreshPending = false;
+    private DateTime _lastRecipeTreeRefresh = DateTime.Now;
+    private bool _recipeTreeRefreshPending = false;
 
-    private bool HandleRecipeResultItemContextMenu = false;
+    private bool _handleRecipeResultItemContextMenu = false;
 
     public class Configuration
     {
@@ -114,10 +114,10 @@ public unsafe partial class EnhancedMaterialList : Tweak
     private void RequestRefresh()
     {
         if (Config.AutoRefreshMaterialList)
-            RecipeMaterialListRefreshPending = true;
+            _recipeMaterialListRefreshPending = true;
 
         if (Config.AutoRefreshRecipeTree)
-            RecipeTreeRefreshPending = true;
+            _recipeTreeRefreshPending = true;
     }
 
     public override void OnTerritoryChanged(ushort e)
@@ -134,56 +134,56 @@ public unsafe partial class EnhancedMaterialList : Tweak
             Log("Restoring RecipeMaterialList");
             agentRecipeMaterialList->OpenByRecipeId(Config.RestoreMaterialListRecipeId, Math.Max(Config.RestoreMaterialListAmount, 1));
 
-            RecipeMaterialListLockPending = true;
+            _recipeMaterialListLockPending = true;
         }
     }
 
     private void RequestRecipeMaterialListRefresh()
-        => RecipeMaterialListRefreshPending = true;
+        => _recipeMaterialListRefreshPending = true;
 
     private void RefreshRecipeMaterialList()
     {
-        if (!RecipeMaterialListRefreshPending && !RecipeMaterialListLockPending)
+        if (!_recipeMaterialListRefreshPending && !_recipeMaterialListLockPending)
             return;
 
-        if (DateTime.Now.Subtract(LastRecipeMaterialListRefresh).TotalSeconds < 2)
+        if (DateTime.Now.Subtract(_lastRecipeMaterialListRefresh).TotalSeconds < 2)
             return;
 
         if (!GetAddon<AddonRecipeMaterialList>(AgentId.RecipeMaterialList, out var recipeMaterialList))
         {
-            RecipeMaterialListRefreshPending = false;
+            _recipeMaterialListRefreshPending = false;
             return;
         }
 
-        if (RecipeMaterialListRefreshPending)
+        if (_recipeMaterialListRefreshPending)
         {
             Log("Refreshing RecipeMaterialList");
             using var atkEvent = new DisposableStruct<AtkEvent>();
             recipeMaterialList->ReceiveEvent(AtkEventType.ButtonClick, 1, atkEvent, 0);
 
-            RecipeMaterialListRefreshPending = false;
+            _recipeMaterialListRefreshPending = false;
         }
 
-        if (RecipeMaterialListLockPending)
+        if (_recipeMaterialListLockPending)
         {
             recipeMaterialList->SetWindowLock(true);
-            RecipeMaterialListLockPending = false;
+            _recipeMaterialListLockPending = false;
         }
 
-        LastRecipeMaterialListRefresh = DateTime.Now;
+        _lastRecipeMaterialListRefresh = DateTime.Now;
     }
 
     private void RefreshRecipeTree()
     {
-        if (!RecipeTreeRefreshPending)
+        if (!_recipeTreeRefreshPending)
             return;
 
-        if (DateTime.Now.Subtract(LastRecipeTreeRefresh).TotalSeconds < 2)
+        if (DateTime.Now.Subtract(_lastRecipeTreeRefresh).TotalSeconds < 2)
             return;
 
         if (!GetAddon<AddonRecipeTree>(AgentId.RecipeTree, out var recipeTree))
         {
-            RecipeTreeRefreshPending = false;
+            _recipeTreeRefreshPending = false;
             return;
         }
 
@@ -191,8 +191,8 @@ public unsafe partial class EnhancedMaterialList : Tweak
         using var atkEvent = new DisposableStruct<AtkEvent>();
         recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, atkEvent, 0);
 
-        LastRecipeTreeRefresh = DateTime.Now;
-        RecipeTreeRefreshPending = false;
+        _lastRecipeTreeRefresh = DateTime.Now;
+        _recipeTreeRefreshPending = false;
     }
 
     private void SaveRestoreMaterialList()
@@ -313,17 +313,17 @@ public unsafe partial class EnhancedMaterialList : Tweak
     [AddressHook<AgentRecipeMaterialList>(nameof(AgentRecipeMaterialList.Addresses.OpenRecipeResultItemContextMenu))]
     public nint AgentRecipeMaterialList_OpenRecipeResultItemContextMenu(AgentRecipeMaterialList* agent)
     {
-        HandleRecipeResultItemContextMenu = true;
+        _handleRecipeResultItemContextMenu = true;
         return AgentRecipeMaterialList_OpenRecipeResultItemContextMenuHook.OriginalDisposeSafe(agent);
     }
 
     [AddressHook<AgentRecipeItemContext>(nameof(AgentRecipeItemContext.Addresses.AddItemContextMenuEntries))]
     public nint AgentRecipeItemContext_AddItemContextMenuEntries(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
     {
-        if (!HandleRecipeResultItemContextMenu)
+        if (!_handleRecipeResultItemContextMenu)
             goto originalAddItemContextMenuEntries;
 
-        HandleRecipeResultItemContextMenu = false;
+        _handleRecipeResultItemContextMenu = false;
 
         if (!Config.AddSearchForItemByCraftingMethodContextMenuEntry)
             goto originalAddItemContextMenuEntries;
@@ -343,7 +343,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
         flags |= 2;
 
-        originalAddItemContextMenuEntries:
+originalAddItemContextMenuEntries:
         return AgentRecipeItemContext_AddItemContextMenuEntriesHook.OriginalDisposeSafe(agent, itemId, flags, itemName);
     }
 
@@ -441,7 +441,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
             exportedPoint.GatheringPointType
         );
 
-        using var tooltip = new DisposableUtf8String(MemoryUtils.strconcat(levelText, space, gatheringPointName));
+        using var tooltip = new DisposableUtf8String(MemoryUtils.Strconcat(levelText, space, gatheringPointName));
 
         var iconId = !IsGatheringPointRare(exportedPoint.GatheringPointType)
             ? gatheringType.IconMain

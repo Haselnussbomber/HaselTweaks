@@ -214,7 +214,7 @@ public sealed partial class Resolver
                 }
             }
         }
-        outLoop:;
+outLoop:;
 
         if (cacheChanged)
             Plugin.Config.Save();

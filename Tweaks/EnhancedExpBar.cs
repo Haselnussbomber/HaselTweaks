@@ -89,7 +89,7 @@ public unsafe partial class EnhancedExpBar : Tweak
     {
         Service.ClientState.LeavePvP += ClientState_LeavePvP;
         Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
-        IsEnabled = true;
+        _isEnabled = true;
         RunUpdate();
     }
 
@@ -97,52 +97,52 @@ public unsafe partial class EnhancedExpBar : Tweak
     {
         Service.ClientState.LeavePvP -= ClientState_LeavePvP;
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
-        IsEnabled = false;
+        _isEnabled = false;
         RunUpdate();
     }
 
-    private bool IsEnabled = false;
-    private ushort LastSeriesXp = 0;
-    private byte LastSeriesClaimedRank = 0;
-    private uint LastBuddyXp;
-    private byte LastBuddyRank;
-    private uint LastBuddyObjectID;
-    private uint LastIslandExperience = 0;
-    private ushort LastSyncedFateId = 0;
+    private bool _isEnabled = false;
+    private ushort _lastSeriesXp = 0;
+    private byte _lastSeriesClaimedRank = 0;
+    private uint _lastBuddyXp;
+    private byte _lastBuddyRank;
+    private uint _lastBuddyObjectID;
+    private uint _lastIslandExperience = 0;
+    private ushort _lastSyncedFateId = 0;
 
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
         var shouldUpdate = false;
 
         var pvpProfile = PvPProfile.Instance();
-        if (pvpProfile != null && pvpProfile->IsLoaded == 0x01 && (LastSeriesXp != pvpProfile->SeriesExperience || LastSeriesClaimedRank != pvpProfile->SeriesClaimedRank))
+        if (pvpProfile != null && pvpProfile->IsLoaded == 0x01 && (_lastSeriesXp != pvpProfile->SeriesExperience || _lastSeriesClaimedRank != pvpProfile->SeriesClaimedRank))
         {
             shouldUpdate = true;
-            LastSeriesXp = pvpProfile->SeriesExperience;
-            LastSeriesClaimedRank = pvpProfile->SeriesClaimedRank;
+            _lastSeriesXp = pvpProfile->SeriesExperience;
+            _lastSeriesClaimedRank = pvpProfile->SeriesClaimedRank;
         }
 
         var buddy = UIState.Instance()->Buddy;
-        if (LastBuddyXp != buddy.CurrentXP || LastBuddyRank != buddy.Rank || LastBuddyObjectID != buddy.Companion.ObjectID)
+        if (_lastBuddyXp != buddy.CurrentXP || _lastBuddyRank != buddy.Rank || _lastBuddyObjectID != buddy.Companion.ObjectID)
         {
             shouldUpdate = true;
-            LastBuddyXp = buddy.CurrentXP;
-            LastBuddyRank = buddy.Rank;
-            LastBuddyObjectID = buddy.Companion.ObjectID;
+            _lastBuddyXp = buddy.CurrentXP;
+            _lastBuddyRank = buddy.Rank;
+            _lastBuddyObjectID = buddy.Companion.ObjectID;
         }
 
         var mjiManager = MJIManager.Instance();
-        if (mjiManager != null && LastIslandExperience != mjiManager->IslandState.CurrentXP)
+        if (mjiManager != null && _lastIslandExperience != mjiManager->IslandState.CurrentXP)
         {
             shouldUpdate = true;
-            LastIslandExperience = mjiManager->IslandState.CurrentXP;
+            _lastIslandExperience = mjiManager->IslandState.CurrentXP;
         }
 
         var fateManager = FateManager.Instance();
-        if (fateManager != null && LastSyncedFateId != fateManager->SyncedFateId)
+        if (fateManager != null && _lastSyncedFateId != fateManager->SyncedFateId)
         {
             shouldUpdate = true;
-            LastSyncedFateId = fateManager->SyncedFateId;
+            _lastSyncedFateId = fateManager->SyncedFateId;
         }
 
         if (shouldUpdate)
@@ -177,7 +177,7 @@ public unsafe partial class EnhancedExpBar : Tweak
     [VTableHook<AddonExp>((int)AtkUnitBaseVfs.OnRequestedUpdate)]
     private nint AddonExp_OnRequestedUpdate(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        if (!IsEnabled)
+        if (!_isEnabled)
             goto OriginalOnRequestedUpdate;
 
         var gaugeBarNode = GetNode<AtkComponentNode>((AtkUnitBase*)addon, 6);
@@ -235,7 +235,7 @@ public unsafe partial class EnhancedExpBar : Tweak
 
         goto OriginalOnRequestedUpdateWithColorReset;
 
-        PvPBar:
+PvPBar:
         {
             var pvpProfile = PvPProfile.Instance();
             if (pvpProfile == null || pvpProfile->IsLoaded != 0x01)
@@ -276,7 +276,7 @@ public unsafe partial class EnhancedExpBar : Tweak
             return ret;
         }
 
-        CompanionBar:
+CompanionBar:
         {
             var buddy = UIState.Instance()->Buddy;
 
@@ -304,7 +304,7 @@ public unsafe partial class EnhancedExpBar : Tweak
             return ret;
         }
 
-        SanctuaryBar:
+SanctuaryBar:
         {
             var mjiManager = MJIManager.Instance();
             if (mjiManager == null)
@@ -348,10 +348,10 @@ public unsafe partial class EnhancedExpBar : Tweak
             return ret;
         }
 
-        OriginalOnRequestedUpdateWithColorReset:
+OriginalOnRequestedUpdateWithColorReset:
         ResetColor(nineGridNode);
 
-        OriginalOnRequestedUpdate:
+OriginalOnRequestedUpdate:
         return AddonExp_OnRequestedUpdateHook!.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
     }
 

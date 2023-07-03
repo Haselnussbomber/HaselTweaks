@@ -18,47 +18,47 @@ public class CreatePresetDialog : ConfirmationDialog
 {
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
 
-    private readonly ConfirmationButton saveButton;
+    private readonly ConfirmationButton _saveButton;
 
-    private string? name;
-    private PortraitPreset? preset;
-    private Image<Bgra32>? image;
-    private HashSet<Guid>? tags;
+    private string? _name;
+    private PortraitPreset? _preset;
+    private Image<Bgra32>? _image;
+    private HashSet<Guid>? _tags;
 
     public CreatePresetDialog() : base("Save as Preset")
     {
-        AddButton(saveButton = new ConfirmationButton("Save", OnSave));
+        AddButton(_saveButton = new ConfirmationButton("Save", OnSave));
     }
 
     public void Open(string name, PortraitPreset? preset, Image<Bgra32>? image)
     {
-        this.name = name;
-        this.preset = preset;
-        this.image = image;
-        tags = new();
+        _name = name;
+        _preset = preset;
+        _image = image;
+        _tags = new();
         Show();
     }
 
     public void Close()
     {
         Hide();
-        name = null;
-        preset = null;
-        image?.Dispose();
-        image = null;
-        tags = null;
+        _name = null;
+        _preset = null;
+        _image?.Dispose();
+        _image = null;
+        _tags = null;
     }
 
     public override bool DrawCondition()
-        => base.DrawCondition() && name != null && preset != null && image != null && tags != null;
+        => base.DrawCondition() && _name != null && _preset != null && _image != null && _tags != null;
 
     public override void InnerDraw()
     {
         ImGui.TextUnformatted("Enter a name for the new preset:");
         ImGui.Spacing();
-        ImGui.InputText("##PresetName", ref name, 100);
+        ImGui.InputText("##PresetName", ref _name, 100);
 
-        var disabled = string.IsNullOrEmpty(name.Trim());
+        var disabled = string.IsNullOrEmpty(_name.Trim());
         if (!disabled && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter)))
         {
             OnSave();
@@ -69,7 +69,7 @@ public class CreatePresetDialog : ConfirmationDialog
             ImGui.Spacing();
             ImGui.TextUnformatted("Select Tags (optional):");
 
-            var tagNames = tags!
+            var tagNames = _tags!
                 .Select(id => Config.PresetTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
                 .Where(name => !string.IsNullOrEmpty(name));
 
@@ -81,29 +81,29 @@ public class CreatePresetDialog : ConfirmationDialog
             {
                 foreach (var tag in Config.PresetTags)
                 {
-                    var isSelected = tags!.Contains(tag.Id);
+                    var isSelected = _tags!.Contains(tag.Id);
 
                     if (ImGui.Selectable($"{tag.Name}##PresetTag{tag.Id}", isSelected))
                     {
                         if (isSelected)
                         {
-                            tags.Remove(tag.Id);
+                            _tags.Remove(tag.Id);
                         }
                         else
                         {
-                            tags.Add(tag.Id);
+                            _tags.Add(tag.Id);
                         }
                     }
                 }
             }
         }
 
-        saveButton.Disabled = disabled;
+        _saveButton.Disabled = disabled;
     }
 
     private void OnSave()
     {
-        if (preset == null || image == null || string.IsNullOrEmpty(name?.Trim()))
+        if (_preset == null || _image == null || string.IsNullOrEmpty(_name?.Trim()))
         {
             PluginLog.Error("Could not save portrait: data missing"); // TODO: show error
             Close();
@@ -114,19 +114,19 @@ public class CreatePresetDialog : ConfirmationDialog
 
         Task.Run(() =>
         {
-            var pixelData = new byte[image.Width * image.Height * 4];
-            image.CopyPixelDataTo(pixelData);
+            var pixelData = new byte[_image.Width * _image.Height * 4];
+            _image.CopyPixelDataTo(pixelData);
 
             var hash = BitConverter.ToInt64(XxHash64.Hash(pixelData)).ToString("x");
             var thumbPath = Config.GetPortraitThumbnailPath(hash);
 
-            image.SaveAsPng(thumbPath, new PngEncoder
+            _image.SaveAsPng(thumbPath, new PngEncoder
             {
                 CompressionLevel = PngCompressionLevel.BestCompression,
                 ColorType = PngColorType.Rgb // no need for alpha channel
             });
 
-            Config.Presets.Insert(0, new(name.Trim(), preset, tags!, hash));
+            Config.Presets.Insert(0, new(_name.Trim(), _preset, _tags!, hash));
             Plugin.Config.Save();
 
             Close();

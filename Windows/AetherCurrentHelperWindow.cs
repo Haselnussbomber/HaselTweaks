@@ -17,21 +17,22 @@ using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
+using ImColor = HaselTweaks.Structs.ImColor;
 
 namespace HaselTweaks.Windows;
 
 public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 {
-    private readonly AetherCurrentHelper AetherCurrentHelper;
-    private AetherCurrentCompFlgSet CompFlgSet;
-    private readonly AgentAetherCurrent* agentAetherCurrent;
-    private readonly Dictionary<uint, EObj?> EObjCache = new(); // key is AetherCurrent.RowId
-    private readonly Dictionary<uint, Level?> LevelCache = new(); // key is Level.RowId
-    private readonly Dictionary<uint, string> QuestNameCache = new(); // key is Quest.RowId, value is stripped from private use utf8 chars
-    private readonly TextureManager TextureManager = new();
-    private bool hideUnlocked = true;
+    private readonly AetherCurrentHelper _aetherCurrentHelper;
+    private AetherCurrentCompFlgSet _compFlgSet;
+    private readonly AgentAetherCurrent* _agentAetherCurrent;
+    private readonly Dictionary<uint, EObj?> _eObjCache = new(); // key is AetherCurrent.RowId
+    private readonly Dictionary<uint, Level?> _levelCache = new(); // key is Level.RowId
+    private readonly Dictionary<uint, string> _questNameCache = new(); // key is Quest.RowId, value is stripped from private use utf8 chars
+    private readonly TextureManager _textureManager = new();
+    private bool _hideUnlocked = true;
 
-    private readonly Structs.ImColor TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
+    private static readonly ImColor TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
 
     [GeneratedRegex("^[\\ue000-\\uf8ff]+ ")]
     private static partial Regex Utf8PrivateUseAreaRegex();
@@ -40,8 +41,8 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 
     public AetherCurrentHelperWindow(AetherCurrentHelper aetherCurrentHelper, AetherCurrentCompFlgSet compFlgSet) : base("[HaselTweaks] Aether Current Helper")
     {
-        AetherCurrentHelper = aetherCurrentHelper;
-        CompFlgSet = compFlgSet;
+        _aetherCurrentHelper = aetherCurrentHelper;
+        _compFlgSet = compFlgSet;
 
         base.SizeCondition = ImGuiCond.Appearing;
         base.Size = new Vector2(350);
@@ -51,19 +52,19 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
             MaximumSize = new Vector2(4096),
         };
 
-        GetAgent(AgentId.AetherCurrent, out agentAetherCurrent);
+        GetAgent(AgentId.AetherCurrent, out _agentAetherCurrent);
     }
 
     public void Dispose()
     {
-        TextureManager.Dispose();
+        _textureManager.Dispose();
     }
 
     public void SetCompFlgSet(AetherCurrentCompFlgSet compFlgSet)
-        => CompFlgSet = compFlgSet;
+        => _compFlgSet = compFlgSet;
 
     public override void OnClose()
-        => AetherCurrentHelper.CloseWindow();
+        => _aetherCurrentHelper.CloseWindow();
 
     public override bool DrawConditions()
         => Service.ClientState.IsLoggedIn;
@@ -72,14 +73,14 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
     {
         DrawMainCommandButton();
 
-        var placeName = CompFlgSet.Territory.Value!.PlaceName.Value!.Name;
+        var placeName = _compFlgSet.Territory.Value!.PlaceName.Value!.Name;
 
         var textSize = ImGui.CalcTextSize(placeName);
         var availableSize = ImGui.GetContentRegionAvail();
         var style = ImGui.GetStyle();
         var startPos = ImGui.GetCursorPos();
 
-        ImGui.Checkbox("##HaselTweaks_AetherCurrents_HideUnlocked", ref hideUnlocked);
+        ImGui.Checkbox("##HaselTweaks_AetherCurrents_HideUnlocked", ref _hideUnlocked);
         if (ImGui.IsItemHovered())
         {
             ImGui.SetTooltip("Check to hide unlocked Aether Currents");
@@ -102,7 +103,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
         var type = 0;
         var linesDisplayed = 0;
         var playerState = PlayerState.Instance();
-        foreach (var aetherCurrent in CompFlgSet.AetherCurrent)
+        foreach (var aetherCurrent in _compFlgSet.AetherCurrent)
         {
             if (aetherCurrent.Row == 0) continue;
 
@@ -114,7 +115,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
             }
 
             var isUnlocked = playerState->IsAetherCurrentUnlocked(aetherCurrent.Row);
-            if (!hideUnlocked || !isUnlocked)
+            if (!_hideUnlocked || !isUnlocked)
             {
                 if (type == 0)
                 {
@@ -153,7 +154,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 
     private unsafe bool DrawMainCommandButton()
     {
-        if (GetAddon((AgentInterface*)agentAetherCurrent) != null)
+        if (GetAddon((AgentInterface*)_agentAetherCurrent) != null)
             return false;
 
         var startPos = ImGui.GetCursorPos();
@@ -163,7 +164,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 
         ImGui.SetCursorPosX(windowSize.X + style.WindowPadding.X - iconSize - 1);
 
-        TextureManager.GetIcon(64)?.Draw(new(iconSize));
+        _textureManager.GetIcon(64)?.Draw(new(iconSize));
 
         if (ImGui.IsItemHovered())
         {
@@ -172,7 +173,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 
         if (ImGui.IsItemClicked())
         {
-            agentAetherCurrent->AgentInterface.Show();
+            _agentAetherCurrent->AgentInterface.Show();
         }
 
         ImGui.SetCursorPos(startPos);
@@ -210,14 +211,14 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 
         // Icon
         ImGui.TableNextColumn();
-        TextureManager.GetIcon(quest.JournalGenre.Value!.Icon).Draw(new(40));
+        _textureManager.GetIcon(quest.JournalGenre.Value!.Icon).Draw(new(40));
 
         // Content
         ImGui.TableNextColumn();
-        if (!QuestNameCache.TryGetValue(quest.RowId, out var questName))
+        if (!_questNameCache.TryGetValue(quest.RowId, out var questName))
         {
             questName = Utf8PrivateUseAreaRegex().Replace(StringCache.GetSheetText<Quest>(quest.RowId, "Name"), "");
-            QuestNameCache.Add(quest.RowId, questName);
+            _questNameCache.Add(quest.RowId, questName);
         }
         ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {questName}");
         ImGui.TextUnformatted(GetHumanReadableCoords(quest.IssuerLocation.Value!) + " | " + StringCache.GetENpcResidentName(quest.IssuerStart));
@@ -246,7 +247,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 
         // Icon
         ImGui.TableNextColumn();
-        TextureManager.GetIcon(60033).Draw(new(40));
+        _textureManager.GetIcon(60033).Draw(new(40));
 
         // Content
         ImGui.TableNextColumn();
@@ -268,7 +269,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
         ImGui.Dummy(new Vector2(0, 0));
     }
 
-    private void DrawUnlockStatus(bool isUnlocked, Level? level)
+    private static void DrawUnlockStatus(bool isUnlocked, Level? level)
     {
         var isSameTerritory = level?.Territory.Row == Service.ClientState.TerritoryType;
         ImGuiUtils.PushCursorY(11);
@@ -330,10 +331,10 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 
     private EObj? GetEObjByData(uint aetherCurrentId)
     {
-        if (!EObjCache.TryGetValue(aetherCurrentId, out var value))
+        if (!_eObjCache.TryGetValue(aetherCurrentId, out var value))
         {
             value = Service.Data.GetExcelSheet<EObj>()?.FirstOrDefault(row => row.Data == aetherCurrentId);
-            EObjCache.Add(aetherCurrentId, value);
+            _eObjCache.Add(aetherCurrentId, value);
         }
 
         return value;
@@ -341,10 +342,10 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 
     private Level? GetLevelByObjectId(uint objId)
     {
-        if (!LevelCache.TryGetValue(objId, out var value))
+        if (!_levelCache.TryGetValue(objId, out var value))
         {
             value = Service.Data.GetExcelSheet<Level>()?.FirstOrDefault(row => row.Object == objId);
-            LevelCache.Add(objId, value);
+            _levelCache.Add(objId, value);
         }
 
         return value;
@@ -398,10 +399,10 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
         );
     }
 
-    private readonly string[] CompassHeadings = new string[] { "E", "NE", "N", "NW", "W", "SW", "S", "SE" };
+    private static readonly string[] CompassHeadings = new string[] { "E", "NE", "N", "NW", "W", "SW", "S", "SE" };
 
     //! https://gamedev.stackexchange.com/a/49300
-    public string GetCompassDirection(Vector2 a, Vector2 b)
+    public static string GetCompassDirection(Vector2 a, Vector2 b)
     {
         var vector = a - b;
         var angle = Math.Atan2(vector.Y, vector.X);
@@ -410,7 +411,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
         return CompassHeadings[octant];
     }
 
-    public string GetCompassDirection(Level? level)
+    public static string GetCompassDirection(Level? level)
     {
         var localPlayer = Service.ClientState.LocalPlayer;
         return localPlayer == null || level == null

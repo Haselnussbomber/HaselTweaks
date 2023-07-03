@@ -11,7 +11,7 @@ public unsafe class AdvancedEditOverlay : Overlay
 {
     protected override OverlayType Type => OverlayType.LeftPane;
 
-    private float lastTimestamp;
+    private float _lastTimestamp;
 
     public AdvancedEditOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper: Advanced Edit", tweak)
     {
@@ -230,7 +230,7 @@ public unsafe class AdvancedEditOverlay : Overlay
 
             var animation = character->ActionTimelineManager.BaseAnimation;
             var timeline = (animation != null && *animation != null) ? *animation : null;
-            var timestamp = timeline == null ? lastTimestamp : state->CharaView->GetAnimationTime();
+            var timestamp = timeline == null ? _lastTimestamp : state->CharaView->GetAnimationTime();
 
             if (timeline == null)
                 ImGui.BeginDisabled();
@@ -241,7 +241,7 @@ public unsafe class AdvancedEditOverlay : Overlay
                     timestamp = 0;
 
                 timeline->CurrentTimestamp = timestamp;
-                lastTimestamp = timestamp;
+                _lastTimestamp = timestamp;
                 state->CharaView->SetPoseTimed(character->ActionTimelineManager.BannerTimelineRowId, timestamp);
                 state->CharaView->Base.ToggleAnimationPaused(true);
                 AddonBannerEditor->PlayAnimationCheckbox->SetValue(false);
@@ -251,7 +251,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             }
 
             ImGui.SetNextItemWidth(-1);
-            if (ImGui.InputFloat($"##DragFloat", ref timestamp, 0.1f, 1f, "%.01f") && lastTimestamp != timestamp)
+            if (ImGui.InputFloat($"##DragFloat", ref timestamp, 0.1f, 1f, "%.01f") && _lastTimestamp != timestamp)
             {
                 SetTimestamp(timestamp);
             }
