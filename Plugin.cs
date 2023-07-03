@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
@@ -16,12 +15,12 @@ using DalamudFramework = Dalamud.Game.Framework;
 
 namespace HaselTweaks;
 
-public sealed partial class Plugin : IDalamudPlugin
+public partial class Plugin : IDalamudPlugin
 {
     public string Name => "HaselTweaks";
 
     internal static WindowSystem WindowSystem = new("HaselTweaks");
-    internal static List<Tweak> Tweaks = new();
+    internal static HashSet<Tweak> Tweaks = null!;
     internal static Configuration Config = null!;
 
     private PluginWindow? _pluginWindow;
@@ -39,34 +38,22 @@ public sealed partial class Plugin : IDalamudPlugin
         AddonFinalizeHook?.Enable();
 
         InitializeResolver();
+        InitializeTweaks();
 
-        var tweakTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(Tweak)) && !t.IsAbstract);
+        Config = Configuration.Load(Tweaks.Select(t => t.Name));
 
-        Config = Configuration.Load(tweakTypes.Select(t => t.Name).ToArray());
-
-        foreach (var type in tweakTypes)
+        foreach (var tweak in Tweaks)
         {
+            if (!Config.EnabledTweaks.Contains(tweak.InternalName))
+                continue;
+
             try
             {
-                var tweak = (Tweak)Activator.CreateInstance(type)!;
-
-                Tweaks.Add(tweak);
-
-                if (Config.EnabledTweaks.Contains(tweak.InternalName))
-                {
-                    try
-                    {
-                        tweak.EnableInternal();
-                    }
-                    catch (Exception ex)
-                    {
-                        PluginLog.Error(ex, $"Failed enabling tweak '{tweak.InternalName}'.");
-                    }
-                }
+                tweak.EnableInternal();
             }
             catch (Exception ex)
             {
-                PluginLog.Error(ex, $"Failed initializing tweak '{type.Name}'.");
+                PluginLog.Error(ex, $"Failed enabling tweak '{tweak.InternalName}'.");
             }
         }
 
@@ -197,7 +184,6 @@ public sealed partial class Plugin : IDalamudPlugin
             }
         }
 
-        Tweaks.Clear();
         Tweaks = null!;
 
         Config?.Save();
