@@ -1,3 +1,10 @@
+// winbase.h
+
+SetThreadExecutionState
+EXECUTION_STATE
+
+// winuser.h
+
 GetForegroundWindow
 GetActiveWindow
 WM_MOUSEWHEEL

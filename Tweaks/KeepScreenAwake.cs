@@ -1,4 +1,6 @@
 using System.Timers;
+using Windows.Win32;
+using Windows.Win32.System.Power;
 
 namespace HaselTweaks.Tweaks;
 
@@ -16,17 +18,6 @@ public partial class KeepScreenAwake : Tweak
         _timer.Interval = 10000; // every 10 seconds
     }
 
-    [Flags]
-    public enum EXECUTION_STATE : uint
-    {
-        ES_CONTINUOUS = 0x80000000,
-        ES_DISPLAY_REQUIRED = 0x00000002,
-        ES_SYSTEM_REQUIRED = 0x00000001
-    }
-
-    [LibraryImport("kernel32.dll", SetLastError = true)]
-    private static partial EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
-
     public override void Enable()
     {
         _timer.Start();
@@ -34,7 +25,7 @@ public partial class KeepScreenAwake : Tweak
 
     public override void Disable()
     {
-        SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
+        PInvoke.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
         _timer.Stop();
     }
 
@@ -45,6 +36,6 @@ public partial class KeepScreenAwake : Tweak
 
     private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)
     {
-        SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS | EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_DISPLAY_REQUIRED);
+        PInvoke.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS | EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_DISPLAY_REQUIRED);
     }
 }
