@@ -2,6 +2,7 @@ using System.Text;
 using Dalamud;
 using Dalamud.ContextMenu;
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Logging;
 using HaselTweaks.Caches;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
@@ -25,19 +26,27 @@ public unsafe class SearchTheMarkets : Tweak
 
     public SearchTheMarkets()
     {
-        var text = new SeStringBuilder()
-            .AddUiForeground("\uE078 ", 32)
-            .AddText(Service.ClientState.ClientLanguage switch
-            {
-                ClientLanguage.German => "Auf den M\u00e4rkten suchen",
-                ClientLanguage.French => "Rechercher sur les marchés",
-                ClientLanguage.Japanese => "市場で検索する",
-                _ => "Search the markets"
-            })
-            .BuiltString;
+        try
+        {
+            var text = new SeStringBuilder()
+                .AddUiForeground("\uE078 ", 32)
+                .AddText(Service.ClientState.ClientLanguage switch
+                {
+                    ClientLanguage.German => "Auf den M\u00e4rkten suchen",
+                    ClientLanguage.French => "Rechercher sur les marchés",
+                    ClientLanguage.Japanese => "市場で検索する",
+                    _ => "Search the markets"
+                })
+                .BuiltString;
 
-        _contextMenuItemGame = new(text, (_) => Search(), false);
-        _contextMenuItemInventory = new(text, (_) => Search(), false);
+            _contextMenuItemGame = new(text, (_) => Search(), false);
+            _contextMenuItemInventory = new(text, (_) => Search(), false);
+        }
+        catch (Exception ex)
+        {
+            PluginLog.Error(ex, "Unable to construct context menu entries");
+            Ready = false;
+        }
     }
 
     private bool IsInvalidState

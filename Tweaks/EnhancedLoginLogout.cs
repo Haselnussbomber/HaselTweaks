@@ -3,6 +3,7 @@ using System.Linq;
 using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
+using Dalamud.Logging;
 using Dalamud.Memory;
 using Dalamud.Utility;
 using Dalamud.Utility.Signatures;
@@ -32,7 +33,15 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 {
     public EnhancedLoginLogout()
     {
-        UpdateExcludedEmotes();
+        try
+        {
+            UpdateExcludedEmotes();
+        }
+        catch (Exception ex)
+        {
+            PluginLog.Error(ex, "Unable to generate unsupported emotes list");
+            Ready = false;
+        }
     }
 
     #region Core
