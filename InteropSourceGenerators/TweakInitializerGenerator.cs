@@ -49,7 +49,7 @@ internal sealed class TweakInitializerGenerator : IIncrementalGenerator
         builder.AppendLine("public partial class Plugin");
         builder.AppendLine("{");
         builder.Indent();
-        builder.AppendLine("internal void InitializeTweaks()");
+        builder.AppendLine("private void InitializeTweaks()");
         builder.AppendLine("{");
         builder.Indent();
 

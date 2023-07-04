@@ -40,7 +40,7 @@ public partial class Plugin : IDalamudPlugin
         InitializeResolver();
         InitializeTweaks();
 
-        Config = Configuration.Load(Tweaks.Select(t => t.Name));
+        Config = Configuration.Load(Tweaks.Select(t => t.InternalName));
 
         foreach (var tweak in Tweaks)
         {
