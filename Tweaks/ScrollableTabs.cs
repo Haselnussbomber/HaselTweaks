@@ -99,7 +99,12 @@ public unsafe partial class ScrollableTabs : Tweak
     private ulong WindowProcHandler(nint hwnd, int uMsg, int wParam)
     {
         if (hwnd == PInvoke.GetActiveWindow() && uMsg == PInvoke.WM_MOUSEWHEEL)
+        {
             _wheelState = (short)Math.Clamp((wParam >> 16) / PInvoke.WHEEL_DELTA * (Config.Invert ? -1 : 1), -1, 1);
+
+            if (_wheelState != 0)
+                Service.Framework.RunOnFrameworkThread(Update);
+        }
 
         return WindowProcHandlerHook.OriginalDisposeSafe(hwnd, uMsg, wParam);
     }
@@ -116,7 +121,7 @@ public unsafe partial class ScrollableTabs : Tweak
     private bool IsPrev
         => _wheelState == (!Config.Invert ? -1 : 1);
 
-    public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
+    public void Update()
     {
         if (_wheelState == 0)
             return;
