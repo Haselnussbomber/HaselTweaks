@@ -61,13 +61,25 @@ public partial class PluginWindow : Window, IDisposable
     public void Dispose()
     {
         _logoTextureWrap?.Dispose();
+
         _textureManager?.Dispose();
         _textureManager = null;
     }
 
-    public override void OnOpen()
+    public override void OnClose()
     {
-        _textureManager ??= new();
+        _selectedTweak = string.Empty;
+
+        _textureManager?.Dispose();
+        _textureManager = null;
+
+        foreach (var tweak in Plugin.Tweaks)
+        {
+            if (tweak.Enabled && tweak.HasCustomConfig)
+            {
+                tweak.OnConfigWindowClose();
+            }
+        }
     }
 
     public override void Update()
@@ -129,24 +141,10 @@ public partial class PluginWindow : Window, IDisposable
         });
     }
 
-    public override void OnClose()
-    {
-        _selectedTweak = string.Empty;
-
-        _textureManager?.Dispose();
-        _textureManager = null;
-
-        foreach (var tweak in Plugin.Tweaks)
-        {
-            if (tweak.Enabled && tweak.HasCustomConfig)
-            {
-                tweak.OnConfigWindowClose();
-            }
-        }
-    }
-
     public override void Draw()
     {
+        _textureManager ??= new();
+
         DrawSidebar();
         ImGui.SameLine();
         DrawConfig();
@@ -396,7 +394,7 @@ public partial class PluginWindow : Window, IDisposable
         if (tweak.HasCustomConfig)
         {
             ImGuiUtils.DrawSection("Configuration");
-            tweak.DrawCustomConfig();
+            tweak.DrawCustomConfig(_textureManager!);
         }
         else
         {

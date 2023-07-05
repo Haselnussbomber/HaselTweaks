@@ -22,7 +22,7 @@ namespace HaselTweaks.Tweaks;
 )]
 public unsafe class DTR : Tweak
 {
-    public override void DrawCustomConfig()
+    public override void DrawCustomConfig(TextureManager textureManager)
     {
         ImGui.TextUnformatted("To enable/disable elements or to change the order go into");
         ImGuiUtils.TextUnformattedColored((Structs.ImColor)ImGuiColors.DalamudRed, "Dalamud Settings");

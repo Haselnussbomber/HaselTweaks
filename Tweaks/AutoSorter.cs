@@ -176,7 +176,7 @@ public unsafe class AutoSorter : Tweak
         public bool SortArmouryOnJobChange = true;
     }
 
-    public override void DrawCustomConfig()
+    public override void DrawCustomConfig(TextureManager textureManager)
     {
         var ItemSpacing = ImGui.GetStyle().ItemSpacing;
         var ArrowUpButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.ArrowUp);

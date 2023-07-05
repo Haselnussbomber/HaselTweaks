@@ -46,6 +46,7 @@ public unsafe partial class AetherCurrentHelper : Tweak
             return;
 
         Plugin.WindowSystem.RemoveWindow(_window);
+        _window.Dispose();
         _window = null;
     }
 

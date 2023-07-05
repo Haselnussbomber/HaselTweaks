@@ -6,6 +6,7 @@ using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Utils;
 
 namespace HaselTweaks;
 
@@ -36,7 +37,7 @@ public abstract unsafe class Tweak
     public IncompatibilityWarning[] IncompatibilityWarnings
         => _incompatibilityWarnings ??= CachedType.GetCustomAttributes<IncompatibilityWarning>().ToArray();
 
-    public virtual void DrawCustomConfig() { }
+    public virtual void DrawCustomConfig(TextureManager textureManager) { }
     public virtual void OnConfigWindowClose() { }
 
     public virtual bool Outdated { get; protected set; }

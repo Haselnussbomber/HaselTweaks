@@ -64,7 +64,9 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
         => _compFlgSet = compFlgSet;
 
     public override void OnClose()
-        => _aetherCurrentHelper.CloseWindow();
+    {
+        _aetherCurrentHelper.CloseWindow();
+    }
 
     public override bool DrawConditions()
         => Service.ClientState.IsLoggedIn;
@@ -164,7 +166,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 
         ImGui.SetCursorPosX(windowSize.X + style.WindowPadding.X - iconSize - 1);
 
-        _textureManager.GetIcon(64)?.Draw(new(iconSize));
+        _textureManager?.GetIcon(64)?.Draw(new(iconSize));
 
         if (ImGui.IsItemHovered())
         {
@@ -211,7 +213,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 
         // Icon
         ImGui.TableNextColumn();
-        _textureManager.GetIcon(quest.JournalGenre.Value!.Icon).Draw(new(40));
+        _textureManager?.GetIcon(quest.JournalGenre.Value!.Icon).Draw(new(40));
 
         // Content
         ImGui.TableNextColumn();
@@ -247,7 +249,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window, IDisposable
 
         // Icon
         ImGui.TableNextColumn();
-        _textureManager.GetIcon(60033).Draw(new(40));
+        _textureManager?.GetIcon(60033).Draw(new(40));
 
         // Content
         ImGui.TableNextColumn();

@@ -50,12 +50,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
     public override void OnLogin() => UpdateCharacterSettings();
     public override void OnLogout() => _isRecordingEmote = false;
     public override void Disable() => CleanupCharaSelect();
-    public override void Dispose() => UnloadTextures();
-    public override void OnConfigWindowClose()
-    {
-        _isRecordingEmote = false;
-        UnloadTextures();
-    }
+    public override void OnConfigWindowClose() => _isRecordingEmote = false;
 
     private CharaSelectCharacter? _currentEntry = null;
     private ulong ActiveContentId => _currentEntry?.ContentId ?? Service.ClientState.LocalContentId;
@@ -64,12 +59,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
     {
         UpdatePetMirageSettings();
         UpdateVoiceCache();
-    }
-
-    public void UnloadTextures()
-    {
-        _textureManager?.Dispose();
-        _textureManager = null;
     }
 
     private void CleanupCharaSelect()
@@ -131,7 +120,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     #region Config
 
-    private TextureManager? _textureManager;
     private bool _isRecordingEmote;
     private readonly uint[] _changePoseEmoteIds = new uint[] { 91, 92, 93, 107, 108, 218, 219, };
     private readonly List<uint> _excludedEmotes = new() { /* Sit */ 50, };
@@ -158,10 +146,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         }
     }
 
-    public override void DrawCustomConfig()
+    public override void DrawCustomConfig(TextureManager textureManager)
     {
-        _textureManager ??= new();
-
         var scale = ImGui.GetIO().FontGlobalScale;
         var verticalTextPadding = 3;
 
@@ -261,7 +247,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                         {
                             var (isChangePose, name, emote) = entry.Value;
                             ImGuiUtils.PushCursorY(-verticalTextPadding);
-                            _textureManager.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(new(24 * scale));
+                            textureManager.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(new(24 * scale));
                             ImGui.SameLine();
                             ImGui.Text(name);
                         }

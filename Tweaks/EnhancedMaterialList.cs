@@ -431,7 +431,7 @@ originalAddItemContextMenuEntries:
         if (gatheringType == null)
             return false;
 
-        var raptureTextModule = Framework.Instance()->GetUiModule()->GetRaptureTextModule();
+        var raptureTextModule = RaptureTextModule.Instance();
 
         var levelText = gatheringPointBase.GatheringLevel == 1
             ? raptureTextModule->GetAddonText(242) // "Lv. ???"

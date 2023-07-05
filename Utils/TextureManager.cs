@@ -1,11 +1,21 @@
 using System.Collections.Generic;
+using System.Linq;
 using Dalamud.Logging;
+using Dalamud.Plugin.Ipc;
 
 namespace HaselTweaks.Utils;
 
 public class TextureManager : IDisposable
 {
     private readonly Dictionary<(string, int), Texture> _cache = new();
+
+    public TextureManager()
+    {
+        if (Service.PluginInterface.InstalledPlugins.Any(p => p.InternalName == "Penumbra" && p.IsLoaded))
+            PenumbraPathResolver = Service.PluginInterface.GetIpcSubscriber<string, string>("Penumbra.ResolveInterfacePath");
+    }
+
+    public ICallGateSubscriber<string, string>? PenumbraPathResolver { get; init; }
 
     public void Dispose()
     {
@@ -40,7 +50,7 @@ public class TextureManager : IDisposable
 #if DEBUG
             PluginLog.Verbose($"[TextureManager] Creating Texture: {path}");
 #endif
-            _cache.Add((path, version), tex = new(path, version));
+            _cache.Add((path, version), tex = new(this, path, version));
         }
 
         return tex;
