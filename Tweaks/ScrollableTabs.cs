@@ -95,7 +95,7 @@ public unsafe partial class ScrollableTabs : Tweak
 
     private short _wheelState;
 
-    [SigHook("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 49 8B F8 C6 05")]
+    [AddressHook<Hwnd>(nameof(Hwnd.Addresses.WindowProcHandler))]
     private ulong WindowProcHandler(nint hwnd, int uMsg, int wParam)
     {
         if (hwnd == PInvoke.GetActiveWindow() && uMsg == PInvoke.WM_MOUSEWHEEL)
