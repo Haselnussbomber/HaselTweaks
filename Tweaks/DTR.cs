@@ -7,7 +7,6 @@ using Dalamud.Interface.Colors;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselTweaks.Extensions;
-using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
@@ -40,7 +39,7 @@ public unsafe class DTR : Tweak
                     return;
                 }
 
-                Chat.SendMessage("/xlsettings");
+                Service.Commands.ProcessCommand("/xlsettings");
             }
             Service.Framework.RunOnTick(OpenSettings, delayTicks: 2);
         }
