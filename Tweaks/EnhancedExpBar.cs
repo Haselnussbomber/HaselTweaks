@@ -112,44 +112,41 @@ public unsafe partial class EnhancedExpBar : Tweak
 
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
-        var shouldUpdate = false;
-
         var pvpProfile = PvPProfile.Instance();
         if (pvpProfile != null && pvpProfile->IsLoaded == 0x01 && (_lastSeriesXp != pvpProfile->SeriesExperience || _lastSeriesClaimedRank != pvpProfile->SeriesClaimedRank))
         {
-            shouldUpdate = true;
             _lastSeriesXp = pvpProfile->SeriesExperience;
             _lastSeriesClaimedRank = pvpProfile->SeriesClaimedRank;
+            goto Update;
         }
 
         var buddy = UIState.Instance()->Buddy;
         if (_lastBuddyXp != buddy.CurrentXP || _lastBuddyRank != buddy.Rank || _lastBuddyObjectID != buddy.Companion.ObjectID)
         {
-            shouldUpdate = true;
             _lastBuddyXp = buddy.CurrentXP;
             _lastBuddyRank = buddy.Rank;
             _lastBuddyObjectID = buddy.Companion.ObjectID;
+            goto Update;
         }
 
         var mjiManager = MJIManager.Instance();
         if (mjiManager != null && _lastIslandExperience != mjiManager->IslandState.CurrentXP)
         {
-            shouldUpdate = true;
             _lastIslandExperience = mjiManager->IslandState.CurrentXP;
+            goto Update;
         }
 
         var fateManager = FateManager.Instance();
         if (fateManager != null && _lastSyncedFateId != fateManager->SyncedFateId)
         {
-            shouldUpdate = true;
             _lastSyncedFateId = fateManager->SyncedFateId;
+            goto Update;
         }
 
-        if (shouldUpdate)
-        {
-            RunUpdate();
-            shouldUpdate = false;
-        }
+        return;
+
+Update:
+        RunUpdate();
     }
 
     // request update immediately upon leaving the pvp area, because
