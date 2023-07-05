@@ -192,7 +192,7 @@ public unsafe partial class EnhancedExpBar : Tweak
         if (nineGridNode == null)
             goto OriginalOnRequestedUpdate;
 
-        if (Service.ClientState.LocalPlayer?.ClassJob.GameData == null || !Service.Data.IsDataReady)
+        if (Service.ClientState.LocalPlayer?.ClassJob.GameData == null)
             goto OriginalOnRequestedUpdateWithColorReset;
 
         var leftText = GetNode<AtkTextNode>((AtkUnitBase*)addon, 4);

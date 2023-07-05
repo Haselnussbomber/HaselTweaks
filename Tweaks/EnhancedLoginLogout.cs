@@ -3,7 +3,6 @@ using System.Linq;
 using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
-using Dalamud.Logging;
 using Dalamud.Memory;
 using Dalamud.Utility;
 using Dalamud.Utility.Signatures;
@@ -31,19 +30,6 @@ namespace HaselTweaks.Tweaks;
 )]
 public unsafe partial class EnhancedLoginLogout : Tweak
 {
-    public EnhancedLoginLogout()
-    {
-        try
-        {
-            UpdateExcludedEmotes();
-        }
-        catch (Exception ex)
-        {
-            PluginLog.Error(ex, "Unable to generate unsupported emotes list");
-            Ready = false;
-        }
-    }
-
     #region Core
 
     public override void Enable() => UpdateCharacterSettings();
@@ -122,7 +108,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     private bool _isRecordingEmote;
     private readonly uint[] _changePoseEmoteIds = new uint[] { 91, 92, 93, 107, 108, 218, 219, };
-    private readonly List<uint> _excludedEmotes = new() { /* Sit */ 50, };
+    private List<uint>? _excludedEmotes;
 
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedLoginLogout;
 
@@ -460,20 +446,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     #region Login: Play emote in character selection
 
-    private void UpdateExcludedEmotes()
-    {
-        foreach (var emote in Service.Data.GetExcelSheet<Emote>()!)
-        {
-            if (emote.RowId == 90) // allow Change Pose
-                continue;
-
-            if (emote.RowId != 0 && emote.Icon != 0 && !(emote.ActionTimeline[0].Row == 0 && emote.ActionTimeline[1].Row == 0))
-                continue;
-
-            _excludedEmotes.Add(emote.RowId);
-        }
-    }
-
     private void UpdateVoiceCache()
     {
         var playerState = PlayerState.Instance();
@@ -587,6 +559,22 @@ public unsafe partial class EnhancedLoginLogout : Tweak
     {
         var changePoseIndexBefore = PlayerState.Instance()->SelectedPoses[0];
         var success = SomeDoEmoteFunctionHook.OriginalDisposeSafe(a1, emoteId, a3);
+
+        if (_excludedEmotes == null)
+        {
+            _excludedEmotes = new() { /* Sit */ 50, };
+
+            foreach (var emote in Service.Data.GetExcelSheet<Emote>()!)
+            {
+                if (emote.RowId == 90) // allow Change Pose
+                    continue;
+
+                if (emote.RowId != 0 && emote.Icon != 0 && !(emote.ActionTimeline[0].Row == 0 && emote.ActionTimeline[1].Row == 0))
+                    continue;
+
+                _excludedEmotes.Add(emote.RowId);
+            }
+        }
 
         if (_isRecordingEmote && success && Service.ClientState.IsLoggedIn && !_excludedEmotes.Contains(emoteId))
         {
