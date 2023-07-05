@@ -1,4 +1,3 @@
-using System.Linq;
 using Dalamud;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Utility.Signatures;
@@ -306,7 +305,7 @@ OriginalPvPReceiveEventCode:
             return;
 
         // loop through all gearsets and find the one matching classJobId with the highest avg itemlevel
-        var selectedGearset = (Index: -1, ItemLevel: -1);
+        var selectedGearset = (Id: -1, ItemLevel: -1);
         for (var id = 0; id < 100; id++)
         {
             // skip if invalid
@@ -328,7 +327,7 @@ OriginalPvPReceiveEventCode:
 
         UIModule.PlaySound(8, 0, 0, 0);
 
-        if (selectedGearset.Index == -1)
+        if (selectedGearset.Id == -1)
         {
             Service.Chat.PrintError(Service.ClientState.ClientLanguage switch
             {
@@ -340,8 +339,7 @@ OriginalPvPReceiveEventCode:
             return;
         }
 
-        var command = $"/gearset change {selectedGearset.Index}";
-        Log($"Executing {command}");
-        Chat.SendMessage(command);
+        Log($"Equipping gearset #{selectedGearset.Id}");
+        gearsetModule->EquipGearset(selectedGearset.Id - 1);
     }
 }
