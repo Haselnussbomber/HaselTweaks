@@ -1,5 +1,6 @@
-using Dalamud.Game;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
@@ -8,14 +9,29 @@ namespace HaselTweaks.Tweaks;
     Name: "Hide MSQ Complete",
     Description: "Hides the Main Scenario Guide when the MSQ is completed. Job quests are still being displayed."
 )]
-public unsafe class HideMSQComplete : Tweak
+public unsafe partial class HideMSQComplete : Tweak
 {
+    public override void Enable()
+    {
+        Update();
+    }
+
     public override void Disable()
     {
         UpdateVisibility(true);
     }
 
-    public override void OnFrameworkUpdate(Framework framework)
+    [VTableHook<AddonScenarioTree>((int)AtkUnitBaseVfs.OnRefresh)]
+    public bool AddonScenarioTree_OnRefresh(AddonScenarioTree* addon, uint numValues, AtkValue* values)
+    {
+        var ret = AddonScenarioTree_OnRefreshHook.OriginalDisposeSafe(addon, numValues, values);
+
+        Update();
+
+        return ret;
+    }
+
+    private static void Update()
     {
         if (GetAgent<AgentScenarioTree>(AgentId.ScenarioTree, out var agentScenarioTree))
             UpdateVisibility(agentScenarioTree->Data != null && agentScenarioTree->Data->NextId != 0);
