@@ -494,6 +494,13 @@ public unsafe class AutoSorter : Tweak
     public override void OnLogin()
     {
         _lastClassJobId = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
+        _queue.Clear();
+    }
+
+    public override void OnLogout()
+    {
+        _lastClassJobId = 0;
+        _queue.Clear();
     }
 
     public override void Disable()
@@ -503,39 +510,39 @@ public unsafe class AutoSorter : Tweak
 
     public override void OnFrameworkUpdate(Framework framework)
     {
-        if (Service.ClientState.IsLoggedIn)
+        if (!Service.ClientState.IsLoggedIn)
+            return;
+
+        if (!(Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInCutSceneEvent]))
         {
-            if (!(Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInCutSceneEvent]))
+            foreach (var (name, wasVisible) in _inventoryAddons)
             {
-                foreach (var (name, wasVisible) in _inventoryAddons)
+                if (GetAddon(name, out var unitBase))
                 {
-                    if (GetAddon(name, out var unitBase))
+                    var isVisible = unitBase->IsVisible;
+
+                    if (wasVisible != isVisible)
                     {
-                        var isVisible = unitBase->IsVisible;
+                        _inventoryAddons[name] = isVisible;
 
-                        if (wasVisible != isVisible)
+                        if (isVisible)
                         {
-                            _inventoryAddons[name] = isVisible;
-
-                            if (isVisible)
-                            {
-                                OnOpenInventory();
-                            }
+                            OnOpenInventory();
                         }
                     }
                 }
             }
+        }
 
-            if (Config.SortArmouryOnJobChange &&
-                Service.ClientState.LocalPlayer != null &&
-                _lastClassJobId != Service.ClientState.LocalPlayer.ClassJob.Id)
+        if (Config.SortArmouryOnJobChange &&
+            Service.ClientState.LocalPlayer != null &&
+            _lastClassJobId != Service.ClientState.LocalPlayer.ClassJob.Id)
+        {
+            _lastClassJobId = Service.ClientState.LocalPlayer.ClassJob.Id;
+
+            if (GetAddon("ArmouryBoard", out var unitBase))
             {
-                _lastClassJobId = Service.ClientState.LocalPlayer.ClassJob.Id;
-
-                if (GetAddon("ArmouryBoard", out var unitBase))
-                {
-                    OnOpenArmoury();
-                }
+                OnOpenArmoury();
             }
         }
 
