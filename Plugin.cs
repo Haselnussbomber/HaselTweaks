@@ -100,8 +100,11 @@ public partial class Plugin : IDalamudPlugin
 
     private void OnFrameworkUpdate(DalamudFramework framework)
     {
-        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
+        foreach (var tweak in Tweaks)
         {
+            if (!tweak.Enabled)
+                continue;
+
             tweak.OnFrameworkUpdateInternal(framework);
         }
     }
