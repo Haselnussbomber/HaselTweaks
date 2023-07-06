@@ -207,7 +207,6 @@ public unsafe class AutoSorter : Tweak
             (Enabled ? ItemSpacing.X + TerminalButtonSize.X : 0));
 
         var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
-        var lang = Service.ClientState.ClientLanguage;
         var preview = "";
         var i = 0;
         var entryToRemove = -1;

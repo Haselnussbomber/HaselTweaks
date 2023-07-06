@@ -5,7 +5,6 @@ using System.Numerics;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Dalamud;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
@@ -489,26 +488,6 @@ public partial class PluginWindow : Window, IDisposable
 
                                         default: DrawNoDrawingFunctionError(field); break;
                                     }
-                                }
-                            }
-                            else
-                            {
-                                var options = tweak.GetType().GetField(attr.Options)?.GetValue(tweak);
-                                if (options is Dictionary<ClientLanguage, List<string>> opts)
-                                {
-                                    var data = new ConfigDrawData<string>()
-                                    {
-                                        Tweak = tweak,
-                                        Config = config,
-                                        Field = field,
-                                        Attr = attr,
-                                    };
-                                    var list = opts[Service.ClientState.ClientLanguage];
-                                    DrawSingleSelect(data, list);
-                                }
-                                else
-                                {
-                                    DrawNoDrawingFunctionError(field);
                                 }
                             }
                         }
