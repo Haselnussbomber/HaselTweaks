@@ -171,7 +171,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                 ApplyPetPosition();
             }
             ImGui.SameLine();
-            if (ImGuiUtils.IconButton($"##HaselTweaks_Config_{InternalName}_Position_Reset", FontAwesomeIcon.Undo, "Reset to Default: -1, 0, 0"))
+            if (ImGuiUtils.IconButton($"##HaselTweaks_Config_{InternalName}_Position_Reset", FontAwesomeIcon.Undo, "Reset to Default: -0.6, 0, 0"))
             {
                 Config.PetPosition = new(-0.6f, 0f, 0f);
                 ApplyPetPosition();
