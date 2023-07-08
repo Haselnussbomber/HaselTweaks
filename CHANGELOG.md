@@ -1,5 +1,9 @@
 # Changelog
 
+## [15.1.5] (2023-07-08)
+
+Maintenance update with optimizations, bug fixes and a lot of behind-the-scenes changes.
+
 ## [15.1.4] (2023-07-01)
 
 ### Custom Chat Timestamp
@@ -930,6 +934,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[15.1.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.1.4...v15.1.5
 [15.1.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.1.3...v15.1.4
 [15.1.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.1.2...v15.1.3
 [15.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.1.1...v15.1.2
