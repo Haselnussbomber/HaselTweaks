@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Search the markets
+
+- **Added:** Support for Grand Company Delivery Missions items (via `/timers`).
+
 ## [15.1.5] (2023-07-08)
 
 Maintenance update with optimizations, bug fixes and a lot of behind-the-scenes changes.

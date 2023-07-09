@@ -14,7 +14,7 @@ namespace HaselTweaks.Tweaks;
 
 [Tweak(
     Name: "Search the markets",
-    Description: "Adds a context menu entry to items in Chat, Crafting Log, Inventory, Materials List and Recipe Tree to quickly search for the item on the Market Board. Only visible when Market Board is open."
+    Description: "Adds an entry to item context menus that allows you to quickly search for the item on the market board. Only visible when market board is open!\n\nSupported context menus are:\n- Chat\n- Crafting Log\n- Grand Company Delivery Missions\n- Inventory\n- Materials List\n- Recipe Tree"
 )]
 public unsafe class SearchTheMarkets : Tweak
 {
@@ -77,7 +77,7 @@ public unsafe class SearchTheMarkets : Tweak
 
     private void ContextMenu_OnOpenGameObjectContextMenu(GameObjectContextMenuOpenArgs args)
     {
-        if (args.ParentAddonName is not ("RecipeNote" or "RecipeMaterialList" or "RecipeTree" or "ChatLog"))
+        if (args.ParentAddonName is not ("RecipeNote" or "RecipeMaterialList" or "RecipeTree" or "ChatLog" or "ContentsInfoDetail"))
             return;
 
         _itemId = 0u;
@@ -99,6 +99,11 @@ public unsafe class SearchTheMarkets : Tweak
             case "ChatLog":
                 if (GetAgent<AgentChatLog>(AgentId.ChatLog, out var agentChatLog))
                     _itemId = agentChatLog->ContextItemId;
+                break;
+
+            case "ContentsInfoDetail":
+                if (GetAgent<AgentContentsTimer>(AgentId.ContentsTimer, out var agentContentsTimer))
+                    _itemId = agentContentsTimer->ContextMenuItemId;
                 break;
         }
 
