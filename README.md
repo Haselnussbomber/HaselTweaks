@@ -215,11 +215,12 @@ Allows the mouse wheel to switch tabs (like with LB/RB on controllers) in the fo
 
 Adds an entry to item context menus that allows you to quickly search for the item on the market board. Only visible when market board is open!
 
-Supported context menus are:
+Supports context menus in the following windows:
 
 - Chat
 - Crafting Log
-- Grand Company Delivery Missions
+- Ehcatl Nine Delivery Quests (via `/timers`)
+- Grand Company Delivery Missions (via `/timers`)
 - Inventory
 - Materials List
 - Recipe Tree

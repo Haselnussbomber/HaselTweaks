@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Search the markets
+
+- **Added:** Support for Ehcatl Nine Delivery Quests items (via `/timers`).
+
 ## [15.2.0] (2023-07-10)
 
 ### Search the markets
