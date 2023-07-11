@@ -1,19 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Dalamud.Game.Config;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
-using Dalamud.Memory;
 using Dalamud.Utility;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using FFXIVClientStructs.FFXIV.Common.Configuration;
 using HaselTweaks.Records;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
@@ -31,16 +29,31 @@ namespace HaselTweaks.Tweaks;
 )]
 public unsafe partial class EnhancedLoginLogout : Tweak
 {
+    private CharaSelectCharacter? _currentEntry = null;
+
     #region Core
 
-    public override void Enable() => UpdateCharacterSettings();
+    public override void Enable()
+    {
+        Service.GameConfig.Changed += GameConfig_Changed;
+        UpdateCharacterSettings();
+    }
+
+    public override void Disable()
+    {
+        Service.GameConfig.Changed -= GameConfig_Changed;
+        CleanupCharaSelect();
+    }
+
     public override void OnLogin() => UpdateCharacterSettings();
     public override void OnLogout() => _isRecordingEmote = false;
-    public override void Disable() => CleanupCharaSelect();
     public override void OnConfigWindowClose() => _isRecordingEmote = false;
 
-    private CharaSelectCharacter? _currentEntry = null;
-    private ulong ActiveContentId => _currentEntry?.ContentId ?? Service.ClientState.LocalContentId;
+    private void GameConfig_Changed(object? sender, ConfigChangeEvent change)
+    {
+        if (change.Option is UiConfigOption.PetMirageTypeCarbuncleSupport or UiConfigOption.PetMirageTypeFairy)
+            UpdatePetMirageSettings();
+    }
 
     private void UpdateCharacterSettings()
     {
@@ -53,6 +66,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         DespawnPet();
         _currentEntry = null;
     }
+
+    private ulong ActiveContentId => _currentEntry?.ContentId ?? Service.ClientState.LocalContentId;
 
     [Signature("E8 ?? ?? ?? ?? 48 8B 48 08 49 89 8C 24")]
     private readonly GetCharacterEntryByIndexDelegate _getCharacterEntryByIndex = null!;
@@ -336,7 +351,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         try
         {
-            Service.GameConfig.UiConfig.TryGetUInt("PetMirageTypeCarbuncleSupport", out petMirageSettings.CarbuncleType);
+            Service.GameConfig.TryGet(UiConfigOption.PetMirageTypeCarbuncleSupport, out petMirageSettings.CarbuncleType);
         }
         catch (Exception e)
         {
@@ -345,7 +360,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         try
         {
-            Service.GameConfig.UiConfig.TryGetUInt("PetMirageTypeFairy", out petMirageSettings.FairyType);
+            Service.GameConfig.TryGet(UiConfigOption.PetMirageTypeFairy, out petMirageSettings.FairyType);
         }
         catch (Exception e)
         {
@@ -353,18 +368,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         }
 
         Debug($"Updated PetMirageSettings: CarbuncleType {petMirageSettings.CarbuncleType}, FairyType {petMirageSettings.FairyType}");
-    }
-
-    [AddressHook<ConfigEntry>(nameof(ConfigEntry.Addresses.SetValueUInt))]
-    public bool ConfigEntry_SetValueUInt(ConfigEntry* entry, uint value, uint unk = 1)
-    {
-        if (entry->Owner == &Framework.Instance()->SystemConfig.CommonSystemConfig.UiConfig &&
-            MemoryHelper.ReadStringNullTerminated((nint)entry->Name) is "PetMirageTypeCarbuncleSupport" or "PetMirageTypeFairy")
-        {
-            UpdatePetMirageSettings();
-        }
-
-        return ConfigEntry_SetValueUIntHook.OriginalDisposeSafe(entry, value, unk);
     }
 
     public void SpawnPet()
