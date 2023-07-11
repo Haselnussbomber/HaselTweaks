@@ -2,39 +2,44 @@ using System.Numerics;
 using Dalamud.Logging;
 using ImGuiNET;
 using ImGuiScene;
+using Lumina.Data.Files;
 
 namespace HaselTweaks.Utils;
 
 public class Texture : IDisposable
 {
-    private readonly TextureManager _textureManager;
     private TextureWrap? _textureWrap;
 
-    public Texture(TextureManager manager, string path, int version)
+    public Texture(string path, int version)
     {
-        _textureManager = manager;
-        Path = path;
-        Version = version;
+        EffectivePath = RequestedPath = path;
+        EffectiveVersion = RequestedVersion = version;
     }
 
-    public string Path { get; }
-    public int Version { get; }
+    public string RequestedPath { get; }
+    public string EffectivePath { get; private set; }
+
+    public int RequestedVersion { get; }
+    public int EffectiveVersion { get; private set; }
 
     public void Dispose()
     {
+#if DEBUG
+        PluginLog.Verbose($"[Texture] Disposing Texture: {RequestedPath} (version {RequestedVersion})");
+#endif
         _textureWrap?.Dispose();
         _textureWrap = null;
     }
 
     public void Draw(Vector2? drawSize = null)
     {
-        if (!IsInViewport())
+        if (!ImGuiUtils.IsInViewport())
         {
             ImGui.Dummy(drawSize ?? default);
             return;
         }
 
-        _textureWrap ??= LoadTexture();
+        _textureWrap ??= GetTexture();
 
         if (_textureWrap == null || _textureWrap.ImGuiHandle == 0)
         {
@@ -47,13 +52,13 @@ public class Texture : IDisposable
 
     public void DrawPart(Vector2 partStart, Vector2 partSize, Vector2? drawSize = null)
     {
-        if (!IsInViewport())
+        if (!ImGuiUtils.IsInViewport())
         {
             ImGui.Dummy(drawSize ?? default);
             return;
         }
 
-        _textureWrap ??= LoadTexture();
+        _textureWrap ??= GetTexture();
 
         if (_textureWrap == null || _textureWrap.ImGuiHandle == 0)
         {
@@ -63,8 +68,8 @@ public class Texture : IDisposable
 
         var texSize = new Vector2(_textureWrap.Width, _textureWrap.Height);
 
-        partStart *= Version;
-        partSize *= Version;
+        partStart *= EffectiveVersion;
+        partSize *= EffectiveVersion;
 
         var partEnd = (partStart + partSize) / texSize;
         partStart /= texSize;
@@ -72,27 +77,44 @@ public class Texture : IDisposable
         ImGui.Image(_textureWrap.ImGuiHandle, drawSize ?? partSize, partStart, partEnd);
     }
 
-    private TextureWrap? LoadTexture()
+    private TextureWrap? GetTexture()
     {
-        var path = Path;
+        // if high-res version was requested, but is not part of path
+        if (RequestedVersion != 1 && !RequestedPath.Contains("_hr1"))
+        {
+            var pathHr1 = RequestedPath.Insert(RequestedPath.LastIndexOf('.'), "_hr1");
 
+            // check if high-res version exists
+            if (Service.Data.FileExists(pathHr1))
+                EffectivePath = pathHr1; // yes: upgrade path
+            else
+                EffectiveVersion = 1; // no: downgrade version
+        }
+
+        // check Penumbra redirect
         try
         {
-            if (_textureManager.PenumbraPathResolver != null)
-                path = _textureManager.PenumbraPathResolver.InvokeFunc(Path);
+            EffectivePath = Service.PluginInterface.GetIpcSubscriber<string, string>("Penumbra.ResolveInterfacePath").InvokeFunc(EffectivePath).Replace('\\', '/');
+            if (!EffectivePath.Contains("_hr1"))
+                EffectiveVersion = 1;
         }
         catch { }
 
 #if DEBUG
-        PluginLog.Verbose($"[Texture] Loading Texture: {path}");
+        if (RequestedPath == EffectivePath && RequestedVersion == EffectiveVersion)
+            PluginLog.Verbose($"[Texture] Loading Texture: {RequestedPath} (version {RequestedVersion}) ");
+        else
+            PluginLog.Verbose($"[Texture] Loading Texture: {RequestedPath} (version {RequestedVersion}) => {EffectivePath} (version {EffectiveVersion})");
 #endif
 
-        return Service.Data.GetImGuiTexture(path);
-    }
-
-    private static bool IsInViewport()
-    {
-        var distanceY = ImGui.GetCursorPosY() - ImGui.GetScrollY();
-        return distanceY >= 0 && distanceY <= ImGui.GetWindowHeight();
+        if (EffectivePath[0] is '/' or '\\' || EffectivePath[1] == ':')
+        {
+            var texFile = Service.Data.GameData.GetFileFromDisk<TexFile>(EffectivePath);
+            return Service.Data.GetImGuiTexture(texFile);
+        }
+        else
+        {
+            return Service.Data.GetImGuiTexture(EffectivePath);
+        }
     }
 }

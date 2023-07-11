@@ -93,6 +93,12 @@ public static partial class ImGuiUtils
         ImGui.SameLine();
     }
 
+    public static bool IsInViewport()
+    {
+        var distanceY = ImGui.GetCursorPosY() - ImGui.GetScrollY();
+        return distanceY >= 0 && distanceY <= ImGui.GetWindowHeight();
+    }
+
     public static void PushCursorX(float x)
         => ImGui.SetCursorPosX(ImGui.GetCursorPosX() + x);
 
