@@ -4,9 +4,6 @@ env:
   plugin_name: HaselTweaks
 
 on:
-  pull_request:
-    branches:
-      - dev # only handle pull requests on dev
   push:
     branches-ignore:
       - main # only handle tags on main
