@@ -169,12 +169,6 @@ public partial class Plugin : IDalamudPlugin
         AddonSetupHook?.Dispose();
         AddonFinalizeHook?.Dispose();
 
-        WindowSystem.RemoveAllWindows();
-        WindowSystem = null!;
-
-        _pluginWindow?.Dispose();
-        _pluginWindow = null;
-
         foreach (var tweak in Tweaks)
         {
             try
@@ -188,6 +182,12 @@ public partial class Plugin : IDalamudPlugin
         }
 
         Tweaks = null!;
+
+        WindowSystem.RemoveAllWindows();
+        WindowSystem = null!;
+
+        _pluginWindow?.Dispose();
+        _pluginWindow = null;
 
         Config?.Save();
         Config = null!;
