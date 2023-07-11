@@ -1,10 +1,10 @@
 using System.IO;
 using System.Threading.Tasks;
-using HaselTweaks.Structs;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.System.Ole;
 
 namespace HaselTweaks.Utils;
@@ -35,7 +35,7 @@ public static class ClipboardUtils
         var data = Marshal.AllocHGlobal(sizeof(BITMAPINFOHEADER) + image.Width * image.Height * sizeof(Bgra32)); // tagBITMAPINFO
 
         var header = (BITMAPINFOHEADER*)data;
-        header->biSize = sizeof(BITMAPINFOHEADER);
+        header->biSize = (uint)sizeof(BITMAPINFOHEADER);
         header->biWidth = image.Width;
         header->biHeight = -image.Height;
         header->biPlanes = 1;

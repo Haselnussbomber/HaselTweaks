@@ -19,3 +19,10 @@ GetClipboardData
 SetClipboardData
 RegisterClipboardFormat
 CLIPBOARD_FORMAT
+
+// windgi.h
+
+BITMAPINFOHEADER
+BITMAPV5HEADER
+CIEXYZ
+CIEXYZTRIPLE
