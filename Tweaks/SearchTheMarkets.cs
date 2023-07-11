@@ -1,14 +1,11 @@
-using System.Text;
 using Dalamud;
 using Dalamud.ContextMenu;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Logging;
-using HaselTweaks.Caches;
 using HaselTweaks.Structs;
-using Lumina.Excel.GeneratedSheets;
+using HaselTweaks.Utils;
 using AgentId = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentId;
 using AgentRecipeNote = HaselTweaks.Structs.AgentRecipeNote;
-using HaselAtkComponentTextInput = HaselTweaks.Structs.AtkComponentTextInput;
 
 namespace HaselTweaks.Tweaks;
 
@@ -48,22 +45,20 @@ public unsafe class SearchTheMarkets : Tweak
                 })
                 .BuiltString;
 
-            _contextMenuItemGame = new(text, (_) => Search(), false);
-            _contextMenuItemInventory = new(text, (_) => Search(), false);
+            _contextMenuItemGame = new(
+                text,
+                (_) => { ItemSearch.Search(_itemId); _itemId = 0; },
+                false);
+
+            _contextMenuItemInventory = new(
+                text,
+                (_) => { ItemSearch.Search(_itemId); _itemId = 0; },
+                false);
         }
         catch (Exception ex)
         {
             PluginLog.Error(ex, "Unable to construct context menu entries");
             Ready = false;
-        }
-    }
-
-    private bool IsInvalidState
-    {
-        get
-        {
-            var item = Service.Data.GetExcelSheet<Item>()?.GetRow(_itemId);
-            return _itemId == 0 || item == null || item.IsUntradable || item.IsCollectable || GetAddon(AgentId.ItemSearch) == null;
         }
     }
 
@@ -121,7 +116,7 @@ public unsafe class SearchTheMarkets : Tweak
                 break;
         }
 
-        if (IsInvalidState)
+        if (!ItemSearch.CanSearchForItem(_itemId))
             return;
 
         args.AddCustomItem(_contextMenuItemGame);
@@ -131,40 +126,9 @@ public unsafe class SearchTheMarkets : Tweak
     {
         _itemId = args.ItemId;
 
-        if (IsInvalidState)
+        if (!ItemSearch.CanSearchForItem(_itemId))
             return;
 
         args.AddCustomItem(_contextMenuItemInventory);
-    }
-
-    private void Search()
-    {
-        if (IsInvalidState)
-            return;
-
-        if (!GetAddon<AddonItemSearch>(AgentId.ItemSearch, out var addon))
-            return;
-
-        if (GetAddon<AddonItemSearchResult>("ItemSearchResult", out var itemSearchResult))
-            itemSearchResult->Hide2();
-
-        var itemName = StringCache.GetItemName(_itemId % 1000000);
-        if (itemName.Length > 40)
-            itemName = itemName[..40];
-
-        var byteArray = Encoding.UTF8.GetBytes(itemName);
-        fixed (byte* ptr = byteArray)
-        {
-            addon->TextInput->AtkComponentInputBase.UnkText1.SetString(ptr);
-            addon->TextInput->AtkComponentInputBase.UnkText2.SetString(ptr);
-            addon->TextInput->UnkText1.SetString(ptr);
-            addon->TextInput->UnkText2.SetString(ptr);
-        }
-
-        addon->SetModeFilter(AddonItemSearch.SearchMode.Normal, 0xFFFFFFFF);
-        ((HaselAtkComponentTextInput*)addon->TextInput)->TriggerRedraw();
-        addon->RunSearch(false);
-
-        _itemId = 0;
     }
 }

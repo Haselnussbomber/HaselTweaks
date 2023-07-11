@@ -31,5 +31,5 @@ public unsafe partial struct AddonItemSearch
     public readonly partial void RunSearch(bool a2);
 
     [MemberFunction("E8 ?? ?? ?? ?? EB 40 41 8D 40 FD")]
-    public readonly partial void SetModeFilter(SearchMode mode, uint filter);
+    public readonly partial void SetModeFilter(SearchMode mode, int filter);
 }
