@@ -1,6 +1,6 @@
 using System.Numerics;
 using Dalamud.Memory;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
@@ -33,7 +33,7 @@ public static unsafe class AtkUtils
         => GetAddon(name, 1, out addon);
 
     public static AtkUnitBase* GetAddon(ushort id)
-        => Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.IsAddonReady(id)
+        => RaptureAtkModule.Instance()->AtkModule.IsAddonReady(id)
             ? AtkStage.GetSingleton()->RaptureAtkUnitManager->GetAddonById(id)
             : null;
 

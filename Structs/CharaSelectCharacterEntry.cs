@@ -8,10 +8,14 @@ public unsafe struct CharaSelectCharacterEntry
     [FieldOffset(0x18)] public short CurrentWorldId;
     [FieldOffset(0x1A)] public short HomeWorldId;
 
-    [FieldOffset(0x2C)] public fixed char Name[32];
-    [FieldOffset(0x4C)] public fixed char CurrentWorldName[32];
-    [FieldOffset(0x6C)] public fixed char HomeWorldName[32];
-    [FieldOffset(0x8C)] public fixed char RawJson[1024];
+    [FixedString("Name")]
+    [FieldOffset(0x2C)] public fixed char NameBytes[32];
+    [FixedString("CurrentWorldName")]
+    [FieldOffset(0x4C)] public fixed char CurrentWorldNameBytes[32];
+    [FixedString("HomeWorldName")]
+    [FieldOffset(0x6C)] public fixed char HomeWorldNameBytes[32];
+    [FixedString("RawJson")]
+    [FieldOffset(0x8C)] public fixed char RawJsonBytes[1024];
 
     [FieldOffset(0x4C0)] public ParsedCharaSelectCharacterData ParsedData;
     [FieldOffset(0x5D0)] public ParsedCharaSelectCharacterData ParsedData2;
@@ -20,7 +24,8 @@ public unsafe struct CharaSelectCharacterEntry
 [StructLayout(LayoutKind.Explicit, Size = 0x110)]
 public unsafe struct ParsedCharaSelectCharacterData
 {
-    [FieldOffset(0x08)] public fixed char Name[32];
+    [FixedString("Name")]
+    [FieldOffset(0x08)] public fixed char NameBytes[32];
     [FieldOffset(0x28)] public byte CurrentClassJobId;
 
     [FieldOffset(0x2A)] public fixed short ClassJobLevelArray[30];

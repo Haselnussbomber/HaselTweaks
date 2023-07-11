@@ -12,13 +12,14 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Common.Configuration;
 using HaselTweaks.Records;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
-using static FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
+using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 using HaselAgentLobby = HaselTweaks.Structs.AgentLobby;
 using HaselCharacter = HaselTweaks.Structs.Character;
 
@@ -460,7 +461,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         if (localPlayer == null)
             return;
 
-        var character = (HaselCharacter*)localPlayer.Address;
+        var character = (Character*)localPlayer.Address;
         var voiceId = character->VoiceId;
 
         if (!Config.VoiceCache.ContainsKey(contentId))
@@ -487,7 +488,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
             return;
 
         if (Config.VoiceCache.TryGetValue(ActiveContentId, out var voiceId))
-            _currentEntry.HaselCharacter->VoiceId = voiceId;
+            _currentEntry.Character->VoiceId = voiceId;
     }
 
     private void PlayEmote(uint emoteId)
@@ -519,7 +520,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         if (emote.EmoteMode.Row != 0)
         {
             Debug($"EmoteMode: {emote.EmoteMode.Row}");
-            _currentEntry.Character->SetMode((CharacterModes)emote.EmoteMode.Value!.ConditionMode, (byte)emote.EmoteMode.Row);
+            _currentEntry.Character->SetMode((Character.CharacterModes)emote.EmoteMode.Value!.ConditionMode, (byte)emote.EmoteMode.Row);
         }
         else
         {
@@ -551,7 +552,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
             return;
 
         Debug("Resetting Character Mode");
-        _currentEntry.Character->SetMode(CharacterModes.Normal, 0);
+        _currentEntry.Character->SetMode(Character.CharacterModes.Normal, 0);
     }
 
     [SigHook("E8 ?? ?? ?? ?? 40 84 ED 74 18")]

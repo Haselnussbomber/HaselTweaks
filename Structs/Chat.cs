@@ -2,7 +2,6 @@ using System.Text;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using HaselTweaks.Utils;
-using Framework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 
 namespace HaselTweaks.Structs;
 
@@ -50,7 +49,7 @@ public unsafe partial struct Chat
         }
 
         using var payload = new DisposableUtf8String(message);
-        ProcessChatBox(Framework.Instance()->GetUiModule(), payload);
+        ProcessChatBox(UIModule.Instance(), payload);
     }
 
     /// <summary>

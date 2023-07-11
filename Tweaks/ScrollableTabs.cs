@@ -1,9 +1,10 @@
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using Windows.Win32;
+using AddonAOZNotebook = HaselTweaks.Structs.AddonAOZNotebook;
 using AgentId = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentId;
 using HaselAtkComponentRadioButton = HaselTweaks.Structs.AtkComponentRadioButton;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
@@ -110,10 +111,10 @@ public unsafe partial class ScrollableTabs : Tweak
     }
 
     private AtkUnitBase* IntersectingAddon
-        => Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.IntersectingAddon;
+        => RaptureAtkModule.Instance()->AtkModule.IntersectingAddon;
 
     private AtkCollisionNode* IntersectingCollisionNode
-        => Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.IntersectingCollisionNode;
+        => RaptureAtkModule.Instance()->AtkModule.IntersectingCollisionNode;
 
     private bool IsNext
         => _wheelState == (!Config.Invert ? 1 : -1);

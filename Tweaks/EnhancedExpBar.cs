@@ -4,12 +4,12 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Caches;
 using HaselTweaks.Enums;
-using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
+using AddonExp = HaselTweaks.Structs.AddonExp;
 using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
 
 namespace HaselTweaks.Tweaks;
@@ -162,7 +162,7 @@ Update:
         if (!GetAddon<AddonExp>("_Exp", out var addon))
             return;
 
-        var atkArrayDataHolder = Framework.Instance()->GetUiModule()->GetRaptureAtkModule()->AtkModule.AtkArrayDataHolder;
+        var atkArrayDataHolder = RaptureAtkModule.Instance()->AtkModule.AtkArrayDataHolder;
 
         AddonExp_OnRequestedUpdate(
             addon,

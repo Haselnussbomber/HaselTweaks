@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Memory;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselTweaks.Structs;
 using Lumina.Excel;
 
@@ -98,7 +98,7 @@ public sealed unsafe partial class StringCache
     {
         if (!AddonCache.TryGetValue(rowId, out var value))
         {
-            var ptr = (nint)Framework.Instance()->GetUiModule()->GetRaptureTextModule()->GetAddonText(rowId);
+            var ptr = (nint)RaptureTextModule.Instance()->GetAddonText(rowId);
             if (ptr != 0)
             {
                 value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();

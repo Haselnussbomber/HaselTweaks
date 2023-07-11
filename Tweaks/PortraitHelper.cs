@@ -9,7 +9,8 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Memory;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -30,7 +31,6 @@ using Windows.Win32.Foundation;
 using Windows.Win32.System.Ole;
 using static HaselTweaks.Structs.AgentBannerEditorState;
 using DalamudFramework = Dalamud.Game.Framework;
-using RenderTargetManager = HaselTweaks.Structs.RenderTargetManager;
 
 namespace HaselTweaks.Tweaks;
 
@@ -820,7 +820,7 @@ public partial class PortraitHelper : Tweak
             sb.AddText(text);
         }
 
-        Framework.Instance()->GetUiModule()->ShowErrorText(text, false);
+        UIModule.Instance()->ShowErrorText(text, false);
 
         Service.Chat.PrintError(sb.Build());
     }
