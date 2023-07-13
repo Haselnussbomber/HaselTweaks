@@ -5,8 +5,6 @@ env:
 
 on:
   push:
-    branches-ignore:
-      - main # only handle tags on main
     paths-ignore:
       - README.md
       - CHANGELOG.md
