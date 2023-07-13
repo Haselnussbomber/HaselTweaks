@@ -1,5 +1,11 @@
 # Changelog
 
+## [15.3.1] (2023-07-14)
+
+- Multiple code adjustments due to ClientStructs and Dalamud additions and minor refactoring.
+- **Fixed:** An error that occured when unloading the plugin, because a tweak would remove a window from the window system after it has been disposed already.
+- **Fixed:** A potential issue with loading icon textures if the path was redirected by Penumbra.
+
 ## [15.3.0] (2023-07-10)
 
 ### Search the markets
@@ -946,6 +952,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[15.3.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.3.0...v15.3.1
 [15.3.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.2.0...v15.3.0
 [15.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.1.5...v15.2.0
 [15.1.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.1.4...v15.1.5
