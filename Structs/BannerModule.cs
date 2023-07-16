@@ -27,13 +27,15 @@ public unsafe partial struct BannerModule
     public readonly partial int GetBannerIdByBannerIndex(int index);
 }
 
-[StructLayout(LayoutKind.Explicit, Size = 0x38B8)]
+[StructLayout(LayoutKind.Explicit, Size = 0x3E60)]
 public unsafe partial struct BannerModuleData
 {
-    [FixedSizeArray<BannerModuleEntry>(100)]
-    [FieldOffset(0x00)] public fixed byte Entries[0x90 * 100];
-    [FieldOffset(0x3840)] public fixed byte BannerId2BannerIndex[100];
-    [FieldOffset(0x38A4)] public byte NextId;
+    [FixedSizeArray<BannerModuleEntry>(110)]
+    [FieldOffset(0x00)] public fixed byte Entries[0x90 * 110];
+    [FieldOffset(0x3DE0)] public fixed byte BannerId2BannerIndex[110];
+    [FieldOffset(0x3E4E)] public byte NextId;
+
+    [FieldOffset(0x3E58)] public BannerModule* BannerModule;
 
     [MemberFunction("40 56 48 83 EC 20 80 B9 ?? ?? ?? ?? ?? 48 8B F1 7C 08")]
     public readonly partial BannerModuleEntry* CreateBanner();
@@ -45,8 +47,9 @@ public unsafe partial struct BannerModuleData
 [StructLayout(LayoutKind.Explicit, Size = 0x90)]
 public unsafe struct BannerModuleEntry
 {
-    [FieldOffset(0x00)] public fixed byte BannerTimelineName[64]; // string
-    [FieldOffset(0x40)] public uint Flags; // maybe? see "8B C2 4C 8B C9 99"
+    [FixedString("BannerTimelineName")]
+    [FieldOffset(0x00)] public fixed byte BannerTimelineNameBytes[0x40];
+    // [FieldOffset(0x40)] public fixed byte Flags[4]; // see "8B C2 4C 8B C9 99"
     [FieldOffset(0x44)] public HalfVector4 CameraPosition;
     [FieldOffset(0x4C)] public HalfVector4 CameraTarget;
     [FieldOffset(0x54)] public HalfVector2 HeadDirection;
@@ -63,6 +66,8 @@ public unsafe struct BannerModuleEntry
     [FieldOffset(0x67)] public byte AmbientLightingColorRed;
     [FieldOffset(0x68)] public byte AmbientLightingColorGreen;
     [FieldOffset(0x69)] public byte AmbientLightingColorBlue;
+    // [FieldOffset(0x6A)] public byte Unk6A;
+    // [FieldOffset(0x6B)] public byte Unk6B;
     [FieldOffset(0x6C)] public float AnimationProgress;
     [FieldOffset(0x70)] public uint BannerTimelineIcon;
     [FieldOffset(0x74)] public uint LastUpdated; // unix timestamp
@@ -72,16 +77,16 @@ public unsafe struct BannerModuleEntry
     [FieldOffset(0x80)] public ushort BannerDecoration;
     [FieldOffset(0x82)] public ushort BannerTimeline;
     [FieldOffset(0x84)] public short ImageRotation;
-    [FieldOffset(0x86)] public byte BannerEntryIndex;
-    [FieldOffset(0x87)] public byte BannerID;
+    [FieldOffset(0x86)] public byte BannerIndex;
+    [FieldOffset(0x87)] public byte BannerId;
     [FieldOffset(0x88)] public byte BannerTimelineClassJobCategory;
     [FieldOffset(0x89)] public byte Expression;
     [FieldOffset(0x8A)] public byte CameraZoom;
     [FieldOffset(0x8B)] public byte DirectionalLightingBrightness;
     [FieldOffset(0x8C)] public byte AmbientLightingBrightness;
     [FieldOffset(0x8D)] public byte HasBannerTimelineCustomName;
-    // [FieldOffset(0x8E)] public byte N00019BE6;
-    // [FieldOffset(0x8F)] public byte N00019BCA;
+    // [FieldOffset(0x8E)] public byte Unk8E;
+    // [FieldOffset(0x8F)] public byte Unk8F;
 }
 
 [Flags]
