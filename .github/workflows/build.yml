@@ -6,6 +6,7 @@ env:
 on:
   push:
     paths-ignore:
+      - LICENSE
       - README.md
       - CHANGELOG.md
       - .gitignore
