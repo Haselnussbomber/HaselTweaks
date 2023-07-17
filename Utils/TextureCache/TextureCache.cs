@@ -9,6 +9,7 @@ namespace HaselTweaks.Utils.TextureCache;
 public class TextureCache : IDisposable
 {
     private readonly Dictionary<(string Path, int Version), Texture> _cache = new();
+    private readonly Dictionary<uint, Texture> _iconTexCache = new();
     private readonly Dictionary<(string UldName, uint PartListId, uint PartId), Texture> _uldTexCache = new();
 
     public TextureCache()
@@ -19,14 +20,16 @@ public class TextureCache : IDisposable
     public void Dispose()
     {
         Service.Framework.Update -= Framework_Update;
+        _iconTexCache.Clear();
+        _uldTexCache.Clear();
         _cache.Dispose();
-        _uldTexCache.Dispose();
     }
 
     private void Framework_Update(Framework framework)
     {
         lock (_cache)
         {
+            _iconTexCache.RemoveAll((key, value) => value.IsExpired);
             _uldTexCache.RemoveAll((key, value) => value.IsExpired);
             _cache.RemoveAll((key, value) => value.IsExpired, true);
         }
@@ -62,6 +65,9 @@ public class TextureCache : IDisposable
 
     public Texture GetIcon(uint iconId)
     {
+        if (_iconTexCache.TryGetValue(iconId, out var tex))
+            return tex;
+
         var path = $"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex";
         var exists = Service.Data.FileExists(path);
         var version = 2;
@@ -79,7 +85,10 @@ public class TextureCache : IDisposable
             path = Texture.EmptyIconPath;
         }
 
-        return Get(path, version);
+        lock (_iconTexCache)
+            _iconTexCache.Add(iconId, tex = Get(path, version));
+
+        return tex;
     }
 
     public Texture GetIcon(int iconId)
