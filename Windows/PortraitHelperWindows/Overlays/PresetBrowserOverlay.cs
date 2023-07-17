@@ -21,7 +21,6 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
     public RenameTagDialog RenameTagDialog { get; init; } = new();
     public DeleteTagDialog DeleteTagDialog { get; init; }
     public DeletePresetDialog DeletePresetDialog { get; init; }
-    public TextureManager TextureManager { get; init; } = new();
     public EditPresetDialog EditPresetDialog { get; init; } = new();
 
     private int _reorderTagOldIndex = -1;
@@ -45,7 +44,6 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             card.Dispose();
 
         PresetCards.Clear();
-        TextureManager.Dispose();
     }
 
     public override void Draw()

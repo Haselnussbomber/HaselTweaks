@@ -27,7 +27,6 @@ public partial class PluginWindow : Window, IDisposable
     private const uint ConfigWidth = SidebarWidth * 2;
     private const string LogoManifestResource = "HaselTweaks.Assets.Logo.svg";
 
-    private TextureManager? _textureManager;
     private string _selectedTweak = string.Empty;
     private bool _isLogoLoading;
     private TextureWrap? _logoTextureWrap;
@@ -60,17 +59,11 @@ public partial class PluginWindow : Window, IDisposable
     public void Dispose()
     {
         _logoTextureWrap?.Dispose();
-
-        _textureManager?.Dispose();
-        _textureManager = null;
     }
 
     public override void OnClose()
     {
         _selectedTweak = string.Empty;
-
-        _textureManager?.Dispose();
-        _textureManager = null;
 
         foreach (var tweak in Plugin.Tweaks)
         {
@@ -142,8 +135,6 @@ public partial class PluginWindow : Window, IDisposable
 
     public override void Draw()
     {
-        _textureManager ??= new();
-
         DrawSidebar();
         ImGui.SameLine();
         DrawConfig();
@@ -333,7 +324,7 @@ public partial class PluginWindow : Window, IDisposable
         if (tweak.IncompatibilityWarnings.Any(entry => entry.IsLoaded))
         {
             ImGuiUtils.DrawSection("Incompatibility Warning");
-            _textureManager?.GetIcon(60073).Draw(new(24));
+            Service.TextureCache.GetIcon(60073).Draw(24);
             ImGui.SameLine();
             var cursorPosX = ImGui.GetCursorPosX();
 
@@ -393,7 +384,7 @@ public partial class PluginWindow : Window, IDisposable
         if (tweak.HasCustomConfig)
         {
             ImGuiUtils.DrawSection("Configuration");
-            tweak.DrawCustomConfig(_textureManager!);
+            tweak.DrawCustomConfig();
         }
         else
         {

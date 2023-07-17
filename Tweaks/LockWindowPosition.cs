@@ -50,7 +50,7 @@ public unsafe partial class LockWindowPosition : Tweak
     private Vector2 _hoveredWindowSize;
     private int _eventIndexToDisable = 0;
 
-    public override void DrawCustomConfig(TextureManager textureManager)
+    public override void DrawCustomConfig()
     {
         ImGui.Checkbox("Invert logic (locks all windows)##HaselTweaks_LockWindows_Inverted", ref Config.Inverted);
         if (ImGui.IsItemClicked())

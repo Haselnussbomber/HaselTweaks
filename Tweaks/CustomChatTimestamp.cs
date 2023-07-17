@@ -22,7 +22,7 @@ public unsafe partial class CustomChatTimestamp : Tweak
         public string Format = "[HH:mm] ";
     }
 
-    public override void DrawCustomConfig(TextureManager textureManager)
+    public override void DrawCustomConfig()
     {
         ImGui.TextUnformatted("Format");
         using (ImGuiUtils.ConfigIndent())

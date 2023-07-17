@@ -28,6 +28,7 @@ public partial class Plugin : IDalamudPlugin
     public Plugin(DalamudPluginInterface pluginInterface)
     {
         pluginInterface.Create<Service>();
+        Service.TextureCache = new();
         Task.Run(Setup);
     }
 
@@ -193,6 +194,7 @@ public partial class Plugin : IDalamudPlugin
         Config = null!;
 
         StringCache.Dispose();
+        Service.TextureCache.Dispose();
     }
 
     [SigHook("E8 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? C1 E8 14")]
