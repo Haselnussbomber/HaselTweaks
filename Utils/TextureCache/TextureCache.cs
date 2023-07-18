@@ -9,7 +9,7 @@ namespace HaselTweaks.Utils.TextureCache;
 public class TextureCache : IDisposable
 {
     private readonly Dictionary<(string Path, int Version, Vector2? Uv0, Vector2? Uv1), Texture> _cache = new();
-    private readonly Dictionary<uint, Texture> _iconTexCache = new();
+    private readonly Dictionary<(uint IconId, bool IsHq), Texture> _iconTexCache = new();
     private readonly Dictionary<(string UldName, uint PartListId, uint PartId), Texture> _uldTexCache = new();
 
     public TextureCache()
@@ -63,18 +63,20 @@ public class TextureCache : IDisposable
         return tex;
     }
 
-    public Texture GetIcon(uint iconId)
+    public Texture GetIcon(uint iconId, bool isHq = false)
     {
-        if (_iconTexCache.TryGetValue(iconId, out var tex))
+        var key = (iconId, isHq);
+
+        if (_iconTexCache.TryGetValue(key, out var tex))
             return tex;
 
-        var path = $"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex";
+        var path = $"ui/icon/{iconId / 1000:D3}000/{(isHq ? "hq/" : "")}{iconId:D6}_hr1.tex";
         var exists = Service.Data.FileExists(path);
         var version = 2;
 
         if (!exists)
         {
-            path = $"ui/icon/{iconId / 1000:D3}000/{iconId:D6}.tex";
+            path = $"ui/icon/{iconId / 1000:D3}000/{(isHq ? "hq/" : "")}{iconId:D6}.tex";
             exists = Service.Data.FileExists(path);
             version = 1;
         }
@@ -86,7 +88,7 @@ public class TextureCache : IDisposable
         }
 
         lock (_iconTexCache)
-            _iconTexCache.Add(iconId, tex = Get(path, version));
+            _iconTexCache.Add(key, tex = Get(path, version));
 
         return tex;
     }
