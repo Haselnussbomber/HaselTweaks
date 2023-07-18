@@ -38,6 +38,7 @@ public unsafe class MenuBar : Window, IDisposable
         base.Flags |= ImGuiWindowFlags.NoSavedSettings;
         base.Flags |= ImGuiWindowFlags.NoDecoration;
         base.Flags |= ImGuiWindowFlags.NoMove;
+        base.DisableWindowSounds = true;
         base.RespectCloseHotkey = false;
         base.IsOpen = true;
     }

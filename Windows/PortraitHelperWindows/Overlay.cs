@@ -30,6 +30,7 @@ public abstract unsafe class Overlay : Window
     {
         Tweak = tweak;
 
+        base.DisableWindowSounds = true;
         base.RespectCloseHotkey = false;
     }
 
