@@ -46,7 +46,6 @@ public record Texture : IDisposable
 
         if (!ImGuiUtils.IsInViewport() || Path == EmptyIconPath)
         {
-            ImGui.Text(Path);
             ImGui.Dummy(size);
             return;
         }

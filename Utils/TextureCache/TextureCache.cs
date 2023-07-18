@@ -8,7 +8,7 @@ namespace HaselTweaks.Utils.TextureCache;
 
 public class TextureCache : IDisposable
 {
-    private readonly Dictionary<(string Path, int Version), Texture> _cache = new();
+    private readonly Dictionary<(string Path, int Version, Vector2? Uv0, Vector2? Uv1), Texture> _cache = new();
     private readonly Dictionary<uint, Texture> _iconTexCache = new();
     private readonly Dictionary<(string UldName, uint PartListId, uint PartId), Texture> _uldTexCache = new();
 
@@ -52,7 +52,7 @@ public class TextureCache : IDisposable
         }
         catch { }
 
-        var key = (path, version);
+        var key = (path, version, uv0, uv1);
 
         if (!_cache.TryGetValue(key, out var tex))
         {
@@ -94,22 +94,22 @@ public class TextureCache : IDisposable
     public Texture GetIcon(int iconId)
         => GetIcon((uint)iconId);
 
-    public Texture GetPart(string uldName, uint partListId, uint partId)
+    public Texture GetPart(string uldName, uint partListId, uint partIndex)
     {
-        var key = (uldName, partListId, partId);
+        var key = (uldName, partListId, partIndex);
 
         if (_uldTexCache.TryGetValue(key, out var tex))
             return tex;
 
-        var uld = Service.PluginInterface.UiBuilder.LoadUld($"ui/uld/{uldName}.uld");
+        using var uld = Service.PluginInterface.UiBuilder.LoadUld($"ui/uld/{uldName}.uld");
 
         if (uld == null || !uld.Valid)
             return Get(Texture.EmptyIconPath);
 
-        if (!uld.Uld!.Parts.FindFirst((partList) => partList.Id == partListId, out var partList) || partList.PartCount < partId)
+        if (!uld.Uld!.Parts.FindFirst((partList) => partList.Id == partListId, out var partList) || partList.PartCount < partIndex)
             return Get(Texture.EmptyIconPath);
 
-        var part = partList.Parts[partId];
+        var part = partList.Parts[partIndex];
 
         if (!uld.Uld.AssetData.FindFirst((asset) => asset.Id == part.TextureId, out var asset))
             return Get(Texture.EmptyIconPath);
