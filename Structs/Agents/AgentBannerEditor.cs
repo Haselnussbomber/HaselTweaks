@@ -84,7 +84,7 @@ public unsafe partial struct AgentBannerEditorState
     [MemberFunction("48 89 5C 24 ?? 48 89 7C 24 ?? 80 79 2C 00")]
     public readonly partial int GetPresetIndex(ushort backgroundIndex, ushort frameIndex, ushort accentIndex);
 
-    [MemberFunction("E8 ?? ?? ?? ?? 44 0A E8")]
+    [MemberFunction("E8 ?? ?? ?? ?? 44 0A E8 45 8B C7")]
     public readonly partial void SetFrame(int frameId);
 
     [MemberFunction("E8 ?? ?? ?? ?? 4C 8B 64 24 ?? 44 0A E8")]
