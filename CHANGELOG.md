@@ -1,5 +1,15 @@
 # Changelog
 
+## [15.3.2] (2023-07-19)
+
+Update for Patch 6.45.
+
+- **Added:** The AGPL 3.0 license has been added to the project.
+- **Changed:** The texture cache has been reworked to make it suitable for future use.
+- **Changed:** Debug information are now embedded as [Portable PDB](https://github.com/dotnet/core/blob/main/Documentation/diagnostics/portable_pdb.md).
+- **Fixed:** A signature to set the portrait frame, that had multiple matches after the patch, was replaced.
+- **Fixed:** The new Dalamud windows sound effects would play for the portrait helper menu bar and overlays.
+
 ## [15.3.1] (2023-07-14)
 
 - Multiple code adjustments due to ClientStructs and Dalamud additions and minor refactoring.
@@ -952,6 +962,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[15.3.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.3.1...v15.3.2
 [15.3.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.3.0...v15.3.1
 [15.3.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.2.0...v15.3.0
 [15.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.1.5...v15.2.0
