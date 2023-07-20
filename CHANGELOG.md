@@ -1,5 +1,9 @@
 # Changelog
 
+## [15.3.3] (2023-07-20)
+
+- **Fixed:** Sometimes the game would freeze, especially when reloading the plugin, due to asynchronously enabling the hooks. Now, the plugin makes sure to enable them on the framework thread.
+
 ## [15.3.2] (2023-07-19)
 
 Update for Patch 6.45.
@@ -962,6 +966,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[15.3.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.3.2...v15.3.3
 [15.3.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.3.1...v15.3.2
 [15.3.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.3.0...v15.3.1
 [15.3.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.2.0...v15.3.0
