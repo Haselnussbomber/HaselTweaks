@@ -35,44 +35,47 @@ public partial class Plugin : IDalamudPlugin
     private void Setup()
     {
         SignatureHelper.Initialise(this);
-        AddonSetupHook?.Enable();
-        AddonFinalizeHook?.Enable();
-
         InitializeResolver();
-        InitializeTweaks();
 
-        Config = Configuration.Load(Tweaks.Select(t => t.InternalName));
-
-        foreach (var tweak in Tweaks)
+        Service.Framework.RunOnFrameworkThread(() =>
         {
-            if (!Config.EnabledTweaks.Contains(tweak.InternalName))
-                continue;
+            AddonSetupHook?.Enable();
+            AddonFinalizeHook?.Enable();
+            InitializeTweaks();
 
-            try
+            Config = Configuration.Load(Tweaks.Select(t => t.InternalName));
+
+            foreach (var tweak in Tweaks)
             {
-                tweak.EnableInternal();
+                if (!Config.EnabledTweaks.Contains(tweak.InternalName))
+                    continue;
+
+                try
+                {
+                    tweak.EnableInternal();
+                }
+                catch (Exception ex)
+                {
+                    PluginLog.Error(ex, $"Failed enabling tweak '{tweak.InternalName}'.");
+                }
             }
-            catch (Exception ex)
+
+            Service.Framework.Update += OnFrameworkUpdate;
+            Service.ClientState.Login += ClientState_Login;
+            Service.ClientState.Logout += ClientState_Logout;
+            Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
+
+            Service.PluginInterface.UiBuilder.Draw += OnDraw;
+            Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
+
+            Service.Commands.RemoveHandler("/haseltweaks");
+            Service.Commands.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
             {
-                PluginLog.Error(ex, $"Failed enabling tweak '{tweak.InternalName}'.");
-            }
-        }
+                HelpMessage = "Show Window"
+            });
 
-        Service.Framework.Update += OnFrameworkUpdate;
-        Service.ClientState.Login += ClientState_Login;
-        Service.ClientState.Logout += ClientState_Logout;
-        Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
-
-        Service.PluginInterface.UiBuilder.Draw += OnDraw;
-        Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
-
-        Service.Commands.RemoveHandler("/haseltweaks");
-        Service.Commands.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
-        {
-            HelpMessage = "Show Window"
+            WindowSystem.AddWindow(_pluginWindow = new PluginWindow());
         });
-
-        WindowSystem.AddWindow(_pluginWindow = new PluginWindow());
     }
 
     private static void InitializeResolver()
