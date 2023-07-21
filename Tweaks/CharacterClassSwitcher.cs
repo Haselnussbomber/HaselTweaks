@@ -88,9 +88,9 @@ public unsafe partial class CharacterClassSwitcher : Tweak
     }
 
     [VTableHook<AddonCharacterClass>((int)AtkResNodeVfs.OnSetup)]
-    private nint AddonCharacterClass_OnSetup(AddonCharacterClass* addon, int a2)
+    private nint AddonCharacterClass_OnSetup(AddonCharacterClass* addon, uint numAtkValues, AtkValue* atkValues)
     {
-        var result = AddonCharacterClass_OnSetupHook!.OriginalDisposeSafe(addon, a2);
+        var result = AddonCharacterClass_OnSetupHook!.OriginalDisposeSafe(addon, numAtkValues, atkValues);
         var eventListener = &addon->AtkUnitBase.AtkEventListener;
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
@@ -188,9 +188,9 @@ OriginalReceiveEventCode:
     }
 
     [VTableHook<AddonPvPCharacter>((int)AtkResNodeVfs.OnSetup)]
-    private void AddonPvPCharacter_OnSetup(AddonPvPCharacter* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
+    private void AddonPvPCharacter_OnSetup(AddonPvPCharacter* addon, uint numAtkValues, AtkValue* atkValues)
     {
-        AddonPvPCharacter_OnSetupHook.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
+        AddonPvPCharacter_OnSetupHook.OriginalDisposeSafe(addon, numAtkValues, atkValues);
 
         var eventListener = &addon->AtkUnitBase.AtkEventListener;
 
