@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Portrait Helper
+
+- **Fixed:** The notification when the gear doesn't match the portrait did not show up outside of sanctuaries.
+
 ## [15.3.3] (2023-07-20)
 
 - **Fixed:** Sometimes the game would freeze, especially when reloading the plugin, due to asynchronously enabling the hooks. Now, the plugin makes sure to enable them on the framework thread.
