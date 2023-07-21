@@ -14,7 +14,7 @@ public unsafe partial struct AgentBannerEditor
     [FieldOffset(0x28)] public AgentBannerEditorState* EditorState;
 
     [MemberFunction("48 89 5C 24 ?? 57 48 83 EC 30 48 83 3D ?? ?? ?? ?? ?? 8B FA 48 8B D9 0F 84")]
-    public readonly partial void OpenForGearset(uint gearsetId);
+    public readonly partial void OpenForGearset(int gearsetId);
 }
 
 [StructLayout(LayoutKind.Explicit, Size = 0x2D8)]

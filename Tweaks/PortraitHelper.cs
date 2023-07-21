@@ -174,11 +174,12 @@ public partial class PortraitHelper : Tweak
 
     private unsafe void OpenPortraitEditChatHandler(uint commandId, SeString message)
     {
-        var gearsetId = GetEquippedGearsetId(RaptureGearsetModule.Instance());
-        if (gearsetId < 100)
-        {
-            AgentBannerEditor->OpenForGearset(gearsetId);
-        }
+        var raptureGearsetModule = RaptureGearsetModule.Instance();
+        var gearsetId = raptureGearsetModule->CurrentGearsetIndex;
+        if (raptureGearsetModule->IsValidGearset(gearsetId) == 0)
+            return;
+
+        AgentBannerEditor->OpenForGearset(gearsetId);
     }
 
     public override unsafe void OnAddonOpen(string addonName, AtkUnitBase* unitbase)
@@ -234,7 +235,7 @@ public partial class PortraitHelper : Tweak
             {
                 Service.Framework.RunOnTick(() =>
                 {
-                    CheckForGearChecksumMismatch(GetEquippedGearsetId(RaptureGearsetModule.Instance()), true);
+                    CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex, true);
                 }, CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token);
             }
         }
@@ -714,7 +715,7 @@ public partial class PortraitHelper : Tweak
     }
 
     [AddressHook<RaptureGearsetModule>(nameof(RaptureGearsetModule.Addresses.UpdateGearset))]
-    public unsafe int RaptureGearsetModule_UpdateGearset(RaptureGearsetModule* raptureGearsetModule, uint gearsetId)
+    public unsafe int RaptureGearsetModule_UpdateGearset(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
         var ret = RaptureGearsetModule_UpdateGearsetHook.OriginalDisposeSafe(raptureGearsetModule, gearsetId);
 
@@ -729,12 +730,13 @@ public partial class PortraitHelper : Tweak
         return ret;
     }
 
-    private unsafe void CheckForGearChecksumMismatch(uint gearsetId, bool disableReequip = false)
+    private unsafe void CheckForGearChecksumMismatch(int gearsetId, bool disableReequip = false)
     {
-        if (!Config.NotifyGearChecksumMismatch || gearsetId >= 100)
+        var raptureGearsetModule = RaptureGearsetModule.Instance();
+
+        if (!Config.NotifyGearChecksumMismatch || raptureGearsetModule->IsValidGearset(gearsetId) == 0)
             return;
 
-        var raptureGearsetModule = RaptureGearsetModule.Instance();
         var gearset = raptureGearsetModule->GetGearset((int)gearsetId);
         if (gearset == null)
             return;
@@ -801,8 +803,8 @@ public partial class PortraitHelper : Tweak
         var sb = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32);
 
-        var gearsetId = GetEquippedGearsetId(RaptureGearsetModule.Instance());
-        if (gearsetId < 100)
+        var raptureGearsetModule = RaptureGearsetModule.Instance();
+        if (raptureGearsetModule->IsValidGearset(raptureGearsetModule->CurrentGearsetIndex) == 1)
         {
             if (_openPortraitEditPayload != null)
             {
@@ -854,8 +856,4 @@ public partial class PortraitHelper : Tweak
 
         return GearsetChecksumData.GenerateChecksum(checksumData.Ptr->ItemIds, checksumData.Ptr->StainIds, gearVisibilityFlag);
     }
-
-    [Signature("E8 ?? ?? ?? ?? 3B D8 75 11")]
-    public readonly GetEquippedGearsetIdDelegate GetEquippedGearsetId = null!;
-    public unsafe delegate uint GetEquippedGearsetIdDelegate(RaptureGearsetModule* module);
 }
