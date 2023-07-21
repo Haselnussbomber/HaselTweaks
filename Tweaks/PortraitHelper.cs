@@ -827,17 +827,14 @@ public partial class PortraitHelper : Tweak
 
     private unsafe uint GetEquippedGearChecksum()
     {
-        const int ItemCount = 14;
-
-        var ptr = Marshal.AllocHGlobal(4 * ItemCount + ItemCount);
+        using var checksumData = new DisposableStruct<GearsetChecksumData>();
         var container = InventoryManager.Instance()->GetInventoryContainer(InventoryType.EquippedItems);
 
-        for (var i = 0; i < ItemCount; i++)
+        for (var i = 0; i < 14; i++)
         {
             var item = container->Items[i];
-
-            *(uint*)(ptr + i * 4) = item.GlamourID != 0 ? item.GlamourID : item.ItemID;
-            *(byte*)(ptr + ItemCount * 4 + i) = item.Stain;
+            checksumData.Ptr->ItemIds[i] = item.GlamourID != 0 ? item.GlamourID : item.ItemID;
+            checksumData.Ptr->StainIds[i] = item.Stain;
         }
 
         AgentStatus->UpdateGearVisibilityInNumberArray();
@@ -855,16 +852,8 @@ public partial class PortraitHelper : Tweak
         if (numberArray->IntArray[270] == 1)
             gearVisibilityFlag |= BannerGearVisibilityFlag.VisorClosed;
 
-        var gearsetHash = GenerateGearChecksum((uint*)ptr, (byte*)(ptr + ItemCount * 4), gearVisibilityFlag);
-
-        Marshal.FreeHGlobal(ptr);
-
-        return gearsetHash;
+        return GearsetChecksumData.GenerateChecksum(checksumData.Ptr->ItemIds, checksumData.Ptr->StainIds, gearVisibilityFlag);
     }
-
-    [Signature("E8 ?? ?? ?? ?? 89 43 48 48 83 C4 20")]
-    public readonly GenerateGearChecksumDelegate GenerateGearChecksum = null!;
-    public unsafe delegate uint GenerateGearChecksumDelegate(uint* itemIds, byte* stainIds, BannerGearVisibilityFlag gearVisibilityFlag);
 
     [Signature("E8 ?? ?? ?? ?? 3B D8 75 11")]
     public readonly GetEquippedGearsetIdDelegate GetEquippedGearsetId = null!;
