@@ -762,7 +762,7 @@ public partial class PortraitHelper : Tweak
 
         Log($"Gear checksum mismatch detected! (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
 
-        if (!disableReequip && Config.ReequipGearsetOnUpdate && gearset->GlamourSetLink > 0 && !GameMain.IsInSanctuary())
+        if (!disableReequip && Config.ReequipGearsetOnUpdate && gearset->GlamourSetLink > 0 && GameMain.IsInSanctuary())
         {
             Log($"Re-equipping Gearset #{gearset->ID + 1} to reapply Glamour Plate");
             raptureGearsetModule->EquipGearset(gearset->ID, gearset->GlamourSetLink);
