@@ -1,13 +1,13 @@
 using System.Linq;
 using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
-using EventHandler = FFXIVClientStructs.FFXIV.Client.Game.Event.EventHandler;
+using AgentRecipeNote = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentRecipeNote;
 
 namespace HaselTweaks.Tweaks;
 
@@ -153,7 +153,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
             for (var todoIndex = todoOffset; todoIndex < todoOffset + todoCount; todoIndex++)
             {
                 uint numHave, numNeeded, itemId;
-                _getTodoArgs(questEventHandler, localPlayer, todoIndex, &numHave, &numNeeded, &itemId);
+                Statics.GetTodoArgs(questEventHandler, localPlayer, todoIndex, &numHave, &numNeeded, &itemId);
                 Debug($"TodoArgs #{todoIndex}: {numHave}/{numNeeded} of {itemId}");
 
                 if (itemId == 0)
@@ -183,10 +183,6 @@ public unsafe partial class AutoOpenRecipe : Tweak
 originalUpdateQuestWork:
         return UpdateQuestWorkHook.OriginalDisposeSafe(index, questData, a3, a4, a5);
     }
-
-    [Signature("E8 ?? ?? ?? ?? 8B 44 24 78 89 44 24 44")]
-    private readonly GetTodoArgsDelegate _getTodoArgs = null!;
-    private delegate void GetTodoArgsDelegate(EventHandler* questEventHandler, BattleChara* localPlayer, int i, uint* numHave, uint* numNeeded, uint* itemId);
 
     private void OpenRecipe(uint resultItemId, uint amount)
     {

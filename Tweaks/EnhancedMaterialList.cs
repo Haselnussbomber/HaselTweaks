@@ -3,7 +3,6 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Memory;
 using Dalamud.Utility;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -398,14 +397,6 @@ originalAddItemContextMenuEntries:
         return placeName == null ? null : (gatheringPoints.Count, point, cost, isSameZone, placeName);
     }
 
-    [Signature("80 F9 07 77 10")]
-    public readonly IsGatheringPointTypeOffDelegate IsGatheringPointRare = null!;
-    public delegate bool IsGatheringPointTypeOffDelegate(byte gatheringPointType);
-
-    [Signature("E8 ?? ?? ?? ?? 4C 8B 05 ?? ?? ?? ?? 48 8D 8C 24 ?? ?? ?? ?? 48 8B D0 E8 ?? ?? ?? ?? 8B 4E 08")]
-    public readonly GetGatheringPointNameDelegate GetGatheringPointName = null!;
-    public delegate byte* GetGatheringPointNameDelegate(RaptureTextModule** module, byte gatheringType, byte gatheringPointType);
-
     public bool OpenMapWithGatheringPoint(GatheringPoint? gatheringPoint, Item? item = null)
     {
         if (!GetAgent<AgentMap>(AgentId.Map, out var agentMap))
@@ -435,7 +426,7 @@ originalAddItemContextMenuEntries:
         var levelText = gatheringPointBase.GatheringLevel == 1
             ? raptureTextModule->GetAddonText(242) // "Lv. ???"
             : raptureTextModule->FormatAddonText2(35, gatheringPointBase.GatheringLevel, 0);
-        var gatheringPointName = GetGatheringPointName(
+        var gatheringPointName = Statics.GetGatheringPointName(
             &raptureTextModule,
             (byte)exportedPoint.GatheringType.Row,
             exportedPoint.GatheringPointType
@@ -445,7 +436,7 @@ originalAddItemContextMenuEntries:
         tooltip.AppendString(" ");
         tooltip.AppendString(gatheringPointName);
 
-        var iconId = !IsGatheringPointRare(exportedPoint.GatheringPointType)
+        var iconId = Statics.IsGatheringPointRare(exportedPoint.GatheringPointType) == 0
             ? gatheringType.IconMain
             : gatheringType.IconOff;
 
