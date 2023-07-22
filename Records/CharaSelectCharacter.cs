@@ -9,14 +9,14 @@ public unsafe class CharaSelectCharacter
     public CSCharacter* Character { get; }
     public HaselCharacter* HaselCharacter => (HaselCharacter*)Character;
     public ulong ContentId { get; }
-    public ushort TerritoryId { get; }
+    public ushort TerritoryType { get; }
     public byte ClassJobId { get; }
 
-    public CharaSelectCharacter(CSCharacter* character, CharaSelectCharacterEntry* entry)
+    public CharaSelectCharacter(CSCharacter* character, AgentLobby.CharaSelectEntry* entry)
     {
         Character = character;
         ContentId = entry->ContentId;
-        TerritoryId = entry->ParsedData.TerritoryId;
-        ClassJobId = entry->ParsedData.CurrentClassJobId;
+        TerritoryType = entry->CharacterInfo.TerritoryType;
+        ClassJobId = entry->CharacterInfo.CurrentClassJobId;
     }
 }

@@ -5,7 +5,6 @@ using Dalamud.Game.Config;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Utility;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
@@ -69,10 +68,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     private ulong ActiveContentId => _currentEntry?.ContentId ?? Service.ClientState.LocalContentId;
 
-    [Signature("E8 ?? ?? ?? ?? 48 8B 48 08 49 89 8C 24")]
-    private readonly GetCharacterEntryByIndexDelegate _getCharacterEntryByIndex = null!;
-    private delegate CharaSelectCharacterEntry* GetCharacterEntryByIndexDelegate(nint a1, int a2, int a3, int index);
-
     // called every frame
     [AddressHook<HaselAgentLobby>(nameof(HaselAgentLobby.Addresses.UpdateCharaSelectDisplay))]
     public void UpdateCharaSelectDisplay(HaselAgentLobby* agent, sbyte index, bool a2)
@@ -88,7 +83,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         if (index >= 100)
             index -= 100;
 
-        var entry = _getCharacterEntryByIndex((nint)agent + 0x40, 0, agent->Unk10F2, index); // what a headache
+        var entry = agent->Unk40.GetCharacterEntryByIndex(0, agent->Unk10F2, index);
         if (entry == null)
         {
             CleanupCharaSelect();
@@ -98,7 +93,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         if (_currentEntry?.ContentId == entry->ContentId)
             return;
 
-        var character = CharaSelect.GetCurrentCharacter();
+        var character = HaselAgentLobby.GetCurrentCharaSelectCharacter();
         if (character == null)
             return;
 
@@ -518,7 +513,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         var intro = (ushort)emote.ActionTimeline[1].Row; // EmoteTimelineType.Intro
         var loop = (ushort)emote.ActionTimeline[0].Row; // EmoteTimelineType.Loop
 
-        Debug($"Playing Emote {emoteId}: intro {intro}, loop {loop})");
+        Debug($"Playing Emote {emoteId}: intro {intro}, loop {loop}");
 
         if (emote.EmoteMode.Row != 0)
         {
@@ -619,7 +614,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         if (_currentEntry == null)
             return;
 
-        ushort territoryId = _currentEntry.TerritoryId switch
+        ushort territoryId = _currentEntry.TerritoryType switch
         {
             282  // Private Cottage - Mist
          or 283  // Private House - Mist
@@ -640,7 +635,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
          or 386  // Private Chambers - The Goblet
          => 341, // The Goblet
 
-            _ => _currentEntry.TerritoryId
+            _ => _currentEntry.TerritoryType
         };
 
         if (territoryId <= 0)
