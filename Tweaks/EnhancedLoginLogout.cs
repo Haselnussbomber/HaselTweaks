@@ -57,7 +57,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
     private void UpdateCharacterSettings()
     {
         UpdatePetMirageSettings();
-        UpdateVoiceCache();
     }
 
     private void CleanupCharaSelect()
@@ -99,8 +98,9 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         _currentEntry = new(character, entry);
 
+        character->VoiceId = entry->CharacterInfo.VoiceId;
+
         SpawnPet();
-        SetVoice();
 
         if (Config.SelectedEmotes.TryGetValue(ActiveContentId, out var emoteId))
             PlayEmote(emoteId);
@@ -134,7 +134,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         public Dictionary<ulong, PetMirageSetting> PetMirageSettings = new();
         public Dictionary<ulong, uint> SelectedEmotes = new();
-        public Dictionary<ulong, ushort> VoiceCache = new();
 
         public class PetMirageSetting
         {
@@ -213,12 +212,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
             {
                 if (ActiveContentId != 0)
                 {
-                    if (!Config.VoiceCache.ContainsKey(ActiveContentId))
-                    {
-                        ImGui.TextColored(Colors.Red, "Voice ID for this character not cached. Please log in.");
-                        ImGuiUtils.PushCursorY(3);
-                    }
-
                     ImGuiUtils.PushCursorY(verticalTextPadding);
                     ImGui.Text("Current Emote:");
                     ImGui.SameLine();
@@ -445,31 +438,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     #region Login: Play emote in character selection
 
-    private void UpdateVoiceCache()
-    {
-        var playerState = PlayerState.Instance();
-        if (playerState == null || playerState->IsLoaded != 0x01)
-            return;
-
-        var contentId = playerState->ContentId;
-        if (contentId == 0)
-            return;
-
-        var localPlayer = Service.ClientState.LocalPlayer;
-        if (localPlayer == null)
-            return;
-
-        var character = (Character*)localPlayer.Address;
-        var voiceId = character->VoiceId;
-
-        if (!Config.VoiceCache.ContainsKey(contentId))
-            Config.VoiceCache.Add(contentId, voiceId);
-        else
-            Config.VoiceCache[contentId] = voiceId;
-
-        Debug($"Updated voice id: {voiceId}");
-    }
-
     private void SaveEmote(uint emoteId)
     {
         Log($"Saving Emote #{emoteId} => {Service.Data.GetExcelSheet<Emote>()?.GetRow(emoteId)?.Name ?? ""}");
@@ -478,15 +446,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
             Config.SelectedEmotes.Add(ActiveContentId, emoteId);
         else
             Config.SelectedEmotes[ActiveContentId] = emoteId;
-    }
-
-    private void SetVoice()
-    {
-        if (_currentEntry == null || _currentEntry.Character == null)
-            return;
-
-        if (Config.VoiceCache.TryGetValue(ActiveContentId, out var voiceId))
-            _currentEntry.Character->VoiceId = voiceId;
     }
 
     private void PlayEmote(uint emoteId)
