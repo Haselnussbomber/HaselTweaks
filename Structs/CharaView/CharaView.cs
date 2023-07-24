@@ -162,8 +162,8 @@ public unsafe struct CharaViewItem
     //[FieldOffset(0x7)] public byte Unk7;
     [FieldOffset(0x8)] public uint ItemId;
     [FieldOffset(0xC)] public uint GlamourItemId;
-    [FieldOffset(0x10)] public fixed short ModelMain[4];
-    [FieldOffset(0x18)] public fixed short ModelSub[4];
+    [FieldOffset(0x10)] public WeaponModelId ModelMain;
+    [FieldOffset(0x18)] public WeaponModelId ModelSub;
 }
 
 [StructLayout(LayoutKind.Explicit)]
