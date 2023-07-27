@@ -30,6 +30,11 @@ Options:
 
 If a new daily/tribal quest objective requires you to craft an item, and you have all the materials for it in your inventory at that moment, this tweak will automatically open the recipe, saving you a whopping 4-5 clicks.
 
+### Background Music Keybind
+
+The game already has a keybind to mute/unmute sounds in general, but does not have a separate keybind to toggle background music. This tweak allows you to configure such a keybind.
+
+
 ### Character Class Switcher
 
 Clicking on a class/job in the character window finds the matching gearset and equips it.
@@ -128,8 +133,6 @@ Always opens the "Grand Company Delivery Missions" window on the "Expert Deliver
 ### Forced Cutscene Music
 
 Auto-unmutes background music for most cutscenes.
-
-I've added this since `/bgm` command doesn't work during cutscenes anymore and I usually play with background music muted.
 
 ### Hide MSQ Complete
 

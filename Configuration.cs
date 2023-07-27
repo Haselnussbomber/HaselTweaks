@@ -37,6 +37,7 @@ public class TweakConfigs
     public EnhancedMaterialList.Configuration EnhancedMaterialList { get; init; } = new();
     public PortraitHelper.Configuration PortraitHelper { get; init; } = new();
     public EnhancedLoginLogout.Configuration EnhancedLoginLogout { get; init; } = new();
+    public BackgroundMusicKeybind.Configuration BackgroundMusicKeybind { get; init; } = new();
 }
 
 internal partial class Configuration

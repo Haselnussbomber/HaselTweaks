@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### New Tweak: Background Music Keybind
+
+The game already has a keybind to mute/unmute sounds in general, but does not have a separate keybind to toggle background music. This tweak allows you to configure such a keybind.
+
 ### Commands
 
 - **Added:** New Command `/whatbarding`  
