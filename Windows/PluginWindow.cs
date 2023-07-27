@@ -61,6 +61,8 @@ public partial class PluginWindow : Window, IDisposable
         _logoTextureWrap?.Dispose();
     }
 
+    private Tweak? SelectedTweak => Plugin.Tweaks.FirstOrDefault(t => t.InternalName == _selectedTweak);
+
     public override void OnClose()
     {
         _selectedTweak = string.Empty;
@@ -244,6 +246,8 @@ public partial class PluginWindow : Window, IDisposable
 
             if (ImGui.Selectable($"{tweak.Name}##Selectable_{tweak.InternalName}", _selectedTweak == tweak.InternalName))
             {
+                SelectedTweak?.OnConfigWindowClose();
+
                 _selectedTweak = _selectedTweak != tweak.InternalName
                     ? tweak.InternalName
                     : string.Empty;
@@ -263,7 +267,8 @@ public partial class PluginWindow : Window, IDisposable
         if (!child || !child.Success)
             return;
 
-        if (string.IsNullOrEmpty(_selectedTweak))
+        var tweak = SelectedTweak;
+        if (tweak == null)
         {
             var cursorPos = ImGui.GetCursorPos();
             var contentAvail = ImGui.GetContentRegionAvail();
@@ -298,10 +303,6 @@ public partial class PluginWindow : Window, IDisposable
 
             return;
         }
-
-        var tweak = Plugin.Tweaks.FirstOrDefault(t => t.InternalName == _selectedTweak);
-        if (tweak == null)
-            return;
 
         ImGuiUtils.TextUnformattedColored(Colors.Gold, tweak.Name);
 
