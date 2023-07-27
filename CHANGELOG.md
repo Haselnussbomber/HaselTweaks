@@ -2,9 +2,14 @@
 
 ## [Unreleased]
 
+### Commands
+
+- **Added:** New Command `/whatbarding`  
+  Target a players chocobo companion and execute the command to see what barding it is wearing.
+
 ### Portrait Helper
 
-- **Fixed:** The notification when the gear doesn't match the portrait did not show up outside of sanctuaries.
+- **Fixed:** The notification that the gear does not match the portrait did not show up when you were outside of a sanctuary.
 
 ## [15.3.3] (2023-07-20)
 

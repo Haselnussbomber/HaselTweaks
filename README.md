@@ -55,10 +55,12 @@ A couple of useful chat commands. Each command is separately toggleable.
 
 Available Commands:
 
-- `/itemlink <id>`
-  - Prints an item link for the given item id in chat.
-- `/whatmount`
-  - Target a player and execute the command to see what mount your target is riding and which item teaches this mount.
+- `/itemlink <id>`  
+  Prints an item link for the given item id in chat.
+- `/whatmount`  
+  Target a player and execute the command to see what mount your target is riding and which item teaches this mount.
+- `/whatbarding`  
+  Target a players chocobo companion and execute the command to see what barding it is wearing.
 
 ### Custom Chat Timestamp
 
