@@ -6,11 +6,13 @@ env:
 on:
   push:
     paths-ignore:
+      - .editorconfig
+      - .gitattributes
+      - .github/**
+      - .gitignore
+      - CHANGELOG.md
       - LICENSE
       - README.md
-      - CHANGELOG.md
-      - .gitignore
-      - .github/**
   workflow_dispatch:
 
 jobs:
