@@ -33,7 +33,7 @@ internal sealed class TweakInitializerGenerator : IIncrementalGenerator
                 sourceContext.AddSource("Plugin.TweakInitializer.g.cs", BuildInitializeTweaksSource(tweakNames.Sort()));
             });
     }
-    
+
     private static string BuildInitializeTweaksSource(ImmutableArray<string> tweakNames)
     {
         IndentedStringBuilder builder = new();

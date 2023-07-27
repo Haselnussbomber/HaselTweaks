@@ -30,7 +30,7 @@ public unsafe partial struct AgentLobby
 
     [MemberFunction("E8 ?? ?? ?? ?? EB 4A 84 C0")]
     public readonly partial void OpenLoginWaitDialog(int position);
-    
+
     [StaticAddress("48 89 2D ?? ?? ?? ?? 48 8B 6C 24", 3, true)]
     public static partial CSCharacter* GetCurrentCharaSelectCharacter();
 
