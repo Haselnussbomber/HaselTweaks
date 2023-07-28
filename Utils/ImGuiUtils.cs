@@ -46,7 +46,7 @@ public static partial class ImGuiUtils
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
 
             using var tooltip = ImRaii.Tooltip();
-            if (tooltip != null && tooltip.Success)
+            if (tooltip.Success)
             {
                 TextUnformattedColored(Colors.White, title);
 

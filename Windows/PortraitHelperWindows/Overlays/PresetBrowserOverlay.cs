@@ -52,7 +52,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         using (var table = ImRaii.Table("##PresetBrowser_Table", 2, ImGuiTableFlags.BordersInnerV | ImGuiTableFlags.NoPadOuterX | ImGuiTableFlags.NoPadInnerX))
         {
-            if (table != null && table.Success)
+            if (table.Success)
             {
                 ImGui.TableSetupColumn("Tags", ImGuiTableColumnFlags.WidthFixed, 180);
                 ImGui.TableSetupColumn("Presets", ImGuiTableColumnFlags.WidthStretch);
@@ -84,7 +84,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             (tag.Id == SelectedTagId ? ImGuiTreeNodeFlags.Selected : ImGuiTreeNodeFlags.None);
 
         using var treeNode = ImRaii.TreeNode($"{tag.Name} ({count})##PresetBrowser_SideBar_Tag{tag.Id}", treeNodeFlags);
-        if (treeNode == null || !treeNode.Success)
+        if (!treeNode.Success)
             return;
 
         if (ImGui.IsItemClicked())
@@ -94,7 +94,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         using (var source = ImRaii.DragDropSource())
         {
-            if (source != null && source.Success)
+            if (source.Success)
             {
                 ImGuiUtils.TextUnformattedDisabled($"Moving {tag.Name}");
 
@@ -108,7 +108,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         using (var target = ImRaii.DragDropTarget())
         {
-            if (target != null && target.Success)
+            if (target.Success)
             {
                 var payload = ImGui.AcceptDragDropPayload("MoveTag");
                 if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
@@ -214,7 +214,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             (SelectedTagId == null ? ImGuiTreeNodeFlags.Selected : ImGuiTreeNodeFlags.None);
 
         using var allTreeNode = ImRaii.TreeNode($"All ({Config.Presets.Count})##PresetBrowser_SideBar_All", treeNodeFlags);
-        if (allTreeNode == null || !allTreeNode.Success)
+        if (!allTreeNode.Success)
             return;
 
         if (ImGui.IsItemClicked())
@@ -274,7 +274,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var child = ImRaii.Child("##PresetBrowser_Content", ImGui.GetContentRegionAvail());
-        if (child == null || !child.Success)
+        if (!child.Success)
             return;
         framePadding?.Dispose();
 

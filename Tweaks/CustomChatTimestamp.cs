@@ -79,7 +79,7 @@ public unsafe partial class CustomChatTimestamp : Tweak
 
             var size = new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetStyle().WindowPadding.Y * 2 + ImGui.GetTextLineHeight() + 2);
             using var child = ImRaii.Child("##HaselTweaks_CustomChatTimestamp_FormatExample", size, true);
-            if (!child || !child.Success)
+            if (!child.Success)
                 return;
 
             ImGuiUtils.TextUnformattedColored(Colors.White, formatted);

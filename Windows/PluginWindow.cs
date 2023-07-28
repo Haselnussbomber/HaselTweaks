@@ -146,11 +146,11 @@ public partial class PluginWindow : Window, IDisposable
     {
         var scale = ImGui.GetIO().FontGlobalScale;
         using var child = ImRaii.Child("##HaselTweaks_Sidebar", new Vector2(SidebarWidth * scale, -1), true);
-        if (!child || !child.Success)
+        if (!child.Success)
             return;
 
         using var table = ImRaii.Table("##HaselTweaks_SidebarTable", 2, ImGuiTableFlags.NoSavedSettings);
-        if (!table || !table.Success)
+        if (!table.Success)
             return;
 
         ImGui.TableSetupColumn("Checkbox", ImGuiTableColumnFlags.WidthFixed);
@@ -179,7 +179,7 @@ public partial class PluginWindow : Window, IDisposable
                 {
                     var (status, color) = GetTweakStatus(tweak);
                     using var tooltip = ImRaii.Tooltip();
-                    if (tooltip != null && tooltip.Success)
+                    if (tooltip.Success)
                     {
                         ImGuiUtils.TextUnformattedColored(color, status);
                     }
@@ -264,7 +264,7 @@ public partial class PluginWindow : Window, IDisposable
     {
         var scale = ImGui.GetIO().FontGlobalScale;
         using var child = ImRaii.Child("##HaselTweaks_Config", new Vector2(ConfigWidth * scale, -1), true);
-        if (!child || !child.Success)
+        if (!child.Success)
             return;
 
         var tweak = SelectedTweak;
@@ -562,7 +562,7 @@ public partial class PluginWindow : Window, IDisposable
         {
             using (var combo = ImRaii.Combo(data.Key, selectedLabel))
             {
-                if (combo != null && combo.Success)
+                if (combo.Success)
                 {
                     var names = Enum.GetNames(enumType)
                         .Select(name => (
@@ -597,7 +597,7 @@ public partial class PluginWindow : Window, IDisposable
         {
             using (var combo = ImRaii.Combo(data.Key, data.Value ?? ""))
             {
-                if (combo != null && combo.Success)
+                if (combo.Success)
                 {
                     foreach (var item in options)
                     {

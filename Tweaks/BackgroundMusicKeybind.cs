@@ -96,7 +96,7 @@ public unsafe class BackgroundMusicKeybind : Tweak
         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - ImGui.GetStyle().IndentSpacing);
         using (var combo = ImRaii.Combo("##Key", previewValue))
         {
-            if (combo != null && combo.Success)
+            if (combo.Success)
             {
                 foreach (var _key in Service.KeyState.GetValidVirtualKeys())
                 {

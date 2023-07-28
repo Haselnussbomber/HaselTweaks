@@ -133,7 +133,7 @@ public class PresetCard : IDisposable
 
         using (var source = ImRaii.DragDropSource())
         {
-            if (source != null && source.Success)
+            if (source.Success)
             {
                 ImGui.TextUnformatted($"Moving {_preset.Name}");
 
@@ -150,7 +150,7 @@ public class PresetCard : IDisposable
 
         using (var target = ImRaii.DragDropTarget())
         {
-            if (target != null && target.Success)
+            if (target.Success)
             {
                 var payload = ImGui.AcceptDragDropPayload("MovePresetCard");
                 unsafe
