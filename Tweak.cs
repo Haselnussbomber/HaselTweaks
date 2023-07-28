@@ -114,8 +114,9 @@ public abstract unsafe class Tweak
         }
         catch (Exception ex)
         {
-            Error(ex, "Unexpected error during Enable");
+            Error(ex, "Unexpected error during Enable (Hooks)");
             LastException = ex;
+            return;
         }
 
         try
@@ -126,6 +127,7 @@ public abstract unsafe class Tweak
         {
             Error(ex, "Unexpected error during Enable");
             LastException = ex;
+            return;
         }
 
         LastException = null;
@@ -142,7 +144,7 @@ public abstract unsafe class Tweak
         }
         catch (Exception ex)
         {
-            Error(ex, "Unexpected error during Disable");
+            Error(ex, "Unexpected error during Disable (Hooks)");
             LastException = ex;
         }
 
@@ -169,7 +171,7 @@ public abstract unsafe class Tweak
         }
         catch (Exception ex)
         {
-            Error(ex, "Unexpected error during Dispose");
+            Error(ex, "Unexpected error during Dispose (Hooks)");
             LastException = ex;
         }
 
