@@ -94,23 +94,23 @@ public sealed unsafe partial class StringCache
     public static string GetOrnamentName(uint id)
         => FormatName(NameFormatter.Placeholder.ActStr, NameFormatter.IdConverter.ActStr_Ornament, id) ?? $"[Ornament#{id}]";
 
-    public static string? GetAddonText(uint rowId)
+    public static string GetAddonText(uint id)
     {
-        if (!AddonCache.TryGetValue(rowId, out var value))
+        if (!AddonCache.TryGetValue(id, out var value))
         {
-            var ptr = (nint)RaptureTextModule.Instance()->GetAddonText(rowId);
+            var ptr = (nint)RaptureTextModule.Instance()->GetAddonText(id);
             if (ptr != 0)
             {
                 value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
 
                 if (string.IsNullOrWhiteSpace(value))
-                    return null;
+                    return null ?? $"[Addon#{id}]";
 
-                AddonCache.Add(rowId, value);
+                AddonCache.Add(id, value);
             }
         }
 
-        return value;
+        return value ?? $"[Addon#{id}]";
     }
 
     public static string GetSheetText<T>(uint rowId, string columnName) where T : ExcelRow
