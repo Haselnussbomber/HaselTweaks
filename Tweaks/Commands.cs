@@ -41,21 +41,21 @@ public unsafe class Commands : Tweak
 
     private static void OnConfigChange()
     {
-        DisableCommands();
-        EnableCommands();
+        UnregisterCommands();
+        RegisterCommands();
     }
 
     public override void Enable()
     {
-        EnableCommands();
+        RegisterCommands();
     }
 
     public override void Disable()
     {
-        DisableCommands(true);
+        UnregisterCommands(true);
     }
 
-    private static void EnableCommands()
+    private static void RegisterCommands()
     {
         if (Config.EnableItemLinkCommand)
         {
@@ -88,7 +88,7 @@ public unsafe class Commands : Tweak
         }
     }
 
-    private static void DisableCommands(bool removeAll = false)
+    private static void UnregisterCommands(bool removeAll = false)
     {
         if (!Config.EnableItemLinkCommand || removeAll)
         {
