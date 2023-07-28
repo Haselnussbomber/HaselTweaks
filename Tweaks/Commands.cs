@@ -126,11 +126,6 @@ public unsafe class Commands : Tweak
             return;
         }
 
-        var itemLink = new SeStringBuilder()
-                    .AddUiForeground(SeIconChar.LinkMarker.ToIconString() + " ", 500)
-                    .Append(MemoryHelper.ReadSeStringNullTerminated((nint)RaptureTextModule.Instance()->FormatAddonText2(2021, (int)item.RowId, 0)))
-                    .Build();
-
         Service.Chat.PrintChat(new XivChatEntry
         {
             Message = new SeStringBuilder()
@@ -138,7 +133,7 @@ public unsafe class Commands : Tweak
                     .AddText("Item ")
                     .AddUiForeground(id.ToString(), 1)
                     .AddText(": ")
-                    .Append(itemLink)
+                    .Append(GetItemLink(id))
                     .Build(),
             Type = XivChatType.Echo
         });
@@ -234,12 +229,9 @@ public unsafe class Commands : Tweak
         }
 
         var sesb = new SeStringBuilder()
-            .AddUiForeground("\uE078 ", 32);
+        .AddUiForeground("\uE078 ", 32);
 
-        var itemLink = new SeStringBuilder()
-                    .AddUiForeground(SeIconChar.LinkMarker.ToIconString() + " ", 500)
-                    .Append(MemoryHelper.ReadSeStringNullTerminated((nint)RaptureTextModule.Instance()->FormatAddonText2(2021, (int)itemRow.RowId, 0)))
-                    .Build();
+        var itemLink = GetItemLink(itemRow.RowId);
 
         switch (Service.ClientState.ClientLanguage)
         {
@@ -357,5 +349,13 @@ public unsafe class Commands : Tweak
             Message = sesb.Build(),
             Type = XivChatType.Echo
         });
+    }
+
+    private static SeString GetItemLink(uint id)
+    {
+        var item = Service.Data.GetExcelSheet<Item>()!.GetRow(id);
+        return item == null
+            ? new SeString(new TextPayload($"Item#{id}"))
+            : SeString.CreateItemLink(item, false);
     }
 }
