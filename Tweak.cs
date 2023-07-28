@@ -111,6 +111,15 @@ public abstract unsafe class Tweak
         try
         {
             CallHooks("Enable");
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during Enable");
+            LastException = ex;
+        }
+
+        try
+        {
             Enable();
         }
         catch (Exception ex)
@@ -119,6 +128,7 @@ public abstract unsafe class Tweak
             LastException = ex;
         }
 
+        LastException = null;
         Enabled = true;
     }
 
@@ -129,6 +139,15 @@ public abstract unsafe class Tweak
         try
         {
             CallHooks("Disable");
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during Disable");
+            LastException = ex;
+        }
+
+        try
+        {
             Disable();
         }
         catch (Exception ex)
@@ -147,11 +166,20 @@ public abstract unsafe class Tweak
         try
         {
             CallHooks("Dispose");
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during Dispose");
+            LastException = ex;
+        }
+
+        try
+        {
             Dispose();
         }
         catch (Exception ex)
         {
-            Error(ex, "Unable to disable");
+            Error(ex, "Unexpected error during Dispose");
             LastException = ex;
         }
 
