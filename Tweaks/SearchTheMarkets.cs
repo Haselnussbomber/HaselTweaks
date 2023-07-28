@@ -47,12 +47,12 @@ public unsafe class SearchTheMarkets : Tweak
 
             _contextMenuItemGame = new(
                 text,
-                (_) => { ItemSearch.Search(_itemId); _itemId = 0; },
+                (_) => { ItemSearchUtils.Search(_itemId); _itemId = 0; },
                 false);
 
             _contextMenuItemInventory = new(
                 text,
-                (_) => { ItemSearch.Search(_itemId); _itemId = 0; },
+                (_) => { ItemSearchUtils.Search(_itemId); _itemId = 0; },
                 false);
         }
         catch (Exception ex)
@@ -116,7 +116,7 @@ public unsafe class SearchTheMarkets : Tweak
                 break;
         }
 
-        if (!ItemSearch.CanSearchForItem(_itemId))
+        if (!ItemSearchUtils.CanSearchForItem(_itemId))
             return;
 
         args.AddCustomItem(_contextMenuItemGame);
@@ -126,7 +126,7 @@ public unsafe class SearchTheMarkets : Tweak
     {
         _itemId = args.ItemId;
 
-        if (!ItemSearch.CanSearchForItem(_itemId))
+        if (!ItemSearchUtils.CanSearchForItem(_itemId))
             return;
 
         args.AddCustomItem(_contextMenuItemInventory);

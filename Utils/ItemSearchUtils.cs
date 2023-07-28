@@ -5,7 +5,7 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Utils;
 
-public static unsafe class ItemSearch
+public static unsafe class ItemSearchUtils
 {
     public static bool CanSearchForItem(uint itemId)
     {
