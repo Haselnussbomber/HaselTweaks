@@ -137,8 +137,8 @@ public unsafe class GearSetGridWindow : Window
                 if (slotIndex == 5)
                     continue;
 
-                var slot = ((GearsetItem*)gearset->ItemsData)[slotIndex];
-                var itemId = slot.ItemID % 1000000; // strip HQ
+                var slot = (GearsetItem*)((nint)gearset->ItemsData + GearsetItem.Size * slotIndex);
+                var itemId = slot->ItemID % 1000000; // strip HQ
 
                 ImGui.TableNextColumn();
 
@@ -179,34 +179,34 @@ public unsafe class GearSetGridWindow : Window
                         {
                             ImGuiUtils.DrawPaddedSeparator();
                             ImGui.Text($"Slot: {StringCache.GetAddonText(738 + slotIndex)} ({slotIndex})");
-                            ImGui.Text($"ItemID: {slot.ItemID}");
-                            ImGui.Text($"GlamourID: {slot.GlamourId}");
-                            if (slot.GlamourId != 0)
+                            ImGui.Text($"ItemID: {slot->ItemID}");
+                            ImGui.Text($"GlamourID: {slot->GlamourId}");
+                            if (slot->GlamourId != 0)
                             {
-                                var glamourItem = Service.Data.GetExcelSheet<Item>()!.GetRow(slot.GlamourId)!;
+                                var glamourItem = Service.Data.GetExcelSheet<Item>()!.GetRow(slot->GlamourId)!;
                                 ImGuiUtils.SameLineSpace();
                                 ImGui.Text("(");
                                 ImGui.SameLine(0, 0);
-                                ImGui.TextColored(Colors.GetItemRarityColor(glamourItem.Rarity), StringCache.GetItemName(slot.GlamourId));
+                                ImGui.TextColored(Colors.GetItemRarityColor(glamourItem.Rarity), StringCache.GetItemName(slot->GlamourId));
                                 ImGui.SameLine(0, 0);
                                 ImGui.Text(")");
                             }
-                            if (slot.Stain != 0)
+                            if (slot->Stain != 0)
                             {
-                                ImGui.Text($"Stain: {slot.Stain}");
+                                ImGui.Text($"Stain: {slot->Stain}");
                                 ImGuiUtils.SameLineSpace();
                                 ImGui.Text("(");
                                 ImGui.SameLine(0, 0);
-                                using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.GetStainColor(slot.Stain)))
+                                using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.GetStainColor(slot->Stain)))
                                     ImGui.Bullet();
                                 ImGui.SameLine(0, 0);
-                                ImGui.Text(StringCache.GetSheetText<Stain>(slot.Stain, "Name"));
+                                ImGui.Text(StringCache.GetSheetText<Stain>(slot->Stain, "Name"));
                                 ImGui.SameLine(0, 0);
                                 ImGui.Text(")");
                             }
                         }
 
-                        var usedInGearsets = GetItemInGearsetsList(slot.ItemID, slotIndex);
+                        var usedInGearsets = GetItemInGearsetsList(slot->ItemID, slotIndex);
                         if (usedInGearsets.Count > 1)
                         {
                             ImGuiUtils.DrawPaddedSeparator();
@@ -294,13 +294,13 @@ public unsafe class GearSetGridWindow : Window
         return Vector4.Lerp(colors[startIndex], colors[endIndex], t);
     }
 
-    public void DrawItemIcon(GearsetItem slot, Item item, string key)
+    public void DrawItemIcon(GearsetItem* slot, Item item, string key)
     {
         var popupKey = $"##ItemContextMenu_{key}_{item.RowId}_Tooltip";
 
         //var isEventItem = slot.ItemID > 2000000;
         //var isCollectable = slot.ItemID is > 500000 and < 1000000;
-        var isHq = slot.ItemID is > 1000000 and < 1500000;
+        var isHq = slot->ItemID is > 1000000 and < 1500000;
 
         var startPos = ImGui.GetCursorPos();
 
@@ -344,9 +344,9 @@ public unsafe class GearSetGridWindow : Window
                 ClickCallback = () =>
                 {
                     if (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift))
-                        AgentTryon.TryOn(0, item.RowId, slot.Stain, 0, 0);
+                        AgentTryon.TryOn(0, item.RowId, slot->Stain, 0, 0);
                     else
-                        AgentTryon.TryOn(0, item.RowId, slot.Stain, slot.GlamourId, slot.Stain);
+                        AgentTryon.TryOn(0, item.RowId, slot->Stain, slot->GlamourId, slot->Stain);
                 }
             },
 
