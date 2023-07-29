@@ -10,16 +10,6 @@ Adds a configurable keybind to toggle the background music, in addition to the g
 
 A window that displays a grid view of all the items in each gear set, making it easier to figure out which items to upgrade next.
 
-Configuration options:
-
-- Auto-open/close with Gear Set List
-- Register `/gsg` command to toggle window
-- Allow switching gearsets  
-  Makes the id column clickable.
-- Convert separator gear set with spacing  
-  When using separator gear sets (e.g. a gearset with name ===========) this option automatically converts it into spacing between rows (in the Gear Set Grid).
-  - Spacing between rows can be fully eliminated with the "Disable spacing" option.
-
 ### Commands
 
 - **Added:** New Command `/whatbarding`  
