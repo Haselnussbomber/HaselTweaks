@@ -8,4 +8,4 @@ public unsafe partial struct GearsetChecksumData
 
     [MemberFunction("E8 ?? ?? ?? ?? 89 43 48 48 83 C4 20")]
     public static partial uint GenerateChecksum(uint* itemIds, byte* stainIds, BannerGearVisibilityFlag gearVisibilityFlag);
-};
+}

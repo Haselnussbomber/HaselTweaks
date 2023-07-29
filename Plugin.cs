@@ -6,16 +6,21 @@ using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Caches;
+using HaselTweaks.Structs;
 using HaselTweaks.Windows;
 using DalamudFramework = Dalamud.Game.Framework;
 
 namespace HaselTweaks;
 
-public partial class Plugin : IDalamudPlugin
+public abstract class PluginBase
+{
+    public abstract void SetupAddressHooks();
+}
+
+public partial class Plugin : PluginBase, IDalamudPlugin
 {
     public string Name => "HaselTweaks";
 
@@ -34,8 +39,8 @@ public partial class Plugin : IDalamudPlugin
 
     private void Setup()
     {
-        SignatureHelper.Initialise(this);
         InitializeResolver();
+        SetupAddressHooks();
 
         Service.Framework.RunOnFrameworkThread(() =>
         {
@@ -200,7 +205,7 @@ public partial class Plugin : IDalamudPlugin
         Service.TextureCache.Dispose();
     }
 
-    [SigHook("E8 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? C1 E8 14")]
+    [AddressHook<HaselAtkUnitBase>(nameof(HaselAtkUnitBase.Addresses.AddonSetup))]
     public unsafe void AddonSetup(AtkUnitBase* unitBase)
     {
         AddonSetupHook.OriginalDisposeSafe(unitBase);
@@ -211,7 +216,7 @@ public partial class Plugin : IDalamudPlugin
         }
     }
 
-    [SigHook("E8 ?? ?? ?? ?? 48 8B 7C 24 ?? 41 8B C6")]
+    [AddressHook<HaselAtkUnitManager>(nameof(HaselAtkUnitManager.Addresses.AddonFinalize))]
     public unsafe void AddonFinalize(AtkUnitManager* unitManager, AtkUnitBase** unitBasePtr)
     {
         var unitBase = *unitBasePtr;

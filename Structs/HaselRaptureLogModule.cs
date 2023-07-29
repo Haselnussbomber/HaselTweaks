@@ -1,13 +1,12 @@
-using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 
 namespace HaselTweaks.Structs;
 
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Explicit, Size = 0x3488)]
 public unsafe partial struct HaselRaptureLogModule
 {
-    public static HaselRaptureLogModule* Instance()
-        => (HaselRaptureLogModule*)UIModule.Instance()->GetRaptureLogModule();
+    public static HaselRaptureLogModule* Instance() => (HaselRaptureLogModule*)RaptureLogModule.Instance();
 
     [MemberFunction("E8 ?? ?? ?? ?? 32 C0 EB 17")]
-    public partial void ShowLogMessageUInt(uint logMessageID, uint value);
+    public readonly partial void ShowLogMessageUInt(uint logMessageID, uint value);
 }

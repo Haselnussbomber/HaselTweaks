@@ -1,5 +1,4 @@
 using System.Numerics;
-using Dalamud.Logging;
 using HaselTweaks.Extensions;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;

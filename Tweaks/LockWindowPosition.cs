@@ -6,10 +6,10 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Memory;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Enums;
+using HaselTweaks.Structs;
 using HaselTweaks.Structs.Addons;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -237,7 +237,7 @@ public unsafe partial class LockWindowPosition : Tweak
         return result;
     }
 
-    [SigHook("E8 ?? ?? ?? ?? 0F BF 8C 24 ?? ?? ?? ?? 01 8F")]
+    [AddressHook<HaselAtkUnitBase>(nameof(HaselAtkUnitBase.Addresses.Move))]
     public bool Move(AtkUnitBase* atkUnitBase, nint xDelta, nint yDelta)
     {
         if (atkUnitBase != null)
@@ -255,8 +255,8 @@ public unsafe partial class LockWindowPosition : Tweak
         return MoveHook.OriginalDisposeSafe(atkUnitBase, xDelta, yDelta);
     }
 
-    [SigHook("48 89 5C 24 ?? 48 89 6C 24 ?? 57 48 83 EC 30 80 7A 37 00")]
-    public bool RaptureAtkUnitManager_Vf6(RaptureAtkUnitManager* self, nint a2)
+    [VTableHook<HaselRaptureAtkUnitManager>(6)]
+    public bool RaptureAtkUnitManager_Vf6(HaselRaptureAtkUnitManager* self, nint a2)
     {
         if (_showPicker)
         {
@@ -373,8 +373,8 @@ public unsafe partial class LockWindowPosition : Tweak
         return AgentContext_OpenContextMenuForAddonHook.OriginalDisposeSafe(agent, addonId, bindToOwner);
     }
 
-    [SigHook("48 89 6C 24 ?? 48 89 54 24 ?? 56 41 54")]
-    public AtkValue* WindowContextMenuEventHandler(nint self, AtkValue* result, nint a3, long a4, long eventParam)
+    [AddressHook<WindowContextMenuHandler>(nameof(WindowContextMenuHandler.Addresses.Callback))]
+    public AtkValue* WindowContextMenuEventHandler_Callback(nint self, AtkValue* result, nint a3, long a4, long eventParam)
     {
         if (_eventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock && GetAgent<AgentContext>(AgentId.Context, out var agentContext))
         {
@@ -414,7 +414,7 @@ public unsafe partial class LockWindowPosition : Tweak
         if (_eventIndexToDisable != 0)
             _eventIndexToDisable = 0;
 
-        return WindowContextMenuEventHandlerHook.OriginalDisposeSafe(self, result, a3, a4, eventParam);
+        return WindowContextMenuEventHandler_CallbackHook.OriginalDisposeSafe(self, result, a3, a4, eventParam);
     }
 
     private void AddMenuEntry(string text, int eventParam)

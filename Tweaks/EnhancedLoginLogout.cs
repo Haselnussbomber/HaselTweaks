@@ -16,9 +16,7 @@ using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
-using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 using HaselAgentLobby = HaselTweaks.Structs.AgentLobby;
-using HaselCharacter = HaselTweaks.Structs.Character;
 
 namespace HaselTweaks.Tweaks;
 
@@ -512,11 +510,11 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         _currentEntry.Character->SetMode(Character.CharacterModes.Normal, 0);
     }
 
-    [SigHook("E8 ?? ?? ?? ?? 40 84 ED 74 18")]
-    public bool SomeDoEmoteFunction(nint a1, ushort emoteId, nint a3)
+    [AddressHook<EmoteManager>(nameof(EmoteManager.Addresses.ExecuteEmote))]
+    public bool ExecuteEmote(EmoteManager* handler, ushort emoteId, nint targetData)
     {
         var changePoseIndexBefore = PlayerState.Instance()->SelectedPoses[0];
-        var success = SomeDoEmoteFunctionHook.OriginalDisposeSafe(a1, emoteId, a3);
+        var success = ExecuteEmoteHook.OriginalDisposeSafe(handler, emoteId, targetData);
 
         if (_excludedEmotes == null)
         {

@@ -1,7 +1,7 @@
 namespace HaselTweaks.Structs;
 
 [StructLayout(LayoutKind.Explicit)]
-public unsafe partial struct Character
+public unsafe partial struct HaselCharacter
 {
     [FieldOffset(0x920)] public ActionTimelineManager ActionTimelineManager;
 

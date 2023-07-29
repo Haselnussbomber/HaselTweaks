@@ -3,7 +3,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using FFXIVClientStructs.STD;
-using CSCharacter = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Structs;
 
@@ -32,7 +31,7 @@ public unsafe partial struct AgentLobby
     public readonly partial void OpenLoginWaitDialog(int position);
 
     [StaticAddress("48 89 2D ?? ?? ?? ?? 48 8B 6C 24", 3, true)]
-    public static partial CSCharacter* GetCurrentCharaSelectCharacter();
+    public static partial Character* GetCurrentCharaSelectCharacter();
 
     [StaticAddress("4C 8D 3D ?? ?? ?? ?? 48 8B DA", 3)]
     public static partial CharaSelectCharacterList* GetCharaSelectCharacterList();

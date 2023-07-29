@@ -91,7 +91,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
         new(2318, 5),
     };
 
-    [SigHook("66 83 F9 1E 0F 83")]
+    [AddressHook<Statics>(nameof(Statics.Addresses.UpdateQuestWork))]
     public nint UpdateQuestWork(ushort index, nint questData, bool a3, bool a4, bool a5)
     {
         var questId = *(ushort*)questData;

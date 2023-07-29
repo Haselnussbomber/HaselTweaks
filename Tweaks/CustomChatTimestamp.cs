@@ -3,6 +3,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using ImGuiNET;
 
@@ -112,7 +113,7 @@ public unsafe partial class CustomChatTimestamp : Tweak
         ReloadChat();
     }
 
-    [SigHook("E8 ?? ?? ?? ?? 48 8B D0 48 8B CB E8 ?? ?? ?? ?? 4C 8D 87")]
+    [AddressHook<HaselRaptureTextModule>(nameof(HaselRaptureTextModule.Addresses.FormatAddonInt))]
     private byte* FormatAddon(nint a1, ulong addonRowId, ulong value)
     {
         if (addonRowId is 7840 or 7841 && !string.IsNullOrWhiteSpace(Config.Format))
