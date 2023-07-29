@@ -20,6 +20,7 @@ using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using GearsetFlag = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetFlag;
 using GearsetItem = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetItem;
+using ImColor = HaselTweaks.Structs.ImColor;
 using Item = HaselTweaks.Sheets.Item;
 
 namespace HaselTweaks.Windows;
@@ -125,7 +126,7 @@ public unsafe class GearSetGridWindow : Window
                 var textSize = ImGui.CalcTextSize(gearsetNumber);
 
                 ImGuiUtils.PushCursorX(region.X / 2f - textSize.X - ImGui.GetStyle().ItemSpacing.X);
-                ImGui.Text(gearsetNumber);
+                ImGui.TextUnformatted(gearsetNumber);
 
                 ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
                 Service.TextureCache.GetIcon(62000 + gearset->ClassJob).Draw(20 * ImGuiHelpers.GlobalScale);
@@ -173,36 +174,36 @@ public unsafe class GearSetGridWindow : Window
                 {
                     using (ImRaii.Tooltip())
                     {
-                        ImGui.TextColored(Colors.GetItemRarityColor(item.Rarity), StringCache.GetItemName(itemId));
+                        ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(item.Rarity), StringCache.GetItemName(itemId));
 
                         if (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift))
                         {
                             ImGuiUtils.DrawPaddedSeparator();
-                            ImGui.Text($"Slot: {StringCache.GetAddonText(738 + slotIndex)} ({slotIndex})");
-                            ImGui.Text($"ItemID: {slot->ItemID}");
-                            ImGui.Text($"GlamourID: {slot->GlamourId}");
+                            ImGui.TextUnformatted($"Slot: {StringCache.GetAddonText(738 + slotIndex)} ({slotIndex})");
+                            ImGui.TextUnformatted($"ItemID: {slot->ItemID}");
+                            ImGui.TextUnformatted($"GlamourID: {slot->GlamourId}");
                             if (slot->GlamourId != 0)
                             {
                                 var glamourItem = Service.Data.GetExcelSheet<Item>()!.GetRow(slot->GlamourId)!;
                                 ImGuiUtils.SameLineSpace();
-                                ImGui.Text("(");
+                                ImGui.TextUnformatted("(");
                                 ImGui.SameLine(0, 0);
-                                ImGui.TextColored(Colors.GetItemRarityColor(glamourItem.Rarity), StringCache.GetItemName(slot->GlamourId));
+                                ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(glamourItem.Rarity), StringCache.GetItemName(slot->GlamourId));
                                 ImGui.SameLine(0, 0);
-                                ImGui.Text(")");
+                                ImGui.TextUnformatted(")");
                             }
                             if (slot->Stain != 0)
                             {
-                                ImGui.Text($"Stain: {slot->Stain}");
+                                ImGui.TextUnformatted($"Stain: {slot->Stain}");
                                 ImGuiUtils.SameLineSpace();
-                                ImGui.Text("(");
+                                ImGui.TextUnformatted("(");
                                 ImGui.SameLine(0, 0);
                                 using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.GetStainColor(slot->Stain)))
                                     ImGui.Bullet();
                                 ImGui.SameLine(0, 0);
-                                ImGui.Text(StringCache.GetSheetText<Stain>(slot->Stain, "Name"));
+                                ImGui.TextUnformatted(StringCache.GetSheetText<Stain>(slot->Stain, "Name"));
                                 ImGui.SameLine(0, 0);
-                                ImGui.Text(")");
+                                ImGui.TextUnformatted(")");
                             }
                         }
 
@@ -210,7 +211,7 @@ public unsafe class GearSetGridWindow : Window
                         if (usedInGearsets.Count > 1)
                         {
                             ImGuiUtils.DrawPaddedSeparator();
-                            ImGui.Text(Service.ClientState.ClientLanguage switch
+                            ImGui.TextUnformatted(Service.ClientState.ClientLanguage switch
                             {
                                 ClientLanguage.German => "Wird auch in diesen Ausrüstungssets benutzt:",
                                 ClientLanguage.French => "Aussi utilisé dans ces ensembles d'équipement :",
@@ -224,7 +225,7 @@ public unsafe class GearSetGridWindow : Window
                                     if (entry.Id == gearset->ID)
                                         continue;
 
-                                    ImGui.Text($"[{entry.Id + 1}] {entry.Name}");
+                                    ImGui.TextUnformatted($"[{entry.Id + 1}] {entry.Name}");
                                 }
                             }
                         }
@@ -233,7 +234,7 @@ public unsafe class GearSetGridWindow : Window
 
                 var itemLevelText = $"{item.LevelItem.Row}";
                 ImGuiUtils.PushCursorX(IconSize.X * ImGuiHelpers.GlobalScale / 2f - ImGui.CalcTextSize(itemLevelText).X / 2f);
-                ImGui.TextColored(GetItemLevelColor(gearset->ClassJob, item, Colors.Red, Colors.Yellow, Colors.Green), itemLevelText);
+                ImGuiUtils.TextUnformattedColored(GetItemLevelColor(gearset->ClassJob, item, Colors.Red, Colors.Yellow, Colors.Green), itemLevelText);
 
                 ImGuiUtils.PushCursorY(2f * ImGuiHelpers.GlobalScale);
             }
@@ -266,7 +267,7 @@ public unsafe class GearSetGridWindow : Window
         return jobIndex == null ? (short)0 : PlayerState.Instance()->ClassJobLevelArray[(short)jobIndex];
     }
 
-    private Vector4 GetItemLevelColor(byte classJob, Item item, params Vector4[] colors)
+    private ImColor GetItemLevelColor(byte classJob, Item item, params Vector4[] colors)
     {
         if (colors.Length < 2)
             throw new ArgumentException("At least two colors are required for interpolation.");
@@ -291,7 +292,7 @@ public unsafe class GearSetGridWindow : Window
         var startIndex = (int)(value * (colors.Length - 1));
         var endIndex = Math.Min(startIndex + 1, colors.Length - 1);
         var t = value * (colors.Length - 1) - startIndex;
-        return Vector4.Lerp(colors[startIndex], colors[endIndex], t);
+        return (ImColor)Vector4.Lerp(colors[startIndex], colors[endIndex], t);
     }
 
     public void DrawItemIcon(GearsetItem* slot, Item item, string key)
@@ -388,7 +389,7 @@ public unsafe class GearSetGridWindow : Window
                         FontAwesomeIcon.ExternalLinkAlt.ToIconString()
                     );
                     ImGui.SetCursorPos(pos + new Vector2(20, 0) * ImGuiHelpers.GlobalScale);
-                    ImGui.TextColored(Colors.Grey, $"https://www.garlandtools.org/db/#item/{item.RowId}");
+                    ImGuiUtils.TextUnformattedColored(Colors.Grey, $"https://www.garlandtools.org/db/#item/{item.RowId}");
                 }
             },
 
