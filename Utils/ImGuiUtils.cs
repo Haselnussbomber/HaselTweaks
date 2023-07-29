@@ -99,6 +99,12 @@ public static partial class ImGuiUtils
         return distanceY >= 0 && distanceY <= ImGui.GetWindowHeight();
     }
 
+    public static void PushCursor(Vector2 vec)
+        => ImGui.SetCursorPos(ImGui.GetCursorPos() + vec);
+
+    public static void PushCursor(float x, float y)
+        => PushCursor(new Vector2(x, y));
+
     public static void PushCursorX(float x)
         => ImGui.SetCursorPosX(ImGui.GetCursorPosX() + x);
 

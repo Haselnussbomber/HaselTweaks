@@ -38,6 +38,7 @@ public class TweakConfigs
     public PortraitHelper.Configuration PortraitHelper { get; init; } = new();
     public EnhancedLoginLogout.Configuration EnhancedLoginLogout { get; init; } = new();
     public BackgroundMusicKeybind.Configuration BackgroundMusicKeybind { get; init; } = new();
+    public GearSetGrid.Configuration GearSetGrid { get; init; } = new();
 }
 
 internal partial class Configuration

@@ -26,6 +26,9 @@ public struct ImColor
     {
     }
 
+    public static implicit operator ImColor(uint col)
+        => new(ImGui.ColorConvertU32ToFloat4(col));
+
     public static implicit operator ImColor(Vector4 vec)
         => new(vec);
 

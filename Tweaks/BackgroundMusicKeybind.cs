@@ -10,7 +10,7 @@ namespace HaselTweaks.Tweaks;
 
 [Tweak(
     Name: "Background Music Keybind",
-    Description: "Set a keybind for muting/unmuting the background music.",
+    Description: "A configurable keybind to toggle the background music.",
     HasCustomConfig: true
 )]
 public unsafe class BackgroundMusicKeybind : Tweak

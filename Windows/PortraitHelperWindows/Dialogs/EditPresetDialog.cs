@@ -71,7 +71,7 @@ public class EditPresetDialog : ConfirmationDialog
 
             ImGui.Spacing();
             using var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge);
-            if (tagsCombo != null && tagsCombo.Success)
+            if (tagsCombo.Success)
             {
                 foreach (var tag in Config.PresetTags)
                 {
