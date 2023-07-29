@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselTweaks.Extensions;
 using HaselTweaks.Structs;
@@ -21,8 +24,18 @@ public static class Colors
     public static ImColor Grey3 { get; } = new(0.6f, 0.6f, 0.6f);
     public static ImColor Grey4 { get; } = new(0.3f, 0.3f, 0.3f);
 
-    public static ImColor GetItemRarityColor(byte rarity)
-        => (ImColor)Service.DataManager.GetExcelSheet<UIColor>()!.GetRow(547u + rarity * 2u)!.UIForeground.Reverse();
+    private static readonly Lazy<Dictionary<byte, ImColor>> ItemRarityColors = new(() =>
+    {
+        var uiColorSheet = Service.DataManager.GetExcelSheet<UIColor>()!;
+        return Service.DataManager.GetExcelSheet<Item>()!
+            .Where(item => !string.IsNullOrEmpty(item.Name.ToDalamudString().ToString()))
+            .Select(item => item.Rarity)
+            .Distinct()
+            .Select(rarity => (Rarity: rarity, Color: (ImColor)uiColorSheet.GetRow(547u + rarity * 2u)!.UIForeground.Reverse()))
+            .ToDictionary(tuple => tuple.Rarity, tuple => tuple.Color);
+    });
+
+    public static ImColor GetItemRarityColor(byte rarity) => ItemRarityColors.Value[rarity];
 
     public static ImColor GetStainColor(uint id)
     {
