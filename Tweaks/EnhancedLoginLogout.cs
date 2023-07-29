@@ -220,10 +220,10 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                     }
                     else
                     {
-                        var defaultIdlePoseEmote = Service.Data.GetExcelSheet<Emote>()!.GetRow(90)!; // first "Change Pose"
+                        var defaultIdlePoseEmote = Service.DataManager.GetExcelSheet<Emote>()!.GetRow(90)!; // first "Change Pose"
                         var changePoseIndex = 1;
 
-                        var entry = Service.Data.GetExcelSheet<Emote>()!
+                        var entry = Service.DataManager.GetExcelSheet<Emote>()!
                             .Select(row => (
                                 IsChangePose: _changePoseEmoteIds.Contains(row.RowId),
                                 Name: _changePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name.ToDalamudString()} ({changePoseIndex++})" : $"{row.Name.ToDalamudString()}",
@@ -438,7 +438,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     private void SaveEmote(uint emoteId)
     {
-        Log($"Saving Emote #{emoteId} => {Service.Data.GetExcelSheet<Emote>()?.GetRow(emoteId)?.Name ?? ""}");
+        Log($"Saving Emote #{emoteId} => {Service.DataManager.GetExcelSheet<Emote>()?.GetRow(emoteId)?.Name ?? ""}");
 
         if (!Config.SelectedEmotes.ContainsKey(ActiveContentId))
             Config.SelectedEmotes.Add(ActiveContentId, emoteId);
@@ -460,7 +460,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
             return;
         }
 
-        var emote = Service.Data.GetExcelSheet<Emote>()!.GetRow(emoteId);
+        var emote = Service.DataManager.GetExcelSheet<Emote>()!.GetRow(emoteId);
         if (emote == null)
         {
             ResetEmoteMode();
@@ -520,7 +520,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         {
             _excludedEmotes = new() { /* Sit */ 50, };
 
-            foreach (var emote in Service.Data.GetExcelSheet<Emote>()!)
+            foreach (var emote in Service.DataManager.GetExcelSheet<Emote>()!)
             {
                 if (emote.RowId == 90) // allow Change Pose
                     continue;
@@ -598,7 +598,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         if (territoryId <= 0)
             return;
 
-        var territoryType = Service.Data.GetExcelSheet<TerritoryType>()?.GetRow(territoryId);
+        var territoryType = Service.DataManager.GetExcelSheet<TerritoryType>()?.GetRow(territoryId);
         if (territoryType == null)
             return;
 

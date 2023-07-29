@@ -59,8 +59,8 @@ public unsafe class Commands : Tweak
     {
         if (Config.EnableItemLinkCommand)
         {
-            Service.Commands.RemoveHandler(ItemLinkCommand);
-            Service.Commands.AddHandler(ItemLinkCommand, new CommandInfo(OnItemLinkCommand)
+            Service.CommandManager.RemoveHandler(ItemLinkCommand);
+            Service.CommandManager.AddHandler(ItemLinkCommand, new CommandInfo(OnItemLinkCommand)
             {
                 HelpMessage = $"Usage: {ItemLinkCommand} <id>",
                 ShowInHelp = true
@@ -69,8 +69,8 @@ public unsafe class Commands : Tweak
 
         if (Config.EnableWhatMountCommand)
         {
-            Service.Commands.RemoveHandler(WhatMountCommand);
-            Service.Commands.AddHandler(WhatMountCommand, new CommandInfo(OnWhatMountCommand)
+            Service.CommandManager.RemoveHandler(WhatMountCommand);
+            Service.CommandManager.AddHandler(WhatMountCommand, new CommandInfo(OnWhatMountCommand)
             {
                 HelpMessage = $"Usage: {WhatMountCommand}",
                 ShowInHelp = true
@@ -79,8 +79,8 @@ public unsafe class Commands : Tweak
 
         if (Config.EnableWhatBardingCommand)
         {
-            Service.Commands.RemoveHandler(WhatBardingCommand);
-            Service.Commands.AddHandler(WhatBardingCommand, new CommandInfo(OnWhatBardingCommand)
+            Service.CommandManager.RemoveHandler(WhatBardingCommand);
+            Service.CommandManager.AddHandler(WhatBardingCommand, new CommandInfo(OnWhatBardingCommand)
             {
                 HelpMessage = $"Usage: {WhatBardingCommand}",
                 ShowInHelp = true
@@ -92,17 +92,17 @@ public unsafe class Commands : Tweak
     {
         if (!Config.EnableItemLinkCommand || removeAll)
         {
-            Service.Commands.RemoveHandler(ItemLinkCommand);
+            Service.CommandManager.RemoveHandler(ItemLinkCommand);
         }
 
         if (!Config.EnableWhatMountCommand || removeAll)
         {
-            Service.Commands.RemoveHandler(WhatMountCommand);
+            Service.CommandManager.RemoveHandler(WhatMountCommand);
         }
 
         if (!Config.EnableWhatBardingCommand || removeAll)
         {
-            Service.Commands.RemoveHandler(WhatBardingCommand);
+            Service.CommandManager.RemoveHandler(WhatBardingCommand);
         }
     }
 
@@ -115,18 +115,18 @@ public unsafe class Commands : Tweak
         }
         catch (Exception e)
         {
-            Service.Chat.PrintError(e.Message);
+            Service.ChatGui.PrintError(e.Message);
             return;
         }
 
-        var item = Service.Data.GetExcelSheet<Item>()!.GetRow(id);
+        var item = Service.DataManager.GetExcelSheet<Item>()!.GetRow(id);
         if (item == null)
         {
-            Service.Chat.PrintError($"Item {id} not found");
+            Service.ChatGui.PrintError($"Item {id} not found");
             return;
         }
 
-        Service.Chat.PrintChat(new XivChatEntry
+        Service.ChatGui.PrintChat(new XivChatEntry
         {
             Message = new SeStringBuilder()
                     .AddUiForeground("\uE078 ", 32)
@@ -144,35 +144,35 @@ public unsafe class Commands : Tweak
         var target = Service.TargetManager.Target;
         if (target == null)
         {
-            Service.Chat.PrintError("No target.");
+            Service.ChatGui.PrintError("No target.");
             return;
         }
 
         if (target.ObjectKind != ObjectKind.Player)
         {
-            Service.Chat.PrintError("Target is not a player.");
+            Service.ChatGui.PrintError("Target is not a player.");
             return;
         }
 
         var targetGameObject = (GameObject*)target.Address;
         if (targetGameObject->ObjectIndex + 1 > Service.ObjectTable.Length)
         {
-            Service.Chat.PrintError("Error: mount game object index out of bounds.");
+            Service.ChatGui.PrintError("Error: mount game object index out of bounds.");
             return;
         }
 
         var mountObject = Service.ObjectTable[targetGameObject->ObjectIndex + 1];
         if (mountObject == null || mountObject.ObjectKind != ObjectKind.MountType)
         {
-            Service.Chat.PrintError("Target is not mounted.");
+            Service.ChatGui.PrintError("Target is not mounted.");
             return;
         }
 
         var modelChara = ((Character*)mountObject.Address)->CharacterData.ModelCharaId;
 
-        var MountSheet = Service.Data.GetExcelSheet<Mount>()!;
-        var ItemSheet = Service.Data.GetExcelSheet<Item>()!;
-        var ItemActionSheet = Service.Data.GetExcelSheet<ItemAction>()!;
+        var MountSheet = Service.DataManager.GetExcelSheet<Mount>()!;
+        var ItemSheet = Service.DataManager.GetExcelSheet<Item>()!;
+        var ItemActionSheet = Service.DataManager.GetExcelSheet<ItemAction>()!;
 
         var mountRow = (
             from row in MountSheet
@@ -182,7 +182,7 @@ public unsafe class Commands : Tweak
 
         if (mountRow == null)
         {
-            Service.Chat.PrintError("Mount not found.");
+            Service.ChatGui.PrintError("Mount not found.");
             return;
         }
 
@@ -196,7 +196,7 @@ public unsafe class Commands : Tweak
 
         if (itemActionRowId == 0)
         {
-            Service.Chat.PrintChat(new XivChatEntry
+            Service.ChatGui.PrintChat(new XivChatEntry
             {
                 Message = new SeStringBuilder()
                     .AddUiForeground("\uE078 ", 32)
@@ -216,7 +216,7 @@ public unsafe class Commands : Tweak
 
         if (itemRow == null)
         {
-            Service.Chat.PrintChat(new XivChatEntry
+            Service.ChatGui.PrintChat(new XivChatEntry
             {
                 Message = new SeStringBuilder()
                     .AddUiForeground("\uE078 ", 32)
@@ -262,7 +262,7 @@ public unsafe class Commands : Tweak
                 break;
         }
 
-        Service.Chat.PrintChat(new XivChatEntry
+        Service.ChatGui.PrintChat(new XivChatEntry
         {
             Message = sesb.Build(),
             Type = XivChatType.Echo
@@ -274,18 +274,18 @@ public unsafe class Commands : Tweak
         var target = Service.TargetManager.Target;
         if (target == null)
         {
-            Service.Chat.PrintError("No target.");
+            Service.ChatGui.PrintError("No target.");
             return;
         }
 
         if (target.ObjectKind != ObjectKind.BattleNpc || target.SubKind != (byte)BattleNpcSubKind.Chocobo)
         {
-            Service.Chat.PrintError("Target is not a chocobo.");
+            Service.ChatGui.PrintError("Target is not a chocobo.");
             return;
         }
 
         var targetCharacter = (Character*)target.Address;
-        var BuddyEquipSheet = Service.Data.GetExcelSheet<BuddyEquip>()!;
+        var BuddyEquipSheet = Service.DataManager.GetExcelSheet<BuddyEquip>()!;
 
         var topRow = (
             from _row in BuddyEquipSheet
@@ -305,7 +305,7 @@ public unsafe class Commands : Tweak
             select _row
         ).FirstOrDefault();
 
-        var stain = Service.Data.GetExcelSheet<Stain>()!.GetRow(targetCharacter->DrawData.Legs.Stain)!;
+        var stain = Service.DataManager.GetExcelSheet<Stain>()!.GetRow(targetCharacter->DrawData.Legs.Stain)!;
         var name = MemoryHelper.ReadStringNullTerminated((nint)targetCharacter->GameObject.Name);
 
         var sesb = new SeStringBuilder()
@@ -344,7 +344,7 @@ public unsafe class Commands : Tweak
             .Add(NewLinePayload.Payload)
             .AddText($"  {StringCache.GetAddonText(4993)}: {legsRow?.Name.ToDalamudString().ToString() ?? StringCache.GetAddonText(4994)}");
 
-        Service.Chat.PrintChat(new XivChatEntry
+        Service.ChatGui.PrintChat(new XivChatEntry
         {
             Message = sesb.Build(),
             Type = XivChatType.Echo
@@ -353,7 +353,7 @@ public unsafe class Commands : Tweak
 
     private static SeString GetItemLink(uint id)
     {
-        var item = Service.Data.GetExcelSheet<Item>()!.GetRow(id);
+        var item = Service.DataManager.GetExcelSheet<Item>()!.GetRow(id);
         return item == null
             ? new SeString(new TextPayload($"Item#{id}"))
             : SeString.CreateItemLink(item, false);

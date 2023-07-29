@@ -823,7 +823,7 @@ public partial class PortraitHelper : Tweak
 
         UIModule.Instance()->ShowErrorText(text, false);
 
-        Service.Chat.PrintError(sb.Build());
+        Service.ChatGui.PrintError(sb.Build());
     }
 
     private unsafe uint GetEquippedGearChecksum()

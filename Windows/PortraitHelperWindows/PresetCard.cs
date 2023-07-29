@@ -270,7 +270,7 @@ public class PresetCard : IDisposable
         if (!flags.HasFlag(CopyImageFlags.NoFrame) && _bannerFrameImage != null)
         {
             var iconId = _bannerFrameImage.Value;
-            var texture = Service.Data.GetFile<TexFile>($"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex");
+            var texture = Service.DataManager.GetFile<TexFile>($"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex");
             if (texture != null)
             {
                 using var image = Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
@@ -282,7 +282,7 @@ public class PresetCard : IDisposable
         if (!flags.HasFlag(CopyImageFlags.NoDecoration) && _bannerDecorationImage != null)
         {
             var iconId = _bannerDecorationImage.Value;
-            var texture = Service.Data.GetFile<TexFile>($"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex");
+            var texture = Service.DataManager.GetFile<TexFile>($"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex");
             if (texture != null)
             {
                 using var image = Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
@@ -299,13 +299,13 @@ public class PresetCard : IDisposable
         if (_preset.Preset!.BannerFrame != _bannerFrame)
         {
             _bannerFrame = _preset.Preset.BannerFrame;
-            _bannerFrameImage = Service.Data.GetExcelSheet<BannerFrame>()?.GetRow(_bannerFrame)?.Image;
+            _bannerFrameImage = Service.DataManager.GetExcelSheet<BannerFrame>()?.GetRow(_bannerFrame)?.Image;
         }
 
         if (_preset.Preset.BannerDecoration != _bannerDecoration)
         {
             _bannerDecoration = _preset.Preset.BannerDecoration;
-            _bannerDecorationImage = Service.Data.GetExcelSheet<BannerDecoration>()?.GetRow(_bannerDecoration)?.Image;
+            _bannerDecorationImage = Service.DataManager.GetExcelSheet<BannerDecoration>()?.GetRow(_bannerDecoration)?.Image;
         }
 
         if (!_isImageLoading && _preset.TextureHash != _textureHash)

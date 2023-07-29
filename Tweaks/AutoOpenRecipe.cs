@@ -100,7 +100,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
         // DailyQuestWork gets updated before QuestWork, so we can check here if it's a daily quest
         if (questId > 0)
         {
-            var questSheet = Service.Data.GetExcelSheet<Quest>();
+            var questSheet = Service.DataManager.GetExcelSheet<Quest>();
             if (questSheet == null)
             {
                 Warning("Could not get Quest sheet");
@@ -189,7 +189,7 @@ originalUpdateQuestWork:
         if (!GetAgent<AgentRecipeNote>(AgentId.RecipeNote, out var agentRecipeNote))
             return;
 
-        var recipeSheet = Service.Data.GetExcelSheet<Recipe>();
+        var recipeSheet = Service.DataManager.GetExcelSheet<Recipe>();
         if (recipeSheet == null)
             return;
 
@@ -227,7 +227,7 @@ originalUpdateQuestWork:
     private bool IngredientsAvailable(Recipe recipe, uint amount)
     {
         var inventoryManager = InventoryManager.Instance();
-        var itemSheet = Service.Data.GetExcelSheet<Item>();
+        var itemSheet = Service.DataManager.GetExcelSheet<Item>();
 
         if (inventoryManager == null || itemSheet == null)
             return false;
@@ -262,7 +262,7 @@ originalUpdateQuestWork:
         var craftType = -1;
         var recipeNote = RecipeNote.Instance();
         var playerState = PlayerState.Instance();
-        var craftTypeSheet = Service.Data.GetExcelSheet<CraftType>();
+        var craftTypeSheet = Service.DataManager.GetExcelSheet<CraftType>();
 
         if (recipeNote == null || playerState == null || craftTypeSheet == null)
             return craftType;

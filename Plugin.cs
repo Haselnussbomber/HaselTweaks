@@ -73,8 +73,8 @@ public partial class Plugin : PluginBase, IDalamudPlugin
             Service.PluginInterface.UiBuilder.Draw += OnDraw;
             Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
 
-            Service.Commands.RemoveHandler("/haseltweaks");
-            Service.Commands.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
+            Service.CommandManager.RemoveHandler("/haseltweaks");
+            Service.CommandManager.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
             {
                 HelpMessage = "Show Window"
             });
@@ -173,7 +173,7 @@ public partial class Plugin : PluginBase, IDalamudPlugin
         Service.PluginInterface.UiBuilder.Draw -= OnDraw;
         Service.PluginInterface.UiBuilder.OpenConfigUi -= OnOpenConfigUi;
 
-        Service.Commands.RemoveHandler("/haseltweaks");
+        Service.CommandManager.RemoveHandler("/haseltweaks");
 
         AddonSetupHook?.Dispose();
         AddonFinalizeHook?.Dispose();

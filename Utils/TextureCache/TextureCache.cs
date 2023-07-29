@@ -40,7 +40,7 @@ public class TextureCache : IDisposable
         try
         {
             var _path = Service.PluginInterface.GetIpcSubscriber<string, string>("Penumbra.ResolveInterfacePath").InvokeFunc(path);
-            if (Path.IsPathRooted(_path) ? File.Exists(_path) : Service.Data.FileExists(_path))
+            if (Path.IsPathRooted(_path) ? File.Exists(_path) : Service.DataManager.FileExists(_path))
             {
                 path = _path;
 
@@ -71,13 +71,13 @@ public class TextureCache : IDisposable
             return tex;
 
         var path = $"ui/icon/{iconId / 1000:D3}000/{(isHq ? "hq/" : "")}{iconId:D6}_hr1.tex";
-        var exists = Service.Data.FileExists(path);
+        var exists = Service.DataManager.FileExists(path);
         var version = 2;
 
         if (!exists)
         {
             path = $"ui/icon/{iconId / 1000:D3}000/{(isHq ? "hq/" : "")}{iconId:D6}.tex";
-            exists = Service.Data.FileExists(path);
+            exists = Service.DataManager.FileExists(path);
             version = 1;
         }
 
@@ -121,14 +121,14 @@ public class TextureCache : IDisposable
         // check if high-res texture exists
         var path = assetPath;
         path = path.Insert(path.LastIndexOf('.'), "_hr1");
-        var exists = Service.Data.FileExists(path);
+        var exists = Service.DataManager.FileExists(path);
         var version = 2;
 
         // fallback to normal texture
         if (!exists)
         {
             path = assetPath;
-            exists = Service.Data.FileExists(path);
+            exists = Service.DataManager.FileExists(path);
             version = 1;
         }
 

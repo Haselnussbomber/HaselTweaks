@@ -238,7 +238,7 @@ PvPBar:
             if (pvpProfile == null || pvpProfile->IsLoaded != 0x01)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
-            var PvPSeriesLevelSheet = Service.Data.GetExcelSheet<PvPSeriesLevel>();
+            var PvPSeriesLevelSheet = Service.DataManager.GetExcelSheet<PvPSeriesLevel>();
             if (PvPSeriesLevelSheet == null || pvpProfile->SeriesCurrentRank > PvPSeriesLevelSheet.Count() - 1)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
@@ -277,7 +277,7 @@ CompanionBar:
         {
             var buddy = UIState.Instance()->Buddy;
 
-            var BuddyRankSheet = Service.Data.GetExcelSheet<BuddyRank>();
+            var BuddyRankSheet = Service.DataManager.GetExcelSheet<BuddyRank>();
             if (BuddyRankSheet == null || buddy.Rank > BuddyRankSheet.Count() - 1)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
@@ -307,7 +307,7 @@ SanctuaryBar:
             if (mjiManager == null)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
-            var MJIRankSheet = Service.Data.GetExcelSheet<MJIRank>();
+            var MJIRankSheet = Service.DataManager.GetExcelSheet<MJIRank>();
             if (MJIRankSheet == null || mjiManager->IslandState.CurrentRank > MJIRankSheet.Count() - 1)
                 goto OriginalOnRequestedUpdateWithColorReset;
 

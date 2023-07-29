@@ -103,8 +103,8 @@ public unsafe partial class MaterialAllocation : Tweak
 
         if (eventParam == 9902 && GetAgent<AgentMJIGatheringNoteBook>(AgentId.MJIGatheringNoteBook, out var agentMJIGatheringNoteBook))
         {
-            var sheetMJIGatheringItem = Service.Data.GetExcelSheet<MJIGatheringItem>();
-            var sheetMJIItemPouch = Service.Data.GetExcelSheet<MJIItemPouch>();
+            var sheetMJIGatheringItem = Service.DataManager.GetExcelSheet<MJIGatheringItem>();
+            var sheetMJIItemPouch = Service.DataManager.GetExcelSheet<MJIItemPouch>();
             if (!Config.OpenGatheringLogOnItemClick || sheetMJIItemPouch == null || sheetMJIGatheringItem == null)
                 goto handled;
 
@@ -143,7 +143,7 @@ public unsafe partial class MaterialAllocation : Tweak
                         .Add(new RawPayload(new byte[] { 0x02, 0x13, 0x02, 0xEC, 0x03 })) // ?
                         .AddText(" is not gatherable.");
 
-                    Service.Chat.PrintChat(new XivChatEntry
+                    Service.ChatGui.PrintChat(new XivChatEntry
                     {
                         Message = sb.BuiltString,
                         Type = XivChatType.Echo

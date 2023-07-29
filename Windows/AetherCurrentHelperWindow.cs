@@ -203,7 +203,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         else if (aetherCurrent.RowId == 2818328 && questId == 70030) // Curing What Ails
             questId = 69793; // In Agama's Footsteps
 
-        var quest = Service.Data.GetExcelSheet<Quest>()?.GetRow(questId);
+        var quest = Service.DataManager.GetExcelSheet<Quest>()?.GetRow(questId);
         if (questId == 0 || quest == null) return;
 
         // Icon
@@ -330,7 +330,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
     {
         if (!_eObjCache.TryGetValue(aetherCurrentId, out var value))
         {
-            value = Service.Data.GetExcelSheet<EObj>()?.FirstOrDefault(row => row.Data == aetherCurrentId);
+            value = Service.DataManager.GetExcelSheet<EObj>()?.FirstOrDefault(row => row.Data == aetherCurrentId);
             _eObjCache.Add(aetherCurrentId, value);
         }
 
@@ -341,7 +341,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
     {
         if (!_levelCache.TryGetValue(objId, out var value))
         {
-            value = Service.Data.GetExcelSheet<Level>()?.FirstOrDefault(row => row.Object == objId);
+            value = Service.DataManager.GetExcelSheet<Level>()?.FirstOrDefault(row => row.Object == objId);
             _levelCache.Add(objId, value);
         }
 

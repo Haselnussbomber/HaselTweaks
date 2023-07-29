@@ -155,7 +155,7 @@ public unsafe class GearSetGridWindow : Window
                     continue;
                 }
 
-                var item = Service.Data.GetExcelSheet<Item>()!.GetRow(itemId);
+                var item = Service.DataManager.GetExcelSheet<Item>()!.GetRow(itemId);
                 if (item == null)
                     continue;
 
@@ -177,7 +177,7 @@ public unsafe class GearSetGridWindow : Window
                             ImGui.TextUnformatted($"GlamourID: {slot->GlamourId}");
                             if (slot->GlamourId != 0)
                             {
-                                var glamourItem = Service.Data.GetExcelSheet<Item>()!.GetRow(slot->GlamourId)!;
+                                var glamourItem = Service.DataManager.GetExcelSheet<Item>()!.GetRow(slot->GlamourId)!;
                                 ImGuiUtils.SameLineSpace();
                                 ImGui.TextUnformatted("(");
                                 ImGui.SameLine(0, 0);

@@ -39,7 +39,7 @@ public unsafe class DTR : Tweak
                     return;
                 }
 
-                Service.Commands.ProcessCommand("/xlsettings");
+                Service.CommandManager.ProcessCommand("/xlsettings");
             }
             Service.Framework.RunOnTick(OpenSettings, delayTicks: 2);
         }
@@ -61,7 +61,7 @@ public unsafe class DTR : Tweak
         DtrBusy.Text = new SeString(
             new UIForegroundPayload(1),
             new UIGlowPayload(16),
-            new TextPayload(Service.Data.Excel.GetSheet<OnlineStatus>()?.GetRow(12)?.Name.ToDalamudString().ToString()),
+            new TextPayload(Service.DataManager.Excel.GetSheet<OnlineStatus>()?.GetRow(12)?.Name.ToDalamudString().ToString()),
             UIGlowPayload.UIGlowOff,
             UIForegroundPayload.UIForegroundOff
         );

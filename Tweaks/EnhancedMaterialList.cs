@@ -231,7 +231,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         var rowData = **(nint**)(a5 + 0x08);
         var itemId = *(uint*)(rowData + 0x04);
 
-        var item = Service.Data.GetExcelSheet<Item>()?.GetRow(itemId);
+        var item = Service.DataManager.GetExcelSheet<Item>()?.GetRow(itemId);
         if (item == null)
             return;
 
@@ -260,7 +260,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
         // TODO: only for missing items?
 
-        var item = Service.Data.GetExcelSheet<Item>()?.GetRow(itemId);
+        var item = Service.DataManager.GetExcelSheet<Item>()?.GetRow(itemId);
         if (item == null)
             return;
 
@@ -349,9 +349,9 @@ originalAddItemContextMenuEntries:
 
     private (int, GatheringPoint, uint, bool, SeString)? GetPointForItem(uint itemId)
     {
-        var GatheringItemSheet = Service.Data.GetExcelSheet<GatheringItem>();
-        var GatheringPointBaseSheet = Service.Data.GetExcelSheet<GatheringPointBase>();
-        var GatheringPointSheet = Service.Data.GetExcelSheet<GatheringPoint>();
+        var GatheringItemSheet = Service.DataManager.GetExcelSheet<GatheringItem>();
+        var GatheringPointBaseSheet = Service.DataManager.GetExcelSheet<GatheringPointBase>();
+        var GatheringPointSheet = Service.DataManager.GetExcelSheet<GatheringPoint>();
 
         if (GatheringItemSheet == null || GatheringPointBaseSheet == null || GatheringPointSheet == null)
             return null;
@@ -413,7 +413,7 @@ originalAddItemContextMenuEntries:
         if (gatheringPointBase == null)
             return false;
 
-        var exportedPoint = Service.Data.GetExcelSheet<ExportedGatheringPoint>()?.GetRow(gatheringPointBase.RowId);
+        var exportedPoint = Service.DataManager.GetExcelSheet<ExportedGatheringPoint>()?.GetRow(gatheringPointBase.RowId);
         if (exportedPoint == null)
             return false;
 

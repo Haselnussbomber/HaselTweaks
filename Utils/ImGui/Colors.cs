@@ -22,11 +22,11 @@ public static class Colors
     public static ImColor Grey4 { get; } = new(0.3f, 0.3f, 0.3f);
 
     public static ImColor GetItemRarityColor(byte rarity)
-        => (ImColor)Service.Data.GetExcelSheet<UIColor>()!.GetRow(547u + rarity * 2u)!.UIForeground.Reverse();
+        => (ImColor)Service.DataManager.GetExcelSheet<UIColor>()!.GetRow(547u + rarity * 2u)!.UIForeground.Reverse();
 
     public static ImColor GetStainColor(uint id)
     {
-        var col = (ImColor)(Service.Data.GetExcelSheet<Stain>()!.GetRow(id)!.Color.Reverse() >> 8);
+        var col = (ImColor)(Service.DataManager.GetExcelSheet<Stain>()!.GetRow(id)!.Color.Reverse() >> 8);
         col.A = 1;
         return col;
     }
@@ -36,7 +36,7 @@ public static class Colors
         if (colors.Length < 2)
             throw new ArgumentException("At least two colors are required for interpolation.");
 
-        var jobIndex = Service.Data.GetExcelSheet<ClassJob>()?.GetRow(classJob)?.DohDolJobIndex;
+        var jobIndex = Service.DataManager.GetExcelSheet<ClassJob>()?.GetRow(classJob)?.DohDolJobIndex;
         if (jobIndex == null)
             return White;
 

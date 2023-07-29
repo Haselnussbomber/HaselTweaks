@@ -83,15 +83,15 @@ public record Texture : IDisposable
 #endif
 
         var tex = System.IO.Path.IsPathRooted(Path)
-            ? Service.Data.GameData.GetFileFromDisk<TexFile>(Path)
-            : Service.Data.GameData.GetFile<TexFile>(Path);
+            ? Service.DataManager.GameData.GetFileFromDisk<TexFile>(Path)
+            : Service.DataManager.GameData.GetFile<TexFile>(Path);
 
         if (tex == null)
             return null;
 
         SetupDimensions(tex);
 
-        return Service.Data.GetImGuiTexture(tex);
+        return Service.DataManager.GetImGuiTexture(tex);
     }
     public void SetupDimensions(TexFile tex)
     {

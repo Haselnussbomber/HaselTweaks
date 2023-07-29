@@ -329,7 +329,7 @@ OriginalPvPReceiveEventCode:
 
         if (selectedGearset.Id == -1)
         {
-            Service.Chat.PrintError(Service.ClientState.ClientLanguage switch
+            Service.ChatGui.PrintError(Service.ClientState.ClientLanguage switch
             {
                 ClientLanguage.German => "Konnte kein passendes Ausrüstungsset finden.",
                 ClientLanguage.French => "Impossible de trouver un ensemble d'équipement adapté.",

@@ -10,11 +10,11 @@ public static class ItemUtils
         var dict = new Dictionary<short, (uint Min, uint Max)>();
 
         short level = 50;
-        foreach (var exVersion in Service.Data.GetExcelSheet<ExVersion>()!)
+        foreach (var exVersion in Service.DataManager.GetExcelSheet<ExVersion>()!)
         {
             var entry = (Min: uint.MaxValue, Max: 0u);
 
-            foreach (var item in Service.Data.GetExcelSheet<Item>()!)
+            foreach (var item in Service.DataManager.GetExcelSheet<Item>()!)
             {
                 if (item.LevelEquip != level || item.LevelItem.Row <= 1)
                     continue;
@@ -36,7 +36,7 @@ public static class ItemUtils
     // see "E8 ?? ?? ?? ?? 85 C0 48 8B 03"
     public static bool CanTryOn(uint rowId)
     {
-        var item = Service.Data.GetExcelSheet<Item>()!.GetRow(rowId)!;
+        var item = Service.DataManager.GetExcelSheet<Item>()!.GetRow(rowId)!;
         // Waist, SoulCrystal or OffHand Tools?!
         return !((item.EquipSlotCategory.Row is 6 or 17) || (item.EquipSlotCategory.Row is 2 && item.FilterGroup != 3));
     }
