@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using Dalamud.Game.Command;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Windows;
-using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
@@ -16,7 +14,6 @@ public unsafe partial class GearSetGrid : Tweak
     private const string GSGCommand = "/gsg";
 
     public static Configuration Config => Plugin.Config.Tweaks.GearSetGrid;
-    public Dictionary<short, (uint Min, uint Max)> MaxLevelRanges { get; init; } = new();
 
     public class Configuration
     {
@@ -37,30 +34,6 @@ public unsafe partial class GearSetGrid : Tweak
 
         [ConfigField(Label = "Disable spacing", DependsOn = nameof(ConvertSeparators))]
         public bool DisableSeparatorSpacing = false;
-    }
-
-    public GearSetGrid()
-    {
-        short level = 50;
-        foreach (var exVersion in Service.Data.GetExcelSheet<ExVersion>()!)
-        {
-            var entry = (Min: uint.MaxValue, Max: 0u);
-
-            foreach (var item in Service.Data.GetExcelSheet<Item>()!)
-            {
-                if (item.LevelEquip != level || item.LevelItem.Row <= 1)
-                    continue;
-
-                if (entry.Min > item.LevelItem.Row)
-                    entry.Min = item.LevelItem.Row;
-
-                if (entry.Max < item.LevelItem.Row)
-                    entry.Max = item.LevelItem.Row;
-            }
-
-            MaxLevelRanges.Add(level, entry);
-            level += 10;
-        }
     }
 
     private void OnConfigChange()

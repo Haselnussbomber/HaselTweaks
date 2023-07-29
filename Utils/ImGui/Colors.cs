@@ -1,4 +1,5 @@
 using System.Numerics;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselTweaks.Extensions;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
@@ -28,5 +29,37 @@ public static class Colors
         var col = (ImColor)(Service.Data.GetExcelSheet<Stain>()!.GetRow(id)!.Color.Reverse() >> 8);
         col.A = 1;
         return col;
+    }
+
+    public static unsafe ImColor GetItemLevelColor(byte classJob, Item item, params Vector4[] colors)
+    {
+        if (colors.Length < 2)
+            throw new ArgumentException("At least two colors are required for interpolation.");
+
+        var jobIndex = Service.Data.GetExcelSheet<ClassJob>()?.GetRow(classJob)?.DohDolJobIndex;
+        if (jobIndex == null)
+            return White;
+
+        var level = PlayerState.Instance()->ClassJobLevelArray[(short)jobIndex];
+
+        if (!ItemUtils.MaxLevelRanges.Value.TryGetValue(level, out var range))
+            return White;
+
+        var itemLevel = item.LevelItem.Row;
+
+        // special case for Fisher's Secondary Tool
+        // which has only one item, Spearfishing Gig
+        if (item.ItemUICategory.Row == 99)
+            return itemLevel == 180 ? Green : Red;
+
+        if (itemLevel < range.Min)
+            return Red;
+
+        var value = (itemLevel - range.Min) / (float)(range.Max - range.Min);
+
+        var startIndex = (int)(value * (colors.Length - 1));
+        var endIndex = Math.Min(startIndex + 1, colors.Length - 1);
+        var t = value * (colors.Length - 1) - startIndex;
+        return (ImColor)Vector4.Lerp(colors[startIndex], colors[endIndex], t);
     }
 }

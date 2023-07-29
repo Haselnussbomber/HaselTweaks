@@ -234,7 +234,7 @@ public unsafe class GearSetGridWindow : Window
 
                 var itemLevelText = $"{item.LevelItem.Row}";
                 ImGuiUtils.PushCursorX(IconSize.X * ImGuiHelpers.GlobalScale / 2f - ImGui.CalcTextSize(itemLevelText).X / 2f);
-                ImGuiUtils.TextUnformattedColored(GetItemLevelColor(gearset->ClassJob, item, Colors.Red, Colors.Yellow, Colors.Green), itemLevelText);
+                ImGuiUtils.TextUnformattedColored(Colors.GetItemLevelColor(gearset->ClassJob, item, Colors.Red, Colors.Yellow, Colors.Green), itemLevelText);
 
                 ImGuiUtils.PushCursorY(2f * ImGuiHelpers.GlobalScale);
             }
@@ -259,40 +259,6 @@ public unsafe class GearSetGridWindow : Window
         }
 
         return list;
-    }
-
-    private short GetLevelForJob(byte classJob)
-    {
-        var jobIndex = Service.Data.GetExcelSheet<ClassJob>()?.GetRow(classJob)?.DohDolJobIndex;
-        return jobIndex == null ? (short)0 : PlayerState.Instance()->ClassJobLevelArray[(short)jobIndex];
-    }
-
-    private ImColor GetItemLevelColor(byte classJob, Item item, params Vector4[] colors)
-    {
-        if (colors.Length < 2)
-            throw new ArgumentException("At least two colors are required for interpolation.");
-
-        var level = GetLevelForJob(classJob);
-
-        if (!_tweak.MaxLevelRanges.TryGetValue(level, out var range))
-            return Colors.White;
-
-        var itemLevel = item.LevelItem.Row;
-
-        // special case for Fisher's Secondary Tool
-        // which has only one item, Spearfishing Gig
-        if (item.ItemUICategory.Row == 99)
-            return itemLevel == 180 ? Colors.Green : Colors.Red;
-
-        if (itemLevel < range.Min)
-            return Colors.Red;
-
-        var value = (itemLevel - range.Min) / (float)(range.Max - range.Min);
-
-        var startIndex = (int)(value * (colors.Length - 1));
-        var endIndex = Math.Min(startIndex + 1, colors.Length - 1);
-        var t = value * (colors.Length - 1) - startIndex;
-        return (ImColor)Vector4.Lerp(colors[startIndex], colors[endIndex], t);
     }
 
     public void DrawItemIcon(GearsetItem* slot, Item item, string key)
