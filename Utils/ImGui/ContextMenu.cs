@@ -1,4 +1,13 @@
 using System.Collections.Generic;
+using System.Numerics;
+using System.Threading.Tasks;
+using Dalamud;
+using Dalamud.Interface;
+using Dalamud.Interface.Raii;
+using Dalamud.Utility;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselTweaks.Caches;
 using ImGuiNET;
 
 namespace HaselTweaks.Utils;
@@ -67,5 +76,83 @@ public partial class ImGuiUtils
                 HoverCallback?.Invoke();
             }
         }
+
+        public static unsafe ContextMenuEntry CreateTryOn(uint ItemId, uint GlamourItemId = 0, byte StainId = 0)
+            => new()
+            {
+                Hidden = !ItemUtils.CanTryOn(ItemId),
+                Label = StringCache.GetAddonText(2426), // "Try On"
+                LoseFocusOnClick = true,
+                ClickCallback = () =>
+                {
+                    if (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift))
+                        AgentTryon.TryOn(0, ItemId, StainId, 0, 0);
+                    else
+                        AgentTryon.TryOn(0, ItemId, StainId, GlamourItemId, StainId);
+                }
+            };
+
+        public static unsafe ContextMenuEntry CreateItemFinder(uint ItemId)
+            => new()
+            {
+                Label = StringCache.GetAddonText(4379), // "Search for Item"
+                LoseFocusOnClick = true,
+                ClickCallback = () =>
+                {
+                    ItemFinderModule.Instance()->SearchForItem(ItemId);
+                }
+            };
+
+        public static ContextMenuEntry CreateGarlandTools(uint ItemId)
+            => new()
+            {
+                Label = "Open on GarlandTools",
+                ClickCallback = () =>
+                {
+                    Task.Run(() => Util.OpenLink($"https://www.garlandtools.org/db/#item/{ItemId}"));
+                },
+                HoverCallback = () =>
+                {
+                    using var tooltip = ImRaii.Tooltip();
+
+                    var pos = ImGui.GetCursorPos();
+                    ImGui.GetWindowDrawList().AddText(
+                        UiBuilder.IconFont, 12 * ImGuiHelpers.GlobalScale,
+                        ImGui.GetWindowPos() + pos + new Vector2(2),
+                        Colors.Grey,
+                        FontAwesomeIcon.ExternalLinkAlt.ToIconString()
+                    );
+                    ImGui.SetCursorPos(pos + new Vector2(20, 0) * ImGuiHelpers.GlobalScale);
+                    TextUnformattedColored(Colors.Grey, $"https://www.garlandtools.org/db/#item/{ItemId}");
+                }
+            };
+
+        public static ContextMenuEntry CreateCopyItemName(uint ItemId)
+            => new()
+            {
+                Label = StringCache.GetAddonText(159), // "Copy Item Name"
+                ClickCallback = () =>
+                {
+                    ImGui.SetClipboardText(StringCache.GetItemName(ItemId));
+                }
+            };
+
+        public static ContextMenuEntry CreateItemSearch(uint ItemId)
+            => new()
+            {
+                Hidden = !ItemSearchUtils.CanSearchForItem(ItemId),
+                Label = Service.ClientState.ClientLanguage switch
+                {
+                    ClientLanguage.German => "Auf den M\u00e4rkten suchen",
+                    ClientLanguage.French => "Rechercher sur les marchés",
+                    ClientLanguage.Japanese => "市場で検索する",
+                    _ => "Search the markets"
+                },
+                LoseFocusOnClick = true,
+                ClickCallback = () =>
+                {
+                    ItemSearchUtils.Search(ItemId);
+                }
+            };
     }
 }

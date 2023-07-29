@@ -32,4 +32,12 @@ public static class ItemUtils
 
         return dict;
     });
+
+    // see "E8 ?? ?? ?? ?? 85 C0 48 8B 03"
+    public static bool CanTryOn(uint rowId)
+    {
+        var item = Service.Data.GetExcelSheet<Item>()!.GetRow(rowId)!;
+        // Waist, SoulCrystal or OffHand Tools?!
+        return !((item.EquipSlotCategory.Row is 6 or 17) || (item.EquipSlotCategory.Row is 2 && item.FilterGroup != 3));
+    }
 }

@@ -1,17 +1,12 @@
 using System.Collections.Generic;
 using System.Numerics;
-using System.Threading.Tasks;
 using Dalamud;
-using Dalamud.Game.Text;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
-using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselTweaks.Caches;
 using HaselTweaks.Tweaks;
@@ -20,8 +15,6 @@ using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using GearsetFlag = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetFlag;
 using GearsetItem = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetItem;
-using ImColor = HaselTweaks.Structs.ImColor;
-using Item = HaselTweaks.Sheets.Item;
 
 namespace HaselTweaks.Windows;
 
@@ -303,78 +296,11 @@ public unsafe class GearSetGridWindow : Window
 
         new ImGuiUtils.ContextMenu(popupKey)
         {
-            new ImGuiUtils.ContextMenuEntry()
-            {
-                Hidden = !item.CanTryOn,
-                Label = StringCache.GetAddonText(2426), // "Try On"
-                LoseFocusOnClick = true,
-                ClickCallback = () =>
-                {
-                    if (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift))
-                        AgentTryon.TryOn(0, item.RowId, slot->Stain, 0, 0);
-                    else
-                        AgentTryon.TryOn(0, item.RowId, slot->Stain, slot->GlamourId, slot->Stain);
-                }
-            },
-
-            new ImGuiUtils.ContextMenuEntry()
-            {
-                Label = StringCache.GetAddonText(4379), // "Search for Item"
-                LoseFocusOnClick = true,
-                ClickCallback = () =>
-                {
-                    ItemFinderModule.Instance()->SearchForItem(item.RowId);
-                }
-            },
-
-            new ImGuiUtils.ContextMenuEntry()
-            {
-                Label = StringCache.GetAddonText(159), // "Copy Item Name"
-                ClickCallback = () =>
-                {
-                    ImGui.SetClipboardText(item.Name);
-                }
-            },
-
-            new ImGuiUtils.ContextMenuEntry()
-            {
-                Label = "Open on GarlandTools",
-                ClickCallback = () =>
-                {
-                    Task.Run(() => Util.OpenLink($"https://www.garlandtools.org/db/#item/{item.RowId}"));
-                },
-                HoverCallback = () =>
-                {
-                    using var tooltip = ImRaii.Tooltip();
-
-                    var pos = ImGui.GetCursorPos();
-                    ImGui.GetWindowDrawList().AddText(
-                        UiBuilder.IconFont, 12 * ImGuiHelpers.GlobalScale,
-                        ImGui.GetWindowPos() + pos + new Vector2(2),
-                        Colors.Grey,
-                        FontAwesomeIcon.ExternalLinkAlt.ToIconString()
-                    );
-                    ImGui.SetCursorPos(pos + new Vector2(20, 0) * ImGuiHelpers.GlobalScale);
-                    ImGuiUtils.TextUnformattedColored(Colors.Grey, $"https://www.garlandtools.org/db/#item/{item.RowId}");
-                }
-            },
-
-            new ImGuiUtils.ContextMenuEntry()
-            {
-                Hidden = !ItemSearchUtils.CanSearchForItem(item.RowId),
-                Label = Service.ClientState.ClientLanguage switch
-                {
-                    ClientLanguage.German => "Auf den M\u00e4rkten suchen",
-                    ClientLanguage.French => "Rechercher sur les marchés",
-                    ClientLanguage.Japanese => "市場で検索する",
-                    _ => "Search the markets"
-                },
-                LoseFocusOnClick = true,
-                ClickCallback = () =>
-                {
-                    ItemSearchUtils.Search(item.RowId);
-                }
-            }
+            ImGuiUtils.ContextMenuEntry.CreateTryOn(item.RowId),
+            ImGuiUtils.ContextMenuEntry.CreateItemFinder(item.RowId),
+            ImGuiUtils.ContextMenuEntry.CreateCopyItemName(item.RowId),
+            ImGuiUtils.ContextMenuEntry.CreateGarlandTools(item.RowId),
+            ImGuiUtils.ContextMenuEntry.CreateItemSearch(item.RowId),
         }
         .Draw();
     }
