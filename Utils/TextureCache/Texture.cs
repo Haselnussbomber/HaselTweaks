@@ -26,10 +26,6 @@ public record Texture : IDisposable
 
     public void Dispose()
     {
-#if DEBUG
-        PluginLog.Verbose($"[Texture] Disposing Texture: {Path} (Version {Version})");
-#endif
-
         Unload();
     }
 
@@ -78,10 +74,6 @@ public record Texture : IDisposable
 
     private TextureWrap? LoadTexture()
     {
-#if DEBUG
-        PluginLog.Verbose($"[Texture] Loading Texture: {Path} (Version {Version})");
-#endif
-
         var tex = System.IO.Path.IsPathRooted(Path)
             ? Service.DataManager.GameData.GetFileFromDisk<TexFile>(Path)
             : Service.DataManager.GameData.GetFile<TexFile>(Path);
@@ -118,10 +110,6 @@ public record Texture : IDisposable
     {
         if (_textureWrap == null)
             return;
-
-#if DEBUG
-        PluginLog.Verbose($"[Texture] Unloading Texture: {Path} (Version {Version})");
-#endif
 
         _textureWrap?.Dispose();
         _textureWrap = null;
