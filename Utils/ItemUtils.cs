@@ -33,11 +33,18 @@ public static class ItemUtils
         return dict;
     });
 
-    // see "E8 ?? ?? ?? ?? 85 C0 48 8B 03"
     public static bool CanTryOn(uint rowId)
     {
         var item = Service.DataManager.GetExcelSheet<Item>()!.GetRow(rowId)!;
-        // Waist, SoulCrystal or OffHand Tools?!
-        return !((item.EquipSlotCategory.Row is 6 or 17) || (item.EquipSlotCategory.Row is 2 && item.FilterGroup != 3));
+
+        // see "E8 ?? ?? ?? ?? 85 C0 48 8B 03"
+        return item.EquipSlotCategory.Row switch
+        {
+            2 when item.FilterGroup != 3 => false, // any OffHand that's not a Shield
+            6 => false, // Waist
+            17 => false, // SoulCrystal
+
+            _ => true
+        };
     }
 }
