@@ -13,6 +13,7 @@ using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
+using GearsetEntry = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetEntry;
 using GearsetFlag = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetFlag;
 using GearsetItem = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetItem;
 
@@ -161,69 +162,7 @@ public unsafe class GearSetGridWindow : Window
 
                 ImGuiUtils.PushCursorY(2f * ImGuiHelpers.GlobalScale);
 
-                DrawItemIcon(slot, item, $"GearsetItem_{gearsetIndex}_{slotIndex}");
-
-                if (ImGui.IsItemHovered())
-                {
-                    using (ImRaii.Tooltip())
-                    {
-                        ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(item.Rarity), StringCache.GetItemName(itemId));
-
-                        if (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift))
-                        {
-                            ImGuiUtils.DrawPaddedSeparator();
-                            ImGui.TextUnformatted($"Slot: {StringCache.GetAddonText(738 + slotIndex)} ({slotIndex})");
-                            ImGui.TextUnformatted($"ItemID: {slot->ItemID}");
-                            ImGui.TextUnformatted($"GlamourID: {slot->GlamourId}");
-                            if (slot->GlamourId != 0)
-                            {
-                                var glamourItem = Service.DataManager.GetExcelSheet<Item>()!.GetRow(slot->GlamourId)!;
-                                ImGuiUtils.SameLineSpace();
-                                ImGui.TextUnformatted("(");
-                                ImGui.SameLine(0, 0);
-                                ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(glamourItem.Rarity), StringCache.GetItemName(slot->GlamourId));
-                                ImGui.SameLine(0, 0);
-                                ImGui.TextUnformatted(")");
-                            }
-                            if (slot->Stain != 0)
-                            {
-                                ImGui.TextUnformatted($"Stain: {slot->Stain}");
-                                ImGuiUtils.SameLineSpace();
-                                ImGui.TextUnformatted("(");
-                                ImGui.SameLine(0, 0);
-                                using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.GetStainColor(slot->Stain)))
-                                    ImGui.Bullet();
-                                ImGui.SameLine(0, 0);
-                                ImGui.TextUnformatted(StringCache.GetSheetText<Stain>(slot->Stain, "Name"));
-                                ImGui.SameLine(0, 0);
-                                ImGui.TextUnformatted(")");
-                            }
-                        }
-
-                        var usedInGearsets = GetItemInGearsetsList(slot->ItemID, slotIndex);
-                        if (usedInGearsets.Count > 1)
-                        {
-                            ImGuiUtils.DrawPaddedSeparator();
-                            ImGui.TextUnformatted(Service.ClientState.ClientLanguage switch
-                            {
-                                ClientLanguage.German => "Wird auch in diesen Ausrüstungssets benutzt:",
-                                ClientLanguage.French => "Aussi utilisé dans ces ensembles d'équipement :",
-                                ClientLanguage.Japanese => "これらのギアセットでも使用されます：",
-                                _ => "Also used in these Gearsets:"
-                            });
-                            using (ImRaii.PushIndent(ImGui.GetStyle().ItemSpacing.X))
-                            {
-                                foreach (var entry in usedInGearsets)
-                                {
-                                    if (entry.Id == gearset->ID)
-                                        continue;
-
-                                    ImGui.TextUnformatted($"[{entry.Id + 1}] {entry.Name}");
-                                }
-                            }
-                        }
-                    }
-                }
+                DrawItemIcon(gearset, slotIndex, slot, item, $"GearsetItem_{gearsetIndex}_{slotIndex}");
 
                 var itemLevelText = $"{item.LevelItem.Row}";
                 ImGuiUtils.PushCursorX(IconSize.X * ImGuiHelpers.GlobalScale / 2f - ImGui.CalcTextSize(itemLevelText).X / 2f);
@@ -254,7 +193,7 @@ public unsafe class GearSetGridWindow : Window
         return list;
     }
 
-    public void DrawItemIcon(GearsetItem* slot, Item item, string key)
+    public void DrawItemIcon(GearsetEntry* gearset, uint slotIndex, GearsetItem* slot, Item item, string key)
     {
         var popupKey = $"##ItemContextMenu_{key}_{item.RowId}_Tooltip";
 
@@ -303,5 +242,94 @@ public unsafe class GearSetGridWindow : Window
             ImGuiUtils.ContextMenuEntry.CreateItemSearch(item.RowId),
         }
         .Draw();
+
+        if (ImGui.IsItemHovered())
+        {
+            using (ImRaii.Tooltip())
+            {
+                ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(item.Rarity), StringCache.GetItemName(item.RowId));
+
+                var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
+                if (holdingShift)
+                {
+                    ImGuiUtils.SameLineSpace();
+                    ImGui.TextUnformatted($"[{item.RowId}]");
+                }
+
+                if (item.ItemUICategory.Row != 0)
+                {
+                    ImGuiUtils.PushCursorY(-ImGui.GetStyle().ItemSpacing.Y);
+                    ImGui.TextUnformatted(StringCache.GetSheetText<ItemUICategory>(item.ItemUICategory.Row, "Name"));
+                }
+
+                if (slot->GlamourId != 0 || slot->Stain != 0)
+                    ImGuiUtils.DrawPaddedSeparator();
+
+                if (slot->GlamourId != 0)
+                {
+                    ImGui.TextUnformatted(Service.ClientState.ClientLanguage switch
+                    {
+                        ClientLanguage.German => "Projektion:",
+                        // ClientLanguage.French => "",
+                        // ClientLanguage.Japanese => "",
+                        _ => "Glamour:"
+                    });
+                    var glamourItem = Service.DataManager.GetExcelSheet<Item>()!.GetRow(slot->GlamourId)!;
+                    ImGuiUtils.SameLineSpace();
+                    ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(glamourItem.Rarity), StringCache.GetItemName(slot->GlamourId));
+
+                    if (holdingShift)
+                    {
+                        ImGuiUtils.SameLineSpace();
+                        ImGui.TextUnformatted($"[{slot->GlamourId}]");
+                    }
+                }
+
+                if (slot->Stain != 0)
+                {
+                    ImGui.TextUnformatted(Service.ClientState.ClientLanguage switch
+                    {
+                        ClientLanguage.German => "Färbung:",
+                        // ClientLanguage.French => "",
+                        // ClientLanguage.Japanese => "",
+                        _ => "Dye:"
+                    });
+                    ImGuiUtils.SameLineSpace();
+                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.GetStainColor(slot->Stain)))
+                        ImGui.Bullet();
+                    ImGui.SameLine(0, 0);
+                    ImGui.TextUnformatted(StringCache.GetSheetText<Stain>(slot->Stain, "Name"));
+
+                    if (holdingShift)
+                    {
+                        ImGuiUtils.SameLineSpace();
+                        ImGui.TextUnformatted($"[{slot->Stain}]");
+                    }
+                }
+
+                var usedInGearsets = GetItemInGearsetsList(slot->ItemID, slotIndex);
+                if (usedInGearsets.Count > 1)
+                {
+                    ImGuiUtils.DrawPaddedSeparator();
+                    ImGui.TextUnformatted(Service.ClientState.ClientLanguage switch
+                    {
+                        ClientLanguage.German => "Wird auch in diesen Ausrüstungssets benutzt:",
+                        ClientLanguage.French => "Aussi utilisé dans ces ensembles d'équipement :",
+                        ClientLanguage.Japanese => "これらのギアセットでも使用されます：",
+                        _ => "Also used in these Gearsets:"
+                    });
+                    using (ImRaii.PushIndent(ImGui.GetStyle().ItemSpacing.X))
+                    {
+                        foreach (var entry in usedInGearsets)
+                        {
+                            if (entry.Id == gearset->ID)
+                                continue;
+
+                            ImGui.TextUnformatted($"[{entry.Id + 1}] {entry.Name}");
+                        }
+                    }
+                }
+            }
+        }
     }
 }
