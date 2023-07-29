@@ -191,7 +191,19 @@ public unsafe class GearSetGridWindow : Window
                                 ImGui.SameLine(0, 0);
                                 ImGui.Text(")");
                             }
-                            ImGui.Text($"Stain: {slot.Stain}");
+                            if (slot.Stain != 0)
+                            {
+                                ImGui.Text($"Stain: {slot.Stain}");
+                                ImGuiUtils.SameLineSpace();
+                                ImGui.Text("(");
+                                ImGui.SameLine(0, 0);
+                                using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.GetStainColor(slot.Stain)))
+                                    ImGui.Bullet();
+                                ImGui.SameLine(0, 0);
+                                ImGui.Text(StringCache.GetSheetText<Stain>(slot.Stain, "Name"));
+                                ImGui.SameLine(0, 0);
+                                ImGui.Text(")");
+                            }
                         }
 
                         var usedInGearsets = GetItemInGearsetsList(slot.ItemID, slotIndex);

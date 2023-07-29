@@ -1,4 +1,5 @@
 using System.Numerics;
+using Dalamud.Logging;
 using HaselTweaks.Extensions;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
@@ -22,4 +23,11 @@ public static class Colors
 
     public static ImColor GetItemRarityColor(byte rarity)
         => (ImColor)Service.Data.GetExcelSheet<UIColor>()!.GetRow(547u + rarity * 2u)!.UIForeground.Reverse();
+
+    public static ImColor GetStainColor(uint id)
+    {
+        var col = (ImColor)(Service.Data.GetExcelSheet<Stain>()!.GetRow(id)!.Color.Reverse() >> 8);
+        col.A = 1;
+        return col;
+    }
 }
