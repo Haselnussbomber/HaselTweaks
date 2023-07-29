@@ -1,5 +1,5 @@
-using HaselTweaks.Structs;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using HaselTweaks.Structs;
 
 namespace HaselTweaks.Records;
 
