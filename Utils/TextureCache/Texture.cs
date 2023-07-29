@@ -13,6 +13,8 @@ public record Texture : IDisposable
 
     private TextureWrap? _textureWrap;
     private DateTime _lastAccess = DateTime.UtcNow;
+    private DateTime _lastRender = DateTime.MinValue;
+    private bool _sizesSet;
 
     public Texture(string path, int version, Vector2? uv0 = null, Vector2? uv1 = null)
     {
@@ -20,6 +22,15 @@ public record Texture : IDisposable
         Version = version;
         Uv0 = uv0;
         Uv1 = uv1;
+    }
+
+    public void Dispose()
+    {
+#if DEBUG
+        PluginLog.Verbose($"[Texture] Disposing Texture: {Path} (Version {Version})");
+#endif
+
+        Unload();
     }
 
     public string Path { get; }
@@ -30,27 +41,25 @@ public record Texture : IDisposable
 
     public bool IsExpired => _lastAccess < DateTime.UtcNow - KeepAliveTime;
 
-    public void Dispose()
-    {
-#if DEBUG
-        PluginLog.Verbose($"[Texture] Disposing Texture: {Path} (Version {Version})");
-#endif
-        _textureWrap?.Dispose();
-    }
-
     public void Draw(Vector2? drawSize = null)
     {
         var size = drawSize ?? Size;
 
         _lastAccess = DateTime.UtcNow;
 
-        if (!ImGuiUtils.IsInViewport() || Path == EmptyIconPath)
+        if (!ImGuiUtils.IsInViewport(size) || Path == EmptyIconPath)
         {
             ImGui.Dummy(size);
+
+            if (_textureWrap != null && _lastRender < DateTime.UtcNow - KeepAliveTime)
+            {
+                Unload();
+            }
             return;
         }
 
         _textureWrap ??= LoadTexture();
+        _lastRender = DateTime.UtcNow;
 
         if (_textureWrap == null || _textureWrap.ImGuiHandle == nint.Zero)
         {
@@ -80,6 +89,15 @@ public record Texture : IDisposable
         if (tex == null)
             return null;
 
+        SetupDimensions(tex);
+
+        return Service.Data.GetImGuiTexture(tex);
+    }
+    public void SetupDimensions(TexFile tex)
+    {
+        if (_sizesSet)
+            return;
+
         var texSize = new Vector2(tex.Header.Width, tex.Header.Height);
 
         // defaults
@@ -93,6 +111,19 @@ public record Texture : IDisposable
         Uv0 = Uv0.Value / texSize;
         Uv1 = Uv1.Value / texSize;
 
-        return Service.Data.GetImGuiTexture(tex);
+        _sizesSet = true;
+    }
+
+    public void Unload()
+    {
+        if (_textureWrap == null)
+            return;
+
+#if DEBUG
+        PluginLog.Verbose($"[Texture] Unloading Texture: {Path} (Version {Version})");
+#endif
+
+        _textureWrap?.Dispose();
+        _textureWrap = null;
     }
 }
