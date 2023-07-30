@@ -18,7 +18,7 @@ public unsafe partial class GearSetGrid : Tweak
     public class Configuration
     {
         [ConfigField(Label = "Auto-open/close with Gear Set List")]
-        public bool AutoOpenWithGearSetList = true;
+        public bool AutoOpenWithGearSetList = false;
 
         [ConfigField(Label = "Register /gsg command to toggle window", OnChange = nameof(OnConfigChange))]
         public bool RegisterCommand = true;
