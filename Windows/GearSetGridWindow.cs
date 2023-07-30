@@ -21,12 +21,14 @@ namespace HaselTweaks.Windows;
 
 public unsafe class GearSetGridWindow : Window
 {
+    private static readonly Vector2 DefaultWindowSize = new(505, 550);
     private static readonly Vector2 IconSize = new(34);
     private static readonly Vector2 IconInset = IconSize * 0.08333f;
     private static readonly float ItemCellWidth = IconSize.X;
     public static GearSetGrid.Configuration Config => Plugin.Config.Tweaks.GearSetGrid;
 
     private readonly GearSetGrid _tweak;
+    private bool _resetSize;
     private bool _resetScrollPosition;
 
     public GearSetGridWindow(GearSetGrid tweak) : base("[HaselTweaks] Gear Set Grid")
@@ -34,10 +36,16 @@ public unsafe class GearSetGridWindow : Window
         _tweak = tweak;
 
         base.Namespace = "HaselTweaks_GearSetGrid";
-        base.DisableWindowSounds = true;
+        base.DisableWindowSounds = Config.AutoOpenWithGearSetList;
         base.IsOpen = true;
 
-        Size = new(515, 554);
+        base.Flags |= ImGuiWindowFlags.NoCollapse;
+
+        if (Plugin.Config.LockedImGuiWindows.Contains(nameof(GearSetGridWindow)))
+            base.Flags |= ImGuiWindowFlags.NoMove;
+
+        base.Size = DefaultWindowSize;
+        base.SizeCondition = ImGuiCond.FirstUseEver;
     }
 
     public override void OnOpen()
@@ -45,8 +53,70 @@ public unsafe class GearSetGridWindow : Window
         _resetScrollPosition = true;
     }
 
+    public override void PreDraw()
+    {
+        if (_resetSize)
+        {
+            base.Size = DefaultWindowSize;
+            base.SizeCondition = ImGuiCond.Always;
+            _resetSize = false;
+        }
+        else
+        {
+            base.SizeCondition = ImGuiCond.FirstUseEver;
+        }
+    }
+
     public override void Draw()
     {
+        using (var windowContext = ImRaii.ContextPopup(nameof(GearSetGridWindow)))
+        {
+            if (windowContext.Success)
+            {
+                if (ImGui.MenuItem(Service.ClientState.ClientLanguage switch
+                {
+                    ClientLanguage.German => "Größe zurücksetzen",
+                    ClientLanguage.French => "Réinitialiser la taille",
+                    ClientLanguage.Japanese => "サイズをリセットする",
+                    _ => "Reset size"
+                }))
+                {
+                    _resetSize = true;
+                }
+
+                if (ImGui.MenuItem(
+                    Service.ClientState.ClientLanguage switch
+                    {
+                        ClientLanguage.German => "Position sperren",
+                        ClientLanguage.French => "Verrouiller la position",
+                        ClientLanguage.Japanese => "ポジションをロックする",
+                        _ => "Lock Position"
+                    },
+                    null,
+                    base.Flags.HasFlag(ImGuiWindowFlags.NoMove)))
+                {
+                    base.Flags ^= ImGuiWindowFlags.NoMove;
+
+                    if (base.Flags.HasFlag(ImGuiWindowFlags.NoMove))
+                    {
+                        if (!Plugin.Config.LockedImGuiWindows.Contains(nameof(GearSetGridWindow)))
+                        {
+                            Plugin.Config.LockedImGuiWindows.Add(nameof(GearSetGridWindow));
+                            Plugin.Config.Save();
+                        }
+                    }
+                    else
+                    {
+                        if (Plugin.Config.LockedImGuiWindows.Contains(nameof(GearSetGridWindow)))
+                        {
+                            Plugin.Config.LockedImGuiWindows.Remove(nameof(GearSetGridWindow));
+                            Plugin.Config.Save();
+                        }
+                    }
+                }
+            }
+        }
+
         const int NUM_SLOTS = 13;
 
         using var cellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, Vector2.Zero);

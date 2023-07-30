@@ -19,6 +19,7 @@ internal partial class Configuration : IPluginConfiguration
     public int Version { get; set; } = CURRENT_CONFIG_VERSION;
     public HashSet<string> EnabledTweaks { get; private set; } = new();
     public TweakConfigs Tweaks { get; init; } = new();
+    public HashSet<string> LockedImGuiWindows { get; private set; } = new();
 }
 
 public class TweakConfigs
