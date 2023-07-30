@@ -305,7 +305,7 @@ public unsafe class GearSetGridWindow : Window
 
         new ImGuiUtils.ContextMenu(popupKey)
         {
-            ImGuiUtils.ContextMenuEntry.CreateTryOn(item.RowId),
+            ImGuiUtils.ContextMenuEntry.CreateTryOn(item.RowId, slot->GlamourId, slot->Stain),
             ImGuiUtils.ContextMenuEntry.CreateItemFinder(item.RowId),
             ImGuiUtils.ContextMenuEntry.CreateCopyItemName(item.RowId),
             ImGuiUtils.ContextMenuEntry.CreateGarlandTools(item.RowId),
