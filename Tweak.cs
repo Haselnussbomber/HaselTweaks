@@ -258,11 +258,11 @@ public abstract unsafe class Tweak
         }
     }
 
-    internal void OnAddonCloseInternal(string addonName, AtkUnitBase* unitbase)
+    internal void OnAddonCloseInternal(string addonName)
     {
         try
         {
-            OnAddonClose(addonName, unitbase);
+            OnAddonClose(addonName);
         }
         catch (Exception ex)
         {
@@ -282,7 +282,7 @@ public abstract unsafe class Tweak
     public virtual void OnLogout() { }
     public virtual void OnTerritoryChanged(ushort id) { }
     public virtual void OnAddonOpen(string addonName, AtkUnitBase* unitbase) { }
-    public virtual void OnAddonClose(string addonName, AtkUnitBase* unitbase) { }
+    public virtual void OnAddonClose(string addonName) { }
 
     #region Logging methods
 

@@ -62,7 +62,7 @@ public unsafe partial class GearSetGrid : Tweak
             OpenWindow();
     }
 
-    public override void OnAddonClose(string addonName, AtkUnitBase* unitbase)
+    public override void OnAddonClose(string addonName)
     {
         if (Config.AutoOpenWithGearSetList && addonName == "GearSetList")
             CloseWindow();

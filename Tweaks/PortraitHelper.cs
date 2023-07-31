@@ -194,7 +194,7 @@ public partial class PortraitHelper : Tweak
         MenuBar.IsOpen = true;
     }
 
-    public override unsafe void OnAddonClose(string addonName, AtkUnitBase* unitbase)
+    public override unsafe void OnAddonClose(string addonName)
     {
         if (addonName != "BannerEditor")
             return;

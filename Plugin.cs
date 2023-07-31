@@ -7,20 +7,14 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Caches;
-using HaselTweaks.Structs;
+using HaselTweaks.Utils;
 using HaselTweaks.Windows;
 using DalamudFramework = Dalamud.Game.Framework;
 
 namespace HaselTweaks;
 
-public abstract class PluginBase
-{
-    public abstract void SetupAddressHooks();
-}
-
-public partial class Plugin : PluginBase, IDalamudPlugin
+public partial class Plugin : IDalamudPlugin
 {
     public string Name => "HaselTweaks";
 
@@ -40,12 +34,9 @@ public partial class Plugin : PluginBase, IDalamudPlugin
     private void Setup()
     {
         InitializeResolver();
-        SetupAddressHooks();
 
         Service.Framework.RunOnFrameworkThread(() =>
         {
-            AddonSetupHook?.Enable();
-            AddonFinalizeHook?.Enable();
             InitializeTweaks();
 
             Config = Configuration.Load(Tweaks.Select(t => t.InternalName));
@@ -109,6 +100,8 @@ public partial class Plugin : PluginBase, IDalamudPlugin
 
     private void OnFrameworkUpdate(DalamudFramework framework)
     {
+        AddonObserver.Update();
+
         foreach (var tweak in Tweaks)
         {
             if (!tweak.Enabled)
@@ -175,9 +168,6 @@ public partial class Plugin : PluginBase, IDalamudPlugin
 
         Service.CommandManager.RemoveHandler("/haseltweaks");
 
-        AddonSetupHook?.Dispose();
-        AddonFinalizeHook?.Dispose();
-
         foreach (var tweak in Tweaks)
         {
             try
@@ -203,29 +193,5 @@ public partial class Plugin : PluginBase, IDalamudPlugin
 
         StringCache.Dispose();
         Service.TextureCache.Dispose();
-    }
-
-    [AddressHook<HaselAtkUnitBase>(nameof(HaselAtkUnitBase.Addresses.AddonSetup))]
-    public unsafe void AddonSetup(AtkUnitBase* unitBase)
-    {
-        AddonSetupHook.OriginalDisposeSafe(unitBase);
-
-        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
-        {
-            tweak.OnAddonOpenInternal(GetAddonName(unitBase), unitBase);
-        }
-    }
-
-    [AddressHook<HaselAtkUnitManager>(nameof(HaselAtkUnitManager.Addresses.AddonFinalize))]
-    public unsafe void AddonFinalize(AtkUnitManager* unitManager, AtkUnitBase** unitBasePtr)
-    {
-        var unitBase = *unitBasePtr;
-
-        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
-        {
-            tweak.OnAddonCloseInternal(GetAddonName(unitBase), unitBase);
-        }
-
-        AddonFinalizeHook.OriginalDisposeSafe(unitManager, unitBasePtr);
     }
 }
