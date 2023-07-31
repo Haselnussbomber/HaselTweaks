@@ -2,7 +2,7 @@
 
 ## [16.0.1] (2023-07-31)
 
-- **Fixed:** I reworked the way the plugin detects when windows are opened/closed in the last update and forgot to check if the window is fully loaded before interacting with it. This update should fix focus issues with armor chests when auto-sorting is enabled.
+- **Fixed:** I reworked the way the plugin detects when windows are opened/closed in the last update and forgot to check if the window is fully loaded before interacting with it. This update should fix focus issues with the armoury chest when Auto Sorter is enabled.
 
 ## [16.0.0] (2023-07-31)
 
