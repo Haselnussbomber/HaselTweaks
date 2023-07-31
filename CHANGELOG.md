@@ -1,5 +1,11 @@
 # Changelog
 
+## [16.0.2] (2023-07-31)
+
+### Scrollable Tabs
+
+- **Fixed:** Scrolling in the Blue Magic Spellbook broke with Patch 6.45.
+
 ## [16.0.1] (2023-07-31)
 
 - **Fixed:** I reworked the way the plugin detects when windows are opened/closed in the last update and forgot to check if the window is fully loaded before interacting with it. This update should fix focus issues with the armoury chest when Auto Sorter is enabled.
@@ -857,7 +863,7 @@ Use ezWondrousTails instead, as it does the same.
 
 ## [0.1.0] (2022-05-04)
 
-### New Tweak: ScrollableTabs
+### New Tweak: Scrollable Tabs
 
 Enables mouse wheel to switch tabs (like with LB/RB on controllers) in the following windows:
 
@@ -990,6 +996,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[16.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.1...v16.0.2
 [16.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.0...v16.0.1
 [16.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.3.3...v16.0.0
 [15.3.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.3.2...v15.3.3
