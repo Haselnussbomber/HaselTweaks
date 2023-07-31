@@ -8,8 +8,8 @@ public unsafe partial struct AddonAOZNotebook
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0xCB8)] public int TabIndex;
-    [FieldOffset(0xCBC)] public int TabCount;
+    [FieldOffset(0xCB0)] public int TabIndex;
+    [FieldOffset(0xCB4)] public int TabCount;
 
     // called via AOZNotebook vf68
     [MemberFunction("E8 ?? ?? ?? ?? 33 D2 48 8B CD E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 41 8D 40 F7")]
