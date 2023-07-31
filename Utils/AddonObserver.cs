@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
@@ -44,8 +43,6 @@ public static unsafe class AddonObserver
                 NameCache.Add(address, name);
             }
 
-            PluginLog.Log($"AddedUnit: {name} @ {address:X}");
-
             foreach (var tweak in Plugin.Tweaks.Where(tweak => tweak.Enabled))
             {
                 tweak.OnAddonOpenInternal(name, unitBase);
@@ -77,8 +74,6 @@ public static unsafe class AddonObserver
             if (NameCache.TryGetValue(address, out var name))
             {
                 NameCache.Remove(address);
-
-                PluginLog.Log($"RemovedUnit: {name} @ {address:X}");
 
                 foreach (var tweak in Plugin.Tweaks.Where(tweak => tweak.Enabled))
                 {
