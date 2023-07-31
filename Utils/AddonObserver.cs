@@ -27,7 +27,7 @@ public static unsafe class AddonObserver
         for (var i = 0; i < allLoadedList->Count; i++)
         {
             var address = (nint)allLoadedList->AtkUnitsSpan[i].Value;
-            if (address == 0 || LoadedUnits.Contains(address))
+            if (address == 0 || LoadedUnits.Contains(address) || !raptureAtkModule->AtkModule.IsAddonReady(((AtkUnitBase*)address)->ID))
                 continue;
 
             AddedUnits.Add(address);
