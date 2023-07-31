@@ -13,9 +13,7 @@ using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
-using GearsetEntry = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetEntry;
-using GearsetFlag = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetFlag;
-using GearsetItem = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetItem;
+using static FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule;
 
 namespace HaselTweaks.Windows;
 
@@ -184,16 +182,20 @@ public unsafe class GearSetGridWindow : Window
                     }
                 }
 
-                ImGui.SetCursorPos(startPos);
-                ImGuiUtils.PushCursor(ImGui.GetStyle().ItemSpacing.X, (rowHeight - ImGui.GetFrameHeight()) / 2f);
-                var gearsetNumber = $"{gearsetIndex + 1}";
-                var textSize = ImGui.CalcTextSize(gearsetNumber);
+                var itemSpacing = ImGui.GetStyle().ItemSpacing;
+                var itemInnerSpacing = ImGui.GetStyle().ItemInnerSpacing;
+                var iconSize = 20 * ImGuiHelpers.GlobalScale;
+                var itemStartPos = startPos + new Vector2(region.X - iconSize - itemSpacing.X, rowHeight / 2f - iconSize / 2f); // start from the right
 
-                ImGuiUtils.PushCursorX(region.X / 2f - textSize.X - ImGui.GetStyle().ItemSpacing.X);
-                ImGui.TextUnformatted(gearsetNumber);
+                // class icon
+                ImGui.SetCursorPos(itemStartPos);
+                Service.TextureCache.GetIcon(62000 + gearset->ClassJob).Draw(iconSize);
 
-                ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
-                Service.TextureCache.GetIcon(62000 + gearset->ClassJob).Draw(20 * ImGuiHelpers.GlobalScale);
+                // gearset number
+                var text = $"{gearsetIndex + 1}";
+                var textSize = ImGui.CalcTextSize(text);
+                ImGui.SetCursorPos(itemStartPos - new Vector2(textSize.X + itemInnerSpacing.X, 0));
+                ImGui.TextUnformatted(text);
             }
 
             for (uint slotIndex = 0; slotIndex < NUM_SLOTS; slotIndex++)
