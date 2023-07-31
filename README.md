@@ -135,7 +135,8 @@ Auto-unmutes background music for most cutscenes.
 
 ### Gear Set Grid
 
-A window that displays a grid view of all the items in each gear set, making it easier to figure out which items to upgrade next.
+A window that displays a grid view of all the items in each gear set, making it easier to figure out which items to upgrade next.  
+This is not meant to be a replacement for the Gear Set List window, but rather a supplement to it.
 
 Configuration options:
 
