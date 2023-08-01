@@ -136,7 +136,8 @@ Auto-unmutes background music for most cutscenes.
 ### Gear Set Grid
 
 A window that displays a grid view of all the items in each gear set, making it easier to figure out which items to upgrade next.  
-This is not meant to be a replacement for the Gear Set List window, but rather a supplement to it.
+This is not meant to be a replacement for the Gear Set List window, but rather a supplement to it.  
+Max level jobs for each expansion have item level range colors, with a low item level displayed as red and a high item level displayed as green.
 
 Configuration options:
 

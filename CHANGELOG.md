@@ -1,10 +1,14 @@
 # Changelog
 
-## [Unreleased]
+## [16.0.3] (2023-08-02)
 
 ### Background Music Keybind
 
 - **Fixed:** The game would respond to the keybind. Now the key press state is reset after handling it.
+
+### Gear Set Grid
+
+- **Fixed:** Calculating the item level color caused the table to suddenly stop rendering, because it was using a wrong column in the ClassJob sheet.
 
 ## [16.0.2] (2023-07-31)
 
@@ -1002,6 +1006,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[16.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.2...v16.0.3
 [16.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.1...v16.0.2
 [16.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.0...v16.0.1
 [16.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v15.3.3...v16.0.0
