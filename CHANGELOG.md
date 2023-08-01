@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Background Music Keybind
+
+- **Fixed:** The game would respond to the keybind. Now the key press state is reset after handling it.
+
 ## [16.0.2] (2023-07-31)
 
 ### Scrollable Tabs
