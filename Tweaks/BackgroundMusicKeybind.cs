@@ -151,6 +151,12 @@ public unsafe class BackgroundMusicKeybind : Tweak
         var numKeysPressed = Service.KeyState.GetValidVirtualKeys().Count(key => Service.KeyState[key]);
         if (numKeysPressed == Config.Keybind.Length)
         {
+            // prevents the game from handling the key press
+            if (Config.Keybind.FindFirst(x => x is not (VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT), out var key))
+            {
+                Service.KeyState[key] = false;
+            }
+
             IsBgmMuted = !IsBgmMuted;
 
             HaselRaptureLogModule.Instance()->ShowLogMessageUInt(3861, IsBgmMuted ? 1u : 0u);
