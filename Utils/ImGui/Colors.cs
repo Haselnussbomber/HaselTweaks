@@ -49,13 +49,12 @@ public static class Colors
         if (colors.Length < 2)
             throw new ArgumentException("At least two colors are required for interpolation.");
 
-        var jobIndex = Service.DataManager.GetExcelSheet<ClassJob>()?.GetRow(classJob)?.DohDolJobIndex;
-        if (jobIndex == null)
+        var expArrayIndex = Service.DataManager.GetExcelSheet<ClassJob>()?.GetRow(classJob)?.ExpArrayIndex;
+        if (expArrayIndex is null or -1)
             return White;
 
-        var level = PlayerState.Instance()->ClassJobLevelArray[(short)jobIndex];
-
-        if (!ItemUtils.MaxLevelRanges.Value.TryGetValue(level, out var range))
+        var level = PlayerState.Instance()->ClassJobLevelArray[(short)expArrayIndex];
+        if (level < 1 || !ItemUtils.MaxLevelRanges.Value.TryGetValue(level, out var range))
             return White;
 
         var itemLevel = item.LevelItem.Row;
@@ -72,6 +71,10 @@ public static class Colors
 
         var startIndex = (int)(value * (colors.Length - 1));
         var endIndex = Math.Min(startIndex + 1, colors.Length - 1);
+
+        if (startIndex < 0 || startIndex >= colors.Length || endIndex < 0 || endIndex >= colors.Length)
+            return White;
+
         var t = value * (colors.Length - 1) - startIndex;
         return (ImColor)Vector4.Lerp(colors[startIndex], colors[endIndex], t);
     }
