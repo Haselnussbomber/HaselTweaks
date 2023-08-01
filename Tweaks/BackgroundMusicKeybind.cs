@@ -94,35 +94,33 @@ public unsafe class BackgroundMusicKeybind : Tweak
             previewValue = key.GetFancyName();
 
         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - ImGui.GetStyle().IndentSpacing);
-        using (var combo = ImRaii.Combo("##Key", previewValue))
+        using var combo = ImRaii.Combo("##Key", previewValue);
+        if (!combo.Success)
+            return;
+
+        foreach (var _key in Service.KeyState.GetValidVirtualKeys())
         {
-            if (combo.Success)
+            if (_key is VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT)
+                continue;
+
+            var _keySet = Config.Keybind.Contains(_key);
+            if (ImGui.Selectable(_key.GetFancyName(), ref _keySet))
             {
-                foreach (var _key in Service.KeyState.GetValidVirtualKeys())
+                var set = new HashSet<VirtualKey>(Config.Keybind);
+
+                // unset current key
+                if (hasKey && Config.Keybind.Contains(key))
                 {
-                    if (_key is VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT)
-                        continue;
-
-                    var _keySet = Config.Keybind.Contains(_key);
-                    if (ImGui.Selectable(_key.GetFancyName(), ref _keySet))
-                    {
-                        var set = new HashSet<VirtualKey>(Config.Keybind);
-
-                        // unset current key
-                        if (hasKey && Config.Keybind.Contains(key))
-                        {
-                            set.Remove(key);
-                        }
-
-                        if (_keySet && !Config.Keybind.Contains(_key))
-                        {
-                            set.Add(_key);
-                        }
-
-                        Config.Keybind = set.Order().ToArray();
-                        Plugin.Config.Save();
-                    }
+                    set.Remove(key);
                 }
+
+                if (_keySet && !Config.Keybind.Contains(_key))
+                {
+                    set.Add(_key);
+                }
+
+                Config.Keybind = set.Order().ToArray();
+                Plugin.Config.Save();
             }
         }
     }

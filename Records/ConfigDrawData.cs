@@ -11,7 +11,7 @@ internal record ConfigDrawData<T> : IConfigDrawData
     public FieldInfo Field { get; init; } = null!;
     public ConfigFieldAttribute? Attr { get; init; }
 
-    public string Key => $"###{Tweak.InternalName}#{Field.Name}";
+    public string Key => $"##{Tweak.InternalName}#{Field.Name}";
     public string Label => Attr != null && !string.IsNullOrEmpty(Attr.Label) ? Attr.Label : Field.Name;
     public string Description => Attr?.Description ?? string.Empty;
 
