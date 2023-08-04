@@ -1,5 +1,11 @@
 # Changelog
 
+## [16.0.4] (2023-08-05)
+
+### Scrollable Tabs
+
+- **Fixed:** It was not possible to scroll the Chocobo Saddlebag when viewing the retainer inventory.
+
 ## [16.0.3] (2023-08-02)
 
 ### Background Music Keybind
@@ -1006,6 +1012,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[16.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.3...v16.0.4
 [16.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.2...v16.0.3
 [16.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.1...v16.0.2
 [16.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.0...v16.0.1
