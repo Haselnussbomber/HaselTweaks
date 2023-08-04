@@ -160,6 +160,7 @@ public unsafe partial class ScrollableTabs : Tweak
             case "MJIMinionNoteBook":      // Island Minion Guide
             case "Currency":               // Currency
             case "InventoryBuddy":         // Chocobo Saddlebag
+            case "InventoryBuddy2":        // Chocobo Saddlebag (when in Retainer Inventory)
             case "Character":              // Character
             case "CharacterClass":         // Character -> Classes/Jobs
             case "CharacterRepute":        // Character -> Reputation
@@ -330,7 +331,7 @@ public unsafe partial class ScrollableTabs : Tweak
         {
             UpdateCurrency(unitBase);
         }
-        else if (Config.HandleInventoryBuddy && name == "InventoryBuddy")
+        else if (Config.HandleInventoryBuddy && name is "InventoryBuddy" or "InventoryBuddy2")
         {
             UpdateInventoryBuddy((AddonInventoryBuddy*)unitBase);
         }
