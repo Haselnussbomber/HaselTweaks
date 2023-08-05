@@ -179,7 +179,7 @@ originalUpdateQuestWork:
 
     private void OpenRecipe(uint resultItemId, uint amount)
     {
-        if (!GetAgent<AgentRecipeNote>(AgentId.RecipeNote, out var agentRecipeNote))
+        if (!TryGetAgent<AgentRecipeNote>(AgentId.RecipeNote, out var agentRecipeNote))
             return;
 
         if (agentRecipeNote->ActiveCraftRecipeId != 0 || Service.Condition[ConditionFlag.Crafting] || Service.Condition[ConditionFlag.Crafting40])

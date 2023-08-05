@@ -109,10 +109,10 @@ public partial class PortraitHelper : Tweak
 
         _openPortraitEditPayload = Service.PluginInterface.AddChatLinkHandler(1000, OpenPortraitEditChatHandler);
 
-        GetAgent(AgentId.BannerEditor, out AgentBannerEditor);
-        GetAgent(AgentId.Status, out AgentStatus);
+        AgentBannerEditor = GetAgent<AgentBannerEditor>(AgentId.BannerEditor);
+        AgentStatus = GetAgent<AgentStatus>(AgentId.Status);
 
-        if (GetAddon(AgentId.BannerEditor, out var addon))
+        if (TryGetAddon(AgentId.BannerEditor, out var addon))
             OnAddonOpen("BannerEditor", addon);
     }
 
@@ -314,7 +314,7 @@ public partial class PortraitHelper : Tweak
 
     public unsafe Image<Bgra32>? GetCurrentCharaViewImage()
     {
-        if (!GetAgent<AgentBannerEditor>(AgentId.BannerEditor, out var agentBannerEditor))
+        if (!TryGetAgent<AgentBannerEditor>(AgentId.BannerEditor, out var agentBannerEditor))
             return null;
 
         var charaViewTexture = RenderTargetManager.Instance()->GetCharaViewTexture(agentBannerEditor->EditorState->CharaView->Base.ClientObjectIndex);
@@ -360,7 +360,7 @@ public partial class PortraitHelper : Tweak
 
     public unsafe PortraitPreset? StateToPreset()
     {
-        if (!GetAgent<AgentBannerEditor>(AgentId.BannerEditor, out var agentBannerEditor))
+        if (!TryGetAgent<AgentBannerEditor>(AgentId.BannerEditor, out var agentBannerEditor))
             return null;
 
         var state = agentBannerEditor->EditorState;
@@ -381,10 +381,10 @@ public partial class PortraitHelper : Tweak
         if (preset == null)
             return;
 
-        if (!GetAgent<AgentBannerEditor>(AgentId.BannerEditor, out var agentBannerEditor))
+        if (!TryGetAgent<AgentBannerEditor>(AgentId.BannerEditor, out var agentBannerEditor))
             return;
 
-        if (!GetAddon<AddonBannerEditor>((AgentInterface*)agentBannerEditor, out var addonBannerEditor))
+        if (!TryGetAddon<AddonBannerEditor>((AgentInterface*)agentBannerEditor, out var addonBannerEditor))
             return;
 
         Debug($"Importing Preset {preset.ToExportedString()} with ImportFlags {importFlags}");

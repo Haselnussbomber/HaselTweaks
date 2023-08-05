@@ -516,7 +516,7 @@ public unsafe class AutoSorter : Tweak
         {
             foreach (var (name, wasVisible) in _inventoryAddons)
             {
-                if (GetAddon(name, out var unitBase))
+                if (TryGetAddon(name, out var unitBase))
                 {
                     var isVisible = unitBase->IsVisible;
 
@@ -539,7 +539,7 @@ public unsafe class AutoSorter : Tweak
         {
             _lastClassJobId = Service.ClientState.LocalPlayer.ClassJob.Id;
 
-            if (GetAddon("ArmouryBoard", out var unitBase))
+            if (TryGetAddon("ArmouryBoard", out var unitBase))
             {
                 OnOpenArmoury();
             }

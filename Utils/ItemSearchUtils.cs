@@ -19,10 +19,10 @@ public static unsafe class ItemSearchUtils
         if (!CanSearchForItem(itemId))
             return;
 
-        if (!GetAddon<AddonItemSearch>(AgentId.ItemSearch, out var addon))
+        if (!TryGetAddon<AddonItemSearch>(AgentId.ItemSearch, out var addon))
             return;
 
-        if (GetAddon<AddonItemSearchResult>("ItemSearchResult", out var itemSearchResult))
+        if (TryGetAddon<AddonItemSearchResult>("ItemSearchResult", out var itemSearchResult))
             itemSearchResult->Hide2();
 
         var itemName = StringCache.GetItemName(itemId % 1000000);

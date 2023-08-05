@@ -159,7 +159,7 @@ Update:
 
     private void RunUpdate()
     {
-        if (!GetAddon<AddonExp>("_Exp", out var addon))
+        if (!TryGetAddon<AddonExp>("_Exp", out var addon))
             return;
 
         var atkArrayDataHolder = RaptureAtkModule.Instance()->AtkModule.AtkArrayDataHolder;

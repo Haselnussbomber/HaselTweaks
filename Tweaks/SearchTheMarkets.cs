@@ -89,29 +89,29 @@ public unsafe class SearchTheMarkets : Tweak
         switch (args.ParentAddonName)
         {
             case "RecipeNote":
-                if (GetAgent<AgentRecipeNote>(AgentId.RecipeNote, out var agentRecipeNote))
+                if (TryGetAgent<AgentRecipeNote>(AgentId.RecipeNote, out var agentRecipeNote))
                     _itemId = agentRecipeNote->ContextMenuResultItemId;
                 break;
 
             case "RecipeTree":
             case "RecipeMaterialList":
                 // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
-                if (GetAgent<AgentRecipeItemContext>(AgentId.RecipeItemContext, out var agentRecipeItemContext))
+                if (TryGetAgent<AgentRecipeItemContext>(AgentId.RecipeItemContext, out var agentRecipeItemContext))
                     _itemId = agentRecipeItemContext->ResultItemId;
                 break;
 
             case "ChatLog":
-                if (GetAgent<AgentChatLog>(AgentId.ChatLog, out var agentChatLog))
+                if (TryGetAgent<AgentChatLog>(AgentId.ChatLog, out var agentChatLog))
                     _itemId = agentChatLog->ContextItemId;
                 break;
 
             case "ContentsInfoDetail":
-                if (GetAgent<AgentContentsTimer>(AgentId.ContentsTimer, out var agentContentsTimer))
+                if (TryGetAgent<AgentContentsTimer>(AgentId.ContentsTimer, out var agentContentsTimer))
                     _itemId = agentContentsTimer->ContextMenuItemId;
                 break;
 
             case "DailyQuestSupply":
-                if (GetAgent<AgentDailyQuestSupply>(AgentId.DailyQuestSupply, out var agentDailyQuestSupply))
+                if (TryGetAgent<AgentDailyQuestSupply>(AgentId.DailyQuestSupply, out var agentDailyQuestSupply))
                     _itemId = agentDailyQuestSupply->ContextMenuItemId;
                 break;
         }

@@ -376,9 +376,9 @@ public unsafe partial class LockWindowPosition : Tweak
     [AddressHook<WindowContextMenuHandler>(nameof(WindowContextMenuHandler.Addresses.Callback))]
     public AtkValue* WindowContextMenuEventHandler_Callback(nint self, AtkValue* result, nint a3, long a4, long eventParam)
     {
-        if (_eventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock && GetAgent<AgentContext>(AgentId.Context, out var agentContext))
+        if (_eventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock && TryGetAgent<AgentContext>(AgentId.Context, out var agentContext))
         {
-            if (GetAddon(agentContext->OwnerAddon, out var addon))
+            if (TryGetAddon(agentContext->OwnerAddon, out var addon))
             {
                 var name = MemoryHelper.ReadStringNullTerminated((nint)addon->Name);
 
@@ -419,7 +419,7 @@ public unsafe partial class LockWindowPosition : Tweak
 
     private void AddMenuEntry(string text, int eventParam)
     {
-        if (!GetAgent<AgentContext>(AgentId.Context, out var agentContext))
+        if (!TryGetAgent<AgentContext>(AgentId.Context, out var agentContext))
             return;
 
         var bytes = new SeStringBuilder()

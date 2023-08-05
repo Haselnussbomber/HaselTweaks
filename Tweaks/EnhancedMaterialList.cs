@@ -127,7 +127,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
     {
         if (Config.RestoreMaterialList &&
             Config.RestoreMaterialListRecipeId != 0 &&
-            GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList, out var agentRecipeMaterialList) &&
+            TryGetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList, out var agentRecipeMaterialList) &&
             agentRecipeMaterialList != null &&
             agentRecipeMaterialList->RecipeId != Config.RestoreMaterialListRecipeId)
         {
@@ -149,7 +149,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         if (DateTime.Now.Subtract(_lastRecipeMaterialListRefresh).TotalSeconds < 2)
             return;
 
-        if (!GetAddon<AddonRecipeMaterialList>(AgentId.RecipeMaterialList, out var recipeMaterialList))
+        if (!TryGetAddon<AddonRecipeMaterialList>(AgentId.RecipeMaterialList, out var recipeMaterialList))
         {
             _recipeMaterialListRefreshPending = false;
             return;
@@ -181,7 +181,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         if (DateTime.Now.Subtract(_lastRecipeTreeRefresh).TotalSeconds < 2)
             return;
 
-        if (!GetAddon<AddonRecipeTree>(AgentId.RecipeTree, out var recipeTree))
+        if (!TryGetAddon<AddonRecipeTree>(AgentId.RecipeTree, out var recipeTree))
         {
             _recipeTreeRefreshPending = false;
             return;
@@ -197,7 +197,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     private void SaveRestoreMaterialList()
     {
-        if (!GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList, out var agentRecipeMaterialList))
+        if (!TryGetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList, out var agentRecipeMaterialList))
             return;
 
         var shouldSave = Config.RestoreMaterialList && agentRecipeMaterialList != null && agentRecipeMaterialList->WindowLocked;
@@ -328,7 +328,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         if (!Config.AddSearchForItemByCraftingMethodContextMenuEntry)
             goto originalAddItemContextMenuEntries;
 
-        if (!GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList, out var agentRecipeMaterialList))
+        if (!TryGetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList, out var agentRecipeMaterialList))
             goto originalAddItemContextMenuEntries;
 
         if (GetAddon(AgentId.RecipeMaterialList) == null)
@@ -393,7 +393,7 @@ originalAddItemContextMenuEntries:
 
     public bool OpenMapWithGatheringPoint(GatheringPoint? gatheringPoint, Item? item = null)
     {
-        if (!GetAgent<AgentMap>(AgentId.Map, out var agentMap))
+        if (!TryGetAgent<AgentMap>(AgentId.Map, out var agentMap))
             return false;
 
         if (gatheringPoint == null)

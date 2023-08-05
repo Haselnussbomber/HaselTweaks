@@ -242,7 +242,7 @@ public unsafe partial class ScrollableTabs : Tweak
                 goto ResetWheelState;
         }
 
-        if (!GetAddon(name, out var unitBase))
+        if (!TryGetAddon(name, out var unitBase))
             goto ResetWheelState;
 
         if (Config.HandleArmouryBoard && name == "ArmouryBoard")
@@ -598,7 +598,7 @@ ResetWheelState:
 
     private void UpdateMJIMountMinion(AddonMJIMinionNoteBook* addon)
     {
-        if (!GetAgent<AgentMJIMinionNoteBook>(AgentId.MJIMinionNoteBook, out var agent))
+        if (!TryGetAgent<AgentMJIMinionNoteBook>(AgentId.MJIMinionNoteBook, out var agent))
             return;
 
         if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Normal)
@@ -713,7 +713,7 @@ ResetWheelState:
         if (GetAddon("MiragePrismPrismBoxFilter") != null)
             return;
 
-        if (!GetAgent(AgentId.MiragePrismPrismBox, out AgentMiragePrismPrismBox* agent))
+        if (!TryGetAgent(AgentId.MiragePrismPrismBox, out AgentMiragePrismPrismBox* agent))
             return;
 
         agent->PageIndex += (byte)_wheelState;
