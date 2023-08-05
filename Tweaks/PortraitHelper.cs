@@ -314,9 +314,7 @@ public partial class PortraitHelper : Tweak
 
     public unsafe Image<Bgra32>? GetCurrentCharaViewImage()
     {
-        if (!TryGetAgent<AgentBannerEditor>(AgentId.BannerEditor, out var agentBannerEditor))
-            return null;
-
+        var agentBannerEditor = GetAgent<AgentBannerEditor>(AgentId.BannerEditor);
         var charaViewTexture = RenderTargetManager.Instance()->GetCharaViewTexture(agentBannerEditor->EditorState->CharaView->Base.ClientObjectIndex);
         if (charaViewTexture == null || charaViewTexture->D3D11Texture2D == null)
             return null;
@@ -360,10 +358,7 @@ public partial class PortraitHelper : Tweak
 
     public unsafe PortraitPreset? StateToPreset()
     {
-        if (!TryGetAgent<AgentBannerEditor>(AgentId.BannerEditor, out var agentBannerEditor))
-            return null;
-
-        var state = agentBannerEditor->EditorState;
+        var state = GetAgent<AgentBannerEditor>(AgentId.BannerEditor)->EditorState;
         var preset = new PortraitPreset();
 
         using var portraitData = new DisposableStruct<ExportedPortraitData>();
@@ -381,15 +376,12 @@ public partial class PortraitHelper : Tweak
         if (preset == null)
             return;
 
-        if (!TryGetAgent<AgentBannerEditor>(AgentId.BannerEditor, out var agentBannerEditor))
-            return;
-
-        if (!TryGetAddon<AddonBannerEditor>((AgentInterface*)agentBannerEditor, out var addonBannerEditor))
+        if (!TryGetAddon<AddonBannerEditor>(AgentId.BannerEditor, out var addonBannerEditor))
             return;
 
         Debug($"Importing Preset {preset.ToExportedString()} with ImportFlags {importFlags}");
 
-        var state = agentBannerEditor->EditorState;
+        var state = GetAgent<AgentBannerEditor>(AgentId.BannerEditor)->EditorState;
         var bannerEntry = state->BannerEntry;
 
         // read current portrait and then overwrite what the flags allow below

@@ -376,9 +376,9 @@ public unsafe partial class LockWindowPosition : Tweak
     [AddressHook<WindowContextMenuHandler>(nameof(WindowContextMenuHandler.Addresses.Callback))]
     public AtkValue* WindowContextMenuEventHandler_Callback(nint self, AtkValue* result, nint a3, long a4, long eventParam)
     {
-        if (_eventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock && TryGetAgent<AgentContext>(AgentId.Context, out var agentContext))
+        if (_eventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock)
         {
-            if (TryGetAddon(agentContext->OwnerAddon, out var addon))
+            if (TryGetAddon(GetAgent<AgentContext>(AgentId.Context)->OwnerAddon, out var addon))
             {
                 var name = MemoryHelper.ReadStringNullTerminated((nint)addon->Name);
 
@@ -419,9 +419,6 @@ public unsafe partial class LockWindowPosition : Tweak
 
     private void AddMenuEntry(string text, int eventParam)
     {
-        if (!TryGetAgent<AgentContext>(AgentId.Context, out var agentContext))
-            return;
-
         var bytes = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
             .AddText(text)
@@ -430,7 +427,7 @@ public unsafe partial class LockWindowPosition : Tweak
         var handler = (nint)AtkStage.GetSingleton()->RaptureAtkUnitManager + 0x9C88; // see vtbl ptr in ctor
         fixed (byte* ptr = &bytes[0])
         {
-            agentContext->AddMenuItem(ptr, (void*)handler, eventParam);
+            GetAgent<AgentContext>(AgentId.Context)->AddMenuItem(ptr, (void*)handler, eventParam);
         }
     }
 }

@@ -40,12 +40,12 @@ public unsafe partial class MaterialAllocation : Tweak
     [VTableHook<AddonMJICraftMaterialConfirmation>(48)]
     public nint AddonMJICraftMaterialConfirmation_vf48(AddonMJICraftMaterialConfirmation* addon, int numAtkValues, nint atkValues)
     {
-        if (Config.SaveLastSelectedTab && TryGetAgent<AgentMJICraftSchedule>(AgentId.MJICraftSchedule, out var agentMJICraftSchedule))
+        if (Config.SaveLastSelectedTab)
         {
             if (Config.LastSelectedTab > 2)
                 Config.LastSelectedTab = 2;
 
-            agentMJICraftSchedule->TabIndex = Config.LastSelectedTab;
+            GetAgent<AgentMJICraftSchedule>(AgentId.MJICraftSchedule)->TabIndex = Config.LastSelectedTab;
 
             for (var i = 0; i < 3; i++)
             {
@@ -100,7 +100,7 @@ public unsafe partial class MaterialAllocation : Tweak
             Config.LastSelectedTab = (byte)(eventParam - 1);
         }
 
-        if (eventParam == 9902 && TryGetAgent<AgentMJIGatheringNoteBook>(AgentId.MJIGatheringNoteBook, out var agentMJIGatheringNoteBook))
+        if (eventParam == 9902)
         {
             if (!Config.OpenGatheringLogOnItemClick)
                 goto handled;
@@ -149,6 +149,7 @@ public unsafe partial class MaterialAllocation : Tweak
                 goto handled;
             }
 
+            var agentMJIGatheringNoteBook = GetAgent<AgentMJIGatheringNoteBook>(AgentId.MJIGatheringNoteBook);
             if (TryGetAddon<AddonAetherCurrent>(AgentId.MJIGatheringNoteBook, out var gatheringNoteBookAddon))
             {
                 // just switch item

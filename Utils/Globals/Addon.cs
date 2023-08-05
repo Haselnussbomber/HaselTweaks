@@ -49,7 +49,7 @@ public static unsafe class Addon
         => (addon = GetAddon(agent)) != null;
 
     public static AtkUnitBase* GetAddon(AgentId id)
-        => GetAddon(GetAgent(id));
+        => GetAddon(GetAgent<AgentInterface>(id));
 
     public static bool TryGetAddon(AgentId id, out AtkUnitBase* addon)
         => (addon = GetAddon(id)) != null;
@@ -67,7 +67,7 @@ public static unsafe class Addon
         => (addon = GetAddon<T>(agent)) != null;
 
     public static bool TryGetAddon<T>(AgentId id, out T* addon)
-        => TryGetAddon(GetAgent(id), out addon);
+        => TryGetAddon(GetAgent<AgentInterface>(id), out addon);
 }
 
 #pragma warning restore CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type

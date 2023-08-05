@@ -179,9 +179,7 @@ originalUpdateQuestWork:
 
     private void OpenRecipe(uint resultItemId, uint amount)
     {
-        if (!TryGetAgent<AgentRecipeNote>(AgentId.RecipeNote, out var agentRecipeNote))
-            return;
-
+        var agentRecipeNote = GetAgent<AgentRecipeNote>(AgentId.RecipeNote);
         if (agentRecipeNote->ActiveCraftRecipeId != 0 || Service.Condition[ConditionFlag.Crafting] || Service.Condition[ConditionFlag.Crafting40])
         {
             Warning($"Not opening Recipe for Item {resultItemId}: Crafting in progress");

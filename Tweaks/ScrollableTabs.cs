@@ -598,8 +598,7 @@ ResetWheelState:
 
     private void UpdateMJIMountMinion(AddonMJIMinionNoteBook* addon)
     {
-        if (!TryGetAgent<AgentMJIMinionNoteBook>(AgentId.MJIMinionNoteBook, out var agent))
-            return;
+        var agent = GetAgent<AgentMJIMinionNoteBook>(AgentId.MJIMinionNoteBook);
 
         if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Normal)
         {
@@ -713,9 +712,7 @@ ResetWheelState:
         if (GetAddon("MiragePrismPrismBoxFilter") != null)
             return;
 
-        if (!TryGetAgent(AgentId.MiragePrismPrismBox, out AgentMiragePrismPrismBox* agent))
-            return;
-
+        var agent = GetAgent<AgentMiragePrismPrismBox>(AgentId.MiragePrismPrismBox);
         agent->PageIndex += (byte)_wheelState;
         agent->UpdateItems(false, false);
     }
