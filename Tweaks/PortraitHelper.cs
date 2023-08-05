@@ -266,7 +266,7 @@ public partial class PortraitHelper : Tweak
             _lastClipboardSequenceNumber = clipboardSequenceNumber;
 
             var data = PInvoke.GetClipboardData((uint)CLIPBOARD_FORMAT.CF_TEXT);
-            if (data != 0)
+            if (!data.IsNull)
             {
                 var clipboardText = MemoryHelper.ReadString(data, 1024);
                 ClipboardPreset = PortraitPreset.FromExportedString(clipboardText);
