@@ -5,7 +5,7 @@ using System.Linq;
 namespace HaselTweaks;
 
 // from Dalamud.Interface
-internal static class ArrayExtensions
+internal static class EnumerableExtensions
 {
     /// <summary> Iterate over enumerables with additional index. </summary>
     public static IEnumerable<(T Value, int Index)> WithIndex<T>(this IEnumerable<T> list)

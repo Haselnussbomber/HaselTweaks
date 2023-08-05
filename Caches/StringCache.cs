@@ -126,7 +126,7 @@ public sealed unsafe partial class StringCache
             if (prop == null || prop.PropertyType != typeof(Lumina.Text.SeString))
                 return string.Empty;
 
-            var sheetRow = Service.DataManager.GetExcelSheet<T>()?.GetRow(rowId);
+            var sheetRow = GetRow<T>(rowId);
             if (sheetRow == null)
                 return string.Empty;
 

@@ -1,5 +1,4 @@
 using System.Numerics;
-using Dalamud.Logging;
 using ImGuiNET;
 using ImGuiScene;
 using Lumina.Data.Files;

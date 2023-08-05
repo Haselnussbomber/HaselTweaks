@@ -1,4 +1,3 @@
-using System.Linq;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.Command;
 using Dalamud.Game.Text;
@@ -119,7 +118,7 @@ public unsafe class Commands : Tweak
             return;
         }
 
-        var item = Service.DataManager.GetExcelSheet<Item>()!.GetRow(id);
+        var item = GetRow<Item>(id);
         if (item == null)
         {
             Service.ChatGui.PrintError($"Item {id} not found");
@@ -170,31 +169,17 @@ public unsafe class Commands : Tweak
 
         var modelChara = ((Character*)mountObject.Address)->CharacterData.ModelCharaId;
 
-        var MountSheet = Service.DataManager.GetExcelSheet<Mount>()!;
-        var ItemSheet = Service.DataManager.GetExcelSheet<Item>()!;
-        var ItemActionSheet = Service.DataManager.GetExcelSheet<ItemAction>()!;
-
-        var mountRow = (
-            from row in MountSheet
-            where row.ModelChara.Row == modelChara
-            select row
-        ).FirstOrDefault();
-
-        if (mountRow == null)
+        var mount = FindRow<Mount>(row => row?.ModelChara.Row == modelChara);
+        if (mount == null)
         {
             Service.ChatGui.PrintError("Mount not found.");
             return;
         }
 
-        var name = StringCache.GetMountName(mountRow.RowId);
+        var name = StringCache.GetMountName(mount.RowId);
 
-        var itemActionRowId = (
-            from row in ItemActionSheet
-            where row.Type == 1322 && row.Data[0] == mountRow.RowId
-            select row.RowId
-        ).FirstOrDefault();
-
-        if (itemActionRowId == 0)
+        var itemAction = FindRow<ItemAction>(row => row?.Type == 1322 && row.Data[0] == mount.RowId);
+        if (itemAction == null || itemAction.RowId == 0)
         {
             Service.ChatGui.PrintChat(new XivChatEntry
             {
@@ -208,13 +193,8 @@ public unsafe class Commands : Tweak
             return;
         }
 
-        var itemRow = (
-            from row in ItemSheet
-            where row.ItemAction.Row == itemActionRowId
-            select row
-        ).FirstOrDefault();
-
-        if (itemRow == null)
+        var item = FindRow<Item>(row => row?.ItemAction.Row == itemAction!.RowId);
+        if (item == null)
         {
             Service.ChatGui.PrintChat(new XivChatEntry
             {
@@ -231,7 +211,7 @@ public unsafe class Commands : Tweak
         var sesb = new SeStringBuilder()
         .AddUiForeground("\uE078 ", 32);
 
-        var itemLink = GetItemLink(itemRow.RowId);
+        var itemLink = GetItemLink(item.RowId);
 
         switch (Service.ClientState.ClientLanguage)
         {
@@ -285,27 +265,12 @@ public unsafe class Commands : Tweak
         }
 
         var targetCharacter = (Character*)target.Address;
-        var BuddyEquipSheet = Service.DataManager.GetExcelSheet<BuddyEquip>()!;
 
-        var topRow = (
-            from _row in BuddyEquipSheet
-            where _row.ModelTop == targetCharacter->DrawData.Head.Value
-            select _row
-        ).FirstOrDefault();
+        var topRow = FindRow<BuddyEquip>(row => row?.ModelTop == targetCharacter->DrawData.Head.Value);
+        var bodyRow = FindRow<BuddyEquip>(row => row?.ModelBody == targetCharacter->DrawData.Top.Value);
+        var legsRow = FindRow<BuddyEquip>(row => row?.ModelLegs == targetCharacter->DrawData.Feet.Value);
 
-        var bodyRow = (
-            from _row in BuddyEquipSheet
-            where _row.ModelBody == targetCharacter->DrawData.Top.Value
-            select _row
-        ).FirstOrDefault();
-
-        var legsRow = (
-            from _row in BuddyEquipSheet
-            where _row.ModelLegs == targetCharacter->DrawData.Feet.Value
-            select _row
-        ).FirstOrDefault();
-
-        var stain = Service.DataManager.GetExcelSheet<Stain>()!.GetRow(targetCharacter->DrawData.Legs.Stain)!;
+        var stain = GetRow<Stain>(targetCharacter->DrawData.Legs.Stain)!;
         var name = MemoryHelper.ReadStringNullTerminated((nint)targetCharacter->GameObject.Name);
 
         var sesb = new SeStringBuilder()
@@ -353,7 +318,7 @@ public unsafe class Commands : Tweak
 
     private static SeString GetItemLink(uint id)
     {
-        var item = Service.DataManager.GetExcelSheet<Item>()!.GetRow(id);
+        var item = GetRow<Item>(id);
         return item == null
             ? new SeString(new TextPayload($"Item#{id}"))
             : SeString.CreateItemLink(item, false);

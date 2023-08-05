@@ -299,13 +299,13 @@ public class PresetCard : IDisposable
         if (_preset.Preset!.BannerFrame != _bannerFrame)
         {
             _bannerFrame = _preset.Preset.BannerFrame;
-            _bannerFrameImage = Service.DataManager.GetExcelSheet<BannerFrame>()?.GetRow(_bannerFrame)?.Image;
+            _bannerFrameImage = GetRow<BannerFrame>(_bannerFrame)?.Image;
         }
 
         if (_preset.Preset.BannerDecoration != _bannerDecoration)
         {
             _bannerDecoration = _preset.Preset.BannerDecoration;
-            _bannerDecorationImage = Service.DataManager.GetExcelSheet<BannerDecoration>()?.GetRow(_bannerDecoration)?.Image;
+            _bannerDecorationImage = GetRow<BannerDecoration>(_bannerDecoration)?.Image;
         }
 
         if (!_isImageLoading && _preset.TextureHash != _textureHash)

@@ -4,11 +4,11 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
-namespace HaselTweaks.Utils;
+namespace HaselTweaks.Utils.Globals;
 
 #pragma warning disable CS8500
 
-public static unsafe class AtkUtils
+public static unsafe class Atk
 {
     #region GetAddon
 
@@ -113,9 +113,13 @@ public static unsafe class AtkUtils
 
     public static void SetAlpha(AtkResNode* node, float alpha)
     {
-        if (node == null) return;
+        if (node == null)
+            return;
+
         var alphaByte = (byte)(alpha >= 1 ? 255 : Math.Floor(alpha * 255f));
-        if (node->Color.A == alphaByte) return;
+        if (node->Color.A == alphaByte)
+            return;
+
         node->Color.A = alphaByte;
     }
 
@@ -124,7 +128,9 @@ public static unsafe class AtkUtils
 
     public static void SetVisibility(AtkResNode* node, bool visible)
     {
-        if (node == null || (visible && node->IsVisible) || (!visible && !node->IsVisible)) return;
+        if (node == null || (visible && node->IsVisible) || (!visible && !node->IsVisible))
+            return;
+
         node->ToggleVisibility(visible);
     }
 

@@ -1,4 +1,3 @@
-using System.Linq;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
@@ -103,9 +102,7 @@ public unsafe partial class MaterialAllocation : Tweak
 
         if (eventParam == 9902 && GetAgent<AgentMJIGatheringNoteBook>(AgentId.MJIGatheringNoteBook, out var agentMJIGatheringNoteBook))
         {
-            var sheetMJIGatheringItem = Service.DataManager.GetExcelSheet<MJIGatheringItem>();
-            var sheetMJIItemPouch = Service.DataManager.GetExcelSheet<MJIItemPouch>();
-            if (!Config.OpenGatheringLogOnItemClick || sheetMJIItemPouch == null || sheetMJIGatheringItem == null)
+            if (!Config.OpenGatheringLogOnItemClick)
                 goto handled;
 
             //var itemRenderer = *(AtkComponentListItemRenderer**)a5;
@@ -113,13 +110,13 @@ public unsafe partial class MaterialAllocation : Tweak
             //var list = *(HaselTweaks.Structs.AtkComponentList**)(a5 + 0x150);
             var id = addon->AtkUnitBase.AtkValues[index + 4].UInt; // MJIItemPouch RowId
 
-            var pouchRow = sheetMJIItemPouch.GetRow(id);
+            var pouchRow = GetRow<MJIItemPouch>(id);
             if (pouchRow == null || pouchRow.Item.Row == 0)
                 goto handled;
 
             var itemId = pouchRow.Item.Row;
 
-            var mjiGatheringItemRow = sheetMJIGatheringItem.FirstOrDefault(row => row.Item.Row == itemId);
+            var mjiGatheringItemRow = FindRow<MJIGatheringItem>(row => row?.Item.Row == itemId);
             if (mjiGatheringItemRow == null)
             {
                 var item = pouchRow.Item.Value;

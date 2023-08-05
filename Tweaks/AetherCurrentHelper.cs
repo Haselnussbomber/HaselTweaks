@@ -67,7 +67,7 @@ public unsafe partial class AetherCurrentHelper : Tweak
         if (index < 19)
             index = rawIndex;
 
-        var compFlgSet = Service.DataManager.GetExcelSheet<AetherCurrentCompFlgSet>()?.GetRow(index + 1);
+        var compFlgSet = GetRow<AetherCurrentCompFlgSet>(index + 1);
         if (compFlgSet == null)
             goto OriginalCode;
 

@@ -228,7 +228,7 @@ public unsafe class GearSetGridWindow : Window
                     continue;
                 }
 
-                var item = Service.DataManager.GetExcelSheet<Item>()!.GetRow(itemId);
+                var item = GetRow<Item>(itemId);
                 if (item == null)
                     continue;
 
@@ -346,7 +346,7 @@ public unsafe class GearSetGridWindow : Window
                         // ClientLanguage.Japanese => "",
                         _ => "Glamour:"
                     });
-                    var glamourItem = Service.DataManager.GetExcelSheet<Item>()!.GetRow(slot->GlamourId)!;
+                    var glamourItem = GetRow<Item>(slot->GlamourId)!;
                     ImGuiUtils.SameLineSpace();
                     ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(glamourItem.Rarity), StringCache.GetItemName(slot->GlamourId));
 

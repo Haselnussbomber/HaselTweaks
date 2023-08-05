@@ -96,7 +96,7 @@ public unsafe class AdvancedImportOverlay : Overlay
 
                 if (string.IsNullOrEmpty(poseName))
                 {
-                    var poseRow = Service.DataManager.GetExcelSheet<BannerTimeline>()?.GetRow(id);
+                    var poseRow = GetRow<BannerTimeline>(id);
                     if (poseRow != null)
                     {
                         switch (poseRow.Type)

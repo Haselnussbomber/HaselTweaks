@@ -10,7 +10,7 @@ public static unsafe class ItemSearchUtils
     public static bool CanSearchForItem(uint itemId)
     {
         if (itemId == 0) return false;
-        var item = Service.DataManager.GetExcelSheet<Item>()?.GetRow(itemId);
+        var item = GetRow<Item>(itemId);
         return item != null && !item.IsUntradable && !item.IsCollectable && GetAddon(AgentId.ItemSearch) != null;
     }
 

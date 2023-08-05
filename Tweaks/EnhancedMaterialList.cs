@@ -231,7 +231,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         var rowData = **(nint**)(a5 + 0x08);
         var itemId = *(uint*)(rowData + 0x04);
 
-        var item = Service.DataManager.GetExcelSheet<Item>()?.GetRow(itemId);
+        var item = GetRow<Item>(itemId);
         if (item == null)
             return;
 
@@ -260,7 +260,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
         // TODO: only for missing items?
 
-        var item = Service.DataManager.GetExcelSheet<Item>()?.GetRow(itemId);
+        var item = GetRow<Item>(itemId);
         if (item == null)
             return;
 
@@ -349,20 +349,14 @@ originalAddItemContextMenuEntries:
 
     private (int, GatheringPoint, uint, bool, SeString)? GetPointForItem(uint itemId)
     {
-        var GatheringItemSheet = Service.DataManager.GetExcelSheet<GatheringItem>();
-        var GatheringPointBaseSheet = Service.DataManager.GetExcelSheet<GatheringPointBase>();
-        var GatheringPointSheet = Service.DataManager.GetExcelSheet<GatheringPoint>();
-
-        if (GatheringItemSheet == null || GatheringPointBaseSheet == null || GatheringPointSheet == null)
-            return null;
-
-        var gatheringItem = GatheringItemSheet.FirstOrDefault(row => row?.Item == itemId, null);
+        var gatheringItem = FindRow<GatheringItem>(row => row?.Item == itemId);
         if (gatheringItem == null)
             return null;
 
-        var gatheringPoints = GatheringPointBaseSheet
+        var gatheringPointSheet = GetSheet<GatheringPoint>();
+        var gatheringPoints = GetSheet<GatheringPointBase>()
             .Where(row => row.Item.Any(item => item == gatheringItem.RowId))
-            .Select(row => GatheringPointSheet.FirstOrDefault(gprow => gprow?.GatheringPointBase.Row == row.RowId && gprow.TerritoryType.Row > 1, null))
+            .Select(row => gatheringPointSheet.FirstOrDefault(gprow => gprow?.GatheringPointBase.Row == row.RowId && gprow.TerritoryType.Row > 1, null))
             .Where(row => row != null)
             /* not needed?
             .GroupBy(row => row!.RowId)
@@ -413,7 +407,7 @@ originalAddItemContextMenuEntries:
         if (gatheringPointBase == null)
             return false;
 
-        var exportedPoint = Service.DataManager.GetExcelSheet<ExportedGatheringPoint>()?.GetRow(gatheringPointBase.RowId);
+        var exportedPoint = GetRow<ExportedGatheringPoint>(gatheringPointBase.RowId);
         if (exportedPoint == null)
             return false;
 

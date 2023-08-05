@@ -61,7 +61,7 @@ public unsafe class DTR : Tweak
         DtrBusy.Text = new SeString(
             new UIForegroundPayload(1),
             new UIGlowPayload(16),
-            new TextPayload(Service.DataManager.Excel.GetSheet<OnlineStatus>()?.GetRow(12)?.Name.ToDalamudString().ToString()),
+            new TextPayload(GetRow<OnlineStatus>(12)?.Name.ToDalamudString().ToString()),
             UIGlowPayload.UIGlowOff,
             UIForegroundPayload.UIForegroundOff
         );

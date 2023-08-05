@@ -238,8 +238,7 @@ PvPBar:
             if (pvpProfile == null || pvpProfile->IsLoaded != 0x01)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
-            var PvPSeriesLevelSheet = Service.DataManager.GetExcelSheet<PvPSeriesLevel>();
-            if (PvPSeriesLevelSheet == null || pvpProfile->SeriesCurrentRank > PvPSeriesLevelSheet.Count() - 1)
+            if (pvpProfile->SeriesCurrentRank > GetRowCount<PvPSeriesLevel>() - 1)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             var claimedRank = pvpProfile->GetSeriesClaimedRank();
@@ -250,7 +249,7 @@ PvPBar:
             var rank = currentRank > 30 ? 30 : currentRank; // 30 = Series Max Rank, hopefully in the future too
             level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
             var star = currentRank > claimedRank ? '*' : ' ';
-            requiredExperience = PvPSeriesLevelSheet.GetRow(currentRank)!.Unknown0;
+            requiredExperience = GetRow<PvPSeriesLevel>(currentRank)!.Unknown0;
 
             leftText->SetText($"{job}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
 
@@ -277,8 +276,7 @@ CompanionBar:
         {
             var buddy = UIState.Instance()->Buddy;
 
-            var BuddyRankSheet = Service.DataManager.GetExcelSheet<BuddyRank>();
-            if (BuddyRankSheet == null || buddy.Rank > BuddyRankSheet.Count() - 1)
+            if (buddy.Rank > GetRowCount<BuddyRank>() - 1)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             var currentRank = buddy.Rank;
@@ -287,7 +285,7 @@ CompanionBar:
             levelLabel = (StringCache.GetAddonText(4968) ?? "Rank").Trim().Replace(":", "");
             var rank = currentRank > 20 ? 20 : currentRank;
             level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-            requiredExperience = BuddyRankSheet.GetRow(currentRank)!.ExpRequired;
+            requiredExperience = GetRow<BuddyRank>(currentRank)!.ExpRequired;
 
             leftText->SetText($"{job}  {levelLabel} {level}   {buddy.CurrentXP}/{requiredExperience}");
 
@@ -307,14 +305,13 @@ SanctuaryBar:
             if (mjiManager == null)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
-            var MJIRankSheet = Service.DataManager.GetExcelSheet<MJIRank>();
-            if (MJIRankSheet == null || mjiManager->IslandState.CurrentRank > MJIRankSheet.Count() - 1)
+            if (mjiManager->IslandState.CurrentRank > GetRowCount<MJIRank>() - 1)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             job = Config.SanctuaryBarHideJob ? "" : Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation + "  ";
             levelLabel = (StringCache.GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
             level = mjiManager->IslandState.CurrentRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-            requiredExperience = MJIRankSheet.GetRow(mjiManager->IslandState.CurrentRank)!.ExpToNext;
+            requiredExperience = GetRow<MJIRank>(mjiManager->IslandState.CurrentRank)!.ExpToNext;
 
             var expStr = mjiManager->IslandState.CurrentXP.ToString();
             var reqExpStr = requiredExperience.ToString();

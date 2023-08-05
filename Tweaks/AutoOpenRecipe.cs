@@ -100,14 +100,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
         // DailyQuestWork gets updated before QuestWork, so we can check here if it's a daily quest
         if (questId > 0)
         {
-            var questSheet = Service.DataManager.GetExcelSheet<Quest>();
-            if (questSheet == null)
-            {
-                Warning("Could not get Quest sheet");
-                goto originalUpdateQuestWork;
-            }
-
-            var quest = questSheet.GetRow((uint)questId | 0x10000);
+            var quest = GetRow<Quest>((uint)questId | 0x10000);
             if (quest?.RowId == 0)
             {
                 Warning($"Ignoring quest #{questId}: Quest not found");
@@ -189,10 +182,6 @@ originalUpdateQuestWork:
         if (!GetAgent<AgentRecipeNote>(AgentId.RecipeNote, out var agentRecipeNote))
             return;
 
-        var recipeSheet = Service.DataManager.GetExcelSheet<Recipe>();
-        if (recipeSheet == null)
-            return;
-
         if (agentRecipeNote->ActiveCraftRecipeId != 0 || Service.Condition[ConditionFlag.Crafting] || Service.Condition[ConditionFlag.Crafting40])
         {
             Warning($"Not opening Recipe for Item {resultItemId}: Crafting in progress");
@@ -200,8 +189,8 @@ originalUpdateQuestWork:
         }
 
         var craftType = GetCurrentCraftType();
-        var recipe = recipeSheet?.FirstOrDefault(row => row?.ItemResult.Row == resultItemId && row.CraftType.Row == craftType, null);
-        recipe ??= recipeSheet?.FirstOrDefault(row => row?.ItemResult.Row == resultItemId, null);
+        var recipe = FindRow<Recipe>(row => row?.ItemResult.Row == resultItemId && row.CraftType.Row == craftType)
+                  ?? FindRow<Recipe>(row => row?.ItemResult.Row == resultItemId);
         if (recipe == null)
         {
             Warning($"Not opening Recipe for Item {resultItemId}: Recipe not found");
@@ -227,9 +216,7 @@ originalUpdateQuestWork:
     private bool IngredientsAvailable(Recipe recipe, uint amount)
     {
         var inventoryManager = InventoryManager.Instance();
-        var itemSheet = Service.DataManager.GetExcelSheet<Item>();
-
-        if (inventoryManager == null || itemSheet == null)
+        if (inventoryManager == null)
             return false;
 
         foreach (var ingredient in recipe.UnkData5)
@@ -239,7 +226,7 @@ originalUpdateQuestWork:
 
             var itemId = (uint)ingredient.ItemIngredient;
 
-            var item = itemSheet.GetRow(itemId);
+            var item = GetRow<Item>(itemId);
             if (item == null || item.ItemUICategory.Row == 59) // ignore Crystals
                 continue;
 
@@ -262,12 +249,12 @@ originalUpdateQuestWork:
         var craftType = -1;
         var recipeNote = RecipeNote.Instance();
         var playerState = PlayerState.Instance();
-        var craftTypeSheet = Service.DataManager.GetExcelSheet<CraftType>();
 
-        if (recipeNote == null || playerState == null || craftTypeSheet == null)
+        if (recipeNote == null || playerState == null)
             return craftType;
 
-        for (var i = 0; i < craftTypeSheet.RowCount; i++)
+        var numCraftTypes = GetRowCount<CraftType>();
+        for (var i = 0; i < numCraftTypes; i++)
         {
             if (recipeNote->Jobs[i] == playerState->CurrentClassJobId)
             {

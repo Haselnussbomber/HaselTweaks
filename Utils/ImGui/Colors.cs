@@ -24,22 +24,19 @@ public static class Colors
     public static ImColor Grey3 { get; } = new(0.6f, 0.6f, 0.6f);
     public static ImColor Grey4 { get; } = new(0.3f, 0.3f, 0.3f);
 
-    private static readonly Lazy<Dictionary<byte, ImColor>> ItemRarityColors = new(() =>
-    {
-        var uiColorSheet = Service.DataManager.GetExcelSheet<UIColor>()!;
-        return Service.DataManager.GetExcelSheet<Item>()!
+    private static readonly Lazy<Dictionary<byte, ImColor>> ItemRarityColors = new(()
+        => GetSheet<Item>()
             .Where(item => !string.IsNullOrEmpty(item.Name.ToDalamudString().ToString()))
             .Select(item => item.Rarity)
             .Distinct()
-            .Select(rarity => (Rarity: rarity, Color: (ImColor)uiColorSheet.GetRow(547u + rarity * 2u)!.UIForeground.Reverse()))
-            .ToDictionary(tuple => tuple.Rarity, tuple => tuple.Color);
-    });
+            .Select(rarity => (Rarity: rarity, Color: (ImColor)GetRow<UIColor>(547u + rarity * 2u)!.UIForeground.Reverse()))
+            .ToDictionary(tuple => tuple.Rarity, tuple => tuple.Color));
 
     public static ImColor GetItemRarityColor(byte rarity) => ItemRarityColors.Value[rarity];
 
     public static ImColor GetStainColor(uint id)
     {
-        var col = (ImColor)(Service.DataManager.GetExcelSheet<Stain>()!.GetRow(id)!.Color.Reverse() >> 8);
+        var col = (ImColor)(GetRow<Stain>(id)!.Color.Reverse() >> 8);
         col.A = 1;
         return col;
     }
@@ -49,7 +46,7 @@ public static class Colors
         if (colors.Length < 2)
             throw new ArgumentException("At least two colors are required for interpolation.");
 
-        var expArrayIndex = Service.DataManager.GetExcelSheet<ClassJob>()?.GetRow(classJob)?.ExpArrayIndex;
+        var expArrayIndex = GetRow<ClassJob>(classJob)?.ExpArrayIndex;
         if (expArrayIndex is null or -1)
             return White;
 
