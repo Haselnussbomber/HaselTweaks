@@ -133,15 +133,15 @@ public abstract unsafe class Overlay : Window
         if (visible || ImGui.GetIO().FontGlobalScale <= 1)
         {
             var leftPane = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 20);
-            SetVisibility(leftPane, visible);
+            leftPane->ToggleVisibility(visible);
 
             if (Type != OverlayType.LeftPane)
             {
                 var verticalSeparatorNode = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 135);
-                SetVisibility(verticalSeparatorNode, visible);
+                verticalSeparatorNode->ToggleVisibility(visible);
 
                 var controlsHint = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 2);
-                SetVisibility(controlsHint, visible);
+                controlsHint->ToggleVisibility(visible);
             }
         }
     }

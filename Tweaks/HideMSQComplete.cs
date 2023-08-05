@@ -42,8 +42,8 @@ public unsafe partial class HideMSQComplete : Tweak
         if (!TryGetAddon<AtkUnitBase>(AgentId.ScenarioTree, out var addon))
             return;
 
-        SetVisibility(addon, 11, visible); // AtkTextNode
-        SetVisibility(addon, 12, visible); // AtkNineGridNode
-        SetVisibility(addon, 13, visible); // AtkComponentButton
+        GetNode<AtkResNode>(addon, 11)->ToggleVisibility(visible); // AtkTextNode
+        GetNode<AtkResNode>(addon, 12)->ToggleVisibility(visible); // AtkNineGridNode
+        GetNode<AtkResNode>(addon, 13)->ToggleVisibility(visible); // AtkComponentButton
     }
 }
