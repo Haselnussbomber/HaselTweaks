@@ -4,8 +4,6 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Utils.Globals;
 
-#pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
-
 public static unsafe class Addon
 {
     public static AtkUnitBase* GetAddon(string name, int index = 1)
@@ -22,10 +20,10 @@ public static unsafe class Addon
     public static bool TryGetAddon(string name, out AtkUnitBase* addon)
         => TryGetAddon(name, 1, out addon);
 
-    public static bool TryGetAddon<T>(string name, int index, out T* addon)
+    public static bool TryGetAddon<T>(string name, int index, out T* addon) where T : unmanaged
         => (addon = (T*)GetAddon(name, index)) != null;
 
-    public static bool TryGetAddon<T>(string name, out T* addon)
+    public static bool TryGetAddon<T>(string name, out T* addon) where T : unmanaged
         => TryGetAddon(name, 1, out addon);
 
     public static AtkUnitBase* GetAddon(ushort id)
@@ -54,20 +52,18 @@ public static unsafe class Addon
     public static bool TryGetAddon(AgentId id, out AtkUnitBase* addon)
         => (addon = GetAddon(id)) != null;
 
-    public static T* GetAddon<T>(ushort id)
+    public static T* GetAddon<T>(ushort id) where T : unmanaged
         => (T*)GetAddon(id);
 
-    public static T* GetAddon<T>(uint id)
+    public static T* GetAddon<T>(uint id) where T : unmanaged
         => GetAddon<T>((ushort)id);
 
-    public static T* GetAddon<T>(AgentInterface* agent)
+    public static T* GetAddon<T>(AgentInterface* agent) where T : unmanaged
         => agent != null && agent->IsAgentActive() ? GetAddon<T>(agent->GetAddonID()) : null;
 
-    public static bool TryGetAddon<T>(AgentInterface* agent, out T* addon)
+    public static bool TryGetAddon<T>(AgentInterface* agent, out T* addon) where T : unmanaged
         => (addon = GetAddon<T>(agent)) != null;
 
-    public static bool TryGetAddon<T>(AgentId id, out T* addon)
+    public static bool TryGetAddon<T>(AgentId id, out T* addon) where T : unmanaged
         => TryGetAddon(GetAgent<AgentInterface>(id), out addon);
 }
-
-#pragma warning restore CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
