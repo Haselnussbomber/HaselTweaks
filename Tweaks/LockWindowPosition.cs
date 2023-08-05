@@ -322,7 +322,7 @@ public unsafe partial class LockWindowPosition : Tweak
     {
         if (_eventIndexToDisable == 7 && agent->ContextMenuIndex == 0)
         {
-            var addon = GetAddon(addonId);
+            var addon = GetAddon<AtkUnitBase>((ushort)addonId);
             if (addon != null)
             {
                 var name = MemoryHelper.ReadStringNullTerminated((nint)addon->Name);
@@ -378,7 +378,7 @@ public unsafe partial class LockWindowPosition : Tweak
     {
         if (_eventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock)
         {
-            if (TryGetAddon(GetAgent<AgentContext>(AgentId.Context)->OwnerAddon, out var addon))
+            if (TryGetAddon<AtkUnitBase>((ushort)GetAgent<AgentContext>(AgentId.Context)->OwnerAddon, out var addon))
             {
                 var name = MemoryHelper.ReadStringNullTerminated((nint)addon->Name);
 

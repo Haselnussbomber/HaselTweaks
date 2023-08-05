@@ -326,7 +326,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         if (!Config.AddSearchForItemByCraftingMethodContextMenuEntry)
             goto originalAddItemContextMenuEntries;
 
-        if (GetAddon(AgentId.RecipeMaterialList) == null)
+        if (!IsAddonOpen(AgentId.RecipeMaterialList))
             goto originalAddItemContextMenuEntries;
 
         var agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList);

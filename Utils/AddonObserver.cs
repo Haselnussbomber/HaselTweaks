@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
@@ -36,7 +37,7 @@ public static unsafe class AddonObserver
         foreach (var address in AddedUnits)
         {
             var unitBase = (AtkUnitBase*)address;
-            var name = GetAddonName(unitBase);
+            var name = MemoryHelper.ReadStringNullTerminated((nint)unitBase->Name);
 
             if (!NameCache.ContainsKey(address))
             {

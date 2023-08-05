@@ -46,7 +46,7 @@ public unsafe partial class GearSetGrid : Tweak
     {
         RegisterCommands();
 
-        if (Config.AutoOpenWithGearSetList && TryGetAddon("GearSetList", out var addon))
+        if (Config.AutoOpenWithGearSetList && TryGetAddon<AtkUnitBase>("GearSetList", out var addon))
             OnAddonOpen("GearSetList", addon);
     }
 

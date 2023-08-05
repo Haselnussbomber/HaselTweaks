@@ -242,7 +242,7 @@ public unsafe partial class ScrollableTabs : Tweak
                 goto ResetWheelState;
         }
 
-        if (!TryGetAddon(name, out var unitBase))
+        if (!TryGetAddon<AtkUnitBase>(name, out var unitBase))
             goto ResetWheelState;
 
         if (Config.HandleArmouryBoard && name == "ArmouryBoard")
@@ -345,7 +345,7 @@ public unsafe partial class ScrollableTabs : Tweak
         }
         else if (name is "Character" or "CharacterClass" or "CharacterRepute")
         {
-            var addonCharacter = (AddonCharacter*)(name == "Character" ? unitBase : GetAddon("Character"));
+            var addonCharacter = name == "Character" ? (AddonCharacter*)unitBase : GetAddon<AddonCharacter>("Character");
 
             if (addonCharacter == null)
                 goto ResetWheelState;
@@ -709,7 +709,7 @@ ResetWheelState:
         if (nextButton == null || (IsNext && !nextButton->IsEnabled))
             return;
 
-        if (GetAddon("MiragePrismPrismBoxFilter") != null)
+        if (IsAddonOpen("MiragePrismPrismBoxFilter"))
             return;
 
         var agent = GetAgent<AgentMiragePrismPrismBox>(AgentId.MiragePrismPrismBox);

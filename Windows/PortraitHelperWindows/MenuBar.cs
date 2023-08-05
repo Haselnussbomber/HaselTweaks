@@ -263,8 +263,8 @@ public unsafe class MenuBar : Window, IDisposable
     {
         if (IsOpen && DrawConditions() && Config.ShowAlignmentTool)
         {
-            var rightPanel = GetNode((AtkUnitBase*)AddonBannerEditor, 107);
-            var charaView = GetNode((AtkUnitBase*)AddonBannerEditor, 130);
+            var rightPanel = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 107);
+            var charaView = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 130);
             var scale = GetNodeScale(charaView);
 
             var position = new Vector2(

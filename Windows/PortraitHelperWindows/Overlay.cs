@@ -81,7 +81,7 @@ public abstract unsafe class Overlay : Window
                 }
                 else if (Type == OverlayType.LeftPane)
                 {
-                    var leftPane = GetNode((AtkUnitBase*)AddonBannerEditor, 20);
+                    var leftPane = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 20);
                     var scale = GetNodeScale(leftPane);
 
                     Position = new Vector2(
@@ -132,15 +132,15 @@ public abstract unsafe class Overlay : Window
     {
         if (visible || ImGui.GetIO().FontGlobalScale <= 1)
         {
-            var leftPane = GetNode((AtkUnitBase*)AddonBannerEditor, 20);
+            var leftPane = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 20);
             SetVisibility(leftPane, visible);
 
             if (Type != OverlayType.LeftPane)
             {
-                var verticalSeparatorNode = GetNode((AtkUnitBase*)AddonBannerEditor, 135);
+                var verticalSeparatorNode = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 135);
                 SetVisibility(verticalSeparatorNode, visible);
 
-                var controlsHint = GetNode((AtkUnitBase*)AddonBannerEditor, 2);
+                var controlsHint = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 2);
                 SetVisibility(controlsHint, visible);
             }
         }

@@ -9,7 +9,6 @@ using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Caches;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
@@ -150,7 +149,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
 
     private unsafe bool DrawMainCommandButton()
     {
-        if (GetAddon((AgentInterface*)_agentAetherCurrent) != null)
+        if (!IsAddonOpen(AgentId.AetherCurrent))
             return false;
 
         var startPos = ImGui.GetCursorPos();

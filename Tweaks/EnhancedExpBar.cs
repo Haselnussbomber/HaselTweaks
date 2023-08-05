@@ -177,7 +177,7 @@ Update:
         if (!_isEnabled)
             goto OriginalOnRequestedUpdate;
 
-        var gaugeBarNode = GetNode<AtkComponentNode>((AtkUnitBase*)addon, 6);
+        var gaugeBarNode = GetNode<AtkComponentNode>(&addon->AtkUnitBase, 6);
         if (gaugeBarNode == null)
             goto OriginalOnRequestedUpdate;
 
@@ -185,14 +185,14 @@ Update:
         if (gaugeBar == null)
             goto OriginalOnRequestedUpdate;
 
-        var nineGridNode = GetNode<AtkNineGridNode>(gaugeBarNode, 4);
+        var nineGridNode = GetNode<AtkNineGridNode>(gaugeBarNode->Component, 4);
         if (nineGridNode == null)
             goto OriginalOnRequestedUpdate;
 
         if (Service.ClientState.LocalPlayer?.ClassJob.GameData == null)
             goto OriginalOnRequestedUpdateWithColorReset;
 
-        var leftText = GetNode<AtkTextNode>((AtkUnitBase*)addon, 4);
+        var leftText = GetNode<AtkTextNode>(&addon->AtkUnitBase, 4);
         if (leftText == null)
             goto OriginalOnRequestedUpdateWithColorReset;
 

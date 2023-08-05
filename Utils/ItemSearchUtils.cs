@@ -11,7 +11,7 @@ public static unsafe class ItemSearchUtils
     {
         if (itemId == 0) return false;
         var item = GetRow<Item>(itemId);
-        return item != null && !item.IsUntradable && !item.IsCollectable && GetAddon(AgentId.ItemSearch) != null;
+        return item != null && !item.IsUntradable && !item.IsCollectable && IsAddonOpen(AgentId.ItemSearch);
     }
 
     public static void Search(uint itemId)

@@ -119,7 +119,8 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
         {
             var node = addon->ButtonNodesSpan[i].Value;
-            if (node == null) continue;
+            if (node == null)
+                continue;
 
             // skip crafters as they already have Cursor Pointer flags
             if (IsCrafter(i))
@@ -130,10 +131,12 @@ public unsafe partial class CharacterClassSwitcher : Tweak
             }
 
             var collisionNode = (AtkCollisionNode*)node->AtkComponentBase.UldManager.RootNode;
-            if (collisionNode == null) continue;
+            if (collisionNode == null)
+                continue;
 
-            var imageNode = GetNode<AtkImageNode>((AtkComponentBase*)node, 4);
-            if (imageNode == null) continue;
+            var imageNode = GetNode<AtkImageNode>(&node->AtkComponentBase, 4);
+            if (imageNode == null)
+                continue;
 
             // if job is unlocked, it has full alpha
             var isUnlocked = imageNode->AtkResNode.Color.A == 255;
@@ -156,7 +159,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         if (node == null || node->AtkComponentBase.OwnerNode == null)
             goto OriginalReceiveEventCode;
 
-        var imageNode = GetNode<AtkImageNode>((AtkComponentBase*)node, 4);
+        var imageNode = GetNode<AtkImageNode>(&node->AtkComponentBase, 4);
         if (imageNode == null)
             goto OriginalReceiveEventCode;
 

@@ -6,64 +6,51 @@ namespace HaselTweaks.Utils.Globals;
 
 public static unsafe class Addon
 {
-    public static AtkUnitBase* GetAddon(string name, int index = 1)
+    public static T* GetAddon<T>(string name, int index = 1) where T : unmanaged
     {
-        var ptr = (nint)AtkStage.GetSingleton()->RaptureAtkUnitManager->GetAddonByName(name, index);
-        return ptr != 0 && (*(byte*)(ptr + 0x189) & 1) == 1 // IsAddonReady
-            ? (AtkUnitBase*)ptr
+        var addon = AtkStage.GetSingleton()->RaptureAtkUnitManager->GetAddonByName(name, index);
+        var ready = addon != null && RaptureAtkModule.Instance()->AtkModule.IsAddonReady(addon->ID);
+        return ready ? (T*)addon : null;
+    }
+
+    public static T* GetAddon<T>(ushort addonId) where T : unmanaged
+    {
+        var raptureAtkModule = RaptureAtkModule.Instance();
+        return raptureAtkModule->AtkModule.IsAddonReady(addonId)
+            ? (T*)raptureAtkModule->RaptureAtkUnitManager.GetAddonById(addonId)
             : null;
     }
 
-    public static bool TryGetAddon(string name, int index, out AtkUnitBase* addon)
-        => (addon = GetAddon(name, index)) != null;
+    public static T* GetAddon<T>(AgentId agentId) where T : unmanaged
+    {
+        var agent = GetAgent<AgentInterface>(agentId);
+        return agent == null || !agent->IsAgentActive()
+            ? (T*)null
+            : GetAddon<T>((ushort)agent->GetAddonID());
+    }
 
-    public static bool TryGetAddon(string name, out AtkUnitBase* addon)
-        => TryGetAddon(name, 1, out addon);
+    // ---
 
     public static bool TryGetAddon<T>(string name, int index, out T* addon) where T : unmanaged
-        => (addon = (T*)GetAddon(name, index)) != null;
+        => (addon = GetAddon<T>(name, index)) != null;
 
     public static bool TryGetAddon<T>(string name, out T* addon) where T : unmanaged
-        => TryGetAddon(name, 1, out addon);
+        => (addon = GetAddon<T>(name, 1)) != null;
 
-    public static AtkUnitBase* GetAddon(ushort id)
-        => RaptureAtkModule.Instance()->AtkModule.IsAddonReady(id)
-            ? AtkStage.GetSingleton()->RaptureAtkUnitManager->GetAddonById(id)
-            : null;
+    public static bool TryGetAddon<T>(ushort addonId, out T* addon) where T : unmanaged
+        => (addon = GetAddon<T>(addonId)) != null;
 
-    public static bool TryGetAddon(ushort id, out AtkUnitBase* addon)
-        => (addon = GetAddon(id)) != null;
+    public static bool TryGetAddon<T>(AgentId agentId, out T* addon) where T : unmanaged
+        => (addon = GetAddon<T>(agentId)) != null;
 
-    public static AtkUnitBase* GetAddon(uint id)
-        => GetAddon((ushort)id);
+    // ---
 
-    public static bool TryGetAddon(uint id, out AtkUnitBase* addon)
-        => TryGetAddon((ushort)id, out addon);
+    public static bool IsAddonOpen(string name, int index = 1)
+        => TryGetAddon<AtkUnitBase>(name, index, out var _);
 
-    public static AtkUnitBase* GetAddon(AgentInterface* agent)
-        => agent != null && agent->IsAgentActive() ? GetAddon((ushort)agent->GetAddonID()) : null;
+    public static bool IsAddonOpen(ushort addonId)
+        => TryGetAddon<AtkUnitBase>(addonId, out var _);
 
-    public static bool TryGetAddon(AgentInterface* agent, out AtkUnitBase* addon)
-        => (addon = GetAddon(agent)) != null;
-
-    public static AtkUnitBase* GetAddon(AgentId id)
-        => GetAddon(GetAgent<AgentInterface>(id));
-
-    public static bool TryGetAddon(AgentId id, out AtkUnitBase* addon)
-        => (addon = GetAddon(id)) != null;
-
-    public static T* GetAddon<T>(ushort id) where T : unmanaged
-        => (T*)GetAddon(id);
-
-    public static T* GetAddon<T>(uint id) where T : unmanaged
-        => GetAddon<T>((ushort)id);
-
-    public static T* GetAddon<T>(AgentInterface* agent) where T : unmanaged
-        => agent != null && agent->IsAgentActive() ? GetAddon<T>(agent->GetAddonID()) : null;
-
-    public static bool TryGetAddon<T>(AgentInterface* agent, out T* addon) where T : unmanaged
-        => (addon = GetAddon<T>(agent)) != null;
-
-    public static bool TryGetAddon<T>(AgentId id, out T* addon) where T : unmanaged
-        => TryGetAddon(GetAgent<AgentInterface>(id), out addon);
+    public static bool IsAddonOpen(AgentId agentId)
+        => TryGetAddon<AtkUnitBase>(agentId, out var _);
 }

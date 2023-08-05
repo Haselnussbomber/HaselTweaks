@@ -39,7 +39,7 @@ public unsafe partial class HideMSQComplete : Tweak
 
     private static void UpdateVisibility(bool visible)
     {
-        if (!TryGetAddon(AgentId.ScenarioTree, out var addon))
+        if (!TryGetAddon<AtkUnitBase>(AgentId.ScenarioTree, out var addon))
             return;
 
         SetVisibility(addon, 11, visible); // AtkTextNode

@@ -1,30 +1,15 @@
 using System.Numerics;
-using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Utils.Globals;
 
-#pragma warning disable CS8500
-
 public static unsafe class Atk
 {
-    public static string GetAddonName(AtkUnitBase* addon)
-        => addon == null ? "" : MemoryHelper.ReadString((nint)addon->Name, 0x20);
+    public static T* GetNode<T>(AtkUnitBase* addon, uint nodeId) where T : unmanaged
+        => addon == null ? null : (T*)addon->UldManager.SearchNodeById(nodeId);
 
-    public static AtkResNode* GetNode(AtkUnitBase* addon, uint nodeId)
-        => addon == null ? null : addon->UldManager.SearchNodeById(nodeId);
-
-    public static bool TryGetNode(AtkUnitBase* addon, uint nodeId, out AtkResNode* node)
-        => (node = GetNode(addon, nodeId)) != null;
-
-    public static T* GetNode<T>(AtkUnitBase* addon, uint nodeId)
-        => (T*)GetNode(addon, nodeId);
-
-    public static T* GetNode<T>(AtkComponentBase* component, uint nodeId)
+    public static T* GetNode<T>(AtkComponentBase* component, uint nodeId) where T : unmanaged
         => component == null ? null : (T*)component->UldManager.SearchNodeById(nodeId);
-
-    public static T* GetNode<T>(AtkComponentNode* node, uint nodeId)
-        => node == null ? null : (T*)node->Component->UldManager.SearchNodeById(nodeId);
 
     public static void SetAlpha(AtkResNode* node, float alpha)
     {
@@ -39,7 +24,7 @@ public static unsafe class Atk
     }
 
     public static void SetAlpha(AtkUnitBase* addon, uint nodeId, float alpha)
-        => SetAlpha(GetNode(addon, nodeId), alpha);
+        => SetAlpha(GetNode<AtkResNode>(addon, nodeId), alpha);
 
     public static void SetVisibility(AtkResNode* node, bool visible)
     {
@@ -50,7 +35,7 @@ public static unsafe class Atk
     }
 
     public static void SetVisibility(AtkUnitBase* addon, uint nodeId, bool visible)
-        => SetVisibility(GetNode(addon, nodeId), visible);
+        => SetVisibility(GetNode<AtkResNode>(addon, nodeId), visible);
 
     public static Vector2 GetNodeScale(AtkResNode* node)
     {
@@ -68,5 +53,3 @@ public static unsafe class Atk
         return scale;
     }
 }
-
-#pragma warning restore CS8500

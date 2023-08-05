@@ -112,7 +112,7 @@ public partial class PortraitHelper : Tweak
         AgentBannerEditor = GetAgent<AgentBannerEditor>(AgentId.BannerEditor);
         AgentStatus = GetAgent<AgentStatus>(AgentId.Status);
 
-        if (TryGetAddon(AgentId.BannerEditor, out var addon))
+        if (TryGetAddon<AtkUnitBase>(AgentId.BannerEditor, out var addon))
             OnAddonOpen("BannerEditor", addon);
     }
 

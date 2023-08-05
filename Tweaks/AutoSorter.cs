@@ -480,8 +480,8 @@ public unsafe class AutoSorter : Tweak
     private bool _isBusy = false;
     private uint _lastClassJobId = 0;
 
-    public static bool IsRetainerInventoryOpen => GetAddon("InventoryRetainer") != null || GetAddon("InventoryRetainerLarge") != null;
-    public static bool IsInventoryBuddyOpen => GetAddon("InventoryBuddy") != null;
+    public static bool IsRetainerInventoryOpen => IsAddonOpen("InventoryRetainer") || IsAddonOpen("InventoryRetainerLarge");
+    public static bool IsInventoryBuddyOpen => IsAddonOpen("InventoryBuddy");
 
     private readonly Dictionary<string, bool> _inventoryAddons = new()
     {
@@ -516,7 +516,7 @@ public unsafe class AutoSorter : Tweak
         {
             foreach (var (name, wasVisible) in _inventoryAddons)
             {
-                if (TryGetAddon(name, out var unitBase))
+                if (TryGetAddon<AtkUnitBase>(name, out var unitBase))
                 {
                     var isVisible = unitBase->IsVisible;
 
@@ -539,7 +539,7 @@ public unsafe class AutoSorter : Tweak
         {
             _lastClassJobId = Service.ClientState.LocalPlayer.ClassJob.Id;
 
-            if (TryGetAddon("ArmouryBoard", out var unitBase))
+            if (IsAddonOpen("ArmouryBoard"))
             {
                 OnOpenArmoury();
             }
