@@ -4,7 +4,6 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Caches;
 using HaselTweaks.Enums;
@@ -102,6 +101,7 @@ public unsafe partial class EnhancedExpBar : Tweak
     }
 
     private bool _isEnabled = false;
+    private bool _isUpdatePending = false;
     private ushort _lastSeriesXp = 0;
     private byte _lastSeriesClaimedRank = 0;
     private uint _lastBuddyXp;
@@ -117,7 +117,7 @@ public unsafe partial class EnhancedExpBar : Tweak
         {
             _lastSeriesXp = pvpProfile->SeriesExperience;
             _lastSeriesClaimedRank = pvpProfile->SeriesClaimedRank;
-            goto Update;
+            _isUpdatePending = true;
         }
 
         var buddy = UIState.Instance()->Buddy;
@@ -126,48 +126,44 @@ public unsafe partial class EnhancedExpBar : Tweak
             _lastBuddyXp = buddy.CurrentXP;
             _lastBuddyRank = buddy.Rank;
             _lastBuddyObjectID = buddy.Companion.ObjectID;
-            goto Update;
+            _isUpdatePending = true;
         }
 
         var mjiManager = MJIManager.Instance();
         if (mjiManager != null && _lastIslandExperience != mjiManager->IslandState.CurrentXP)
         {
             _lastIslandExperience = mjiManager->IslandState.CurrentXP;
-            goto Update;
+            _isUpdatePending = true;
         }
 
         var fateManager = FateManager.Instance();
         if (fateManager != null && _lastSyncedFateId != fateManager->SyncedFateId)
         {
             _lastSyncedFateId = fateManager->SyncedFateId;
-            goto Update;
+            _isUpdatePending = true;
         }
 
-        return;
-
-Update:
-        RunUpdate();
+        if (_isUpdatePending)
+            RunUpdate();
     }
 
     // request update immediately upon leaving the pvp area, because
     // otherwise it might get updated too late, like a second after the black screen ends
     private void ClientState_LeavePvP()
-        => RunUpdate();
+        => _isUpdatePending = true;
 
     private void ClientState_TerritoryChanged(object? sender, ushort territoryType)
-        => RunUpdate();
+        => _isUpdatePending = true;
 
     private void RunUpdate()
     {
         if (!TryGetAddon<AddonExp>("_Exp", out var addon))
             return;
 
-        var atkArrayDataHolder = RaptureAtkModule.Instance()->AtkModule.AtkArrayDataHolder;
-
         AddonExp_OnRequestedUpdate(
             addon,
-            atkArrayDataHolder.NumberArrays,
-            atkArrayDataHolder.StringArrays
+            AtkStage.GetSingleton()->GetNumberArrayData(),
+            AtkStage.GetSingleton()->GetStringArrayData()
         );
     }
 
@@ -230,6 +226,8 @@ Update:
         addon->ClassJob--;
         addon->RequiredExp--;
 
+        _isUpdatePending = false;
+
         goto OriginalOnRequestedUpdateWithColorReset;
 
 PvPBar:
@@ -269,13 +267,13 @@ PvPBar:
                 ResetColor(nineGridNode);
             }
 
+            _isUpdatePending = false;
             return ret;
         }
 
 CompanionBar:
         {
             var buddy = UIState.Instance()->Buddy;
-
             if (buddy.Rank > GetRowCount<BuddyRank>() - 1)
                 goto OriginalOnRequestedUpdateWithColorReset;
 
@@ -296,6 +294,7 @@ CompanionBar:
 
             ResetColor(nineGridNode);
 
+            _isUpdatePending = false;
             return ret;
         }
 
@@ -339,6 +338,7 @@ SanctuaryBar:
                 ResetColor(nineGridNode);
             }
 
+            _isUpdatePending = false;
             return ret;
         }
 
