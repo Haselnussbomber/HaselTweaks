@@ -44,11 +44,11 @@ public static unsafe class Addon
     // ---
 
     public static bool IsAddonOpen(string name, int index = 1)
-        => TryGetAddon<AtkUnitBase>(name, index, out var _);
+        => GetAddon<AtkUnitBase>(name, index) != null;
 
     public static bool IsAddonOpen(ushort addonId)
-        => TryGetAddon<AtkUnitBase>(addonId, out var _);
+        => GetAddon<AtkUnitBase>(addonId) != null;
 
     public static bool IsAddonOpen(AgentId agentId)
-        => TryGetAddon<AtkUnitBase>(agentId, out var _);
+        => GetAddon<AtkUnitBase>(agentId) != null;
 }
