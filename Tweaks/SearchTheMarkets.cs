@@ -89,25 +89,25 @@ public unsafe class SearchTheMarkets : Tweak
         switch (args.ParentAddonName)
         {
             case "RecipeNote":
-                _itemId = GetAgent<AgentRecipeNote>(AgentId.RecipeNote)->ContextMenuResultItemId;
+                _itemId = GetAgent<AgentRecipeNote>()->ContextMenuResultItemId;
                 break;
 
             case "RecipeTree":
             case "RecipeMaterialList":
                 // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
-                _itemId = GetAgent<AgentRecipeItemContext>(AgentId.RecipeItemContext)->ResultItemId;
+                _itemId = GetAgent<AgentRecipeItemContext>()->ResultItemId;
                 break;
 
             case "ChatLog":
-                _itemId = GetAgent<AgentChatLog>(AgentId.ChatLog)->ContextItemId;
+                _itemId = GetAgent<AgentChatLog>()->ContextItemId;
                 break;
 
             case "ContentsInfoDetail":
-                _itemId = GetAgent<AgentContentsTimer>(AgentId.ContentsTimer)->ContextMenuItemId;
+                _itemId = GetAgent<AgentContentsTimer>()->ContextMenuItemId;
                 break;
 
             case "DailyQuestSupply":
-                _itemId = GetAgent<AgentDailyQuestSupply>(AgentId.DailyQuestSupply)->ContextMenuItemId;
+                _itemId = GetAgent<AgentDailyQuestSupply>()->ContextMenuItemId;
                 break;
         }
 

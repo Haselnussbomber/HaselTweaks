@@ -109,8 +109,8 @@ public partial class PortraitHelper : Tweak
 
         _openPortraitEditPayload = Service.PluginInterface.AddChatLinkHandler(1000, OpenPortraitEditChatHandler);
 
-        AgentBannerEditor = GetAgent<AgentBannerEditor>(AgentId.BannerEditor);
-        AgentStatus = GetAgent<AgentStatus>(AgentId.Status);
+        AgentBannerEditor = GetAgent<AgentBannerEditor>();
+        AgentStatus = GetAgent<AgentStatus>();
 
         if (TryGetAddon<AtkUnitBase>(AgentId.BannerEditor, out var addon))
             OnAddonOpen("BannerEditor", addon);
@@ -314,7 +314,7 @@ public partial class PortraitHelper : Tweak
 
     public unsafe Image<Bgra32>? GetCurrentCharaViewImage()
     {
-        var agentBannerEditor = GetAgent<AgentBannerEditor>(AgentId.BannerEditor);
+        var agentBannerEditor = GetAgent<AgentBannerEditor>();
         var charaViewTexture = RenderTargetManager.Instance()->GetCharaViewTexture(agentBannerEditor->EditorState->CharaView->Base.ClientObjectIndex);
         if (charaViewTexture == null || charaViewTexture->D3D11Texture2D == null)
             return null;
@@ -358,7 +358,7 @@ public partial class PortraitHelper : Tweak
 
     public unsafe PortraitPreset? StateToPreset()
     {
-        var state = GetAgent<AgentBannerEditor>(AgentId.BannerEditor)->EditorState;
+        var state = GetAgent<AgentBannerEditor>()->EditorState;
         var preset = new PortraitPreset();
 
         using var portraitData = new DisposableStruct<ExportedPortraitData>();
@@ -381,7 +381,7 @@ public partial class PortraitHelper : Tweak
 
         Debug($"Importing Preset {preset.ToExportedString()} with ImportFlags {importFlags}");
 
-        var state = GetAgent<AgentBannerEditor>(AgentId.BannerEditor)->EditorState;
+        var state = GetAgent<AgentBannerEditor>()->EditorState;
         var bannerEntry = state->BannerEntry;
 
         // read current portrait and then overwrite what the flags allow below

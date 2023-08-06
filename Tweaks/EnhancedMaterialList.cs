@@ -128,7 +128,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         if (!Config.RestoreMaterialList || Config.RestoreMaterialListRecipeId == 0)
             return;
 
-        var agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList);
+        var agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>();
         if (agentRecipeMaterialList->RecipeId != Config.RestoreMaterialListRecipeId)
         {
             Log("Restoring RecipeMaterialList");
@@ -197,7 +197,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     private void SaveRestoreMaterialList()
     {
-        var agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList);
+        var agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>();
         var shouldSave = Config.RestoreMaterialList && agentRecipeMaterialList->WindowLocked;
         Config.RestoreMaterialListRecipeId = shouldSave ? agentRecipeMaterialList->RecipeId : 0u;
         Config.RestoreMaterialListAmount = shouldSave ? agentRecipeMaterialList->Amount : 0u;
@@ -329,7 +329,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         if (!IsAddonOpen(AgentId.RecipeMaterialList))
             goto originalAddItemContextMenuEntries;
 
-        var agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>(AgentId.RecipeMaterialList);
+        var agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>();
         if (agentRecipeMaterialList->Recipe == null || agentRecipeMaterialList->Recipe->ResultItemId != itemId)
             goto originalAddItemContextMenuEntries;
 
@@ -427,7 +427,7 @@ originalAddItemContextMenuEntries:
             ? gatheringType.IconMain
             : gatheringType.IconOff;
 
-        var agentMap = GetAgent<AgentMap>(AgentId.Map);
+        var agentMap = GetAgent<AgentMap>();
         agentMap->TempMapMarkerCount = 0;
         agentMap->AddGatheringTempMarker(
             4u,

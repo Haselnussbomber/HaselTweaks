@@ -49,7 +49,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
             MaximumSize = new Vector2(4096),
         };
 
-        _agentAetherCurrent = GetAgent<AgentAetherCurrent>(AgentId.AetherCurrent);
+        _agentAetherCurrent = GetAgent<AgentAetherCurrent>();
 
     }
 

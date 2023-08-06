@@ -378,7 +378,7 @@ public unsafe partial class LockWindowPosition : Tweak
     {
         if (_eventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock)
         {
-            if (TryGetAddon<AtkUnitBase>((ushort)GetAgent<AgentContext>(AgentId.Context)->OwnerAddon, out var addon))
+            if (TryGetAddon<AtkUnitBase>((ushort)GetAgent<AgentContext>()->OwnerAddon, out var addon))
             {
                 var name = MemoryHelper.ReadStringNullTerminated((nint)addon->Name);
 
@@ -427,7 +427,7 @@ public unsafe partial class LockWindowPosition : Tweak
         var handler = (nint)AtkStage.GetSingleton()->RaptureAtkUnitManager + 0x9C88; // see vtbl ptr in ctor
         fixed (byte* ptr = &bytes[0])
         {
-            GetAgent<AgentContext>(AgentId.Context)->AddMenuItem(ptr, (void*)handler, eventParam);
+            GetAgent<AgentContext>()->AddMenuItem(ptr, (void*)handler, eventParam);
         }
     }
 }

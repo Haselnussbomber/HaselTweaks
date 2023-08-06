@@ -45,7 +45,7 @@ public unsafe partial class MaterialAllocation : Tweak
             if (Config.LastSelectedTab > 2)
                 Config.LastSelectedTab = 2;
 
-            GetAgent<AgentMJICraftSchedule>(AgentId.MJICraftSchedule)->TabIndex = Config.LastSelectedTab;
+            GetAgent<AgentMJICraftSchedule>()->TabIndex = Config.LastSelectedTab;
 
             for (var i = 0; i < 3; i++)
             {
@@ -149,7 +149,7 @@ public unsafe partial class MaterialAllocation : Tweak
                 goto handled;
             }
 
-            var agentMJIGatheringNoteBook = GetAgent<AgentMJIGatheringNoteBook>(AgentId.MJIGatheringNoteBook);
+            var agentMJIGatheringNoteBook = GetAgent<AgentMJIGatheringNoteBook>();
             if (IsAddonOpen(AgentId.MJIGatheringNoteBook))
             {
                 // just switch item
