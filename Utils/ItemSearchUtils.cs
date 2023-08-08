@@ -1,7 +1,9 @@
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Caches;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
+using HaselAtkComponentTextInput = HaselTweaks.Structs.AtkComponentTextInput;
 
 namespace HaselTweaks.Utils;
 
@@ -22,7 +24,7 @@ public static unsafe class ItemSearchUtils
         if (!TryGetAddon<AddonItemSearch>(AgentId.ItemSearch, out var addon))
             return;
 
-        if (TryGetAddon<AddonItemSearchResult>("ItemSearchResult", out var itemSearchResult))
+        if (TryGetAddon<AtkUnitBase>("ItemSearchResult", out var itemSearchResult))
             itemSearchResult->Hide2();
 
         var itemName = StringCache.GetItemName(itemId % 1000000);
@@ -35,7 +37,7 @@ public static unsafe class ItemSearchUtils
         addon->TextInput->UnkText2.SetString(itemName);
 
         addon->SetModeFilter(AddonItemSearch.SearchMode.Normal, -1);
-        ((AtkComponentTextInput*)addon->TextInput)->TriggerRedraw();
+        ((HaselAtkComponentTextInput*)addon->TextInput)->TriggerRedraw();
         addon->RunSearch(false);
     }
 }

@@ -159,7 +159,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         {
             Log("Refreshing RecipeMaterialList");
             using var atkEvent = new DisposableStruct<AtkEvent>();
-            recipeMaterialList->ReceiveEvent(AtkEventType.ButtonClick, 1, atkEvent, 0);
+            recipeMaterialList->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 1, atkEvent, 0);
 
             _recipeMaterialListRefreshPending = false;
         }
@@ -181,7 +181,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         if (DateTime.Now.Subtract(_lastRecipeTreeRefresh).TotalSeconds < 2)
             return;
 
-        if (!TryGetAddon<AddonRecipeTree>(AgentId.RecipeTree, out var recipeTree))
+        if (!TryGetAddon<AtkUnitBase>(AgentId.RecipeTree, out var recipeTree))
         {
             _recipeTreeRefreshPending = false;
             return;

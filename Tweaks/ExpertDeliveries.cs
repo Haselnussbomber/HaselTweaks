@@ -1,5 +1,4 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
@@ -16,6 +15,6 @@ public unsafe class ExpertDeliveries : Tweak
             return;
 
         using var atkEvent = new DisposableStruct<AtkEvent>();
-        ((AddonGrandCompanySupplyList*)unitBase)->ReceiveEvent(AtkEventType.ButtonClick, 4, atkEvent, 0);
+        unitBase->ReceiveEvent(AtkEventType.ButtonClick, 4, atkEvent, 0);
     }
 }

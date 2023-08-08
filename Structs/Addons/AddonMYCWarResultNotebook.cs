@@ -13,7 +13,4 @@ public unsafe partial struct AddonMYCWarResultNotebook
     [FieldOffset(0x254)] public int MaxNoteIndex;
     [FieldOffset(0x258)] public int CurrentNoteIndex;
     [FieldOffset(0x25C)] public int CurrentPageIndex;
-
-    [VirtualFunction(2)]
-    public readonly partial void ReceiveEvent(AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5);
 }

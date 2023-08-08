@@ -557,8 +557,8 @@ ResetWheelState:
             if (addon->CurrentPageIndex > 0)
             {
                 var page = addon->CurrentPageIndex - 1;
-                addon->ReceiveEvent(AtkEventType.ButtonClick, page + 10, atkEvent, 0);
-                addon->ReceiveEvent(AtkEventType.ButtonClick, 9, atkEvent, 0);
+                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, atkEvent, 0);
+                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 9, atkEvent, 0);
             }
         }
         else if (eventParam == 10)
@@ -566,12 +566,12 @@ ResetWheelState:
             if (addon->CurrentPageIndex < 4)
             {
                 var page = addon->CurrentPageIndex + 1;
-                addon->ReceiveEvent(AtkEventType.ButtonClick, page + 10, atkEvent, 0);
+                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, atkEvent, 0);
             }
         }
         else
         {
-            addon->ReceiveEvent(AtkEventType.ButtonClick, eventParam, atkEvent, 0);
+            addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, eventParam, atkEvent, 0);
         }
     }
 
