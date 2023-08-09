@@ -17,7 +17,6 @@ using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
-using HaselAgentLobby = HaselTweaks.Structs.AgentLobby;
 
 namespace HaselTweaks.Tweaks;
 
@@ -68,8 +67,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak
     private ulong ActiveContentId => _currentEntry?.ContentId ?? Service.ClientState.LocalContentId;
 
     // called every frame
-    [AddressHook<HaselAgentLobby>(nameof(HaselAgentLobby.Addresses.UpdateCharaSelectDisplay))]
-    public void UpdateCharaSelectDisplay(HaselAgentLobby* agent, sbyte index, bool a2)
+    [AddressHook<AgentLobby>(nameof(AgentLobby.Addresses.UpdateCharaSelectDisplay))]
+    public void UpdateCharaSelectDisplay(AgentLobby* agent, sbyte index, bool a2)
     {
         UpdateCharaSelectDisplayHook.OriginalDisposeSafe(agent, index, a2);
 
@@ -82,7 +81,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         if (index >= 100)
             index -= 100;
 
-        var entry = agent->Unk40.GetCharacterEntryByIndex(0, agent->Unk10F2, index);
+        var entry = agent->LobbyData.GetCharacterEntryByIndex(0, agent->WorldIndex, index);
         if (entry == null)
         {
             CleanupCharaSelect();
@@ -92,7 +91,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         if (_currentEntry?.ContentId == entry->ContentId)
             return;
 
-        var character = HaselAgentLobby.GetCurrentCharaSelectCharacter();
+        var character = CharaSelectCharacterList.GetCurrentCharacter();
         if (character == null)
             return;
 
@@ -106,7 +105,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
             PlayEmote(emoteId);
     }
 
-    [AddressHook<HaselAgentLobby>(nameof(HaselAgentLobby.Addresses.CleanupCharaSelectCharacters))]
+    [AddressHook<CharaSelectCharacterList>(nameof(CharaSelectCharacterList.Addresses.CleanupCharacters))]
     public void CleanupCharaSelectCharacters()
     {
         CleanupCharaSelect();
@@ -560,8 +559,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     #region Login: Preload territory when queued
 
-    [AddressHook<HaselAgentLobby>(nameof(HaselAgentLobby.Addresses.OpenLoginWaitDialog))]
-    public void OpenLoginWaitDialog(HaselAgentLobby* agent, int position)
+    [AddressHook<AgentLobby>(nameof(AgentLobby.Addresses.OpenLoginWaitDialog))]
+    public void OpenLoginWaitDialog(AgentLobby* agent, int position)
     {
         OpenLoginWaitDialogHook.OriginalDisposeSafe(agent, position);
 
