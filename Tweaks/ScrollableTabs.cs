@@ -5,7 +5,6 @@ using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using Windows.Win32;
 using AddonAOZNotebook = HaselTweaks.Structs.AddonAOZNotebook;
-using AgentId = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentId;
 using HaselAtkComponentRadioButton = HaselTweaks.Structs.AtkComponentRadioButton;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 

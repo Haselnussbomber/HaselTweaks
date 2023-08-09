@@ -4,7 +4,6 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Logging;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
-using AgentId = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentId;
 using AgentRecipeNote = HaselTweaks.Structs.AgentRecipeNote;
 
 namespace HaselTweaks.Tweaks;
