@@ -25,7 +25,7 @@ public partial class ImGuiUtils
 
         public void Draw()
         {
-            using var popup = ImRaiiExtensions.ContextPopupItem(key);
+            using var popup = ImRaii.ContextPopupItem(key);
             if (!popup.Success)
                 return;
 
