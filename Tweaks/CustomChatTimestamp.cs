@@ -29,13 +29,13 @@ public unsafe partial class CustomChatTimestamp : Tweak
         ImGui.TextUnformatted("Format");
         using (ImGuiUtils.ConfigIndent())
         {
-            if (ImGui.InputText("##HaselTweaks_CustomChatTimestamp_Format", ref Config.Format, 50))
+            if (ImGui.InputText("##Format", ref Config.Format, 50))
             {
                 Plugin.Config.Save();
                 ReloadChat();
             }
             ImGui.SameLine();
-            if (ImGuiUtils.IconButton("##HaselTweaks_CustomChatTimestamp_FormatReset", FontAwesomeIcon.Undo, "Reset to Default: \"[HH:mm] \""))
+            if (ImGuiUtils.IconButton("##FormatReset", FontAwesomeIcon.Undo, "Reset to Default: \"[HH:mm] \""))
             {
                 Config.Format = "[HH:mm] ";
                 Plugin.Config.Save();
@@ -67,7 +67,7 @@ public unsafe partial class CustomChatTimestamp : Tweak
 
             if (!Service.GameConfig.UiConfig.TryGet("ColorParty", out uint colorParty))
             {
-                colorParty = 0xFFFFE666;
+                colorParty = 0xFFFFE666; // 0xFFFFE666;
             }
             else
             {
@@ -80,7 +80,7 @@ public unsafe partial class CustomChatTimestamp : Tweak
             }
 
             var size = new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetStyle().WindowPadding.Y * 2 + ImGui.GetTextLineHeight() + 2);
-            using var child = ImRaii.Child("##HaselTweaks_CustomChatTimestamp_FormatExample", size, true);
+            using var child = ImRaii.Child("##FormatExample", size, true);
             if (!child.Success)
                 return;
 

@@ -42,6 +42,8 @@ public partial class PluginWindow : Window, IDisposable
         var style = ImGui.GetStyle();
         var width = SidebarWidth + ConfigWidth + style.ItemSpacing.X + style.FramePadding.X * 2;
 
+        Namespace = "HaselTweaksConfig";
+
         Size = new Vector2(width, 600);
         SizeConstraints = new()
         {
@@ -304,6 +306,8 @@ public partial class PluginWindow : Window, IDisposable
 
             return;
         }
+
+        using var id = ImRaii.PushId(tweak.InternalName);
 
         ImGuiUtils.TextUnformattedColored(Colors.Gold, tweak.Name);
 

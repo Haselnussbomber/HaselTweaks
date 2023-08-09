@@ -179,21 +179,19 @@ public unsafe class AutoSorter : Tweak
 
     public override void DrawCustomConfig()
     {
+        ImGui.Checkbox("Sort armoury on job change", ref Config.SortArmouryOnJobChange);
+
+        ImGuiUtils.DrawPaddedSeparator();
+
+        using var table = ImRaii.Table("##Table", 5, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX);
+        if (!table.Success)
+            return;
+
         var ItemSpacing = ImGui.GetStyle().ItemSpacing;
         var ArrowUpButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.ArrowUp);
         var ArrowDownButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.ArrowDown);
         var TrashButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Trash);
         var TerminalButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Terminal);
-
-        ImGui.Checkbox("Sort armoury on job change", ref Config.SortArmouryOnJobChange);
-
-        ImGuiUtils.DrawPaddedSeparator();
-
-        if (!ImGui.BeginTable("##HaselTweaks_AutoSortSettings", 5, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX))
-        {
-            ImGui.PopStyleVar();
-            return;
-        }
 
         ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed);
         ImGui.TableSetupColumn("Category", ImGuiTableColumnFlags.WidthStretch);
@@ -218,7 +216,7 @@ public unsafe class AutoSorter : Tweak
 
         foreach (var entry in Config.Settings)
         {
-            var key = $"##HaselTweaks_AutoSortSettings_Setting[{i}]";
+            var key = $"##Setting[{i}]";
 
             ImGui.TableNextRow();
 
@@ -412,9 +410,9 @@ public unsafe class AutoSorter : Tweak
             i++;
         }
 
-        ImGui.EndTable();
+        table?.Dispose();
 
-        if (ImGui.Button("Add##HaselTweaks_AutoSortSettings_Add"))
+        if (ImGui.Button("Add##Add"))
         {
             Config.Settings.Add(new());
             Plugin.Config.Save();
@@ -426,7 +424,7 @@ public unsafe class AutoSorter : Tweak
 
             if (!_isBusy && !_queue.Any())
             {
-                if (ImGui.Button("Run All##HaselTweaks_AutoSortSettings_RunAll"))
+                if (ImGui.Button("Run All##RunAll"))
                 {
                     var groups = Config.Settings
                         .FindAll(entry => !string.IsNullOrEmpty(entry.Category))
@@ -441,7 +439,7 @@ public unsafe class AutoSorter : Tweak
             else
             {
                 using (ImRaii.Disabled())
-                    ImGui.Button("Run All##HaselTweaks_AutoSortSettings_RunAll");
+                    ImGui.Button("Run All##RunAll");
 
                 if (ImGui.IsItemHovered())
                     ImGui.SetTooltip("Sorting in progress. Please wait.");

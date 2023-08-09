@@ -149,7 +149,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         ImGuiUtils.DrawSection("Login Options");
         // ShowPets
-        if (ImGui.Checkbox($"Show pets in character selection##HaselTweaks_Config_{InternalName}_ShowPets", ref Config.ShowPets))
+        if (ImGui.Checkbox($"Show pets in character selection##ShowPets", ref Config.ShowPets))
         {
             if (!Config.ShowPets)
                 DespawnPet();
@@ -174,12 +174,12 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         using (ImGuiUtils.ConfigIndent())
         {
-            if (ImGui.DragFloat3($"Position##HaselTweaks_Config_{InternalName}_Position", ref Config.PetPosition, 0.01f, -10f, 10f))
+            if (ImGui.DragFloat3($"Position##Position", ref Config.PetPosition, 0.01f, -10f, 10f))
             {
                 ApplyPetPosition();
             }
             ImGui.SameLine();
-            if (ImGuiUtils.IconButton($"##HaselTweaks_Config_{InternalName}_Position_Reset", FontAwesomeIcon.Undo, "Reset to Default: -0.6, 0, 0"))
+            if (ImGuiUtils.IconButton($"##Reset", FontAwesomeIcon.Undo, "Reset to Default: -0.6, 0, 0"))
             {
                 Config.PetPosition = new(-0.6f, 0f, 0f);
                 ApplyPetPosition();
@@ -189,7 +189,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         showPetsDisabled?.Dispose();
 
         // PlayEmote
-        if (ImGui.Checkbox($"Play emote in character selection##HaselTweaks_Config_{InternalName}_PlayEmote", ref Config.EnableCharaSelectEmote))
+        if (ImGui.Checkbox($"Play emote in character selection##PlayEmote", ref Config.EnableCharaSelectEmote))
         {
             if (!Config.EnableCharaSelectEmote && _currentEntry != null && _currentEntry.Character != null)
             {
@@ -300,7 +300,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         playEmoteDisabled?.Dispose();
 
         // PreloadTerritory
-        ImGui.Checkbox($"Preload territory when queued##HaselTweaks_Config_{InternalName}_PreloadTerritory", ref Config.PreloadTerritory);
+        ImGui.Checkbox($"Preload territory when queued##PreloadTerritory", ref Config.PreloadTerritory);
         using (ImGuiUtils.ConfigIndent())
         {
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.");
@@ -309,7 +309,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         ImGuiUtils.DrawSection("Logout Options");
         // ClearTellHistory
-        ImGui.Checkbox($"Clear tell history on logout##HaselTweaks_Config_{InternalName}_ClearTellHistory", ref Config.ClearTellHistory);
+        ImGui.Checkbox($"Clear tell history on logout##ClearTellHistory", ref Config.ClearTellHistory);
     }
 
     #endregion

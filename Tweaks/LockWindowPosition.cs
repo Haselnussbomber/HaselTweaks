@@ -52,13 +52,13 @@ public unsafe partial class LockWindowPosition : Tweak
 
     public override void DrawCustomConfig()
     {
-        ImGui.Checkbox("Invert logic (locks all windows)##HaselTweaks_LockWindows_Inverted", ref Config.Inverted);
+        ImGui.Checkbox("Invert logic (locks all windows)##Inverted", ref Config.Inverted);
         if (ImGui.IsItemClicked())
         {
             Plugin.Config.Save();
         }
 
-        ImGui.Checkbox("Add Lock/Unlock Position to windows context menu##HaselTweaks_LockWindows_AddLockUnlockContextMenuEntries", ref Config.AddLockUnlockContextMenuEntries);
+        ImGui.Checkbox("Add Lock/Unlock Position to windows context menu##AddLockUnlockContextMenuEntries", ref Config.AddLockUnlockContextMenuEntries);
         if (ImGui.IsItemClicked())
         {
             Plugin.Config.Save();
@@ -71,7 +71,7 @@ public unsafe partial class LockWindowPosition : Tweak
         {
             ImGui.TextUnformatted("Windows:");
 
-            if (!ImGui.BeginTable("##HaselTweaks_LockWindowsTable", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX))
+            if (!ImGui.BeginTable("##Table", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX))
             {
                 return;
             }
@@ -85,7 +85,7 @@ public unsafe partial class LockWindowPosition : Tweak
 
             foreach (var entry in Config.LockedWindows)
             {
-                var key = $"##HaselTweaks_LockWindowsTable_{i}";
+                var key = $"##Table_Row{i}";
                 ImGui.TableNextRow();
 
                 ImGui.TableNextColumn();
