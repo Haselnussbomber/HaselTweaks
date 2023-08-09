@@ -1,7 +1,7 @@
+using System.IO;
 using System.Numerics;
 using ImGuiNET;
 using ImGuiScene;
-using Lumina.Data.Files;
 
 namespace HaselTweaks.Utils.TextureCache;
 
@@ -74,35 +74,28 @@ public record Texture : IDisposable
     private TextureWrap? LoadTexture()
     {
         var tex = System.IO.Path.IsPathRooted(Path)
-            ? Service.DataManager.GameData.GetFileFromDisk<TexFile>(Path)
-            : Service.DataManager.GameData.GetFile<TexFile>(Path);
+            ? Service.TextureProvider.GetTextureFromFile(new FileInfo(Path), true)
+            : Service.TextureProvider.GetTextureFromGame(Path, true);
 
-        if (tex == null)
-            return null;
+        if (tex != null && !_sizesSet)
+        {
+            var texSize = new Vector2(tex.Width, tex.Height);
 
-        SetupDimensions(tex);
+            // defaults
+            Uv0 ??= Vector2.Zero;
+            Uv1 ??= texSize;
 
-        return Service.DataManager.GetImGuiTexture(tex);
-    }
-    public void SetupDimensions(TexFile tex)
-    {
-        if (_sizesSet)
-            return;
+            // set size depending on uv dimensions
+            Size = Uv1.Value - Uv0.Value;
 
-        var texSize = new Vector2(tex.Header.Width, tex.Header.Height);
+            // convert uv coordinates range from [[0, 0], [Width, Height]] to [[0, 0], [1, 1]] for ImGui
+            Uv0 = Uv0.Value / texSize;
+            Uv1 = Uv1.Value / texSize;
 
-        // defaults
-        Uv0 ??= Vector2.Zero;
-        Uv1 ??= texSize;
+            _sizesSet = true;
+        }
 
-        // set size depending on uv dimensions
-        Size = Uv1.Value - Uv0.Value;
-
-        // convert uv coordinates range from [[0, 0], [Width, Height]] to [[0, 0], [1, 1]] for ImGui
-        Uv0 = Uv0.Value / texSize;
-        Uv1 = Uv1.Value / texSize;
-
-        _sizesSet = true;
+        return tex;
     }
 
     public void Unload()

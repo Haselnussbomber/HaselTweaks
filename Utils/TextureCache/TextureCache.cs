@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
 using Dalamud.Game;
+using Dalamud.Plugin.Services;
 using HaselTweaks.Extensions;
 
 namespace HaselTweaks.Utils.TextureCache;
@@ -37,21 +37,6 @@ public class TextureCache : IDisposable
 
     public Texture Get(string path, int version = 1, Vector2? uv0 = null, Vector2? uv1 = null)
     {
-        try
-        {
-            var _path = Service.PluginInterface.GetIpcSubscriber<string, string>("Penumbra.ResolveInterfacePath").InvokeFunc(path);
-            if (Path.IsPathRooted(_path) ? File.Exists(_path) : Service.DataManager.FileExists(_path))
-            {
-                path = _path;
-
-                if (path.EndsWith("_hr1.tex"))
-                {
-                    version = 2;
-                }
-            }
-        }
-        catch { }
-
         var key = (path, version, uv0, uv1);
 
         if (!_cache.TryGetValue(key, out var tex))
@@ -70,22 +55,13 @@ public class TextureCache : IDisposable
         if (_iconTexCache.TryGetValue(key, out var tex))
             return tex;
 
-        var path = $"ui/icon/{iconId / 1000:D3}000/{(isHq ? "hq/" : "")}{iconId:D6}_hr1.tex";
-        var exists = Service.DataManager.FileExists(path);
-        var version = 2;
+        var flags = ITextureProvider.IconFlags.HiRes;
 
-        if (!exists)
-        {
-            path = $"ui/icon/{iconId / 1000:D3}000/{(isHq ? "hq/" : "")}{iconId:D6}.tex";
-            exists = Service.DataManager.FileExists(path);
-            version = 1;
-        }
+        if (isHq)
+            flags |= ITextureProvider.IconFlags.ItemHighQuality;
 
-        if (!exists)
-        {
-            // fallback: transparent icon
-            path = Texture.EmptyIconPath;
-        }
+        var path = Service.TextureProvider.GetIconPath(iconId, flags) ?? Texture.EmptyIconPath;
+        var version = path.EndsWith("_hr1.tex") ? 2 : 1;
 
         lock (_iconTexCache)
             _iconTexCache.Add(key, tex = Get(path, version));
