@@ -148,174 +148,168 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         var verticalTextPadding = 3;
 
         ImGuiUtils.DrawSection("Login Options");
-        using (ImRaii.PushIndent())
+        // ShowPets
+        if (ImGui.Checkbox($"Show pets in character selection##HaselTweaks_Config_{InternalName}_ShowPets", ref Config.ShowPets))
         {
-            // ShowPets
-            if (ImGui.Checkbox($"Show pets in character selection##HaselTweaks_Config_{InternalName}_ShowPets", ref Config.ShowPets))
-            {
-                if (!Config.ShowPets)
-                    DespawnPet();
-                else
-                    SpawnPet();
-            }
-            using (ImGuiUtils.ConfigIndent())
-            {
-                ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "Displays a carbuncle (Arcanist/Summoner) or a fairy (Scholar) next to your character.");
+            if (!Config.ShowPets)
+                DespawnPet();
+            else
+                SpawnPet();
+        }
+        using (ImGuiUtils.ConfigIndent())
+        {
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "Displays a carbuncle (Arcanist/Summoner) or a fairy (Scholar) next to your character.");
 
+            if (ActiveContentId != 0)
+            {
+                if (!Config.PetMirageSettings.ContainsKey(ActiveContentId))
+                    ImGui.TextColored(Colors.Red, "Pet glamour settings for this character not cached! Please log in.");
+            }
+
+            ImGuiUtils.PushCursorY(3);
+        }
+
+        // PetPosition
+        var showPetsDisabled = Config.ShowPets ? null : ImRaii.Disabled();
+
+        using (ImGuiUtils.ConfigIndent())
+        {
+            if (ImGui.DragFloat3($"Position##HaselTweaks_Config_{InternalName}_Position", ref Config.PetPosition, 0.01f, -10f, 10f))
+            {
+                ApplyPetPosition();
+            }
+            ImGui.SameLine();
+            if (ImGuiUtils.IconButton($"##HaselTweaks_Config_{InternalName}_Position_Reset", FontAwesomeIcon.Undo, "Reset to Default: -0.6, 0, 0"))
+            {
+                Config.PetPosition = new(-0.6f, 0f, 0f);
+                ApplyPetPosition();
+            }
+        }
+
+        showPetsDisabled?.Dispose();
+
+        // PlayEmote
+        if (ImGui.Checkbox($"Play emote in character selection##HaselTweaks_Config_{InternalName}_PlayEmote", ref Config.EnableCharaSelectEmote))
+        {
+            if (!Config.EnableCharaSelectEmote && _currentEntry != null && _currentEntry.Character != null)
+            {
+                ResetEmoteMode();
+                _currentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(3);
+            }
+        }
+
+        var playEmoteDisabled = Config.EnableCharaSelectEmote ? null : ImRaii.Disabled();
+
+        using (ImGuiUtils.ConfigIndent())
+        {
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "Have your character greet you with an emote!");
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "Note: Emote settings are per character and not all emotes are supported (e.g. sitting or underwater emotes). What is supported, however, are alternative standing idle poses.");
+            ImGuiUtils.PushCursorY(3);
+
+            if (Config.EnableCharaSelectEmote)
+            {
                 if (ActiveContentId != 0)
                 {
-                    if (!Config.PetMirageSettings.ContainsKey(ActiveContentId))
-                        ImGui.TextColored(Colors.Red, "Pet glamour settings for this character not cached! Please log in.");
-                }
+                    ImGuiUtils.PushCursorY(verticalTextPadding);
+                    ImGui.Text("Current Emote:");
+                    ImGui.SameLine();
 
-                ImGuiUtils.PushCursorY(3);
-            }
-
-            // PetPosition
-            var showPetsDisabled = Config.ShowPets ? null : ImRaii.Disabled();
-
-            using (ImGuiUtils.ConfigIndent())
-            {
-                if (ImGui.DragFloat3($"Position##HaselTweaks_Config_{InternalName}_Position", ref Config.PetPosition, 0.01f, -10f, 10f))
-                {
-                    ApplyPetPosition();
-                }
-                ImGui.SameLine();
-                if (ImGuiUtils.IconButton($"##HaselTweaks_Config_{InternalName}_Position_Reset", FontAwesomeIcon.Undo, "Reset to Default: -0.6, 0, 0"))
-                {
-                    Config.PetPosition = new(-0.6f, 0f, 0f);
-                    ApplyPetPosition();
-                }
-            }
-
-            showPetsDisabled?.Dispose();
-
-            // PlayEmote
-            if (ImGui.Checkbox($"Play emote in character selection##HaselTweaks_Config_{InternalName}_PlayEmote", ref Config.EnableCharaSelectEmote))
-            {
-                if (!Config.EnableCharaSelectEmote && _currentEntry != null && _currentEntry.Character != null)
-                {
-                    ResetEmoteMode();
-                    _currentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(3);
-                }
-            }
-
-            var playEmoteDisabled = Config.EnableCharaSelectEmote ? null : ImRaii.Disabled();
-
-            using (ImGuiUtils.ConfigIndent())
-            {
-                ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "Have your character greet you with an emote!");
-                ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "Note: Emote settings are per character and not all emotes are supported (e.g. sitting or underwater emotes). What is supported, however, are alternative standing idle poses.");
-                ImGuiUtils.PushCursorY(3);
-
-                if (Config.EnableCharaSelectEmote)
-                {
-                    if (ActiveContentId != 0)
+                    if (!Config.SelectedEmotes.TryGetValue(ActiveContentId, out var selectedEmoteId) || selectedEmoteId == 0)
                     {
-                        ImGuiUtils.PushCursorY(verticalTextPadding);
-                        ImGui.Text("Current Emote:");
-                        ImGui.SameLine();
+                        ImGui.Text("None");
+                    }
+                    else
+                    {
+                        var defaultIdlePoseEmote = GetRow<Emote>(90)!; // first "Change Pose"
+                        var changePoseIndex = 1;
 
-                        if (!Config.SelectedEmotes.TryGetValue(ActiveContentId, out var selectedEmoteId) || selectedEmoteId == 0)
+                        var entry = GetSheet<Emote>()
+                            .Select(row => (
+                                IsChangePose: _changePoseEmoteIds.Contains(row.RowId),
+                                Name: _changePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name.ToDalamudString()} ({changePoseIndex++})" : $"{row.Name.ToDalamudString()}",
+                                Emote: row
+                            ) as (bool IsChangePose, string Name, Emote Emote)?)
+                            .FirstOrDefault(entry => entry != null && entry.Value.Emote.RowId == selectedEmoteId, null);
+
+                        if (entry.HasValue)
                         {
-                            ImGui.Text("None");
+                            var (isChangePose, name, emote) = entry.Value;
+                            ImGuiUtils.PushCursorY(-verticalTextPadding);
+                            Service.TextureCache.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(24 * scale);
+                            ImGui.SameLine();
+                            ImGui.Text(name);
                         }
                         else
                         {
-                            var defaultIdlePoseEmote = GetRow<Emote>(90)!; // first "Change Pose"
-                            var changePoseIndex = 1;
+                            ImGui.Text("Unknown");
+                        }
+                    }
 
-                            var entry = GetSheet<Emote>()
-                                .Select(row => (
-                                    IsChangePose: _changePoseEmoteIds.Contains(row.RowId),
-                                    Name: _changePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name.ToDalamudString()} ({changePoseIndex++})" : $"{row.Name.ToDalamudString()}",
-                                    Emote: row
-                                ) as (bool IsChangePose, string Name, Emote Emote)?)
-                                .FirstOrDefault(entry => entry != null && entry.Value.Emote.RowId == selectedEmoteId, null);
+                    if (Service.ClientState.IsLoggedIn)
+                    {
+                        ImGui.SameLine();
 
-                            if (entry.HasValue)
+                        ImGuiUtils.PushCursorY(-verticalTextPadding);
+
+                        if (_isRecordingEmote)
+                        {
+                            if (ImGui.Button("Stop Recording"))
                             {
-                                var (isChangePose, name, emote) = entry.Value;
-                                ImGuiUtils.PushCursorY(-verticalTextPadding);
-                                Service.TextureCache.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(24 * scale);
-                                ImGui.SameLine();
-                                ImGui.Text(name);
+                                _isRecordingEmote = false;
                             }
-                            else
+                        }
+                        else
+                        {
+                            if (ImGui.Button("Change"))
                             {
-                                ImGui.Text("Unknown");
+                                _isRecordingEmote = true;
+
+                                var agentEmote = AgentModule.Instance()->GetAgentByInternalId(AgentId.Emote);
+                                if (!agentEmote->IsAgentActive())
+                                {
+                                    agentEmote->Show();
+                                }
                             }
                         }
 
-                        if (Service.ClientState.IsLoggedIn)
+                        if (selectedEmoteId != 0)
                         {
                             ImGui.SameLine();
 
                             ImGuiUtils.PushCursorY(-verticalTextPadding);
-
-                            if (_isRecordingEmote)
+                            if (ImGui.Button("Unset"))
                             {
-                                if (ImGui.Button("Stop Recording"))
-                                {
-                                    _isRecordingEmote = false;
-                                }
-                            }
-                            else
-                            {
-                                if (ImGui.Button("Change"))
-                                {
-                                    _isRecordingEmote = true;
-
-                                    var agentEmote = AgentModule.Instance()->GetAgentByInternalId(AgentId.Emote);
-                                    if (!agentEmote->IsAgentActive())
-                                    {
-                                        agentEmote->Show();
-                                    }
-                                }
-                            }
-
-                            if (selectedEmoteId != 0)
-                            {
-                                ImGui.SameLine();
-
-                                ImGuiUtils.PushCursorY(-verticalTextPadding);
-                                if (ImGui.Button("Unset"))
-                                {
-                                    SaveEmote(0);
-                                }
-                            }
-
-                            if (_isRecordingEmote)
-                            {
-                                ImGui.TextColored(Colors.Gold, "Perform an emote now to set it for this character!");
-                                ImGuiUtils.PushCursorY(verticalTextPadding);
+                                SaveEmote(0);
                             }
                         }
-                        else
+
+                        if (_isRecordingEmote)
                         {
-                            ImGui.Text("Please log in to set an emote.");
+                            ImGui.TextColored(Colors.Gold, "Perform an emote now to set it for this character!");
+                            ImGuiUtils.PushCursorY(verticalTextPadding);
                         }
+                    }
+                    else
+                    {
+                        ImGui.Text("Please log in to set an emote.");
                     }
                 }
             }
+        }
 
-            playEmoteDisabled?.Dispose();
+        playEmoteDisabled?.Dispose();
 
-            // PreloadTerritory
-            ImGui.Checkbox($"Preload territory when queued##HaselTweaks_Config_{InternalName}_PreloadTerritory", ref Config.PreloadTerritory);
-            using (ImGuiUtils.ConfigIndent())
-            {
-                ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.");
-                ImGuiUtils.PushCursorY(verticalTextPadding);
-            }
+        // PreloadTerritory
+        ImGui.Checkbox($"Preload territory when queued##HaselTweaks_Config_{InternalName}_PreloadTerritory", ref Config.PreloadTerritory);
+        using (ImGuiUtils.ConfigIndent())
+        {
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.");
+            ImGuiUtils.PushCursorY(verticalTextPadding);
         }
 
         ImGuiUtils.DrawSection("Logout Options");
-        using (ImRaii.PushIndent())
-        {
-            // ClearTellHistory
-            ImGui.Checkbox($"Clear tell history on logout##HaselTweaks_Config_{InternalName}_ClearTellHistory", ref Config.ClearTellHistory);
-        }
+        // ClearTellHistory
+        ImGui.Checkbox($"Clear tell history on logout##HaselTweaks_Config_{InternalName}_ClearTellHistory", ref Config.ClearTellHistory);
     }
 
     #endregion
