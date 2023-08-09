@@ -31,7 +31,7 @@ public partial class PluginWindow : Window, IDisposable
     private string _selectedTweak = string.Empty;
     private bool _isLogoLoading;
     private TextureWrap? _logoTextureWrap;
-    private readonly Point _logoSize = new(580, 180);
+    private readonly Point _logoSize = new(708, 220);
     private Point _renderedLogoSize = new(0, 0);
 
     [GeneratedRegex("\\.0$")]
