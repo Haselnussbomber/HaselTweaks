@@ -7,15 +7,17 @@ using Dalamud.Game.Gui;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using HaselTweaks.Utils.TextureCache;
+using HaselTweaks.Services;
 
 namespace HaselTweaks;
 
 public class Service
 {
-    public static TextureCache TextureCache { get; internal set; } = null!;
+    public static DalamudPluginInterface PluginInterface { get; internal set; } = null!;
 
-    [PluginService] public static DalamudPluginInterface PluginInterface { get; private set; } = null!;
+    public static AddonObserver AddonObserver { get; internal set; } = null!;
+    public static TextureManager TextureManager { get; internal set; } = null!;
+    public static StringManager StringManager { get; internal set; } = null!;
 
     [PluginService] public static ChatGui ChatGui { get; private set; } = null!;
     [PluginService] public static ClientState ClientState { get; private set; } = null!;
@@ -33,4 +35,19 @@ public class Service
     [PluginService] public static ISigScanner SigScanner { get; private set; } = null!;
     [PluginService] public static ITargetManager TargetManager { get; private set; } = null!;
     [PluginService] public static ITextureProvider TextureProvider { get; private set; } = null!;
+
+    public static void Initialize()
+    {
+        PluginInterface.Create<Service>();
+        AddonObserver = new();
+        TextureManager = new();
+        StringManager = new();
+    }
+
+    public static void Dispose()
+    {
+        AddonObserver.Dispose();
+        TextureManager.Dispose();
+        StringManager.Dispose();
+    }
 }

@@ -112,8 +112,8 @@ public partial class PortraitHelper : Tweak
         AgentBannerEditor = GetAgent<AgentBannerEditor>();
         AgentStatus = GetAgent<AgentStatus>();
 
-        if (TryGetAddon<AtkUnitBase>(AgentId.BannerEditor, out var addon))
-            OnAddonOpen("BannerEditor", addon);
+        if (IsAddonOpen(AgentId.BannerEditor))
+            OnAddonOpen("BannerEditor");
     }
 
     public override void Disable()
@@ -181,12 +181,13 @@ public partial class PortraitHelper : Tweak
         AgentBannerEditor->OpenForGearset(gearsetId);
     }
 
-    public override unsafe void OnAddonOpen(string addonName, AtkUnitBase* unitbase)
+    public override unsafe void OnAddonOpen(string addonName)
     {
         if (addonName != "BannerEditor")
             return;
 
-        AddonBannerEditor = (AddonBannerEditor*)unitbase;
+        if (!TryGetAddon<AddonBannerEditor>(addonName, out var AddonBannerEditor))
+            return;
 
         if (MenuBar == null)
             Plugin.WindowSystem.AddWindow(MenuBar = new(this));

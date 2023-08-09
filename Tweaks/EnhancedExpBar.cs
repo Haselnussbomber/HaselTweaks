@@ -5,7 +5,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Caches;
 using HaselTweaks.Enums;
 using Lumina.Excel.GeneratedSheets;
 using AddonExp = HaselTweaks.Structs.AddonExp;
@@ -243,7 +242,7 @@ PvPBar:
             var currentRank = pvpProfile->GetSeriesCurrentRank();
 
             job = Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation;
-            levelLabel = (StringCache.GetAddonText(14860) ?? "Series Level").Trim().Replace(":", "");
+            levelLabel = (GetAddonText(14860) ?? "Series Level").Trim().Replace(":", "");
             var rank = currentRank > 30 ? 30 : currentRank; // 30 = Series Max Rank, hopefully in the future too
             level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
             var star = currentRank > claimedRank ? '*' : ' ';
@@ -280,7 +279,7 @@ CompanionBar:
             var currentRank = buddy.Rank;
 
             job = Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation;
-            levelLabel = (StringCache.GetAddonText(4968) ?? "Rank").Trim().Replace(":", "");
+            levelLabel = (GetAddonText(4968) ?? "Rank").Trim().Replace(":", "");
             var rank = currentRank > 20 ? 20 : currentRank;
             level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
             requiredExperience = GetRow<BuddyRank>(currentRank)!.ExpRequired;
@@ -308,7 +307,7 @@ SanctuaryBar:
                 goto OriginalOnRequestedUpdateWithColorReset;
 
             job = Config.SanctuaryBarHideJob ? "" : Service.ClientState.LocalPlayer.ClassJob.GameData.Abbreviation + "  ";
-            levelLabel = (StringCache.GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
+            levelLabel = (GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
             level = mjiManager->IslandState.CurrentRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
             requiredExperience = GetRow<MJIRank>(mjiManager->IslandState.CurrentRank)!.ExpToNext;
 

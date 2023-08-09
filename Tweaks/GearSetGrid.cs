@@ -1,5 +1,4 @@
 using Dalamud.Game.Command;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
@@ -46,8 +45,8 @@ public unsafe partial class GearSetGrid : Tweak
     {
         RegisterCommands();
 
-        if (Config.AutoOpenWithGearSetList && TryGetAddon<AtkUnitBase>("GearSetList", out var addon))
-            OnAddonOpen("GearSetList", addon);
+        if (Config.AutoOpenWithGearSetList && IsAddonOpen("GearSetList"))
+            OpenWindow();
     }
 
     public override void Disable()
@@ -56,7 +55,7 @@ public unsafe partial class GearSetGrid : Tweak
         CloseWindow();
     }
 
-    public override void OnAddonOpen(string addonName, AtkUnitBase* unitbase)
+    public override void OnAddonOpen(string addonName)
     {
         if (Config.AutoOpenWithGearSetList && addonName == "GearSetList")
             OpenWindow();

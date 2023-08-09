@@ -7,8 +7,6 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
-using HaselTweaks.Caches;
-using HaselTweaks.Utils;
 using HaselTweaks.Windows;
 using DalamudFramework = Dalamud.Game.Framework;
 
@@ -26,8 +24,8 @@ public partial class Plugin : IDalamudPlugin
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
-        pluginInterface.Create<Service>();
-        Service.TextureCache = new();
+        Service.PluginInterface = pluginInterface;
+        Service.Initialize();
         Task.Run(Setup);
     }
 
@@ -60,6 +58,8 @@ public partial class Plugin : IDalamudPlugin
             Service.ClientState.Login += ClientState_Login;
             Service.ClientState.Logout += ClientState_Logout;
             Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
+            Service.AddonObserver.AddonOpen += AddonObserver_AddonOpen;
+            Service.AddonObserver.AddonClose += AddonObserver_AddonClose;
 
             Service.PluginInterface.UiBuilder.Draw += OnDraw;
             Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
@@ -100,8 +100,6 @@ public partial class Plugin : IDalamudPlugin
 
     private void OnFrameworkUpdate(DalamudFramework framework)
     {
-        AddonObserver.Update();
-
         foreach (var tweak in Tweaks)
         {
             if (!tweak.Enabled)
@@ -135,6 +133,22 @@ public partial class Plugin : IDalamudPlugin
         }
     }
 
+    private void AddonObserver_AddonOpen(string addonName)
+    {
+        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
+        {
+            tweak.OnAddonOpenInternal(addonName);
+        }
+    }
+
+    private void AddonObserver_AddonClose(string addonName)
+    {
+        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
+        {
+            tweak.OnAddonCloseInternal(addonName);
+        }
+    }
+
     private void OnDraw()
     {
         try
@@ -159,6 +173,8 @@ public partial class Plugin : IDalamudPlugin
 
     void IDisposable.Dispose()
     {
+        Service.AddonObserver.AddonClose -= AddonObserver_AddonClose;
+        Service.AddonObserver.AddonOpen -= AddonObserver_AddonOpen;
         Service.Framework.Update -= OnFrameworkUpdate;
         Service.ClientState.Login -= ClientState_Login;
         Service.ClientState.Logout -= ClientState_Logout;
@@ -191,7 +207,6 @@ public partial class Plugin : IDalamudPlugin
         Config?.Save();
         Config = null!;
 
-        StringCache.Dispose();
-        Service.TextureCache.Dispose();
+        Service.Dispose();
     }
 }

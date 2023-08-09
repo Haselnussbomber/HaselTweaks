@@ -234,7 +234,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                         {
                             var (isChangePose, name, emote) = entry.Value;
                             ImGuiUtils.PushCursorY(-verticalTextPadding);
-                            Service.TextureCache.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(24 * scale);
+                            Service.TextureManager.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(24 * scale);
                             ImGui.SameLine();
                             ImGui.Text(name);
                         }

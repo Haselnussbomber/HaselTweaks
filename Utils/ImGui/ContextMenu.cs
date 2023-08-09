@@ -7,7 +7,6 @@ using Dalamud.Interface.Raii;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using HaselTweaks.Caches;
 using ImGuiNET;
 
 namespace HaselTweaks.Utils;
@@ -81,7 +80,7 @@ public partial class ImGuiUtils
             => new()
             {
                 Hidden = !ItemUtils.CanTryOn(ItemId),
-                Label = StringCache.GetAddonText(2426), // "Try On"
+                Label = GetAddonText(2426), // "Try On"
                 LoseFocusOnClick = true,
                 ClickCallback = () =>
                 {
@@ -95,7 +94,7 @@ public partial class ImGuiUtils
         public static unsafe ContextMenuEntry CreateItemFinder(uint ItemId)
             => new()
             {
-                Label = StringCache.GetAddonText(4379), // "Search for Item"
+                Label = GetAddonText(4379), // "Search for Item"
                 LoseFocusOnClick = true,
                 ClickCallback = () =>
                 {
@@ -130,10 +129,10 @@ public partial class ImGuiUtils
         public static ContextMenuEntry CreateCopyItemName(uint ItemId)
             => new()
             {
-                Label = StringCache.GetAddonText(159), // "Copy Item Name"
+                Label = GetAddonText(159), // "Copy Item Name"
                 ClickCallback = () =>
                 {
-                    ImGui.SetClipboardText(StringCache.GetItemName(ItemId));
+                    ImGui.SetClipboardText(GetItemName(ItemId));
                 }
             };
 

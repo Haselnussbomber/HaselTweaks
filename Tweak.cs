@@ -5,7 +5,6 @@ using Dalamud.Game;
 using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Enums;
 
 namespace HaselTweaks;
@@ -245,11 +244,11 @@ public abstract unsafe class Tweak
         }
     }
 
-    internal void OnAddonOpenInternal(string addonName, AtkUnitBase* unitbase)
+    internal void OnAddonOpenInternal(string addonName)
     {
         try
         {
-            OnAddonOpen(addonName, unitbase);
+            OnAddonOpen(addonName);
         }
         catch (Exception ex)
         {
@@ -282,7 +281,7 @@ public abstract unsafe class Tweak
     public virtual void OnLogin() { }
     public virtual void OnLogout() { }
     public virtual void OnTerritoryChanged(ushort id) { }
-    public virtual void OnAddonOpen(string addonName, AtkUnitBase* unitbase) { }
+    public virtual void OnAddonOpen(string addonName) { }
     public virtual void OnAddonClose(string addonName) { }
 
     #region Logging methods

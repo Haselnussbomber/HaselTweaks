@@ -9,12 +9,15 @@ namespace HaselTweaks.Tweaks;
 )]
 public unsafe class ExpertDeliveries : Tweak
 {
-    public override void OnAddonOpen(string addonName, AtkUnitBase* unitBase)
+    public override void OnAddonOpen(string addonName)
     {
         if (addonName != "GrandCompanySupplyList")
             return;
 
+        if (!TryGetAddon<AtkUnitBase>(addonName, out var addon))
+            return;
+
         using var atkEvent = new DisposableStruct<AtkEvent>();
-        unitBase->ReceiveEvent(AtkEventType.ButtonClick, 4, atkEvent, 0);
+        addon->ReceiveEvent(AtkEventType.ButtonClick, 4, atkEvent, 0);
     }
 }

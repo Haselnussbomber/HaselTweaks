@@ -3,16 +3,17 @@ using System.Numerics;
 using Dalamud.Game;
 using Dalamud.Plugin.Services;
 using HaselTweaks.Extensions;
+using HaselTweaks.Records;
 
-namespace HaselTweaks.Utils.TextureCache;
+namespace HaselTweaks.Services;
 
-public class TextureCache : IDisposable
+public class TextureManager : IDisposable
 {
     private readonly Dictionary<(string Path, int Version, Vector2? Uv0, Vector2? Uv1), Texture> _cache = new();
     private readonly Dictionary<(uint IconId, bool IsHq), Texture> _iconTexCache = new();
     private readonly Dictionary<(string UldName, uint PartListId, uint PartId), Texture> _uldTexCache = new();
 
-    public TextureCache()
+    public TextureManager()
     {
         Service.Framework.Update += Framework_Update;
     }
@@ -110,9 +111,7 @@ public class TextureCache : IDisposable
 
         // fallback to transparent texture
         if (!exists)
-        {
             return Get(Texture.EmptyIconPath);
-        }
 
         var uv0 = new Vector2(part.U, part.V) * version;
         var uv1 = new Vector2(part.U + part.W, part.V + part.H) * version;

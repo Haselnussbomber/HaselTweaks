@@ -99,7 +99,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         RefreshRecipeTree();
     }
 
-    public override void OnAddonOpen(string addonName, AtkUnitBase* unitBase)
+    public override void OnAddonOpen(string addonName)
     {
         if (addonName is "Catch")
             RequestRefresh();

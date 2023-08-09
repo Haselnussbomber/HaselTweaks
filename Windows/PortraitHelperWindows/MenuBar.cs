@@ -5,7 +5,6 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Caches;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
@@ -60,14 +59,14 @@ public unsafe class MenuBar : Window, IDisposable
 
         if (AgentBannerEditor->EditorState->OpenType == EditorOpenType.AdventurerPlate)
         {
-            _portraitName = StringCache.GetAddonText(14761) ?? "Adventurer Plate";
+            _portraitName = GetAddonText(14761) ?? "Adventurer Plate";
         }
         else if (AgentBannerEditor->EditorState->GearsetId > -1)
         {
             var gearset = RaptureGearsetModule.Instance()->GetGearset(AgentBannerEditor->EditorState->GearsetId);
             if (gearset != null)
             {
-                _portraitName = $"{StringCache.GetAddonText(756) ?? "Gear Set"} #{gearset->ID + 1}: {MemoryHelper.ReadString((nint)gearset->Name, 0x2F)}";
+                _portraitName = $"{GetAddonText(756) ?? "Gear Set"} #{gearset->ID + 1}: {MemoryHelper.ReadString((nint)gearset->Name, 0x2F)}";
             }
         }
     }
@@ -85,9 +84,9 @@ public unsafe class MenuBar : Window, IDisposable
 
         if (!AgentBannerEditor->EditorState->HasDataChanged)
         {
-            ImGuiUtils.IconButton("Reset", FontAwesomeIcon.Undo, StringCache.GetAddonText(4830) ?? "Reset", disabled: true);
+            ImGuiUtils.IconButton("Reset", FontAwesomeIcon.Undo, GetAddonText(4830) ?? "Reset", disabled: true);
         }
-        else if (ImGuiUtils.IconButton("Reset", FontAwesomeIcon.Undo, StringCache.GetAddonText(4830) ?? "Reset"))
+        else if (ImGuiUtils.IconButton("Reset", FontAwesomeIcon.Undo, GetAddonText(4830) ?? "Reset"))
         {
             Tweak.PresetToState(_initialPreset, ImportFlags.All);
             AgentBannerEditor->EditorState->SetHasChanged(false);

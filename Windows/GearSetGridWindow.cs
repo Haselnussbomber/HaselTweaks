@@ -8,7 +8,6 @@ using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using HaselTweaks.Caches;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -189,7 +188,7 @@ public unsafe class GearSetGridWindow : Window
 
                 // class icon
                 ImGui.SetCursorPos(itemStartPos);
-                Service.TextureCache.GetIcon(62000 + gearset->ClassJob).Draw(iconSize);
+                Service.TextureManager.GetIcon(62000 + gearset->ClassJob).Draw(iconSize);
 
                 // gearset number
                 var text = $"{gearsetIndex + 1}";
@@ -216,12 +215,12 @@ public unsafe class GearSetGridWindow : Window
 
                     // icon background
                     ImGui.SetCursorPos(cursorPos);
-                    Service.TextureCache
+                    Service.TextureManager
                         .GetPart("Character", 8, 0)
                         .Draw(IconSize * ImGuiHelpers.GlobalScale);
 
                     ImGui.SetCursorPos(cursorPos + IconInset * ImGuiHelpers.GlobalScale);
-                    Service.TextureCache
+                    Service.TextureManager
                         .GetPart("Character", 11, 17 + slotIndex)
                         .Draw((IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
@@ -277,19 +276,19 @@ public unsafe class GearSetGridWindow : Window
 
         // icon background
         ImGui.SetCursorPos(startPos);
-        Service.TextureCache
+        Service.TextureManager
             .GetPart("Character", 7, 4)
             .Draw(IconSize * ImGuiHelpers.GlobalScale);
 
         // icon
         ImGui.SetCursorPos(startPos + IconInset * ImGuiHelpers.GlobalScale);
-        Service.TextureCache
+        Service.TextureManager
             .GetIcon(item.Icon, isHq)
             .Draw((IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
         // icon overlay
         ImGui.SetCursorPos(startPos);
-        Service.TextureCache
+        Service.TextureManager
             .GetPart("Character", 7, 0)
             .Draw(IconSize * ImGuiHelpers.GlobalScale);
 
@@ -298,7 +297,7 @@ public unsafe class GearSetGridWindow : Window
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
             ImGui.SetCursorPos(startPos);
-            Service.TextureCache
+            Service.TextureManager
                 .GetPart("Character", 7, 5)
                 .Draw(IconSize * ImGuiHelpers.GlobalScale);
         }
@@ -319,7 +318,7 @@ public unsafe class GearSetGridWindow : Window
         {
             using (ImRaii.Tooltip())
             {
-                ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(item.Rarity), StringCache.GetItemName(item.RowId));
+                ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(item.Rarity), GetItemName(item.RowId));
 
                 var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
                 if (holdingShift)
@@ -331,7 +330,7 @@ public unsafe class GearSetGridWindow : Window
                 if (item.ItemUICategory.Row != 0)
                 {
                     ImGuiUtils.PushCursorY(-ImGui.GetStyle().ItemSpacing.Y);
-                    ImGui.TextUnformatted(StringCache.GetSheetText<ItemUICategory>(item.ItemUICategory.Row, "Name"));
+                    ImGui.TextUnformatted(GetSheetText<ItemUICategory>(item.ItemUICategory.Row, "Name"));
                 }
 
                 if (slot->GlamourId != 0 || slot->Stain != 0)
@@ -348,7 +347,7 @@ public unsafe class GearSetGridWindow : Window
                     });
                     var glamourItem = GetRow<Item>(slot->GlamourId)!;
                     ImGuiUtils.SameLineSpace();
-                    ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(glamourItem.Rarity), StringCache.GetItemName(slot->GlamourId));
+                    ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(glamourItem.Rarity), GetItemName(slot->GlamourId));
 
                     if (holdingShift)
                     {
@@ -370,7 +369,7 @@ public unsafe class GearSetGridWindow : Window
                     using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.GetStainColor(slot->Stain)))
                         ImGui.Bullet();
                     ImGui.SameLine(0, 0);
-                    ImGui.TextUnformatted(StringCache.GetSheetText<Stain>(slot->Stain, "Name"));
+                    ImGui.TextUnformatted(GetSheetText<Stain>(slot->Stain, "Name"));
 
                     if (holdingShift)
                     {

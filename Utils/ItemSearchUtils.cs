@@ -1,6 +1,5 @@
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Caches;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 using HaselAtkComponentTextInput = HaselTweaks.Structs.AtkComponentTextInput;
@@ -27,7 +26,7 @@ public static unsafe class ItemSearchUtils
         if (TryGetAddon<AtkUnitBase>("ItemSearchResult", out var itemSearchResult))
             itemSearchResult->Hide2();
 
-        var itemName = StringCache.GetItemName(itemId % 1000000);
+        var itemName = GetItemName(itemId % 1000000);
         if (itemName.Length > 40)
             itemName = itemName[..40];
 

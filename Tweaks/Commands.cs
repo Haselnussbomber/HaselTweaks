@@ -7,7 +7,6 @@ using Dalamud.Memory;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using HaselTweaks.Caches;
 using Lumina.Excel.GeneratedSheets;
 using GameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 using ObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
@@ -176,7 +175,7 @@ public unsafe class Commands : Tweak
             return;
         }
 
-        var name = StringCache.GetMountName(mount.RowId);
+        var name = GetMountName(mount.RowId);
 
         var itemAction = FindRow<ItemAction>(row => row?.Type == 1322 && row.Data[0] == mount.RowId);
         if (itemAction == null || itemAction.RowId == 0)
@@ -300,14 +299,14 @@ public unsafe class Commands : Tweak
         }
 
         sesb.Add(NewLinePayload.Payload)
-            .AddText($"  {StringCache.GetAddonText(4987)}: ")
+            .AddText($"  {GetAddonText(4987)}: ")
             .Append(MemoryHelper.ReadSeStringNullTerminated((nint)RaptureTextModule.Instance()->FormatAddonText2(4986, (int)stain.RowId, 0))) // stain name
             .Add(NewLinePayload.Payload)
-            .AddText($"  {StringCache.GetAddonText(4991)}: {topRow?.Name.ToDalamudString().ToString() ?? StringCache.GetAddonText(4994)}")
+            .AddText($"  {GetAddonText(4991)}: {topRow?.Name.ToDalamudString().ToString() ?? GetAddonText(4994)}")
             .Add(NewLinePayload.Payload)
-            .AddText($"  {StringCache.GetAddonText(4992)}: {bodyRow?.Name.ToDalamudString().ToString() ?? StringCache.GetAddonText(4994)}")
+            .AddText($"  {GetAddonText(4992)}: {bodyRow?.Name.ToDalamudString().ToString() ?? GetAddonText(4994)}")
             .Add(NewLinePayload.Payload)
-            .AddText($"  {StringCache.GetAddonText(4993)}: {legsRow?.Name.ToDalamudString().ToString() ?? StringCache.GetAddonText(4994)}");
+            .AddText($"  {GetAddonText(4993)}: {legsRow?.Name.ToDalamudString().ToString() ?? GetAddonText(4994)}");
 
         Service.ChatGui.PrintChat(new XivChatEntry
         {

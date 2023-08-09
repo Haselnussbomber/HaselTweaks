@@ -1,9 +1,10 @@
 using System.IO;
 using System.Numerics;
+using HaselTweaks.Utils;
 using ImGuiNET;
 using ImGuiScene;
 
-namespace HaselTweaks.Utils.TextureCache;
+namespace HaselTweaks.Records;
 
 public record Texture : IDisposable
 {
@@ -47,9 +48,7 @@ public record Texture : IDisposable
             ImGui.Dummy(size);
 
             if (_textureWrap != null && _lastRender < DateTime.UtcNow - KeepAliveTime)
-            {
                 Unload();
-            }
             return;
         }
 

@@ -330,7 +330,7 @@ public partial class PluginWindow : Window, IDisposable
         if (tweak.IncompatibilityWarnings.Any(entry => entry.IsLoaded))
         {
             ImGuiUtils.DrawSection("Incompatibility Warning");
-            Service.TextureCache.GetIcon(60073).Draw(24);
+            Service.TextureManager.GetIcon(60073).Draw(24);
             ImGui.SameLine();
             var cursorPosX = ImGui.GetCursorPosX();
 

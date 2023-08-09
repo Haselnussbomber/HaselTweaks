@@ -60,12 +60,14 @@ public unsafe partial class MaterialAllocation : Tweak
         return AddonMJICraftMaterialConfirmation_vf48Hook.OriginalDisposeSafe(addon, numAtkValues, atkValues);
     }
 
-    public override unsafe void OnAddonOpen(string addonName, AtkUnitBase* unitbase)
+    public override unsafe void OnAddonOpen(string addonName)
     {
         if (addonName != "MJICraftMaterialConfirmation")
             return;
 
-        var addon = (AddonMJICraftMaterialConfirmation*)unitbase;
+        if (!TryGetAddon<AddonMJICraftMaterialConfirmation>(addonName, out var addon))
+            return;
+
         if (addon->ItemList != null && addon->ItemList->AtkComponentBase.OwnerNode != null)
         {
             //addon->ItemList->AtkComponentBase.OwnerNode->AtkResNode.AddEvent(31, 9901, (AtkEventListener*)addon, null, false); // MouseDown

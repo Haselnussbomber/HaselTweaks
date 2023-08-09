@@ -89,7 +89,7 @@ public class PresetCard : IDisposable
         var cursorPos = ImGui.GetCursorPos();
         var center = windowPos + cursorPos + PortraitSize * scale / 2f - new Vector2(0, ImGui.GetScrollY());
 
-        Service.TextureCache.GetIcon(190009).Draw(PortraitSize * scale);
+        Service.TextureManager.GetIcon(190009).Draw(PortraitSize * scale);
         ImGui.SetCursorPos(cursorPos);
 
         if (_isImageLoading)
@@ -112,13 +112,13 @@ public class PresetCard : IDisposable
         if (_bannerFrameImage != null)
         {
             ImGui.SetCursorPos(cursorPos);
-            Service.TextureCache.GetIcon(_bannerFrameImage.Value).Draw(PortraitSize * scale);
+            Service.TextureManager.GetIcon(_bannerFrameImage.Value).Draw(PortraitSize * scale);
         }
 
         if (_bannerDecorationImage != null)
         {
             ImGui.SetCursorPos(cursorPos);
-            Service.TextureCache.GetIcon(_bannerDecorationImage.Value).Draw(PortraitSize * scale);
+            Service.TextureManager.GetIcon(_bannerDecorationImage.Value).Draw(PortraitSize * scale);
         }
 
         ImGui.SetCursorPos(cursorPos);

@@ -8,7 +8,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Caches;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
@@ -101,7 +100,7 @@ public unsafe class AutoSorter : Tweak
 
     public static string GetLocalizedParam(uint rowId, string? fallback = null)
     {
-        var param = StringCache.GetSheetText<TextCommandParam>(rowId, "Param");
+        var param = GetSheetText<TextCommandParam>(rowId, "Param");
         return string.IsNullOrEmpty(param) ? fallback ?? "" : param.ToLower();
     }
 
@@ -111,7 +110,7 @@ public unsafe class AutoSorter : Tweak
 
         if (!string.IsNullOrEmpty(key) && dict.TryGetValue(key, out var rowId))
         {
-            var param = StringCache.GetSheetText<TextCommandParam>(rowId, "Param");
+            var param = GetSheetText<TextCommandParam>(rowId, "Param");
 
             if (!string.IsNullOrEmpty(param))
             {
@@ -547,7 +546,7 @@ public unsafe class AutoSorter : Tweak
         ProcessQueue();
     }
 
-    public override void OnAddonOpen(string addonName, AtkUnitBase* unitBase)
+    public override void OnAddonOpen(string addonName)
     {
         switch (addonName)
         {

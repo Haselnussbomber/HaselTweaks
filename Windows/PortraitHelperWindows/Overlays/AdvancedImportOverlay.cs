@@ -9,7 +9,6 @@ using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
-using static HaselTweaks.Caches.StringCache;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
