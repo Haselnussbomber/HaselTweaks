@@ -9,6 +9,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Caches;
+using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -19,7 +20,7 @@ namespace HaselTweaks.Tweaks;
 [Tweak(
     Name: "Auto Sorter",
     Description: "Sorts items inside various containers when they are opened.",
-    HasCustomConfig: true
+    Flags: TweakFlags.HasCustomConfig
 )]
 public unsafe class AutoSorter : Tweak
 {

@@ -11,6 +11,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselTweaks.Enums;
 using HaselTweaks.Records;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
@@ -23,7 +24,7 @@ namespace HaselTweaks.Tweaks;
 [Tweak(
     Name: "Enhanced Login/Logout",
     Description: "Enhances login and logout.",
-    HasCustomConfig: true
+    Flags: TweakFlags.HasCustomConfig | TweakFlags.NoCustomConfigHeader
 )]
 public unsafe partial class EnhancedLoginLogout : Tweak
 {
@@ -146,10 +147,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         var scale = ImGui.GetIO().FontGlobalScale;
         var verticalTextPadding = 3;
 
-        using var tabs = ImRaii.TabBar("##Tabs");
-
-        using var loginTab = ImRaii.TabItem("Login");
-        if (loginTab.Success)
+        ImGuiUtils.DrawSection("Login Options");
+        using (ImRaii.PushIndent())
         {
             // ShowPets
             if (ImGui.Checkbox($"Show pets in character selection##HaselTweaks_Config_{InternalName}_ShowPets", ref Config.ShowPets))
@@ -310,10 +309,9 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                 ImGuiUtils.PushCursorY(verticalTextPadding);
             }
         }
-        loginTab?.Dispose();
 
-        using var logoutTab = ImRaii.TabItem("Logout");
-        if (logoutTab.Success)
+        ImGuiUtils.DrawSection("Logout Options");
+        using (ImRaii.PushIndent())
         {
             // ClearTellHistory
             ImGui.Checkbox($"Clear tell history on logout##HaselTweaks_Config_{InternalName}_ClearTellHistory", ref Config.ClearTellHistory);

@@ -6,17 +6,18 @@ using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Enums;
 
 namespace HaselTweaks;
 
 public abstract unsafe class Tweak
 {
-    private Type? _type = null;
-    private string? _internalName = null;
-    private string? _name = null;
-    private string? _description = null;
-    private bool? _hasCustomConfig = null;
-    private IncompatibilityWarning[]? _incompatibilityWarnings = null;
+    private Type? _type;
+    private string? _internalName;
+    private string? _name;
+    private string? _description;
+    private TweakFlags? _flags;
+    private IncompatibilityWarning[]? _incompatibilityWarnings;
 
     public Type CachedType
         => _type ??= GetType();
@@ -30,8 +31,8 @@ public abstract unsafe class Tweak
     public string Description
         => _description ??= CachedType.GetCustomAttribute<TweakAttribute>()?.Description ?? "";
 
-    public bool HasCustomConfig
-        => _hasCustomConfig ??= CachedType.GetCustomAttribute<TweakAttribute>()?.HasCustomConfig ?? false;
+    public TweakFlags Flags
+        => _flags ??= CachedType.GetCustomAttribute<TweakAttribute>()?.Flags ?? TweakFlags.None;
 
     public IncompatibilityWarning[] IncompatibilityWarnings
         => _incompatibilityWarnings ??= CachedType.GetCustomAttributes<IncompatibilityWarning>().ToArray();

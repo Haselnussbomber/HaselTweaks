@@ -3,6 +3,7 @@ using System.Linq;
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Interface.Raii;
+using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using ImGuiNET;
 
@@ -11,7 +12,7 @@ namespace HaselTweaks.Tweaks;
 [Tweak(
     Name: "Background Music Keybind",
     Description: "A configurable keybind to toggle the background music.",
-    HasCustomConfig: true
+    Flags: TweakFlags.HasCustomConfig
 )]
 public unsafe class BackgroundMusicKeybind : Tweak
 {

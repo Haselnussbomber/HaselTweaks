@@ -3,6 +3,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -12,7 +13,7 @@ namespace HaselTweaks.Tweaks;
 [Tweak(
     Name: "Custom Chat Timestamp",
     Description: "As it says, configurable chat timestamp format.",
-    HasCustomConfig: true
+    Flags: TweakFlags.HasCustomConfig
 )]
 public unsafe partial class CustomChatTimestamp : Tweak
 {

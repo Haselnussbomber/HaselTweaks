@@ -6,6 +6,7 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Colors;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using HaselTweaks.Enums;
 using HaselTweaks.Extensions;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -17,7 +18,7 @@ namespace HaselTweaks.Tweaks;
 [Tweak(
     Name: "DTR",
     Description: "Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar.",
-    HasCustomConfig: true
+    Flags: TweakFlags.HasCustomConfig
 )]
 public unsafe class DTR : Tweak
 {

@@ -19,7 +19,7 @@ namespace HaselTweaks.Tweaks;
 [Tweak(
     Name: "Lock Window Position",
     Description: "Lock window positions so they can't move.",
-    HasCustomConfig: true
+    Flags: TweakFlags.HasCustomConfig
 )]
 public unsafe partial class LockWindowPosition : Tweak
 {

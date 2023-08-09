@@ -9,6 +9,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
+using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Records;
 using HaselTweaks.Utils;
@@ -69,7 +70,7 @@ public partial class PluginWindow : Window, IDisposable
 
         foreach (var tweak in Plugin.Tweaks)
         {
-            if (tweak.Enabled && tweak.HasCustomConfig)
+            if (tweak.Enabled && tweak.Flags.HasFlag(TweakFlags.HasCustomConfig))
             {
                 tweak.OnConfigWindowClose();
             }
@@ -382,9 +383,10 @@ public partial class PluginWindow : Window, IDisposable
         }
 #endif
 
-        if (tweak.HasCustomConfig)
+        if (tweak.Flags.HasFlag(TweakFlags.HasCustomConfig))
         {
-            ImGuiUtils.DrawSection("Configuration");
+            if (!tweak.Flags.HasFlag(TweakFlags.NoCustomConfigHeader))
+                ImGuiUtils.DrawSection("Configuration");
             tweak.DrawCustomConfig();
         }
         else

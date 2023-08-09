@@ -1,19 +1,26 @@
+using HaselTweaks.Enums;
+
 namespace HaselTweaks;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class TweakAttribute : Attribute
 {
-    public TweakAttribute(
-        string Name,
-        string Description = "",
-        bool HasCustomConfig = false)
+    public TweakAttribute(string Name)
     {
         this.Name = Name;
-        this.Description = Description;
-        this.HasCustomConfig = HasCustomConfig;
     }
 
-    public string Name { get; }
-    public string Description { get; }
-    public bool HasCustomConfig { get; }
+    public TweakAttribute(string Name, string Description) : this(Name)
+    {
+        this.Description = Description;
+    }
+
+    public TweakAttribute(string Name, string Description, TweakFlags Flags) : this(Name, Description)
+    {
+        this.Flags = Flags;
+    }
+
+    public string Name { get; init; }
+    public string Description { get; init; } = string.Empty;
+    public TweakFlags Flags { get; init; } = TweakFlags.None;
 }
