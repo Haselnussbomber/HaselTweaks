@@ -16,8 +16,9 @@ public class Service
     public static DalamudPluginInterface PluginInterface { get; internal set; } = null!;
 
     public static AddonObserver AddonObserver { get; internal set; } = null!;
-    public static TextureManager TextureManager { get; internal set; } = null!;
+    public static TranslationManager TranslationManager { get; internal set; } = null!;
     public static StringManager StringManager { get; internal set; } = null!;
+    public static TextureManager TextureManager { get; internal set; } = null!;
 
     [PluginService] public static ChatGui ChatGui { get; private set; } = null!;
     [PluginService] public static ClientState ClientState { get; private set; } = null!;
@@ -40,14 +41,16 @@ public class Service
     {
         PluginInterface.Create<Service>();
         AddonObserver = new();
-        TextureManager = new();
+        TranslationManager = new();
         StringManager = new();
+        TextureManager = new();
     }
 
     public static void Dispose()
     {
         AddonObserver.Dispose();
-        TextureManager.Dispose();
+        TranslationManager.Dispose();
         StringManager.Dispose();
+        TextureManager.Dispose();
     }
 }

@@ -120,19 +120,21 @@ public unsafe class Commands : Tweak
         var item = GetRow<Item>(id);
         if (item == null)
         {
-            Service.ChatGui.PrintError($"Item {id} not found");
+            Service.ChatGui.PrintError(t("Commands.ItemLink.ItemNotFound", id));
             return;
         }
 
+        var idStr = new SeStringBuilder()
+            .AddUiForeground(id.ToString(), 1)
+            .Build();
+
+        var sb = new SeStringBuilder()
+            .AddUiForeground("\uE078 ", 32)
+            .Append(t("Commands.ItemLink.Item", idStr, GetItemLink(id)));
+
         Service.ChatGui.PrintChat(new XivChatEntry
         {
-            Message = new SeStringBuilder()
-                    .AddUiForeground("\uE078 ", 32)
-                    .AddText("Item ")
-                    .AddUiForeground(id.ToString(), 1)
-                    .AddText(": ")
-                    .Append(GetItemLink(id))
-                    .Build(),
+            Message = sb.Build(),
             Type = XivChatType.Echo
         });
     }
@@ -142,13 +144,13 @@ public unsafe class Commands : Tweak
         var target = Service.TargetManager.Target;
         if (target == null)
         {
-            Service.ChatGui.PrintError("No target.");
+            Service.ChatGui.PrintError(t("Commands.NoTarget"));
             return;
         }
 
         if (target.ObjectKind != ObjectKind.Player)
         {
-            Service.ChatGui.PrintError("Target is not a player.");
+            Service.ChatGui.PrintError(t("Commands.TargetIsNotAPlayer"));
             return;
         }
 
@@ -162,7 +164,7 @@ public unsafe class Commands : Tweak
         var mountObject = Service.ObjectTable[targetGameObject->ObjectIndex + 1];
         if (mountObject == null || mountObject.ObjectKind != ObjectKind.MountType)
         {
-            Service.ChatGui.PrintError("Target is not mounted.");
+            Service.ChatGui.PrintError(t("Commands.WhatMount.TargetNotMounted"));
             return;
         }
 
@@ -171,21 +173,24 @@ public unsafe class Commands : Tweak
         var mount = FindRow<Mount>(row => row?.ModelChara.Row == modelChara);
         if (mount == null)
         {
-            Service.ChatGui.PrintError("Mount not found.");
+            Service.ChatGui.PrintError(t("Commands.WhatMount.MountNotFound"));
             return;
         }
 
-        var name = GetMountName(mount.RowId);
+        var sb = new SeStringBuilder()
+            .AddUiForeground("\uE078 ", 32);
+
+        var name = new SeStringBuilder()
+            .AddUiForeground(GetMountName(mount.RowId), 1)
+            .Build();
 
         var itemAction = FindRow<ItemAction>(row => row?.Type == 1322 && row.Data[0] == mount.RowId);
         if (itemAction == null || itemAction.RowId == 0)
         {
             Service.ChatGui.PrintChat(new XivChatEntry
             {
-                Message = new SeStringBuilder()
-                    .AddUiForeground("\uE078 ", 32)
-                    .AddText("Mount: ")
-                    .AddUiForeground(name, 1)
+                Message = sb
+                    .Append(t("Commands.WhatMount.WithoutItem", name))
                     .Build(),
                 Type = XivChatType.Echo
             });
@@ -197,53 +202,20 @@ public unsafe class Commands : Tweak
         {
             Service.ChatGui.PrintChat(new XivChatEntry
             {
-                Message = new SeStringBuilder()
-                    .AddUiForeground("\uE078 ", 32)
-                    .AddText("Mount: ")
-                    .AddUiForeground(name, 1)
+                Message = sb
+                    .Append(t("Commands.WhatMount.WithoutItem", name))
                     .Build(),
                 Type = XivChatType.Echo
             });
             return;
         }
 
-        var sesb = new SeStringBuilder()
-        .AddUiForeground("\uE078 ", 32);
-
-        var itemLink = GetItemLink(item.RowId);
-
-        switch (Service.ClientState.ClientLanguage)
-        {
-            case Dalamud.ClientLanguage.German:
-                sesb.AddText("Reittier ")
-                    .AddUiForeground(name, 1)
-                    .AddText(" gelehrt von ")
-                    .Append(itemLink);
-                break;
-            case Dalamud.ClientLanguage.French:
-                sesb.AddText("Monture ")
-                    .AddUiForeground(name, 1)
-                    .AddText(" enseignée par ")
-                    .Append(itemLink);
-                break;
-            case Dalamud.ClientLanguage.Japanese:
-                sesb.Append(itemLink)
-                    .AddText(" によって教えられた ")
-                    .AddUiForeground(name, 1)
-                    .AddText("のマウント");
-                break;
-            default:
-                sesb.AddText("Mount ")
-                    .AddUiForeground(name, 1)
-                    .AddText(" taught by ")
-                    .AddUiForeground(SeIconChar.LinkMarker.ToIconString() + " ", 500)
-                    .Append(itemLink);
-                break;
-        }
+        var seItemLink = GetItemLink(item.RowId);
+        sb.Append(t("Commands.WhatMount.WithItem", name, seItemLink));
 
         Service.ChatGui.PrintChat(new XivChatEntry
         {
-            Message = sesb.Build(),
+            Message = sb.Build(),
             Type = XivChatType.Echo
         });
     }
@@ -253,13 +225,13 @@ public unsafe class Commands : Tweak
         var target = Service.TargetManager.Target;
         if (target == null)
         {
-            Service.ChatGui.PrintError("No target.");
+            Service.ChatGui.PrintError(t("Commands.NoTarget"));
             return;
         }
 
         if (target.ObjectKind != ObjectKind.BattleNpc || target.SubKind != (byte)BattleNpcSubKind.Chocobo)
         {
-            Service.ChatGui.PrintError("Target is not a chocobo.");
+            Service.ChatGui.PrintError(t("Commands.TargetIsNotAChocobo"));
             return;
         }
 
@@ -270,35 +242,14 @@ public unsafe class Commands : Tweak
         var legsRow = FindRow<BuddyEquip>(row => row?.ModelLegs == targetCharacter->DrawData.Feet.Value);
 
         var stain = GetRow<Stain>(targetCharacter->DrawData.Legs.Stain)!;
-        var name = MemoryHelper.ReadStringNullTerminated((nint)targetCharacter->GameObject.Name);
+        var name = new SeStringBuilder()
+            .AddUiForeground(MemoryHelper.ReadStringNullTerminated((nint)targetCharacter->GameObject.Name), 1)
+            .Build();
 
-        var sesb = new SeStringBuilder()
-            .AddUiForeground("\uE078 ", 32);
-
-        switch (Service.ClientState.ClientLanguage)
-        {
-            case Dalamud.ClientLanguage.German:
-                sesb.AddText("Aussehen von ")
-                    .AddUiForeground(name, 1)
-                    .AddText(":");
-                break;
-            case Dalamud.ClientLanguage.French:
-                sesb.AddText("Apparence de ")
-                    .AddUiForeground(name, 1)
-                    .AddText(":");
-                break;
-            case Dalamud.ClientLanguage.Japanese:
-                sesb.AddUiForeground(name, 1)
-                    .AddText(" の外見：");
-                break;
-            default:
-                sesb.AddText("Appearance of ")
-                    .AddUiForeground(name, 1)
-                    .AddText(":");
-                break;
-        }
-
-        sesb.Add(NewLinePayload.Payload)
+        var sb = new SeStringBuilder()
+            .AddUiForeground("\uE078 ", 32)
+            .Append(t("Commands.WhatBarding.AppearanceOf", name))
+            .Add(NewLinePayload.Payload)
             .AddText($"  {GetAddonText(4987)}: ")
             .Append(MemoryHelper.ReadSeStringNullTerminated((nint)RaptureTextModule.Instance()->FormatAddonText2(4986, (int)stain.RowId, 0))) // stain name
             .Add(NewLinePayload.Payload)
@@ -310,7 +261,7 @@ public unsafe class Commands : Tweak
 
         Service.ChatGui.PrintChat(new XivChatEntry
         {
-            Message = sesb.Build(),
+            Message = sb.Build(),
             Type = XivChatType.Echo
         });
     }
@@ -318,8 +269,14 @@ public unsafe class Commands : Tweak
     private static SeString GetItemLink(uint id)
     {
         var item = GetRow<Item>(id);
-        return item == null
-            ? new SeString(new TextPayload($"Item#{id}"))
-            : SeString.CreateItemLink(item, false);
+        if (item == null)
+            return new SeString(new TextPayload($"Item#{id}"));
+
+
+        var link = SeString.CreateItemLink(item, false);
+        // TODO: remove in Dalamud v9
+        link.Payloads.Add(UIGlowPayload.UIGlowOff);
+        link.Payloads.Add(UIForegroundPayload.UIForegroundOff);
+        return link;
     }
 }

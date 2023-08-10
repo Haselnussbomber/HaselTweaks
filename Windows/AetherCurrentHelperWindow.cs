@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
 using System.Text.RegularExpressions;
-using Dalamud;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
@@ -132,13 +131,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
             ImGui.TableNextColumn();
             ImGui.TableNextColumn();
             startPos = ImGui.GetCursorPos() + new Vector2(-startPos.X - 4, 0);
-            var text = Service.ClientState.ClientLanguage switch
-            {
-                ClientLanguage.German => "Alle Windätherquellen gebündelt!",
-                ClientLanguage.French => "Toutes les sources d'éther sont réunies !",
-                ClientLanguage.Japanese => "すべてのエーテル風車を結集！",
-                _ => "All aether currents attuned!"
-            };
+            var text = t("AetherCurrentHelper.AllAetherCurrentsAttuned");
             textSize = ImGui.CalcTextSize(text);
             ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
             ImGui.TextUnformatted(text);

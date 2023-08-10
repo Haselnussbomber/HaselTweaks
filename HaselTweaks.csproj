@@ -47,6 +47,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Assets\Logo.svg" />
+    <EmbeddedResource Include="Assets\Translations.json" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Numerics;
-using Dalamud;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
@@ -70,25 +69,13 @@ public unsafe class GearSetGridWindow : Window
         {
             if (windowContext.Success)
             {
-                if (ImGui.MenuItem(Service.ClientState.ClientLanguage switch
-                {
-                    ClientLanguage.German => "Größe zurücksetzen",
-                    ClientLanguage.French => "Réinitialiser la taille",
-                    ClientLanguage.Japanese => "サイズをリセットする",
-                    _ => "Reset size"
-                }))
+                if (ImGui.MenuItem(t("ImGuiWindow.ContextMenuItem.ResetSize")))
                 {
                     _resetSize = true;
                 }
 
                 if (ImGui.MenuItem(
-                    Service.ClientState.ClientLanguage switch
-                    {
-                        ClientLanguage.German => "Position sperren",
-                        ClientLanguage.French => "Verrouiller la position",
-                        ClientLanguage.Japanese => "ポジションをロックする",
-                        _ => "Lock Position"
-                    },
+                    t("ImGuiWindow.ContextMenuItem.LockPosition"),
                     null,
                     base.Flags.HasFlag(ImGuiWindowFlags.NoMove)))
                 {
@@ -338,13 +325,7 @@ public unsafe class GearSetGridWindow : Window
 
                 if (slot->GlamourId != 0)
                 {
-                    ImGui.TextUnformatted(Service.ClientState.ClientLanguage switch
-                    {
-                        ClientLanguage.German => "Projektion:",
-                        // ClientLanguage.French => "",
-                        // ClientLanguage.Japanese => "",
-                        _ => "Glamour:"
-                    });
+                    ImGui.TextUnformatted(t("GearSetGridWindow.ItemTooltip.LabelGlamour"));
                     var glamourItem = GetRow<Item>(slot->GlamourId)!;
                     ImGuiUtils.SameLineSpace();
                     ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(glamourItem.Rarity), GetItemName(slot->GlamourId));
@@ -358,13 +339,7 @@ public unsafe class GearSetGridWindow : Window
 
                 if (slot->Stain != 0)
                 {
-                    ImGui.TextUnformatted(Service.ClientState.ClientLanguage switch
-                    {
-                        ClientLanguage.German => "Färbung:",
-                        // ClientLanguage.French => "",
-                        // ClientLanguage.Japanese => "",
-                        _ => "Dye:"
-                    });
+                    ImGui.TextUnformatted(t("GearSetGridWindow.ItemTooltip.LabelDye"));
                     ImGuiUtils.SameLineSpace();
                     using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.GetStainColor(slot->Stain)))
                         ImGui.Bullet();
@@ -382,13 +357,7 @@ public unsafe class GearSetGridWindow : Window
                 if (usedInGearsets.Count > 1)
                 {
                     ImGuiUtils.DrawPaddedSeparator();
-                    ImGui.TextUnformatted(Service.ClientState.ClientLanguage switch
-                    {
-                        ClientLanguage.German => "Wird auch in diesen Ausrüstungssets benutzt:",
-                        ClientLanguage.French => "Aussi utilisé dans ces ensembles d'équipement :",
-                        ClientLanguage.Japanese => "これらのギアセットでも使用されます：",
-                        _ => "Also used in these Gearsets:"
-                    });
+                    ImGui.TextUnformatted(t("GearSetGridWindow.ItemTooltip.AlsoUsedInTheseGearsets"));
                     using (ImRaii.PushIndent(ImGui.GetStyle().ItemSpacing.X))
                     {
                         foreach (var entry in usedInGearsets)

@@ -1,0 +1,114 @@
+{
+  "AetherCurrentHelper.AllAetherCurrentsAttuned": {
+    "en": "All aether currents attuned!",
+    "de": "Alle Windätherquellen gebündelt!",
+    "fr": "Toutes les sources d'éther sont réunies !",
+    "ja": "すべてのエーテル風車を結集！"
+  },
+  "CharacterClassSwitcher.NoSuitableGearsetFound": {
+    "en": "Couldn't find a suitable gearset.",
+    "de": "Konnte kein passendes Ausrüstungsset finden.",
+    "fr": "Impossible de trouver un ensemble d'équipement adapté.",
+    "ja": "適切なギアセットが見つかりませんでした。"
+  },
+  "Commands.ItemLink.ItemNotFound": {
+    "en": "Item {0} not found.",
+    "de": "Gegenstand {id} nicht gefunden."
+  },
+  "Commands.ItemLink.Item": {
+    "en": "Item #{0}: {1}",
+    "de": "Gegenstand #{0}: {1}"
+  },
+  "Commands.NoTarget": {
+    "en": "No target.",
+    "de": "Kein Ziel."
+  },
+  "Commands.TargetIsNotAPlayer": {
+    "en": "Target is not a player.",
+    "de": "Ziel ist kein Spieler."
+  },
+  "Commands.TargetIsNotAChocobo": {
+    "en": "Target is not a chocobo.",
+    "de": "Ziel ist kein Chocobo."
+  },
+  "Commands.WhatBarding.AppearanceOf": {
+    "en": "Appearance of {0}:",
+    "de": "Aussehen von {0}:",
+    "fr": "Apparence de {0}:",
+    "ja": "{} の外見："
+  },
+  "Commands.WhatMount.TargetNotMounted": {
+    "en": "Target is not mounted.",
+    "de": "Ziel reitet nicht."
+  },
+  "Commands.WhatMount.MountNotFound": {
+    "en": "Mount not found.",
+    "de": "Reittier nicht gefunden."
+  },
+  "Commands.WhatMount.WithoutItem": {
+    "en": "Mount: ",
+    "de": "Reittier: "
+  },
+  "Commands.WhatMount.WithItem": {
+    "en": "Mount {0} is taught by {1}.",
+    "de": "Reittier {0} wird gelehrt von {1}.",
+    "fr": "Monture {0} apprise auprès de {1}.",
+    "ja": "{0} のマウントは {1} によって教えられています。"
+  },
+  "GearSetGridWindow.ItemTooltip.LabelGlamour": {
+    "en": "Glamour:",
+    "de": "Projektion:"
+  },
+  "GearSetGridWindow.ItemTooltip.LabelDye": {
+    "en": "Dye:",
+    "de": "Färbung:"
+  },
+  "GearSetGridWindow.ItemTooltip.AlsoUsedInTheseGearsets": {
+    "en": "Also used in these Gearsets:",
+    "de": "Wird auch in diesen Ausrüstungssets benutzt:",
+    "fr": "Aussi utilisé dans ces ensembles d'équipement :",
+    "ja": "これらのギアセットでも使用されます："
+  },
+  "LockWindowPosition.LockPosition": {
+    "en": "Lock Position",
+    "de": "Position sperren",
+    "fr": "Verrouiller la position",
+    "ja": "ポジションをロックする"
+  },
+  "LockWindowPosition.UnlockPosition": {
+    "en": "Unlock Position",
+    "de": "Position entsperren",
+    "fr": "Déverrouiller la position",
+    "ja": "ポジションのロック解除"
+  },
+  "PortraitHelper.GearChecksumMismatch": {
+    "en": "Current appearance and/or gear does not match that shown in portrait.",
+    "de": "Momentan angelegte Ausrüstung und Aussehen weichen vom Portrait ab.",
+    "fr": "La tenue que vous portez ou votre apparence ne correspondent pas à celles de votre portrait instantané.",
+    "ja": "現在の外見や装備がポートレートと一致していません。"
+  },
+  "ItemSearch.SearchTheMarkets": {
+    "en": "Search the markets",
+    "de": "Auf den Märkten suchen",
+    "fr": "Rechercher sur les marchés",
+    "ja": "市場で検索する"
+  },
+  "ImGuiWindow.ContextMenuItem.ResetSize": {
+    "en": "Reset size",
+    "de": "Größe zurücksetzen",
+    "fr": "Réinitialiser la taille",
+    "ja": "サイズをリセットする"
+  },
+  "ImGuiWindow.ContextMenuItem.LockPosition": {
+    "en": "Lock Position",
+    "de": "Position sperren",
+    "fr": "Verrouiller la position",
+    "ja": "ポジションをロックする"
+  },
+  "template": {
+    "en": "",
+    "de": "",
+    "fr": "",
+    "ja": ""
+  }
+}

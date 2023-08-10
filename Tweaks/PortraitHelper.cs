@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
-using Dalamud;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Memory;
@@ -784,13 +783,7 @@ public partial class PortraitHelper : Tweak
 
     private unsafe void NotifyMismatchOrOpenPortraitEditor()
     {
-        var text = Service.ClientState.ClientLanguage switch // see LogMessage#5876
-        {
-            ClientLanguage.German => "Momentan angelegte Ausrüstung und Aussehen weichen vom Portrait ab.",
-            ClientLanguage.French => "La tenue que vous portez ou votre apparence ne correspondent pas à celles de votre portrait instantané.",
-            ClientLanguage.Japanese => "現在の外見や装備がポートレートと一致していません。",
-            _ => "Current appearance and/or gear does not match that shown in portrait.",
-        };
+        var text = t("PortraitHelper.GearChecksumMismatch"); // based on LogMessage#5876
 
         var sb = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32);

@@ -1,4 +1,3 @@
-using Dalamud;
 using Dalamud.ContextMenu;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Logging;
@@ -35,13 +34,7 @@ public unsafe class SearchTheMarkets : Tweak
         {
             var text = new SeStringBuilder()
                 .AddUiForeground("\uE078 ", 32)
-                .AddText(Service.ClientState.ClientLanguage switch
-                {
-                    ClientLanguage.German => "Auf den M\u00e4rkten suchen",
-                    ClientLanguage.French => "Rechercher sur les marchés",
-                    ClientLanguage.Japanese => "市場で検索する",
-                    _ => "Search the markets"
-                })
+                .AddText(t("ItemSearch.SearchTheMarkets"))
                 .BuiltString;
 
             _contextMenuItemGame = new(

@@ -107,7 +107,7 @@ public partial class PluginWindow : Window, IDisposable
                 using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(LogoManifestResource);
                 if (stream == null)
                 {
-                    PluginLog.Error($"ManifestResource {LogoManifestResource} not found");
+                    PluginLog.Error("ManifestResource {0} not found", LogoManifestResource);
                     return;
                 }
 
@@ -148,11 +148,11 @@ public partial class PluginWindow : Window, IDisposable
     private void DrawSidebar()
     {
         var scale = ImGui.GetIO().FontGlobalScale;
-        using var child = ImRaii.Child("##HaselTweaks_Sidebar", new Vector2(SidebarWidth * scale, -1), true);
+        using var child = ImRaii.Child("##Sidebar", new Vector2(SidebarWidth * scale, -1), true);
         if (!child.Success)
             return;
 
-        using var table = ImRaii.Table("##HaselTweaks_SidebarTable", 2, ImGuiTableFlags.NoSavedSettings);
+        using var table = ImRaii.Table("##SidebarTable", 2, ImGuiTableFlags.NoSavedSettings);
         if (!table.Success)
             return;
 
@@ -266,7 +266,7 @@ public partial class PluginWindow : Window, IDisposable
     private void DrawConfig()
     {
         var scale = ImGui.GetIO().FontGlobalScale;
-        using var child = ImRaii.Child("##HaselTweaks_Config", new Vector2(ConfigWidth * scale, -1), true);
+        using var child = ImRaii.Child("##Config", new Vector2(ConfigWidth * scale, -1), true);
         if (!child.Success)
             return;
 

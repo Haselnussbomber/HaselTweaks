@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
-using Dalamud;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Utility;
@@ -140,13 +139,7 @@ public partial class ImGuiUtils
             => new()
             {
                 Hidden = !ItemSearchUtils.CanSearchForItem(ItemId),
-                Label = Service.ClientState.ClientLanguage switch
-                {
-                    ClientLanguage.German => "Auf den M\u00e4rkten suchen",
-                    ClientLanguage.French => "Rechercher sur les marchés",
-                    ClientLanguage.Japanese => "市場で検索する",
-                    _ => "Search the markets"
-                },
+                Label = t("ItemSearch.SearchTheMarkets"),
                 LoseFocusOnClick = true,
                 ClickCallback = () =>
                 {

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using Dalamud;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
@@ -340,30 +339,14 @@ public unsafe partial class LockWindowPosition : Tweak
 
                         if (Config.AddLockUnlockContextMenuEntries)
                         {
-                            var title = Service.ClientState.ClientLanguage switch
-                            {
-                                ClientLanguage.German => "Position entsperren",
-                                ClientLanguage.French => "Déverrouiller la position",
-                                ClientLanguage.Japanese => "ポジションのロック解除",
-                                _ => "Unlock Position"
-                            };
-
-                            AddMenuEntry(title, EventParamUnlock);
+                            AddMenuEntry(t("LockWindowPosition.UnlockPosition"), EventParamUnlock);
                         }
                     }
                     else
                     {
                         if (Config.AddLockUnlockContextMenuEntries)
                         {
-                            var title = Service.ClientState.ClientLanguage switch
-                            {
-                                ClientLanguage.German => "Position sperren",
-                                ClientLanguage.French => "Verrouiller la position",
-                                ClientLanguage.Japanese => "ポジションをロックする",
-                                _ => "Lock Position"
-                            };
-
-                            AddMenuEntry(title, EventParamLock);
+                            AddMenuEntry(t("LockWindowPosition.LockPosition"), EventParamLock);
                         }
                     }
                 }

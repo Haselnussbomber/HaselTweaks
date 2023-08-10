@@ -1,4 +1,3 @@
-using Dalamud;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -332,13 +331,7 @@ OriginalPvPReceiveEventCode:
 
         if (selectedGearset.Id == -1)
         {
-            Service.ChatGui.PrintError(Service.ClientState.ClientLanguage switch
-            {
-                ClientLanguage.German => "Konnte kein passendes Ausrüstungsset finden.",
-                ClientLanguage.French => "Impossible de trouver un ensemble d'équipement adapté.",
-                ClientLanguage.Japanese => "適切なギアセットが見つかりませんでした。",
-                _ => "Couldn't find a suitable gearset."
-            });
+            Service.ChatGui.PrintError(t("CharacterClassSwitcher.NoSuitableGearsetFound"));
             return;
         }
 
