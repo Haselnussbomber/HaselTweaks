@@ -24,20 +24,14 @@ public unsafe class Commands : Tweak
 
     public class Configuration
     {
-        [BoolConfig(OnChange = nameof(OnConfigChange))]
+        [BoolConfig]
         public bool EnableItemLinkCommand = true;
 
-        [BoolConfig(OnChange = nameof(OnConfigChange))]
+        [BoolConfig]
         public bool EnableWhatMountCommand = true;
 
-        [BoolConfig(OnChange = nameof(OnConfigChange))]
+        [BoolConfig]
         public bool EnableWhatBardingCommand = true;
-    }
-
-    private static void OnConfigChange()
-    {
-        UnregisterCommands();
-        RegisterCommands();
     }
 
     public override void Enable()
@@ -48,6 +42,12 @@ public unsafe class Commands : Tweak
     public override void Disable()
     {
         UnregisterCommands(true);
+    }
+
+    public override void OnConfigChange(string fieldName)
+    {
+        UnregisterCommands();
+        RegisterCommands();
     }
 
     private static void RegisterCommands()

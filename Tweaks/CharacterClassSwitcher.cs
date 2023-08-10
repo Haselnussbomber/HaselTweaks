@@ -17,7 +17,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
 
     public class Configuration
     {
-        [BoolConfig(OnChange = nameof(OnTooltipConfigChange))]
+        [BoolConfig]
         public bool DisableTooltips = false;
     }
 
@@ -55,7 +55,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         ApplyTooltipPatch(false);
     }
 
-    private void OnTooltipConfigChange()
+    public override void OnConfigChange(string fieldName)
     {
         ApplyTooltipPatch(Config.DisableTooltips);
     }

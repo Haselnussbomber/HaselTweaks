@@ -31,7 +31,7 @@ public class EnumConfigAttribute : BaseConfigAttribute
                 if (ImGui.Selectable(GetOptionLabel(value), selectedValue == value))
                 {
                     fieldInfo.SetValue(config, value);
-                    OnChangeInternal(tweak);
+                    OnChangeInternal(tweak, fieldInfo);
                 }
 
                 if (selectedValue == value)

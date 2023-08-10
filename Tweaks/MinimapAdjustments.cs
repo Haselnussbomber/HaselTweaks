@@ -19,10 +19,10 @@ public unsafe class MinimapAdjustments : Tweak
         [FloatConfig(Max = 1, DefaultValue = 1)]
         public float HoverOpacity = 1f;
 
-        [BoolConfig(OnChange = nameof(OnConfigChange))]
+        [BoolConfig]
         public bool HideCoords = true;
 
-        [BoolConfig(OnChange = nameof(OnConfigChange))]
+        [BoolConfig]
         public bool HideWeather = true;
     }
 
@@ -44,6 +44,19 @@ public unsafe class MinimapAdjustments : Tweak
         UpdateCollision(false);
     }
 
+    public override void OnConfigChange(string fieldName)
+    {
+        if (fieldName is nameof(Configuration.HideCoords)
+                      or nameof(Configuration.HideWeather))
+        {
+            if (!IsAddonOpen("_NaviMap"))
+                return;
+
+            CoordsNode->ToggleVisibility(!Config.HideCoords);
+            WeatherNode->ToggleVisibility(!Config.HideWeather);
+        }
+    }
+
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
         if (!IsAddonOpen("_NaviMap"))
@@ -51,15 +64,6 @@ public unsafe class MinimapAdjustments : Tweak
 
         UpdateVisibility(RaptureAtkModule.Instance()->AtkModule.IntersectingAddon == NaviMap);
         UpdateCollision(Config.Square);
-    }
-
-    private static void OnConfigChange()
-    {
-        if (!IsAddonOpen("_NaviMap"))
-            return;
-
-        CoordsNode->ToggleVisibility(!Config.HideCoords);
-        WeatherNode->ToggleVisibility(!Config.HideWeather);
     }
 
     private static void UpdateVisibility(bool hovered)

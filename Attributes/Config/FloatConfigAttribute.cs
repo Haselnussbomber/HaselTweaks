@@ -24,13 +24,13 @@ public class FloatConfigAttribute : BaseConfigAttribute
         if (ImGui.DragFloat("##Input", ref value, 0.01f, Min, Max, "%.2f"))
         {
             fieldInfo.SetValue(config, value);
-            OnChangeInternal(tweak);
+            OnChangeInternal(tweak, fieldInfo);
         }
 
         if (DrawResetButton(string.Format(CultureInfo.InvariantCulture, "{0:0.00}", DefaultValue)))
         {
             fieldInfo.SetValue(config, DefaultValue);
-            OnChangeInternal(tweak);
+            OnChangeInternal(tweak, fieldInfo);
         }
 
         if (Service.TranslationManager.TryGetTranslation($"{tweak.InternalName}.Config.{fieldInfo.Name}.Description", out var description))

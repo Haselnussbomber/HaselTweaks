@@ -15,7 +15,7 @@ public class BoolConfigAttribute : BaseConfigAttribute
         if (ImGui.Checkbox(t($"{tweak.InternalName}.Config.{fieldInfo.Name}.Label") + "##Input", ref value))
         {
             fieldInfo.SetValue(config, value);
-            OnChangeInternal(tweak);
+            OnChangeInternal(tweak, fieldInfo);
         }
 
         if (Service.TranslationManager.TryGetTranslation($"{tweak.InternalName}.Config.{fieldInfo.Name}.Description", out var description))

@@ -32,16 +32,16 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     public class Configuration
     {
-        [BoolConfig(OnChange = nameof(RequestRecipeMaterialListRefresh))]
+        [BoolConfig]
         public bool EnableZoneNames = true;
 
-        [BoolConfig(OnChange = nameof(RequestRecipeMaterialListRefresh))]
+        [BoolConfig]
         public bool DisableZoneNameForCrystals = true;
 
         [BoolConfig]
         public bool ClickToOpenMap = true;
 
-        [BoolConfig(OnChange = nameof(RequestRecipeMaterialListRefresh))]
+        [BoolConfig]
         public bool DisableClickToOpenMapForCrystals = true;
 
         [BoolConfig]
@@ -50,7 +50,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         [BoolConfig]
         public bool AutoRefreshRecipeTree = true;
 
-        [BoolConfig(OnChange = nameof(SaveRestoreMaterialList))]
+        [BoolConfig]
         public bool RestoreMaterialList = true;
 
         public uint RestoreMaterialListRecipeId = 0;
@@ -58,6 +58,21 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
         [BoolConfig]
         public bool AddSearchForItemByCraftingMethodContextMenuEntry = true; // yep, i spelled it out
+    }
+
+    public override void OnConfigChange(string fieldName)
+    {
+        if (fieldName is nameof(Configuration.EnableZoneNames)
+                      or nameof(Configuration.DisableZoneNameForCrystals)
+                      or nameof(Configuration.DisableClickToOpenMapForCrystals))
+        {
+            RequestRecipeMaterialListRefresh();
+        }
+
+        if (fieldName is nameof(Configuration.RestoreMaterialList))
+        {
+            SaveRestoreMaterialList();
+        }
     }
 
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)

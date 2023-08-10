@@ -16,7 +16,7 @@ public unsafe partial class GearSetGrid : Tweak
         [BoolConfig]
         public bool AutoOpenWithGearSetList = false;
 
-        [BoolConfig(OnChange = nameof(OnConfigChange))]
+        [BoolConfig]
         public bool RegisterCommand = true;
 
         [BoolConfig]
@@ -32,12 +32,6 @@ public unsafe partial class GearSetGrid : Tweak
         public bool DisableSeparatorSpacing = false;
     }
 
-    private void OnConfigChange()
-    {
-        UnregisterCommand();
-        RegisterCommands();
-    }
-
     public override void Enable()
     {
         RegisterCommands();
@@ -50,6 +44,15 @@ public unsafe partial class GearSetGrid : Tweak
     {
         UnregisterCommand(true);
         CloseWindow();
+    }
+
+    public override void OnConfigChange(string fieldName)
+    {
+        if (fieldName is nameof(Configuration.RegisterCommand))
+        {
+            UnregisterCommand();
+            RegisterCommands();
+        }
     }
 
     public override void OnAddonOpen(string addonName)

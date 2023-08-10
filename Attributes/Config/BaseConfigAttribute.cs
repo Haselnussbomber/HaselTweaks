@@ -7,17 +7,13 @@ namespace HaselTweaks;
 
 public abstract class BaseConfigAttribute : Attribute
 {
-    public string OnChange = string.Empty;
     public string DependsOn = string.Empty;
 
     public abstract void Draw(Tweak tweak, object config, FieldInfo fieldInfo);
 
-    protected void OnChangeInternal(Tweak tweak)
+    protected void OnChangeInternal(Tweak tweak, FieldInfo fieldInfo)
     {
-        if (string.IsNullOrEmpty(OnChange))
-            return;
-
-        tweak.CachedType.GetMethod(OnChange, BindingFlags.Instance | BindingFlags.NonPublic)?.Invoke(tweak, null);
+        tweak.CachedType.GetMethod(nameof(Tweak.OnConfigChange), BindingFlags.Instance | BindingFlags.Public)?.Invoke(tweak, new[] { fieldInfo.Name });
     }
 
     protected bool DrawResetButton(string defaultValueString)

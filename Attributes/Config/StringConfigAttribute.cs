@@ -21,13 +21,13 @@ public class StringConfigAttribute : BaseConfigAttribute
         if (ImGui.InputText("##Input", ref value, 50))
         {
             fieldInfo.SetValue(config, value);
-            OnChangeInternal(tweak);
+            OnChangeInternal(tweak, fieldInfo);
         }
 
         if (DrawResetButton(DefaultValue))
         {
             fieldInfo.SetValue(config, DefaultValue);
-            OnChangeInternal(tweak);
+            OnChangeInternal(tweak, fieldInfo);
         }
 
         if (Service.TranslationManager.TryGetTranslation($"{tweak.InternalName}.Config.{fieldInfo.Name}.Description", out var description))

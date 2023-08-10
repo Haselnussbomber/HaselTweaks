@@ -30,22 +30,22 @@ public unsafe partial class EnhancedExpBar : Tweak
 
     public class Configuration
     {
-        [BoolConfig(OnChange = nameof(RunUpdate))]
+        [BoolConfig]
         public bool ForcePvPSeriesBar = true;
 
-        [BoolConfig(OnChange = nameof(RunUpdate))]
+        [BoolConfig]
         public bool ForceSanctuaryBar = true;
 
-        [BoolConfig(OnChange = nameof(RunUpdate))]
+        [BoolConfig]
         public bool ForceCompanionBar = true;
 
-        [BoolConfig(OnChange = nameof(RunUpdate))]
+        [BoolConfig]
         public bool SanctuaryBarHideJob = false;
 
-        [EnumConfig(OnChange = nameof(RunUpdate))]
+        [EnumConfig]
         public MaxLevelOverrideType MaxLevelOverride = MaxLevelOverrideType.Default;
 
-        [BoolConfig(OnChange = nameof(RunUpdate))]
+        [BoolConfig]
         public bool DisableColorChanges = false;
     }
 
@@ -62,6 +62,11 @@ public unsafe partial class EnhancedExpBar : Tweak
         Service.ClientState.LeavePvP -= ClientState_LeavePvP;
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
         _isEnabled = false;
+        RunUpdate();
+    }
+
+    public override void OnConfigChange(string fieldName)
+    {
         RunUpdate();
     }
 

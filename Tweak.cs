@@ -297,6 +297,7 @@ public abstract unsafe class Tweak
     public virtual void Enable() { }
     public virtual void Disable() { }
     public virtual void Dispose() { }
+    public virtual void OnConfigChange(string fieldName) { }
     public virtual void OnFrameworkUpdate(Framework framework) { }
     public virtual void OnLogin() { }
     public virtual void OnLogout() { }
