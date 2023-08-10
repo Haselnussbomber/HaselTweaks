@@ -10,10 +10,7 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Material Allocation",
-    Description: "Enhances the Island Sanctuarys \"Material Allocation\" window."
-)]
+[Tweak]
 public unsafe partial class MaterialAllocation : Tweak
 {
     public static Configuration Config => Plugin.Config.Tweaks.MaterialAllocation;
@@ -60,7 +57,7 @@ public unsafe partial class MaterialAllocation : Tweak
         return AddonMJICraftMaterialConfirmation_vf48Hook.OriginalDisposeSafe(addon, numAtkValues, atkValues);
     }
 
-    public override unsafe void OnAddonOpen(string addonName)
+    public override void OnAddonOpen(string addonName)
     {
         if (addonName != "MJICraftMaterialConfirmation")
             return;

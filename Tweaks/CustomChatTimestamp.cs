@@ -10,11 +10,7 @@ using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Custom Chat Timestamp",
-    Description: "As it says, configurable chat timestamp format.",
-    Flags: TweakFlags.HasCustomConfig
-)]
+[Tweak(TweakFlags.HasCustomConfig)]
 public unsafe partial class CustomChatTimestamp : Tweak
 {
     public static Configuration Config => Plugin.Config.Tweaks.CustomChatTimestamp;

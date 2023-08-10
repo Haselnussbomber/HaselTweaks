@@ -3,10 +3,7 @@ using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Expert Deliveries",
-    Description: "Always opens the \"Grand Company Delivery Missions\" window on the \"Expert Delivery\" tab."
-)]
+[Tweak]
 public unsafe class ExpertDeliveries : Tweak
 {
     public override void OnAddonOpen(string addonName)

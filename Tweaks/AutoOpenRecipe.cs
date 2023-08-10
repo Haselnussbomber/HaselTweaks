@@ -10,10 +10,7 @@ using AgentRecipeNote = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentRecipeNote
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Auto-open Recipe",
-    Description: "When a new daily/tribal quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe."
-)]
+[Tweak]
 public unsafe partial class AutoOpenRecipe : Tweak
 {
     // for older quests that don't return the item id in GetTodoArgs

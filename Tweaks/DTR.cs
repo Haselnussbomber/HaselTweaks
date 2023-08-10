@@ -15,11 +15,7 @@ using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "DTR",
-    Description: "Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar.",
-    Flags: TweakFlags.HasCustomConfig
-)]
+[Tweak(TweakFlags.HasCustomConfig)]
 public unsafe class DTR : Tweak
 {
     public override void DrawCustomConfig()

@@ -4,10 +4,7 @@ using Windows.Win32.System.Power;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Keep Screen Awake",
-    Description: "Prevents the screen from going into standby."
-)]
+[Tweak]
 public partial class KeepScreenAwake : Tweak
 {
     private readonly Timer _timer = new();

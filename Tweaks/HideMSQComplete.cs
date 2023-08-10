@@ -5,10 +5,7 @@ using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Hide MSQ Complete",
-    Description: "Hides the Main Scenario Guide when the MSQ is completed. Job quests are still being displayed."
-)]
+[Tweak]
 public unsafe partial class HideMSQComplete : Tweak
 {
     public override void Enable()

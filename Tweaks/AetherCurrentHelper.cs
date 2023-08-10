@@ -8,10 +8,7 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Aether Current Helper",
-    Description: "Clicking on a zone in the Aether Currents window opens a helper window that shows where to find the aether currents or which quests unlocks them. Clicking on an aether current in the list flags the position of the aether current or the quest giver on the map."
-)]
+[Tweak]
 public unsafe partial class AetherCurrentHelper : Tweak
 {
     public class Configuration

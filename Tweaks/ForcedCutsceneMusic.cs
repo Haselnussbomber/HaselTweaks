@@ -2,10 +2,7 @@ using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Forced Cutscene Music",
-    Description: "Auto-unmutes background music for most cutscenes."
-)]
+[Tweak]
 public unsafe partial class ForcedCutsceneMusic : Tweak
 {
     public static Configuration Config => Plugin.Config.Tweaks.ForcedCutsceneMusic;

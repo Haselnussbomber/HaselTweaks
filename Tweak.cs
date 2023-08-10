@@ -25,10 +25,30 @@ public abstract unsafe class Tweak
         => _internalName ??= CachedType.Name;
 
     public string Name
-        => _name ??= CachedType.GetCustomAttribute<TweakAttribute>()?.Name ?? "";
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_name) && Service.TranslationManager.TryGetTranslation($"{InternalName}.Tweak.Name", out var text))
+            {
+                _name = text;
+            }
+
+            return _name ?? "";
+        }
+    }
 
     public string Description
-        => _description ??= CachedType.GetCustomAttribute<TweakAttribute>()?.Description ?? "";
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_description) && Service.TranslationManager.TryGetTranslation($"{InternalName}.Tweak.Description", out var text))
+            {
+                _description = text;
+            }
+
+            return _description ?? "";
+        }
+    }
 
     public TweakFlags Flags
         => _flags ??= CachedType.GetCustomAttribute<TweakAttribute>()?.Flags ?? TweakFlags.None;
@@ -293,40 +313,40 @@ public abstract unsafe class Tweak
         => Information(exception, messageTemplate, values);
 
     protected void Verbose(string messageTemplate, params object[] values)
-        => PluginLog.Verbose($"[{Name}] {messageTemplate}", values);
+        => PluginLog.Verbose($"[{InternalName}] {messageTemplate}", values);
 
     protected void Verbose(Exception exception, string messageTemplate, params object[] values)
-        => PluginLog.Verbose(exception, $"[{Name}] {messageTemplate}", values);
+        => PluginLog.Verbose(exception, $"[{InternalName}] {messageTemplate}", values);
 
     protected void Debug(string messageTemplate, params object[] values)
-        => PluginLog.Debug($"[{Name}] {messageTemplate}", values);
+        => PluginLog.Debug($"[{InternalName}] {messageTemplate}", values);
 
     protected void Debug(Exception exception, string messageTemplate, params object[] values)
-        => PluginLog.Debug(exception, $"[{Name}] {messageTemplate}", values);
+        => PluginLog.Debug(exception, $"[{InternalName}] {messageTemplate}", values);
 
     protected void Information(string messageTemplate, params object[] values)
-        => PluginLog.Information($"[{Name}] {messageTemplate}", values);
+        => PluginLog.Information($"[{InternalName}] {messageTemplate}", values);
 
     protected void Information(Exception exception, string messageTemplate, params object[] values)
-        => PluginLog.Information(exception, $"[{Name}] {messageTemplate}", values);
+        => PluginLog.Information(exception, $"[{InternalName}] {messageTemplate}", values);
 
     protected void Warning(string messageTemplate, params object[] values)
-        => PluginLog.Warning($"[{Name}] {messageTemplate}", values);
+        => PluginLog.Warning($"[{InternalName}] {messageTemplate}", values);
 
     protected void Warning(Exception exception, string messageTemplate, params object[] values)
-        => PluginLog.Warning(exception, $"[{Name}] {messageTemplate}", values);
+        => PluginLog.Warning(exception, $"[{InternalName}] {messageTemplate}", values);
 
     protected void Error(string messageTemplate, params object[] values)
-        => PluginLog.Error($"[{Name}] {messageTemplate}", values);
+        => PluginLog.Error($"[{InternalName}] {messageTemplate}", values);
 
     protected void Error(Exception exception, string messageTemplate, params object[] values)
-        => PluginLog.Error(exception, $"[{Name}] {messageTemplate}", values);
+        => PluginLog.Error(exception, $"[{InternalName}] {messageTemplate}", values);
 
     protected void Fatal(string messageTemplate, params object[] values)
-        => PluginLog.Fatal($"[{Name}] {messageTemplate}", values);
+        => PluginLog.Fatal($"[{InternalName}] {messageTemplate}", values);
 
     protected void Fatal(Exception exception, string messageTemplate, params object[] values)
-        => PluginLog.Fatal(exception, $"[{Name}] {messageTemplate}", values);
+        => PluginLog.Fatal(exception, $"[{InternalName}] {messageTemplate}", values);
 
     #endregion
 }

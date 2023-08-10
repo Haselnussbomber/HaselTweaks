@@ -1,4 +1,142 @@
 {
+  "AetherCurrentHelper.Tweak.Name": {
+    "en": "Aether Current Helper"
+  },
+  "AetherCurrentHelper.Tweak.Description": {
+    "en": "Clicking on a zone in the Aether Currents window opens a helper window that shows where to find the aether currents or which quests unlocks them. Clicking on an aether current in the list flags the position of the aether current or the quest giver on the map."
+  },
+  "AutoOpenRecipe.Tweak.Name": {
+    "en": "Auto-open Recipe"
+  },
+  "AutoOpenRecipe.Tweak.Description": {
+    "en": "When a new daily/tribal quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe."
+  },
+  "AutoSorter.Tweak.Name": {
+    "en": "Auto Sorter"
+  },
+  "AutoSorter.Tweak.Description": {
+    "en": "Sorts items inside various containers when they are opened."
+  },
+  "BackgroundMusicKeybind.Tweak.Name": {
+    "en": "Background Music Keybind"
+  },
+  "BackgroundMusicKeybind.Tweak.Description": {
+    "en": "A configurable keybind to toggle the background music."
+  },
+  "CharacterClassSwitcher.Tweak.Name": {
+    "en": "Character Class Switcher"
+  },
+  "CharacterClassSwitcher.Tweak.Description": {
+    "en": "Clicking on a class/job in the character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window."
+  },
+  "Commands.Tweak.Name": {
+    "en": "Commands"
+  },
+  "Commands.Tweak.Description": {
+    "en": "A variety of useful chat commands."
+  },
+  "CustomChatTimestamp.Tweak.Name": {
+    "en": "Custom Chat Timestamp"
+  },
+  "CustomChatTimestamp.Tweak.Description": {
+    "en": "As it says, configurable chat timestamp format."
+  },
+  "DTR.Tweak.Name": {
+    "en": "DTR"
+  },
+  "DTR.Tweak.Description": {
+    "en": "Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar."
+  },
+  "EnhancedExpBar.Tweak.Name": {
+    "en": "Enhanced Experience Bar"
+  },
+  "EnhancedExpBar.Tweak.Description": {
+    "en": "Enhances the Experience Bar with the following modes:\n\n- The PvP Series Bar shows series rank and experience. A little * after the rank indicates a claimable rank-up reward.\n\n- The Sanctuary Bar shows sanctuary level and island experience."
+  },
+  "EnhancedLoginLogout.Tweak.Name": {
+    "en": "Enhanced Login/Logout"
+  },
+  "EnhancedLoginLogout.Tweak.Description": {
+    "en": "Enhances login and logout."
+  },
+  "EnhancedMaterialList.Tweak.Name": {
+    "en": "Enhanced Material List"
+  },
+  "EnhancedMaterialList.Tweak.Description": {
+    "en": "Enhances the Material List (and Recipe Tree)."
+  },
+  "ExpertDeliveries.Tweak.Name": {
+    "en": "Expert Deliveries"
+  },
+  "ExpertDeliveries.Tweak.Description": {
+    "en": "Always opens the \"Grand Company Delivery Missions\" window on the \"Expert Delivery\" tab."
+  },
+  "ForcedCutsceneMusic.Tweak.Name": {
+    "en": "Forced Cutscene Music"
+  },
+  "ForcedCutsceneMusic.Tweak.Description": {
+    "en": "Auto-unmutes background music for most cutscenes."
+  },
+  "GearSetGrid.Tweak.Name": {
+    "en": "Gear Set Grid"
+  },
+  "GearSetGrid.Tweak.Description": {
+    "en": "A window that displays a grid view of all the items of each gear set."
+  },
+  "HideMSQComplete.Tweak.Name": {
+    "en": "Hide MSQ Complete"
+  },
+  "HideMSQComplete.Tweak.Description": {
+    "en": "Hides the Main Scenario Guide when the MSQ is completed. Job quests are still being displayed."
+  },
+  "KeepScreenAwake.Tweak.Name": {
+    "en": "Keep Screen Awake"
+  },
+  "KeepScreenAwake.Tweak.Description": {
+    "en": "Prevents the screen from going into standby."
+  },
+  "LockWindowPosition.Tweak.Name": {
+    "en": "Lock Window Position"
+  },
+  "LockWindowPosition.Tweak.Description": {
+    "en": "Lock window positions so they can't move."
+  },
+  "MaterialAllocation.Tweak.Name": {
+    "en": "Material Allocation"
+  },
+  "MaterialAllocation.Tweak.Description": {
+    "en": "Enhances the Island Sanctuarys \"Material Allocation\" window."
+  },
+  "MinimapAdjustments.Tweak.Name": {
+    "en": "Minimap Adjustments"
+  },
+  "MinimapAdjustments.Tweak.Description": {
+    "en": "Mini changes for the Minimap. :)"
+  },
+  "PortraitHelper.Tweak.Name": {
+    "en": "Portrait Helper"
+  },
+  "PortraitHelper.Tweak.Description": {
+    "en": "A helper for editing portraits."
+  },
+  "RevealDutyRequirements.Tweak.Name": {
+    "en": "Reveal Duty Requirements"
+  },
+  "RevealDutyRequirements.Tweak.Description": {
+    "en": "Reveals duty names in duty finder, which were shown as \"???\". Useful for unlocking Mentor roulette."
+  },
+  "ScrollableTabs.Tweak.Name": {
+    "en": "Scrollable Tabs"
+  },
+  "ScrollableTabs.Tweak.Description": {
+    "en": "Enables mouse wheel to switch tabs (like with LB/RB on controllers)."
+  },
+  "SearchTheMarkets.Tweak.Name": {
+    "en": "Search the markets"
+  },
+  "SearchTheMarkets.Tweak.Description": {
+    "en": "Adds an entry to item context menus that allows you to quickly search for the item on the market board. Only visible when market board is open!\n\nSupports context menus in the following windows:\n- Chat\n- Crafting Log\n- Ehcatl Nine Delivery Quests (via /timers)\n- Grand Company Delivery Missions (via /timers)\n- Inventory\n- Materials List\n- Recipe Tree\n"
+  },
   "AetherCurrentHelper.AllAetherCurrentsAttuned": {
     "en": "All aether currents attuned!",
     "de": "Alle Windätherquellen gebündelt!",

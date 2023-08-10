@@ -3,10 +3,7 @@ using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Gear Set Grid",
-    Description: "A window that displays a grid view of all the items of each gear set."
-)]
+[Tweak]
 public unsafe partial class GearSetGrid : Tweak
 {
     private GearSetGridWindow? _window;

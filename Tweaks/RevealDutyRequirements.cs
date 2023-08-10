@@ -3,10 +3,7 @@ using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Reveal Duty Requirements",
-    Description: "Reveals duty names in duty finder, which were shown as \"???\". Useful for unlocking Mentor roulette."
-)]
+[Tweak]
 public class RevealDutyRequirements : Tweak
 {
     /*

@@ -7,19 +7,7 @@ using AgentRecipeNote = HaselTweaks.Structs.AgentRecipeNote;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Search the markets",
-    Description: @"Adds an entry to item context menus that allows you to quickly search for the item on the market board. Only visible when market board is open!
-
-Supports context menus in the following windows:
-- Chat
-- Crafting Log
-- Ehcatl Nine Delivery Quests (via /timers)
-- Grand Company Delivery Missions (via /timers)
-- Inventory
-- Materials List
-- Recipe Tree"
-)]
+[Tweak]
 public unsafe class SearchTheMarkets : Tweak
 {
     private readonly DalamudContextMenu _contextMenu = new();

@@ -16,10 +16,7 @@ using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Enhanced Material List",
-    Description: "Enhances the Material List (and Recipe Tree)."
-)]
+[Tweak]
 public unsafe partial class EnhancedMaterialList : Tweak
 {
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedMaterialList;

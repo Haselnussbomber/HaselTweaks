@@ -16,11 +16,7 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Auto Sorter",
-    Description: "Sorts items inside various containers when they are opened.",
-    Flags: TweakFlags.HasCustomConfig
-)]
+[Tweak(TweakFlags.HasCustomConfig)]
 public unsafe class AutoSorter : Tweak
 {
     public static Configuration Config => Plugin.Config.Tweaks.AutoSorter;

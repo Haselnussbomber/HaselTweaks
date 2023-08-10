@@ -12,14 +12,7 @@ using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Enhanced Experience Bar",
-    Description: @"Enhances the Experience Bar with the following modes:
-
-- The PvP Series Bar shows series rank and experience. A little * after the rank indicates a claimable rank-up reward.
-
-- The Sanctuary Bar shows sanctuary level and island experience."
-)]
+[Tweak]
 [IncompatibilityWarning("SimpleTweaksPlugin", "Simple Tweaks", "Show Experience Percentage")]
 public unsafe partial class EnhancedExpBar : Tweak
 {

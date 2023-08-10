@@ -15,11 +15,7 @@ using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Lock Window Position",
-    Description: "Lock window positions so they can't move.",
-    Flags: TweakFlags.HasCustomConfig
-)]
+[Tweak(TweakFlags.HasCustomConfig)]
 public unsafe partial class LockWindowPosition : Tweak
 {
     public static Configuration Config => Plugin.Config.Tweaks.LockWindowPosition;

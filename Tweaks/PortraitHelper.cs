@@ -32,10 +32,7 @@ using DalamudFramework = Dalamud.Game.Framework;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Portrait Helper",
-    Description: "A helper for editing portraits."
-)]
+[Tweak]
 public partial class PortraitHelper : Tweak
 {
     public static Configuration Config => Plugin.Config.Tweaks.PortraitHelper;

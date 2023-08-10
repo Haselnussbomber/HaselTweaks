@@ -9,10 +9,7 @@ using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Character Class Switcher",
-    Description: "Clicking on a class/job in the character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window."
-)]
+[Tweak]
 [IncompatibilityWarning("SimpleTweaksPlugin", "Simple Tweaks", "Character Window Job Switcher")]
 public unsafe partial class CharacterClassSwitcher : Tweak
 {

@@ -9,11 +9,7 @@ using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Background Music Keybind",
-    Description: "A configurable keybind to toggle the background music.",
-    Flags: TweakFlags.HasCustomConfig
-)]
+[Tweak(TweakFlags.HasCustomConfig)]
 public unsafe class BackgroundMusicKeybind : Tweak
 {
     public static Configuration Config => Plugin.Config.Tweaks.BackgroundMusicKeybind;

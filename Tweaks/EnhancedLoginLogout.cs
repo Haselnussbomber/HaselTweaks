@@ -20,11 +20,7 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Enhanced Login/Logout",
-    Description: "Enhances login and logout.",
-    Flags: TweakFlags.HasCustomConfig | TweakFlags.NoCustomConfigHeader
-)]
+[Tweak(TweakFlags.HasCustomConfig | TweakFlags.NoCustomConfigHeader)]
 public unsafe partial class EnhancedLoginLogout : Tweak
 {
     private CharaSelectCharacter? _currentEntry = null;

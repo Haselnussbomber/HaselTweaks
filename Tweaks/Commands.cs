@@ -13,10 +13,7 @@ using ObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(
-    Name: "Commands",
-    Description: "A variety of useful chat commands."
-)]
+[Tweak]
 public unsafe class Commands : Tweak
 {
     public static Configuration Config => Plugin.Config.Tweaks.Commands;
