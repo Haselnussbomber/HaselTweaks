@@ -8,8 +8,9 @@ public static unsafe class Addon
 {
     public static T* GetAddon<T>(string name, int index = 1) where T : unmanaged
     {
-        var addon = AtkStage.GetSingleton()->RaptureAtkUnitManager->GetAddonByName(name, index);
-        var ready = addon != null && RaptureAtkModule.Instance()->AtkModule.IsAddonReady(addon->ID);
+        var raptureAtkModule = RaptureAtkModule.Instance();
+        var addon = raptureAtkModule->RaptureAtkUnitManager.GetAddonByName(name, index);
+        var ready = addon != null && raptureAtkModule->AtkModule.IsAddonReady(addon->ID);
         return ready ? (T*)addon : null;
     }
 
