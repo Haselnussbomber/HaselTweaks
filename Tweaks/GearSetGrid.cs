@@ -13,22 +13,22 @@ public unsafe partial class GearSetGrid : Tweak
 
     public class Configuration
     {
-        [ConfigField(Label = "Auto-open/close with Gear Set List")]
+        [BoolConfig]
         public bool AutoOpenWithGearSetList = false;
 
-        [ConfigField(Label = "Register /gsg command to toggle window", OnChange = nameof(OnConfigChange))]
+        [BoolConfig(OnChange = nameof(OnConfigChange))]
         public bool RegisterCommand = true;
 
-        [ConfigField(Label = "Allow switching gearsets", Description = "Makes the id column clickable.")]
+        [BoolConfig]
         public bool AllowSwitchingGearsets = true;
 
-        [ConfigField(Label = "Convert separator gear set with spacing", Description = "When using separator gear sets (e.g. a gearset with name ===========) this option automatically converts it into spacing between rows (in the Gear Set Grid).")]
+        [BoolConfig]
         public bool ConvertSeparators = true;
 
-        [ConfigField(Label = "Gear set name of the separator", DependsOn = nameof(ConvertSeparators), DefaultValue = "===========")]
+        [StringConfig(DependsOn = nameof(ConvertSeparators), DefaultValue = "===========")]
         public string SeparatorFilter = "===========";
 
-        [ConfigField(Label = "Disable spacing", DependsOn = nameof(ConvertSeparators))]
+        [BoolConfig(DependsOn = nameof(ConvertSeparators))]
         public bool DisableSeparatorSpacing = false;
     }
 

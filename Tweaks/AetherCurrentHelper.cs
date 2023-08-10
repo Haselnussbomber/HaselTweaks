@@ -13,10 +13,10 @@ public unsafe partial class AetherCurrentHelper : Tweak
 {
     public class Configuration
     {
-        [ConfigField(Label = "Show distance instead of checkmark when unlocked")]
+        [BoolConfig]
         public bool AlwaysShowDistance = false;
 
-        [ConfigField(Label = "Center distance column", Description = "Disable this if you have problems with the window endlessly expanding to the right")]
+        [BoolConfig]
         public bool CenterDistance = true;
     }
 

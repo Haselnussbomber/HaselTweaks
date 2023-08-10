@@ -20,59 +20,32 @@ public unsafe partial class EnhancedExpBar : Tweak
 
     public enum MaxLevelOverrideType
     {
-        [EnumOption("Default")]
         Default,
-
-        [EnumOption("PvP Series Bar")]
         PvPSeriesBar,
-
-        [EnumOption("Companion Bar")]
         CompanionBar,
 
         // Disabled because data is only available once loaded into the island. Sadge.
-        //[EnumOption("Sanctuary Bar")]
-        //SanctuaryBar
+        // SanctuaryBar
     }
 
     public class Configuration
     {
-        [ConfigField(
-            Label = "Always show PvP Series Bar in PvP Areas",
-            OnChange = nameof(RunUpdate)
-        )]
+        [BoolConfig(OnChange = nameof(RunUpdate))]
         public bool ForcePvPSeriesBar = true;
 
-        [ConfigField(
-            Label = "Always show Sanctuary Bar on the Island",
-            OnChange = nameof(RunUpdate)
-        )]
+        [BoolConfig(OnChange = nameof(RunUpdate))]
         public bool ForceSanctuaryBar = true;
 
-        [ConfigField(
-            Label = "Always show Companion Bar when chocobo companion summoned",
-            OnChange = nameof(RunUpdate)
-        )]
+        [BoolConfig(OnChange = nameof(RunUpdate))]
         public bool ForceCompanionBar = true;
 
-        [ConfigField(
-            Label = "Hide Job on Sanctuary Bar",
-            OnChange = nameof(RunUpdate)
-        )]
+        [BoolConfig(OnChange = nameof(RunUpdate))]
         public bool SanctuaryBarHideJob = false;
 
-        [ConfigField(
-            Label = "Max Level Override",
-            Description = "Will switch to the selected bar if your current job is on max level and none of the settings above apply.",
-            Type = ConfigFieldTypes.SingleSelect,
-            Options = nameof(MaxLevelOverrideType),
-            OnChange = nameof(RunUpdate)
-        )]
+        [EnumConfig(OnChange = nameof(RunUpdate))]
         public MaxLevelOverrideType MaxLevelOverride = MaxLevelOverrideType.Default;
 
-        [ConfigField(
-            Label = "Disable color change",
-            OnChange = nameof(RunUpdate)
-        )]
+        [BoolConfig(OnChange = nameof(RunUpdate))]
         public bool DisableColorChanges = false;
     }
 

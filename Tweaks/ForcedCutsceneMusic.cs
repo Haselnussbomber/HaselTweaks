@@ -9,7 +9,7 @@ public unsafe partial class ForcedCutsceneMusic : Tweak
 
     public class Configuration
     {
-        [ConfigField(Label = "Restore mute state after cutscene")]
+        [BoolConfig]
         public bool Restore = true;
     }
 

@@ -39,34 +39,21 @@ public partial class PortraitHelper : Tweak
 
     public class Configuration
     {
-        [ConfigField(Type = ConfigFieldTypes.Ignore)]
         public List<SavedPreset> Presets = new();
-
-        [ConfigField(Type = ConfigFieldTypes.Ignore)]
         public List<SavedPresetTag> PresetTags = new();
-
-        [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Show Alignment Tool")]
         public bool ShowAlignmentTool = false;
-
-        [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Vertical Lines"/*, DependsOn = nameof(ShowAlignmentTool), Min = 0, Max = 10*/)]
         public int AlignmentToolVerticalLines = 2;
-
-        [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Vertical Color"/*, DependsOn = nameof(ShowAlignmentTool), Type = ConfigFieldTypes.Color4*/)]
         public Vector4 AlignmentToolVerticalColor = new(0, 0, 0, 1f);
-
-        [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Horizontal Lines"/*, DependsOn = nameof(ShowAlignmentTool), Min = 0, Max = 10*/)]
         public int AlignmentToolHorizontalLines = 2;
-
-        [ConfigField(Type = ConfigFieldTypes.Ignore, Label = "Horizontal Color"/*, DependsOn = nameof(ShowAlignmentTool), Type = ConfigFieldTypes.Color4*/)]
         public Vector4 AlignmentToolHorizontalColor = new(0, 0, 0, 1f);
 
-        [ConfigField(Label = "Notify if appearance and/or gear doesn't match Portait", Description = "Prints a notification in chat which can be clicked to open the Portrait Editor.")]
+        [BoolConfig]
         public bool NotifyGearChecksumMismatch = true;
 
-        [ConfigField(Label = "Try to fix by automatically re-equipping Gearset to reapply Glamour Plate", DependsOn = nameof(NotifyGearChecksumMismatch), Description = "Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state.")]
+        [BoolConfig(DependsOn = nameof(NotifyGearChecksumMismatch))]
         public bool ReequipGearsetOnUpdate = false;
 
-        public string GetPortraitThumbnailPath(string hash)
+        public static string GetPortraitThumbnailPath(string hash)
         {
             var portraitsPath = Path.Join(Service.PluginInterface.ConfigDirectory.FullName, "Portraits");
 

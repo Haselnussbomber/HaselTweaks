@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -10,8 +9,6 @@ using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using HaselTweaks.Enums;
-using HaselTweaks.Interfaces;
-using HaselTweaks.Records;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using ImGuiScene;
@@ -391,114 +388,43 @@ public partial class PluginWindow : Window, IDisposable
         {
             if (!tweak.Flags.HasFlag(TweakFlags.NoCustomConfigHeader))
                 ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+
             tweak.DrawCustomConfig();
+            return;
         }
-        else
-        {
-            var config = Plugin.Config.Tweaks.GetType().GetProperty(tweak.InternalName)?.GetValue(Plugin.Config.Tweaks);
-            if (config != null)
+
+        var config = Plugin.Config.Tweaks.GetType().GetProperty(tweak.InternalName)?.GetValue(Plugin.Config.Tweaks);
+        if (config == null)
+            return;
+
+        var configType = config.GetType();
+        var configFields = configType.GetFields()
+            .Select(field =>
             {
-                var configType = config.GetType();
-                var configFields = configType.GetFields()
-                    .Select(field =>
-                    {
-                        var attr = (ConfigFieldAttribute?)Attribute.GetCustomAttribute(field, typeof(ConfigFieldAttribute));
-                        return (field, attr);
-                    })
-                    .Where((fa) => fa.attr?.Type != ConfigFieldTypes.Ignore);
+                var attr = field.GetCustomAttribute<BaseConfigAttribute>();
+                return (field, attr);
+            })
+            .Where((fa) => fa.attr != null)
+            .Cast<(FieldInfo, BaseConfigAttribute)>();
 
-                if (configFields.Any())
-                {
-                    ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+        if (!configFields.Any())
+            return;
 
-                    foreach (var (field, attr) in configFields)
-                    {
-                        var hasDependency = !string.IsNullOrEmpty(attr?.DependsOn);
-                        var isDisabled = hasDependency && (bool?)configType.GetField(attr!.DependsOn)?.GetValue(config) == false;
-                        var indent = hasDependency ? ImGuiUtils.ConfigIndent() : null;
-                        var disabled = isDisabled ? ImRaii.Disabled() : null;
+        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
 
-                        if (attr == null)
-                        {
-#if DEBUG
-                            ImGuiUtils.TextUnformattedColored(Colors.Red, $"No ConfigFieldAttribute for {field.Name}");
-#endif
-                        }
-                        else if (attr.Type == ConfigFieldTypes.Color4)
-                        {
-                            var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType }))!;
+        foreach (var (field, attr) in configFields)
+        {
+            using var fieldid = ImRaii.PushId(field.Name);
 
-                            data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
-                            data.GetType().GetProperty("Config")!.SetValue(data, config);
-                            data.GetType().GetProperty("Field")!.SetValue(data, field);
-                            data.GetType().GetProperty("Attr")!.SetValue(data, attr);
+            var hasDependency = !string.IsNullOrEmpty(attr.DependsOn);
+            var isDisabled = hasDependency && (bool?)configType.GetField(attr.DependsOn)?.GetValue(config) == false;
+            var indent = hasDependency ? ImGuiUtils.ConfigIndent() : null;
+            var disabled = isDisabled ? ImRaii.Disabled() : null;
 
-                            if (field.FieldType.Name == nameof(Vector4))
-                            {
-                                DrawColor4((ConfigDrawData<Vector4>)data);
-                            }
-                            else
-                            {
-                                DrawInvalidType(field);
-                            }
-                        }
-                        else if (attr.Type == ConfigFieldTypes.Auto)
-                        {
-                            var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { field.FieldType }))!;
+            attr.Draw(tweak, config, field);
 
-                            data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
-                            data.GetType().GetProperty("Config")!.SetValue(data, config);
-                            data.GetType().GetProperty("Field")!.SetValue(data, field);
-                            data.GetType().GetProperty("Attr")!.SetValue(data, attr);
-
-                            switch (field.FieldType.Name)
-                            {
-                                case nameof(String): DrawString((ConfigDrawData<string>)data); break;
-                                case nameof(Single): DrawFloat((ConfigDrawData<float>)data); break;
-                                case nameof(Int32): DrawInt((ConfigDrawData<int>)data); break;
-                                case nameof(Boolean): DrawBool((ConfigDrawData<bool>)data); break;
-
-                                default: DrawNoDrawingFunctionError(field); break;
-                            }
-                        }
-                        else if (attr.Type == ConfigFieldTypes.SingleSelect)
-                        {
-                            if (field.FieldType.IsEnum)
-                            {
-                                var enumType = tweak.GetType().GetNestedType(attr.Options);
-                                if (enumType == null)
-                                {
-                                    DrawNoDrawingFunctionError(field);
-                                }
-                                else
-                                {
-                                    var underlyingType = Enum.GetUnderlyingType(enumType);
-                                    var data = Activator.CreateInstance(typeof(ConfigDrawData<>).MakeGenericType(new Type[] { underlyingType }))!;
-
-                                    data.GetType().GetProperty("Tweak")!.SetValue(data, tweak);
-                                    data.GetType().GetProperty("Config")!.SetValue(data, config);
-                                    data.GetType().GetProperty("Field")!.SetValue(data, field);
-                                    data.GetType().GetProperty("Attr")!.SetValue(data, attr);
-
-                                    switch (underlyingType.Name)
-                                    {
-                                        case nameof(Int32): DrawSingleSelectEnumInt32((ConfigDrawData<int>)data, enumType); break;
-
-                                        default: DrawNoDrawingFunctionError(field); break;
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            DrawNoDrawingFunctionError(field);
-                        }
-
-                        disabled?.Dispose();
-                        indent?.Dispose();
-                    }
-                }
-            }
+            disabled?.Dispose();
+            indent?.Dispose();
         }
     }
 
@@ -528,195 +454,5 @@ public partial class PluginWindow : Window, IDisposable
         }
 
         return (status, color);
-    }
-
-    private static void DrawNoDrawingFunctionError(FieldInfo field)
-    {
-        ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, $"Could not find suitable drawing function for field \"{field.Name}\" (Type {field.FieldType.Name}).");
-    }
-
-    private static void DrawInvalidType(FieldInfo field)
-    {
-        ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, $"Invalid type for \"{field.Name}\" (Type {field.FieldType.Name}).");
-    }
-
-    private static void DrawSingleSelectEnumInt32(ConfigDrawData<int> data, Type enumType)
-    {
-        var selectedLabel = "Invalid Option";
-
-        var selectedName = Enum.GetName(enumType, data.Value);
-        if (string.IsNullOrEmpty(selectedName))
-        {
-            ImGuiUtils.TextUnformattedColored(Colors.Red, $"Missing Name for Value {data.Value} in {enumType.Name}.");
-        }
-        else
-        {
-            var selectedAttr = (EnumOptionAttribute?)enumType.GetField(selectedName)?.GetCustomAttribute(typeof(EnumOptionAttribute));
-            if (selectedAttr == null)
-            {
-                ImGuiUtils.TextUnformattedColored(Colors.Red, $"Missing EnumOptionAttribute for {selectedName} in {enumType.Name}.");
-            }
-            else
-            {
-                selectedLabel = selectedAttr.Label;
-            }
-        }
-
-        ImGui.TextUnformatted(data.Label);
-
-        using (ImGuiUtils.ConfigIndent())
-        {
-            using (var combo = ImRaii.Combo(data.Key, selectedLabel))
-            {
-                if (combo.Success)
-                {
-                    var names = Enum.GetNames(enumType)
-                        .Select(name => (
-                            Name: name,
-                            Attr: (EnumOptionAttribute?)enumType.GetField(name)?.GetCustomAttribute(typeof(EnumOptionAttribute))
-                        ))
-                        .Where(tuple => tuple.Attr != null)
-                        .OrderBy((tuple) => tuple.Attr == null ? "" : tuple.Attr.Label);
-
-                    foreach (var (Name, Attr) in names)
-                    {
-                        var value = (int)Enum.Parse(enumType, Name);
-
-                        if (ImGui.Selectable(Attr!.Label, data.Value == value))
-                            data.Value = value;
-
-                        if (data.Value == value)
-                            ImGui.SetItemDefaultFocus();
-                    }
-                }
-            }
-
-            DrawSettingsDescription(data);
-        }
-    }
-
-    private static void DrawSingleSelect(ConfigDrawData<string> data, List<string> options)
-    {
-        ImGui.TextUnformatted(data.Label);
-
-        using (ImGuiUtils.ConfigIndent())
-        {
-            using (var combo = ImRaii.Combo(data.Key, data.Value ?? ""))
-            {
-                if (combo.Success)
-                {
-                    foreach (var item in options)
-                    {
-                        if (ImGui.Selectable(item, data.Value == item))
-                            data.Value = item;
-
-                        if (data.Value == item)
-                            ImGui.SetItemDefaultFocus();
-                    }
-                }
-            }
-
-            DrawSettingsDescription(data);
-        }
-    }
-
-    private static void DrawString(ConfigDrawData<string> data)
-    {
-        var value = data.Value;
-
-        ImGui.TextUnformatted(data.Label);
-
-        using (ImGuiUtils.ConfigIndent())
-        {
-            if (ImGui.InputText(data.Key, ref value, 50))
-                data.Value = value;
-
-            DrawResetButton(data);
-            DrawSettingsDescription(data);
-        }
-    }
-
-    private static void DrawFloat(ConfigDrawData<float> data)
-    {
-        var min = data.Attr != null ? data.Attr.Min : 0f;
-        var max = data.Attr != null ? data.Attr.Max : 100f;
-
-        var value = data.Value;
-
-        ImGui.TextUnformatted(data.Label);
-
-        using (ImGuiUtils.ConfigIndent())
-        {
-            if (ImGui.SliderFloat(data.Key, ref value, min, max))
-                data.Value = value;
-
-            DrawResetButton(data);
-            DrawSettingsDescription(data);
-        }
-    }
-
-    private static void DrawInt(ConfigDrawData<int> data)
-    {
-        var min = data.Attr != null ? data.Attr.Min : 0f;
-        var max = data.Attr != null ? data.Attr.Max : 100f;
-
-        var value = data.Value;
-
-        ImGui.TextUnformatted(data.Label);
-
-        using (ImGuiUtils.ConfigIndent())
-        {
-            if (ImGui.SliderInt(data.Key, ref value, (int)min, (int)max))
-                data.Value = value;
-
-            DrawResetButton(data);
-            DrawSettingsDescription(data);
-        }
-    }
-
-    private static void DrawBool(ConfigDrawData<bool> data)
-    {
-        var value = data.Value;
-
-        if (ImGui.Checkbox(data.Label + data.Key, ref value))
-            data.Value = value;
-
-        DrawSettingsDescription(data, true);
-    }
-
-    private static void DrawResetButton<T>(ConfigDrawData<T> data)
-    {
-        if (data.Attr?.DefaultValue != null)
-        {
-            ImGui.SameLine();
-            if (ImGuiUtils.IconButton($"##{data.Tweak.InternalName}_{data.Field.Name}_Reset", FontAwesomeIcon.Undo, $"Reset to Default: {(T)data.Attr!.DefaultValue}"))
-            {
-                data.Value = (T)data.Attr!.DefaultValue;
-            }
-        }
-    }
-
-    private static void DrawColor4(ConfigDrawData<Vector4> data)
-    {
-        var value = data.Value;
-
-        if (ImGui.ColorEdit4(data.Label + data.Key, ref value))
-            data.Value = value;
-
-        DrawSettingsDescription(data, true);
-    }
-
-    private static void DrawSettingsDescription(IConfigDrawData data, bool indent = false)
-    {
-        if (string.IsNullOrEmpty(data.Description))
-            return;
-
-        var _indent = indent ? ImGuiUtils.ConfigIndent() : null;
-
-        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, data.Description);
-
-        _indent?.Dispose();
-
-        ImGuiUtils.PushCursorY(3);
     }
 }

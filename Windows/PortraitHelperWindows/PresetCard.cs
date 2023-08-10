@@ -318,7 +318,7 @@ public class PresetCard : IDisposable
 
             if (!string.IsNullOrEmpty(_preset.TextureHash) && DateTime.Now - _lastTextureCheck > TimeSpan.FromSeconds(1))
             {
-                var thumbPath = Config.GetPortraitThumbnailPath(_preset.TextureHash);
+                var thumbPath = PortraitHelper.Configuration.GetPortraitThumbnailPath(_preset.TextureHash);
 
                 if (File.Exists(thumbPath))
                 {

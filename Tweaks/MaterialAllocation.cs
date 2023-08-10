@@ -19,13 +19,11 @@ public unsafe partial class MaterialAllocation : Tweak
 
     public class Configuration
     {
-        [ConfigField(Label = "Save last selected tab between game sessions")]
+        [BoolConfig]
         public bool SaveLastSelectedTab = true;
-
-        [ConfigField(Type = ConfigFieldTypes.Ignore)]
         public byte LastSelectedTab = 2;
 
-        [ConfigField(Label = "Open Sanctuary Gathering Log for gatherable items")]
+        [BoolConfig]
         public bool OpenGatheringLogOnItemClick = true;
     }
 

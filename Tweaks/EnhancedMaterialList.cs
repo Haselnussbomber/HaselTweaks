@@ -32,61 +32,31 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     public class Configuration
     {
-        [ConfigField(
-            Label = "Enable Zone Names",
-            Description = "The zone with the lowest teleportation cost is displayed.\nA green zone name means it's the current zone.\nSince space is limited it has to shorten the item and zone name.",
-            OnChange = nameof(RequestRecipeMaterialListRefresh)
-        )]
+        [BoolConfig(OnChange = nameof(RequestRecipeMaterialListRefresh))]
         public bool EnableZoneNames = true;
 
-        [ConfigField(
-            Label = "Disable for Crystals",
-            DependsOn = nameof(EnableZoneNames),
-            OnChange = nameof(RequestRecipeMaterialListRefresh)
-        )]
+        [BoolConfig(OnChange = nameof(RequestRecipeMaterialListRefresh))]
         public bool DisableZoneNameForCrystals = true;
 
-        [ConfigField(
-            Label = "Enable click to open Map"
-        )]
+        [BoolConfig]
         public bool ClickToOpenMap = true;
 
-        [ConfigField(
-            Label = "Disable for Crystals",
-            DependsOn = nameof(ClickToOpenMap),
-            OnChange = nameof(RequestRecipeMaterialListRefresh)
-        )]
+        [BoolConfig(OnChange = nameof(RequestRecipeMaterialListRefresh))]
         public bool DisableClickToOpenMapForCrystals = true;
 
-        [ConfigField(
-            Label = "Auto-refresh Material List",
-            Description = "Refreshes the material list after an item has been bought, crafted, fished or gathered."
-        )]
+        [BoolConfig]
         public bool AutoRefreshMaterialList = true;
 
-        [ConfigField(
-            Label = "Auto-refresh Recipe Tree",
-            Description = "Refreshes the recipe tree after an item has been bought, crafted, fished or gathered."
-        )]
+        [BoolConfig]
         public bool AutoRefreshRecipeTree = true;
 
-        [ConfigField(
-            Label = "Restore Material List on Login",
-            Description = "The material list will reopen with the same recipe and quantity each time you log in as long as the window is locked.",
-            OnChange = nameof(SaveRestoreMaterialList)
-        )]
+        [BoolConfig(OnChange = nameof(SaveRestoreMaterialList))]
         public bool RestoreMaterialList = true;
 
-        [ConfigField(Type = ConfigFieldTypes.Ignore)]
         public uint RestoreMaterialListRecipeId = 0;
-
-        [ConfigField(Type = ConfigFieldTypes.Ignore)]
         public uint RestoreMaterialListAmount = 0;
 
-        [ConfigField(
-            Label = "Add \"Search for Item by Crafting Method\" context menu entry",
-            Description = "For the result item. No more need to open the recipe tree first."
-        )]
+        [BoolConfig]
         public bool AddSearchForItemByCraftingMethodContextMenuEntry = true; // yep, i spelled it out
     }
 

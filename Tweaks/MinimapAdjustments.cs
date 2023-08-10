@@ -10,19 +10,19 @@ public unsafe class MinimapAdjustments : Tweak
 
     public class Configuration
     {
-        [ConfigField(Label = "Square Collision", Description = "Changes collision box to from round to square.")]
+        [BoolConfig]
         public bool Square = false;
 
-        [ConfigField(Label = "Default Opacity", Max = 1, DefaultValue = 0.8f)]
+        [FloatConfig(Max = 1, DefaultValue = 0.8f)]
         public float DefaultOpacity = 0.8f;
 
-        [ConfigField(Label = "Hover Opacity", Max = 1, DefaultValue = 1f)]
+        [FloatConfig(Max = 1, DefaultValue = 1)]
         public float HoverOpacity = 1f;
 
-        [ConfigField(Label = "Hide Coordinates", Description = "Visible on hover.", OnChange = nameof(OnConfigChange))]
+        [BoolConfig(OnChange = nameof(OnConfigChange))]
         public bool HideCoords = true;
 
-        [ConfigField(Label = "Hide Weather", Description = "Visible on hover.", OnChange = nameof(OnConfigChange))]
+        [BoolConfig(OnChange = nameof(OnConfigChange))]
         public bool HideWeather = true;
     }
 

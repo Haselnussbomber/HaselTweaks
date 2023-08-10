@@ -35,7 +35,7 @@ public record SavedPreset
     {
         var config = Plugin.Config.Tweaks.PortraitHelper;
 
-        var thumbPath = config.GetPortraitThumbnailPath(TextureHash);
+        var thumbPath = Tweaks.PortraitHelper.Configuration.GetPortraitThumbnailPath(TextureHash);
         if (File.Exists(thumbPath))
         {
             try

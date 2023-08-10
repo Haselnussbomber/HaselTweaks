@@ -17,7 +17,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
 
     public class Configuration
     {
-        [ConfigField(Label = "Disable Tooltips", OnChange = nameof(OnTooltipConfigChange))]
+        [BoolConfig(OnChange = nameof(OnTooltipConfigChange))]
         public bool DisableTooltips = false;
     }
 

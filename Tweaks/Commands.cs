@@ -24,13 +24,13 @@ public unsafe class Commands : Tweak
 
     public class Configuration
     {
-        [ConfigField(Label = ItemLinkCommand, Description = "Prints an item link for the given item id in chat.\nUsage: {ItemLinkCommand} <id>", OnChange = nameof(OnConfigChange))]
+        [BoolConfig(OnChange = nameof(OnConfigChange))]
         public bool EnableItemLinkCommand = true;
 
-        [ConfigField(Label = WhatMountCommand, Description = "Target a player and execute the command to see what mount\nyour target is riding and which item teaches this mount.", OnChange = nameof(OnConfigChange))]
+        [BoolConfig(OnChange = nameof(OnConfigChange))]
         public bool EnableWhatMountCommand = true;
 
-        [ConfigField(Label = WhatBardingCommand, Description = "Target a players chocobo companion and execute the command to see\nwhat barding it is wearing.", OnChange = nameof(OnConfigChange))]
+        [BoolConfig(OnChange = nameof(OnConfigChange))]
         public bool EnableWhatBardingCommand = true;
     }
 

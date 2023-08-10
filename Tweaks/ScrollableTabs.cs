@@ -17,76 +17,76 @@ public unsafe partial class ScrollableTabs : Tweak
 
     public class Configuration
     {
-        [ConfigField]
+        [BoolConfig]
         public bool Invert = true;
 
-        [ConfigField(Label = "Enable in Aether Currents")]
+        [BoolConfig]
         public bool HandleAetherCurrent = true;
 
-        [ConfigField(Label = "Enable in Armoury Chest")]
+        [BoolConfig]
         public bool HandleArmouryBoard = true;
 
-        [ConfigField(Label = "Enable in Blue Magic Spellbook")]
+        [BoolConfig]
         public bool HandleAOZNotebook = true;
 
-        [ConfigField(Label = "Enable in Character")]
+        [BoolConfig]
         public bool HandleCharacter = true;
 
-        [ConfigField(Label = "Enable in Character -> Classes/Jobs")]
+        [BoolConfig]
         public bool HandleCharacterClass = true;
 
-        [ConfigField(Label = "Enable in Character -> Reputation")]
+        [BoolConfig]
         public bool HandleCharacterRepute = true;
 
-        [ConfigField(Label = "Enable in Chocobo Saddlebag", Description = "The second tab requires a subscription to the Companion Premium Service")]
+        [BoolConfig]
         public bool HandleInventoryBuddy = true;
 
-        [ConfigField(Label = "Enable in Companion")]
+        [BoolConfig]
         public bool HandleBuddy = true;
 
-        [ConfigField(Label = "Enable in Currency")]
+        [BoolConfig]
         public bool HandleCurrency = true;
 
-        [ConfigField(Label = "Enable in Fashion Accessories")]
+        [BoolConfig]
         public bool HandleOrnamentNoteBook = true;
 
-        [ConfigField(Label = "Enable in Field Records")]
+        [BoolConfig]
         public bool HandleFieldRecord = true;
 
-        [ConfigField(Label = "Enable in Fish Guide")]
+        [BoolConfig]
         public bool HandleFishGuide = true;
 
-        [ConfigField(Label = "Enable in Glamour Dresser", Description = "Scrolls pages, not tabs.")]
+        [BoolConfig]
         public bool HandleMiragePrismPrismBox = true;
 
-        [ConfigField(Label = "Enable in Gold Saucer -> Card List")]
+        [BoolConfig]
         public bool HandleGoldSaucerCardList = true;
 
-        [ConfigField(Label = "Enable in Gold Saucer -> Decks -> Edit Deck")]
+        [BoolConfig]
         public bool HandleGoldSaucerCardDeckEdit = true;
 
-        [ConfigField(Label = "Enable in Gold Saucer -> Lord of Verminion -> Minion Hotbar")]
+        [BoolConfig]
         public bool HandleLovmPaletteEdit = true;
 
-        [ConfigField(Label = "Enable in Inventory")]
+        [BoolConfig]
         public bool HandleInventory = true;
 
-        [ConfigField(Label = "Enable in Island Minion Guide")]
+        [BoolConfig]
         public bool HandleMJIMinionNoteBook = true;
 
-        [ConfigField(Label = "Enable in Minions")]
+        [BoolConfig]
         public bool HandleMinionNoteBook = true;
 
-        [ConfigField(Label = "Enable in Mounts")]
+        [BoolConfig]
         public bool HandleMountNoteBook = true;
 
-        [ConfigField(Label = "Enable in Retainer Inventory")]
+        [BoolConfig]
         public bool HandleRetainer = true;
 
-        [ConfigField(Label = "Enable in Shared FATE")]
+        [BoolConfig]
         public bool HandleFateProgress = true;
 
-        [ConfigField(Label = "Enable in Sightseeing Log")]
+        [BoolConfig]
         public bool HandleAdventureNoteBook = true;
     }
 

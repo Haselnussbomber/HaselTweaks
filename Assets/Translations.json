@@ -53,143 +53,24 @@
   "HaselTweaks.Config.TweakStatus.Disabled": {
     "en": "Disabled"
   },
+  "HaselTweaks.Config.ResetToDefault": {
+    "en": "Reset to Default: {0}"
+  },
+
   "AetherCurrentHelper.Tweak.Name": {
     "en": "Aether Current Helper"
   },
   "AetherCurrentHelper.Tweak.Description": {
     "en": "Clicking on a zone in the Aether Currents window opens a helper window that shows where to find the aether currents or which quests unlocks them. Clicking on an aether current in the list flags the position of the aether current or the quest giver on the map."
   },
-  "AutoOpenRecipe.Tweak.Name": {
-    "en": "Auto-open Recipe"
+  "AetherCurrentHelper.Config.AlwaysShowDistance.Label": {
+    "en": "Show distance instead of checkmark when unlocked"
   },
-  "AutoOpenRecipe.Tweak.Description": {
-    "en": "When a new daily/tribal quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe."
+  "AetherCurrentHelper.Config.CenterDistance.Label": {
+    "en": "Center distance column"
   },
-  "AutoSorter.Tweak.Name": {
-    "en": "Auto Sorter"
-  },
-  "AutoSorter.Tweak.Description": {
-    "en": "Sorts items inside various containers when they are opened."
-  },
-  "BackgroundMusicKeybind.Tweak.Name": {
-    "en": "Background Music Keybind"
-  },
-  "BackgroundMusicKeybind.Tweak.Description": {
-    "en": "A configurable keybind to toggle the background music."
-  },
-  "CharacterClassSwitcher.Tweak.Name": {
-    "en": "Character Class Switcher"
-  },
-  "CharacterClassSwitcher.Tweak.Description": {
-    "en": "Clicking on a class/job in the character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window."
-  },
-  "Commands.Tweak.Name": {
-    "en": "Commands"
-  },
-  "Commands.Tweak.Description": {
-    "en": "A variety of useful chat commands."
-  },
-  "CustomChatTimestamp.Tweak.Name": {
-    "en": "Custom Chat Timestamp"
-  },
-  "CustomChatTimestamp.Tweak.Description": {
-    "en": "As it says, configurable chat timestamp format."
-  },
-  "DTR.Tweak.Name": {
-    "en": "DTR"
-  },
-  "DTR.Tweak.Description": {
-    "en": "Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar."
-  },
-  "EnhancedExpBar.Tweak.Name": {
-    "en": "Enhanced Experience Bar"
-  },
-  "EnhancedExpBar.Tweak.Description": {
-    "en": "Enhances the Experience Bar with the following modes:\n\n- The PvP Series Bar shows series rank and experience. A little * after the rank indicates a claimable rank-up reward.\n\n- The Sanctuary Bar shows sanctuary level and island experience."
-  },
-  "EnhancedLoginLogout.Tweak.Name": {
-    "en": "Enhanced Login/Logout"
-  },
-  "EnhancedLoginLogout.Tweak.Description": {
-    "en": "Enhances login and logout."
-  },
-  "EnhancedMaterialList.Tweak.Name": {
-    "en": "Enhanced Material List"
-  },
-  "EnhancedMaterialList.Tweak.Description": {
-    "en": "Enhances the Material List (and Recipe Tree)."
-  },
-  "ExpertDeliveries.Tweak.Name": {
-    "en": "Expert Deliveries"
-  },
-  "ExpertDeliveries.Tweak.Description": {
-    "en": "Always opens the \"Grand Company Delivery Missions\" window on the \"Expert Delivery\" tab."
-  },
-  "ForcedCutsceneMusic.Tweak.Name": {
-    "en": "Forced Cutscene Music"
-  },
-  "ForcedCutsceneMusic.Tweak.Description": {
-    "en": "Auto-unmutes background music for most cutscenes."
-  },
-  "GearSetGrid.Tweak.Name": {
-    "en": "Gear Set Grid"
-  },
-  "GearSetGrid.Tweak.Description": {
-    "en": "A window that displays a grid view of all the items of each gear set."
-  },
-  "HideMSQComplete.Tweak.Name": {
-    "en": "Hide MSQ Complete"
-  },
-  "HideMSQComplete.Tweak.Description": {
-    "en": "Hides the Main Scenario Guide when the MSQ is completed. Job quests are still being displayed."
-  },
-  "KeepScreenAwake.Tweak.Name": {
-    "en": "Keep Screen Awake"
-  },
-  "KeepScreenAwake.Tweak.Description": {
-    "en": "Prevents the screen from going into standby."
-  },
-  "LockWindowPosition.Tweak.Name": {
-    "en": "Lock Window Position"
-  },
-  "LockWindowPosition.Tweak.Description": {
-    "en": "Lock window positions so they can't move."
-  },
-  "MaterialAllocation.Tweak.Name": {
-    "en": "Material Allocation"
-  },
-  "MaterialAllocation.Tweak.Description": {
-    "en": "Enhances the Island Sanctuarys \"Material Allocation\" window."
-  },
-  "MinimapAdjustments.Tweak.Name": {
-    "en": "Minimap Adjustments"
-  },
-  "MinimapAdjustments.Tweak.Description": {
-    "en": "Mini changes for the Minimap. :)"
-  },
-  "PortraitHelper.Tweak.Name": {
-    "en": "Portrait Helper"
-  },
-  "PortraitHelper.Tweak.Description": {
-    "en": "A helper for editing portraits."
-  },
-  "RevealDutyRequirements.Tweak.Name": {
-    "en": "Reveal Duty Requirements"
-  },
-  "RevealDutyRequirements.Tweak.Description": {
-    "en": "Reveals duty names in duty finder, which were shown as \"???\". Useful for unlocking Mentor roulette."
-  },
-  "ScrollableTabs.Tweak.Name": {
-    "en": "Scrollable Tabs"
-  },
-  "ScrollableTabs.Tweak.Description": {
-    "en": "Enables mouse wheel to switch tabs (like with LB/RB on controllers)."
-  },
-  "SearchTheMarkets.Tweak.Name": {
-    "en": "Search the markets"
-  },
-  "SearchTheMarkets.Tweak.Description": {
-    "en": "Adds an entry to item context menus that allows you to quickly search for the item on the market board. Only visible when market board is open!\n\nSupports context menus in the following windows:\n- Chat\n- Crafting Log\n- Ehcatl Nine Delivery Quests (via /timers)\n- Grand Company Delivery Missions (via /timers)\n- Inventory\n- Materials List\n- Recipe Tree\n"
+  "AetherCurrentHelper.Config.CenterDistance.Description": {
+    "en": "Disable this if you have problems with the window endlessly expanding to the right"
   },
   "AetherCurrentHelper.AllAetherCurrentsAttuned": {
     "en": "All aether currents attuned!",
@@ -197,11 +78,67 @@
     "fr": "Toutes les sources d'éther sont réunies !",
     "ja": "すべてのエーテル風車を結集！"
   },
+
+  "AutoOpenRecipe.Tweak.Name": {
+    "en": "Auto-open Recipe"
+  },
+  "AutoOpenRecipe.Tweak.Description": {
+    "en": "When a new daily/tribal quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe."
+  },
+
+  "AutoSorter.Tweak.Name": {
+    "en": "Auto Sorter"
+  },
+  "AutoSorter.Tweak.Description": {
+    "en": "Sorts items inside various containers when they are opened."
+  },
+
+  "BackgroundMusicKeybind.Tweak.Name": {
+    "en": "Background Music Keybind"
+  },
+  "BackgroundMusicKeybind.Tweak.Description": {
+    "en": "A configurable keybind to toggle the background music."
+  },
+
+  "CharacterClassSwitcher.Tweak.Name": {
+    "en": "Character Class Switcher"
+  },
+  "CharacterClassSwitcher.Tweak.Description": {
+    "en": "Clicking on a class/job in the character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window."
+  },
+  "CharacterClassSwitcher.Config.DisableTooltips.Label": {
+    "en": "Disable Tooltips"
+  },
   "CharacterClassSwitcher.NoSuitableGearsetFound": {
     "en": "Couldn't find a suitable gearset.",
     "de": "Konnte kein passendes Ausrüstungsset finden.",
     "fr": "Impossible de trouver un ensemble d'équipement adapté.",
     "ja": "適切なギアセットが見つかりませんでした。"
+  },
+
+  "Commands.Tweak.Name": {
+    "en": "Commands"
+  },
+  "Commands.Tweak.Description": {
+    "en": "A variety of useful chat commands."
+  },
+  "Commands.Config.EnableItemLinkCommand.Label": {
+    "en": "/itemlink"
+  },
+  "Commands.Config.EnableItemLinkCommand.Description": {
+    "en": "Prints an item link for the given item id in chat.\nUsage: {ItemLinkCommand} <id>"
+  },
+  "Commands.Config.EnableWhatMountCommand.Label": {
+    "en": "/whatmount"
+  },
+  "Commands.Config.EnableWhatMountCommand.Description": {
+    "en": "Target a player and execute the command to see what mount\nyour target is riding and which item teaches this mount."
+  },
+  "Commands.Config.EnableWhatBardingCommand.Label": {
+    "en": "/whatbarding"
+  },
+  "Commands.Config.EnableWhatBardingCommand.Description": {
+    "en": "Target a players chocobo companion and execute the command to see\nwhat barding it is wearing."
   },
   "Commands.ItemLink.ItemNotFound": {
     "en": "Item {0} not found.",
@@ -247,6 +184,159 @@
     "fr": "Monture {0} apprise auprès de {1}.",
     "ja": "{0} のマウントは {1} によって教えられています。"
   },
+
+  "CustomChatTimestamp.Tweak.Name": {
+    "en": "Custom Chat Timestamp"
+  },
+  "CustomChatTimestamp.Tweak.Description": {
+    "en": "As it says, configurable chat timestamp format."
+  },
+
+  "DTR.Tweak.Name": {
+    "en": "DTR"
+  },
+  "DTR.Tweak.Description": {
+    "en": "Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar."
+  },
+
+  "EnhancedExpBar.Tweak.Name": {
+    "en": "Enhanced Experience Bar"
+  },
+  "EnhancedExpBar.Tweak.Description": {
+    "en": "Enhances the Experience Bar with the following modes:\n\n- The PvP Series Bar shows series rank and experience. A little * after the rank indicates a claimable rank-up reward.\n\n- The Sanctuary Bar shows sanctuary level and island experience."
+  },
+  "EnhancedExpBar.Config.ForcePvPSeriesBar.Label": {
+    "en": "Always show PvP Series Bar in PvP Areas"
+  },
+  "EnhancedExpBar.Config.ForceSanctuaryBar.Label": {
+    "en": "Always show Sanctuary Bar on the Island"
+  },
+  "EnhancedExpBar.Config.ForceCompanionBar.Label": {
+    "en": "Always show Companion Bar when chocobo companion summoned"
+  },
+  "EnhancedExpBar.Config.SanctuaryBarHideJob.Label": {
+    "en": "Hide Job on Sanctuary Bar"
+  },
+  "EnhancedExpBar.Config.MaxLevelOverride.Label": {
+    "en": "Max Level Override"
+  },
+  "EnhancedExpBar.Config.MaxLevelOverride.Description": {
+    "en": "Will switch to the selected bar if your current job is on max level and none of the settings above apply."
+  },
+  "EnhancedExpBar.Config.MaxLevelOverride.Options.Default.Label": {
+    "en": "Default"
+  },
+  "EnhancedExpBar.Config.MaxLevelOverride.Options.PvPSeriesBar.Label": {
+    "en": "PvP Series Bar"
+  },
+  "EnhancedExpBar.Config.MaxLevelOverride.Options.CompanionBar.Label": {
+    "en": "Companion Bar"
+  },
+  "EnhancedExpBar.Config.DisableColorChanges.Label": {
+    "en": "Disable color change"
+  },
+
+
+  "EnhancedLoginLogout.Tweak.Name": {
+    "en": "Enhanced Login/Logout"
+  },
+  "EnhancedLoginLogout.Tweak.Description": {
+    "en": "Enhances login and logout."
+  },
+
+  "EnhancedMaterialList.Tweak.Name": {
+    "en": "Enhanced Material List"
+  },
+  "EnhancedMaterialList.Tweak.Description": {
+    "en": "Enhances the Material List (and Recipe Tree)."
+  },
+  "EnhancedMaterialList.Config.EnableZoneNames.Label": {
+    "en": "Enable Zone Names"
+  },
+  "EnhancedMaterialList.Config.EnableZoneNames.Description": {
+    "en": "The zone with the lowest teleportation cost is displayed.\nA green zone name means it's the current zone.\nSince space is limited it has to shorten the item and zone name."
+  },
+  "EnhancedMaterialList.Config.DisableZoneNameForCrystals.Label": {
+    "en": "Disable for Crystals"
+  },
+  "EnhancedMaterialList.Config.ClickToOpenMap.Label": {
+    "en": "Enable click to open Map"
+  },
+  "EnhancedMaterialList.Config.DisableClickToOpenMapForCrystals.Label": {
+    "en": "Disable for Crystals"
+  },
+  "EnhancedMaterialList.Config.AutoRefreshMaterialList.Label": {
+    "en": "Auto-refresh Material List"
+  },
+  "EnhancedMaterialList.Config.AutoRefreshMaterialList.Description": {
+    "en": "Refreshes the material list after an item has been bought, crafted, fished or gathered."
+  },
+  "EnhancedMaterialList.Config.AutoRefreshRecipeTree.Label": {
+    "en": "Auto-refresh Recipe Tree"
+  },
+  "EnhancedMaterialList.Config.AutoRefreshRecipeTree.Description": {
+    "en": "Refreshes the recipe tree after an item has been bought, crafted, fished or gathered."
+  },
+  "EnhancedMaterialList.Config.RestoreMaterialList.Label": {
+    "en": "Restore Material List on Login"
+  },
+  "EnhancedMaterialList.Config.RestoreMaterialList.Description": {
+    "en": "The material list will reopen with the same recipe and quantity each time you log in as long as the window is locked."
+  },
+  "EnhancedMaterialList.Config.AddSearchForItemByCraftingMethodContextMenuEntry.Label": {
+    "en": "Add \"Search for Item by Crafting Method\" context menu entry"
+  },
+  "EnhancedMaterialList.Config.AddSearchForItemByCraftingMethodContextMenuEntry.Description": {
+    "en": "For the result item. No more need to open the recipe tree first."
+  },
+
+  "ExpertDeliveries.Tweak.Name": {
+    "en": "Expert Deliveries"
+  },
+  "ExpertDeliveries.Tweak.Description": {
+    "en": "Always opens the \"Grand Company Delivery Missions\" window on the \"Expert Delivery\" tab."
+  },
+
+  "ForcedCutsceneMusic.Tweak.Name": {
+    "en": "Forced Cutscene Music"
+  },
+  "ForcedCutsceneMusic.Tweak.Description": {
+    "en": "Auto-unmutes background music for most cutscenes."
+  },
+  "EnhancedMaterialList.Config.Restore.Label": {
+    "en": "Restore mute state after cutscene"
+  },
+
+  "GearSetGrid.Tweak.Name": {
+    "en": "Gear Set Grid"
+  },
+  "GearSetGrid.Tweak.Description": {
+    "en": "A window that displays a grid view of all the items of each gear set."
+  },
+  "GearSetGrid.Config.AutoOpenWithGearSetList.Label": {
+    "en": "Auto-open/close with Gear Set List"
+  },
+  "GearSetGrid.Config.RegisterCommand.Label": {
+    "en": "Register /gsg command to toggle window"
+  },
+  "GearSetGrid.Config.AllowSwitchingGearsets.Label": {
+    "en": "Allow switching gearsets"
+  },
+  "GearSetGrid.Config.AllowSwitchingGearsets.Description": {
+    "en": "Makes the id column clickable."
+  },
+  "GearSetGrid.Config.ConvertSeparators.Label": {
+    "en": "Convert separator gear set with spacing"
+  },
+  "GearSetGrid.Config.ConvertSeparators.Description": {
+    "en": "When using separator gear sets (e.g. a gearset with name ===========) this option automatically converts it into spacing between rows (in the Gear Set Grid)."
+  },
+  "GearSetGrid.Config.SeparatorFilter.Label": {
+    "en": "Gear set name of the separator"
+  },
+  "GearSetGrid.Config.DisableSeparatorSpacing.Label": {
+    "en": "Disable spacing"
+  },
   "GearSetGridWindow.ItemTooltip.LabelGlamour": {
     "en": "Glamour:",
     "de": "Projektion:"
@@ -261,6 +351,27 @@
     "fr": "Aussi utilisé dans ces ensembles d'équipement :",
     "ja": "これらのギアセットでも使用されます："
   },
+
+  "HideMSQComplete.Tweak.Name": {
+    "en": "Hide MSQ Complete"
+  },
+  "HideMSQComplete.Tweak.Description": {
+    "en": "Hides the Main Scenario Guide when the MSQ is completed. Job quests are still being displayed."
+  },
+
+  "KeepScreenAwake.Tweak.Name": {
+    "en": "Keep Screen Awake"
+  },
+  "KeepScreenAwake.Tweak.Description": {
+    "en": "Prevents the screen from going into standby."
+  },
+
+  "LockWindowPosition.Tweak.Name": {
+    "en": "Lock Window Position"
+  },
+  "LockWindowPosition.Tweak.Description": {
+    "en": "Lock window positions so they can't move."
+  },
   "LockWindowPosition.LockPosition": {
     "en": "Lock Position",
     "de": "Position sperren",
@@ -273,12 +384,175 @@
     "fr": "Déverrouiller la position",
     "ja": "ポジションのロック解除"
   },
+
+  "MaterialAllocation.Tweak.Name": {
+    "en": "Material Allocation"
+  },
+  "MaterialAllocation.Tweak.Description": {
+    "en": "Enhances the Island Sanctuarys \"Material Allocation\" window."
+  },
+  "MaterialAllocation.Config.SaveLastSelectedTab.Label": {
+    "en": "Save last selected tab between game sessions"
+  },
+  "MaterialAllocation.Config.OpenGatheringLogOnItemClick.Label": {
+    "en": "Open Sanctuary Gathering Log for gatherable items"
+  },
+
+  "MinimapAdjustments.Tweak.Name": {
+    "en": "Minimap Adjustments"
+  },
+  "MinimapAdjustments.Tweak.Description": {
+    "en": "Mini changes for the Minimap. :)"
+  },
+  "MinimapAdjustments.Config.Square.Label": {
+    "en": "Square Collision"
+  },
+  "MinimapAdjustments.Config.Square.Description": {
+    "en": "Changes collision box to from round to square."
+  },
+  "MinimapAdjustments.Config.DefaultOpacity.Label": {
+    "en": "Default Opacity"
+  },
+  "MinimapAdjustments.Config.HoverOpacity.Label": {
+    "en": "Hover Opacity"
+  },
+  "MinimapAdjustments.Config.HideCoords.Label": {
+    "en": "Hide Coordinates"
+  },
+  "MinimapAdjustments.Config.HideCoords.Description": {
+    "en": "Visible on hover."
+  },
+  "MinimapAdjustments.Config.HideWeather.Label": {
+    "en": "Hide Weather"
+  },
+  "MinimapAdjustments.Config.HideWeather.Description": {
+    "en": "Visible on hover."
+  },
+
+  "PortraitHelper.Tweak.Name": {
+    "en": "Portrait Helper"
+  },
+  "PortraitHelper.Tweak.Description": {
+    "en": "A helper for editing portraits."
+  },
   "PortraitHelper.GearChecksumMismatch": {
     "en": "Current appearance and/or gear does not match that shown in portrait.",
     "de": "Momentan angelegte Ausrüstung und Aussehen weichen vom Portrait ab.",
     "fr": "La tenue que vous portez ou votre apparence ne correspondent pas à celles de votre portrait instantané.",
     "ja": "現在の外見や装備がポートレートと一致していません。"
   },
+  "PortraitHelper.Config.NotifyGearChecksumMismatch.Label": {
+    "en": "Notify if appearance and/or gear doesn't match Portait"
+  },
+  "PortraitHelper.Config.NotifyGearChecksumMismatch.Description": {
+    "en": "Prints a notification in chat which can be clicked to open the Portrait Editor."
+  },
+  "PortraitHelper.Config.ReequipGearsetOnUpdate.Label": {
+    "en": "Try to fix by automatically re-equipping Gearset to reapply Glamour Plate"
+  },
+  "PortraitHelper.Config.ReequipGearsetOnUpdate.Description": {
+    "en": "Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state."
+  },
+
+  "RevealDutyRequirements.Tweak.Name": {
+    "en": "Reveal Duty Requirements"
+  },
+  "RevealDutyRequirements.Tweak.Description": {
+    "en": "Reveals duty names in duty finder, which were shown as \"???\". Useful for unlocking Mentor roulette."
+  },
+
+  "ScrollableTabs.Tweak.Name": {
+    "en": "Scrollable Tabs"
+  },
+  "ScrollableTabs.Tweak.Description": {
+    "en": "Enables mouse wheel to switch tabs (like with LB/RB on controllers)."
+  },
+  "ScrollableTabs.Config.Invert.Label": {
+    "en": "Invert"
+  },
+  "ScrollableTabs.Config.HandleAetherCurrent.Label": {
+    "en": "Enable in Aether Currents"
+  },
+  "ScrollableTabs.Config.HandleArmouryBoard.Label": {
+    "en": "Enable in Armoury Chest"
+  },
+  "ScrollableTabs.Config.HandleAOZNotebook.Label": {
+    "en": "Enable in Blue Magic Spellbook"
+  },
+  "ScrollableTabs.Config.HandleCharacter.Label": {
+    "en": "Enable in Character"
+  },
+  "ScrollableTabs.Config.HandleCharacterClass.Label": {
+    "en": "Enable in Character -> Classes/Jobs"
+  },
+  "ScrollableTabs.Config.HandleCharacterRepute.Label": {
+    "en": "Enable in Character -> Reputation"
+  },
+  "ScrollableTabs.Config.HandleInventoryBuddy.Label": {
+    "en": "Enable in Chocobo Saddlebag"
+  },
+  "ScrollableTabs.Config.HandleInventoryBuddy.Description": {
+    "en": "The second tab requires a subscription to the Companion Premium Service"
+  },
+  "ScrollableTabs.Config.HandleBuddy.Label": {
+    "en": "Enable in Companion"
+  },
+  "ScrollableTabs.Config.HandleCurrency.Label": {
+    "en": "Enable in Currency"
+  },
+  "ScrollableTabs.Config.HandleOrnamentNoteBook.Label": {
+    "en": "Enable in Fashion Accessories"
+  },
+  "ScrollableTabs.Config.HandleFieldRecord.Label": {
+    "en": "Enable in Field Records"
+  },
+  "ScrollableTabs.Config.HandleFishGuide.Label": {
+    "en": "Enable in Fish Guide"
+  },
+  "ScrollableTabs.Config.HandleMiragePrismPrismBox.Label": {
+    "en": "Enable in Glamour Dresser"
+  },
+  "ScrollableTabs.Config.HandleMiragePrismPrismBox.Description": {
+    "en": "Scrolls pages, not tabs."
+  },
+  "ScrollableTabs.Config.HandleGoldSaucerCardList.Label": {
+    "en": "Enable in Gold Saucer -> Card List"
+  },
+  "ScrollableTabs.Config.HandleGoldSaucerCardDeckEdit.Label": {
+    "en": "Enable in Gold Saucer -> Decks -> Edit Deck"
+  },
+  "ScrollableTabs.Config.HandleLovmPaletteEdit.Label": {
+    "en": "Enable in Gold Saucer -> Lord of Verminion -> Minion Hotbar"
+  },
+  "ScrollableTabs.Config.HandleInventory.Label": {
+    "en": "Enable in Inventory"
+  },
+  "ScrollableTabs.Config.HandleMJIMinionNoteBook.Label": {
+    "en": "Enable in Island Minion Guide"
+  },
+  "ScrollableTabs.Config.HandleMinionNoteBook.Label": {
+    "en": "Enable in Minions"
+  },
+  "ScrollableTabs.Config.HandleMountNoteBook.Label": {
+    "en": "Enable in Mounts"
+  },
+  "ScrollableTabs.Config.HandleRetainer.Label": {
+    "en": "Enable in Retainer Inventory"
+  },
+  "ScrollableTabs.Config.HandleFateProgress.Label": {
+    "en": "Enable in Shared FATE"
+  },
+  "ScrollableTabs.Config.HandleAdventureNoteBook.Label": {
+    "en": "Enable in Sightseeing Log"
+  },
+
+  "SearchTheMarkets.Tweak.Name": {
+    "en": "Search the markets"
+  },
+  "SearchTheMarkets.Tweak.Description": {
+    "en": "Adds an entry to item context menus that allows you to quickly search for the item on the market board. Only visible when market board is open!\n\nSupports context menus in the following windows:\n- Chat\n- Crafting Log\n- Ehcatl Nine Delivery Quests (via /timers)\n- Grand Company Delivery Missions (via /timers)\n- Inventory\n- Materials List\n- Recipe Tree\n"
+  },
+
   "ItemSearch.SearchTheMarkets": {
     "en": "Search the markets",
     "de": "Auf den Märkten suchen",
@@ -297,6 +571,7 @@
     "fr": "Verrouiller la position",
     "ja": "ポジションをロックする"
   },
+
   "template": {
     "en": "",
     "de": "",
