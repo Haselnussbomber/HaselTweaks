@@ -169,7 +169,7 @@ public partial class PortraitHelper : Tweak
         if (addonName != "BannerEditor")
             return;
 
-        if (!TryGetAddon<AddonBannerEditor>(addonName, out var AddonBannerEditor))
+        if (!TryGetAddon(addonName, out AddonBannerEditor))
             return;
 
         if (MenuBar == null)
@@ -182,6 +182,8 @@ public partial class PortraitHelper : Tweak
     {
         if (addonName != "BannerEditor")
             return;
+
+        AddonBannerEditor = null;
 
         if (MenuBar != null)
             MenuBar.IsOpen = false;
