@@ -1,4 +1,58 @@
 {
+  "HaselTweaks.Config.DevGitHubLink.Tooltip": {
+    "en": "Compare changes"
+  },
+  "HaselTweaks.Config.ReleaseNotesLink.Tooltip": {
+    "en": "Visit Release Notes"
+  },
+  "HaselTweaks.Config.GitHubLink.Tooltip": {
+    "en": "Visit the HaselTweaks GitHub Repository"
+  },
+  "HaselTweaks.Config.KoFiLink.Tooltip": {
+    "en": "Support me on Ko-fi"
+  },
+  "HaselTweaks.Config.SectionTitle.IncompatibilityWarning": {
+    "en": "Incompatibility Warning"
+  },
+  "HaselTweaks.Config.SectionTitle.Configuration": {
+    "en": "Configuration"
+  },
+  "HaselTweaks.Config.IncompatibilityWarning.Single.Plugin": {
+    "en": "In order for this tweak to work properly, please make sure {0} is disabled."
+  },
+  "HaselTweaks.Config.IncompatibilityWarning.Single.PluginSetting": {
+    "en": "In order for this tweak to work properly, please make sure {0} is disabled in {1}."
+  },
+  "HaselTweaks.Config.IncompatibilityWarning.Single.PluginSettings": {
+    "en": "In order for this tweak to work properly, please make sure the following settings are disabled in {0}:"
+  },
+  "HaselTweaks.Config.IncompatibilityWarning.Multi.Preface": {
+    "en": "In order for this tweak to work properly, please make sure"
+  },
+  "HaselTweaks.Config.IncompatibilityWarning.Multi.Plugin": {
+    "en": "- {0} is disabled"
+  },
+  "HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSetting": {
+    "en": "- {0} is disabled in {1}"
+  },
+  "HaselTweaks.Config.IncompatibilityWarning.MultiPluginSettings": {
+    "en": "- the following settings are disabled in {0}:"
+  },
+  "HaselTweaks.Config.TweakStatus.Unknown": {
+    "en": "???"
+  },
+  "HaselTweaks.Config.TweakStatus.Outdated": {
+    "en": "Outdated"
+  },
+  "HaselTweaks.Config.TweakStatus.InitializationFailed": {
+    "en": "Initialization failed"
+  },
+  "HaselTweaks.Config.TweakStatus.Enabled": {
+    "en": "Enabled"
+  },
+  "HaselTweaks.Config.TweakStatus.Disabled": {
+    "en": "Disabled"
+  },
   "AetherCurrentHelper.Tweak.Name": {
     "en": "Aether Current Helper"
   },

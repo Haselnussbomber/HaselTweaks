@@ -284,23 +284,23 @@ public partial class PluginWindow : Window, IDisposable
 
             // links, bottom left
             ImGui.SetCursorPos(cursorPos + new Vector2(0, contentAvail.Y - ImGui.CalcTextSize(" ").Y));
-            ImGuiUtils.DrawLink("GitHub", "Visit the HaselTweaks GitHub Repository", "https://github.com/Haselnussbomber/HaselTweaks");
+            ImGuiUtils.DrawLink("GitHub", t("HaselTweaks.Config.GitHubLink.Tooltip"), "https://github.com/Haselnussbomber/HaselTweaks");
             ImGui.SameLine();
             ImGui.TextUnformatted("•");
             ImGui.SameLine();
-            ImGuiUtils.DrawLink("Ko-fi", "Support me on Ko-fi", "https://ko-fi.com/haselnussbomber");
+            ImGuiUtils.DrawLink("Ko-fi", t("HaselTweaks.Config.KoFiLink.Tooltip"), "https://ko-fi.com/haselnussbomber");
 
             // version, bottom right
 #if DEBUG
             ImGui.SetCursorPos(cursorPos + contentAvail - ImGui.CalcTextSize("dev"));
-            ImGuiUtils.DrawLink("dev", "Compare changes", $"https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev");
+            ImGuiUtils.DrawLink("dev", t("HaselTweaks.Config.DevGitHubLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev");
 #else
             var version = GetType().Assembly.GetName().Version;
             if (version != null)
             {
                 var versionString = "v" + VersionPatchZeroRegex().Replace(version.ToString(), "");
                 ImGui.SetCursorPos(cursorPos + contentAvail - ImGui.CalcTextSize(versionString));
-                ImGuiUtils.DrawLink(versionString, "Visit Release Notes", $"https://github.com/Haselnussbomber/HaselTweaks/releases/tag/{versionString}");
+                ImGuiUtils.DrawLink(versionString, t("HaselTweaks.Config.ReleaseNotesLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/releases/tag/{versionString}");
             }
 #endif
 
@@ -329,7 +329,7 @@ public partial class PluginWindow : Window, IDisposable
 
         if (tweak.IncompatibilityWarnings.Any(entry => entry.IsLoaded))
         {
-            ImGuiUtils.DrawSection("Incompatibility Warning");
+            ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.IncompatibilityWarning"));
             Service.TextureManager.GetIcon(60073).Draw(24);
             ImGui.SameLine();
             var cursorPosX = ImGui.GetCursorPosX();
@@ -341,38 +341,38 @@ public partial class PluginWindow : Window, IDisposable
                 {
                     if (entry.ConfigNames.Length == 0)
                     {
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, $"In order for this tweak to work properly, please make sure {entry.Name} is disabled.");
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Single.Plugin", entry.Name));
                     }
                     else if (entry.ConfigNames.Length == 1)
                     {
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, $"In order for this tweak to work properly, please make sure {entry.ConfigNames[0]} is disabled in {entry.Name}.");
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Single.PluginSetting", entry.ConfigNames[0], entry.Name));
                     }
                     else if (entry.ConfigNames.Length > 1)
                     {
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, $"In order for this tweak to work properly, please make sure the following settings are disabled in {entry.Name}:\n- {string.Join("\n- ", entry.ConfigNames)}");
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Single.PluginSettings", entry.Name) + $"\n- {string.Join("\n- ", entry.ConfigNames)}");
                     }
                 }
             }
             else if (tweak.IncompatibilityWarnings.Length > 1)
             {
-                ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, $"In order for this tweak to work properly, please make sure");
+                ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Multi.Preface"));
 
                 foreach (var entry in tweak.IncompatibilityWarnings.Where(entry => entry.IsLoaded))
                 {
                     if (entry.ConfigNames.Length == 0)
                     {
                         ImGui.SetCursorPosX(cursorPosX);
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, $"- {entry.Name} is disabled");
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Multi.Plugin", entry.Name));
                     }
                     else if (entry.ConfigNames.Length == 1)
                     {
                         ImGui.SetCursorPosX(cursorPosX);
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, $"- {entry.ConfigNames[0]} is disabled in {entry.Name}");
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSetting", entry.ConfigNames[0], entry.Name));
                     }
                     else if (entry.ConfigNames.Length > 1)
                     {
                         ImGui.SetCursorPosX(cursorPosX);
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, $"- the following settings are disabled in {entry.Name}:\n    - {string.Join("\n    - ", entry.ConfigNames)}");
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSettings", entry.Name) + $"\n    - {string.Join("\n    - ", entry.ConfigNames)}");
                     }
                 }
             }
@@ -390,7 +390,7 @@ public partial class PluginWindow : Window, IDisposable
         if (tweak.Flags.HasFlag(TweakFlags.HasCustomConfig))
         {
             if (!tweak.Flags.HasFlag(TweakFlags.NoCustomConfigHeader))
-                ImGuiUtils.DrawSection("Configuration");
+                ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
             tweak.DrawCustomConfig();
         }
         else
@@ -409,7 +409,7 @@ public partial class PluginWindow : Window, IDisposable
 
                 if (configFields.Any())
                 {
-                    ImGuiUtils.DrawSection("Configuration");
+                    ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
 
                     foreach (var (field, attr) in configFields)
                     {
@@ -504,27 +504,27 @@ public partial class PluginWindow : Window, IDisposable
 
     private static (string, ImColor) GetTweakStatus(Tweak tweak)
     {
-        var status = "???";
+        var status = t("HaselTweaks.Config.TweakStatus.Unknown");
         var color = Colors.Grey3;
 
         if (tweak.Outdated)
         {
-            status = "Outdated";
+            status = t("HaselTweaks.Config.TweakStatus.Outdated");
             color = Colors.Red;
         }
         else if (!tweak.Ready)
         {
-            status = "Initialization failed";
+            status = t("HaselTweaks.Config.TweakStatus.InitializationFailed");
             color = Colors.Red;
         }
         else if (tweak.Enabled)
         {
-            status = "Enabled";
+            status = t("HaselTweaks.Config.TweakStatus.Enabled");
             color = Colors.Green;
         }
         else if (!tweak.Enabled)
         {
-            status = "Disabled";
+            status = t("HaselTweaks.Config.TweakStatus.Disabled");
         }
 
         return (status, color);
@@ -689,7 +689,7 @@ public partial class PluginWindow : Window, IDisposable
         if (data.Attr?.DefaultValue != null)
         {
             ImGui.SameLine();
-            if (ImGuiUtils.IconButton($"##HaselTweaks_Config_{data.Tweak.InternalName}_{data.Field.Name}_Reset", FontAwesomeIcon.Undo, $"Reset to Default: {(T)data.Attr!.DefaultValue}"))
+            if (ImGuiUtils.IconButton($"##{data.Tweak.InternalName}_{data.Field.Name}_Reset", FontAwesomeIcon.Undo, $"Reset to Default: {(T)data.Attr!.DefaultValue}"))
             {
                 data.Value = (T)data.Attr!.DefaultValue;
             }
