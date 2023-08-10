@@ -35,7 +35,7 @@
     "en": "Appearance of {0}:",
     "de": "Aussehen von {0}:",
     "fr": "Apparence de {0}:",
-    "ja": "{} の外見："
+    "ja": "{0} の外見："
   },
   "Commands.WhatMount.TargetNotMounted": {
     "en": "Target is not mounted.",
