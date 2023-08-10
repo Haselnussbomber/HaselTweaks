@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Game.Text.SeStringHandling;
 using HaselTweaks.Structs;
@@ -14,10 +13,7 @@ public static unsafe class Strings
     public static string t(string key, params object?[] args)
         => Service.TranslationManager.Translate(key, args);
 
-    public static SeString t(string key, params IEnumerable<Payload>[] args)
-        => Service.TranslationManager.TranslateSeString(key, args);
-
-    public static SeString t(string key, params SeString[] args)
+    public static SeString tSe(string key, params SeString[] args)
         => Service.TranslationManager.TranslateSeString(key, args.Select(s => s.Payloads).ToArray());
 
     public static string GetAddonText(uint id)

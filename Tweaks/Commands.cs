@@ -127,7 +127,7 @@ public unsafe class Commands : Tweak
 
         var sb = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
-            .Append(t("Commands.ItemLink.Item", idStr, GetItemLink(id)));
+            .Append(tSe("Commands.ItemLink.Item", idStr, GetItemLink(id)));
 
         Service.ChatGui.PrintChat(new XivChatEntry
         {
@@ -187,7 +187,7 @@ public unsafe class Commands : Tweak
             Service.ChatGui.PrintChat(new XivChatEntry
             {
                 Message = sb
-                    .Append(t("Commands.WhatMount.WithoutItem", name))
+                    .Append(tSe("Commands.WhatMount.WithoutItem", name))
                     .Build(),
                 Type = XivChatType.Echo
             });
@@ -200,7 +200,7 @@ public unsafe class Commands : Tweak
             Service.ChatGui.PrintChat(new XivChatEntry
             {
                 Message = sb
-                    .Append(t("Commands.WhatMount.WithoutItem", name))
+                    .Append(tSe("Commands.WhatMount.WithoutItem", name))
                     .Build(),
                 Type = XivChatType.Echo
             });
@@ -208,7 +208,7 @@ public unsafe class Commands : Tweak
         }
 
         var seItemLink = GetItemLink(item.RowId);
-        sb.Append(t("Commands.WhatMount.WithItem", name, seItemLink));
+        sb.Append(tSe("Commands.WhatMount.WithItem", name, seItemLink));
 
         Service.ChatGui.PrintChat(new XivChatEntry
         {
@@ -245,7 +245,7 @@ public unsafe class Commands : Tweak
 
         var sb = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
-            .Append(t("Commands.WhatBarding.AppearanceOf", name))
+            .Append(tSe("Commands.WhatBarding.AppearanceOf", name))
             .Add(NewLinePayload.Payload)
             .AddText($"  {GetAddonText(4987)}: ")
             .Append(MemoryHelper.ReadSeStringNullTerminated((nint)RaptureTextModule.Instance()->FormatAddonText2(4986, (int)stain.RowId, 0))) // stain name

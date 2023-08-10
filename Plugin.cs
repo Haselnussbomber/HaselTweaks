@@ -192,7 +192,7 @@ public partial class Plugin : IDalamudPlugin
             }
             catch (Exception ex)
             {
-                PluginLog.Error(ex, $"Failed disposing tweak '{tweak.Name}'.");
+                PluginLog.Error(ex, $"Failed disposing tweak '{tweak.InternalName}'.");
             }
         }
 
