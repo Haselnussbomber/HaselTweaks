@@ -398,22 +398,18 @@ public partial class PluginWindow : Window, IDisposable
             return;
 
         var configType = config.GetType();
-        var configFields = configType.GetFields()
-            .Select(field =>
-            {
-                var attr = field.GetCustomAttribute<BaseConfigAttribute>();
-                return (field, attr);
-            })
-            .Where((fa) => fa.attr != null)
-            .Cast<(FieldInfo, BaseConfigAttribute)>();
-
+        var configFields = configType.GetFields();
         if (!configFields.Any())
             return;
 
         ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
 
-        foreach (var (field, attr) in configFields)
+        foreach (var field in configFields)
         {
+            var attr = field.GetCustomAttribute<BaseConfigAttribute>();
+            if (attr == null)
+                continue;
+
             using var fieldid = ImRaii.PushId(field.Name);
 
             var hasDependency = !string.IsNullOrEmpty(attr.DependsOn);
