@@ -10,6 +10,7 @@ on:
       - .gitattributes
       - .github/**
       - .gitignore
+      - Assets/Translations.json
       - CHANGELOG.md
       - LICENSE
       - README.md
