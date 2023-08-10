@@ -331,22 +331,29 @@ public partial class PluginWindow : Window, IDisposable
             ImGui.SameLine();
             var cursorPosX = ImGui.GetCursorPosX();
 
+            string getConfigName(string tweakName, string configName)
+                => t($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{tweakName}.Config.{configName}");
+
             if (tweak.IncompatibilityWarnings.Length == 1)
             {
                 var entry = tweak.IncompatibilityWarnings[0];
+                var pluginName = t($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Name");
+
                 if (entry.IsLoaded)
                 {
                     if (entry.ConfigNames.Length == 0)
                     {
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Single.Plugin", entry.Name));
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Single.Plugin", pluginName));
                     }
                     else if (entry.ConfigNames.Length == 1)
                     {
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Single.PluginSetting", entry.ConfigNames[0], entry.Name));
+                        var configName = getConfigName(entry.InternalName, entry.ConfigNames[0]);
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Single.PluginSetting", configName, pluginName));
                     }
                     else if (entry.ConfigNames.Length > 1)
                     {
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Single.PluginSettings", entry.Name) + $"\n- {string.Join("\n- ", entry.ConfigNames)}");
+                        var configNames = entry.ConfigNames.Select((configName) => t($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Config.{configName}"));
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Single.PluginSettings", pluginName) + $"\n- {string.Join("\n- ", configNames)}");
                     }
                 }
             }
@@ -356,20 +363,24 @@ public partial class PluginWindow : Window, IDisposable
 
                 foreach (var entry in tweak.IncompatibilityWarnings.Where(entry => entry.IsLoaded))
                 {
+                    var pluginName = t($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Name");
+
                     if (entry.ConfigNames.Length == 0)
                     {
                         ImGui.SetCursorPosX(cursorPosX);
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Multi.Plugin", entry.Name));
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Multi.Plugin", pluginName));
                     }
                     else if (entry.ConfigNames.Length == 1)
                     {
                         ImGui.SetCursorPosX(cursorPosX);
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSetting", entry.ConfigNames[0], entry.Name));
+                        var configName = t($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Config.{entry.ConfigNames[0]}");
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSetting", configName, pluginName));
                     }
                     else if (entry.ConfigNames.Length > 1)
                     {
                         ImGui.SetCursorPosX(cursorPosX);
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSettings", entry.Name) + $"\n    - {string.Join("\n    - ", entry.ConfigNames)}");
+                        var configNames = entry.ConfigNames.Select((configName) => t($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Config.{configName}"));
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, t("HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSettings", pluginName) + $"\n    - {string.Join("\n    - ", configNames)}");
                     }
                 }
             }

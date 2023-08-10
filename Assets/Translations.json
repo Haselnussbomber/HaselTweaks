@@ -38,6 +38,15 @@
   "HaselTweaks.Config.IncompatibilityWarning.MultiPluginSettings": {
     "en": "- the following settings are disabled in {0}:"
   },
+  "HaselTweaks.Config.IncompatibilityWarning.Plugin.SimpleTweaksPlugin.Name": {
+    "en": "Simple Tweaks"
+  },
+  "HaselTweaks.Config.IncompatibilityWarning.Plugin.SimpleTweaksPlugin.Config.CharacterWindowJobSwitcher": {
+    "en": "Character Window Job Switcher"
+  },
+  "HaselTweaks.Config.IncompatibilityWarning.Plugin.SimpleTweaksPlugin.Config.ShowExperiencePercentage": {
+    "en": "Show Experience Percentage"
+  },
   "HaselTweaks.Config.TweakStatus.Unknown": {
     "en": "???"
   },

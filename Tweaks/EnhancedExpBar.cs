@@ -13,7 +13,7 @@ using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
 namespace HaselTweaks.Tweaks;
 
 [Tweak]
-[IncompatibilityWarning("SimpleTweaksPlugin", "Simple Tweaks", "Show Experience Percentage")]
+[IncompatibilityWarning("SimpleTweaksPlugin", "ShowExperiencePercentage")]
 public unsafe partial class EnhancedExpBar : Tweak
 {
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedExpBar;

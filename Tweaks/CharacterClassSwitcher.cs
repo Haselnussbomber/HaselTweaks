@@ -10,7 +10,7 @@ using HaselTweaks.Utils;
 namespace HaselTweaks.Tweaks;
 
 [Tweak]
-[IncompatibilityWarning("SimpleTweaksPlugin", "Simple Tweaks", "Character Window Job Switcher")]
+[IncompatibilityWarning("SimpleTweaksPlugin", "CharacterWindowJobSwitcher")]
 public unsafe partial class CharacterClassSwitcher : Tweak
 {
     public static Configuration Config => Plugin.Config.Tweaks.CharacterClassSwitcher;
