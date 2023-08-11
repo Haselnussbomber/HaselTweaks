@@ -135,7 +135,7 @@ public class PresetCard : IDisposable
         {
             if (source.Success)
             {
-                ImGui.TextUnformatted($"Moving {_preset.Name}");
+                ImGui.TextUnformatted(t("PortraitHelperWindows.PresetCard.MovingPresetCard.Tooltip", _preset.Name));
 
                 unsafe
                 {
@@ -185,40 +185,40 @@ public class PresetCard : IDisposable
 
         if (ImGui.BeginPopupContextItem($"{_preset.Id}_Popup"))
         {
-            if (ImGui.MenuItem("Load Preset"))
+            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.LoadPreset.Label")))
             {
                 _overlay.Tweak.PresetToState(_preset.Preset, ImportFlags.All);
                 _overlay.Tweak.CloseWindows();
             }
 
-            if (ImGui.MenuItem("Edit Preset"))
+            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.EditPreset.Label")))
             {
                 _overlay.EditPresetDialog.Open(_preset);
             }
 
-            if (ImGui.MenuItem("Export to Clipboard"))
+            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.ExportToClipboard.Label")))
             {
                 _overlay.Tweak.PresetToClipboard(_preset.Preset);
             }
 
-            if (_image != null && ImGui.BeginMenu("Copy Image"))
+            if (_image != null && ImGui.BeginMenu(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Label")))
             {
-                if (ImGui.MenuItem("Everything"))
+                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Everything.Label")))
                 {
                     Task.Run(async () => await CopyImage());
                 }
 
-                if (ImGui.MenuItem("Without Frame"))
+                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrame.Label")))
                 {
                     Task.Run(async () => await CopyImage(CopyImageFlags.NoFrame));
                 }
 
-                if (ImGui.MenuItem("Without Decoration"))
+                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutDecoration.Label")))
                 {
                     Task.Run(async () => await CopyImage(CopyImageFlags.NoDecoration));
                 }
 
-                if (ImGui.MenuItem("Without Frame and Decoration"))
+                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrameAndDecoration.Label")))
                 {
                     Task.Run(async () => await CopyImage(CopyImageFlags.NoFrame | CopyImageFlags.NoDecoration));
                 }

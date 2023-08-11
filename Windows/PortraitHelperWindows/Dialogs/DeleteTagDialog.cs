@@ -17,12 +17,12 @@ public class DeleteTagDialog : ConfirmationDialog
     private SavedPresetTag? _tag;
     private bool _deletePortraits;
 
-    public DeleteTagDialog(PresetBrowserOverlay presetBrowserOverlay) : base("Delete Tag")
+    public DeleteTagDialog(PresetBrowserOverlay presetBrowserOverlay) : base(t("PortraitHelperWindows.DeleteTagDialog.Title"))
     {
         _presetBrowserOverlay = presetBrowserOverlay;
 
-        AddButton(new ConfirmationButton("Delete", OnDelete));
-        AddButton(new ConfirmationButton("Cancel", Close));
+        AddButton(new ConfirmationButton(t("ConfirmationButtonWindow.Delete"), OnDelete));
+        AddButton(new ConfirmationButton(t("ConfirmationButtonWindow.Cancel"), Close));
     }
 
     public void Open(SavedPresetTag tag)
@@ -43,9 +43,9 @@ public class DeleteTagDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        ImGuiUtils.TextUnformattedDisabled($"Do you really want to delete the tag \"{_tag!.Name}\"?");
+        ImGuiUtils.TextUnformattedDisabled(t("PortraitHelperWindows.DeleteTagDialog.Prompt", _tag!.Name));
         ImGui.Spacing();
-        ImGui.Checkbox("Delete portraits too", ref _deletePortraits);
+        ImGui.Checkbox(t("PortraitHelperWindows.DeleteTagDialog.DeletePortraitsToo.Label"), ref _deletePortraits);
     }
 
     private void OnDelete()

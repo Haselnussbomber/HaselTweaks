@@ -12,10 +12,10 @@ public class CreateTagDialog : ConfirmationDialog
 
     private string? _name;
 
-    public CreateTagDialog() : base("Create Tag")
+    public CreateTagDialog() : base(t("PortraitHelperWindows.CreateTagDialog.Title"))
     {
-        AddButton(_saveButton = new ConfirmationButton("Save", OnSave));
-        AddButton(new ConfirmationButton("Cancel", Close));
+        AddButton(_saveButton = new ConfirmationButton(t("ConfirmationButtonWindow.Save"), OnSave));
+        AddButton(new ConfirmationButton(t("ConfirmationButtonWindow.Cancel"), Close));
     }
 
     public void Open()
@@ -35,7 +35,7 @@ public class CreateTagDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        ImGui.TextUnformatted("Enter a name for the new tag:");
+        ImGui.TextUnformatted(t("PortraitHelperWindows.CreateTagDialog.Name.Label"));
 
         ImGui.Spacing();
 

@@ -26,7 +26,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
     private int _reorderTagOldIndex = -1;
     private int _reorderTagNewIndex = -1;
 
-    public PresetBrowserOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper: Preset Browser", tweak)
+    public PresetBrowserOverlay(PortraitHelper tweak) : base(t("PortraitHelperWindows.PresetBrowserOverlay.Title"), tweak)
     {
         DeleteTagDialog = new(this);
         DeletePresetDialog = new(this);
@@ -96,7 +96,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         {
             if (source.Success)
             {
-                ImGuiUtils.TextUnformattedDisabled($"Moving {tag.Name}");
+                ImGuiUtils.TextUnformattedDisabled(t("PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip", tag.Name));
 
                 var bytes = tag.Id.ToByteArray();
                 fixed (byte* ptr = bytes)
@@ -134,22 +134,22 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         if (ImGui.BeginPopupContextItem($"##PresetBrowser_SideBar_Tag{tag.Id}Popup"))
         {
-            if (ImGui.MenuItem("Create Tag"))
+            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label")))
             {
                 CreateTagDialog.Open();
             }
 
-            if (ImGui.MenuItem("Rename Tag"))
+            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RenameTag.Label")))
             {
                 RenameTagDialog.Open(tag);
             }
 
-            if (ImGui.MenuItem("Remove Tag"))
+            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveTag.Label")))
             {
                 DeleteTagDialog.Open(tag);
             }
 
-            if (ImGui.MenuItem("Remove unused Tags"))
+            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTag.Label")))
             {
                 removeUnusedTags = true;
             }
@@ -172,7 +172,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         var removeUnusedTags = false;
 
-        ImGuiUtils.TextUnformattedColored(Colors.Gold, "Tags");
+        ImGuiUtils.TextUnformattedColored(Colors.Gold, t("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Tags.Title"));
         ImGuiUtils.PushCursorY(-style.ItemSpacing.Y + 3);
         ImGui.Separator();
         ImGuiUtils.PushCursorY(style.ItemSpacing.Y);
@@ -213,7 +213,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             ImGuiTreeNodeFlags.Leaf |
             (SelectedTagId == null ? ImGuiTreeNodeFlags.Selected : ImGuiTreeNodeFlags.None);
 
-        using var allTreeNode = ImRaii.TreeNode($"All ({Config.Presets.Count})##PresetBrowser_SideBar_All", treeNodeFlags);
+        using var allTreeNode = ImRaii.TreeNode(t("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.AllTags.Title", Config.Presets.Count.ToString()) + $"##PresetBrowser_SideBar_All", treeNodeFlags);
         if (!allTreeNode.Success)
             return;
 
@@ -222,10 +222,10 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         if (ImGui.BeginPopupContextItem("##PresetBrowser_SideBar_AllPopup"))
         {
-            if (ImGui.MenuItem("Create Tag"))
+            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label")))
                 CreateTagDialog.Open();
 
-            if (ImGui.MenuItem("Remove unused Tags"))
+            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label")))
                 removeUnusedTags = true;
 
             ImGui.EndPopup();
@@ -267,7 +267,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         var style = ImGui.GetStyle();
 
         ImGuiUtils.PushCursorX(style.ItemSpacing.X);
-        ImGuiUtils.TextUnformattedColored(Colors.Gold, "Presets");
+        ImGuiUtils.TextUnformattedColored(Colors.Gold, t("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Presets.Title"));
         ImGuiUtils.PushCursorY(-style.ItemSpacing.Y + 3);
         ImGui.Separator();
         ImGuiUtils.PushCursorY(style.ItemSpacing.Y);

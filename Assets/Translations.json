@@ -93,6 +93,9 @@
   "AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip": {
     "en": "Open Aether Currents Window"
   },
+  "AetherCurrentHelperWindow.Coords": {
+    "en": "X: {0}, Y: {1}"
+  },
   "AetherCurrentHelperWindow.Compass.E": {
     "en": "E",
     "de": "O"
@@ -449,7 +452,7 @@
     "en": "Change"
   },
   "EnhancedLoginLogout.Config.PlayEmote.UnsetButton.Label": {
-    "en": "Change"
+    "en": "Unset"
   },
   "EnhancedLoginLogout.Config.PlayEmote.RecordingInfo": {
     "en": "Perform an emote now to set it for this character!"
@@ -718,6 +721,237 @@
   "PortraitHelper.Config.ReequipGearsetOnUpdate.Description": {
     "en": "Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state."
   },
+  "PortraitHelperWindows.CreatePresetDialog.Title": {
+    "en": "Save as Preset"
+  },
+  "PortraitHelperWindows.CreatePresetDialog.Name.Label": {
+    "en": "Enter a name for the new preset:"
+  },
+  "PortraitHelperWindows.CreatePresetDialog.Tags.Label": {
+    "en": "Select Tags (optional):"
+  },
+  "PortraitHelperWindows.CreatePresetDialog.Tags.None": {
+    "en": "None"
+  },
+  "PortraitHelperWindows.CreateTagDialog.Title": {
+    "en": "Create Tag"
+  },
+  "PortraitHelperWindows.CreateTagDialog.Name.Label": {
+    "en": "Enter a name for the new tag:"
+  },
+  "PortraitHelperWindows.DeletePresetDialog.Title": {
+    "en": "Delete Preset"
+  },
+  "PortraitHelperWindows.DeletePresetDialog.Prompt": {
+    "en": "Do you really want to delete the preset \"{0}\"?"
+  },
+  "PortraitHelperWindows.DeleteTagDialog.Title": {
+    "en": "Delete Tag"
+  },
+  "PortraitHelperWindows.DeleteTagDialog.Prompt": {
+    "en": "Do you really want to delete the tag \"{0}\"?"
+  },
+  "PortraitHelperWindows.DeleteTagDialog.DeletePortraitsToo.Label": {
+    "en": "Delete portraits too"
+  },
+  "PortraitHelperWindows.EditPresetDialog.Title": {
+    "en": "Edit Preset"
+  },
+  "PortraitHelperWindows.EditPresetDialog.Name.Label": {
+    "en": "Name:"
+  },
+  "PortraitHelperWindows.EditPresetDialog.Tags.Label": {
+    "en": "Tags:"
+  },
+  "PortraitHelperWindows.EditPresetDialog.Tags.None": {
+    "en": "None"
+  },
+  "PortraitHelperWindows.RenameTagDialog.Title": {
+    "en": "Rename Tag"
+  },
+  "PortraitHelperWindows.RenameTagDialog.Name.Label": {
+    "en": "Enter a new name for tag \"{0}\":"
+  },
+  "PortraitHelperWindows.AdvancedEditOverlay.Title": {
+    "en": "[HaselTweaks] Portrait Helper: Advanced Edit"
+  },
+  "PortraitHelperWindows.AdvancedEditOverlay.Title.Inner": {
+    "en": "Advanced Edit"
+  },
+  "PortraitHelperWindows.AdvancedEditOverlay.CameraYaw.Label": {
+    "en": "Camera Yaw"
+  },
+  "PortraitHelperWindows.AdvancedEditOverlay.CameraPitch.Label": {
+    "en": "Camera Pitch"
+  },
+  "PortraitHelperWindows.AdvancedEditOverlay.CameraDistance.Label": {
+    "en": "Camera Distance"
+  },
+  "PortraitHelperWindows.AdvancedEditOverlay.CameraXY.Label": {
+    "en": "Camera X / Y"
+  },
+  "PortraitHelperWindows.AdvancedEditOverlay.ZoomRotation.Label": {
+    "en": "Zoom / Rotation"
+  },
+  "PortraitHelperWindows.AdvancedEditOverlay.EyeDirection.Label": {
+    "en": "Eye Direction"
+  },
+  "PortraitHelperWindows.AdvancedEditOverlay.HeadDirection.Label": {
+    "en": "Head Direction"
+  },
+  "PortraitHelperWindows.AdvancedEditOverlay.AnimationTimestamp.Label": {
+    "en": "Animation Timestamp"
+  },
+  "PortraitHelperWindows.AdvancedEditOverlay.Note.Label": {
+    "en": "Please note:"
+  },
+  "PortraitHelperWindows.AdvancedEditOverlay.Note.1": {
+    "en": "The game may verify the values on setting them and/or saving the portrait. If possible, it will automatically adjust them so that they are within a valid range. If not, it will throw an error and you have to fix the values yourself. In any case, if the game adjusts the values, the adjusted values will not be reflected here unless you reopen the window."
+  },
+  "PortraitHelperWindows.AdvancedEditOverlay.Note.2": {
+    "en": "Also, setting the Animation Timestamp will restart the animation at the specified timestamp, causing some flickering. If the Animation Timestamp is too high, the game will start the next loop, resetting the timestamp to 0."
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.Title": {
+    "en": "[HaselTweaks] Portrait Helper: Advanced Import"
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.Info": {
+    "en": "Only the checked settings will be imported."
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.ImportSelectedSettingsButton.Label": {
+    "en": "Import Selected Settings"
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.AnimationProgressInput.Label": {
+    "en": "Animation Timestamp"
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.CameraTargetInput.Label": {
+    "en": "Camera Target"
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.HeadDirectionInput.Label": {
+    "en": "Head Direction"
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.ColorInput.R": {
+    "en": "R: {0}"
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.ColorInput.G": {
+    "en": "G: {0}"
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.ColorInput.B": {
+    "en": "B: {0}"
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.VectorInput.X": {
+    "en": "X:"
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.VectorInput.Y": {
+    "en": "Y:"
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.VectorInput.Z": {
+    "en": "Z:"
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.VectorInput.W": {
+    "en": "W:"
+  },
+  "PortraitHelperWindows.AlignmentToolSettingsOverlay.Title": {
+    "en": "[HaselTweaks] Portrait Helper: Alignment Tool Settings"
+  },
+  "PortraitHelperWindows.AlignmentToolSettingsOverlay.Title.Inner": {
+    "en": "Alignment Tool Settings"
+  },
+  "PortraitHelperWindows.AlignmentToolSettingsOverlay.ShowAlignmentTool.Label": {
+    "en": "Enable"
+  },
+  "PortraitHelperWindows.AlignmentToolSettingsOverlay.VerticalLines.Label": {
+    "en": "Vertical Lines"
+  },
+  "PortraitHelperWindows.AlignmentToolSettingsOverlay.HorizontalLines.Label": {
+    "en": "Horizontal Lines"
+  },
+  "PortraitHelperWindows.PresetBrowserOverlay.Title": {
+    "en": "[HaselTweaks] Portrait Helper: Preset Browser"
+  },
+  "PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip": {
+    "en": "Moving {0}"
+  },
+  "PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label": {
+    "en": "Create Tag"
+  },
+  "PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RenameTag.Label": {
+    "en": "Rename Tag"
+  },
+  "PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveTag.Label": {
+    "en": "Remove Tag"
+  },
+  "PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label": {
+    "en": "Remove unused Tags"
+  },
+  "PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Tags.Title": {
+    "en": "Tags"
+  },
+  "PortraitHelperWindows.PresetBrowserOverlay.Sidebar.AllTags.Title": {
+    "en": "All ({0})"
+  },
+  "PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Presets.Title": {
+    "en": "Presets"
+  },
+  "PortraitHelperWindows.MenuBar.Title": {
+    "en": "[HaselTweaks] Portrait Helper MenuBar"
+  },
+  "PortraitHelperWindows.MenuBar.Initializing": {
+    "en": "Initializing..."
+  },
+  "PortraitHelperWindows.MenuBar.ExportToClipboard.Label": {
+    "en": "Export to Clipboard"
+  },
+  "PortraitHelperWindows.MenuBar.ImportFromClipboard.Label": {
+    "en": "Import from Clipboard"
+  },
+  "PortraitHelperWindows.MenuBar.ImportFromClipboardAllSettings.Label": {
+    "en": "Import from Clipboard (All Settings)"
+  },
+  "PortraitHelperWindows.MenuBar.ToggleAdvancedImportMode.Label": {
+    "en": "Toggle Advanced Import Mode"
+  },
+  "PortraitHelperWindows.MenuBar.ToggleAdvancedEditMode.Label": {
+    "en": "Toggle Advanced Edit Mode"
+  },
+  "PortraitHelperWindows.MenuBar.SaveAsPreset.Label": {
+    "en": "Save as Preset"
+  },
+  "PortraitHelperWindows.MenuBar.TogglePresetBrowser.Label": {
+    "en": "Toggle Preset Browser"
+  },
+  "PortraitHelperWindows.MenuBar.ToggleAlignmentTool.Label.CloseSettings": {
+    "en": "Toggle Alignment Tool\nShift: Close Settings"
+  },
+  "PortraitHelperWindows.MenuBar.ToggleAlignmentTool.Label.OpenSettings": {
+    "en": "Toggle Alignment Tool\nShift: Open Settings"
+  },
+  "PortraitHelperWindows.PresetCard.MovingPresetCard.Tooltip": {
+    "en": "Moving {0}"
+  },
+  "PortraitHelperWindows.PresetCard.ContextMenu.LoadPreset.Label": {
+    "en": "Load Preset"
+  },
+  "PortraitHelperWindows.PresetCard.ContextMenu.EditPreset.Label": {
+    "en": "Edit Preset"
+  },
+  "PortraitHelperWindows.PresetCard.ContextMenu.ExportToClipboard.Label": {
+    "en": "Export to Clipboard"
+  },
+  "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Label": {
+    "en": "Copy Image"
+  },
+  "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Everything.Label": {
+    "en": "Everything"
+  },
+  "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrame.Label": {
+    "en": "Without Frame"
+  },
+  "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutDecoration.Label": {
+    "en": "Without Decoration"
+  },
+  "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrameAndDecoration.Label": {
+    "en": "Without Frame and Decoration"
+  },
 
   "RevealDutyRequirements.Tweak.Name": {
     "en": "Reveal Duty Requirements"
@@ -835,6 +1069,16 @@
     "de": "Position sperren",
     "fr": "Verrouiller la position",
     "ja": "ポジションをロックする"
+  },
+
+  "ConfirmationButtonWindow.Save": {
+    "en": "Save"
+  },
+  "ConfirmationButtonWindow.Cancel": {
+    "en": "Cancel"
+  },
+  "ConfirmationButtonWindow.Delete": {
+    "en": "Delete"
   },
 
   "template": {

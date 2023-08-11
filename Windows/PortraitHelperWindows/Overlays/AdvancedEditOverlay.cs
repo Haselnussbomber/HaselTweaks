@@ -13,7 +13,7 @@ public unsafe class AdvancedEditOverlay : Overlay
 
     private float _lastTimestamp;
 
-    public AdvancedEditOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper: Advanced Edit", tweak)
+    public AdvancedEditOverlay(PortraitHelper tweak) : base(t("PortraitHelperWindows.AdvancedEditOverlay.Title"), tweak)
     {
     }
 
@@ -48,7 +48,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.TextUnformatted("Camera Yaw");
+            ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedEditOverlay.CameraYaw.Label"));
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
@@ -69,7 +69,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.TextUnformatted("Camera Pitch");
+            ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedEditOverlay.CameraPitch.Label"));
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
@@ -90,7 +90,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.TextUnformatted("Camera Distance");
+            ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedEditOverlay.CameraDistance.Label"));
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
@@ -113,7 +113,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.TextUnformatted("Camera X / Y");
+            ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedEditOverlay.CameraXY.Label"));
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
@@ -140,7 +140,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.TextUnformatted("Zoom / Rotation");
+            ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedEditOverlay.ZoomRotation.Label"));
 
             ImGui.TableNextColumn();
 
@@ -176,7 +176,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.TextUnformatted("Eye Direction");
+            ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedEditOverlay.EyeDirection.Label"));
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
@@ -200,7 +200,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.TextUnformatted("Head Direction");
+            ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedEditOverlay.HeadDirection.Label"));
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
@@ -224,7 +224,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.TextUnformatted("Animation Timestamp");
+            ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedEditOverlay.AnimationTimestamp.Label"));
 
             ImGui.TableNextColumn();
 
@@ -264,9 +264,9 @@ public unsafe class AdvancedEditOverlay : Overlay
 
         using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Grey))
         {
-            ImGui.TextUnformatted("Please note:");
-            ImGuiHelpers.SafeTextWrapped("The game may verify the values on setting them and/or saving the portrait. If possible, it will automatically adjust them so that they are within a valid range. If not, it will throw an error and you have to fix the values yourself. In any case, if the game adjusts the values, the adjusted values will not be reflected here unless you reopen the window.");
-            ImGuiHelpers.SafeTextWrapped("Also, setting the Animation Timestamp will restart the animation at the specified timestamp, causing some flickering. If the Animation Timestamp is too high, the game will start the next loop, resetting the timestamp to 0.");
+            ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedEditOverlay.Note.Label"));
+            ImGuiHelpers.SafeTextWrapped("PortraitHelperWindows.AdvancedEditOverlay.Note.1");
+            ImGuiHelpers.SafeTextWrapped("PortraitHelperWindows.AdvancedEditOverlay.Note.2");
         }
     }
 }

@@ -14,7 +14,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
 public unsafe class AdvancedImportOverlay : Overlay
 {
-    public AdvancedImportOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper: Advanced Import", tweak)
+    public AdvancedImportOverlay(PortraitHelper tweak) : base(t("PortraitHelperWindows.AdvancedImportOverlay.Title"), tweak)
     {
         base.Flags &= ~ImGuiWindowFlags.NoScrollbar;
     }
@@ -33,7 +33,7 @@ public unsafe class AdvancedImportOverlay : Overlay
         var unknown = GetAddonText(624) ?? "Unknown";
 
         using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Grey))
-            ImGuiHelpers.SafeTextWrapped("Only the checked settings will be imported.");
+            ImGuiHelpers.SafeTextWrapped(t("PortraitHelperWindows.AdvancedImportOverlay.Info"));
 
         if (ImGui.Button(GetAddonText(14923) ?? "Select All"))
             Tweak.CurrentImportFlags = ImportFlags.All;
@@ -45,7 +45,7 @@ public unsafe class AdvancedImportOverlay : Overlay
 
         ImGui.SameLine();
 
-        if (ImGui.Button("Import Selected Settings"))
+        if (ImGui.Button(t("PortraitHelperWindows.AdvancedImportOverlay.ImportSelectedSettingsButton.Label")))
         {
             Tweak.PresetToState(Tweak.ClipboardPreset, Tweak.CurrentImportFlags);
             Tweak.CloseWindows();
@@ -153,7 +153,7 @@ public unsafe class AdvancedImportOverlay : Overlay
         );
 
         DrawImportSetting(
-            "Animation Timestamp",
+            t("PortraitHelperWindows.AdvancedImportOverlay.AnimationProgressInput.Label"),
             ImportFlags.AnimationProgress,
             () => ImGui.TextUnformatted(Tweak.ClipboardPreset.AnimationProgress.ToString("0.000", CultureInfo.InvariantCulture))
         );
@@ -165,19 +165,19 @@ public unsafe class AdvancedImportOverlay : Overlay
         );
 
         DrawImportSetting(
-            "Camera Target",
+            t("PortraitHelperWindows.AdvancedImportOverlay.CameraTargetInput.Label"),
             ImportFlags.CameraTarget,
             () => DrawHalfVector4(Tweak.ClipboardPreset.CameraTarget)
         );
 
         DrawImportSetting(
-            "Head Direction",
+            t("PortraitHelperWindows.AdvancedImportOverlay.CameraTargetInput.Label"),
             ImportFlags.HeadDirection,
             () => DrawHalfVector2(Tweak.ClipboardPreset.HeadDirection)
         );
 
         DrawImportSetting(
-            "Eye Direction",
+            t("PortraitHelperWindows.AdvancedImportOverlay.HeadDirectionInput.Label"),
             ImportFlags.EyeDirection,
             () => DrawHalfVector2(Tweak.ClipboardPreset.EyeDirection)
         );
@@ -284,13 +284,13 @@ public unsafe class AdvancedImportOverlay : Overlay
         ImGui.ColorEdit3("##ColorEdit3", ref vec, ImGuiColorEditFlags.NoPicker | ImGuiColorEditFlags.NoOptions | ImGuiColorEditFlags.NoLabel | ImGuiColorEditFlags.NoInputs);
 
         ImGui.TableNextColumn();
-        ImGui.TextUnformatted("R: " + r.ToString());
+        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.ColorInput.R", r.ToString()));
 
         ImGui.TableNextColumn();
-        ImGui.TextUnformatted("G: " + g.ToString());
+        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.ColorInput.G", g.ToString()));
 
         ImGui.TableNextColumn();
-        ImGui.TextUnformatted("B: " + b.ToString());
+        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.ColorInput.B", b.ToString()));
 
         ImGui.TableNextColumn();
     }
@@ -308,12 +308,12 @@ public unsafe class AdvancedImportOverlay : Overlay
         ImGui.TableNextRow();
 
         ImGui.TableNextColumn();
-        ImGui.TextUnformatted("X:");
+        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.X"));
         ImGui.SameLine(24);
         ImGui.TextUnformatted(vec.X.ToString("0.000", CultureInfo.InvariantCulture));
 
         ImGui.TableNextColumn();
-        ImGui.TextUnformatted("Y:");
+        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.Y"));
         ImGui.SameLine(24);
         ImGui.TextUnformatted(vec.Y.ToString("0.000", CultureInfo.InvariantCulture));
 
@@ -335,22 +335,22 @@ public unsafe class AdvancedImportOverlay : Overlay
         ImGui.TableNextRow();
 
         ImGui.TableNextColumn();
-        ImGui.TextUnformatted("X:");
+        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.X"));
         ImGui.SameLine(24);
         ImGui.TextUnformatted(vec.X.ToString("0.000", CultureInfo.InvariantCulture));
 
         ImGui.TableNextColumn();
-        ImGui.TextUnformatted("Y:");
+        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.Y"));
         ImGui.SameLine(24);
         ImGui.TextUnformatted(vec.Y.ToString("0.000", CultureInfo.InvariantCulture));
 
         ImGui.TableNextColumn();
-        ImGui.TextUnformatted("Z:");
+        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.Z"));
         ImGui.SameLine(24);
         ImGui.TextUnformatted(vec.Z.ToString("0.000", CultureInfo.InvariantCulture));
 
         ImGui.TableNextColumn();
-        ImGui.TextUnformatted("W:");
+        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.W"));
         ImGui.SameLine(24);
         ImGui.TextUnformatted(vec.W.ToString("0.000", CultureInfo.InvariantCulture));
 

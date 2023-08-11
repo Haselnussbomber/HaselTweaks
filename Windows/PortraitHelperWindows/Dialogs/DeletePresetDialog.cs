@@ -11,12 +11,12 @@ public class DeletePresetDialog : ConfirmationDialog
 
     private SavedPreset? _preset;
 
-    public DeletePresetDialog(PresetBrowserOverlay presetBrowserOverlay) : base("Delete Preset")
+    public DeletePresetDialog(PresetBrowserOverlay presetBrowserOverlay) : base(t("PortraitHelperWindows.DeletePresetDialog.Title"))
     {
         _presetBrowserOverlay = presetBrowserOverlay;
 
-        AddButton(new ConfirmationButton("Delete", OnDelete));
-        AddButton(new ConfirmationButton("Cancel", Close));
+        AddButton(new ConfirmationButton(t("ConfirmationButtonWindow.Delete"), OnDelete));
+        AddButton(new ConfirmationButton(t("ConfirmationButtonWindow.Cancel"), Close));
     }
 
     public void Open(SavedPreset? preset)
@@ -35,7 +35,7 @@ public class DeletePresetDialog : ConfirmationDialog
         => base.DrawCondition() && _preset != null;
 
     public override void InnerDraw()
-        => ImGuiUtils.TextUnformattedDisabled($"Do you really want to delete the preset \"{_preset!.Name}\"?");
+        => ImGuiUtils.TextUnformattedDisabled(t("PortraitHelperWindows.DeletePresetDialog.Prompt", _preset!.Name));
 
     private void OnDelete()
     {

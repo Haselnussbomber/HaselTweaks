@@ -36,13 +36,13 @@ public class RenameTagDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        ImGui.TextUnformatted($"Enter a new name for tag \"{_tag!.Name}\":");
+        ImGui.TextUnformatted(t("PortraitHelperWindows.RenameTagDialog.Name.Label"));
 
         ImGui.Spacing();
 
         ImGui.InputText("##TagName", ref _name, 30);
 
-        var disabled = string.IsNullOrEmpty(_name.Trim()) && _name.Trim() != _tag.Name.Trim();
+        var disabled = string.IsNullOrEmpty(_name.Trim()) && _name.Trim() != _tag!.Name.Trim();
 
         _saveButton.Disabled = disabled;
 

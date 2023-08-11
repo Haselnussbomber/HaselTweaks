@@ -352,7 +352,9 @@ public unsafe partial class AetherCurrentHelperWindow : Window
     private static string GetHumanReadableCoords(Level level)
     {
         var coords = GetLevelPos(level);
-        return $"X: {coords.X.ToString("0.0", CultureInfo.InvariantCulture)}, Y: {coords.Y.ToString("0.0", CultureInfo.InvariantCulture)}";
+        var x = coords.X.ToString("0.0", CultureInfo.InvariantCulture);
+        var y = coords.Y.ToString("0.0", CultureInfo.InvariantCulture);
+        return t("AetherCurrentHelperWindow.Coords", x, y);
     }
 
     private static void OpenMapLocation(Level? level)

@@ -8,7 +8,7 @@ public unsafe class AlignmentToolSettingsOverlay : Overlay
 {
     protected override OverlayType Type => OverlayType.LeftPane;
 
-    public AlignmentToolSettingsOverlay(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper: Alignment Tool Settings", tweak)
+    public AlignmentToolSettingsOverlay(PortraitHelper tweak) : base(t("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title"), tweak)
     {
     }
 
@@ -17,14 +17,14 @@ public unsafe class AlignmentToolSettingsOverlay : Overlay
         ImGui.PopStyleVar(); // WindowPadding from PreDraw()
 
         var style = ImGui.GetStyle();
-        ImGuiUtils.TextUnformattedColored(Colors.Gold, "Alignment Tool Settings");
+        ImGuiUtils.TextUnformattedColored(Colors.Gold, t("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title.Inner"));
         ImGuiUtils.PushCursorY(-style.ItemSpacing.Y + 3);
         ImGui.Separator();
         ImGuiUtils.PushCursorY(style.ItemSpacing.Y);
 
         var changed = false;
 
-        changed |= ImGui.Checkbox("Enable", ref Config.ShowAlignmentTool);
+        changed |= ImGui.Checkbox(t("PortraitHelperWindows.AlignmentToolSettingsOverlay.ShowAlignmentTool.Label"), ref Config.ShowAlignmentTool);
 
         var enabled = Config.ShowAlignmentTool;
         if (!enabled)
@@ -34,14 +34,14 @@ public unsafe class AlignmentToolSettingsOverlay : Overlay
         ImGui.Separator();
         ImGui.Spacing();
 
-        ImGui.TextUnformatted("Vertical Lines");
+        ImGui.TextUnformatted(t("PortraitHelperWindows.AlignmentToolSettingsOverlay.VerticalLines.Label"));
         ImGui.Indent();
 
         changed |= ImGui.SliderInt("##Vertical Lines", ref Config.AlignmentToolVerticalLines, 0, 10);
         changed |= ImGui.ColorEdit4("##Vertical Color", ref Config.AlignmentToolVerticalColor);
 
         ImGui.Unindent();
-        ImGui.TextUnformatted("Horizontal Lines");
+        ImGui.TextUnformatted(t("PortraitHelperWindows.AlignmentToolSettingsOverlay.HorizontalLines.Label"));
         ImGui.Indent();
 
         changed |= ImGui.SliderInt("##Horizontal Lines", ref Config.AlignmentToolHorizontalLines, 0, 10);

@@ -25,9 +25,9 @@ public class CreatePresetDialog : ConfirmationDialog
     private Image<Bgra32>? _image;
     private HashSet<Guid>? _tags;
 
-    public CreatePresetDialog() : base("Save as Preset")
+    public CreatePresetDialog() : base(t("PortraitHelperWindows.CreatePresetDialog.Title"))
     {
-        AddButton(_saveButton = new ConfirmationButton("Save", OnSave));
+        AddButton(_saveButton = new ConfirmationButton(t("ConfirmationButtonWindow.Save"), OnSave));
     }
 
     public void Open(string name, PortraitPreset? preset, Image<Bgra32>? image)
@@ -54,7 +54,7 @@ public class CreatePresetDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        ImGui.TextUnformatted("Enter a name for the new preset:");
+        ImGui.TextUnformatted(t("PortraitHelperWindows.CreatePresetDialog.Name.Label"));
         ImGui.Spacing();
         ImGui.InputText("##PresetName", ref _name, 100);
 
@@ -67,13 +67,13 @@ public class CreatePresetDialog : ConfirmationDialog
         if (Config.PresetTags.Any())
         {
             ImGui.Spacing();
-            ImGui.TextUnformatted("Select Tags (optional):");
+            ImGui.TextUnformatted(t("PortraitHelperWindows.CreatePresetDialog.Tags.Label"));
 
             var tagNames = _tags!
                 .Select(id => Config.PresetTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
                 .Where(name => !string.IsNullOrEmpty(name));
 
-            var preview = tagNames.Any() ? string.Join(", ", tagNames) : "None";
+            var preview = tagNames.Any() ? string.Join(", ", tagNames) : t("PortraitHelperWindows.CreatePresetDialog.Tags.None");
 
             ImGui.Spacing();
             using var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge);
