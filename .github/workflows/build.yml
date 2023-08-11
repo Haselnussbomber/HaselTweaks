@@ -20,6 +20,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
       - uses: actions/checkout@v3
@@ -29,6 +31,7 @@ jobs:
         with:
           dotnet-version: 7.0.x
           cache: true
+          cache-dependency-path: ${{ env.plugin_name }}/packages.lock.json
 
       - name: Restore dependencies
         run: dotnet restore --locked-mode
