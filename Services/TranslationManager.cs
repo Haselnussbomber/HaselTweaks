@@ -32,7 +32,7 @@ public class TranslationManager : IDisposable
         if (stream == null)
             return;
 
-        Translations = JsonSerializer.Deserialize< Dictionary<string, Dictionary<string, string>>>(stream) ?? new();
+        Translations = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(stream) ?? new();
     }
 
     public bool TryGetTranslation(string key, [MaybeNullWhen(false)] out string text)

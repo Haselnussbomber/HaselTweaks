@@ -62,7 +62,7 @@ internal partial class Configuration
             PluginLog.Error(ex, "Could not load configuration, creating a new one");
 
             Service.PluginInterface.UiBuilder.AddNotification(
-                "Could not load the configuration file. Creating a new one.",
+                t("HaselTweaks.Config.CouldNotLoadConfigNotification.Text"),
                 "HaselTweaks",
                 NotificationType.Error,
                 5000

@@ -11,6 +11,9 @@
   "HaselTweaks.Config.KoFiLink.Tooltip": {
     "en": "Support me on Ko-fi"
   },
+  "HaselTweaks.Config.CouldNotLoadConfigNotification.Text": {
+    "en": "Could not load the configuration file. Creating a new one."
+  },
   "HaselTweaks.Config.SectionTitle.IncompatibilityWarning": {
     "en": "Incompatibility Warning"
   },

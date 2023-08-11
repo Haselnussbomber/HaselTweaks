@@ -9,7 +9,7 @@ public class TweakAttribute : Attribute
     {
     }
 
-    public TweakAttribute(TweakFlags Flags) 
+    public TweakAttribute(TweakFlags Flags)
     {
         this.Flags = Flags;
     }
