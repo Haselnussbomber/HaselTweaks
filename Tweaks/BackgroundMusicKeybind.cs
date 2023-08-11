@@ -21,12 +21,12 @@ public unsafe class BackgroundMusicKeybind : Tweak
 
     public override void DrawCustomConfig()
     {
-        ImGui.Text("Keybind:");
+        ImGui.Text(t("BackgroundMusicKeybind.Config.Keybind.Label"));
         ImGui.Spacing();
         using var indent = ImRaii.PushIndent();
 
         var shift = Config.Keybind.Contains(VirtualKey.SHIFT);
-        if (ImGui.Checkbox("Shift", ref shift))
+        if (ImGui.Checkbox(t("BackgroundMusicKeybind.Config.ShiftKeyCheckbox.Label"), ref shift))
         {
             var set = new HashSet<VirtualKey>(Config.Keybind);
 
@@ -46,7 +46,7 @@ public unsafe class BackgroundMusicKeybind : Tweak
         ImGui.SameLine();
 
         var ctrl = Config.Keybind.Contains(VirtualKey.CONTROL);
-        if (ImGui.Checkbox("Control", ref ctrl))
+        if (ImGui.Checkbox(t("BackgroundMusicKeybind.Config.ControlKeyCheckbox.Label"), ref ctrl))
         {
             var set = new HashSet<VirtualKey>(Config.Keybind);
 
@@ -66,7 +66,7 @@ public unsafe class BackgroundMusicKeybind : Tweak
         ImGui.SameLine();
 
         var alt = Config.Keybind.Contains(VirtualKey.MENU);
-        if (ImGui.Checkbox("Alt", ref alt))
+        if (ImGui.Checkbox(t("BackgroundMusicKeybind.Config.AltKeyCheckbox.Label"), ref alt))
         {
             var set = new HashSet<VirtualKey>(Config.Keybind);
 
@@ -85,7 +85,7 @@ public unsafe class BackgroundMusicKeybind : Tweak
 
         ImGui.SameLine();
 
-        var previewValue = "None";
+        var previewValue = t("BackgroundMusicKeybind.Config.KeyCombo.Preview.None");
         var hasKey = Config.Keybind.FindFirst(x => x is not (VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT), out var key);
         if (hasKey)
             previewValue = key.GetFancyName();

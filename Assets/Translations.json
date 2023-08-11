@@ -81,11 +81,49 @@
   "AetherCurrentHelper.Config.CenterDistance.Description": {
     "en": "Disable this if you have problems with the window endlessly expanding to the right"
   },
-  "AetherCurrentHelper.AllAetherCurrentsAttuned": {
+  "AetherCurrentHelperWindow.AllAetherCurrentsAttuned": {
     "en": "All aether currents attuned!",
     "de": "Alle Windätherquellen gebündelt!",
     "fr": "Toutes les sources d'éther sont réunies !",
     "ja": "すべてのエーテル風車を結集！"
+  },
+  "AetherCurrentHelperWindow.HideUnlockedTooltip": {
+    "en": "Check to hide unlocked Aether Currents"
+  },
+  "AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip": {
+    "en": "Open Aether Currents Window"
+  },
+  "AetherCurrentHelperWindow.Compass.E": {
+    "en": "E",
+    "de": "O"
+  },
+  "AetherCurrentHelperWindow.Compass.NE": {
+    "en": "NE",
+    "de": "NO"
+  },
+  "AetherCurrentHelperWindow.Compass.N": {
+    "en": "N",
+    "de": "N"
+  },
+  "AetherCurrentHelperWindow.Compass.NW": {
+    "en": "NW",
+    "de": "NW"
+  },
+  "AetherCurrentHelperWindow.Compass.W": {
+    "en": "W",
+    "de": "W"
+  },
+  "AetherCurrentHelperWindow.Compass.SW": {
+    "en": "SW",
+    "de": "SW"
+  },
+  "AetherCurrentHelperWindow.Compass.S": {
+    "en": "S",
+    "de": "S"
+  },
+  "AetherCurrentHelperWindow.Compass.SE": {
+    "en": "SE",
+    "de": "SO"
   },
 
   "AutoOpenRecipe.Tweak.Name": {
@@ -101,12 +139,96 @@
   "AutoSorter.Tweak.Description": {
     "en": "Sorts items inside various containers when they are opened."
   },
+  "AutoSorter.Config.SortArmouryOnJobChange.Label": {
+    "en": "Sort armoury on job change"
+  },
+  "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsEnabled": {
+    "en": "Rule is enabled"
+  },
+  "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsDisabled": {
+    "en": "Rule is disabled"
+  },
+  "AutoSorter.Config.CategoryCombo.Placeholder": {
+    "en": "Category..."
+  },
+  "AutoSorter.Config.ConditionCombo.Placeholder": {
+    "en": "Condition..."
+  },
+  "AutoSorter.Config.OrderCombo.Placeholder": {
+    "en": "Order..."
+  },
+  "AutoSorter.Config.MoveRuleUpButton.Tooltip": {
+    "en": "Move up"
+  },
+  "AutoSorter.Config.MoveRuleDownButton.Tooltip": {
+    "en": "Move down"
+  },
+  "AutoSorter.Config.DeleteRuleButton.Tooltip.HoldingShift": {
+    "en": "Delete rule"
+  },
+  "AutoSorter.Config.DeleteRuleButton.Tooltip.NotHoldingShift": {
+    "en": "Hold shift to delete rule"
+  },
+  "AutoSorter.Config.DeleteRuleButton.Tooltip.WindowNotFocused": {
+    "en": "Focus window and hold shift to delete rule"
+  },
+  "AutoSorter.Config.ExecuteButton.Tooltip.Busy": {
+    "en": "Sorting in progress. Please wait."
+  },
+  "AutoSorter.Config.ExecuteButton.Tooltip.Ready": {
+    "en": "Execute this rule"
+  },
+  "AutoSorter.Config.ExecuteButton.Tooltip.SaddlebagNotOpen": {
+    "en": "Sorting saddlebag/rightsaddlebag only works when the window is open."
+  },
+  "AutoSorter.Config.ExecuteButton.Tooltip.RetainerNotOpen": {
+    "en": "Sorting retainer only works when the window is open."
+  },
+  "AutoSorter.Config.AddButton.Label": {
+    "en": "Add"
+  },
+  "AutoSorter.Config.RunAllButton.Label": {
+    "en": "Run All"
+  },
+  "AutoSorter.Config.RunAllButton.Tooltip.SortingInProgress": {
+    "en": "Sorting in progress. Please wait."
+  },
+  "AutoSorter.SortingRule.Error.CategoryNotSet": {
+    "en": "Category is not set."
+  },
+  "AutoSorter.SortingRule.Error.ConditionNotSet": {
+    "en": "Condition is not set."
+  },
+  "AutoSorter.SortingRule.Error.OrderNotSet": {
+    "en": "Order is not set."
+  },
+  "AutoSorter.SortingRule.Error.OverridesArmouryRule": {
+    "en": "This rule overrides a slot-based armoury rule. Move it up."
+  },
+  "AutoSorter.SortingRule.Error.PremiumSaddlebagNotSubscribed": {
+    "en": "Not subscribed to the Companion Premium Service."
+  },
 
   "BackgroundMusicKeybind.Tweak.Name": {
     "en": "Background Music Keybind"
   },
   "BackgroundMusicKeybind.Tweak.Description": {
     "en": "A configurable keybind to toggle the background music."
+  },
+  "BackgroundMusicKeybind.Config.Keybind.Label": {
+    "en": "Keybind:"
+  },
+  "BackgroundMusicKeybind.Config.ShiftKeyCheckbox.Label": {
+    "en": "Shift"
+  },
+  "BackgroundMusicKeybind.Config.ControlKeyCheckbox.Label": {
+    "en": "Control"
+  },
+  "BackgroundMusicKeybind.Config.AltKeyCheckbox.Label": {
+    "en": "Alt"
+  },
+  "BackgroundMusicKeybind.Config.KeyCombo.Preview.None": {
+    "en": "None"
   },
 
   "CharacterClassSwitcher.Tweak.Name": {
@@ -200,12 +322,45 @@
   "CustomChatTimestamp.Tweak.Description": {
     "en": "As it says, configurable chat timestamp format."
   },
+  "CustomChatTimestamp.Config.Format.Label": {
+    "en": "Format"
+  },
+  "CustomChatTimestamp.Config.Format.DateTimeLink.Pre": {
+    "en": "This gets passed to C#'s"
+  },
+  "CustomChatTimestamp.Config.Format.DateTimeLink.Tooltip": {
+    "en": "Custom date and time format strings documentation"
+  },
+  "CustomChatTimestamp.Config.Format.DateTimeLink.Post": {
+    "en": "function."
+  },
+  "CustomChatTimestamp.Config.Format.Example.Label": {
+    "en": "Example with the current format:"
+  },
+  "CustomChatTimestamp.Config.Format.Example.Message": {
+    "en": "(\uE090Player Name) This is a test message."
+  },
+  "CustomChatTimestamp.Config.Format.Invalid": {
+    "en": "The current format is not valid."
+  },
 
   "DTR.Tweak.Name": {
     "en": "DTR"
   },
   "DTR.Tweak.Description": {
     "en": "Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar."
+  },
+  "DTR.Config.Explanation.Pre": {
+    "en": "To enable/disable elements or to change the order go into"
+  },
+  "DTR.Config.Explanation.DalamudSettings": {
+    "en": "Dalamud Settings"
+  },
+  "DTR.Config.Explanation.Post": {
+    "en": "> Server Info Bar."
+  },
+  "DTR.FPS.Format": {
+    "en": "{0:0} fps"
   },
 
   "EnhancedExpBar.Tweak.Name": {
@@ -245,12 +400,71 @@
     "en": "Disable color change"
   },
 
-
   "EnhancedLoginLogout.Tweak.Name": {
     "en": "Enhanced Login/Logout"
   },
   "EnhancedLoginLogout.Tweak.Description": {
     "en": "Enhances login and logout."
+  },
+  "EnhancedLoginLogout.Config.LoginOptions.Title": {
+    "en": "Login Options"
+  },
+  "EnhancedLoginLogout.Config.LogoutOptions.Title": {
+    "en": "Logout Options"
+  },
+  "EnhancedLoginLogout.Config.ShowPets.Label": {
+    "en": "Show pets in character selection"
+  },
+  "EnhancedLoginLogout.Config.ShowPets.Description": {
+    "en": "Displays a carbuncle (Arcanist/Summoner) or a fairy (Scholar) next to your character."
+  },
+  "EnhancedLoginLogout.Config.ShowPets.Error.MissingPetMirageSettings": {
+    "en": "Pet glamour settings for this character not cached! Please log in."
+  },
+  "EnhancedLoginLogout.Config.PetPosition.Label": {
+    "en": "Position"
+  },
+  "EnhancedLoginLogout.Config.PlayEmote.Label": {
+    "en": "Play emote in character selection"
+  },
+  "EnhancedLoginLogout.Config.PlayEmote.Description": {
+    "en": "Have your character greet you with an emote!"
+  },
+  "EnhancedLoginLogout.Config.PlayEmote.Note": {
+    "en": "Note: Emote settings are per character and not all emotes are supported (e.g. sitting or underwater emotes). What is supported, however, are alternative standing idle poses."
+  },
+  "EnhancedLoginLogout.Config.PlayEmote.CurrentEmote": {
+    "en": "Current Emote:"
+  },
+  "EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.None": {
+    "en": "None"
+  },
+  "EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.Unknown": {
+    "en": "Unknown"
+  },
+  "EnhancedLoginLogout.Config.PlayEmote.StopRecordingButton.Label": {
+    "en": "Stop Recording"
+  },
+  "EnhancedLoginLogout.Config.PlayEmote.ChangeButton.Label": {
+    "en": "Change"
+  },
+  "EnhancedLoginLogout.Config.PlayEmote.UnsetButton.Label": {
+    "en": "Change"
+  },
+  "EnhancedLoginLogout.Config.PlayEmote.RecordingInfo": {
+    "en": "Perform an emote now to set it for this character!"
+  },
+  "EnhancedLoginLogout.Config.PlayEmote.NotLoggedIn": {
+    "en": "Please log in to set an emote."
+  },
+  "EnhancedLoginLogout.Config.PreloadTerritory.Label": {
+    "en": "Preload territory when queued"
+  },
+  "EnhancedLoginLogout.Config.PreloadTerritory.Description": {
+    "en": "When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting."
+  },
+  "EnhancedLoginLogout.Config.ClearTellHistory.Label": {
+    "en": "Clear tell history on logout"
   },
 
   "EnhancedMaterialList.Tweak.Name": {
@@ -393,6 +607,45 @@
     "fr": "Déverrouiller la position",
     "ja": "ポジションのロック解除"
   },
+  "LockWindowPosition.Config.Inverted.Label": {
+    "en": "Invert logic (locks all windows)"
+  },
+  "LockWindowPosition.Config.AddLockUnlockContextMenuEntries.Label": {
+    "en": "Add Lock/Unlock Position to windows context menu"
+  },
+  "LockWindowPosition.Config.Windows.Title": {
+    "en": "Windows:"
+  },
+  "LockWindowPosition.Config.EnableCheckmark.Tooltip.Locked": {
+    "en": "Window is locked"
+  },
+  "LockWindowPosition.Config.EnableCheckmark.Tooltip.Unlocked": {
+    "en": "Window is unlocked"
+  },
+  "LockWindowPosition.Config.DeleteButton.Tooltip": {
+    "en": "Delete"
+  },
+  "LockWindowPosition.Config.DeleteButton.Tooltip.HoldingShift": {
+    "en": "Delete rule"
+  },
+  "LockWindowPosition.Config.DeleteButton.Tooltip.NotHoldingShift": {
+    "en": "Hold shift to delete rule"
+  },
+  "LockWindowPosition.Config.DeleteButton.Tooltip.WindowNotFocused": {
+    "en": "Focus window and hold shift to delete rule"
+  },
+  "LockWindowPosition.Config.NoWindowsAddedYet": {
+    "en": "No windows added yet."
+  },
+  "LockWindowPosition.Config.Picker.CancelButton.Label": {
+    "en": "Cancel"
+  },
+  "LockWindowPosition.Config.Picker.PickWindowButton.Label": {
+    "en": "Pick Window"
+  },
+  "LockWindowPosition.Config.Picker.ToggleAllButton.Label": {
+    "en": "Toggle All"
+  },
 
   "MaterialAllocation.Tweak.Name": {
     "en": "Material Allocation"
@@ -405,6 +658,9 @@
   },
   "MaterialAllocation.Config.OpenGatheringLogOnItemClick.Label": {
     "en": "Open Sanctuary Gathering Log for gatherable items"
+  },
+  "MaterialAllocation.ItemIsNotGatherable": {
+    "en": "Item {0} is not gatherable."
   },
 
   "MinimapAdjustments.Tweak.Name": {

@@ -7,6 +7,7 @@ using Dalamud.Memory;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;
 using GameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 using ObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
@@ -127,7 +128,7 @@ public unsafe class Commands : Tweak
 
         var sb = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
-            .Append(tSe("Commands.ItemLink.Item", idStr, GetItemLink(id)));
+            .Append(tSe("Commands.ItemLink.Item", idStr, ItemUtils.GetItemLink(id)));
 
         Service.ChatGui.PrintChat(new XivChatEntry
         {
@@ -207,7 +208,7 @@ public unsafe class Commands : Tweak
             return;
         }
 
-        var seItemLink = GetItemLink(item.RowId);
+        var seItemLink = ItemUtils.GetItemLink(item.RowId);
         sb.Append(tSe("Commands.WhatMount.WithItem", name, seItemLink));
 
         Service.ChatGui.PrintChat(new XivChatEntry
@@ -261,19 +262,5 @@ public unsafe class Commands : Tweak
             Message = sb.Build(),
             Type = XivChatType.Echo
         });
-    }
-
-    private static SeString GetItemLink(uint id)
-    {
-        var item = GetRow<Item>(id);
-        if (item == null)
-            return new SeString(new TextPayload($"Item#{id}"));
-
-
-        var link = SeString.CreateItemLink(item, false);
-        // TODO: remove in Dalamud v9
-        link.Payloads.Add(UIGlowPayload.UIGlowOff);
-        link.Payloads.Add(UIForegroundPayload.UIForegroundOff);
-        return link;
     }
 }

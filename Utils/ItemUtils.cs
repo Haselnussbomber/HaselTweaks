@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Utils;
@@ -46,5 +48,19 @@ public static class ItemUtils
 
             _ => true
         };
+    }
+
+    public static SeString GetItemLink(uint id)
+    {
+        var item = GetRow<Item>(id);
+        if (item == null)
+            return new SeString(new TextPayload($"Item#{id}"));
+
+
+        var link = SeString.CreateItemLink(item, false);
+        // TODO: remove in Dalamud v9
+        link.Payloads.Add(UIGlowPayload.UIGlowOff);
+        link.Payloads.Add(UIForegroundPayload.UIForegroundOff);
+        return link;
     }
 }

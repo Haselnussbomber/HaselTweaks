@@ -12,6 +12,7 @@ using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
+using ImColor = HaselTweaks.Structs.ImColor;
 
 namespace HaselTweaks.Tweaks;
 
@@ -20,8 +21,8 @@ public unsafe class DTR : Tweak
 {
     public override void DrawCustomConfig()
     {
-        ImGui.TextUnformatted("To enable/disable elements or to change the order go into");
-        ImGuiUtils.TextUnformattedColored((Structs.ImColor)ImGuiColors.DalamudRed, "Dalamud Settings");
+        ImGui.TextUnformatted(t("DTR.Config.Explanation.Pre"));
+        ImGuiUtils.TextUnformattedColored((ImColor)ImGuiColors.DalamudRed, t("DTR.Config.Explanation.DalamudSettings"));
         if (ImGui.IsItemHovered())
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
@@ -41,7 +42,7 @@ public unsafe class DTR : Tweak
             Service.Framework.RunOnTick(OpenSettings, delayTicks: 2);
         }
         ImGuiUtils.SameLineSpace();
-        ImGui.TextUnformatted("> Server Info Bar.");
+        ImGui.TextUnformatted(t("DTR.Config.Explanation.Post"));
     }
 
     public DtrBarEntry? DtrInstance;
@@ -129,7 +130,7 @@ public unsafe class DTR : Tweak
         var frameRate = (int)(gameFramework->FrameRate + 0.5f);
         if (_lastFrameRate != frameRate)
         {
-            DtrFPS.SetText(frameRate.ToString("0") + " fps");
+            DtrFPS.SetText(t("DTR.FPS.Format", frameRate));
             DtrFPS.SetVisibility(true);
             _lastFrameRate = frameRate;
         }

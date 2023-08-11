@@ -6,6 +6,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Structs.Agents;
+using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
@@ -119,27 +120,9 @@ public unsafe partial class MaterialAllocation : Tweak
                 var item = pouchRow.Item.Value;
                 if (itemId != 0 && item != null)
                 {
-                    var fgColor = (ushort)(549 + (item.Rarity - 1) * 2);
-                    var glowColor = (ushort)(fgColor + 1);
-
-                    var sb = new SeStringBuilder()
-                        .AddText($"Item ")
-                        .AddUiForeground(fgColor)
-                        .AddUiGlow(glowColor)
-                        .AddItemLink(item.RowId, false)
-                        .AddUiForeground(500)
-                        .AddUiGlow(501)
-                        .AddText(SeIconChar.LinkMarker.ToIconString() + " ")
-                        .AddUiForegroundOff()
-                        .AddUiGlowOff()
-                        .AddText(item.Name)
-                        .Add(new RawPayload(new byte[] { 0x02, 0x27, 0x07, 0xCF, 0x01, 0x01, 0x01, 0xFF, 0x01, 0x03 })) // LinkTerminator
-                        .Add(new RawPayload(new byte[] { 0x02, 0x13, 0x02, 0xEC, 0x03 })) // ?
-                        .AddText(" is not gatherable.");
-
                     Service.ChatGui.PrintChat(new XivChatEntry
                     {
-                        Message = sb.BuiltString,
+                        Message = tSe("MaterialAllocation.ItemIsNotGatherable", ItemUtils.GetItemLink(item.RowId)),
                         Type = XivChatType.Echo
                     });
                 }

@@ -135,31 +135,31 @@ public unsafe class AutoSorter : Tweak
             if (string.IsNullOrEmpty(Category))
             {
                 errors ??= new();
-                errors.Add("Category is not set.");
+                errors.Add(t("AutoSorter.SortingRule.Error.CategoryNotSet"));
             }
 
             if (string.IsNullOrEmpty(Condition))
             {
                 errors ??= new();
-                errors.Add("Condition is not set.");
+                errors.Add(t("AutoSorter.SortingRule.Error.ConditionNotSet"));
             }
 
             if (string.IsNullOrEmpty(Order))
             {
                 errors ??= new();
-                errors.Add("Order is not set.");
+                errors.Add(t("AutoSorter.SortingRule.Error.OrderNotSet"));
             }
 
             if (Category == "armoury" && usedCategories != null && ArmourySubcategories.Any(usedCategories.Contains))
             {
                 errors ??= new();
-                errors.Add("This rule overrides a slot-based armoury rule. Move it up.");
+                errors.Add(t("AutoSorter.SortingRule.Error.OverridesArmouryRule"));
             }
 
             if (Category is "rightsaddlebag" && !PlayerState.Instance()->HasPremiumSaddlebag)
             {
                 errors ??= new();
-                errors.Add("Not subscribed to the Companion Premium Service.");
+                errors.Add(t("AutoSorter.SortingRule.Error.PremiumSaddlebagNotSubscribed"));
             }
 
             return errors;
@@ -174,7 +174,7 @@ public unsafe class AutoSorter : Tweak
 
     public override void DrawCustomConfig()
     {
-        ImGui.Checkbox("Sort armoury on job change", ref Config.SortArmouryOnJobChange);
+        ImGui.Checkbox(t("AutoSorter.Config.SortArmouryOnJobChange.Label"), ref Config.SortArmouryOnJobChange);
 
         ImGuiUtils.DrawPaddedSeparator();
 
@@ -219,7 +219,9 @@ public unsafe class AutoSorter : Tweak
             ImGui.Checkbox(key + "_Enabled", ref entry.Enabled);
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip("Rule is " + (entry.Enabled ? "enabled" : "disabled"));
+                ImGui.SetTooltip(t(entry.Enabled
+                    ? "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsEnabled"
+                    : "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsDisabled"));
             }
             if (ImGui.IsItemClicked())
             {
@@ -229,7 +231,7 @@ public unsafe class AutoSorter : Tweak
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
-            preview = entry.LocalizedCategory ?? "Category...";
+            preview = entry.LocalizedCategory ?? t("AutoSorter.Config.CategoryCombo.Placeholder");
 
             if (ImGui.BeginCombo(key + "Category", preview))
             {
@@ -251,7 +253,7 @@ public unsafe class AutoSorter : Tweak
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
-            preview = entry.LocalizedCondition ?? "Condition...";
+            preview = entry.LocalizedCondition ?? t("AutoSorter.Config.ConditionCombo.Placeholder");
 
             if (ImGui.BeginCombo(key + "Condition", preview))
             {
@@ -273,7 +275,7 @@ public unsafe class AutoSorter : Tweak
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
-            preview = entry.LocalizedOrder ?? "Order...";
+            preview = entry.LocalizedOrder ?? t("AutoSorter.Config.OrderCombo.Placeholder");
 
             if (ImGui.BeginCombo(key + "Order", preview))
             {
@@ -295,7 +297,7 @@ public unsafe class AutoSorter : Tweak
             ImGui.TableNextColumn();
             if (i > 0)
             {
-                if (ImGuiUtils.IconButton(key + "_Up", FontAwesomeIcon.ArrowUp, "Move up"))
+                if (ImGuiUtils.IconButton(key + "_Up", FontAwesomeIcon.ArrowUp, t("AutoSorter.Config.MoveRuleUpButton.Tooltip")))
                 {
                     entryToMoveUp = i;
                 }
@@ -309,7 +311,7 @@ public unsafe class AutoSorter : Tweak
 
             if (i < Config.Settings.Count - 1)
             {
-                if (ImGuiUtils.IconButton(key + "_Down", FontAwesomeIcon.ArrowDown, "Move down"))
+                if (ImGuiUtils.IconButton(key + "_Down", FontAwesomeIcon.ArrowDown, t("AutoSorter.Config.MoveRuleDownButton.Tooltip")))
                 {
                     entryToMoveDown = i;
                 }
@@ -323,7 +325,7 @@ public unsafe class AutoSorter : Tweak
 
             if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
             {
-                if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, "Delete rule"))
+                if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, t("AutoSorter.Config.DeleteRuleButton.Tooltip.HoldingShift")))
                 {
                     entryToRemove = i;
                 }
@@ -333,9 +335,9 @@ public unsafe class AutoSorter : Tweak
                 ImGuiUtils.IconButton(
                     key + "_Delete",
                     FontAwesomeIcon.Trash,
-                    isWindowFocused
-                        ? "Hold shift to delete rule"
-                        : "Focus window and hold shift to delete rule",
+                    t(isWindowFocused
+                        ? "AutoSorter.Config.DeleteRuleButton.Tooltip.NotHoldingShift"
+                        : "AutoSorter.Config.DeleteRuleButton.Tooltip.WindowNotFocused"),
                     disabled: true);
             }
 
@@ -346,7 +348,7 @@ public unsafe class AutoSorter : Tweak
                 if (_isBusy || _queue.Any())
                 {
                     ImGui.SameLine();
-                    ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, "Sorting in progress. Please wait.", disabled: true);
+                    ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, t("AutoSorter.Config.ExecuteButton.Tooltip.Busy"), disabled: true);
                 }
                 else
                 {
@@ -355,13 +357,13 @@ public unsafe class AutoSorter : Tweak
                     if (entry.Category is "saddlebag" or "rightsaddlebag" && !IsInventoryBuddyOpen)
                     {
                         disabledReasons ??= new();
-                        disabledReasons.Add("Sorting saddlebag/rightsaddlebag only works when the window is open.");
+                        disabledReasons.Add(t("AutoSorter.Config.ExecuteButton.Tooltip.SaddlebagNotOpen"));
                     }
 
                     if (entry.Category is "retainer" && !IsRetainerInventoryOpen)
                     {
                         disabledReasons ??= new();
-                        disabledReasons.Add("Sorting retainer only works when the window is open.");
+                        disabledReasons.Add(t("AutoSorter.Config.ExecuteButton.Tooltip.RetainerNotOpen"));
                     }
 
                     ImGui.SameLine();
@@ -391,7 +393,7 @@ public unsafe class AutoSorter : Tweak
                                         : errors.First());
                             }
                         }
-                        else if (ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, "Execute this rule"))
+                        else if (ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, t("AutoSorter.Config.ExecuteButton.Tooltip.Ready")))
                         {
                             entryToExecute = i;
                         }
@@ -407,7 +409,7 @@ public unsafe class AutoSorter : Tweak
 
         table?.Dispose();
 
-        if (ImGui.Button("Add##Add"))
+        if (ImGui.Button(t("AutoSorter.Config.AddButton.Label")))
         {
             Config.Settings.Add(new());
             Plugin.Config.Save();
@@ -419,7 +421,7 @@ public unsafe class AutoSorter : Tweak
 
             if (!_isBusy && !_queue.Any())
             {
-                if (ImGui.Button("Run All##RunAll"))
+                if (ImGui.Button(t("AutoSorter.Config.RunAllButton.Label")))
                 {
                     var groups = Config.Settings
                         .FindAll(entry => !string.IsNullOrEmpty(entry.Category))
@@ -434,10 +436,10 @@ public unsafe class AutoSorter : Tweak
             else
             {
                 using (ImRaii.Disabled())
-                    ImGui.Button("Run All##RunAll");
+                    ImGui.Button(t("AutoSorter.Config.RunAllButton.Label"));
 
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip("Sorting in progress. Please wait.");
+                    ImGui.SetTooltip(t("AutoSorter.Config.RunAllButton.Tooltip.SortingInProgress"));
             }
         }
 

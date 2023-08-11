@@ -47,13 +47,13 @@ public unsafe partial class LockWindowPosition : Tweak
 
     public override void DrawCustomConfig()
     {
-        ImGui.Checkbox("Invert logic (locks all windows)##Inverted", ref Config.Inverted);
+        ImGui.Checkbox(t("LockWindowPosition.Config.Inverted.Label"), ref Config.Inverted);
         if (ImGui.IsItemClicked())
         {
             Plugin.Config.Save();
         }
 
-        ImGui.Checkbox("Add Lock/Unlock Position to windows context menu##AddLockUnlockContextMenuEntries", ref Config.AddLockUnlockContextMenuEntries);
+        ImGui.Checkbox(t("LockWindowPosition.Config.AddLockUnlockContextMenuEntries.Label"), ref Config.AddLockUnlockContextMenuEntries);
         if (ImGui.IsItemClicked())
         {
             Plugin.Config.Save();
@@ -64,7 +64,7 @@ public unsafe partial class LockWindowPosition : Tweak
         ImGuiUtils.DrawPaddedSeparator();
         if (Config.LockedWindows.Any())
         {
-            ImGui.TextUnformatted("Windows:");
+            ImGui.TextUnformatted(t("LockWindowPosition.Config.Windows.Title"));
 
             if (!ImGui.BeginTable("##Table", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX))
             {
@@ -92,7 +92,9 @@ public unsafe partial class LockWindowPosition : Tweak
                     if (Config.Inverted)
                         isLocked = !isLocked;
 
-                    ImGui.SetTooltip("Window is " + (isLocked ? "locked" : "unlocked"));
+                    ImGui.SetTooltip(t(isLocked
+                        ? "LockWindowPosition.Config.EnableCheckmark.Tooltip.Locked"
+                        : "LockWindowPosition.Config.EnableCheckmark.Tooltip.Unlocked"));
                 }
                 if (ImGui.IsItemClicked())
                 {
@@ -105,7 +107,7 @@ public unsafe partial class LockWindowPosition : Tweak
                 ImGui.TableNextColumn();
                 if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
                 {
-                    if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, "Delete"))
+                    if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, t("LockWindowPosition.Config.DeleteButton.Tooltip")))
                     {
                         entryToRemove = i;
                     }
@@ -115,9 +117,9 @@ public unsafe partial class LockWindowPosition : Tweak
                     ImGuiUtils.IconButton(
                         key + "_Delete",
                         FontAwesomeIcon.Trash,
-                        isWindowFocused
-                            ? "Hold shift to delete"
-                            : "Focus window and hold shift to delete",
+                        t(isWindowFocused
+                            ? "LockWindowPosition.Config.DeleteButton.Tooltip.NotHoldingShift"
+                            : "LockWindowPosition.Config.DeleteButton.Tooltip.WindowNotFocused"),
                         disabled: true);
                 }
 
@@ -134,20 +136,20 @@ public unsafe partial class LockWindowPosition : Tweak
         }
         else
         {
-            ImGuiUtils.TextUnformattedDisabled("No windows added yet.");
+            ImGuiUtils.TextUnformattedDisabled(t("LockWindowPosition.Config.NoWindowsAddedYet"));
             ImGuiUtils.PushCursorY(4);
         }
 
         if (_showPicker)
         {
-            if (ImGui.Button("Cancel"))
+            if (ImGui.Button(t("LockWindowPosition.Config.Picker.CancelButton.Label")))
             {
                 _showPicker = false;
             }
         }
         else
         {
-            if (ImGui.Button("Pick Window"))
+            if (ImGui.Button(t("LockWindowPosition.Config.Picker.PickWindowButton.Label")))
             {
                 _hoveredWindowName = "";
                 _hoveredWindowPos = default;
@@ -160,7 +162,7 @@ public unsafe partial class LockWindowPosition : Tweak
         {
             ImGui.SameLine();
 
-            if (ImGui.Button("Toggle All"))
+            if (ImGui.Button(t("LockWindowPosition.Config.Picker.ToggleAllButton.Label")))
             {
                 foreach (var entry in Config.LockedWindows)
                 {

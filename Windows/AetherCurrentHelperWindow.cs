@@ -39,9 +39,11 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         _aetherCurrentHelper = aetherCurrentHelper;
         _compFlgSet = compFlgSet;
 
-        base.SizeCondition = ImGuiCond.Appearing;
-        base.Size = new Vector2(350);
-        base.SizeConstraints = new WindowSizeConstraints
+        Namespace = "HaselTweaksAetherCurrentHelperWindow";
+
+        SizeCondition = ImGuiCond.Appearing;
+        Size = new Vector2(350);
+        SizeConstraints = new WindowSizeConstraints
         {
             MinimumSize = new Vector2(300, 200),
             MaximumSize = new Vector2(4096),
@@ -73,10 +75,10 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         var style = ImGui.GetStyle();
         var startPos = ImGui.GetCursorPos();
 
-        ImGui.Checkbox("##HaselTweaks_AetherCurrents_HideUnlocked", ref _hideUnlocked);
+        ImGui.Checkbox("##HideUnlocked", ref _hideUnlocked);
         if (ImGui.IsItemHovered())
         {
-            ImGui.SetTooltip("Check to hide unlocked Aether Currents");
+            ImGui.SetTooltip(t("AetherCurrentHelperWindow.HideUnlockedTooltip"));
         }
 
         ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
@@ -84,7 +86,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         ImGui.SetCursorPos(startPos + new Vector2(0, textSize.Y + style.ItemSpacing.Y * 4));
 
         using var cellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(4));
-        using var table = ImRaii.Table($"##HaselTweaks_AetherCurrents", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.NoPadOuterX);
+        using var table = ImRaii.Table($"##Table", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.NoPadOuterX);
         if (!table.Success)
             return;
 
@@ -131,7 +133,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
             ImGui.TableNextColumn();
             ImGui.TableNextColumn();
             startPos = ImGui.GetCursorPos() + new Vector2(-startPos.X - 4, 0);
-            var text = t("AetherCurrentHelper.AllAetherCurrentsAttuned");
+            var text = t("AetherCurrentHelperWindow.AllAetherCurrentsAttuned");
             textSize = ImGui.CalcTextSize(text);
             ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
             ImGui.TextUnformatted(text);
@@ -155,7 +157,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
 
         if (ImGui.IsItemHovered())
         {
-            ImGui.SetTooltip("Open Aether Currents Window");
+            ImGui.SetTooltip(t("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip"));
         }
 
         if (ImGui.IsItemClicked())
@@ -244,7 +246,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         // Actions
         ImGui.TableNextColumn();
         var selected = false;
-        ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y) * 2));
+        ImGui.Selectable($"##AetherCurrent_{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y) * 2));
         if (selected)
         {
             OpenMapLocation(level);
@@ -395,7 +397,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         var angle = Math.Atan2(vector.Y, vector.X);
         var octant = (int)Math.Round(8 * angle / (2 * Math.PI) + 8) % 8;
 
-        return CompassHeadings[octant];
+        return t($"AetherCurrentHelperWindow.Compass.{CompassHeadings[octant]}");
     }
 
     public static string GetCompassDirection(Level? level)

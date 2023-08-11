@@ -22,7 +22,7 @@ public unsafe partial class CustomChatTimestamp : Tweak
 
     public override void DrawCustomConfig()
     {
-        ImGui.TextUnformatted("Format");
+        ImGui.TextUnformatted(t("CustomChatTimestamp.Config.Format.Label"));
         using (ImGuiUtils.ConfigIndent())
         {
             if (ImGui.InputText("##Format", ref Config.Format, 50))
@@ -31,7 +31,7 @@ public unsafe partial class CustomChatTimestamp : Tweak
                 ReloadChat();
             }
             ImGui.SameLine();
-            if (ImGuiUtils.IconButton("##FormatReset", FontAwesomeIcon.Undo, "Reset to Default: \"[HH:mm] \""))
+            if (ImGuiUtils.IconButton("##FormatReset", FontAwesomeIcon.Undo, t("HaselTweaks.Config.ResetToDefault", "\"[HH:mm] \"")))
             {
                 Config.Format = "[HH:mm] ";
                 Plugin.Config.Save();
@@ -39,14 +39,14 @@ public unsafe partial class CustomChatTimestamp : Tweak
             }
 
             ImGui.PushStyleColor(ImGuiCol.Text, (uint)Colors.Grey);
-            ImGui.TextUnformatted("This gets passed to C#'s");
+            ImGui.TextUnformatted(t("CustomChatTimestamp.Config.Format.DateTimeLink.Pre"));
             ImGuiUtils.SameLineSpace();
             using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.White))
             {
-                ImGuiUtils.DrawLink("DateTime.ToString()", "Custom date and time format strings documentation", "https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings");
+                ImGuiUtils.DrawLink("DateTime.ToString()", t("CustomChatTimestamp.Config.Format.DateTimeLink.Tooltip"), "https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings");
             }
             ImGuiUtils.SameLineSpace();
-            ImGui.TextUnformatted("function.");
+            ImGui.TextUnformatted(t("CustomChatTimestamp.Config.Format.DateTimeLink.Post"));
             ImGui.PopStyleColor();
         }
 
@@ -59,11 +59,11 @@ public unsafe partial class CustomChatTimestamp : Tweak
 
             ImGui.Spacing();
             ImGui.Spacing();
-            ImGui.TextUnformatted("Example with the current format:");
+            ImGui.TextUnformatted(t("CustomChatTimestamp.Config.Format.Example.Label"));
 
             if (!Service.GameConfig.UiConfig.TryGet("ColorParty", out uint colorParty))
             {
-                colorParty = 0xFFFFE666; // 0xFFFFE666;
+                colorParty = 0xFFFFE666;
             }
             else
             {
@@ -82,13 +82,13 @@ public unsafe partial class CustomChatTimestamp : Tweak
 
             ImGuiUtils.TextUnformattedColored(Colors.White, formatted);
             ImGui.SameLine(0, 0);
-            ImGuiUtils.TextUnformattedColored(colorParty, $"(\uE090Player Name) This is a test message.");
+            ImGuiUtils.TextUnformattedColored(colorParty, t("CustomChatTimestamp.Config.Format.Example.Message"));
         }
         catch (FormatException)
         {
             using (ImRaii.PushIndent())
             {
-                ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, "The current format is not valid.");
+                ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, t("CustomChatTimestamp.Config.Format.Invalid"));
             }
         }
         catch (Exception e)

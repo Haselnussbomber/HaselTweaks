@@ -142,9 +142,9 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         var scale = ImGui.GetIO().FontGlobalScale;
         var verticalTextPadding = 3;
 
-        ImGuiUtils.DrawSection("Login Options");
+        ImGuiUtils.DrawSection(t("EnhancedLoginLogout.Config.LoginOptions.Title"));
         // ShowPets
-        if (ImGui.Checkbox($"Show pets in character selection##ShowPets", ref Config.ShowPets))
+        if (ImGui.Checkbox(t("EnhancedLoginLogout.Config.ShowPets.Label"), ref Config.ShowPets))
         {
             if (!Config.ShowPets)
                 DespawnPet();
@@ -153,12 +153,12 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         }
         using (ImGuiUtils.ConfigIndent())
         {
-            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "Displays a carbuncle (Arcanist/Summoner) or a fairy (Scholar) next to your character.");
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, t("EnhancedLoginLogout.Config.ShowPets.Description"));
 
             if (ActiveContentId != 0)
             {
                 if (!Config.PetMirageSettings.ContainsKey(ActiveContentId))
-                    ImGui.TextColored(Colors.Red, "Pet glamour settings for this character not cached! Please log in.");
+                    ImGuiUtils.TextUnformattedColored(Colors.Red, t("EnhancedLoginLogout.Config.ShowPets.Error.MissingPetMirageSettings"));
             }
 
             ImGuiUtils.PushCursorY(3);
@@ -169,12 +169,12 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         using (ImGuiUtils.ConfigIndent())
         {
-            if (ImGui.DragFloat3($"Position##Position", ref Config.PetPosition, 0.01f, -10f, 10f))
+            if (ImGui.DragFloat3(t("EnhancedLoginLogout.Config.PetPosition.Label"), ref Config.PetPosition, 0.01f, -10f, 10f))
             {
                 ApplyPetPosition();
             }
             ImGui.SameLine();
-            if (ImGuiUtils.IconButton($"##Reset", FontAwesomeIcon.Undo, "Reset to Default: -0.6, 0, 0"))
+            if (ImGuiUtils.IconButton("##PetPositionReset", FontAwesomeIcon.Undo, t("HaselTweaks.Config.ResetToDefault", "-0.6, 0, 0")))
             {
                 Config.PetPosition = new(-0.6f, 0f, 0f);
                 ApplyPetPosition();
@@ -184,7 +184,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         showPetsDisabled?.Dispose();
 
         // PlayEmote
-        if (ImGui.Checkbox($"Play emote in character selection##PlayEmote", ref Config.EnableCharaSelectEmote))
+        if (ImGui.Checkbox(t("EnhancedLoginLogout.Config.PlayEmote.Label"), ref Config.EnableCharaSelectEmote))
         {
             if (!Config.EnableCharaSelectEmote && _currentEntry != null && _currentEntry.Character != null)
             {
@@ -197,8 +197,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         using (ImGuiUtils.ConfigIndent())
         {
-            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "Have your character greet you with an emote!");
-            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "Note: Emote settings are per character and not all emotes are supported (e.g. sitting or underwater emotes). What is supported, however, are alternative standing idle poses.");
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, t("EnhancedLoginLogout.Config.PlayEmote.Description"));
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, t("EnhancedLoginLogout.Config.PlayEmote.Note"));
             ImGuiUtils.PushCursorY(3);
 
             if (Config.EnableCharaSelectEmote)
@@ -206,12 +206,12 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                 if (ActiveContentId != 0)
                 {
                     ImGuiUtils.PushCursorY(verticalTextPadding);
-                    ImGui.Text("Current Emote:");
+                    ImGui.TextUnformatted(t("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote"));
                     ImGui.SameLine();
 
                     if (!Config.SelectedEmotes.TryGetValue(ActiveContentId, out var selectedEmoteId) || selectedEmoteId == 0)
                     {
-                        ImGui.Text("None");
+                        ImGui.TextUnformatted(t("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.None"));
                     }
                     else
                     {
@@ -232,11 +232,11 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                             ImGuiUtils.PushCursorY(-verticalTextPadding);
                             Service.TextureManager.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(24 * scale);
                             ImGui.SameLine();
-                            ImGui.Text(name);
+                            ImGui.TextUnformatted(name);
                         }
                         else
                         {
-                            ImGui.Text("Unknown");
+                            ImGui.TextUnformatted(t("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.Unknown"));
                         }
                     }
 
@@ -248,14 +248,14 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
                         if (_isRecordingEmote)
                         {
-                            if (ImGui.Button("Stop Recording"))
+                            if (ImGui.Button(t("EnhancedLoginLogout.Config.PlayEmote.StopRecordingButton.Label")))
                             {
                                 _isRecordingEmote = false;
                             }
                         }
                         else
                         {
-                            if (ImGui.Button("Change"))
+                            if (ImGui.Button(t("EnhancedLoginLogout.Config.PlayEmote.ChangeButton.Label")))
                             {
                                 _isRecordingEmote = true;
 
@@ -272,7 +272,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                             ImGui.SameLine();
 
                             ImGuiUtils.PushCursorY(-verticalTextPadding);
-                            if (ImGui.Button("Unset"))
+                            if (ImGui.Button(t("EnhancedLoginLogout.Config.PlayEmote.UnsetButton.Label")))
                             {
                                 SaveEmote(0);
                             }
@@ -280,13 +280,13 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
                         if (_isRecordingEmote)
                         {
-                            ImGui.TextColored(Colors.Gold, "Perform an emote now to set it for this character!");
+                            ImGuiUtils.TextUnformattedColored(Colors.Gold, t("EnhancedLoginLogout.Config.PlayEmote.RecordingInfo"));
                             ImGuiUtils.PushCursorY(verticalTextPadding);
                         }
                     }
                     else
                     {
-                        ImGui.Text("Please log in to set an emote.");
+                        ImGui.TextUnformatted(t("EnhancedLoginLogout.Config.PlayEmote.NotLoggedIn"));
                     }
                 }
             }
@@ -295,16 +295,16 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         playEmoteDisabled?.Dispose();
 
         // PreloadTerritory
-        ImGui.Checkbox($"Preload territory when queued##PreloadTerritory", ref Config.PreloadTerritory);
+        ImGui.Checkbox(t("EnhancedLoginLogout.Config.PreloadTerritory.Label"), ref Config.PreloadTerritory);
         using (ImGuiUtils.ConfigIndent())
         {
-            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, "When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.");
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, t("EnhancedLoginLogout.Config.PreloadTerritory.Description"));
             ImGuiUtils.PushCursorY(verticalTextPadding);
         }
 
-        ImGuiUtils.DrawSection("Logout Options");
+        ImGuiUtils.DrawSection(t("EnhancedLoginLogout.Config.LogoutOptions.Title"));
         // ClearTellHistory
-        ImGui.Checkbox($"Clear tell history on logout##ClearTellHistory", ref Config.ClearTellHistory);
+        ImGui.Checkbox(t("EnhancedLoginLogout.Config.ClearTellHistory.Label"), ref Config.ClearTellHistory);
     }
 
     #endregion
