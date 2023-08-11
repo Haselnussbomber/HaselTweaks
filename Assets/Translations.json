@@ -529,7 +529,7 @@
   "ForcedCutsceneMusic.Tweak.Description": {
     "en": "Auto-unmutes background music for most cutscenes."
   },
-  "EnhancedMaterialList.Config.Restore.Label": {
+  "ForcedCutsceneMusic.Config.Restore.Label": {
     "en": "Restore mute state after cutscene"
   },
 

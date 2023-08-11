@@ -96,7 +96,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         {
             if (source.Success)
             {
-                ImGuiUtils.TextUnformattedDisabled(t("PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip", tag.Name));
+                ImGui.TextUnformatted(t("PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip", tag.Name));
 
                 var bytes = tag.Id.ToByteArray();
                 fixed (byte* ptr = bytes)
@@ -149,7 +149,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
                 DeleteTagDialog.Open(tag);
             }
 
-            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTag.Label")))
+            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label")))
             {
                 removeUnusedTags = true;
             }

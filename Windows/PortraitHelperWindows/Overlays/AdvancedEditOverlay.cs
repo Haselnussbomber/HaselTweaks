@@ -265,8 +265,8 @@ public unsafe class AdvancedEditOverlay : Overlay
         using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Grey))
         {
             ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedEditOverlay.Note.Label"));
-            ImGuiHelpers.SafeTextWrapped("PortraitHelperWindows.AdvancedEditOverlay.Note.1");
-            ImGuiHelpers.SafeTextWrapped("PortraitHelperWindows.AdvancedEditOverlay.Note.2");
+            ImGuiHelpers.SafeTextWrapped(t("PortraitHelperWindows.AdvancedEditOverlay.Note.1"));
+            ImGuiHelpers.SafeTextWrapped(t("PortraitHelperWindows.AdvancedEditOverlay.Note.2"));
         }
     }
 }

@@ -1,7 +1,7 @@
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
-using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
+using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
@@ -35,7 +35,7 @@ public class DeletePresetDialog : ConfirmationDialog
         => base.DrawCondition() && _preset != null;
 
     public override void InnerDraw()
-        => ImGuiUtils.TextUnformattedDisabled(t("PortraitHelperWindows.DeletePresetDialog.Prompt", _preset!.Name));
+        => ImGui.TextUnformatted(t("PortraitHelperWindows.DeletePresetDialog.Prompt", _preset!.Name));
 
     private void OnDelete()
     {

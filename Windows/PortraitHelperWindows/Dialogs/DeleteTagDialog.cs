@@ -2,7 +2,6 @@ using System.Linq;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
-using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using ImGuiNET;
 
@@ -43,7 +42,7 @@ public class DeleteTagDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        ImGuiUtils.TextUnformattedDisabled(t("PortraitHelperWindows.DeleteTagDialog.Prompt", _tag!.Name));
+        ImGui.TextUnformatted(t("PortraitHelperWindows.DeleteTagDialog.Prompt", _tag!.Name));
         ImGui.Spacing();
         ImGui.Checkbox(t("PortraitHelperWindows.DeleteTagDialog.DeletePortraitsToo.Label"), ref _deletePortraits);
     }
