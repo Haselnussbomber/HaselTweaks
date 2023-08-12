@@ -776,31 +776,50 @@
     "en": "[HaselTweaks] Portrait Helper: Advanced Edit"
   },
   "PortraitHelperWindows.AdvancedEditOverlay.Title.Inner": {
-    "en": "Advanced Edit"
+    "en": "Advanced Edit Mode",
+    "de": "Erweiterter Bearbeitungsmodus"
   },
-  "PortraitHelperWindows.AdvancedEditOverlay.CameraYaw.Label": {
-    "en": "Camera Yaw"
+  "PortraitHelperWindows.Setting.CameraYaw.Label": {
+    "en": "Camera Yaw",
+    "de": "Kamera-Gierachse"
   },
-  "PortraitHelperWindows.AdvancedEditOverlay.CameraPitch.Label": {
-    "en": "Camera Pitch"
+  "PortraitHelperWindows.Setting.CameraYaw.Tooltip": {
+    "en": "Rotation around the z-axis",
+    "de": "Rotation um die Z-Achse"
   },
-  "PortraitHelperWindows.AdvancedEditOverlay.CameraDistance.Label": {
-    "en": "Camera Distance"
+  "PortraitHelperWindows.Setting.CameraPitch.Label": {
+    "en": "Camera Pitch",
+    "de": "Kamera-Querachse"
   },
-  "PortraitHelperWindows.AdvancedEditOverlay.CameraXY.Label": {
-    "en": "Camera X / Y"
+  "PortraitHelperWindows.Setting.CameraPitch.Tooltip": {
+    "en": "Rotation around the y-axis",
+    "de": "Rotation um die Y-Achse"
   },
-  "PortraitHelperWindows.AdvancedEditOverlay.ZoomRotation.Label": {
-    "en": "Zoom / Rotation"
+  "PortraitHelperWindows.Setting.CameraDistance.Label": {
+    "en": "Camera Distance",
+    "de": "Kameradistanz"
   },
-  "PortraitHelperWindows.AdvancedEditOverlay.EyeDirection.Label": {
-    "en": "Eye Direction"
+  "PortraitHelperWindows.Setting.CameraTarget.Label": {
+    "en": "Camera Target",
+    "de": "Kamera-Zielpunkt"
   },
-  "PortraitHelperWindows.AdvancedEditOverlay.HeadDirection.Label": {
-    "en": "Head Direction"
+  "PortraitHelperWindows.Setting.ZoomRotation.Label": {
+    "en": "Zoom and Rotation",
+    "de": "Zoom & Rotation"
   },
-  "PortraitHelperWindows.AdvancedEditOverlay.AnimationTimestamp.Label": {
+  "PortraitHelperWindows.Setting.EyeDirection.Label": {
+    "en": "Eye Direction",
+    "de": "Blickrichtung"
+  },
+  "PortraitHelperWindows.Setting.HeadDirection.Label": {
+    "en": "Head Direction",
+    "de": "Kopfdrehung"
+  },
+  "PortraitHelperWindows.Setting.AnimationTimestamp.Label": {
     "en": "Animation Timestamp"
+  },
+  "PortraitHelperWindows.Setting.AnimationTimestamp.ValueFormat": {
+    "en": "{0:0.000}"
   },
   "PortraitHelperWindows.AdvancedEditOverlay.Note.Label": {
     "en": "Please note:"
@@ -812,31 +831,28 @@
     "en": "Also, setting the Animation Timestamp will restart the animation at the specified timestamp, causing some flickering. If the Animation Timestamp is too high, the game will start the next loop, resetting the timestamp to 0."
   },
   "PortraitHelperWindows.AdvancedImportOverlay.Title": {
-    "en": "[HaselTweaks] Portrait Helper: Advanced Import"
+    "en": "[HaselTweaks] Portrait Helper: Advanced Import",
+    "de": "[HaselTweaks] Portrait Helper: Erweiterter Import"
   },
   "PortraitHelperWindows.AdvancedImportOverlay.Info": {
-    "en": "Only the checked settings will be imported."
+    "en": "Only the checked settings will be imported.",
+    "de": "Nur ausgewählte Einstellungen werden importiert."
   },
   "PortraitHelperWindows.AdvancedImportOverlay.ImportSelectedSettingsButton.Label": {
-    "en": "Import Selected Settings"
-  },
-  "PortraitHelperWindows.AdvancedImportOverlay.AnimationProgressInput.Label": {
-    "en": "Animation Timestamp"
-  },
-  "PortraitHelperWindows.AdvancedImportOverlay.CameraTargetInput.Label": {
-    "en": "Camera Target"
-  },
-  "PortraitHelperWindows.AdvancedImportOverlay.HeadDirectionInput.Label": {
-    "en": "Head Direction"
+    "en": "Import Selected Settings",
+    "de": "Ausgewählte Einstellungen importieren"
   },
   "PortraitHelperWindows.AdvancedImportOverlay.ColorInput.R": {
-    "en": "R: {0}"
+    "en": "R:"
   },
   "PortraitHelperWindows.AdvancedImportOverlay.ColorInput.G": {
-    "en": "G: {0}"
+    "en": "G:"
   },
   "PortraitHelperWindows.AdvancedImportOverlay.ColorInput.B": {
-    "en": "B: {0}"
+    "en": "B:"
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.ColorInput.ValueFormat": {
+    "en": "{0}"
   },
   "PortraitHelperWindows.AdvancedImportOverlay.VectorInput.X": {
     "en": "X:"
@@ -849,6 +865,9 @@
   },
   "PortraitHelperWindows.AdvancedImportOverlay.VectorInput.W": {
     "en": "W:"
+  },
+  "PortraitHelperWindows.AdvancedImportOverlay.VectorInput.ValueFormat": {
+    "en": "{0:0.000}"
   },
   "PortraitHelperWindows.AlignmentToolSettingsOverlay.Title": {
     "en": "[HaselTweaks] Portrait Helper: Alignment Tool Settings"

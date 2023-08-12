@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
@@ -153,9 +152,9 @@ public unsafe class AdvancedImportOverlay : Overlay
         );
 
         DrawImportSetting(
-            t("PortraitHelperWindows.AdvancedImportOverlay.AnimationProgressInput.Label"),
+            t("PortraitHelperWindows.Setting.AnimationTimestamp.Label"),
             ImportFlags.AnimationProgress,
-            () => ImGui.TextUnformatted(Tweak.ClipboardPreset.AnimationProgress.ToString("0.000", CultureInfo.InvariantCulture))
+            () => ImGui.TextUnformatted(t("PortraitHelperWindows.Setting.AnimationTimestamp.ValueFormat", Tweak.ClipboardPreset.AnimationProgress))
         );
 
         DrawImportSetting(
@@ -165,19 +164,19 @@ public unsafe class AdvancedImportOverlay : Overlay
         );
 
         DrawImportSetting(
-            t("PortraitHelperWindows.AdvancedImportOverlay.CameraTargetInput.Label"),
+            t("PortraitHelperWindows.Setting.CameraTarget.Label"),
             ImportFlags.CameraTarget,
             () => DrawHalfVector4(Tweak.ClipboardPreset.CameraTarget)
         );
 
         DrawImportSetting(
-            t("PortraitHelperWindows.AdvancedImportOverlay.CameraTargetInput.Label"),
+            t("PortraitHelperWindows.Setting.HeadDirection.Label"),
             ImportFlags.HeadDirection,
             () => DrawHalfVector2(Tweak.ClipboardPreset.HeadDirection)
         );
 
         DrawImportSetting(
-            t("PortraitHelperWindows.AdvancedImportOverlay.HeadDirectionInput.Label"),
+            t("PortraitHelperWindows.Setting.EyeDirection.Label"),
             ImportFlags.EyeDirection,
             () => DrawHalfVector2(Tweak.ClipboardPreset.EyeDirection)
         );
@@ -283,14 +282,21 @@ public unsafe class AdvancedImportOverlay : Overlay
         ImGui.TableNextColumn();
         ImGui.ColorEdit3("##ColorEdit3", ref vec, ImGuiColorEditFlags.NoPicker | ImGuiColorEditFlags.NoOptions | ImGuiColorEditFlags.NoLabel | ImGuiColorEditFlags.NoInputs);
 
-        ImGui.TableNextColumn();
-        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.ColorInput.R", r.ToString()));
+        void drawColumn(string label, Half value)
+        {
+            ImGui.TableNextColumn();
+            label = t("PortraitHelperWindows.AdvancedImportOverlay.ColorInput." + label);
+            var labelWidth = ImGui.CalcTextSize(label).X;
+            ImGui.TextUnformatted(label);
 
-        ImGui.TableNextColumn();
-        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.ColorInput.G", g.ToString()));
+            var valueStr = t("PortraitHelperWindows.AdvancedImportOverlay.ColorInput.ValueFormat", value);
+            ImGui.SameLine(0, ImGui.GetContentRegionAvail().X - labelWidth - ImGui.CalcTextSize(valueStr).X);
+            ImGui.TextUnformatted(valueStr);
+        }
 
-        ImGui.TableNextColumn();
-        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.ColorInput.B", b.ToString()));
+        drawColumn("R", r);
+        drawColumn("G", g);
+        drawColumn("B", b);
 
         ImGui.TableNextColumn();
     }
@@ -301,21 +307,26 @@ public unsafe class AdvancedImportOverlay : Overlay
         if (!table.Success)
             return;
 
-        ImGui.TableSetupColumn("X", ImGuiTableColumnFlags.WidthFixed, 56);
-        ImGui.TableSetupColumn("Y", ImGuiTableColumnFlags.WidthFixed, 56);
+        ImGui.TableSetupColumn("X", ImGuiTableColumnFlags.WidthFixed, 50);
+        ImGui.TableSetupColumn("Y", ImGuiTableColumnFlags.WidthFixed, 50);
         ImGui.TableSetupColumn("spacing", ImGuiTableColumnFlags.WidthStretch);
 
         ImGui.TableNextRow();
 
-        ImGui.TableNextColumn();
-        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.X"));
-        ImGui.SameLine(24);
-        ImGui.TextUnformatted(vec.X.ToString("0.000", CultureInfo.InvariantCulture));
+        void drawColumn(string label, Half value)
+        {
+            ImGui.TableNextColumn();
+            label = t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput." + label);
+            var labelWidth = ImGui.CalcTextSize(label).X;
+            ImGui.TextUnformatted(label);
 
-        ImGui.TableNextColumn();
-        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.Y"));
-        ImGui.SameLine(24);
-        ImGui.TextUnformatted(vec.Y.ToString("0.000", CultureInfo.InvariantCulture));
+            var valueStr = t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.ValueFormat", value);
+            ImGui.SameLine(0, ImGui.GetContentRegionAvail().X - labelWidth - ImGui.CalcTextSize(valueStr).X);
+            ImGui.TextUnformatted(valueStr);
+        }
+
+        drawColumn("X", vec.X);
+        drawColumn("Y", vec.Y);
 
         ImGui.TableNextColumn();
     }
@@ -326,33 +337,30 @@ public unsafe class AdvancedImportOverlay : Overlay
         if (!table.Success)
             return;
 
-        ImGui.TableSetupColumn("X", ImGuiTableColumnFlags.WidthFixed, 56);
-        ImGui.TableSetupColumn("Y", ImGuiTableColumnFlags.WidthFixed, 56);
-        ImGui.TableSetupColumn("Z", ImGuiTableColumnFlags.WidthFixed, 56);
-        ImGui.TableSetupColumn("W", ImGuiTableColumnFlags.WidthFixed, 56);
+        ImGui.TableSetupColumn("X", ImGuiTableColumnFlags.WidthFixed, 50);
+        ImGui.TableSetupColumn("Y", ImGuiTableColumnFlags.WidthFixed, 50);
+        ImGui.TableSetupColumn("Z", ImGuiTableColumnFlags.WidthFixed, 50);
+        ImGui.TableSetupColumn("W", ImGuiTableColumnFlags.WidthFixed, 50);
         ImGui.TableSetupColumn("spacing", ImGuiTableColumnFlags.WidthStretch);
 
         ImGui.TableNextRow();
 
-        ImGui.TableNextColumn();
-        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.X"));
-        ImGui.SameLine(24);
-        ImGui.TextUnformatted(vec.X.ToString("0.000", CultureInfo.InvariantCulture));
+        void drawColumn(string label, Half value)
+        {
+            ImGui.TableNextColumn();
+            label = t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput." + label);
+            var labelWidth = ImGui.CalcTextSize(label).X;
+            ImGui.TextUnformatted(label);
 
-        ImGui.TableNextColumn();
-        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.Y"));
-        ImGui.SameLine(24);
-        ImGui.TextUnformatted(vec.Y.ToString("0.000", CultureInfo.InvariantCulture));
+            var valueStr = t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.ValueFormat", value);
+            ImGui.SameLine(0, ImGui.GetContentRegionAvail().X - labelWidth - ImGui.CalcTextSize(valueStr).X);
+            ImGui.TextUnformatted(valueStr);
+        }
 
-        ImGui.TableNextColumn();
-        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.Z"));
-        ImGui.SameLine(24);
-        ImGui.TextUnformatted(vec.Z.ToString("0.000", CultureInfo.InvariantCulture));
-
-        ImGui.TableNextColumn();
-        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.W"));
-        ImGui.SameLine(24);
-        ImGui.TextUnformatted(vec.W.ToString("0.000", CultureInfo.InvariantCulture));
+        drawColumn("X", vec.X);
+        drawColumn("Y", vec.Y);
+        drawColumn("Z", vec.Z);
+        drawColumn("W", vec.W);
 
         ImGui.TableNextColumn();
     }
