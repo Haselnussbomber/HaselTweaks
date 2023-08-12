@@ -348,7 +348,7 @@ public unsafe class AutoSorter : Tweak
                 if (_isBusy || _queue.Any())
                 {
                     ImGui.SameLine();
-                    ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, t("AutoSorter.Config.ExecuteButton.Tooltip.Busy"), disabled: true);
+                    ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, t("AutoSorter.SortingInProgress"), disabled: true);
                 }
                 else
                 {
@@ -439,7 +439,7 @@ public unsafe class AutoSorter : Tweak
                     ImGui.Button(t("AutoSorter.Config.RunAllButton.Label"));
 
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(t("AutoSorter.Config.RunAllButton.Tooltip.SortingInProgress"));
+                    ImGui.SetTooltip(t("AutoSorter.SortingInProgress"));
             }
         }
 

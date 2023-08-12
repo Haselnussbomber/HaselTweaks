@@ -1,45 +1,59 @@
 {
   "HaselTweaks.Config.DevGitHubLink.Tooltip": {
-    "en": "Compare changes"
+    "en": "Compare changes",
+    "de": "Änderungen vergleichen"
   },
   "HaselTweaks.Config.ReleaseNotesLink.Tooltip": {
-    "en": "Visit Release Notes"
+    "en": "Visit Release Notes",
+    "de": "Zu den Release Notes"
   },
   "HaselTweaks.Config.GitHubLink.Tooltip": {
-    "en": "Visit the HaselTweaks GitHub Repository"
+    "en": "Visit the HaselTweaks GitHub Repository",
+    "de": "Zum HaselTweaks GitHub Repository"
   },
   "HaselTweaks.Config.KoFiLink.Tooltip": {
-    "en": "Support me on Ko-fi"
+    "en": "Support me on Ko-fi",
+    "de": "Unterstütze mich auf Ko-fi"
   },
   "HaselTweaks.Config.CouldNotLoadConfigNotification.Text": {
-    "en": "Could not load the configuration file. Creating a new one."
+    "en": "Could not load the configuration file. Creating a new one.",
+    "de": "Die Konfigurationsdatei konnte nicht geladen werden. Es wird eine neue erstellt."
   },
   "HaselTweaks.Config.SectionTitle.IncompatibilityWarning": {
-    "en": "Incompatibility Warning"
+    "en": "Incompatibility Warning",
+    "de": "Inkompatibilitätswarnung"
   },
   "HaselTweaks.Config.SectionTitle.Configuration": {
-    "en": "Configuration"
+    "en": "Configuration",
+    "de": "Konfiguration"
   },
   "HaselTweaks.Config.IncompatibilityWarning.Single.Plugin": {
-    "en": "In order for this tweak to work properly, please make sure {0} is disabled."
+    "en": "In order for this tweak to work properly, please make sure {0} is disabled.",
+    "de": "Damit dieser Tweak richtig funktioniert, stell bitte sicher, dass {0} deaktiviert ist."
   },
   "HaselTweaks.Config.IncompatibilityWarning.Single.PluginSetting": {
-    "en": "In order for this tweak to work properly, please make sure {0} is disabled in {1}."
+    "en": "In order for this tweak to work properly, please make sure {0} is disabled in {1}.",
+    "de": "Damit dieser Tweak richtig funktioniert, stell bitte sicher, dass {0} in {1} deaktiviert ist."
   },
   "HaselTweaks.Config.IncompatibilityWarning.Single.PluginSettings": {
-    "en": "In order for this tweak to work properly, please make sure the following settings are disabled in {0}:"
+    "en": "In order for this tweak to work properly, please make sure the following settings are disabled in {0}:",
+    "de": "Damit dieser Tweak richtig funktioniert, stell bitte sicher, dass die folgenden Einstellungen in {0} deaktiviert sind:"
   },
   "HaselTweaks.Config.IncompatibilityWarning.Multi.Preface": {
-    "en": "In order for this tweak to work properly, please make sure"
+    "en": "In order for this tweak to work properly, please make sure",
+    "de": "Damit dieser Tweak richtig funktioniert, stell bitte sicher, dass"
   },
   "HaselTweaks.Config.IncompatibilityWarning.Multi.Plugin": {
-    "en": "- {0} is disabled"
+    "en": "- {0} is disabled",
+    "de": "- {0} deaktiviert ist"
   },
   "HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSetting": {
-    "en": "- {0} is disabled in {1}"
+    "en": "- {0} is disabled in {1}",
+    "de": "- {0} in {1} deaktiviert ist"
   },
   "HaselTweaks.Config.IncompatibilityWarning.MultiPluginSettings": {
-    "en": "- the following settings are disabled in {0}:"
+    "en": "- the following settings are disabled in {0}:",
+    "de": "- die folgenden Einstellungen in {0} deaktiviert sind:"
   },
   "HaselTweaks.Config.IncompatibilityWarning.Plugin.SimpleTweaksPlugin.Name": {
     "en": "Simple Tweaks"
@@ -54,35 +68,47 @@
     "en": "???"
   },
   "HaselTweaks.Config.TweakStatus.Outdated": {
-    "en": "Outdated"
+    "en": "Outdated",
+    "de": "Veraltet"
   },
   "HaselTweaks.Config.TweakStatus.InitializationFailed": {
-    "en": "Initialization failed"
+    "en": "Initialization failed",
+    "de": "Initialisierung fehlgeschlagen"
   },
   "HaselTweaks.Config.TweakStatus.Enabled": {
-    "en": "Enabled"
+    "en": "Enabled",
+    "de": "Aktiviert"
   },
   "HaselTweaks.Config.TweakStatus.Disabled": {
-    "en": "Disabled"
+    "en": "Disabled",
+    "de": "Deaktiviert"
   },
   "HaselTweaks.Config.ResetToDefault": {
-    "en": "Reset to Default: {0}"
+    "en": "Reset to Default: {0}",
+    "de": "Auf Standard zurücksetzen: {0}"
   },
 
   "AetherCurrentHelper.Tweak.Name": {
     "en": "Aether Current Helper"
   },
   "AetherCurrentHelper.Tweak.Description": {
-    "en": "Clicking on a zone in the Aether Currents window opens a helper window that shows where to find the aether currents or which quests unlocks them. Clicking on an aether current in the list flags the position of the aether current or the quest giver on the map."
+    "en": "Clicking on a zone in the Aether Currents window opens a helper window that shows where to find the aether currents or which quests unlocks them. Clicking on an entry marks the location of the aether current or the quest giver on the map.",
+    "de": "Ein Klick auf eine Zone im Windätherquellen-Fenster öffnet ein Hilfsfenster, das zeigt, wo die Windätherquellen zu finden sind oder welche Quests sie freischalten. Ein Klick auf einen Eintrag markiert die Position der Windätherquelle oder des Questgebers auf der Karte."
   },
   "AetherCurrentHelper.Config.AlwaysShowDistance.Label": {
-    "en": "Show distance instead of checkmark when unlocked"
+    "en": "Show distance instead of checkmark when unlocked",
+    "de": "Entfernung anstelle des Häkchens anzeigen"
+  },
+  "AetherCurrentHelper.Config.AlwaysShowDistance.Description": {
+    "de": "Betrifft bereits freigeschaltete Windätherquellen."
   },
   "AetherCurrentHelper.Config.CenterDistance.Label": {
-    "en": "Center distance column"
+    "en": "Center distance column",
+    "de": "Distanz-Spalte zentrieren"
   },
   "AetherCurrentHelper.Config.CenterDistance.Description": {
-    "en": "Disable this if you have problems with the window endlessly expanding to the right"
+    "en": "Disable this if you have problems with the window endlessly expanding to the right.",
+    "de": "Deaktiviere diese Option, wenn das Problem auftritt, dass sich das Fenster endlos nach rechts ausdehnt."
   },
   "AetherCurrentHelperWindow.AllAetherCurrentsAttuned": {
     "en": "All aether currents attuned!",
@@ -91,10 +117,12 @@
     "ja": "すべてのエーテル風車を結集！"
   },
   "AetherCurrentHelperWindow.HideUnlockedTooltip": {
-    "en": "Check to hide unlocked Aether Currents"
+    "en": "Check to hide unlocked Aether Currents",
+    "de": "Anklicken, um bereits freigeschaltete Windätherquellen zu verstecken"
   },
   "AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip": {
-    "en": "Open Aether Currents Window"
+    "en": "Open Aether Currents Window",
+    "de": "Windätherquellen-Fenster öffnen"
   },
   "AetherCurrentHelperWindow.Coords": {
     "en": "X: {0}, Y: {1}"
@@ -136,115 +164,138 @@
     "en": "Auto-open Recipe"
   },
   "AutoOpenRecipe.Tweak.Description": {
-    "en": "When a new daily/tribal quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe."
+    "en": "When a new daily/tribal quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe.",
+    "de": "Wenn ein neues tägliches/stammesbezogenes Questziel verlangt, dass ein Gegenstand hergestellt werden soll und alle Materialien dafür in jenem Moment im Inventar verfügbar sind, wird automatisch das Rezept geöffnet."
   },
 
   "AutoSorter.Tweak.Name": {
     "en": "Auto Sorter"
   },
   "AutoSorter.Tweak.Description": {
-    "en": "Sorts items inside various containers when they are opened."
+    "en": "Sorts items inside various containers when they are opened.",
+    "de": "Sortiert Gegenstände in verschiedenen Behältern, wenn diese geöffnet werden."
   },
   "AutoSorter.Config.SortArmouryOnJobChange.Label": {
-    "en": "Sort armoury on job change"
+    "en": "Sort armoury on job change",
+    "de": "Arsenal bei Jobwechsel sortieren"
   },
   "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsEnabled": {
-    "en": "Rule is enabled"
+    "en": "Rule is enabled",
+    "de": "Regel ist aktiv"
   },
   "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsDisabled": {
-    "en": "Rule is disabled"
+    "en": "Rule is disabled",
+    "de": "Regel ist inaktiv"
   },
   "AutoSorter.Config.CategoryCombo.Placeholder": {
-    "en": "Category..."
+    "en": "Category...",
+    "de": "Kategorie..."
   },
   "AutoSorter.Config.ConditionCombo.Placeholder": {
-    "en": "Condition..."
+    "en": "Condition...",
+    "de": "Bedingung..."
   },
   "AutoSorter.Config.OrderCombo.Placeholder": {
-    "en": "Order..."
+    "en": "Order...",
+    "de": "Sortierung..."
   },
   "AutoSorter.Config.MoveRuleUpButton.Tooltip": {
-    "en": "Move up"
+    "en": "Move up",
+    "de": "Nach oben"
   },
   "AutoSorter.Config.MoveRuleDownButton.Tooltip": {
-    "en": "Move down"
+    "en": "Move down",
+    "de": "Nach unten"
   },
   "AutoSorter.Config.DeleteRuleButton.Tooltip.HoldingShift": {
-    "en": "Delete rule"
+    "en": "Delete rule",
+    "de": "Regel löschen"
   },
   "AutoSorter.Config.DeleteRuleButton.Tooltip.NotHoldingShift": {
-    "en": "Hold shift to delete rule"
+    "en": "Hold shift to delete rule",
+    "de": "Shift gedrückt halten, um die Regel zu löschen"
   },
   "AutoSorter.Config.DeleteRuleButton.Tooltip.WindowNotFocused": {
-    "en": "Focus window and hold shift to delete rule"
-  },
-  "AutoSorter.Config.ExecuteButton.Tooltip.Busy": {
-    "en": "Sorting in progress. Please wait."
+    "en": "Focus window and hold shift to delete rule",
+    "de": "Fokussiere das Fenster und halte Shift gedrückt, um die Regel zu löschen"
   },
   "AutoSorter.Config.ExecuteButton.Tooltip.Ready": {
-    "en": "Execute this rule"
+    "en": "Execute rule",
+    "de": "Regel ausführen"
   },
   "AutoSorter.Config.ExecuteButton.Tooltip.SaddlebagNotOpen": {
-    "en": "Sorting saddlebag/rightsaddlebag only works when the window is open."
+    "en": "Sorting of Chocobo Saddlebag only works when the window is open.",
+    "de": "Die Sortierung der Chocobo-Satteltasche funktioniert nur, wenn das Fenster geöffnet ist."
   },
   "AutoSorter.Config.ExecuteButton.Tooltip.RetainerNotOpen": {
-    "en": "Sorting retainer only works when the window is open."
+    "en": "Sorting of Retainer Inventory only works when the window is open.",
+    "de": "Die Sortierung des Gehilfeninventars funktioniert nur, wenn das Fenster geöffnet ist."
   },
   "AutoSorter.Config.AddButton.Label": {
-    "en": "Add"
+    "en": "Add rule",
+    "de": "Neue Regel"
   },
   "AutoSorter.Config.RunAllButton.Label": {
-    "en": "Run All"
+    "en": "Run All",
+    "de": "Alle ausführen"
   },
-  "AutoSorter.Config.RunAllButton.Tooltip.SortingInProgress": {
-    "en": "Sorting in progress. Please wait."
+  "AutoSorter.SortingInProgress": {
+    "en": "Sorting in progress. Please wait.",
+    "de": "Sortierung im Gange. Bitte warten."
   },
   "AutoSorter.SortingRule.Error.CategoryNotSet": {
-    "en": "Category is not set."
+    "en": "Category is not set.",
+    "de": "Kategorie nicht ausgewählt."
   },
   "AutoSorter.SortingRule.Error.ConditionNotSet": {
-    "en": "Condition is not set."
+    "en": "Condition is not set.",
+    "de": "Bedingung nicht ausgewählt."
   },
   "AutoSorter.SortingRule.Error.OrderNotSet": {
-    "en": "Order is not set."
+    "en": "Order is not set.",
+    "de": "Sortierung nicht ausgewählt."
   },
   "AutoSorter.SortingRule.Error.OverridesArmouryRule": {
-    "en": "This rule overrides a slot-based armoury rule. Move it up."
+    "en": "This rule overrides a slot-based armoury rule. Move it up!",
+    "de": "Diese Regel überschreibt eine Slot-basierte Arsenal-Regel. Verschiebe sie nach oben!"
   },
   "AutoSorter.SortingRule.Error.PremiumSaddlebagNotSubscribed": {
-    "en": "Not subscribed to the Companion Premium Service."
+    "en": "Not subscribed to the Companion Premium Service.",
+    "de": "Premium-Nutzungsplan der Companion-App nicht aboniert."
   },
 
   "BackgroundMusicKeybind.Tweak.Name": {
     "en": "Background Music Keybind"
   },
   "BackgroundMusicKeybind.Tweak.Description": {
-    "en": "A configurable keybind to toggle the background music."
-  },
-  "BackgroundMusicKeybind.Config.Keybind.Label": {
-    "en": "Keybind:"
+    "en": "A configurable keybind to toggle the background music.",
+    "de": "Eine konfigurierbare Tastenkombination zum Umschalten der Hintergrundmusik."
   },
   "BackgroundMusicKeybind.Config.ShiftKeyCheckbox.Label": {
     "en": "Shift"
   },
   "BackgroundMusicKeybind.Config.ControlKeyCheckbox.Label": {
-    "en": "Control"
+    "en": "Control",
+    "de": "Steuerung"
   },
   "BackgroundMusicKeybind.Config.AltKeyCheckbox.Label": {
     "en": "Alt"
   },
   "BackgroundMusicKeybind.Config.KeyCombo.Preview.None": {
-    "en": "None"
+    "en": "None",
+    "de": "Keine Taste"
   },
 
   "CharacterClassSwitcher.Tweak.Name": {
     "en": "Character Class Switcher"
   },
   "CharacterClassSwitcher.Tweak.Description": {
-    "en": "Clicking on a class/job in the character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window."
+    "en": "Clicking on a class/job in the character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window.",
+    "de": "Ein Klick auf eine Klasse/Job im Charakterfenster findet die passende Ausrüstung und rüstet sie aus. Halte die Umschalttaste bei Handwerkern gedrückt, um das ursprüngliche Desynthesefenster zu öffnen."
   },
   "CharacterClassSwitcher.Config.DisableTooltips.Label": {
-    "en": "Disable Tooltips"
+    "en": "Disable Tooltips",
+    "de": "Tooltips deaktivieren"
   },
   "CharacterClassSwitcher.NoSuitableGearsetFound": {
     "en": "Couldn't find a suitable gearset.",
@@ -257,25 +308,29 @@
     "en": "Commands"
   },
   "Commands.Tweak.Description": {
-    "en": "A variety of useful chat commands."
+    "en": "A variety of useful chat commands.",
+    "de": "Eine Vielzahl von nützlichen Chat-Befehlen."
   },
   "Commands.Config.EnableItemLinkCommand.Label": {
     "en": "/itemlink"
   },
   "Commands.Config.EnableItemLinkCommand.Description": {
-    "en": "Prints an item link for the given item id in chat.\nUsage: {ItemLinkCommand} <id>"
+    "en": "Prints an item link for the given id in chat.\nUsage: /itemlink <id>",
+    "de": "Gibt einen Gegenstands-Link für die angegebene ID im Chat aus.\nVerwendung: /itemlink <id>"
   },
   "Commands.Config.EnableWhatMountCommand.Label": {
     "en": "/whatmount"
   },
   "Commands.Config.EnableWhatMountCommand.Description": {
-    "en": "Target a player and execute the command to see what mount\nyour target is riding and which item teaches this mount."
+    "en": "Target a player and execute the command to see what mount your target is riding and which item teaches this mount.",
+    "de": "Visiere einen Spieler an und führe den Befehl aus, um zu sehen, welches Reittier dein Ziel reitet und welcher Gegenstand dieses Reittier lehrt."
   },
   "Commands.Config.EnableWhatBardingCommand.Label": {
     "en": "/whatbarding"
   },
   "Commands.Config.EnableWhatBardingCommand.Description": {
-    "en": "Target a players chocobo companion and execute the command to see\nwhat barding it is wearing."
+    "en": "Target a players chocobo companion and execute the command to see what barding it is wearing.",
+    "de": "Visiere den Chocobo-Begleiter eines Spielers an und führe den Befehl aus, um zu sehen, welche Ausrüstung es trägt."
   },
   "Commands.ItemLink.ItemNotFound": {
     "en": "Item {0} not found.",
@@ -326,44 +381,55 @@
     "en": "Custom Chat Timestamp"
   },
   "CustomChatTimestamp.Tweak.Description": {
-    "en": "As it says, configurable chat timestamp format."
+    "en": "As it says, configurable chat timestamp format.",
+    "de": "Wie der Name schon sagt: konfigurierbares Chat-Zeitstempel-Format."
   },
   "CustomChatTimestamp.Config.Format.Label": {
-    "en": "Format"
+    "en": "Format:"
   },
   "CustomChatTimestamp.Config.Format.DateTimeLink.Pre": {
-    "en": "This gets passed to C#'s"
+    "en": "This gets passed to C#'s",
+    "de": "Dies wird an die C#-Funktion"
   },
   "CustomChatTimestamp.Config.Format.DateTimeLink.Tooltip": {
-    "en": "Custom date and time format strings documentation"
+    "en": "Custom date and time format strings documentation",
+    "de": "Dokumentation für benutzerdefinierte Formatzeichenfolgen für Datum und Uhrzeit"
   },
   "CustomChatTimestamp.Config.Format.DateTimeLink.Post": {
-    "en": "function."
+    "en": "function.",
+    "de": "übergeben."
   },
   "CustomChatTimestamp.Config.Format.Example.Label": {
-    "en": "Example with the current format:"
+    "en": "Example with the current format:",
+    "de": "Beispiel mit dem aktuellen Format:"
   },
   "CustomChatTimestamp.Config.Format.Example.Message": {
-    "en": "(\uE090Player Name) This is a test message."
+    "en": "(\uE090Player Name) This is a test message.",
+    "de": "(\uE090Spieler Name) Dies ist eine Testnachricht."
   },
   "CustomChatTimestamp.Config.Format.Invalid": {
-    "en": "The current format is not valid."
+    "en": "The current format is not valid.",
+    "de": "Das aktuelle Format ist ungültig."
   },
 
   "DTR.Tweak.Name": {
     "en": "DTR"
   },
   "DTR.Tweak.Description": {
-    "en": "Shows Instance number (only if the current zone is instanced), FPS and Busy status in DTR bar."
+    "en": "Shows Instance number (only if the current zone is instanced), FPS and Busy status in the Server Info Bar (internally called DTR).",
+    "de": "Zeigt die Instanznummer (nur wenn die aktuelle Zone instanziert ist), FPS und den Beschäftigt-Status in der Server-Infoleiste (intern DTR genannt) an."
   },
   "DTR.Config.Explanation.Pre": {
-    "en": "To enable/disable elements or to change the order go into"
+    "en": "To enable/disable elements or to change the order go into",
+    "de": "Um Elemente zu aktivieren/deaktivieren oder die Reihenfolge zu ändern, gehe in den"
   },
   "DTR.Config.Explanation.DalamudSettings": {
-    "en": "Dalamud Settings"
+    "en": "Dalamud Settings",
+    "de": "Dalamud Einstellungen"
   },
   "DTR.Config.Explanation.Post": {
-    "en": "> Server Info Bar."
+    "en": "> Server Info Bar.",
+    "de": "auf den Tab Server-Infoleiste."
   },
   "DTR.FPS.Format": {
     "en": "{0:0} fps"
@@ -373,104 +439,135 @@
     "en": "Enhanced Experience Bar"
   },
   "EnhancedExpBar.Tweak.Description": {
-    "en": "Enhances the Experience Bar with the following modes:\n\n- The PvP Series Bar shows series rank and experience. A little * after the rank indicates a claimable rank-up reward.\n\n- The Sanctuary Bar shows sanctuary level and island experience."
+    "en": "Enhances the Experience Bar with the following modes:\n\n- The PvP Series Bar shows series rank and experience. A little * after the rank indicates a claimable rank-up reward.\n\n- The Sanctuary Bar shows sanctuary level and island experience.",
+    "de": "Erweitert die Erfahrungsleiste um die folgenden Modi:\n\n- Die PvP-Serienleiste zeigt den Serienstufe und -erfahrung an. Ein kleines * hinter dem Rang zeigt an, dass eine Belohnung zum Einlösen bereit steht.\n\n- Der Inselparadies-Balken zeigt Inselstufe und Inselroutine an."
   },
   "EnhancedExpBar.Config.ForcePvPSeriesBar.Label": {
-    "en": "Always show PvP Series Bar in PvP Areas"
+    "en": "Always show PvP Series Bar in PvP Areas",
+    "de": "Immer die PvP-Serienleiste in PvP-Gebieten anzeigen"
   },
   "EnhancedExpBar.Config.ForceSanctuaryBar.Label": {
-    "en": "Always show Sanctuary Bar on the Island"
+    "en": "Always show Sanctuary Bar on the Island",
+    "de": "Immer den Inselparadies-Balken auf der Insel anzeigen"
   },
   "EnhancedExpBar.Config.ForceCompanionBar.Label": {
-    "en": "Always show Companion Bar when chocobo companion summoned"
+    "en": "Always show Companion Bar when chocobo companion summoned",
+    "de": "Immer die Begleiterleiste anzeigen, wenn der Chocobo-Begleiter gerufen ist"
   },
   "EnhancedExpBar.Config.SanctuaryBarHideJob.Label": {
-    "en": "Hide Job on Sanctuary Bar"
+    "en": "Hide Job on Sanctuary Bar",
+    "de": "Job auf dem Inselparadies-Balken verstecken"
   },
   "EnhancedExpBar.Config.MaxLevelOverride.Label": {
-    "en": "Max Level Override"
+    "en": "Max Level Override",
+    "de": "Überschreibung auf Maximalstufe"
   },
   "EnhancedExpBar.Config.MaxLevelOverride.Description": {
-    "en": "Will switch to the selected bar if your current job is on max level and none of the settings above apply."
+    "en": "Will switch to the selected bar if your current job is on max level and none of the settings above apply.",
+    "de": "Wechselt zur ausgewählten Leiste, wenn der aktuelle Job auf maximaler Stufe ist und keine der oben genannten Einstellungen zutrifft."
   },
   "EnhancedExpBar.Config.MaxLevelOverride.Options.Default.Label": {
-    "en": "Default"
+    "en": "Default",
+    "de": "Standard"
   },
   "EnhancedExpBar.Config.MaxLevelOverride.Options.PvPSeriesBar.Label": {
-    "en": "PvP Series Bar"
+    "en": "PvP Series Bar",
+    "de": "PvP-Serienleiste"
   },
   "EnhancedExpBar.Config.MaxLevelOverride.Options.CompanionBar.Label": {
-    "en": "Companion Bar"
+    "en": "Companion Bar",
+    "de": "Begleiterleiste"
   },
   "EnhancedExpBar.Config.DisableColorChanges.Label": {
-    "en": "Disable color change"
+    "en": "Disable color change",
+    "de": "Farbanpassung deaktivieren"
   },
 
   "EnhancedLoginLogout.Tweak.Name": {
     "en": "Enhanced Login/Logout"
   },
   "EnhancedLoginLogout.Tweak.Description": {
-    "en": "Enhances login and logout."
+    "en": "Enhances login and logout.",
+    "de": "Verbessert Login und Logout."
   },
   "EnhancedLoginLogout.Config.LoginOptions.Title": {
-    "en": "Login Options"
+    "en": "Login Options",
+    "de": "Login-Optionen"
   },
   "EnhancedLoginLogout.Config.LogoutOptions.Title": {
-    "en": "Logout Options"
+    "en": "Logout Options",
+    "de": "Logout-Optionen"
   },
   "EnhancedLoginLogout.Config.ShowPets.Label": {
-    "en": "Show pets in character selection"
+    "en": "Show pets in character selection",
+    "de": "Familiar in der Charakterauswahl anzeigen"
   },
   "EnhancedLoginLogout.Config.ShowPets.Description": {
-    "en": "Displays a carbuncle (Arcanist/Summoner) or a fairy (Scholar) next to your character."
+    "en": "Displays a carbuncle (Arcanist/Summoner) or a fairy (Scholar) next to your character.",
+    "de": "Zeigt einen Karfunkel (Arkanist/Beschwörer) oder eine Fee (Gelehrter) neben deinem Charakter an."
   },
   "EnhancedLoginLogout.Config.ShowPets.Error.MissingPetMirageSettings": {
-    "en": "Pet glamour settings for this character not cached! Please log in."
+    "en": "Pet glamour settings for this character not cached! Please log in.",
+    "de": "Familiarprojektionseinstellungen für diesen Charakter nicht im Cache! Bitte log dich einmal ein."
   },
   "EnhancedLoginLogout.Config.PetPosition.Label": {
     "en": "Position"
   },
   "EnhancedLoginLogout.Config.PlayEmote.Label": {
-    "en": "Play emote in character selection"
+    "en": "Play emote in character selection",
+    "de": "Emote in der Charakterauswahl abspielen"
   },
   "EnhancedLoginLogout.Config.PlayEmote.Description": {
-    "en": "Have your character greet you with an emote!"
+    "en": "Have your character greet you with an emote!",
+    "de": "Lass deinen Charakter dich mit einem Emote begrüßen!"
   },
   "EnhancedLoginLogout.Config.PlayEmote.Note": {
-    "en": "Note: Emote settings are per character and not all emotes are supported (e.g. sitting or underwater emotes). What is supported, however, are alternative standing idle poses."
+    "en": "Note: Emote settings are per character and not all emotes are supported (e.g. sitting or underwater emotes). What is supported, however, are alternative standing idle poses.",
+    "de": "Hinweis: Die Emote-Einstellungen gelten pro Charakter und nicht alle Emotes werden unterstützt (z.B. sitzende oder Unterwasser-Emotes). Was jedoch unterstützt wird, sind alternative stehende Leerlaufposen."
   },
   "EnhancedLoginLogout.Config.PlayEmote.CurrentEmote": {
-    "en": "Current Emote:"
+    "en": "Current Emote:",
+    "de": "Aktuelles Emote:"
   },
   "EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.None": {
-    "en": "None"
+    "en": "None",
+    "de": "Keins"
   },
   "EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.Unknown": {
-    "en": "Unknown"
+    "en": "Unknown",
+    "de": "Unbekannt"
   },
   "EnhancedLoginLogout.Config.PlayEmote.StopRecordingButton.Label": {
-    "en": "Stop Recording"
+    "en": "Stop Recording",
+    "de": "Aufnahme stoppen"
   },
   "EnhancedLoginLogout.Config.PlayEmote.ChangeButton.Label": {
-    "en": "Change"
+    "en": "Change",
+    "de": "Ändern"
   },
   "EnhancedLoginLogout.Config.PlayEmote.UnsetButton.Label": {
-    "en": "Unset"
+    "en": "Unset",
+    "de": "Zurücksetzen"
   },
   "EnhancedLoginLogout.Config.PlayEmote.RecordingInfo": {
-    "en": "Perform an emote now to set it for this character!"
+    "en": "Perform an emote now to set it for this character!",
+    "de": "Führe jetzt ein Emote aus, um es für diesen Charakter zu setzen!"
   },
   "EnhancedLoginLogout.Config.PlayEmote.NotLoggedIn": {
-    "en": "Please log in to set an emote."
+    "en": "Please log in to set an emote.",
+    "de": "Bitte log dich ein, um ein Emote zu setzen."
   },
   "EnhancedLoginLogout.Config.PreloadTerritory.Label": {
-    "en": "Preload territory when queued"
+    "en": "Preload territory when queued",
+    "de": "Zone in der Warteschlange vorladen"
   },
   "EnhancedLoginLogout.Config.PreloadTerritory.Description": {
-    "en": "When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting."
+    "en": "When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.",
+    "de": "Wenn in die Warteschlange gesetzt wird, werden die Texturen des Gebiets im Hintergrund vorgeladen, so wie es auch beim Teleportieren geschieht."
   },
   "EnhancedLoginLogout.Config.ClearTellHistory.Label": {
-    "en": "Clear tell history on logout"
+    "en": "Clear tell history on logout",
+    "de": "Flüsterverlauf beim Ausloggen leeren"
   },
 
   "EnhancedMaterialList.Tweak.Name": {
@@ -523,42 +620,52 @@
     "en": "Expert Deliveries"
   },
   "ExpertDeliveries.Tweak.Description": {
-    "en": "Always opens the \"Grand Company Delivery Missions\" window on the \"Expert Delivery\" tab."
+    "en": "Always opens the \"Grand Company Delivery Missions\" window on the \"Expert Delivery\" tab.",
+    "de": "Öffnet immer das Fenster \"LIEFEREINSÄTZE\" mit dem Tab \"Experteneinsätze\"."
   },
 
   "ForcedCutsceneMusic.Tweak.Name": {
     "en": "Forced Cutscene Music"
   },
   "ForcedCutsceneMusic.Tweak.Description": {
-    "en": "Auto-unmutes background music for most cutscenes."
+    "en": "Auto-unmutes background music for most cutscenes.",
+    "de": "Schaltet die Hintergrundmusik für die meisten Zwischensequenzen automatisch an."
   },
   "ForcedCutsceneMusic.Config.Restore.Label": {
-    "en": "Restore mute state after cutscene"
+    "en": "Restore mute state after cutscene",
+    "de": "Stummschaltung nach Cutscene wiederherstellen"
   },
 
   "GearSetGrid.Tweak.Name": {
     "en": "Gear Set Grid"
   },
   "GearSetGrid.Tweak.Description": {
-    "en": "A window that displays a grid view of all the items of each gear set."
+    "en": "A window that displays a grid view of all the items of each gear set.",
+    "de": "Ein Fenster, das eine Übersicht aller Gegenstände jeder Ausrüstungssets anzeigt."
   },
   "GearSetGrid.Config.AutoOpenWithGearSetList.Label": {
-    "en": "Auto-open/close with Gear Set List"
+    "en": "Auto-open/close with Gear Set List",
+    "de": "Automatisches Öffnen/Schließen mit Liste der Ausrüstungssets"
   },
   "GearSetGrid.Config.RegisterCommand.Label": {
-    "en": "Register /gsg command to toggle window"
+    "en": "Register /gsg command to toggle window",
+    "de": "Befehl /gsg zum Umschalten des Fensters registrieren"
   },
   "GearSetGrid.Config.ConvertSeparators.Label": {
-    "en": "Convert separator gear set with spacing"
+    "en": "Convert separator gear set with spacing",
+    "de": "Umwandeln von Trenner-Ausrüstungssets"
   },
   "GearSetGrid.Config.ConvertSeparators.Description": {
-    "en": "When using separator gear sets (e.g. a gearset with name ===========) this option automatically converts it into spacing between rows (in the Gear Set Grid)."
+    "en": "When using separator gear sets (e.g. a gearset with name ===========) this option automatically converts it into spacing between rows (in the Gear Set Grid).",
+    "de": "Bei der Verwendung von Trenner-Ausrüstungssets (z.B. ein Ausrüstungsset mit dem Namen ===========) wird dieser mit dieser Option automatisch in Zeilenabstände (im Gear Set Grid) umgewandelt."
   },
   "GearSetGrid.Config.SeparatorFilter.Label": {
-    "en": "Gear set name of the separator"
+    "en": "Gear set name of the separator",
+    "de": "Name der Trenner-Ausrüstungssets"
   },
   "GearSetGrid.Config.DisableSeparatorSpacing.Label": {
-    "en": "Disable spacing"
+    "en": "Completely disable spacing",
+    "de": "Abstand komplett deaktivieren"
   },
   "GearSetGridWindow.Title": {
     "en": "[HaselTweaks] Gear Set Grid"
@@ -582,21 +689,24 @@
     "en": "Hide MSQ Complete"
   },
   "HideMSQComplete.Tweak.Description": {
-    "en": "Hides the Main Scenario Guide when the MSQ is completed. Job quests are still being displayed."
+    "en": "Hides the Main Scenario Guide when the MSQ is completed, but still displays Job quests.",
+    "de": "Blendet den Scenarioführer aus, wenn die MSQ abgeschlossen ist, zeigt aber weiterhin die Job-Quests an."
   },
 
   "KeepScreenAwake.Tweak.Name": {
     "en": "Keep Screen Awake"
   },
   "KeepScreenAwake.Tweak.Description": {
-    "en": "Prevents the screen from going into standby."
+    "en": "Prevents the screen from going into standby.",
+    "de": "Verhindert, dass der Bildschirm in den Standby-Modus wechselt."
   },
 
   "LockWindowPosition.Tweak.Name": {
     "en": "Lock Window Position"
   },
   "LockWindowPosition.Tweak.Description": {
-    "en": "Lock window positions so they can't move."
+    "en": "Lock window positions so you can't move them accidentally anymore.",
+    "de": "Fensterpositionen sperren, damit du sie nicht mehr versehentlich verschiebst."
   },
   "LockWindowPosition.LockPosition": {
     "en": "Lock Position",
@@ -611,97 +721,124 @@
     "ja": "ポジションのロック解除"
   },
   "LockWindowPosition.Config.Inverted.Label": {
-    "en": "Invert logic (locks all windows)"
+    "en": "Invert logic (locks all windows)",
+    "de": "Logik invertieren (sperrt alle Fenster)"
   },
   "LockWindowPosition.Config.AddLockUnlockContextMenuEntries.Label": {
-    "en": "Add Lock/Unlock Position to windows context menu"
+    "en": "Add Lock/Unlock Position to windows context menu",
+    "de": "Position sperren/entsperren zum Fenster-Kontextmenü hinzufügen"
   },
   "LockWindowPosition.Config.Windows.Title": {
-    "en": "Windows:"
+    "en": "Windows:",
+    "de": "Fenster:"
   },
   "LockWindowPosition.Config.EnableCheckmark.Tooltip.Locked": {
-    "en": "Window is locked"
+    "en": "Window is locked",
+    "de": "Fenster ist gesperrt"
   },
   "LockWindowPosition.Config.EnableCheckmark.Tooltip.Unlocked": {
-    "en": "Window is unlocked"
+    "en": "Window is unlocked",
+    "de": "Fenster ist entsperrt"
   },
   "LockWindowPosition.Config.DeleteButton.Tooltip": {
-    "en": "Delete"
+    "en": "Delete",
+    "de": "Löschen"
   },
   "LockWindowPosition.Config.DeleteButton.Tooltip.HoldingShift": {
-    "en": "Delete rule"
+    "en": "Delete rule",
+    "de": "Regel löschen"
   },
   "LockWindowPosition.Config.DeleteButton.Tooltip.NotHoldingShift": {
-    "en": "Hold shift to delete rule"
+    "en": "Hold shift to delete rule",
+    "de": "Shift gedrückt halten, um die Regel zu löschen"
   },
   "LockWindowPosition.Config.DeleteButton.Tooltip.WindowNotFocused": {
-    "en": "Focus window and hold shift to delete rule"
+    "en": "Focus window and hold shift to delete rule",
+    "de": "Fokussiere das Fenster und halte Shift gedrückt, um die Regel zu löschen"
   },
   "LockWindowPosition.Config.NoWindowsAddedYet": {
-    "en": "No windows added yet."
+    "en": "No windows added yet.",
+    "de": "Bislang keine Fenster hinzugefügt."
   },
   "LockWindowPosition.Config.Picker.CancelButton.Label": {
-    "en": "Cancel"
+    "en": "Cancel",
+    "de": "Abbrechen"
   },
   "LockWindowPosition.Config.Picker.PickWindowButton.Label": {
-    "en": "Pick Window"
+    "en": "Pick Window",
+    "de": "Fenster auswählen"
   },
   "LockWindowPosition.Config.Picker.ToggleAllButton.Label": {
-    "en": "Toggle All"
+    "en": "Toggle All",
+    "de": "Alle umschalten"
   },
 
   "MaterialAllocation.Tweak.Name": {
     "en": "Material Allocation"
   },
   "MaterialAllocation.Tweak.Description": {
-    "en": "Enhances the Island Sanctuarys \"Material Allocation\" window."
+    "en": "Enhances the Islekeep's Index \"Material Allocation\" window.",
+    "de": "Verbessert das INVENTUR-Fenster des Inselführers."
   },
   "MaterialAllocation.Config.SaveLastSelectedTab.Label": {
-    "en": "Save last selected tab between game sessions"
+    "en": "Save last selected tab between game sessions",
+    "de": "Zuletzt ausgewählten Tab zwischen Spielsitzungen speichern"
   },
   "MaterialAllocation.Config.OpenGatheringLogOnItemClick.Label": {
-    "en": "Open Sanctuary Gathering Log for gatherable items"
+    "en": "Open Sanctuary Gathering Log for gatherable items",
+    "de": "Öffne den Insel-Almanach für sammelbare Gegenstände"
   },
   "MaterialAllocation.ItemIsNotGatherable": {
-    "en": "Item {0} is not gatherable."
+    "en": "Item {0} is not gatherable.",
+    "de": "Der Gegenstand {0} ist nicht sammelbar."
   },
 
   "MinimapAdjustments.Tweak.Name": {
     "en": "Minimap Adjustments"
   },
   "MinimapAdjustments.Tweak.Description": {
-    "en": "Mini changes for the Minimap. :)"
+    "en": "Mini changes for the Minimap. :)",
+    "de": "Kleine Änderungen für die Minimap :)"
   },
   "MinimapAdjustments.Config.Square.Label": {
-    "en": "Square Collision"
+    "en": "Square Collision",
+    "de": "Quadratische Kollision"
   },
   "MinimapAdjustments.Config.Square.Description": {
-    "en": "Changes collision box to from round to square."
+    "en": "Changes collision box to from round to square.",
+    "de": "Ändert die Kollisionsbox von rund auf quadratisch."
   },
   "MinimapAdjustments.Config.DefaultOpacity.Label": {
-    "en": "Default Opacity"
+    "en": "Default Opacity",
+    "de": "Standard-Deckkraft"
   },
   "MinimapAdjustments.Config.HoverOpacity.Label": {
-    "en": "Hover Opacity"
+    "en": "Hover Opacity",
+    "de": "Deckkraft beim Mausüberfahren"
   },
   "MinimapAdjustments.Config.HideCoords.Label": {
-    "en": "Hide Coordinates"
+    "en": "Hide Coordinates",
+    "de": "Koordinaten ausblenden"
   },
   "MinimapAdjustments.Config.HideCoords.Description": {
-    "en": "Visible on hover."
+    "en": "Visible on hover.",
+    "de": "Sichtbar beim Mausüberfahren."
   },
   "MinimapAdjustments.Config.HideWeather.Label": {
-    "en": "Hide Weather"
+    "en": "Hide Weather",
+    "de": "Wetter ausblenden"
   },
   "MinimapAdjustments.Config.HideWeather.Description": {
-    "en": "Visible on hover."
+    "en": "Visible on hover.",
+    "de": "Sichtbar beim Mausüberfahren."
   },
 
   "PortraitHelper.Tweak.Name": {
     "en": "Portrait Helper"
   },
   "PortraitHelper.Tweak.Description": {
-    "en": "A helper for editing portraits."
+    "en": "A helper for editing portraits.",
+    "de": "Ein Assistent für die Bearbeitung von Porträts."
   },
   "PortraitHelper.GearChecksumMismatch": {
     "en": "Current appearance and/or gear does not match that shown in portrait.",
@@ -710,52 +847,68 @@
     "ja": "現在の外見や装備がポートレートと一致していません。"
   },
   "PortraitHelper.Config.NotifyGearChecksumMismatch.Label": {
-    "en": "Notify if appearance and/or gear doesn't match Portait"
+    "en": "Notify if appearance and/or gear doesn't match Portait",
+    "de": "Bei Abweichungen von Aussehen oder Ausrüstung benachrichtigen"
   },
   "PortraitHelper.Config.NotifyGearChecksumMismatch.Description": {
-    "en": "Prints a notification in chat which can be clicked to open the Portrait Editor."
+    "en": "Prints a notification in chat which can be clicked to open the Portrait Editor.",
+    "de": "Zeigt eine Benachrichtigung im Chat an, die angeklickt werden kann, um den Portrait-Editor zu öffnen."
   },
   "PortraitHelper.Config.ReequipGearsetOnUpdate.Label": {
-    "en": "Try to fix by automatically re-equipping Gearset to reapply Glamour Plate"
+    "en": "Try to fix by automatically re-equipping Gearset to reapply Glamour Plate",
+    "de": "Automatisches ausrüsten des Sets, um die Projektionsplatte anzuwenden"
   },
   "PortraitHelper.Config.ReequipGearsetOnUpdate.Description": {
-    "en": "Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state."
+    "en": "Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state.",
+    "de": "Versucht automatisch unstimmigkeiten zu beheben, in dem das Ausrüstungsset neu aktiviert wird. Funktioniert nur an Orten, an denen Projektionsplatten angewandt werden können, wenn die Projektionsplatte die fehlerhaften Slots abdeckt und wenn die Abweichung der Prüfsumme nicht durch eine Abweichung der Sichtbarkeit von Waffen und Kopfbedeckung oder des Visierstatus verursacht wurde."
   },
   "PortraitHelperWindows.CreatePresetDialog.Title": {
-    "en": "Save as Preset"
+    "en": "Save as Preset",
+    "de": "Als Vorlage speichern"
   },
   "PortraitHelperWindows.CreatePresetDialog.Name.Label": {
-    "en": "Enter a name for the new preset:"
+    "en": "Name for the new preset:",
+    "de": "Name für die neue Vorlage:"
   },
   "PortraitHelperWindows.CreatePresetDialog.Tags.Label": {
-    "en": "Select Tags (optional):"
+    "en": "Select Tags (optional):",
+    "de": "Tags auswählen (optional):"
   },
   "PortraitHelperWindows.CreatePresetDialog.Tags.None": {
-    "en": "None"
+    "en": "None",
+    "de": "Kein Tag"
   },
   "PortraitHelperWindows.CreateTagDialog.Title": {
-    "en": "Create Tag"
+    "en": "Create Tag",
+    "de": "Tag erstellen"
   },
   "PortraitHelperWindows.CreateTagDialog.Name.Label": {
-    "en": "Enter a name for the new tag:"
+    "en": "Name for the new tag:",
+    "de": "Name für den neuen Tag:"
   },
   "PortraitHelperWindows.DeletePresetDialog.Title": {
-    "en": "Delete Preset"
+    "en": "Delete Preset",
+    "de": "Vorlage löschen"
   },
   "PortraitHelperWindows.DeletePresetDialog.Prompt": {
-    "en": "Do you really want to delete the preset \"{0}\"?"
+    "en": "Do you really want to delete the preset \"{0}\"?",
+    "de": "Möchtest du wirklich die Vorlage \"{0}\" löschen?"
   },
   "PortraitHelperWindows.DeleteTagDialog.Title": {
-    "en": "Delete Tag"
+    "en": "Delete Tag",
+    "de": "Tag löschen"
   },
   "PortraitHelperWindows.DeleteTagDialog.Prompt": {
-    "en": "Do you really want to delete the tag \"{0}\"?"
+    "en": "Do you really want to delete the tag \"{0}\"?",
+    "de": "Möchtest du wirklich den Tag \"{0}\" löschen?"
   },
   "PortraitHelperWindows.DeleteTagDialog.DeletePortraitsToo.Label": {
-    "en": "Delete portraits too"
+    "en": "Delete portraits too",
+    "de": "Portraits auch löschen"
   },
   "PortraitHelperWindows.EditPresetDialog.Title": {
-    "en": "Edit Preset"
+    "en": "Edit Preset",
+    "de": "Vorlage bearbeiten"
   },
   "PortraitHelperWindows.EditPresetDialog.Name.Label": {
     "en": "Name:"
@@ -764,16 +917,20 @@
     "en": "Tags:"
   },
   "PortraitHelperWindows.EditPresetDialog.Tags.None": {
-    "en": "None"
+    "en": "None",
+    "de": "Kein Tag"
   },
   "PortraitHelperWindows.RenameTagDialog.Title": {
-    "en": "Rename Tag"
+    "en": "Rename Tag",
+    "de": "Tag umbenennen"
   },
   "PortraitHelperWindows.RenameTagDialog.Name.Label": {
-    "en": "Enter a new name for tag \"{0}\":"
+    "en": "Enter a new name for tag \"{0}\":",
+    "de": "Neuer Name für den Tag \"{0}\":"
   },
   "PortraitHelperWindows.AdvancedEditOverlay.Title": {
-    "en": "[HaselTweaks] Portrait Helper: Advanced Edit"
+    "en": "[HaselTweaks] Portrait Helper: Advanced Edit",
+    "de": "[HaselTweaks] Portrait Helper: Erweiterte Bearbeitungs"
   },
   "PortraitHelperWindows.AdvancedEditOverlay.Title.Inner": {
     "en": "Advanced Edit Mode",
@@ -816,19 +973,23 @@
     "de": "Kopfdrehung"
   },
   "PortraitHelperWindows.Setting.AnimationTimestamp.Label": {
-    "en": "Animation Timestamp"
+    "en": "Animation Timestamp",
+    "de": "Animationszeitstempel"
   },
   "PortraitHelperWindows.Setting.AnimationTimestamp.ValueFormat": {
     "en": "{0:0.000}"
   },
   "PortraitHelperWindows.AdvancedEditOverlay.Note.Label": {
-    "en": "Please note:"
+    "en": "Please note:",
+    "de": "Bitte beachte:"
   },
   "PortraitHelperWindows.AdvancedEditOverlay.Note.1": {
-    "en": "The game may verify the values on setting them and/or saving the portrait. If possible, it will automatically adjust them so that they are within a valid range. If not, it will throw an error and you have to fix the values yourself. In any case, if the game adjusts the values, the adjusted values will not be reflected here unless you reopen the window."
+    "en": "The game may verify the values on setting them and/or saving the portrait. If possible, it will automatically adjust them so that they are within a valid range. If not, it will throw an error and you have to fix the values yourself. In any case, if the game adjusts the values, the adjusted values will not be reflected here unless you reopen the window.",
+    "de": "Das Spiel kann die Werte beim Einstellen und/oder Speichern des Porträts überprüfen. Wenn möglich, wird es sie automatisch anpassen, so dass sie in einem gültigen Bereich liegen. Wenn nicht, gibt es eine Fehlermeldung aus und du musst die Werte selbst korrigieren. Wie auch immer, wenn das Spiel die Werte anpasst, werden die angepassten Werte hier nicht angezeigt bis das Fenster neu geöffnet wird."
   },
   "PortraitHelperWindows.AdvancedEditOverlay.Note.2": {
-    "en": "Also, setting the Animation Timestamp will restart the animation at the specified timestamp, causing some flickering. If the Animation Timestamp is too high, the game will start the next loop, resetting the timestamp to 0."
+    "en": "Also, setting the Animation Timestamp will restart the animation at the specified timestamp, causing some flickering. If the Animation Timestamp is too high, the game will start the next loop, resetting the timestamp to 0.",
+    "de": "Außerdem: Die Animation startet beim Setzen des Animationszeitstempels zum angegebenen Zeitpunkt neu, was ein gewisses Flackern verursacht. Wenn der Animationszeitstempel zu hoch ist, wird das Spiel den nächsten Durchlauf beginnen und den Zeitstempel auf 0 zurücksetzen."
   },
   "PortraitHelperWindows.AdvancedImportOverlay.Title": {
     "en": "[HaselTweaks] Portrait Helper: Advanced Import",
@@ -870,205 +1031,267 @@
     "en": "{0:0.000}"
   },
   "PortraitHelperWindows.AlignmentToolSettingsOverlay.Title": {
-    "en": "[HaselTweaks] Portrait Helper: Alignment Tool Settings"
+    "en": "[HaselTweaks] Portrait Helper: Alignment Tool Settings",
+    "de": "[HaselTweaks] Portrait Helper: Einstellungen des Ausrichtungswerkzeugs"
   },
   "PortraitHelperWindows.AlignmentToolSettingsOverlay.Title.Inner": {
-    "en": "Alignment Tool Settings"
+    "en": "Alignment Tool Settings",
+    "de": "Einstellungen des Ausrichtungswerkzeugs"
   },
   "PortraitHelperWindows.AlignmentToolSettingsOverlay.ShowAlignmentTool.Label": {
-    "en": "Enable"
+    "en": "Enable",
+    "de": "Aktivieren"
   },
   "PortraitHelperWindows.AlignmentToolSettingsOverlay.VerticalLines.Label": {
-    "en": "Vertical Lines"
+    "en": "Vertical Lines",
+    "de": "Senkrechte Linien"
   },
   "PortraitHelperWindows.AlignmentToolSettingsOverlay.HorizontalLines.Label": {
-    "en": "Horizontal Lines"
+    "en": "Horizontal Lines",
+    "de": "Waagerechte Linien"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.Title": {
-    "en": "[HaselTweaks] Portrait Helper: Preset Browser"
+    "en": "[HaselTweaks] Portrait Helper: Preset Browser",
+    "de": "[HaselTweaks] Portrait Helper: Vorlangen-Browser"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip": {
-    "en": "Moving {0}"
+    "en": "Moving \"{0}\"",
+    "de": "Verschiebe \"{0}\""
   },
   "PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label": {
-    "en": "Create Tag"
+    "en": "Create Tag",
+    "de": "Tag erstellen"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RenameTag.Label": {
-    "en": "Rename Tag"
+    "en": "Rename Tag",
+    "de": "Tag umbenennen"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveTag.Label": {
-    "en": "Remove Tag"
+    "en": "Remove Tag",
+    "de": "Tag löschen"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label": {
-    "en": "Remove unused Tags"
+    "en": "Remove unused Tags",
+    "de": "Ungenutzte Tags löschen"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Tags.Title": {
     "en": "Tags"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.Sidebar.AllTags.Title": {
-    "en": "All ({0})"
+    "en": "All ({0})",
+    "de": "Alle ({0})"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Presets.Title": {
-    "en": "Presets"
-  },
-  "PortraitHelperWindows.MenuBar.Title": {
-    "en": "[HaselTweaks] Portrait Helper MenuBar"
+    "en": "Presets",
+    "de": "Vorlangen"
   },
   "PortraitHelperWindows.MenuBar.Initializing": {
-    "en": "Initializing..."
+    "en": "Initializing...",
+    "de": "Initialisieren..."
   },
   "PortraitHelperWindows.MenuBar.ExportToClipboard.Label": {
-    "en": "Export to Clipboard"
+    "en": "Export to Clipboard",
+    "de": "In Zwischenablage exportieren"
   },
   "PortraitHelperWindows.MenuBar.ImportFromClipboard.Label": {
-    "en": "Import from Clipboard"
+    "en": "Import from Clipboard",
+    "de": "Aus der Zwischenablage importieren"
   },
   "PortraitHelperWindows.MenuBar.ImportFromClipboardAllSettings.Label": {
-    "en": "Import from Clipboard (All Settings)"
+    "en": "Import from Clipboard (All Settings)",
+    "de": "Importieren aus der Zwischenablage (Alle Einstellungen)"
   },
   "PortraitHelperWindows.MenuBar.ToggleAdvancedImportMode.Label": {
-    "en": "Toggle Advanced Import Mode"
+    "en": "Toggle Advanced Import Mode",
+    "de": "Erweiterten Importmodus umschalten"
   },
   "PortraitHelperWindows.MenuBar.ToggleAdvancedEditMode.Label": {
-    "en": "Toggle Advanced Edit Mode"
+    "en": "Toggle Advanced Edit Mode",
+    "de": "Erweiterten Bearbeitungsmodus umschalten"
   },
   "PortraitHelperWindows.MenuBar.SaveAsPreset.Label": {
-    "en": "Save as Preset"
+    "en": "Save as Preset",
+    "de": "Als Vorlage speichern"
   },
   "PortraitHelperWindows.MenuBar.TogglePresetBrowser.Label": {
-    "en": "Toggle Preset Browser"
+    "en": "Toggle Preset Browser",
+    "de": "Vorlagen-Browser umschalten"
   },
   "PortraitHelperWindows.MenuBar.ToggleAlignmentTool.Label.CloseSettings": {
-    "en": "Toggle Alignment Tool\nShift: Close Settings"
+    "en": "Toggle Alignment Tool\nShift: Close Settings",
+    "de": "Ausrichtungswerkzeug umschalten\nShift: Einstellungen schließen"
   },
   "PortraitHelperWindows.MenuBar.ToggleAlignmentTool.Label.OpenSettings": {
-    "en": "Toggle Alignment Tool\nShift: Open Settings"
+    "en": "Toggle Alignment Tool\nShift: Open Settings",
+    "de": "Ausrichtungswerkzeug umschalten\nShift: Einstellungen öffnen"
   },
   "PortraitHelperWindows.PresetCard.MovingPresetCard.Tooltip": {
-    "en": "Moving {0}"
+    "en": "Moving \"{0}\"",
+    "de": "Verschiebe \"{0}\""
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.LoadPreset.Label": {
-    "en": "Load Preset"
+    "en": "Load Preset",
+    "de": "Vorlage laden"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.EditPreset.Label": {
-    "en": "Edit Preset"
+    "en": "Edit Preset",
+    "de": "Vorlage bearbeiten"
+  },
+  "PortraitHelperWindows.PresetCard.ContextMenu.DeletePreset.Label": {
+    "en": "Delete Preset",
+    "de": "Vorlage löschen"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.ExportToClipboard.Label": {
-    "en": "Export to Clipboard"
+    "en": "Export to Clipboard",
+    "de": "In Zwischenablage exportieren"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Label": {
-    "en": "Copy Image"
+    "en": "Copy Image",
+    "de": "Bild kopieren"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Everything.Label": {
-    "en": "Everything"
+    "en": "Everything",
+    "de": "Alles"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrame.Label": {
-    "en": "Without Frame"
+    "en": "Without Frame",
+    "de": "Ohne Rahmen"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutDecoration.Label": {
-    "en": "Without Decoration"
+    "en": "Without Decoration",
+    "de": "Ohne Verzierung"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrameAndDecoration.Label": {
-    "en": "Without Frame and Decoration"
+    "en": "Without Frame and Decoration",
+    "de": "Ohne Rahmen und Verzierung"
   },
 
   "RevealDutyRequirements.Tweak.Name": {
     "en": "Reveal Duty Requirements"
   },
   "RevealDutyRequirements.Tweak.Description": {
-    "en": "Reveals duty names in duty finder, which were shown as \"???\". Useful for unlocking Mentor roulette."
+    "en": "Reveals duty names in duty finder, which were shown as \"???\". Useful for unlocking Mentor roulette.",
+    "de": "Zeigt die Namen der Inhalte in der Inhaltssuche an, die als \"???\" angezeigt werden. Nützlich zum Freischalten des Mentor-Roulettes."
   },
 
   "ScrollableTabs.Tweak.Name": {
     "en": "Scrollable Tabs"
   },
   "ScrollableTabs.Tweak.Description": {
-    "en": "Enables mouse wheel to switch tabs (like with LB/RB on controllers)."
+    "en": "Enables mouse wheel to switch tabs (like with LB/RB on controllers).",
+    "de": "Ermöglicht das Umschalten von Tabs mit dem Mausrad (wie mit LB/RB auf Controllern)."
   },
   "ScrollableTabs.Config.Invert.Label": {
-    "en": "Invert"
+    "en": "Invert scroll behaviour",
+    "de": "Invertiertes Scrollverhalten"
   },
   "ScrollableTabs.Config.HandleAetherCurrent.Label": {
-    "en": "Enable in Aether Currents"
+    "en": "Enable in Aether Currents",
+    "de": "Aktiviere für Windätherquellen"
   },
   "ScrollableTabs.Config.HandleArmouryBoard.Label": {
-    "en": "Enable in Armoury Chest"
+    "en": "Enable in Armoury Chest",
+    "de": "Aktiviere für Arsenal"
   },
   "ScrollableTabs.Config.HandleAOZNotebook.Label": {
-    "en": "Enable in Blue Magic Spellbook"
+    "en": "Enable in Blue Magic Spellbook",
+    "de": "Aktiviere für Zauberbuch der Blaumagie"
   },
   "ScrollableTabs.Config.HandleCharacter.Label": {
-    "en": "Enable in Character"
+    "en": "Enable in Character",
+    "de": "Aktiviere für Charakter"
   },
   "ScrollableTabs.Config.HandleCharacterClass.Label": {
-    "en": "Enable in Character -> Classes/Jobs"
+    "en": "Enable in Character -> Classes/Jobs",
+    "de": "Aktiviere für Charakter -> Klassen/Jobs"
   },
   "ScrollableTabs.Config.HandleCharacterRepute.Label": {
-    "en": "Enable in Character -> Reputation"
+    "en": "Enable in Character -> Reputation",
+    "de": "Aktiviere für Charakter -> Ansehen"
   },
   "ScrollableTabs.Config.HandleInventoryBuddy.Label": {
-    "en": "Enable in Chocobo Saddlebag"
+    "en": "Enable in Chocobo Saddlebag",
+    "de": "Aktiviere für Chocobo-Satteltasche"
   },
   "ScrollableTabs.Config.HandleInventoryBuddy.Description": {
-    "en": "The second tab requires a subscription to the Companion Premium Service"
+    "en": "The second tab requires a subscription to the Companion Premium Service",
+    "de": "Der zweite Tab benötigt ein Abonnement des Premium-Nutzungsplans in der Companion-App."
   },
   "ScrollableTabs.Config.HandleBuddy.Label": {
-    "en": "Enable in Companion"
+    "en": "Enable in Companion",
+    "de": "Aktiviere für Mitstreiter"
   },
   "ScrollableTabs.Config.HandleCurrency.Label": {
-    "en": "Enable in Currency"
+    "en": "Enable in Currency",
+    "de": "Aktiviere für Vermögen"
   },
   "ScrollableTabs.Config.HandleOrnamentNoteBook.Label": {
-    "en": "Enable in Fashion Accessories"
+    "en": "Enable in Fashion Accessories",
+    "de": "Aktiviere für Modeaccessoires"
   },
   "ScrollableTabs.Config.HandleFieldRecord.Label": {
-    "en": "Enable in Field Records"
+    "en": "Enable in Field Records",
+    "de": "Aktiviere für Frontbericht"
   },
   "ScrollableTabs.Config.HandleFishGuide.Label": {
-    "en": "Enable in Fish Guide"
+    "en": "Enable in Fish Guide",
+    "de": "Aktiviere für Fischverzeichnis"
   },
   "ScrollableTabs.Config.HandleMiragePrismPrismBox.Label": {
-    "en": "Enable in Glamour Dresser"
+    "en": "Enable in Glamour Dresser",
+    "de": "Aktiviere für Projektionskommode"
   },
   "ScrollableTabs.Config.HandleMiragePrismPrismBox.Description": {
-    "en": "Scrolls pages, not tabs."
+    "en": "Scrolls pages, not tabs.",
+    "de": "Blättert durch Seiten, nicht durch Tabs."
   },
   "ScrollableTabs.Config.HandleGoldSaucerCardList.Label": {
-    "en": "Enable in Gold Saucer -> Card List"
+    "en": "Enable in Gold Saucer -> Card List",
+    "de": "Aktiviere für Gold Saucer -> Karten"
   },
   "ScrollableTabs.Config.HandleGoldSaucerCardDeckEdit.Label": {
-    "en": "Enable in Gold Saucer -> Decks -> Edit Deck"
+    "en": "Enable in Gold Saucer -> Decks -> Edit Deck",
+    "de": "Aktiviere für Gold Saucer -> Decks -> Deck ändern"
   },
   "ScrollableTabs.Config.HandleLovmPaletteEdit.Label": {
-    "en": "Enable in Gold Saucer -> Lord of Verminion -> Minion Hotbar"
+    "en": "Enable in Gold Saucer -> Lord of Verminion -> Minion Hotbar",
+    "de": "Aktiviere für Gold Saucer -> Trabanten -> Kommandomenü bearbeiten"
   },
   "ScrollableTabs.Config.HandleInventory.Label": {
-    "en": "Enable in Inventory"
+    "en": "Enable in Inventory",
+    "de": "Aktiviere für Inventar"
   },
   "ScrollableTabs.Config.HandleMJIMinionNoteBook.Label": {
-    "en": "Enable in Island Minion Guide"
+    "en": "Enable in Island Minion Guide",
+    "de": "Aktiviere für Domizil verwalten"
   },
   "ScrollableTabs.Config.HandleMinionNoteBook.Label": {
-    "en": "Enable in Minions"
+    "en": "Enable in Minions",
+    "de": "Aktiviere für Begleiter-Verzeichnis"
   },
   "ScrollableTabs.Config.HandleMountNoteBook.Label": {
-    "en": "Enable in Mounts"
+    "en": "Enable in Mounts",
+    "de": "Aktiviere für Reittier-Verzeichnis"
   },
   "ScrollableTabs.Config.HandleRetainer.Label": {
-    "en": "Enable in Retainer Inventory"
+    "en": "Enable in Retainer Inventory",
+    "de": "Aktiviere für Gehilfeninventar"
   },
   "ScrollableTabs.Config.HandleFateProgress.Label": {
-    "en": "Enable in Shared FATE"
+    "en": "Enable in Shared FATE",
+    "de": "Aktiviere für FATE-Fortschritt"
   },
   "ScrollableTabs.Config.HandleAdventureNoteBook.Label": {
-    "en": "Enable in Sightseeing Log"
+    "en": "Enable in Sightseeing Log",
+    "de": "Aktiviere für Eorzea Incognita"
   },
 
   "SearchTheMarkets.Tweak.Name": {
     "en": "Search the markets"
   },
   "SearchTheMarkets.Tweak.Description": {
-    "en": "Adds an entry to item context menus that allows you to quickly search for the item on the market board. Only visible when market board is open!\n\nSupports context menus in the following windows:\n- Chat\n- Crafting Log\n- Ehcatl Nine Delivery Quests (via /timers)\n- Grand Company Delivery Missions (via /timers)\n- Inventory\n- Materials List\n- Recipe Tree\n"
+    "en": "Adds an entry to item context menus that allows you to quickly search for the item on the market board. Only visible when market board is open!\n\nSupports context menus in the following windows:\n- Chat\n- Crafting Log\n- Ehcatl Nine Delivery Quests (via /timers)\n- Grand Company Delivery Missions (via /timers)\n- Inventory\n- Materials List\n- Recipe Tree\n",
+    "de": "Fügt dem Gegenstand-Kontextmenü einen Eintrag hinzu, mit dem man schnell nach dem Gegenstand auf dem Marktbrett suchen kann. Nur sichtbar, wenn die Gegenstandssuche (Marktbrett) geöffnet ist!\n\nUnterstützt Kontextmenüs in den folgenden Fenstern:\n- Chat\n- Handwerker-Notizbuch\n- Ixal-Lieferaufträge (über /timers)\n- Liefereinsätze (über /timers)\n- Inventar\n- Materialliste\n- Rezeptbaum\n"
   },
 
   "ItemSearch.SearchTheMarkets": {
@@ -1091,13 +1314,16 @@
   },
 
   "ConfirmationButtonWindow.Save": {
-    "en": "Save"
+    "en": "Save",
+    "de": "Speichern"
   },
   "ConfirmationButtonWindow.Cancel": {
-    "en": "Cancel"
+    "en": "Cancel",
+    "de": "Abbrechen"
   },
   "ConfirmationButtonWindow.Delete": {
-    "en": "Delete"
+    "en": "Delete",
+    "de": "Löschen"
   },
 
   "template": {

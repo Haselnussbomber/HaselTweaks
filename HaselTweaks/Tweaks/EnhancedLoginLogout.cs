@@ -140,7 +140,6 @@ public unsafe partial class EnhancedLoginLogout : Tweak
     public override void DrawCustomConfig()
     {
         var scale = ImGui.GetIO().FontGlobalScale;
-        var verticalTextPadding = 3;
 
         ImGuiUtils.DrawSection(t("EnhancedLoginLogout.Config.LoginOptions.Title"));
         // ShowPets
@@ -153,7 +152,9 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         }
         using (ImGuiUtils.ConfigIndent())
         {
+            ImGuiUtils.PushCursorY(-3);
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, t("EnhancedLoginLogout.Config.ShowPets.Description"));
+            ImGuiUtils.PushCursorY(3);
 
             if (ActiveContentId != 0)
             {
@@ -197,6 +198,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         using (ImGuiUtils.ConfigIndent())
         {
+            ImGuiUtils.PushCursorY(-3);
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, t("EnhancedLoginLogout.Config.PlayEmote.Description"));
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, t("EnhancedLoginLogout.Config.PlayEmote.Note"));
             ImGuiUtils.PushCursorY(3);
@@ -205,7 +207,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
             {
                 if (ActiveContentId != 0)
                 {
-                    ImGuiUtils.PushCursorY(verticalTextPadding);
+                    ImGuiUtils.PushCursorY(3);
                     ImGui.TextUnformatted(t("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote"));
                     ImGui.SameLine();
 
@@ -229,7 +231,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                         if (entry.HasValue)
                         {
                             var (isChangePose, name, emote) = entry.Value;
-                            ImGuiUtils.PushCursorY(-verticalTextPadding);
+                            ImGuiUtils.PushCursorY(-3);
                             Service.TextureManager.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(24 * scale);
                             ImGui.SameLine();
                             ImGui.TextUnformatted(name);
@@ -244,7 +246,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                     {
                         ImGui.SameLine();
 
-                        ImGuiUtils.PushCursorY(-verticalTextPadding);
+                        ImGuiUtils.PushCursorY(-3);
 
                         if (_isRecordingEmote)
                         {
@@ -271,7 +273,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                         {
                             ImGui.SameLine();
 
-                            ImGuiUtils.PushCursorY(-verticalTextPadding);
+                            ImGuiUtils.PushCursorY(-3);
                             if (ImGui.Button(t("EnhancedLoginLogout.Config.PlayEmote.UnsetButton.Label")))
                             {
                                 SaveEmote(0);
@@ -281,7 +283,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                         if (_isRecordingEmote)
                         {
                             ImGuiUtils.TextUnformattedColored(Colors.Gold, t("EnhancedLoginLogout.Config.PlayEmote.RecordingInfo"));
-                            ImGuiUtils.PushCursorY(verticalTextPadding);
+                            ImGuiUtils.PushCursorY(3);
                         }
                     }
                     else
@@ -298,8 +300,9 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         ImGui.Checkbox(t("EnhancedLoginLogout.Config.PreloadTerritory.Label"), ref Config.PreloadTerritory);
         using (ImGuiUtils.ConfigIndent())
         {
+            ImGuiUtils.PushCursorY(-3);
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, t("EnhancedLoginLogout.Config.PreloadTerritory.Description"));
-            ImGuiUtils.PushCursorY(verticalTextPadding);
+            ImGuiUtils.PushCursorY(3);
         }
 
         ImGuiUtils.DrawSection(t("EnhancedLoginLogout.Config.LogoutOptions.Title"));

@@ -228,7 +228,7 @@ public class PresetCard : IDisposable
 
             ImGui.Separator();
 
-            if (ImGui.MenuItem("Delete Preset"))
+            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.DeletePreset.Label")))
             {
                 _overlay.DeletePresetDialog.Open(_preset);
             }

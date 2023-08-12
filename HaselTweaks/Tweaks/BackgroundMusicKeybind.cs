@@ -21,10 +21,6 @@ public unsafe class BackgroundMusicKeybind : Tweak
 
     public override void DrawCustomConfig()
     {
-        ImGui.Text(t("BackgroundMusicKeybind.Config.Keybind.Label"));
-        ImGui.Spacing();
-        using var indent = ImRaii.PushIndent();
-
         var shift = Config.Keybind.Contains(VirtualKey.SHIFT);
         if (ImGui.Checkbox(t("BackgroundMusicKeybind.Config.ShiftKeyCheckbox.Label"), ref shift))
         {
@@ -90,7 +86,7 @@ public unsafe class BackgroundMusicKeybind : Tweak
         if (hasKey)
             previewValue = key.GetFancyName();
 
-        ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - ImGui.GetStyle().IndentSpacing);
+        ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
         using var combo = ImRaii.Combo("##Key", previewValue);
         if (!combo.Success)
             return;

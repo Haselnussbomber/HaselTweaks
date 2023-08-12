@@ -30,7 +30,7 @@ public unsafe class MenuBar : Window, IDisposable
 
     private readonly CreatePresetDialog _saveAsPresetDialog = new();
 
-    public MenuBar(PortraitHelper tweak) : base(t("PortraitHelperWindows.MenuBar.Title"))
+    public MenuBar(PortraitHelper tweak) : base("[HaselTweaks] Portrait Helper MenuBar")
     {
         Tweak = tweak;
 

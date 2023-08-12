@@ -36,7 +36,7 @@ public unsafe class AdvancedEditOverlay : Overlay
         if (!table.Success)
             return;
 
-        ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, 128 * ImGui.GetIO().FontGlobalScale);
+        ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, 150 * ImGui.GetIO().FontGlobalScale);
         ImGui.TableSetupColumn("Value", ImGuiTableColumnFlags.WidthStretch);
 
         using (ImRaii.PushId("Camera"))

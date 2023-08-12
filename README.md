@@ -148,7 +148,7 @@ Configuration options:
 
 ### Hide MSQ Complete
 
-Hides the Main Scenario Guide when the MSQ is completed. Job quests are still being displayed.
+Hides the Main Scenario Guide when the MSQ is completed, but still displays Job quests.
 
 ### Keep Screen Awake
 
@@ -156,14 +156,14 @@ Prevents the screen from going into standby. Similar to [PowerToys Awake](https:
 
 ### Lock Window Position
 
-Lock window positions so they can't move.
+Lock window positions so you can't move them accidentally anymore.
 
 Adds a context menu entry for the title bar to "Lock/Unlock Position" (can be disabled).  
 Alternatively it's possible to add windows by using the window picker in the configuration.
 
 ### Material Allocation
 
-Enhances the Island Sanctuarys "Material Allocation" window.
+Enhances the Islekeep's Index "Material Allocation" window.
 
 - Saves the last selected tab between game sessions.
 - Clicking on a gatherable item opens the Sanctuary Gathering Log with that item selected.
