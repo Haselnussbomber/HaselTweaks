@@ -20,8 +20,10 @@ public class BoolConfigAttribute : BaseConfigAttribute
 
         if (Service.TranslationManager.TryGetTranslation($"{tweak.InternalName}.Config.{fieldInfo.Name}.Description", out var description))
         {
+            ImGuiUtils.PushCursorY(-3);
             using var descriptionIndent = ImGuiUtils.ConfigIndent();
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);
+            ImGuiUtils.PushCursorY(3);
         }
     }
 }
