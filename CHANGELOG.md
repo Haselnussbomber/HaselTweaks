@@ -4,7 +4,12 @@
 
 ### HaselTweaks
 
-- The plugin is now theoretically fully translatable (except for log messages and texts that are loaded from the game, of course). Currently it will use the game's language and fall back to English if text isn't available in that language. That doesn't mean I'll be translating it anytime soon. I don't even speak French or Japanese!
+- The plugin is now theoretically fully translatable. In total, there are 343 strings (excluding log messages and texts that are loaded from the game, of course). Currently the plugin will use the game's language and fall back to English if the text isn't available in that language. Anyhow, that doesn't mean I'll be translating the plugin anytime soon.
+- A lot of internal code has been updated to make things simpler and cleaner, but I'll spare you the details.
+
+### Enhanced Experience Bar
+
+- **Fixed:** The experience bar should no longer get stuck on old data, as it will now try to update it every frame until it's done.
 
 ### Gear Set Grid
 
