@@ -4,9 +4,13 @@ using System.Threading.Tasks;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Utility;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselTweaks.Structs;
+using HaselTweaks.Structs.Agents;
 using ImGuiNET;
+using GearsetEntry = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetEntry;
 
 namespace HaselTweaks.Utils;
 
@@ -70,7 +74,6 @@ public partial class ImGuiUtils
             }
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
                 HoverCallback?.Invoke();
             }
         }
@@ -144,6 +147,54 @@ public partial class ImGuiUtils
                 ClickCallback = () =>
                 {
                     ItemSearchUtils.Search(ItemId);
+                }
+            };
+
+        public static unsafe ContextMenuEntry CreateGearsetLinkGlamour(GearsetEntry* gearset)
+            => new()
+            {
+                Enabled = UIState.Instance()->IsUnlockLinkUnlocked(15),
+                Hidden = gearset->GlamourSetLink != 0,
+                Label = GetAddonText(4394),
+                LoseFocusOnClick = true,
+                ClickCallback = () =>
+                {
+                    GetAgent<AgentGearset>()->ContextMenuGlamourCallback(gearset->ID, AgentGearset.GearsetGlamourLinkCallback.Link);
+                }
+            };
+
+        public static unsafe ContextMenuEntry CreateGearsetUnlinkGlamour(GearsetEntry* gearset)
+            => new()
+            {
+                Enabled = UIState.Instance()->IsUnlockLinkUnlocked(15),
+                Hidden = gearset->GlamourSetLink == 0,
+                Label = GetAddonText(4396),
+                ClickCallback = () =>
+                {
+                    GetAgent<AgentGearset>()->ContextMenuGlamourCallback(gearset->ID, AgentGearset.GearsetGlamourLinkCallback.Unlink);
+                }
+            };
+
+        public static unsafe ContextMenuEntry CreateGearsetChangeGlamour(GearsetEntry* gearset)
+            => new()
+            {
+                Enabled = UIState.Instance()->IsUnlockLinkUnlocked(15),
+                Hidden = gearset->GlamourSetLink == 0,
+                Label = GetAddonText(4395),
+                ClickCallback = () =>
+                {
+                    GetAgent<AgentGearset>()->ContextMenuGlamourCallback(gearset->ID, AgentGearset.GearsetGlamourLinkCallback.ChangeLink);
+                }
+            };
+
+        public static unsafe ContextMenuEntry CreateGearsetChangePortrait(GearsetEntry* gearset)
+            => new()
+            {
+                Label = GetAddonText(4411),
+                ClickCallback = () =>
+                {
+                    GetAgent<AgentBannerEditor>()->AgentInterface.Hide();
+                    GetAgent<AgentBannerEditor>()->OpenForGearset(gearset->ID);
                 }
             };
     }

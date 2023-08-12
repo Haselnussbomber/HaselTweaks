@@ -548,12 +548,6 @@
   "GearSetGrid.Config.RegisterCommand.Label": {
     "en": "Register /gsg command to toggle window"
   },
-  "GearSetGrid.Config.AllowSwitchingGearsets.Label": {
-    "en": "Allow switching gearsets"
-  },
-  "GearSetGrid.Config.AllowSwitchingGearsets.Description": {
-    "en": "Makes the id column clickable."
-  },
   "GearSetGrid.Config.ConvertSeparators.Label": {
     "en": "Convert separator gear set with spacing"
   },
@@ -565,6 +559,9 @@
   },
   "GearSetGrid.Config.DisableSeparatorSpacing.Label": {
     "en": "Disable spacing"
+  },
+  "GearSetGridWindow.Title": {
+    "en": "[HaselTweaks] Gear Set Grid"
   },
   "GearSetGridWindow.ItemTooltip.LabelGlamour": {
     "en": "Glamour:",

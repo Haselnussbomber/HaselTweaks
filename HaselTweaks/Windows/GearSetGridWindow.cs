@@ -11,7 +11,9 @@ using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
-using static FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule;
+using GearsetEntry = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetEntry;
+using GearsetFlag = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetFlag;
+using GearsetItem = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetItem;
 
 namespace HaselTweaks.Windows;
 
@@ -27,7 +29,7 @@ public unsafe class GearSetGridWindow : Window
     private bool _resetSize;
     private bool _resetScrollPosition;
 
-    public GearSetGridWindow(GearSetGrid tweak) : base("[HaselTweaks] Gear Set Grid")
+    public GearSetGridWindow(GearSetGrid tweak) : base(t("GearSetGridWindow.Title"))
     {
         _tweak = tweak;
 
@@ -133,7 +135,7 @@ public unsafe class GearSetGridWindow : Window
             if (!gearset->Flags.HasFlag(GearsetFlag.Exists))
                 continue;
 
-            using var id = ImRaii.PushId($"Gearset#{gearsetIndex}");
+            using var id = ImRaii.PushId($"Gearset_{gearsetIndex}");
 
             var name = MemoryHelper.ReadStringNullTerminated((nint)gearset->Name);
 
@@ -155,18 +157,30 @@ public unsafe class GearSetGridWindow : Window
                 var region = ImGui.GetContentRegionAvail();
                 var rowHeight = IconSize.Y * ImGuiHelpers.GlobalScale + ImGui.GetFrameHeight();
 
-                if (Config.AllowSwitchingGearsets)
+                if (ImGui.Selectable("##Equip", gearsetIndex == raptureGearsetModule->CurrentGearsetIndex, ImGuiSelectableFlags.None, new Vector2(region.X, rowHeight)))
                 {
-                    if (ImGui.Selectable($"##Equip", gearsetIndex == raptureGearsetModule->CurrentGearsetIndex, ImGuiSelectableFlags.None, new Vector2(region.X, rowHeight)))
+                    UIModule.PlaySound(8, 0, 0, 0);
+                    raptureGearsetModule->EquipGearset(gearsetIndex);
+                }
+                if (ImGui.IsItemHovered())
+                {
+                    using var tooltip = ImRaii.Tooltip();
+                    ImGui.TextUnformatted($"[{gearset->ID + 1}] {name}");
+
+                    if (gearset->GlamourSetLink != 0)
                     {
-                        UIModule.PlaySound(8, 0, 0, 0);
-                        raptureGearsetModule->EquipGearset(gearsetIndex);
-                    }
-                    if (ImGui.IsItemHovered())
-                    {
-                        ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+                        ImGui.TextUnformatted($"{GetAddonText(3185)}: {gearset->GlamourSetLink}"); // "Glamour Plate: {link}"
                     }
                 }
+
+                new ImGuiUtils.ContextMenu("##GearsetContext")
+                {
+                    ImGuiUtils.ContextMenuEntry.CreateGearsetLinkGlamour(gearset),
+                    ImGuiUtils.ContextMenuEntry.CreateGearsetChangeGlamour(gearset),
+                    ImGuiUtils.ContextMenuEntry.CreateGearsetUnlinkGlamour(gearset),
+                    ImGuiUtils.ContextMenuEntry.CreateGearsetChangePortrait(gearset)
+                }
+                .Draw();
 
                 var itemSpacing = ImGui.GetStyle().ItemSpacing;
                 var itemInnerSpacing = ImGui.GetStyle().ItemInnerSpacing;
@@ -282,7 +296,6 @@ public unsafe class GearSetGridWindow : Window
         // icon hover effect
         if (ImGui.IsItemHovered() || ImGui.IsPopupOpen(popupKey))
         {
-            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
             ImGui.SetCursorPos(startPos);
             Service.TextureManager
                 .GetPart("Character", 7, 5)

@@ -20,9 +20,6 @@ public unsafe partial class GearSetGrid : Tweak
         public bool RegisterCommand = true;
 
         [BoolConfig]
-        public bool AllowSwitchingGearsets = true;
-
-        [BoolConfig]
         public bool ConvertSeparators = true;
 
         [StringConfig(DependsOn = nameof(ConvertSeparators), DefaultValue = "===========")]
