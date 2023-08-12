@@ -12,9 +12,9 @@ public unsafe partial struct AgentGearset
     [FieldOffset(0)] public AgentInterface AgentInterface;
 
     [MemberFunction("40 53 48 83 EC 20 8B DA 41 83 F8 14")]
-    public partial void ContextMenuGlamourCallback(uint gearsetId, GearsetGlamourLinkCallback action);
+    public partial void ContextMenuGlamourCallback(uint gearsetId, ContextMenuGlamourCallbackAction action);
 
-    public enum GearsetGlamourLinkCallback
+    public enum ContextMenuGlamourCallbackAction
     {
         Link = 20,
         ChangeLink = 21,

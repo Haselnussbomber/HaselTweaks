@@ -159,7 +159,7 @@ public partial class ImGuiUtils
                 LoseFocusOnClick = true,
                 ClickCallback = () =>
                 {
-                    GetAgent<AgentGearset>()->ContextMenuGlamourCallback(gearset->ID, AgentGearset.GearsetGlamourLinkCallback.Link);
+                    GetAgent<AgentGearset>()->ContextMenuGlamourCallback(gearset->ID, AgentGearset.ContextMenuGlamourCallbackAction.Link);
                 }
             };
 
@@ -171,7 +171,7 @@ public partial class ImGuiUtils
                 Label = GetAddonText(4396),
                 ClickCallback = () =>
                 {
-                    GetAgent<AgentGearset>()->ContextMenuGlamourCallback(gearset->ID, AgentGearset.GearsetGlamourLinkCallback.Unlink);
+                    GetAgent<AgentGearset>()->ContextMenuGlamourCallback(gearset->ID, AgentGearset.ContextMenuGlamourCallbackAction.Unlink);
                 }
             };
 
@@ -183,7 +183,7 @@ public partial class ImGuiUtils
                 Label = GetAddonText(4395),
                 ClickCallback = () =>
                 {
-                    GetAgent<AgentGearset>()->ContextMenuGlamourCallback(gearset->ID, AgentGearset.GearsetGlamourLinkCallback.ChangeLink);
+                    GetAgent<AgentGearset>()->ContextMenuGlamourCallback(gearset->ID, AgentGearset.ContextMenuGlamourCallbackAction.ChangeLink);
                 }
             };
 
