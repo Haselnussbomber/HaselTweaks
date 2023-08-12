@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased]
+
+### HaselTweaks
+
+- The plugin is now theoretically fully translatable (except for log messages and texts that are loaded from the game, of course). Currently it will use the game's language and fall back to English if text isn't available in that language. That doesn't mean I'll be translating it anytime soon. I don't even speak French or Japanese!
+
+### Gear Set Grid
+
+- **Changed:** Removed the "Allow switching gearsets" option, because that's the default now.
+- **Removed:** The mouse cursor no longer changes to a hand when hovering over something.
+- **Added:** The id column now has a tooltip with the gear set name and the glamour plate id (if linked).
+- **Added:** The id column now also has a context menu to link/change/unlink glamour plates and edit portraits.
+
 ## [16.0.4] (2023-08-05)
 
 ### Scrollable Tabs
