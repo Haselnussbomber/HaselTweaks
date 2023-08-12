@@ -1,8 +1,10 @@
+using System.Reflection;
 using Dalamud.Game;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
@@ -19,6 +21,13 @@ namespace HaselTweaks.Tweaks;
 [Tweak(TweakFlags.HasCustomConfig)]
 public unsafe class DTR : Tweak
 {
+    public static Configuration Config => Plugin.Config.Tweaks.DTR;
+
+    public class Configuration
+    {
+        public string FormatUnitText = " fps";
+    }
+
     public override void DrawCustomConfig()
     {
         ImGui.TextUnformatted(t("DTR.Config.Explanation.Pre"));
@@ -43,6 +52,25 @@ public unsafe class DTR : Tweak
         }
         ImGuiUtils.SameLineSpace();
         ImGui.TextUnformatted(t("DTR.Config.Explanation.Post"));
+
+        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+
+        ImGui.TextUnformatted(t("DTR.Config.FormatUnitText.Label"));
+        if (ImGui.InputText("##FormatUnitTextInput", ref Config.FormatUnitText, 20))
+        {
+            Plugin.Config.Save();
+            _lastFrameRate = 0; // trigger update
+        }
+        ImGui.SameLine();
+        if (ImGuiUtils.IconButton("##Reset", FontAwesomeIcon.Undo, t("HaselTweaks.Config.ResetToDefault", " fps")))
+        {
+            Config.FormatUnitText = " fps";
+            Plugin.Config.Save();
+        }
+        if (Service.TranslationManager.TryGetTranslation("DTR.Config.FormatUnitText.Description", out var description))
+        {
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);
+        }
     }
 
     public DtrBarEntry? DtrInstance;
@@ -130,7 +158,7 @@ public unsafe class DTR : Tweak
         var frameRate = (int)(gameFramework->FrameRate + 0.5f);
         if (_lastFrameRate != frameRate)
         {
-            DtrFPS.SetText(t("DTR.FPS.Format", frameRate));
+            DtrFPS.SetText(t("DTR.FPS.Format", frameRate, Config.FormatUnitText));
             DtrFPS.SetVisibility(true);
             _lastFrameRate = frameRate;
         }

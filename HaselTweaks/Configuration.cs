@@ -24,22 +24,23 @@ internal partial class Configuration : IPluginConfiguration
 
 public class TweakConfigs
 {
-    public AutoSorter.Configuration AutoSorter { get; init; } = new();
-    public CustomChatTimestamp.Configuration CustomChatTimestamp { get; init; } = new();
-    public MinimapAdjustments.Configuration MinimapAdjustments { get; init; } = new();
-    public ForcedCutsceneMusic.Configuration ForcedCutsceneMusic { get; init; } = new();
-    public ScrollableTabs.Configuration ScrollableTabs { get; init; } = new();
-    public Commands.Configuration Commands { get; init; } = new();
-    public CharacterClassSwitcher.Configuration CharacterClassSwitcher { get; init; } = new();
-    public EnhancedExpBar.Configuration EnhancedExpBar { get; init; } = new();
     public AetherCurrentHelper.Configuration AetherCurrentHelper { get; init; } = new();
+    public AutoSorter.Configuration AutoSorter { get; init; } = new();
+    public BackgroundMusicKeybind.Configuration BackgroundMusicKeybind { get; init; } = new();
+    public CharacterClassSwitcher.Configuration CharacterClassSwitcher { get; init; } = new();
+    public Commands.Configuration Commands { get; init; } = new();
+    public CustomChatTimestamp.Configuration CustomChatTimestamp { get; init; } = new();
+    public DTR.Configuration DTR { get; init; } = new();
+    public EnhancedExpBar.Configuration EnhancedExpBar { get; init; } = new();
+    public EnhancedLoginLogout.Configuration EnhancedLoginLogout { get; init; } = new();
+    public EnhancedMaterialList.Configuration EnhancedMaterialList { get; init; } = new();
+    public ForcedCutsceneMusic.Configuration ForcedCutsceneMusic { get; init; } = new();
+    public GearSetGrid.Configuration GearSetGrid { get; init; } = new();
     public LockWindowPosition.Configuration LockWindowPosition { get; init; } = new();
     public MaterialAllocation.Configuration MaterialAllocation { get; init; } = new();
-    public EnhancedMaterialList.Configuration EnhancedMaterialList { get; init; } = new();
+    public MinimapAdjustments.Configuration MinimapAdjustments { get; init; } = new();
     public PortraitHelper.Configuration PortraitHelper { get; init; } = new();
-    public EnhancedLoginLogout.Configuration EnhancedLoginLogout { get; init; } = new();
-    public BackgroundMusicKeybind.Configuration BackgroundMusicKeybind { get; init; } = new();
-    public GearSetGrid.Configuration GearSetGrid { get; init; } = new();
+    public ScrollableTabs.Configuration ScrollableTabs { get; init; } = new();
 }
 
 internal partial class Configuration

@@ -16,8 +16,6 @@ public class StringConfigAttribute : BaseConfigAttribute
 
         ImGui.TextUnformatted(t($"{tweak.InternalName}.Config.{fieldInfo.Name}.Label"));
 
-        using var indent = ImGuiUtils.ConfigIndent();
-
         if (ImGui.InputText("##Input", ref value, 50))
         {
             fieldInfo.SetValue(config, value);
@@ -32,7 +30,6 @@ public class StringConfigAttribute : BaseConfigAttribute
 
         if (Service.TranslationManager.TryGetTranslation($"{tweak.InternalName}.Config.{fieldInfo.Name}.Description", out var description))
         {
-            using var descriptionIndent = ImGuiUtils.ConfigIndent();
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);
         }
     }

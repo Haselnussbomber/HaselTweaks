@@ -76,6 +76,10 @@ Shows Instance number (only if the current zone is instanced), FPS and Busy stat
 
 To enable/disable elements or to change the order go into Dalamud Settings > Server Info Bar.
 
+Options:
+
+- FPS unit text (default: " fps")
+
 ### Enhanced Experience Bar
 
 Depending on the settings, the experience bar can be transformed into one of the following bars:

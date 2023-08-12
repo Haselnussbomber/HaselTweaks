@@ -431,8 +431,16 @@
     "en": "> Server Info Bar.",
     "de": "auf den Tab Server-Infoleiste."
   },
+  "DTR.Config.FormatUnitText.Label": {
+    "en": "Text of the FPS unit",
+    "de": "Text der FPS-Einheit"
+  },
+  "DTR.Config.FormatUnitText.Description": {
+    "en": "Some people like it all uppercase, some lowercase... Here you can define it yourself.",
+    "de": "Manche mögen es in Großbuchstaben, manche nicht... Hier kannst du es selbst definieren."
+  },
   "DTR.FPS.Format": {
-    "en": "{0:0} fps"
+    "en": "{0:0}{1}"
   },
 
   "EnhancedExpBar.Tweak.Name": {
