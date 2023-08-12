@@ -45,7 +45,7 @@ public class TranslationManager : IDisposable
         => TryGetTranslation(key, out var text) ? text : key;
 
     public string Translate(string key, params object?[] args)
-        => TryGetTranslation(key, out var text) ? string.Format(text, args) : key;
+        => TryGetTranslation(key, out var text) ? string.Format(CultureInfo, text, args) : key;
 
     public SeString TranslateSeString(string key, params IEnumerable<Payload>[] args)
     {
