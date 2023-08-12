@@ -143,7 +143,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
 
     private unsafe bool DrawMainCommandButton()
     {
-        if (!IsAddonOpen(AgentId.AetherCurrent))
+        if (IsAddonOpen(AgentId.AetherCurrent))
             return false;
 
         var startPos = ImGui.GetCursorPos();
