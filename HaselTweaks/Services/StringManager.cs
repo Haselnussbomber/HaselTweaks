@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using Dalamud.Game.Text.SeStringHandling;
+using System.Reflection;
 using Dalamud.Memory;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselTweaks.Structs;
 using Lumina.Excel;
@@ -61,8 +62,7 @@ public unsafe class StringManager : IDisposable
 
         if (!SheetCache.TryGetValue(key, out var value))
         {
-
-            var prop = sheetType.GetProperty(columnName);
+            var prop = sheetType.GetProperty(columnName, BindingFlags.Instance | BindingFlags.Public);
             if (prop == null || prop.PropertyType != typeof(Lumina.Text.SeString))
                 return string.Empty;
 
@@ -74,7 +74,7 @@ public unsafe class StringManager : IDisposable
             if (seStr == null)
                 return string.Empty;
 
-            value = SeString.Parse(seStr.RawData).ToString();
+            value = seStr.ToDalamudString().TextValue;
 
             SheetCache.Add(key, value);
         }
