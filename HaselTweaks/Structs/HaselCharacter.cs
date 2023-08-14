@@ -10,7 +10,4 @@ public unsafe partial struct HaselCharacter
 
     [MemberFunction("E8 ?? ?? ?? ?? 83 4B 70 01")]
     public readonly partial void SetPosition(float x, float y, float z);
-
-    [MemberFunction("E8 ?? ?? ?? ?? 45 0F B6 86 ?? ?? ?? ?? 33 D2")]
-    public readonly partial void SetupBNpc(uint bNpcBaseId, uint bNpcName = 0);
 }
