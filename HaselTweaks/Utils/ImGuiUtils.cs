@@ -20,13 +20,19 @@ public static partial class ImGuiUtils
         PushCursorY(style.ItemSpacing.Y - 1);
     }
 
-    public static void DrawSection(string label)
+    public static void DrawSection(string Label, bool PushDown = true, bool RespectUiTheme = false, uint UIColor = 1)
     {
         var style = ImGui.GetStyle();
 
         // push down a bit
-        PushCursorY(style.ItemSpacing.Y * 2);
-        TextUnformattedColored(Colors.Gold, label);
+        if (PushDown)
+            PushCursorY(style.ItemSpacing.Y * 2);
+
+        var color = Colors.Gold;
+        if (RespectUiTheme && Colors.IsLightTheme)
+            color = Colors.GetUIColor(UIColor);
+
+        TextUnformattedColored(color, Label);
 
         // pull up the separator
         PushCursorY(-style.ItemSpacing.Y + 3);

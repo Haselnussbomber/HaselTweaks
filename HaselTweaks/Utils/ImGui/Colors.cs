@@ -6,6 +6,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselTweaks.Extensions;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
+using UIColor = HaselTweaks.Sheets.UIColor;
 
 namespace HaselTweaks.Utils;
 
@@ -24,12 +25,28 @@ public static class Colors
     public static ImColor Grey3 { get; } = new(0.6f, 0.6f, 0.6f);
     public static ImColor Grey4 { get; } = new(0.3f, 0.3f, 0.3f);
 
+    public static unsafe bool IsLightTheme
+        => HaselAtkModule.Instance()->ActiveColorThemeType == 1;
+
+    public static ImColor GetUIColor(uint id)
+    {
+        var colorThemeType = 0;
+        unsafe
+        {
+            colorThemeType = HaselAtkModule.Instance()->ActiveColorThemeType;
+        }
+
+        var row = GetRow<UIColor>(id)!;
+        var color = row.Colors[colorThemeType];
+        return (ImColor)color.Reverse();
+    }
+
     private static readonly Lazy<Dictionary<byte, ImColor>> ItemRarityColors = new(()
         => GetSheet<Item>()
             .Where(item => !string.IsNullOrEmpty(item.Name.ToDalamudString().ToString()))
             .Select(item => item.Rarity)
             .Distinct()
-            .Select(rarity => (Rarity: rarity, Color: (ImColor)GetRow<UIColor>(547u + rarity * 2u)!.UIForeground.Reverse()))
+            .Select(rarity => (Rarity: rarity, Color: GetUIColor(547u + rarity * 2u)))
             .ToDictionary(tuple => tuple.Rarity, tuple => tuple.Color));
 
     public static ImColor GetItemRarityColor(byte rarity) => ItemRarityColors.Value[rarity];

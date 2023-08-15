@@ -1,5 +1,4 @@
 using System.Numerics;
-using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Memory;
 using HaselTweaks.Enums.PortraitHelper;
@@ -15,12 +14,11 @@ public unsafe class AdvancedImportOverlay : Overlay
 {
     public AdvancedImportOverlay(PortraitHelper tweak) : base(t("PortraitHelperWindows.AdvancedImportOverlay.Title"), tweak)
     {
-        base.Flags &= ~ImGuiWindowFlags.NoScrollbar;
     }
 
     public override void Draw()
     {
-        ImGui.PopStyleVar(); // WindowPadding from PreDraw()
+        base.Draw();
 
         if (Tweak.ClipboardPreset == null)
         {
@@ -28,11 +26,11 @@ public unsafe class AdvancedImportOverlay : Overlay
             return;
         }
 
+        if (IsWindow)
+            ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y * 2);
+
         var state = AgentBannerEditor->EditorState;
         var unknown = GetAddonText(624) ?? "Unknown";
-
-        using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Grey))
-            ImGuiHelpers.SafeTextWrapped(t("PortraitHelperWindows.AdvancedImportOverlay.Info"));
 
         if (ImGui.Button(GetAddonText(14923) ?? "Select All"))
             Tweak.CurrentImportFlags = ImportFlags.All;
@@ -50,7 +48,7 @@ public unsafe class AdvancedImportOverlay : Overlay
             Tweak.CloseWindows();
         }
 
-        ImGuiUtils.DrawSection(GetAddonText(14684) ?? "Design");
+        ImGuiUtils.DrawSection(GetAddonText(14684) ?? "Design", RespectUiTheme: !IsWindow);
 
         DrawImportSetting(
             GetAddonText(14687) ?? "Background",
@@ -82,7 +80,7 @@ public unsafe class AdvancedImportOverlay : Overlay
             () => ImGui.TextUnformatted(Tweak.ClipboardPreset.ImageRotation.ToString())
         );
 
-        ImGuiUtils.DrawSection(GetAddonText(14685) ?? "Character");
+        ImGuiUtils.DrawSection(GetAddonText(14685) ?? "Character", RespectUiTheme: !IsWindow);
 
         DrawImportSetting(
             GetAddonText(14690) ?? "Pose",
@@ -181,7 +179,7 @@ public unsafe class AdvancedImportOverlay : Overlay
             () => DrawHalfVector2(Tweak.ClipboardPreset.EyeDirection)
         );
 
-        ImGuiUtils.DrawSection(GetAddonText(14692) ?? "Ambient Lighting");
+        ImGuiUtils.DrawSection(GetAddonText(14692) ?? "Ambient Lighting", RespectUiTheme: !IsWindow);
 
         var labelBrightness = GetAddonText(14694) ?? "Brightness";
         var labelColor = GetAddonText(7008) ?? "Color";
@@ -202,7 +200,7 @@ public unsafe class AdvancedImportOverlay : Overlay
             )
         );
 
-        ImGuiUtils.DrawSection(GetAddonText(14693) ?? "Directional Lighting");
+        ImGuiUtils.DrawSection(GetAddonText(14693) ?? "Directional Lighting", RespectUiTheme: !IsWindow);
 
         DrawImportSetting(
             labelBrightness,
@@ -231,6 +229,9 @@ public unsafe class AdvancedImportOverlay : Overlay
             ImportFlags.DirectionalLightingHorizontalAngle,
             () => ImGui.TextUnformatted(Tweak.ClipboardPreset.DirectionalLightingHorizontalAngle.ToString())
         );
+
+        if (IsWindow)
+            ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);
     }
 
     private void DrawImportSetting(string label, ImportFlags flag, System.Action drawFn)
@@ -251,9 +252,7 @@ public unsafe class AdvancedImportOverlay : Overlay
         if (!isEnabled)
             ImGui.BeginDisabled();
 
-        var style = ImGui.GetStyle();
-
-        ImGui.SameLine(0, style.ItemInnerSpacing.X);
+        ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
         ImGui.TextUnformatted(label);
 
         ImGui.NextColumn();
@@ -268,15 +267,15 @@ public unsafe class AdvancedImportOverlay : Overlay
     private static void DrawColor(byte r, byte g, byte b)
     {
         var vec = new Vector3(r / 255f, g / 255f, b / 255f);
-        using var table = ImRaii.Table("##Table", 5);
+        using var table = ImRaii.Table("##Table", 4);
         if (!table.Success)
             return;
 
-        ImGui.TableSetupColumn("Preview", ImGuiTableColumnFlags.WidthFixed, 26);
-        ImGui.TableSetupColumn("R", ImGuiTableColumnFlags.WidthFixed, 40);
-        ImGui.TableSetupColumn("G", ImGuiTableColumnFlags.WidthFixed, 40);
-        ImGui.TableSetupColumn("B", ImGuiTableColumnFlags.WidthFixed, 40);
-        ImGui.TableSetupColumn("spacing", ImGuiTableColumnFlags.WidthStretch);
+        var scale = ImGui.GetIO().FontGlobalScale;
+        ImGui.TableSetupColumn("Preview", ImGuiTableColumnFlags.WidthFixed, 26 * scale);
+        ImGui.TableSetupColumn("R", ImGuiTableColumnFlags.WidthFixed, 40 * scale);
+        ImGui.TableSetupColumn("G", ImGuiTableColumnFlags.WidthFixed, 40 * scale);
+        ImGui.TableSetupColumn("B", ImGuiTableColumnFlags.WidthFixed, 40 * scale);
 
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
@@ -297,19 +296,17 @@ public unsafe class AdvancedImportOverlay : Overlay
         drawColumn("R", r);
         drawColumn("G", g);
         drawColumn("B", b);
-
-        ImGui.TableNextColumn();
     }
 
     private static void DrawHalfVector2(HalfVector2 vec)
     {
-        using var table = ImRaii.Table("##Table", 3);
+        using var table = ImRaii.Table("##Table", 2);
         if (!table.Success)
             return;
 
-        ImGui.TableSetupColumn("X", ImGuiTableColumnFlags.WidthFixed, 50);
-        ImGui.TableSetupColumn("Y", ImGuiTableColumnFlags.WidthFixed, 50);
-        ImGui.TableSetupColumn("spacing", ImGuiTableColumnFlags.WidthStretch);
+        var scale = ImGui.GetIO().FontGlobalScale;
+        ImGui.TableSetupColumn("X", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
+        ImGui.TableSetupColumn("Y", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
 
         ImGui.TableNextRow();
 
@@ -327,21 +324,19 @@ public unsafe class AdvancedImportOverlay : Overlay
 
         drawColumn("X", vec.X);
         drawColumn("Y", vec.Y);
-
-        ImGui.TableNextColumn();
     }
 
     private static void DrawHalfVector4(HalfVector4 vec)
     {
-        using var table = ImRaii.Table("##Table", 5);
+        using var table = ImRaii.Table("##Table", 4);
         if (!table.Success)
             return;
 
-        ImGui.TableSetupColumn("X", ImGuiTableColumnFlags.WidthFixed, 50);
-        ImGui.TableSetupColumn("Y", ImGuiTableColumnFlags.WidthFixed, 50);
-        ImGui.TableSetupColumn("Z", ImGuiTableColumnFlags.WidthFixed, 50);
-        ImGui.TableSetupColumn("W", ImGuiTableColumnFlags.WidthFixed, 50);
-        ImGui.TableSetupColumn("spacing", ImGuiTableColumnFlags.WidthStretch);
+        var scale = ImGui.GetIO().FontGlobalScale;
+        ImGui.TableSetupColumn("X", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
+        ImGui.TableSetupColumn("Y", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
+        ImGui.TableSetupColumn("Z", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
+        ImGui.TableSetupColumn("W", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
 
         ImGui.TableNextRow();
 
@@ -361,7 +356,5 @@ public unsafe class AdvancedImportOverlay : Overlay
         drawColumn("Y", vec.Y);
         drawColumn("Z", vec.Z);
         drawColumn("W", vec.W);
-
-        ImGui.TableNextColumn();
     }
 }

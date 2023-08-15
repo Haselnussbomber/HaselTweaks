@@ -48,7 +48,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
     public override void Draw()
     {
-        ImGui.PopStyleVar(); // WindowPadding from PreDraw()
+        base.Draw();
 
         using (var table = ImRaii.Table("##PresetBrowser_Table", 2, ImGuiTableFlags.BordersInnerV | ImGuiTableFlags.NoPadOuterX | ImGuiTableFlags.NoPadInnerX))
         {
@@ -96,7 +96,8 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         {
             if (source.Success)
             {
-                ImGui.TextUnformatted(t("PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip", tag.Name));
+                using (ImRaii.PushColor(ImGuiCol.Text, DefaultImGuiTextColor))
+                    ImGui.TextUnformatted(t("PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip", tag.Name));
 
                 var bytes = tag.Id.ToByteArray();
                 fixed (byte* ptr = bytes)
@@ -132,29 +133,32 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             }
         }
 
-        if (ImGui.BeginPopupContextItem($"##PresetBrowser_SideBar_Tag{tag.Id}Popup"))
+        using (ImRaii.PushColor(ImGuiCol.Text, DefaultImGuiTextColor))
         {
-            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label")))
+            if (ImGui.BeginPopupContextItem($"##PresetBrowser_SideBar_Tag{tag.Id}Popup"))
             {
-                CreateTagDialog.Open();
-            }
+                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label")))
+                {
+                    CreateTagDialog.Open();
+                }
 
-            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RenameTag.Label")))
-            {
-                RenameTagDialog.Open(tag);
-            }
+                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RenameTag.Label")))
+                {
+                    RenameTagDialog.Open(tag);
+                }
 
-            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveTag.Label")))
-            {
-                DeleteTagDialog.Open(tag);
-            }
+                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveTag.Label")))
+                {
+                    DeleteTagDialog.Open(tag);
+                }
 
-            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label")))
-            {
-                removeUnusedTags = true;
-            }
+                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label")))
+                {
+                    removeUnusedTags = true;
+                }
 
-            ImGui.EndPopup();
+                ImGui.EndPopup();
+            }
         }
 
         ImGui.SameLine();
@@ -172,10 +176,10 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         var removeUnusedTags = false;
 
-        ImGuiUtils.TextUnformattedColored(Colors.Gold, t("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Tags.Title"));
-        ImGuiUtils.PushCursorY(-style.ItemSpacing.Y + 3);
-        ImGui.Separator();
-        ImGuiUtils.PushCursorY(style.ItemSpacing.Y);
+        ImGuiUtils.DrawSection(
+            t("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Tags.Title"),
+            PushDown: false,
+            RespectUiTheme: !IsWindow);
 
         using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var child = ImRaii.Child("##PresetBrowser_SideBar", ImGui.GetContentRegionAvail() - style.ItemInnerSpacing);
@@ -220,15 +224,18 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         if (ImGui.IsItemClicked())
             SelectedTagId = null;
 
-        if (ImGui.BeginPopupContextItem("##PresetBrowser_SideBar_AllPopup"))
+        using (ImRaii.PushColor(ImGuiCol.Text, DefaultImGuiTextColor))
         {
-            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label")))
-                CreateTagDialog.Open();
+            if (ImGui.BeginPopupContextItem("##PresetBrowser_SideBar_AllPopup"))
+            {
+                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label")))
+                    CreateTagDialog.Open();
 
-            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label")))
-                removeUnusedTags = true;
+                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label")))
+                    removeUnusedTags = true;
 
-            ImGui.EndPopup();
+                ImGui.EndPopup();
+            }
         }
 
         ImGui.SameLine();
@@ -267,10 +274,10 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         var style = ImGui.GetStyle();
 
         ImGuiUtils.PushCursorX(style.ItemSpacing.X);
-        ImGuiUtils.TextUnformattedColored(Colors.Gold, t("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Presets.Title"));
-        ImGuiUtils.PushCursorY(-style.ItemSpacing.Y + 3);
-        ImGui.Separator();
-        ImGuiUtils.PushCursorY(style.ItemSpacing.Y);
+        ImGuiUtils.DrawSection(
+            t("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Presets.Title"),
+            PushDown: false,
+            RespectUiTheme: !IsWindow);
 
         using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var child = ImRaii.Child("##PresetBrowser_Content", ImGui.GetContentRegionAvail());
@@ -315,7 +322,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
                 {
                     for (int i = 0, index = row * presetsPerRow; i < presetsPerRow && index < presetCards.Length; i++, index++)
                     {
-                        presetCards[index]?.Draw(scale);
+                        presetCards[index]?.Draw(scale, DefaultImGuiTextColor);
 
                         if (i < presetsPerRow - 1 && index + 1 < presetCards.Length)
                             ImGui.SameLine(0, style.ItemInnerSpacing.X);

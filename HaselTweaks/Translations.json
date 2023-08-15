@@ -938,7 +938,7 @@
   },
   "PortraitHelperWindows.AdvancedEditOverlay.Title": {
     "en": "[HaselTweaks] Portrait Helper: Advanced Edit",
-    "de": "[HaselTweaks] Portrait Helper: Erweiterte Bearbeitungs"
+    "de": "[HaselTweaks] Portrait Helper: Erweiterte Bearbeitung"
   },
   "PortraitHelperWindows.AdvancedEditOverlay.Title.Inner": {
     "en": "Advanced Edit Mode",
@@ -1002,10 +1002,6 @@
   "PortraitHelperWindows.AdvancedImportOverlay.Title": {
     "en": "[HaselTweaks] Portrait Helper: Advanced Import",
     "de": "[HaselTweaks] Portrait Helper: Erweiterter Import"
-  },
-  "PortraitHelperWindows.AdvancedImportOverlay.Info": {
-    "en": "Only the checked settings will be imported.",
-    "de": "Nur ausgewählte Einstellungen werden importiert."
   },
   "PortraitHelperWindows.AdvancedImportOverlay.ImportSelectedSettingsButton.Label": {
     "en": "Import Selected Settings",

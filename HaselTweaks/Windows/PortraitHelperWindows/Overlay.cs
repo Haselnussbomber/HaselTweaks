@@ -3,6 +3,7 @@ using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
+using HaselTweaks.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
@@ -11,7 +12,10 @@ public abstract unsafe class Overlay : Window
 {
     public PortraitHelper Tweak { get; init; }
 
-    private bool? IsWindow { get; set; } = null;
+    protected bool IsWindow { get; set; }
+    protected bool FlagsSet { get; set; }
+
+    protected uint DefaultImGuiTextColor { get; set; }
 
     public AgentBannerEditor* AgentBannerEditor => Tweak.AgentBannerEditor;
     public AddonBannerEditor* AddonBannerEditor => Tweak.AddonBannerEditor;
@@ -48,15 +52,16 @@ public abstract unsafe class Overlay : Window
     public override void OnClose()
     {
         ToggleUiVisibility(true);
+        FlagsSet = false;
     }
 
     public override void Update()
     {
         var isWindow = ImGui.GetIO().FontGlobalScale > 1;
 
-        ToggleUiVisibility(!DrawConditions() || isWindow);
+        ToggleUiVisibility(isWindow);
 
-        if (IsWindow == null || IsWindow != isWindow)
+        if (IsWindow != isWindow || !FlagsSet)
         {
             if (!isWindow)
             {
@@ -93,13 +98,18 @@ public abstract unsafe class Overlay : Window
                         leftPane->GetWidth() * scale.X,
                         leftPane->GetHeight() * scale.Y
                     );
+
+                    SizeCondition = ImGuiCond.Always;
+                    SizeConstraints = null;
+                    Flags |= ImGuiWindowFlags.AlwaysAutoResize;
                 }
             }
             else
             {
-                base.Flags &= ImGuiWindowFlags.NoSavedSettings;
-                base.Flags &= ImGuiWindowFlags.NoDecoration;
-                base.Flags &= ImGuiWindowFlags.NoMove;
+                base.Flags &= ~ImGuiWindowFlags.NoSavedSettings;
+                base.Flags &= ~ImGuiWindowFlags.NoDecoration;
+                base.Flags &= ~ImGuiWindowFlags.NoMove;
+                base.Flags &= ~ImGuiWindowFlags.AlwaysAutoResize;
 
                 SizeCondition = ImGuiCond.Appearing;
                 SizeConstraints = new WindowSizeConstraints
@@ -113,36 +123,78 @@ public abstract unsafe class Overlay : Window
             }
 
             IsWindow = isWindow;
+            FlagsSet = true;
         }
     }
 
     public override void PreDraw()
     {
-        ImGui.PushStyleColor(ImGuiCol.WindowBg, 0xFF313131);
-        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10, 4));
+        DefaultImGuiTextColor = ImGui.GetColorU32(ImGuiCol.Text);
+
+        if (!IsWindow)
+        {
+            if (Type == OverlayType.LeftPane)
+            {
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+            }
+
+            if (Colors.IsLightTheme)
+            {
+                ImGui.PushStyleColor(ImGuiCol.Text, (uint)Colors.GetUIColor(2));
+            }
+
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, 0);
+        }
+    }
+
+    public override void Draw()
+    {
+        if (!IsWindow)
+        {
+            ImGui.PopStyleColor();
+
+            if (Type == OverlayType.LeftPane)
+            {
+                ImGui.PopStyleVar();
+            }
+        }
     }
 
     public override void PostDraw()
     {
-        // ImGui.PopStyleVar(); // call in Draw()!!!!
-        ImGui.PopStyleColor();
+        if (!IsWindow && Colors.IsLightTheme)
+        {
+            ImGui.PopStyleColor();
+        }
     }
 
     public void ToggleUiVisibility(bool visible)
     {
-        if (visible || ImGui.GetIO().FontGlobalScale <= 1)
+        var leftPane = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 20);
+        leftPane->ToggleVisibility(visible);
+
+        if (Type != OverlayType.LeftPane)
         {
-            var leftPane = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 20);
-            leftPane->ToggleVisibility(visible);
+            var rightPane = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 107);
+            rightPane->ToggleVisibility(visible);
 
-            if (Type != OverlayType.LeftPane)
-            {
-                var verticalSeparatorNode = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 135);
-                verticalSeparatorNode->ToggleVisibility(visible);
+            var verticalSeparatorNode = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 135);
+            verticalSeparatorNode->ToggleVisibility(visible);
 
-                var controlsHint = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 2);
-                controlsHint->ToggleVisibility(visible);
-            }
+            var controlsHint = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 2);
+            controlsHint->ToggleVisibility(visible);
+
+            var copyEquimentButton = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 131);
+            copyEquimentButton->ToggleVisibility(visible);
+
+            var saveButton = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 133);
+            saveButton->ToggleVisibility(visible);
+
+            var closeButton = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 134);
+            closeButton->ToggleVisibility(visible);
+
+            var lowerHorizontalLine = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 136);
+            lowerHorizontalLine->ToggleVisibility(visible);
         }
     }
 }

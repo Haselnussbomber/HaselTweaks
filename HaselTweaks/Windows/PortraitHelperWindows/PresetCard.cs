@@ -74,7 +74,7 @@ public class PresetCard : IDisposable
         _isDisposed = true;
     }
 
-    public void Draw(float scale)
+    public void Draw(float scale, uint defaultImGuiTextColor)
     {
         if (_isDisposed)
             return;
@@ -135,7 +135,8 @@ public class PresetCard : IDisposable
         {
             if (source.Success)
             {
-                ImGui.TextUnformatted(t("PortraitHelperWindows.PresetCard.MovingPresetCard.Tooltip", _preset.Name));
+                using (ImRaii.PushColor(ImGuiCol.Text, defaultImGuiTextColor))
+                    ImGui.TextUnformatted(t("PortraitHelperWindows.PresetCard.MovingPresetCard.Tooltip", _preset.Name));
 
                 unsafe
                 {
@@ -173,7 +174,8 @@ public class PresetCard : IDisposable
         {
             using (ImRaii.Tooltip())
             {
-                ImGui.TextUnformatted(_preset.Name);
+                using (ImRaii.PushColor(ImGuiCol.Text, defaultImGuiTextColor))
+                    ImGui.TextUnformatted(_preset.Name);
             }
 
             if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
@@ -183,57 +185,60 @@ public class PresetCard : IDisposable
             }
         }
 
-        if (ImGui.BeginPopupContextItem($"{_preset.Id}_Popup"))
+        using (ImRaii.PushColor(ImGuiCol.Text, defaultImGuiTextColor))
         {
-            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.LoadPreset.Label")))
+            if (ImGui.BeginPopupContextItem($"{_preset.Id}_Popup"))
             {
-                _overlay.Tweak.PresetToState(_preset.Preset, ImportFlags.All);
-                _overlay.Tweak.CloseWindows();
-            }
-
-            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.EditPreset.Label")))
-            {
-                _overlay.EditPresetDialog.Open(_preset);
-            }
-
-            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.ExportToClipboard.Label")))
-            {
-                _overlay.Tweak.PresetToClipboard(_preset.Preset);
-            }
-
-            if (_image != null && ImGui.BeginMenu(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Label")))
-            {
-                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Everything.Label")))
+                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.LoadPreset.Label")))
                 {
-                    Task.Run(async () => await CopyImage());
+                    _overlay.Tweak.PresetToState(_preset.Preset, ImportFlags.All);
+                    _overlay.Tweak.CloseWindows();
                 }
 
-                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrame.Label")))
+                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.EditPreset.Label")))
                 {
-                    Task.Run(async () => await CopyImage(CopyImageFlags.NoFrame));
+                    _overlay.EditPresetDialog.Open(_preset);
                 }
 
-                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutDecoration.Label")))
+                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.ExportToClipboard.Label")))
                 {
-                    Task.Run(async () => await CopyImage(CopyImageFlags.NoDecoration));
+                    _overlay.Tweak.PresetToClipboard(_preset.Preset);
                 }
 
-                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrameAndDecoration.Label")))
+                if (_image != null && ImGui.BeginMenu(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Label")))
                 {
-                    Task.Run(async () => await CopyImage(CopyImageFlags.NoFrame | CopyImageFlags.NoDecoration));
+                    if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Everything.Label")))
+                    {
+                        Task.Run(async () => await CopyImage());
+                    }
+
+                    if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrame.Label")))
+                    {
+                        Task.Run(async () => await CopyImage(CopyImageFlags.NoFrame));
+                    }
+
+                    if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutDecoration.Label")))
+                    {
+                        Task.Run(async () => await CopyImage(CopyImageFlags.NoDecoration));
+                    }
+
+                    if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrameAndDecoration.Label")))
+                    {
+                        Task.Run(async () => await CopyImage(CopyImageFlags.NoFrame | CopyImageFlags.NoDecoration));
+                    }
+
+                    ImGui.EndMenu();
                 }
 
-                ImGui.EndMenu();
+                ImGui.Separator();
+
+                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.DeletePreset.Label")))
+                {
+                    _overlay.DeletePresetDialog.Open(_preset);
+                }
+
+                ImGui.EndPopup();
             }
-
-            ImGui.Separator();
-
-            if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.DeletePreset.Label")))
-            {
-                _overlay.DeletePresetDialog.Open(_preset);
-            }
-
-            ImGui.EndPopup();
         }
     }
 

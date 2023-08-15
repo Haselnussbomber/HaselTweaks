@@ -14,13 +14,12 @@ public unsafe class AlignmentToolSettingsOverlay : Overlay
 
     public override void Draw()
     {
-        ImGui.PopStyleVar(); // WindowPadding from PreDraw()
+        base.Draw();
 
-        var style = ImGui.GetStyle();
-        ImGuiUtils.TextUnformattedColored(Colors.Gold, t("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title.Inner"));
-        ImGuiUtils.PushCursorY(-style.ItemSpacing.Y + 3);
-        ImGui.Separator();
-        ImGuiUtils.PushCursorY(style.ItemSpacing.Y);
+        ImGuiUtils.DrawSection(
+            t("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title.Inner"),
+            PushDown: false,
+            RespectUiTheme: !IsWindow);
 
         var changed = false;
 

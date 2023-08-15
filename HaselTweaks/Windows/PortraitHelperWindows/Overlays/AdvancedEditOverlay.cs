@@ -19,18 +19,23 @@ public unsafe class AdvancedEditOverlay : Overlay
 
     public override void Draw()
     {
-        ImGui.PopStyleVar(); // WindowPadding from PreDraw()
+        base.Draw();
+
+        var style = ImGui.GetStyle();
 
         var state = AgentBannerEditor->EditorState;
         var character = state->CharaView->Base.GetCharacter();
         if (character == null)
             return;
 
-        var style = ImGui.GetStyle();
-        ImGuiUtils.TextUnformattedColored(Colors.Gold, t("PortraitHelperWindows.AdvancedEditOverlay.Title.Inner"));
-        ImGuiUtils.PushCursorY(-style.ItemSpacing.Y + 3);
-        ImGui.Separator();
-        ImGuiUtils.PushCursorY(style.ItemSpacing.Y);
+        if (!IsWindow)
+        {
+            ImGuiUtils.DrawSection(
+                t("PortraitHelperWindows.AdvancedEditOverlay.Title.Inner"),
+                PushDown: false,
+                RespectUiTheme: true,
+                UIColor: 2);
+        }
 
         using var table = ImRaii.Table("##Table", 2);
         if (!table.Success)
@@ -266,7 +271,7 @@ public unsafe class AdvancedEditOverlay : Overlay
 
         table?.Dispose();
 
-        using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Grey))
+        using (ImRaii.PushColor(ImGuiCol.Text, (uint)(Colors.IsLightTheme && !IsWindow ? Colors.GetUIColor(3) : Colors.Grey)))
         {
             ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedEditOverlay.Note.Label"));
             ImGuiHelpers.SafeTextWrapped(t("PortraitHelperWindows.AdvancedEditOverlay.Note.1"));
