@@ -5,7 +5,8 @@
 ### HaselTweaks
 
 - **Added:** You can now set the plugins language via a Plugin Configuration menu bar in the plugin window. To toggle the menu bar, click on the gear button in the top right corner. The default language, which was previously determined by the client language, is now whatever is set in Dalamud (if supported - if not, it defaults to English). You can also choose to automatically use whatever the client is using, or set the language directly.  
-  *Please note:* I can only provide full translation in English and German. While French and Japanese are supported as they are part of the game, I only included the few lines I had already translated using ChatGPT. If you want to help translating the plugin into another language, feel free to edit the Translations.json and submit a pull request! :)
+  *Please note:* I can only provide full translation in English and German. While French and Japanese are supported as they are part of the game, I only included the few lines I had already translated using ChatGPT. If you want to help translating the plugin into another language, feel free to edit the Translations.json and submit a pull request! :)  
+  To avoid confusion I decided not to translate tweak names (for now).
 
 ### Aether Current Helper
 
@@ -21,10 +22,10 @@
 
 ### Gear Set Grid
 
-- **Changed:** Removed the "Allow switching gearsets" option, because that's the default now.
-- **Removed:** The mouse cursor no longer changes to a hand when hovering over something.
 - **Added:** The id column now has a tooltip with the gear set name and the glamour plate id (if linked).
 - **Added:** The id column now also has a context menu to link/change/unlink glamour plates and edit portraits.
+- **Changed:** Removed the "Allow switching gearsets" option, because that's the default now.
+- **Fixed:** The mouse cursor no longer changes to a hand when hovering over something because gear sets and items can't be dragged out of the ImGui window.
 
 ## [16.0.4] (2023-08-05)
 
