@@ -7,6 +7,10 @@
 - **Added:** You can now set the plugins language via a Plugin Configuration menu bar in the plugin window. To toggle the menu bar, click on the gear button in the top right corner. The default language, which was previously determined by the client language, is now whatever is set in Dalamud (if supported - if not, it defaults to English). You can also choose to automatically use whatever the client is using, or set the language directly.  
   *Please note:* I can only provide full translation in English and German. While French and Japanese are supported as they are part of the game, I only included the few lines I had already translated using ChatGPT. If you want to help translating the plugin into another language, feel free to edit the Translations.json and submit a pull request! :)
 
+### Aether Current Helper
+
+- **Changed:** The window now hides and unhides automatically with the game UI.
+
 ### DTR
 
 - **Added:** A configuration field to change the FPS unit text (default: " fps").

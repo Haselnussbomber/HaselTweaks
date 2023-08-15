@@ -7,6 +7,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
@@ -50,7 +51,6 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         };
 
         _agentAetherCurrent = GetAgent<AgentAetherCurrent>();
-
     }
 
     public void SetCompFlgSet(AetherCurrentCompFlgSet compFlgSet)
@@ -62,7 +62,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
     }
 
     public override bool DrawConditions()
-        => Service.ClientState.IsLoggedIn;
+        => Service.ClientState.IsLoggedIn && !HaselRaptureAtkUnitManager.Instance()->UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
 
     public override unsafe void Draw()
     {
@@ -139,6 +139,9 @@ public unsafe partial class AetherCurrentHelperWindow : Window
             ImGui.TextUnformatted(text);
             ImGui.TableNextColumn();
         }
+
+        if (!Flags.HasFlag(ImGuiWindowFlags.NoFocusOnAppearing))
+            Flags |= ImGuiWindowFlags.NoFocusOnAppearing;
     }
 
     private unsafe bool DrawMainCommandButton()
