@@ -20,4 +20,7 @@ public unsafe partial struct Statics
 
     [MemberFunction("E8 ?? ?? ?? ?? 4C 8B 05 ?? ?? ?? ?? 48 8D 8C 24 ?? ?? ?? ?? 48 8B D0 E8 ?? ?? ?? ?? 8B 4E 08")]
     public static partial byte* GetGatheringPointName(RaptureTextModule** module, byte gatheringTypeId, byte gatheringPointType);
+
+    [StaticAddress("41 0F B6 45 ?? 48 8D 0D", 8)]
+    public static partial byte** ColorThemeTypePaths();
 }

@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Game;
+using Dalamud.Memory;
 using Dalamud.Plugin.Services;
 using HaselTweaks.Extensions;
 using HaselTweaks.Records;
+using HaselTweaks.Structs;
 
 namespace HaselTweaks.Services;
 
@@ -93,15 +95,42 @@ public class TextureManager : IDisposable
         if (!uld.Uld.AssetData.FindFirst((asset) => asset.Id == part.TextureId, out var asset))
             return Get(Texture.EmptyIconPath);
 
+        var colorThemeType = 0;
+        var colorThemePath = "";
+        unsafe
+        {
+            colorThemeType = HaselAtkModule.Instance()->ActiveColorThemeType;
+            colorThemePath = MemoryHelper.ReadStringNullTerminated((nint)Statics.ColorThemeTypePaths()[colorThemeType]);
+        }
+
         var assetPath = new string(asset.Path, 0, asset.Path.IndexOf('\0'));
 
-        // check if high-res texture exists
+        // check if theme high-res texture exists
         var path = assetPath;
+        path = path.Insert(7, colorThemePath);
         path = path.Insert(path.LastIndexOf('.'), "_hr1");
         var exists = Service.DataManager.FileExists(path);
         var version = 2;
 
-        // fallback to normal texture
+        // fallback to theme normal texture
+        if (!exists)
+        {
+            path = assetPath;
+            path = path.Insert(7, colorThemePath);
+            exists = Service.DataManager.FileExists(path);
+            version = 1;
+        }
+
+        // check if default theme high-res texture exists
+        if (!exists)
+        {
+            path = assetPath;
+            path = path.Insert(path.LastIndexOf('.'), "_hr1");
+            exists = Service.DataManager.FileExists(path);
+            version = 2;
+        }
+
+        // fallback to default theme normal texture
         if (!exists)
         {
             path = assetPath;
