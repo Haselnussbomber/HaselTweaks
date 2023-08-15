@@ -13,8 +13,6 @@ public abstract unsafe class Tweak
 {
     private Type? _type;
     private string? _internalName;
-    private string? _name;
-    private string? _description;
     private TweakFlags? _flags;
     private IncompatibilityWarning[]? _incompatibilityWarnings;
 
@@ -25,30 +23,10 @@ public abstract unsafe class Tweak
         => _internalName ??= CachedType.Name;
 
     public string Name
-    {
-        get
-        {
-            if (string.IsNullOrEmpty(_name) && Service.TranslationManager.TryGetTranslation($"{InternalName}.Tweak.Name", out var text))
-            {
-                _name = text;
-            }
-
-            return _name ?? "";
-        }
-    }
+        => Service.TranslationManager.TryGetTranslation($"{InternalName}.Tweak.Name", out var text) ? text : string.Empty;
 
     public string Description
-    {
-        get
-        {
-            if (string.IsNullOrEmpty(_description) && Service.TranslationManager.TryGetTranslation($"{InternalName}.Tweak.Description", out var text))
-            {
-                _description = text;
-            }
-
-            return _description ?? "";
-        }
-    }
+        => Service.TranslationManager.TryGetTranslation($"{InternalName}.Tweak.Description", out var text) ? text : string.Empty;
 
     public TweakFlags Flags
         => _flags ??= CachedType.GetCustomAttribute<TweakAttribute>()?.Flags ?? TweakFlags.None;
@@ -298,6 +276,7 @@ public abstract unsafe class Tweak
     public virtual void Disable() { }
     public virtual void Dispose() { }
     public virtual void OnConfigChange(string fieldName) { }
+    public virtual void OnLanguageChange() { }
     public virtual void OnFrameworkUpdate(Framework framework) { }
     public virtual void OnLogin() { }
     public virtual void OnLogout() { }

@@ -11,12 +11,35 @@ namespace HaselTweaks.Tweaks;
 public unsafe class SearchTheMarkets : Tweak
 {
     private readonly DalamudContextMenu _contextMenu = new();
-    private readonly GameObjectContextMenuItem _contextMenuItemGame = null!;
-    private readonly InventoryContextMenuItem _contextMenuItemInventory = null!;
+    private GameObjectContextMenuItem _contextMenuItemGame = null!;
+    private InventoryContextMenuItem _contextMenuItemInventory = null!;
 
     private uint _itemId;
 
-    public SearchTheMarkets()
+    public override void Enable()
+    {
+        SetupContextMenus();
+        _contextMenu.OnOpenGameObjectContextMenu += ContextMenu_OnOpenGameObjectContextMenu;
+        _contextMenu.OnOpenInventoryContextMenu += ContextMenu_OnOpenInventoryContextMenu;
+    }
+
+    public override void Disable()
+    {
+        _contextMenu.OnOpenGameObjectContextMenu -= ContextMenu_OnOpenGameObjectContextMenu;
+        _contextMenu.OnOpenInventoryContextMenu -= ContextMenu_OnOpenInventoryContextMenu;
+    }
+
+    public override void OnLanguageChange()
+    {
+        SetupContextMenus();
+    }
+
+    public override void Dispose()
+    {
+        _contextMenu.Dispose();
+    }
+
+    private void SetupContextMenus()
     {
         try
         {
@@ -40,23 +63,6 @@ public unsafe class SearchTheMarkets : Tweak
             PluginLog.Error(ex, "Unable to construct context menu entries");
             Ready = false;
         }
-    }
-
-    public override void Enable()
-    {
-        _contextMenu.OnOpenGameObjectContextMenu += ContextMenu_OnOpenGameObjectContextMenu;
-        _contextMenu.OnOpenInventoryContextMenu += ContextMenu_OnOpenInventoryContextMenu;
-    }
-
-    public override void Disable()
-    {
-        _contextMenu.OnOpenGameObjectContextMenu -= ContextMenu_OnOpenGameObjectContextMenu;
-        _contextMenu.OnOpenInventoryContextMenu -= ContextMenu_OnOpenInventoryContextMenu;
-    }
-
-    public override void Dispose()
-    {
-        _contextMenu.Dispose();
     }
 
     private void ContextMenu_OnOpenGameObjectContextMenu(GameObjectContextMenuOpenArgs args)

@@ -9,6 +9,7 @@ using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using HaselTweaks.Enums;
+using HaselTweaks.Services;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using ImGuiScene;
@@ -48,7 +49,7 @@ public partial class PluginWindow : Window, IDisposable
             MaximumSize = new Vector2(4096, 2160)
         };
 
-        SizeCondition = ImGuiCond.Appearing;
+        SizeCondition = ImGuiCond.Always;
 
         Flags |= ImGuiWindowFlags.AlwaysAutoResize;
         Flags |= ImGuiWindowFlags.NoSavedSettings;
@@ -66,6 +67,7 @@ public partial class PluginWindow : Window, IDisposable
     public override void OnClose()
     {
         _selectedTweak = string.Empty;
+        Flags &= ~ImGuiWindowFlags.MenuBar;
 
         foreach (var tweak in Plugin.Tweaks)
         {
@@ -137,6 +139,40 @@ public partial class PluginWindow : Window, IDisposable
 
     public override void Draw()
     {
+        if (ImGui.BeginMenuBar())
+        {
+            if (ImGui.BeginMenu("Language"))
+            {
+                if (ImGui.MenuItem(TranslationManager.DalamudLanguageLabel, "", Plugin.Config.PluginLanguageOverride == PluginLanguageOverride.Dalamud))
+                {
+                    Plugin.Config.PluginLanguageOverride = PluginLanguageOverride.Dalamud;
+                    Plugin.Config.UpdateLanguage();
+                }
+
+                if (ImGui.MenuItem(TranslationManager.ClientLanguageLabel, "", Plugin.Config.PluginLanguageOverride == PluginLanguageOverride.Client))
+                {
+                    Plugin.Config.PluginLanguageOverride = PluginLanguageOverride.Client;
+                    Plugin.Config.UpdateLanguage();
+                }
+
+                ImGui.Separator();
+
+                foreach (var (code, name) in TranslationManager.AllowedLanguages)
+                {
+                    if (ImGui.MenuItem(name, "", Plugin.Config.PluginLanguageOverride == PluginLanguageOverride.None && Plugin.Config.PluginLanguage == code))
+                    {
+                        Plugin.Config.PluginLanguageOverride = PluginLanguageOverride.None;
+                        Plugin.Config.PluginLanguage = code;
+                        Plugin.Config.UpdateLanguage();
+                    }
+                }
+
+                ImGui.EndMenu();
+            }
+
+            ImGui.EndMenuBar();
+        }
+
         DrawSidebar();
         ImGui.SameLine();
         DrawConfig();
@@ -272,6 +308,12 @@ public partial class PluginWindow : Window, IDisposable
         {
             var cursorPos = ImGui.GetCursorPos();
             var contentAvail = ImGui.GetContentRegionAvail();
+
+            ImGuiUtils.PushCursorX(contentAvail.X - ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Cog).X);
+            if (ImGuiUtils.IconButton("##PluginConfigButton", FontAwesomeIcon.Cog, "Toggle Plugin Configuration", active: Flags.HasFlag(ImGuiWindowFlags.MenuBar)))
+            {
+                Flags ^= ImGuiWindowFlags.MenuBar;
+            }
 
             if (!_isLogoLoading && _logoTextureWrap != null && _logoTextureWrap.ImGuiHandle != 0)
             {

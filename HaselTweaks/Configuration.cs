@@ -4,6 +4,8 @@ using System.Linq;
 using Dalamud.Configuration;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Logging;
+using HaselTweaks.Enums;
+using HaselTweaks.Services;
 using HaselTweaks.Tweaks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -17,6 +19,10 @@ internal partial class Configuration : IPluginConfiguration
     public const int CURRENT_CONFIG_VERSION = 4;
 
     public int Version { get; set; } = CURRENT_CONFIG_VERSION;
+
+    public string PluginLanguage { get; set; } = "en";
+    public PluginLanguageOverride PluginLanguageOverride { get; set; } = PluginLanguageOverride.Dalamud;
+
     public HashSet<string> EnabledTweaks { get; private set; } = new();
     public TweakConfigs Tweaks { get; init; } = new();
     public HashSet<string> LockedImGuiWindows { get; private set; } = new();
@@ -149,5 +155,30 @@ internal partial class Configuration
     internal void Save()
     {
         Service.PluginInterface.SavePluginConfig(this);
+    }
+
+    internal void UpdateLanguage()
+    {
+        var code = PluginLanguageOverride switch
+        {
+            PluginLanguageOverride.Dalamud => TranslationManager.DalamudLanguageCode,
+            PluginLanguageOverride.Client => TranslationManager.ClientLanguageCode,
+            _ => PluginLanguage,
+        };
+
+        if (!TranslationManager.AllowedLanguages.ContainsKey(code))
+            code = TranslationManager.DefaultLanguage;
+
+        if (PluginLanguage == code)
+            return;
+
+        PluginLanguage = code;
+        TranslationManager.CultureInfo = new(code);
+        Save();
+
+        foreach (var tweak in Plugin.Tweaks.Where(tweak => tweak.Enabled))
+        {
+            tweak.OnLanguageChange();
+        }
     }
 }

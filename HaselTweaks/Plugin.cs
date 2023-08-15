@@ -38,6 +38,7 @@ public partial class Plugin : IDalamudPlugin
             InitializeTweaks();
 
             Config = Configuration.Load(Tweaks.Select(t => t.InternalName));
+            Config.UpdateLanguage();
 
             foreach (var tweak in Tweaks)
             {

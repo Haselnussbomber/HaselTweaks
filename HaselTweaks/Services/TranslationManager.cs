@@ -5,40 +5,72 @@ using System.Reflection;
 using System.Text.Json;
 using Dalamud;
 using Dalamud.Game.Text.SeStringHandling;
+using HaselTweaks.Enums;
 
 namespace HaselTweaks.Services;
 
 public class TranslationManager : IDisposable
 {
-    private static Dictionary<string, Dictionary<string, string>> Translations = new();
+    public static readonly string DefaultLanguage = "en";
+    public static readonly Dictionary<string, string> AllowedLanguages = new()
+    {
+        ["de"] = "German",
+        ["en"] = "English",
+        ["fr"] = "French",
+        ["ja"] = "Japanese"
+    };
+    public static CultureInfo CultureInfo = new(DefaultLanguage);
 
-    public CultureInfo CultureInfo { get; private set; } = new("en");
-    public string Locale { get; private set; } = "en";
+    public static string DalamudLanguageCode
+        => AllowedLanguages.ContainsKey(Service.PluginInterface.UiLanguage)
+            ? Service.PluginInterface.UiLanguage
+            : DefaultLanguage;
+
+    public static string DalamudLanguageLabel
+        => AllowedLanguages.ContainsKey(DalamudLanguageCode)
+            ? $"Override: Dalamud ({DalamudLanguageCode})"
+            : $"Override: Dalamud ({DalamudLanguageCode} is not supported, using fallback {DefaultLanguage})";
+
+    public static string ClientLanguageCode
+        => Service.ClientState.ClientLanguage switch
+        {
+            ClientLanguage.English => "en",
+            ClientLanguage.German => "de",
+            ClientLanguage.French => "fr",
+            ClientLanguage.Japanese => "ja",
+            _ => DefaultLanguage
+        };
+
+    public static string ClientLanguageLabel
+        => AllowedLanguages.ContainsKey(ClientLanguageCode)
+            ? $"Override: Client ({ClientLanguageCode})"
+            : $"Override: Client ({ClientLanguageCode} is not supported, using fallback {DefaultLanguage})";
+
+    private readonly Dictionary<string, Dictionary<string, string>> _translations = new();
 
     public TranslationManager()
     {
-        var code = Service.ClientState.ClientLanguage switch
-        {
-            ClientLanguage.Japanese => "ja",
-            ClientLanguage.German => "de",
-            ClientLanguage.French => "fr",
-            _ => "en"
-        };
-
-        CultureInfo = new(code);
-        Locale = code;
-
-        using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"HaselTweaks.Assets.Translations.json");
+        using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"HaselTweaks.Translations.json");
         if (stream == null)
             return;
 
-        Translations = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(stream) ?? new();
+        _translations = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(stream) ?? new();
+
+        Service.PluginInterface.LanguageChanged += PluginInterface_LanguageChanged;
+    }
+
+    private void PluginInterface_LanguageChanged(string langCode)
+    {
+        if (Plugin.Config.PluginLanguageOverride == PluginLanguageOverride.Dalamud)
+        {
+            Plugin.Config.UpdateLanguage();
+        }
     }
 
     public bool TryGetTranslation(string key, [MaybeNullWhen(false)] out string text)
     {
         text = default;
-        return Translations.TryGetValue(key, out var entry) && (entry.TryGetValue(Locale, out text) || entry.TryGetValue("en", out text));
+        return _translations.TryGetValue(key, out var entry) && (entry.TryGetValue(Plugin.Config.PluginLanguage, out text) || entry.TryGetValue("en", out text));
     }
 
     public string Translate(string key)
@@ -82,6 +114,7 @@ public class TranslationManager : IDisposable
 
     public void Dispose()
     {
-        Translations.Clear();
+        Service.PluginInterface.LanguageChanged -= PluginInterface_LanguageChanged;
+        _translations.Clear();
     }
 }

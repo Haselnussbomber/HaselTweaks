@@ -4,8 +4,8 @@
 
 ### HaselTweaks
 
-- The plugin is now theoretically fully translatable. In total, there are 343 strings (excluding log messages and texts that are loaded from the game, of course). Currently the plugin will use the game's language and fall back to English if the text isn't available in that language. Anyhow, that doesn't mean I'll be translating the plugin anytime soon.
-- A lot of internal code has been updated to make things simpler and cleaner, but I'll spare you the details.
+- **Added:** You can now set the plugins language via a Plugin Configuration menu bar in the plugin window. To toggle the menu bar, click on the gear button in the top right corner. The default language, which was previously determined by the client language, is now whatever is set in Dalamud. You can also choose the client language, or set the language directly.  
+  *Please note:* I can only provide full translation in English and German. While French and Japanese are supported as they are part of the game, I only included the few lines I had already translated using ChatGPT. If you want to help translating the plugin into another language, feel free to edit the Translations.json and submit a pull request! :)
 
 ### DTR
 

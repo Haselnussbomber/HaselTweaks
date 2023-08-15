@@ -43,11 +43,9 @@
 
   <ItemGroup>
     <None Remove="Assets\Logo.svg" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Assets\Logo.svg" />
-    <EmbeddedResource Include="Assets\Translations.json" />
+    <None Remove="Translations.json" />
+    <EmbeddedResource Include="Translations.json" />
   </ItemGroup>
 
   <ItemGroup>
