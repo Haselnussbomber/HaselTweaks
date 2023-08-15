@@ -1,10 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## [16.1.0] (2023-08-15)
 
 ### HaselTweaks
 
-- **Added:** You can now set the plugins language via a Plugin Configuration menu bar in the plugin window. To toggle the menu bar, click on the gear button in the top right corner. The default language, which was previously determined by the client language, is now whatever is set in Dalamud (if supported - if not, it defaults to English). You can also choose to automatically use whatever the client is using, or set the language directly.  
+- **Added:** You can now set the plugins language via a Plugin Configuration menu bar in the plugin window. To toggle the menu bar, click on the gear button in the top right corner. The default language, which was previously determined by the client language, is now whatever is set in Dalamud (if not supported, it defaults to English). You can also choose to automatically use whatever the client is using, or set the language directly.  
   *Please note:* I can only provide full translation in English and German. While French and Japanese are supported as they are part of the game, I only included the few lines I had already translated using ChatGPT. If you want to help translating the plugin into another language, feel free to edit the Translations.json and submit a pull request! :)  
   To avoid confusion I decided not to translate tweak names (for now).
 
@@ -1039,6 +1039,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[16.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.4...v16.1.0
 [16.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.3...v16.0.4
 [16.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.2...v16.0.3
 [16.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.1...v16.0.2
