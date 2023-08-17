@@ -13,12 +13,12 @@ namespace HaselTweaks;
 
 public class Service
 {
-    public static DalamudPluginInterface PluginInterface { get; internal set; } = null!;
-
     public static AddonObserver AddonObserver { get; internal set; } = null!;
     public static TranslationManager TranslationManager { get; internal set; } = null!;
     public static StringManager StringManager { get; internal set; } = null!;
     public static TextureManager TextureManager { get; internal set; } = null!;
+
+    public static DalamudPluginInterface PluginInterface { get; private set; } = null!;
 
     [PluginService] public static ChatGui ChatGui { get; private set; } = null!;
     [PluginService] public static ClientState ClientState { get; private set; } = null!;
@@ -37,11 +37,12 @@ public class Service
     [PluginService] public static ITargetManager TargetManager { get; private set; } = null!;
     [PluginService] public static ITextureProvider TextureProvider { get; private set; } = null!;
 
-    public static void Initialize()
+    public static void Initialize(DalamudPluginInterface pluginInterface)
     {
+        PluginInterface = pluginInterface;
         PluginInterface.Create<Service>();
         AddonObserver = new();
-        TranslationManager = new();
+        TranslationManager = new(PluginInterface, ClientState);
         StringManager = new();
         TextureManager = new();
     }

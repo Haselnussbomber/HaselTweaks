@@ -9,6 +9,7 @@ using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using HaselTweaks.Enums;
+using HaselTweaks.Extensions;
 using HaselTweaks.Services;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -143,27 +144,29 @@ public partial class PluginWindow : Window, IDisposable
         {
             if (ImGui.BeginMenu("Language"))
             {
-                if (ImGui.MenuItem(TranslationManager.DalamudLanguageLabel, "", Plugin.Config.PluginLanguageOverride == PluginLanguageOverride.Dalamud))
+                static string GetLabel(string type, string code)
                 {
-                    Plugin.Config.PluginLanguageOverride = PluginLanguageOverride.Dalamud;
-                    Plugin.Config.UpdateLanguage();
+                    return TranslationManager.AllowedLanguages.ContainsKey(code)
+                        ? $"Override: {type} ({code})"
+                        : $"Override: {type} ({code} is not supported, using fallback {TranslationManager.DefaultLanguage})";
+                }
+                if (ImGui.MenuItem(GetLabel("Dalamud", Service.PluginInterface.UiLanguage), "", Service.TranslationManager.Override == PluginLanguageOverride.Dalamud))
+                {
+                    Service.TranslationManager.Override = PluginLanguageOverride.Dalamud;
                 }
 
-                if (ImGui.MenuItem(TranslationManager.ClientLanguageLabel, "", Plugin.Config.PluginLanguageOverride == PluginLanguageOverride.Client))
+                if (ImGui.MenuItem(GetLabel("Client", Service.ClientState.ClientLanguage.ToCode()), "", Service.TranslationManager.Override == PluginLanguageOverride.Client))
                 {
-                    Plugin.Config.PluginLanguageOverride = PluginLanguageOverride.Client;
-                    Plugin.Config.UpdateLanguage();
+                    Service.TranslationManager.Override = PluginLanguageOverride.Client;
                 }
 
                 ImGui.Separator();
 
                 foreach (var (code, name) in TranslationManager.AllowedLanguages)
                 {
-                    if (ImGui.MenuItem(name, "", Plugin.Config.PluginLanguageOverride == PluginLanguageOverride.None && Plugin.Config.PluginLanguage == code))
+                    if (ImGui.MenuItem(name, "", Service.TranslationManager.Override == PluginLanguageOverride.None && Service.TranslationManager.Language == code))
                     {
-                        Plugin.Config.PluginLanguageOverride = PluginLanguageOverride.None;
-                        Plugin.Config.PluginLanguage = code;
-                        Plugin.Config.UpdateLanguage();
+                        Service.TranslationManager.SetLanguage(PluginLanguageOverride.None, code);
                     }
                 }
 

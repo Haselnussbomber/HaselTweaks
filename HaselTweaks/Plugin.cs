@@ -24,8 +24,7 @@ public partial class Plugin : IDalamudPlugin
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
-        Service.PluginInterface = pluginInterface;
-        Service.Initialize();
+        Service.Initialize(pluginInterface);
         Task.Run(Setup);
     }
 
@@ -38,7 +37,8 @@ public partial class Plugin : IDalamudPlugin
             InitializeTweaks();
 
             Config = Configuration.Load(Tweaks.Select(t => t.InternalName));
-            Config.UpdateLanguage();
+            Service.TranslationManager.Initialize("HaselTweaks.Translations.json", Config);
+            Service.TranslationManager.OnLanguageChange += OnLanguageChange;
 
             foreach (var tweak in Tweaks)
             {
@@ -97,6 +97,16 @@ public partial class Plugin : IDalamudPlugin
             new FileInfo(Path.Join(Service.PluginInterface.ConfigDirectory.FullName, currentSigCacheName)));
 
         Interop.Resolver.GetInstance.Resolve();
+    }
+
+    private void OnLanguageChange()
+    {
+        Config.Save();
+
+        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
+        {
+            tweak.OnLanguageChange();
+        }
     }
 
     private void OnFrameworkUpdate(DalamudFramework framework)
@@ -174,6 +184,7 @@ public partial class Plugin : IDalamudPlugin
 
     void IDisposable.Dispose()
     {
+        Service.TranslationManager.OnLanguageChange -= OnLanguageChange;
         Service.AddonObserver.AddonClose -= AddonObserver_AddonClose;
         Service.AddonObserver.AddonOpen -= AddonObserver_AddonOpen;
         Service.Framework.Update -= OnFrameworkUpdate;

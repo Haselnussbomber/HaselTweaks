@@ -3,9 +3,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
-using Dalamud;
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using HaselTweaks.Enums;
+using HaselTweaks.Extensions;
+using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Services;
 
@@ -19,58 +22,97 @@ public class TranslationManager : IDisposable
         ["fr"] = "French",
         ["ja"] = "Japanese"
     };
-    public static CultureInfo CultureInfo = new(DefaultLanguage);
 
-    public static string DalamudLanguageCode
-        => AllowedLanguages.ContainsKey(Service.PluginInterface.UiLanguage)
-            ? Service.PluginInterface.UiLanguage
-            : DefaultLanguage;
+    private readonly DalamudPluginInterface _pluginInterface;
+    private readonly IClientState _clientState;
 
-    public static string DalamudLanguageLabel
-        => AllowedLanguages.ContainsKey(DalamudLanguageCode)
-            ? $"Override: Dalamud ({DalamudLanguageCode})"
-            : $"Override: Dalamud ({DalamudLanguageCode} is not supported, using fallback {DefaultLanguage})";
+    private Dictionary<string, Dictionary<string, string>> _translations = new();
+    private ITranslationConfig _config = null!;
 
-    public static string ClientLanguageCode
-        => Service.ClientState.ClientLanguage switch
-        {
-            ClientLanguage.English => "en",
-            ClientLanguage.German => "de",
-            ClientLanguage.French => "fr",
-            ClientLanguage.Japanese => "ja",
-            _ => DefaultLanguage
-        };
+    private string _activeLanguage = DefaultLanguage;
 
-    public static string ClientLanguageLabel
-        => AllowedLanguages.ContainsKey(ClientLanguageCode)
-            ? $"Override: Client ({ClientLanguageCode})"
-            : $"Override: Client ({ClientLanguageCode} is not supported, using fallback {DefaultLanguage})";
+    public delegate void LanguageChangedDelegate();
+    public event LanguageChangedDelegate? OnLanguageChange;
 
-    private readonly Dictionary<string, Dictionary<string, string>> _translations = new();
+    public CultureInfo CultureInfo { get; private set; } = new(DefaultLanguage);
 
-    public TranslationManager()
+    public TranslationManager(DalamudPluginInterface pluginInterface, IClientState clientState)
     {
-        using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"HaselTweaks.Translations.json");
-        if (stream == null)
-            return;
+        _pluginInterface = pluginInterface;
+        _clientState = clientState;
+    }
+
+    public void Dispose()
+    {
+        Service.PluginInterface.LanguageChanged -= PluginInterface_LanguageChanged;
+    }
+
+    public void Initialize(string translationsResourceName, ITranslationConfig config)
+    {
+        using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(translationsResourceName)
+            ?? throw new Exception($"Could not find translations resource \"{translationsResourceName}\".");
 
         _translations = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(stream) ?? new();
 
-        Service.PluginInterface.LanguageChanged += PluginInterface_LanguageChanged;
+        _config = config;
+
+        SetLanguage(_config.PluginLanguageOverride, _config.PluginLanguage, false);
+
+        _pluginInterface.LanguageChanged += PluginInterface_LanguageChanged;
+    }
+
+    public PluginLanguageOverride Override
+    {
+        get => _config.PluginLanguageOverride;
+        set => SetLanguage(value, _config.PluginLanguage);
+    }
+
+    public string Language
+    {
+        get => _activeLanguage;
+        set => SetLanguage(_config.PluginLanguageOverride, value);
     }
 
     private void PluginInterface_LanguageChanged(string langCode)
     {
-        if (Plugin.Config.PluginLanguageOverride == PluginLanguageOverride.Dalamud)
+        if (Override == PluginLanguageOverride.Dalamud)
+            Language = langCode;
+    }
+
+    public void SetLanguage(PluginLanguageOverride pluginLanguageOverride, string code, bool fireOnLanguageChangeEvent = true)
+    {
+        code = pluginLanguageOverride switch
         {
-            Plugin.Config.UpdateLanguage();
+            PluginLanguageOverride.Dalamud => _pluginInterface.UiLanguage,
+            PluginLanguageOverride.Client => _clientState.ClientLanguage.ToCode(),
+            _ => code,
+        };
+
+        if (!AllowedLanguages.ContainsKey(code))
+            code = DefaultLanguage;
+
+        _config.PluginLanguageOverride = pluginLanguageOverride;
+        _config.PluginLanguage = code;
+
+        if (_activeLanguage != code)
+        {
+            _activeLanguage = code;
+            CultureInfo = new(code);
+
+            if (fireOnLanguageChangeEvent)
+                OnLanguageChange?.Invoke();
         }
+    }
+
+    public void UpdateLanguage()
+    {
+        SetLanguage(Override, Language);
     }
 
     public bool TryGetTranslation(string key, [MaybeNullWhen(false)] out string text)
     {
         text = default;
-        return _translations.TryGetValue(key, out var entry) && (entry.TryGetValue(Plugin.Config.PluginLanguage, out text) || entry.TryGetValue("en", out text));
+        return _translations.TryGetValue(key, out var entry) && (entry.TryGetValue(_activeLanguage, out text) || entry.TryGetValue("en", out text));
     }
 
     public string Translate(string key)
@@ -110,11 +152,5 @@ public class TranslationManager : IDisposable
         }
 
         return sb.Build();
-    }
-
-    public void Dispose()
-    {
-        Service.PluginInterface.LanguageChanged -= PluginInterface_LanguageChanged;
-        _translations.Clear();
     }
 }

@@ -5,7 +5,7 @@ using Dalamud.Configuration;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Logging;
 using HaselTweaks.Enums;
-using HaselTweaks.Services;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Tweaks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 namespace HaselTweaks;
 
 [Serializable]
-internal partial class Configuration : IPluginConfiguration
+public partial class Configuration : IPluginConfiguration, ITranslationConfig
 {
     [JsonIgnore]
     public const int CURRENT_CONFIG_VERSION = 4;
@@ -49,7 +49,7 @@ public class TweakConfigs
     public ScrollableTabs.Configuration ScrollableTabs { get; init; } = new();
 }
 
-internal partial class Configuration
+public partial class Configuration
 {
     internal static Configuration Load(IEnumerable<string> tweakNames)
     {
@@ -156,30 +156,5 @@ internal partial class Configuration
     {
         PluginLog.Information("Configuration saved.");
         Service.PluginInterface.SavePluginConfig(this);
-    }
-
-    internal void UpdateLanguage()
-    {
-        var code = PluginLanguageOverride switch
-        {
-            PluginLanguageOverride.Dalamud => TranslationManager.DalamudLanguageCode,
-            PluginLanguageOverride.Client => TranslationManager.ClientLanguageCode,
-            _ => PluginLanguage,
-        };
-
-        if (!TranslationManager.AllowedLanguages.ContainsKey(code))
-            code = TranslationManager.DefaultLanguage;
-
-        if (PluginLanguage == code)
-            return;
-
-        PluginLanguage = code;
-        TranslationManager.CultureInfo = new(code);
-        Save();
-
-        foreach (var tweak in Plugin.Tweaks.Where(tweak => tweak.Enabled))
-        {
-            tweak.OnLanguageChange();
-        }
     }
 }
