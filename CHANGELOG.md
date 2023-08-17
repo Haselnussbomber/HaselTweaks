@@ -1,5 +1,15 @@
 # Changelog
 
+## [16.1.1] (2023-08-17)
+
+### HaselTweaks
+
+- **Fixed:** Changing tweak settings didn't save the config. Sorry about that!
+
+### Portrait Helper
+
+- **Changed:** The overlays should now play nicely with the different UI themes. 🎉
+
 ## [16.1.0] (2023-08-15)
 
 ### HaselTweaks
@@ -1039,6 +1049,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[16.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.1.0...v16.1.1
 [16.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.4...v16.1.0
 [16.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.3...v16.0.4
 [16.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.2...v16.0.3
