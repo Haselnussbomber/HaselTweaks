@@ -16,7 +16,7 @@ using static HaselTweaks.Structs.AgentBannerEditorState;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
-public unsafe class MenuBar : Window, IDisposable
+public unsafe class MenuBar : Window
 {
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
 
@@ -40,11 +40,6 @@ public unsafe class MenuBar : Window, IDisposable
         base.DisableWindowSounds = true;
         base.RespectCloseHotkey = false;
         base.IsOpen = true;
-    }
-
-    public void Dispose()
-    {
-        base.IsOpen = false;
     }
 
     public override bool DrawConditions()

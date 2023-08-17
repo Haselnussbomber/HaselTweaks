@@ -114,7 +114,6 @@ public partial class PortraitHelper : Tweak
         if (MenuBar != null && Plugin.WindowSystem.Windows.Contains(MenuBar))
         {
             Plugin.WindowSystem.RemoveWindow(MenuBar);
-            MenuBar.Dispose();
             MenuBar = null;
         }
 

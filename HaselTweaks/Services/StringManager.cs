@@ -8,7 +8,7 @@ using Lumina.Excel;
 
 namespace HaselTweaks.Services;
 
-public unsafe class StringManager : IDisposable
+public unsafe class StringManager
 {
     private readonly Dictionary<uint, string> AddonCache = new();
     private readonly Dictionary<(NameFormatter.Placeholder placeholder, NameFormatter.IdConverter idConverter, uint id), string> NameCache = new();
@@ -80,12 +80,5 @@ public unsafe class StringManager : IDisposable
         }
 
         return value;
-    }
-
-    public void Dispose()
-    {
-        AddonCache.Clear();
-        NameCache.Clear();
-        SheetCache.Clear();
     }
 }

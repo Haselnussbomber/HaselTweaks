@@ -50,7 +50,6 @@ public class Service
     {
         AddonObserver.Dispose();
         TranslationManager.Dispose();
-        StringManager.Dispose();
         TextureManager.Dispose();
     }
 }
