@@ -13,10 +13,10 @@ namespace HaselTweaks;
 
 public class Service
 {
-    public static AddonObserver AddonObserver { get; internal set; } = null!;
-    public static TranslationManager TranslationManager { get; internal set; } = null!;
-    public static StringManager StringManager { get; internal set; } = null!;
-    public static TextureManager TextureManager { get; internal set; } = null!;
+    public static AddonObserver AddonObserver { get; private set; } = null!;
+    public static TranslationManager TranslationManager { get; private set; } = null!;
+    public static StringManager StringManager { get; private set; } = null!;
+    public static TextureManager TextureManager { get; private set; } = null!;
 
     public static DalamudPluginInterface PluginInterface { get; private set; } = null!;
 

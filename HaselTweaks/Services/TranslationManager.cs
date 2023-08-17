@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
+using Dalamud;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
@@ -72,6 +73,8 @@ public class TranslationManager : IDisposable
         get => _activeLanguage;
         set => SetLanguage(_config.PluginLanguageOverride, value);
     }
+
+    public ClientLanguage ClientLanguage => _activeLanguage.ToClientlanguage();
 
     private void PluginInterface_LanguageChanged(string langCode)
     {

@@ -12,4 +12,13 @@ public static class ClientLanguageExtensions
             ClientLanguage.Japanese => "ja",
             _ => "en"
         };
+
+    public static ClientLanguage ToClientlanguage(this string value)
+        => value switch
+        {
+            "de" => ClientLanguage.German,
+            "fr" => ClientLanguage.French,
+            "ja" => ClientLanguage.Japanese,
+            _ => ClientLanguage.English
+        };
 }
