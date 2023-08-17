@@ -35,25 +35,6 @@ public unsafe class StringManager
         return value;
     }
 
-    public string GetAddonText(uint id)
-    {
-        if (!AddonCache.TryGetValue(id, out var value))
-        {
-            var ptr = (nint)RaptureTextModule.Instance()->GetAddonText(id);
-            if (ptr != 0)
-            {
-                value = MemoryHelper.ReadSeStringNullTerminated(ptr).ToString();
-
-                if (string.IsNullOrWhiteSpace(value))
-                    return null ?? $"[Addon#{id}]";
-
-                AddonCache.Add(id, value);
-            }
-        }
-
-        return value ?? $"[Addon#{id}]";
-    }
-
     public string GetSheetText<T>(uint rowId, string columnName) where T : ExcelRow
     {
         var sheetType = typeof(T);

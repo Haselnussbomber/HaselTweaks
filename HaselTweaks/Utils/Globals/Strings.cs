@@ -2,6 +2,7 @@ using System.Linq;
 using Dalamud.Game.Text.SeStringHandling;
 using HaselTweaks.Structs;
 using Lumina.Excel;
+using AddonSheet = Lumina.Excel.GeneratedSheets.Addon;
 
 namespace HaselTweaks.Utils.Globals;
 
@@ -17,7 +18,7 @@ public static unsafe class Strings
         => Service.TranslationManager.TranslateSeString(key, args.Select(s => s.Payloads).ToArray());
 
     public static string GetAddonText(uint id)
-        => Service.StringManager.GetAddonText(id);
+        => Service.StringManager.GetSheetText<AddonSheet>(id, "Text");
 
     public static string GetSheetText<T>(uint rowId, string columnName) where T : ExcelRow
         => Service.StringManager.GetSheetText<T>(rowId, columnName);
