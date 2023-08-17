@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using Dalamud.Memory;
 using Dalamud.Utility;
-using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselTweaks.Structs;
 using Lumina.Excel;
 
@@ -10,15 +9,14 @@ namespace HaselTweaks.Services;
 
 public unsafe class StringManager
 {
-    private readonly Dictionary<uint, string> AddonCache = new();
-    private readonly Dictionary<(NameFormatter.Placeholder placeholder, NameFormatter.IdConverter idConverter, uint id), string> NameCache = new();
-    private readonly Dictionary<(string sheetName, uint rowId, string columnName), string> SheetCache = new();
+    private readonly Dictionary<(NameFormatter.Placeholder placeholder, NameFormatter.IdConverter idConverter, uint id), string> _nameCache = new();
+    private readonly Dictionary<(string sheetName, uint rowId, string columnName), string> _sheetCache = new();
 
     public string? FormatName(NameFormatter.Placeholder placeholder, NameFormatter.IdConverter idConverter, uint id)
     {
         var key = (placeholder, idConverter, id);
 
-        if (!NameCache.TryGetValue(key, out var value))
+        if (!_nameCache.TryGetValue(key, out var value))
         {
             var ptr = NameFormatter.Format(placeholder, id, idConverter, 1);
             if (ptr != 0)
@@ -28,7 +26,7 @@ public unsafe class StringManager
                 if (string.IsNullOrWhiteSpace(value))
                     return null;
 
-                NameCache.Add(key, value);
+                _nameCache.Add(key, value);
             }
         }
 
@@ -41,7 +39,7 @@ public unsafe class StringManager
         var sheetName = sheetType.Name;
         var key = (sheetName, rowId, columnName);
 
-        if (!SheetCache.TryGetValue(key, out var value))
+        if (!_sheetCache.TryGetValue(key, out var value))
         {
             var prop = sheetType.GetProperty(columnName, BindingFlags.Instance | BindingFlags.Public);
             if (prop == null || prop.PropertyType != typeof(Lumina.Text.SeString))
@@ -57,9 +55,15 @@ public unsafe class StringManager
 
             value = seStr.ToDalamudString().TextValue;
 
-            SheetCache.Add(key, value);
+            _sheetCache.Add(key, value);
         }
 
         return value;
+    }
+
+    public void Clear()
+    {
+        _nameCache.Clear();
+        _sheetCache.Clear();
     }
 }

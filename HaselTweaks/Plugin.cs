@@ -101,6 +101,7 @@ public partial class Plugin : IDalamudPlugin
 
     private void OnLanguageChange()
     {
+        Service.StringManager.Clear();
         Config.Save();
 
         foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
