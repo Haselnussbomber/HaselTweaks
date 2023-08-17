@@ -13,6 +13,7 @@ public abstract class BaseConfigAttribute : Attribute
 
     protected void OnChangeInternal(Tweak tweak, FieldInfo fieldInfo)
     {
+        Plugin.Config.Save();
         tweak.CachedType.GetMethod(nameof(Tweak.OnConfigChange), BindingFlags.Instance | BindingFlags.Public)?.Invoke(tweak, new[] { fieldInfo.Name });
     }
 
