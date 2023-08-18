@@ -31,20 +31,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove=".git*" />
-    <None Remove="InteropSourceGenerators\**" />
-    <Compile Remove=".git*" />
-    <Compile Remove="InteropSourceGenerators\**" />
-    <Content Remove=".git*" />
-    <Content Remove="InteropSourceGenerators\**" />
-    <EmbeddedResource Remove=".git*" />
-    <EmbeddedResource Remove="InteropSourceGenerators\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Assets\Logo.svg" />
     <EmbeddedResource Include="Assets\Logo.svg" />
-    <None Remove="Translations.json" />
     <EmbeddedResource Include="Translations.json" />
   </ItemGroup>
 
