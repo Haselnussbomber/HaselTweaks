@@ -1,5 +1,11 @@
 # Changelog
 
+## [16.1.3] (2023-08-19)
+
+### Enhanced Login/Logout
+
+- **Fixed:** Pet glamours should now be applied correctly.
+
 ## [16.1.2] (2023-08-18)
 
 ### HaselTweaks
@@ -1063,6 +1069,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[16.1.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.1.2...v16.1.3
+[16.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.1.1...v16.1.2
 [16.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.1.0...v16.1.1
 [16.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.4...v16.1.0
 [16.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.0.3...v16.0.4
