@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [16.1.2] (2023-08-18)
 
 ### HaselTweaks
 
@@ -9,8 +9,9 @@
 
 ### Portrait Helper
 
-- **Changed:** The Animation Timestamp input is a slider now.  
-  As I understand it, the end timestamp used now is based on the duration of the emote, which is different from the duration of the race-specific animation. Since I can't find the actual animation duration for the life of me, we have to use the general emote duration for now.
+- **Changed:** The Animation Timestamp input in the Advanced Edit Mode has been reworked. It is a slider now and supports dragging to scroll through the animation. But, two things:
+  - The flickering has not been fixed yet, as it still relies on the same game function that restart/reloads the animation at the specific timestamp.
+  - As I understand it, the end timestamp used for the slider is based on the duration of the emote, which is different from the duration of the race-specific animation. Since I can't find the actual animation duration for the life of me, we have to use the general emote duration for now.
 - **Fixed:** The overlays didn't update their position when the window moved.
 
 ## [16.1.1] (2023-08-17)
