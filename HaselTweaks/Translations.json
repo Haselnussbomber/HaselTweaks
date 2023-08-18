@@ -984,6 +984,10 @@
     "en": "Animation Timestamp",
     "de": "Animationszeitstempel"
   },
+  "PortraitHelperWindows.Setting.AnimationTimestamp.Info": {
+    "en": "Setting the Animation Timestamp will reload the animation at the specified timestamp. This will cause some flickering. Also, due to technical limitations, it is not possible to determine the exact end timestamp of the animation at this time.",
+    "de": "Die Animation startet beim Setzen des Animationszeitstempels neu, da sie neu geladen wird. Dies verursacht ein gewisses Flackern. Außerdem ist es aus technischen Gründen derzeit nicht möglich den exakten Endzeitpunkt der Animation zu ermitteln."
+  },
   "PortraitHelperWindows.Setting.AnimationTimestamp.ValueFormat": {
     "en": "{0:0.000}"
   },
@@ -991,13 +995,9 @@
     "en": "Please note:",
     "de": "Bitte beachte:"
   },
-  "PortraitHelperWindows.AdvancedEditOverlay.Note.1": {
+  "PortraitHelperWindows.AdvancedEditOverlay.Note.Text": {
     "en": "The game may verify the values on setting them and/or saving the portrait. If possible, it will automatically adjust them so that they are within a valid range. If not, it will throw an error and you have to fix the values yourself. In any case, if the game adjusts the values, the adjusted values will not be reflected here unless you reopen the window.",
     "de": "Das Spiel kann die Werte beim Einstellen und/oder Speichern des Porträts überprüfen. Wenn möglich, wird es sie automatisch anpassen, so dass sie in einem gültigen Bereich liegen. Wenn nicht, gibt es eine Fehlermeldung aus und du musst die Werte selbst korrigieren. Wie auch immer, wenn das Spiel die Werte anpasst, werden die angepassten Werte hier nicht angezeigt bis das Fenster neu geöffnet wird."
-  },
-  "PortraitHelperWindows.AdvancedEditOverlay.Note.2": {
-    "en": "Also, setting the Animation Timestamp will restart the animation at the specified timestamp, causing some flickering. If the Animation Timestamp is too high, the game will start the next loop, resetting the timestamp to 0.",
-    "de": "Außerdem: Die Animation startet beim Setzen des Animationszeitstempels zum angegebenen Zeitpunkt neu, was ein gewisses Flackern verursacht. Wenn der Animationszeitstempel zu hoch ist, wird das Spiel den nächsten Durchlauf beginnen und den Zeitstempel auf 0 zurücksetzen."
   },
   "PortraitHelperWindows.AdvancedImportOverlay.Title": {
     "en": "[HaselTweaks] Portrait Helper: Advanced Import",

@@ -131,4 +131,16 @@ public static partial class ImGuiUtils
         using (ImRaii.PushColor(ImGuiCol.Text, col))
             ImGui.TextUnformatted(text);
     }
+
+    public static Vector2 GetIconSize(FontAwesomeIcon icon)
+    {
+        using var font = ImRaii.PushFont(UiBuilder.IconFont);
+        return ImGui.CalcTextSize(icon.ToIconString());
+    }
+
+    public static void Icon(FontAwesomeIcon icon)
+    {
+        using (ImRaii.PushFont(UiBuilder.IconFont))
+            ImGui.TextDisabled(icon.ToIconString());
+    }
 }

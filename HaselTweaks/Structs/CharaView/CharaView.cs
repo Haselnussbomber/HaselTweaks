@@ -211,4 +211,7 @@ public unsafe partial struct CharaViewCharacterActionTimelineManager
 public unsafe partial struct CharaViewGameObjectSchedulerTimeline
 {
     [FieldOffset(0x34)] public float CurrentTimestamp;
+
+    [FieldOffset(0x44)] public float TbmhLength;
+    [FieldOffset(0x48)] public float AnimationLength; // C010
 }

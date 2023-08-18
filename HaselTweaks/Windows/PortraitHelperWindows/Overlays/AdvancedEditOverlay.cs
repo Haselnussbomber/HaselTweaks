@@ -11,10 +11,41 @@ public unsafe class AdvancedEditOverlay : Overlay
 {
     protected override OverlayType Type => OverlayType.LeftPane;
 
-    private float _lastTimestamp;
+    private float _timestamp;
+    private float _timelineLength;
 
     public AdvancedEditOverlay(PortraitHelper tweak) : base(t("PortraitHelperWindows.AdvancedEditOverlay.Title"), tweak)
     {
+    }
+
+    public override void OnOpen()
+    {
+        var state = AgentBannerEditor->EditorState;
+        var character = state->CharaView->Base.GetCharacter();
+        if (character == null)
+            return;
+
+        var timelinePtr = character->ActionTimelineManager.BaseAnimation;
+        if (timelinePtr == null)
+            return;
+
+        var timeline = *timelinePtr;
+        if (timeline == null)
+            return;
+
+        _timestamp = (float)Math.Round(AgentBannerEditor->EditorState->CharaView->GetAnimationTime(), 1);
+        _timelineLength = timeline->AnimationLength;
+    }
+
+    public override void Update()
+    {
+        base.Update();
+
+        var charaViewTimestamp = (float)Math.Round(AgentBannerEditor->EditorState->CharaView->GetAnimationTime(), 1);
+        if (charaViewTimestamp != 0 && _timestamp != charaViewTimestamp)
+        {
+            _timestamp = charaViewTimestamp;
+        }
     }
 
     public override void Draw()
@@ -237,36 +268,43 @@ public unsafe class AdvancedEditOverlay : Overlay
 
             ImGui.TableNextColumn();
 
-            var animation = character->ActionTimelineManager.BaseAnimation;
-            var timeline = (animation != null && *animation != null) ? *animation : null;
-            var timestamp = timeline == null ? _lastTimestamp : state->CharaView->GetAnimationTime();
+            var region = ImGui.GetContentRegionAvail();
+            ImGui.SetNextItemWidth(region.X - (ImGui.GetStyle().ItemInnerSpacing.X + ImGuiUtils.GetIconSize(FontAwesomeIcon.InfoCircle).X));
 
-            if (timeline == null)
-                ImGui.BeginDisabled();
-
-            void SetTimestamp(float timestamp)
+            var timestampBefore = _timestamp;
+            var timestampAfter = timestampBefore;
+            if (ImGui.DragFloat($"##DragFloat", ref timestampAfter, 0.1f, 0f, _timelineLength, "%.1f") && timestampAfter != timestampBefore)
             {
-                if (timestamp < 0)
-                    timestamp = 0;
+                var clampedValue = Math.Clamp(timestampAfter, 0, _timelineLength);
+                _timestamp = (float)Math.Round(clampedValue, 1);
 
-                timeline->CurrentTimestamp = timestamp;
-                _lastTimestamp = timestamp;
-                state->CharaView->SetPoseTimed(character->ActionTimelineManager.BannerTimelineRowId, timestamp);
-                state->CharaView->Base.ToggleAnimationPaused(true);
-                AddonBannerEditor->PlayAnimationCheckbox->SetValue(false);
+                var timelinePtr = character->ActionTimelineManager.BaseAnimation;
+                if (timelinePtr != null)
+                {
+                    var timeline = *timelinePtr;
+                    if (timeline != null)
+                    {
+                        timeline->CurrentTimestamp = clampedValue;
+                        state->CharaView->SetPoseTimed(character->ActionTimelineManager.BannerTimelineRowId, clampedValue);
+                        state->CharaView->Base.ToggleAnimationPaused(true);
+                        AddonBannerEditor->PlayAnimationCheckbox->SetValue(false);
 
-                if (!AgentBannerEditor->EditorState->HasDataChanged)
-                    AgentBannerEditor->EditorState->SetHasChanged(true);
+                        if (!AgentBannerEditor->EditorState->HasDataChanged)
+                            AgentBannerEditor->EditorState->SetHasChanged(true);
+                    }
+                }
             }
 
-            ImGui.SetNextItemWidth(-1);
-            if (ImGui.InputFloat($"##DragFloat", ref timestamp, 0.1f, 1f, "%.01f") && _lastTimestamp != timestamp)
+            ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
+            ImGuiUtils.Icon(FontAwesomeIcon.InfoCircle);
+            if (ImGui.IsItemHovered())
             {
-                SetTimestamp(timestamp);
+                ImGui.SetNextWindowSize(new Vector2(300, -1));
+                using (ImRaii.Tooltip())
+                {
+                    ImGui.TextWrapped(t("PortraitHelperWindows.Setting.AnimationTimestamp.Info"));
+                }
             }
-
-            if (timeline == null)
-                ImGui.EndDisabled();
         }
 
         table?.Dispose();
@@ -274,8 +312,7 @@ public unsafe class AdvancedEditOverlay : Overlay
         using (ImRaii.PushColor(ImGuiCol.Text, (uint)(Colors.IsLightTheme && !IsWindow ? Colors.GetUIColor(3) : Colors.Grey)))
         {
             ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedEditOverlay.Note.Label"));
-            ImGuiHelpers.SafeTextWrapped(t("PortraitHelperWindows.AdvancedEditOverlay.Note.1"));
-            ImGuiHelpers.SafeTextWrapped(t("PortraitHelperWindows.AdvancedEditOverlay.Note.2"));
+            ImGuiHelpers.SafeTextWrapped(t("PortraitHelperWindows.AdvancedEditOverlay.Note.Text"));
         }
     }
 }
