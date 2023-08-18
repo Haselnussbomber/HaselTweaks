@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased]
+
+### HaselTweaks
+
+- **Fixed:** Text from the Addon sheet wasn't read in the selected language.
+- **Fixed:** Text cache was not cleared when switching languages.
+
+### Portrait Helper
+
+- **Changed:** The Animation Timestamp input is a slider now.  
+  As I understand it, the end timestamp used now is based on the duration of the emote, which is different from the duration of the race-specific animation. Since I can't find the actual animation duration for the life of me, we have to use the general emote duration for now.
+- **Fixed:** The overlays didn't update their position when the window moved.
+
 ## [16.1.1] (2023-08-17)
 
 ### HaselTweaks
