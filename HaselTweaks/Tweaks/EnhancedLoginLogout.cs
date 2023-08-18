@@ -370,9 +370,22 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         var bNpcId = _currentEntry.ClassJobId switch
         {
-            26 => 13498u + petMirageSettings.CarbuncleType, // Arcanist
-            27 => 13498u + petMirageSettings.CarbuncleType, // Summoner
-            28 => 1008u + petMirageSettings.FairyType, // Scholar
+            // Arcanist or Summoner
+            26 or 27 when petMirageSettings.CarbuncleType is 0 => 13498u, // Carbuncle
+            26 or 27 when petMirageSettings.CarbuncleType is 1 => 13501u, // Emerald Carbuncle (Blue)
+            26 or 27 when petMirageSettings.CarbuncleType is 2 => 13500u, // Topaz Carbuncle (Yellow)
+            26 or 27 when petMirageSettings.CarbuncleType is 3 => 13499u, // Ruby Carbuncle (Red)
+            26 or 27 when petMirageSettings.CarbuncleType is 5 => 13502u, // Ifrit-Egi
+            26 or 27 when petMirageSettings.CarbuncleType is 6 => 13503u, // Titan-Egi
+            26 or 27 when petMirageSettings.CarbuncleType is 7 => 13504u, // Garuda-Egi
+
+            // Scholar
+            28 when petMirageSettings.FairyType is 0 => 1008u, // Eos
+            28 when petMirageSettings.FairyType is 1 => 13501u, // Emerald Carbuncle (Blue)
+            28 when petMirageSettings.FairyType is 2 => 13500u, // Topaz Carbuncle (Yellow)
+            28 when petMirageSettings.FairyType is 3 => 13499u, // Ruby Carbuncle (Red)
+            28 when petMirageSettings.FairyType is 4 => 13498u, // Carbuncle
+            28 when petMirageSettings.FairyType is 8 => 1009u, // Selene
             _ => 0u
         };
 
