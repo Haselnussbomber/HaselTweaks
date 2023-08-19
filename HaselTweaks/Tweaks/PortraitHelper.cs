@@ -55,6 +55,9 @@ public partial class PortraitHelper : Tweak
         [BoolConfig(DependsOn = nameof(NotifyGearChecksumMismatch))]
         public bool ReequipGearsetOnUpdate = false;
 
+        [BoolConfig(DependsOn = nameof(NotifyGearChecksumMismatch))]
+        public bool AutoSavePotraitOnGearUpdate = false;
+
         public static string GetPortraitThumbnailPath(string hash)
         {
             var portraitsPath = Path.Join(Service.PluginInterface.ConfigDirectory.FullName, "Portraits");
@@ -271,7 +274,7 @@ public partial class PortraitHelper : Tweak
             {
                 Service.Framework.RunOnTick(() =>
                 {
-                    CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex, true);
+                    CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex, true, true);
                 }, CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token);
             }
         }
@@ -758,7 +761,7 @@ public partial class PortraitHelper : Tweak
         return ret;
     }
 
-    private unsafe void CheckForGearChecksumMismatch(int gearsetId, bool disableReequip = false)
+    private unsafe void CheckForGearChecksumMismatch(int gearsetId, bool disableReequip = false, bool disablePortraitSave = false)
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
 
@@ -796,7 +799,7 @@ public partial class PortraitHelper : Tweak
             raptureGearsetModule->EquipGearset(gearset->ID, gearset->GlamourSetLink);
             RecheckGearChecksumOrOpenPortraitEditor(banner);
         }
-        else if(gearset->GlamourSetLink == 0)
+        else if(!disablePortraitSave && Config.AutoSavePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
         {
             // Attempt to save the portrait with current gear
             Log($"Attempting to save portrait with currently equiped gear (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
