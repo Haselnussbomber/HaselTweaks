@@ -96,4 +96,3 @@ public unsafe partial struct AgentBannerEditorState
     [MemberFunction("E8 ?? ?? ?? ?? 33 D2 48 8B CE E8 ?? ?? ?? ?? 48 8B 8E")]
     public readonly partial void Save();
 }
-
