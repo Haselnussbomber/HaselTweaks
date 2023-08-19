@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dalamud.Game.Text.SeStringHandling;
@@ -179,7 +178,7 @@ public partial class PortraitHelper : Tweak
                 Log("Attempting to save portrait in task");
                 var maxTries = 5;
                 var loopCount = 0;
-                while(!GetAgent<AgentBannerEditor>()->EditorState->CharaView->CharacterLoaded)
+                while (!GetAgent<AgentBannerEditor>()->EditorState->CharaView->CharacterLoaded)
                 {
                     Thread.Sleep(100);
                     if (loopCount > maxTries)
@@ -799,7 +798,7 @@ public partial class PortraitHelper : Tweak
             raptureGearsetModule->EquipGearset(gearset->ID, gearset->GlamourSetLink);
             RecheckGearChecksumOrOpenPortraitEditor(banner);
         }
-        else if(!disablePortraitSave && Config.AutoSavePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
+        else if (!disablePortraitSave && Config.AutoSavePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
         {
             // Attempt to save the portrait with current gear
             Log($"Attempting to save portrait with currently equiped gear (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
