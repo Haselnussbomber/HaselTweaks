@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Portrait Helper
+
+- **Fixed:** The reset button should now properly reset the portrait to the initial state of the *current* portrait.
+
 ## [16.1.3] (2023-08-19)
 
 ### Enhanced Login/Logout
