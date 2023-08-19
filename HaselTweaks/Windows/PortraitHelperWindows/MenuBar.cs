@@ -316,5 +316,7 @@ public unsafe class MenuBar : Window
     public override void OnClose()
     {
         _saveAsPresetDialog.Hide();
+        _initialPreset = null;
+        _portraitName = string.Empty;
     }
 }
