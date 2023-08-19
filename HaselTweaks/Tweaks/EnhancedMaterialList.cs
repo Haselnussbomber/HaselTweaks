@@ -35,13 +35,13 @@ public unsafe partial class EnhancedMaterialList : Tweak
         [BoolConfig]
         public bool EnableZoneNames = true;
 
-        [BoolConfig]
+        [BoolConfig(DependsOn = nameof(EnableZoneNames))]
         public bool DisableZoneNameForCrystals = true;
 
         [BoolConfig]
         public bool ClickToOpenMap = true;
 
-        [BoolConfig]
+        [BoolConfig(DependsOn = nameof(ClickToOpenMap))]
         public bool DisableClickToOpenMapForCrystals = true;
 
         [BoolConfig]
