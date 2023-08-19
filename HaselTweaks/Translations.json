@@ -876,19 +876,13 @@
     "en": "Prints a notification in chat which can be clicked to open the Portrait Editor.",
     "de": "Zeigt eine Benachrichtigung im Chat an, die angeklickt werden kann, um den Portrait-Editor zu öffnen."
   },
-  "PortraitHelper.Config.ReequipGearsetOnUpdate.Label": {
-    "en": "Try to fix by automatically re-equipping Gearset to reapply Glamour Plate",
-    "de": "Automatisches ausrüsten des Sets, um die Projektionsplatte anzuwenden"
-  },
-  "PortraitHelper.Config.ReequipGearsetOnUpdate.Description": {
-    "en": "Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state.",
-    "de": "Versucht automatisch unstimmigkeiten zu beheben, in dem das Ausrüstungsset neu aktiviert wird. Funktioniert nur an Orten, an denen Projektionsplatten angewandt werden können, wenn die Projektionsplatte die fehlerhaften Slots abdeckt und wenn die Abweichung der Prüfsumme nicht durch eine Abweichung der Sichtbarkeit von Waffen und Kopfbedeckung oder des Visierstatus verursacht wurde."
-  },
   "PortraitHelper.Config.AutoSavePotraitOnGearUpdate.Label": {
-    "en": "Auto save portrait when gearset is updated"
+    "en": "Automatically update portrait when gear set is updated",
+    "de": "Automatisch das Portrait nach speichern des Ausrüstungssets aktualisieren"
   },
   "PortraitHelper.Config.AutoSavePotraitOnGearUpdate.Description": {
-    "en": "If no glamour plate is linked to the gearset, try to automatically save the portrait when the gearset is updated"
+    "en": "Please note: When saving the gear set, an additional network request is sent if the current portrait differs from the equipment.",
+    "de": "Bitte beachte: Beim Speichern des Ausrüstungssets wird eine zusätzliche Netzwerkanfrage gesendet, wenn das aktuelle Portrait von der Ausrüstung abweicht."
   },
   "PortraitHelperWindows.CreatePresetDialog.Title": {
     "en": "Save as Preset",

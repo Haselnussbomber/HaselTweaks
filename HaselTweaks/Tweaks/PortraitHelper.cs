@@ -3,11 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
-using System.Threading.Tasks;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -52,9 +52,6 @@ public partial class PortraitHelper : Tweak
         public bool NotifyGearChecksumMismatch = true;
 
         [BoolConfig(DependsOn = nameof(NotifyGearChecksumMismatch))]
-        public bool ReequipGearsetOnUpdate = false;
-
-        [BoolConfig(DependsOn = nameof(NotifyGearChecksumMismatch))]
         public bool AutoSavePotraitOnGearUpdate = false;
 
         public static string GetPortraitThumbnailPath(string hash)
@@ -69,7 +66,6 @@ public partial class PortraitHelper : Tweak
     }
 
     public unsafe AgentBannerEditor* AgentBannerEditor;
-    public unsafe AgentBannerEditorState* AgentBannerEditorState;
     public unsafe AgentStatus* AgentStatus;
     public unsafe AddonBannerEditor* AddonBannerEditor;
 
@@ -158,63 +154,14 @@ public partial class PortraitHelper : Tweak
         _lastJob = 0;
     }
 
-    private unsafe int? GetCurrentGearsetId()
+    private unsafe void OpenPortraitEditChatHandler(uint commandId, SeString message)
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
         var gearsetId = raptureGearsetModule->CurrentGearsetIndex;
-        return raptureGearsetModule->IsValidGearset(gearsetId) == 0 ? null : gearsetId;
-    }
+        if (raptureGearsetModule->IsValidGearset(gearsetId) == 0)
+            return;
 
-    private unsafe void SavePortrait(BannerModuleEntry* banner)
-    {
-        var gearsetId = GetCurrentGearsetId();
-        if (gearsetId != null)
-        {
-            AgentBannerEditor->OpenForGearset((int)gearsetId);
-
-            // We need to wait until the character potrait is actually loaded before we can call save
-            Task.Run(() =>
-            {
-                Log("Attempting to save portrait in task");
-                var maxTries = 5;
-                var loopCount = 0;
-                while (!GetAgent<AgentBannerEditor>()->EditorState->CharaView->CharacterLoaded)
-                {
-                    Thread.Sleep(100);
-                    if (loopCount > maxTries)
-                    {
-                        Log(new Exception(), $"Could not open portrait window after {maxTries} attempts");
-                        break;
-                    }
-                }
-
-                GetAgent<AgentBannerEditor>()->EditorState->Save();
-                RecheckGearChecksumOrOpenPortraitEditor(banner);
-
-                // one final check to determine if we can mark the save button as grayed out
-                if (banner->GearChecksum == GetEquippedGearChecksum())
-                {
-                    GetAgent<AgentBannerEditor>()->EditorState->SetHasChanged(false);
-
-                    // Tell the user what we did
-                    var rapture = RaptureGearsetModule.Instance();
-                    var gearsetID = rapture->CurrentGearsetIndex;
-                    var gearset = rapture->GetGearset(gearsetID);
-                    var gearsetName = System.Text.Encoding.ASCII.GetString(gearset->Name, 0x2F);
-
-                    var text = $"Portrait has been saved and updated for \"{gearsetName}\"";
-                    UIModule.Instance()->ShowText(0, text);
-                    Service.ChatGui.Print($"Portrait has been saved and updated for \"{gearsetName}\"");
-                }
-            });
-        }
-    }
-
-    private unsafe void OpenPortraitEditChatHandler(uint commandId, SeString message)
-    {
-        var gearsetId = GetCurrentGearsetId();
-        if (gearsetId != null)
-            AgentBannerEditor->OpenForGearset((int)gearsetId);
+        AgentBannerEditor->OpenForGearset(gearsetId);
     }
 
     public override unsafe void OnAddonOpen(string addonName)
@@ -273,7 +220,7 @@ public partial class PortraitHelper : Tweak
             {
                 Service.Framework.RunOnTick(() =>
                 {
-                    CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex, true, true);
+                    CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex);
                 }, CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token);
             }
         }
@@ -760,14 +707,14 @@ public partial class PortraitHelper : Tweak
         return ret;
     }
 
-    private unsafe void CheckForGearChecksumMismatch(int gearsetId, bool disableReequip = false, bool disablePortraitSave = false)
+    private unsafe void CheckForGearChecksumMismatch(int gearsetId, bool disablePortraitSave = false)
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
 
         if (!Config.NotifyGearChecksumMismatch || raptureGearsetModule->IsValidGearset(gearsetId) == 0)
             return;
 
-        var gearset = raptureGearsetModule->GetGearset((int)gearsetId);
+        var gearset = raptureGearsetModule->GetGearset(gearsetId);
         if (gearset == null)
             return;
 
@@ -792,17 +739,9 @@ public partial class PortraitHelper : Tweak
 
         Log($"Gear checksum mismatch detected! (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
 
-        if (!disableReequip && Config.ReequipGearsetOnUpdate && gearset->GlamourSetLink > 0 && GameMain.IsInSanctuary())
+        if (!disablePortraitSave && Config.AutoSavePotraitOnGearUpdate)
         {
-            Log($"Re-equipping Gearset #{gearset->ID + 1} to reapply Glamour Plate");
-            raptureGearsetModule->EquipGearset(gearset->ID, gearset->GlamourSetLink);
-            RecheckGearChecksumOrOpenPortraitEditor(banner);
-        }
-        else if (!disablePortraitSave && Config.AutoSavePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
-        {
-            // Attempt to save the portrait with current gear
-            Log($"Attempting to save portrait with currently equiped gear (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
-            SavePortrait(banner);
+            SendPortraitUpdate(banner);
         }
         else
         {
@@ -888,5 +827,96 @@ public partial class PortraitHelper : Tweak
             gearVisibilityFlag |= BannerGearVisibilityFlag.VisorClosed;
 
         return GearsetChecksumData.GenerateChecksum(checksumData.Ptr->ItemIds, checksumData.Ptr->StainIds, gearVisibilityFlag);
+    }
+
+    private unsafe void SendPortraitUpdate(BannerModuleEntry* banner)
+    {
+        var raptureGearsetModule = RaptureGearsetModule.Instance();
+
+        var gearsetId = raptureGearsetModule->CurrentGearsetIndex;
+        if (raptureGearsetModule->IsValidGearset(gearsetId) == 0)
+        {
+            Warning("No Portrait Update: Gearset invalid");
+            return;
+        }
+
+        var gearset = raptureGearsetModule->GetGearset(gearsetId);
+        if (gearset == null)
+        {
+            Warning("No Portrait Update: Gearset is null");
+            return;
+        }
+
+        var bannerIndex = *(byte*)((nint)gearset + 0x36);
+        if (bannerIndex == 0) // no banner linked
+        {
+            Information("No Portrait Update: Gearset not linked to Banner");
+            return;
+        }
+
+        if (banner->BannerIndex != bannerIndex - 1)
+        {
+            Warning($"No Portrait Update: Banner index mismatch (Banner: {banner->BannerIndex}, Gearset Banner Link: {bannerIndex - 1})");
+            return;
+        }
+
+        var currentChecksum = GetEquippedGearChecksum();
+        if (banner->GearChecksum == currentChecksum)
+        {
+            Information("No Portrait Update: Checksum still matches");
+            return;
+        }
+
+        var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? 0);
+        if (localPlayer == null)
+        {
+            Warning("No Portrait Update: LocalPlayer is null");
+            return;
+        }
+
+        var helper = HaselUIModule.Instance()->GetVf35Struct()->BannerModuleHelper;
+
+        // TODO: check E8 ?? ?? ?? ?? 84 C0 74 4A 48 8D 4C 24
+
+        // update Banner
+        banner->LastUpdated = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        banner->GearChecksum = currentChecksum;
+        helper->CopyRaceGenderHeightTribe(banner, localPlayer);
+        BannerModule.Instance()->UserFileEvent.HasChanges = true;
+
+        if (!helper->IsBannerNotExpired(banner, 1))
+        {
+            Warning("No Portrait Update: Banner expired");
+            return;
+        }
+
+        if (!helper->IsBannerCharacterDataNotExpired(banner, 1))
+        {
+            Warning("No Portrait Update: Banner character data expired");
+            return;
+        }
+
+        using var bannerUpdateData = new DisposableCreatable<BannerUpdateData>();
+
+        if (!helper->InitializeBannerUpdateData(bannerUpdateData))
+        {
+            Warning("No Portrait Update: InitializeBannerUpdateData failed");
+            return;
+        }
+
+        if (!helper->CopyBannerEntryToBannerUpdateData(bannerUpdateData, banner))
+        {
+            Warning("No Portrait Update: CopyBannerEntryToBannerUpdateData failed");
+            return;
+        }
+
+        if (helper->SendBannerUpdateData(bannerUpdateData))
+        {
+            Log("Portrait Update sent");
+        }
+        else
+        {
+            Warning("Portrait Update failed to send");
+        }
     }
 }
