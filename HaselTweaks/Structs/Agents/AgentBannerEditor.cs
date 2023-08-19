@@ -93,4 +93,3 @@ public unsafe partial struct AgentBannerEditorState
     [MemberFunction("E8 ?? ?? ?? ?? 32 C0 48 8B 4D 37")]
     public readonly partial void SetHasChanged(bool hasDataChanged);
 }
-
