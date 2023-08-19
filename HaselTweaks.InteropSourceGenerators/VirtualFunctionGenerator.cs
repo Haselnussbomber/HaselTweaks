@@ -4,7 +4,6 @@ using HaselTweaks.InteropSourceGenerators.Models;
 using LanguageExt;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using static HaselTweaks.InteropSourceGenerators.DiagnosticDescriptors;
 
 namespace HaselTweaks.InteropSourceGenerators;
 

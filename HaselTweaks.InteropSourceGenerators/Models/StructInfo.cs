@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using HaselTweaks.InteropGenerator;
 using HaselTweaks.InteropSourceGenerators.Extensions;
 using LanguageExt;

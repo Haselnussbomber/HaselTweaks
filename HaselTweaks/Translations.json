@@ -884,6 +884,12 @@
     "en": "Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state.",
     "de": "Versucht automatisch unstimmigkeiten zu beheben, in dem das Ausrüstungsset neu aktiviert wird. Funktioniert nur an Orten, an denen Projektionsplatten angewandt werden können, wenn die Projektionsplatte die fehlerhaften Slots abdeckt und wenn die Abweichung der Prüfsumme nicht durch eine Abweichung der Sichtbarkeit von Waffen und Kopfbedeckung oder des Visierstatus verursacht wurde."
   },
+  "PortraitHelper.Config.AutoSavePotraitOnGearUpdate.Label": {
+    "en": "Auto save portrait when gearset is updated"
+  },
+  "PortraitHelper.Config.AutoSavePotraitOnGearUpdate.Description": {
+    "en": "If no glamour plate is linked to the gearset, try to automatically save the portrait when the gearset is updated"
+  },
   "PortraitHelperWindows.CreatePresetDialog.Title": {
     "en": "Save as Preset",
     "de": "Als Vorlage speichern"
