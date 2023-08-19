@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Memory;
@@ -65,6 +67,7 @@ public partial class PortraitHelper : Tweak
     }
 
     public unsafe AgentBannerEditor* AgentBannerEditor;
+    public unsafe AgentBannerEditorState* AgentBannerEditorState;
     public unsafe AgentStatus* AgentStatus;
     public unsafe AddonBannerEditor* AddonBannerEditor;
 
@@ -74,7 +77,7 @@ public partial class PortraitHelper : Tweak
     public PresetBrowserOverlay? PresetBrowserOverlay { get; set; }
     public AlignmentToolSettingsOverlay? AlignmentToolSettingsOverlay { get; set; }
 
-    private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
+    private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(100);
 
     private DateTime _lastClipboardCheck = default;
     private uint _lastClipboardSequenceNumber;
@@ -153,14 +156,63 @@ public partial class PortraitHelper : Tweak
         _lastJob = 0;
     }
 
-    private unsafe void OpenPortraitEditChatHandler(uint commandId, SeString message)
+    private unsafe int? GetCurrentGearsetId()
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
         var gearsetId = raptureGearsetModule->CurrentGearsetIndex;
-        if (raptureGearsetModule->IsValidGearset(gearsetId) == 0)
-            return;
+        return raptureGearsetModule->IsValidGearset(gearsetId) == 0 ? null : gearsetId;
+    }
 
-        AgentBannerEditor->OpenForGearset(gearsetId);
+    private unsafe void SavePortrait(BannerModuleEntry* banner)
+    {
+        var gearsetId = GetCurrentGearsetId();
+        if (gearsetId != null)
+        {
+            AgentBannerEditor->OpenForGearset((int)gearsetId);
+
+            // We need to wait until the character potrait is actually loaded before we can call save
+            Task.Run(() =>
+            {
+                Log("Attempting to save portrait in task");
+                var maxTries = 5;
+                var loopCount = 0;
+                while(!GetAgent<AgentBannerEditor>()->EditorState->CharaView->CharacterLoaded)
+                {
+                    Thread.Sleep(100);
+                    if (loopCount > maxTries)
+                    {
+                        Log(new Exception(), $"Could not open portrait window after {maxTries} attempts");
+                        break;
+                    }
+                }
+
+                GetAgent<AgentBannerEditor>()->EditorState->Save();
+                RecheckGearChecksumOrOpenPortraitEditor(banner);
+
+                // one final check to determine if we can mark the save button as grayed out
+                if (banner->GearChecksum == GetEquippedGearChecksum())
+                {
+                    GetAgent<AgentBannerEditor>()->EditorState->SetHasChanged(false);
+
+                    // Tell the user what we did
+                    var rapture = RaptureGearsetModule.Instance();
+                    var gearsetID = rapture->CurrentGearsetIndex;
+                    var gearset = rapture->GetGearset(gearsetID);
+                    var gearsetName = System.Text.Encoding.ASCII.GetString(gearset->Name, 0x2F);
+
+                    var text = $"Portrait has been saved and updated for \"{gearsetName}\"";
+                    UIModule.Instance()->ShowText(0, text);
+                    Service.ChatGui.Print($"Portrait has been saved and updated for \"{gearsetName}\"");
+                }
+            });
+        }
+    }
+
+    private unsafe void OpenPortraitEditChatHandler(uint commandId, SeString message)
+    {
+        var gearsetId = GetCurrentGearsetId();
+        if (gearsetId != null)
+            AgentBannerEditor->OpenForGearset((int)gearsetId);
     }
 
     public override unsafe void OnAddonOpen(string addonName)
@@ -742,28 +794,37 @@ public partial class PortraitHelper : Tweak
         {
             Log($"Re-equipping Gearset #{gearset->ID + 1} to reapply Glamour Plate");
             raptureGearsetModule->EquipGearset(gearset->ID, gearset->GlamourSetLink);
-
-            _jobChangedOrGearsetUpdatedCTS?.Cancel();
-            _jobChangedOrGearsetUpdatedCTS = new();
-
-            Service.Framework.RunOnTick(() =>
-            {
-                if (banner->GearChecksum != GetEquippedGearChecksum())
-                {
-                    Log($"Gear checksum still mismatching (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X}), opening Banner Editor");
-
-                    NotifyMismatchOrOpenPortraitEditor();
-                }
-                else
-                {
-                    Log($"Gear checksum matches now (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
-                }
-            }, delay: CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token); // TODO: find out when it's safe to check again instead of randomly picking a delay. ping may vary
+            RecheckGearChecksumOrOpenPortraitEditor(banner);
+        }
+        else if(gearset->GlamourSetLink == 0)
+        {
+            // Attempt to save the portrait with current gear
+            Log($"Attempting to save portrait with currently equiped gear (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
+            SavePortrait(banner);
         }
         else
         {
             NotifyMismatchOrOpenPortraitEditor();
         }
+    }
+
+    private unsafe void RecheckGearChecksumOrOpenPortraitEditor(BannerModuleEntry* banner)
+    {
+        _jobChangedOrGearsetUpdatedCTS?.Cancel();
+        _jobChangedOrGearsetUpdatedCTS = new();
+
+        Service.Framework.RunOnTick(() =>
+        {
+            if (banner->GearChecksum != GetEquippedGearChecksum())
+            {
+                Log($"Gear checksum still mismatching (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X}), opening Banner Editor");
+                NotifyMismatchOrOpenPortraitEditor();
+            }
+            else
+            {
+                Log($"Gear checksum matches now (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
+            }
+        }, delay: CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token); // TODO: find out when it's safe to check again instead of randomly picking a delay. ping may vary
     }
 
     private unsafe void NotifyMismatchOrOpenPortraitEditor()

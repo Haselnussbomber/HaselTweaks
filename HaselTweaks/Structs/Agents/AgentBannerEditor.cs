@@ -92,5 +92,8 @@ public unsafe partial struct AgentBannerEditorState
 
     [MemberFunction("E8 ?? ?? ?? ?? 32 C0 48 8B 4D 37")]
     public readonly partial void SetHasChanged(bool hasDataChanged);
+
+    [MemberFunction("E8 ?? ?? ?? ?? 33 D2 48 8B CE E8 ?? ?? ?? ?? 48 8B 8E")]
+    public readonly partial void Save();
 }
 
