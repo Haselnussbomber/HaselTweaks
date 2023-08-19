@@ -707,7 +707,7 @@ public partial class PortraitHelper : Tweak
         return ret;
     }
 
-    private unsafe void CheckForGearChecksumMismatch(int gearsetId, bool disablePortraitSave = false)
+    private unsafe void CheckForGearChecksumMismatch(int gearsetId)
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
 
@@ -739,7 +739,7 @@ public partial class PortraitHelper : Tweak
 
         Log($"Gear checksum mismatch detected! (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
 
-        if (!disablePortraitSave && Config.AutoSavePotraitOnGearUpdate)
+        if (Config.AutoSavePotraitOnGearUpdate)
         {
             SendPortraitUpdate(banner);
         }
