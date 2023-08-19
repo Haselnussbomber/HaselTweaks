@@ -582,46 +582,60 @@
     "en": "Enhanced Material List"
   },
   "EnhancedMaterialList.Tweak.Description": {
-    "en": "Enhances the Material List (and Recipe Tree)."
+    "en": "Enhances the Material List (and Recipe Tree).",
+    "de": "Verbessert Materialliste (und Rezeptbaum)."
   },
   "EnhancedMaterialList.Config.EnableZoneNames.Label": {
-    "en": "Enable Zone Names"
+    "en": "Enable Zone Names",
+    "de": "Zonennamen aktivieren"
   },
   "EnhancedMaterialList.Config.EnableZoneNames.Description": {
-    "en": "The zone with the lowest teleportation cost is displayed.\nA green zone name means it's the current zone.\nSince space is limited it has to shorten the item and zone name."
+    "en": "The zone with the lowest teleportation cost is displayed.\nA green zone name means it's the current zone.\nSince space is limited it has to shorten the item and zone name.",
+    "de": "Die Zone mit den niedrigsten Teleportationskosten wird angezeigt.\nDer Zonenname ist grün, wenn du dich in der Zone befindest.\nDa der Platz begrenzt ist, wird der Gegenstandsname und Zonenname gekürzt."
   },
   "EnhancedMaterialList.Config.DisableZoneNameForCrystals.Label": {
-    "en": "Disable for Crystals"
+    "en": "Disable for Crystals",
+    "de": "Für Kristalle deaktivieren"
   },
   "EnhancedMaterialList.Config.ClickToOpenMap.Label": {
-    "en": "Enable click to open Map"
+    "en": "Enable click to open Map",
+    "de": "Bei Klick Karte öffnen"
   },
   "EnhancedMaterialList.Config.DisableClickToOpenMapForCrystals.Label": {
-    "en": "Disable for Crystals"
+    "en": "Disable for Crystals",
+    "de": "Für Kristalle deaktivieren"
   },
   "EnhancedMaterialList.Config.AutoRefreshMaterialList.Label": {
-    "en": "Auto-refresh Material List"
+    "en": "Auto-refresh Material List",
+    "de": "Materialliste automatisch aktualisieren"
   },
   "EnhancedMaterialList.Config.AutoRefreshMaterialList.Description": {
-    "en": "Refreshes the material list after an item has been bought, crafted, fished or gathered."
+    "en": "Refreshes the material list after an item has been bought, crafted, fished or gathered.",
+    "de": "Die Materialliste wird automatisch aktualisiert, nachdem ein Gegenstand gekauft, hergestellt, geangelt oder gesammelt wurde."
   },
   "EnhancedMaterialList.Config.AutoRefreshRecipeTree.Label": {
-    "en": "Auto-refresh Recipe Tree"
+    "en": "Auto-refresh Recipe Tree",
+    "de": "Rezeptbaum automatisch aktualisieren"
   },
   "EnhancedMaterialList.Config.AutoRefreshRecipeTree.Description": {
-    "en": "Refreshes the recipe tree after an item has been bought, crafted, fished or gathered."
+    "en": "Refreshes the recipe tree after an item has been bought, crafted, fished or gathered.",
+    "de": "Der Rezeptbaum wird automatisch aktualisiert, nachdem ein Gegenstand gekauft, hergestellt, geangelt oder gesammelt wurde."
   },
   "EnhancedMaterialList.Config.RestoreMaterialList.Label": {
-    "en": "Restore Material List on Login"
+    "en": "Restore Material List on Login",
+    "de": "Materialliste beim Login wiederherstellen"
   },
   "EnhancedMaterialList.Config.RestoreMaterialList.Description": {
-    "en": "The material list will reopen with the same recipe and quantity each time you log in as long as the window is locked."
+    "en": "The material list will reopen with the same recipe and quantity each time you log in as long as the window is locked.",
+    "de": "Solange das Fenster gesperrt ist, wird die Materialliste bei jedem Login mit dem gleichen Rezept und der gleichen Menge neu geöffnet."
   },
   "EnhancedMaterialList.Config.AddSearchForItemByCraftingMethodContextMenuEntry.Label": {
-    "en": "Add \"Search for Item by Crafting Method\" context menu entry"
+    "en": "Add \"Search for Item by Crafting Method\" context menu entry",
+    "de": "Kontextmenüeintrag \"Syntheserezept anzeigen\" hinzufügen"
   },
   "EnhancedMaterialList.Config.AddSearchForItemByCraftingMethodContextMenuEntry.Description": {
-    "en": "For the result item. No more need to open the recipe tree first."
+    "en": "For the result item. No more need to open the recipe tree first.",
+    "de": "Für den Resultatgegenstand. Es ist nicht mehr notwendig, zuerst den Rezeptbaum zu öffnen."
   },
 
   "ExpertDeliveries.Tweak.Name": {
