@@ -4,10 +4,8 @@
 
 ### Portrait Helper
 
-- **Added:** A new option "Automatically update portrait when gear set is updated" has been added. Thanks to @Rycko1 for helping!  
-  I think we got it right this time. When you press the save button to update your gear set, or when you change jobs, it will check if the gear matches the portrait, and if not, it will actually update the portrait. If it didn't send an update, it will notify instead (if the option is enabled).  
-  Please note that this is an automatic network request and SE can detect it - not that they do, but it's always possible.
-- **Removed:** The option "Try to fix by automatically re-equipping Gearset to reapply Glamour Plate" has been removed.
+- **Added:** A new option "Automatically update portrait" has been added. Thanks to @Rycko1 for helping!  
+  This is only for gear sets that do not have a glamour plate linked. It will automatically send a portrait update to the server, when you save the gear set and it doesn't match the current portrait.
 - **Fixed:** The reset button should now properly reset the portrait to the initial state of the *current* portrait.
 
 ## [16.1.3] (2023-08-19)
