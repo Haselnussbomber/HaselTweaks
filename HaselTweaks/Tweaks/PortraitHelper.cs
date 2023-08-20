@@ -52,6 +52,9 @@ public partial class PortraitHelper : Tweak
         public bool NotifyGearChecksumMismatch = true;
 
         [BoolConfig]
+        public bool ReequipGearsetOnUpdate = false;
+
+        [BoolConfig]
         public bool AutoUpdatePotraitOnGearUpdate = false;
 
         public static string GetPortraitThumbnailPath(string hash)
@@ -218,7 +221,7 @@ public partial class PortraitHelper : Tweak
 
             Service.Framework.RunOnTick(() =>
             {
-                CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex);
+                CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex, true);
             }, CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token);
         }
 
@@ -704,7 +707,7 @@ public partial class PortraitHelper : Tweak
         return ret;
     }
 
-    private unsafe void CheckForGearChecksumMismatch(int gearsetId)
+    private unsafe void CheckForGearChecksumMismatch(int gearsetId, bool isJobChange = false)
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
 
@@ -736,19 +739,25 @@ public partial class PortraitHelper : Tweak
 
         Log($"Gear checksum mismatch detected! (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
 
-        var pluginUpdateSent = false;
-        if (Config.AutoUpdatePotraitOnGearUpdate)
+        if (!isJobChange && Config.ReequipGearsetOnUpdate && gearset->GlamourSetLink > 0 && GameMain.IsInSanctuary())
         {
-            pluginUpdateSent = SendPortraitUpdate(banner);
+            Log($"Re-equipping Gearset #{gearset->ID + 1} to reapply glamour plate");
+            raptureGearsetModule->EquipGearset(gearset->ID, gearset->GlamourSetLink);
+            RecheckGearChecksum(banner);
         }
-
-        if (!pluginUpdateSent && Config.NotifyGearChecksumMismatch)
+        else if (!isJobChange && Config.AutoUpdatePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
+        {
+            Log("Trying to send portrait update...");
+            if (SendPortraitUpdate(banner))
+                RecheckGearChecksum(banner);
+        }
+        else if (Config.NotifyGearChecksumMismatch)
         {
             NotifyMismatch();
         }
     }
 
-    private unsafe void RecheckGearChecksumOrOpenPortraitEditor(BannerModuleEntry* banner)
+    private unsafe void RecheckGearChecksum(BannerModuleEntry* banner)
     {
         _jobChangedOrGearsetUpdatedCTS?.Cancel();
         _jobChangedOrGearsetUpdatedCTS = new();
@@ -877,12 +886,6 @@ public partial class PortraitHelper : Tweak
 
         // TODO: check E8 ?? ?? ?? ?? 84 C0 74 4A 48 8D 4C 24
 
-        // update Banner
-        banner->LastUpdated = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        banner->GearChecksum = currentChecksum;
-        helper->CopyRaceGenderHeightTribe(banner, localPlayer);
-        BannerModule.Instance()->UserFileEvent.HasChanges = true;
-
         if (!helper->IsBannerNotExpired(banner, 1))
         {
             Warning("No Portrait Update: Banner expired");
@@ -902,6 +905,12 @@ public partial class PortraitHelper : Tweak
             Warning("No Portrait Update: InitializeBannerUpdateData failed");
             return false;
         }
+
+        // update Banner
+        banner->LastUpdated = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        banner->GearChecksum = currentChecksum;
+        helper->CopyRaceGenderHeightTribe(banner, localPlayer);
+        BannerModule.Instance()->UserFileEvent.HasChanges = true;
 
         if (!helper->CopyBannerEntryToBannerUpdateData(bannerUpdateData, banner))
         {

@@ -876,13 +876,21 @@
     "en": "Prints a notification in chat which can be clicked to open the Portrait Editor.",
     "de": "Zeigt eine Benachrichtigung im Chat an, die angeklickt werden kann, um den Portrait-Editor zu öffnen."
   },
+  "PortraitHelper.Config.ReequipGearsetOnUpdate.Label": {
+    "en": "Automatically re-equip gear set to re-apply glamour plate",
+    "de": "Automatisch das Set neu ausrüsten, um die Projektionsplatte anzuwenden"
+  },
+  "PortraitHelper.Config.ReequipGearsetOnUpdate.Description": {
+    "en": "Works only if the following criteria are met:\n- The gear set has a glamour plate linked.\n- You are in a place where glamour plates are allowed to be applied.\n- The glamour plate covers the slot(s) that caused the mismatch.\n- The mismatch was not caused by mainhand/headgear visibility or visor state.",
+    "de": "Funktioniert nur, wenn folgende Kriterien erfüllt sind:\n- Das Ausrüstungsset ist mit einer Projektionsplatte verknüpft.\n- Du befindest dich in einer Zone, in der es erlaubt ist Projektionsplatten anzuwenden.\n- Die Projektionsplatte deckt die Slots ab, die die fehlerhafte Prüfsumme verursachten.\n- Die fehlerhafte Prüfsumme wurde nicht durch die Sichtbarkeit der Haupthand/Kopfbedeckung oder den Zustand des Visiers verursacht."
+  },
   "PortraitHelper.Config.AutoUpdatePotraitOnGearUpdate.Label": {
-    "en": "Automatically update portrait when gear set is updated",
-    "de": "Automatisch das Portrait nach speichern des Ausrüstungssets aktualisieren"
+    "en": "Automatically update portrait",
+    "de": "Automatisch das Portrait aktualisieren"
   },
   "PortraitHelper.Config.AutoUpdatePotraitOnGearUpdate.Description": {
-    "en": "Please note: When saving the gear set, an additional network request is sent if the current portrait differs from the equipment.",
-    "de": "Bitte beachte: Beim Speichern des Ausrüstungssets wird eine zusätzliche Netzwerkanfrage gesendet, wenn das aktuelle Portrait von der Ausrüstung abweicht."
+    "en": "Only works for gear sets that are not linked with a glamour plate.",
+    "de": "Funktioniert nur mit Ausrüstungssets, die nicht mit einer Projektionsplatte verknüpft sind."
   },
   "PortraitHelperWindows.CreatePresetDialog.Title": {
     "en": "Save as Preset",
