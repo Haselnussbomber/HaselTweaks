@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [16.2.0] (2023-08-20)
 
 ### Auto Sorter
 
@@ -9,7 +9,7 @@
 ### Portrait Helper
 
 - **Added:** A new option "Automatically update portrait" has been added. Thanks to @Rycko1 for helping!  
-  This is only for gear sets that do not have a glamour plate linked. It will automatically send a portrait update to the server, when you save the gear set and it doesn't match the current portrait.
+  This is only for gear sets that do not have a glamour plate linked! It will automatically send a portrait update to the server, when you update the gear set.
 - **Fixed:** The reset button should now properly reset the portrait to the initial state of the *current* portrait.
 
 ## [16.1.3] (2023-08-19)
