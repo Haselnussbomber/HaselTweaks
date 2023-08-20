@@ -197,8 +197,16 @@ A helper for editing portraits, featuring:
 
 Configuration options:
 
-- "Notify if appearance and/or gear doesn't match Portait" (default on): Prints a notification in chat which can be clicked to open the Portrait Editor.
-- "Try to fix by automatically re-equipping Gearset to reapply Glamour Plate" (default off, depends on the notification option): Only works in places where Glamour Plates are allowed to be applied, if the Glamour Plate covers the correct slots and if the gear checksum mismatch was not caused by a mismatch of mainhand/headgear visibility or visor state.
+- "Notify if appearance and/or gear doesn't match Portait" (default on)  
+  Prints a notification in chat which can be clicked to open the Portrait Editor.
+- "Automatically re-equip gear set to re-apply glamour plate" (default off)  
+  Works only if the following criteria are met:
+  - The gear set has a glamour plate linked.
+  - You are in a place where glamour plates are allowed to be applied.
+  - The glamour plate covers the slot(s) that caused the mismatch.
+  - The mismatch was not caused by mainhand/headgear visibility or visor state.
+- "Automatically update portrait" (default off)  
+  Only works for gear sets that are not linked with a glamour plate.
 
 ### Reveal Duty Requirements
 
