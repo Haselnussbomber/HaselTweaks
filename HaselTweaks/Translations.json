@@ -876,11 +876,11 @@
     "en": "Prints a notification in chat which can be clicked to open the Portrait Editor.",
     "de": "Zeigt eine Benachrichtigung im Chat an, die angeklickt werden kann, um den Portrait-Editor zu öffnen."
   },
-  "PortraitHelper.Config.AutoSavePotraitOnGearUpdate.Label": {
+  "PortraitHelper.Config.AutoUpdatePotraitOnGearUpdate.Label": {
     "en": "Automatically update portrait when gear set is updated",
     "de": "Automatisch das Portrait nach speichern des Ausrüstungssets aktualisieren"
   },
-  "PortraitHelper.Config.AutoSavePotraitOnGearUpdate.Description": {
+  "PortraitHelper.Config.AutoUpdatePotraitOnGearUpdate.Description": {
     "en": "Please note: When saving the gear set, an additional network request is sent if the current portrait differs from the equipment.",
     "de": "Bitte beachte: Beim Speichern des Ausrüstungssets wird eine zusätzliche Netzwerkanfrage gesendet, wenn das aktuelle Portrait von der Ausrüstung abweicht."
   },

@@ -51,8 +51,8 @@ public partial class PortraitHelper : Tweak
         [BoolConfig]
         public bool NotifyGearChecksumMismatch = true;
 
-        [BoolConfig(DependsOn = nameof(NotifyGearChecksumMismatch))]
-        public bool AutoSavePotraitOnGearUpdate = false;
+        [BoolConfig]
+        public bool AutoUpdatePotraitOnGearUpdate = false;
 
         public static string GetPortraitThumbnailPath(string hash)
         {
@@ -75,7 +75,7 @@ public partial class PortraitHelper : Tweak
     public PresetBrowserOverlay? PresetBrowserOverlay { get; set; }
     public AlignmentToolSettingsOverlay? AlignmentToolSettingsOverlay { get; set; }
 
-    private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(100);
+    private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
     private DateTime _lastClipboardCheck = default;
     private uint _lastClipboardSequenceNumber;
@@ -216,13 +216,10 @@ public partial class PortraitHelper : Tweak
 
             _lastJob = currentJob;
 
-            if (Config.NotifyGearChecksumMismatch)
+            Service.Framework.RunOnTick(() =>
             {
-                Service.Framework.RunOnTick(() =>
-                {
-                    CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex);
-                }, CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token);
-            }
+                CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex);
+            }, CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token);
         }
 
         if (MenuBar != null && !MenuBar.IsOpen)
@@ -711,7 +708,7 @@ public partial class PortraitHelper : Tweak
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
 
-        if (!Config.NotifyGearChecksumMismatch || raptureGearsetModule->IsValidGearset(gearsetId) == 0)
+        if (raptureGearsetModule->IsValidGearset(gearsetId) == 0)
             return;
 
         var gearset = raptureGearsetModule->GetGearset(gearsetId);
@@ -739,13 +736,15 @@ public partial class PortraitHelper : Tweak
 
         Log($"Gear checksum mismatch detected! (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
 
-        if (Config.AutoSavePotraitOnGearUpdate)
+        var pluginUpdateSent = false;
+        if (Config.AutoUpdatePotraitOnGearUpdate)
         {
-            SendPortraitUpdate(banner);
+            pluginUpdateSent = SendPortraitUpdate(banner);
         }
-        else
+
+        if (!pluginUpdateSent && Config.NotifyGearChecksumMismatch)
         {
-            NotifyMismatchOrOpenPortraitEditor();
+            NotifyMismatch();
         }
     }
 
@@ -759,7 +758,7 @@ public partial class PortraitHelper : Tweak
             if (banner->GearChecksum != GetEquippedGearChecksum())
             {
                 Log($"Gear checksum still mismatching (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X}), opening Banner Editor");
-                NotifyMismatchOrOpenPortraitEditor();
+                NotifyMismatch();
             }
             else
             {
@@ -768,7 +767,7 @@ public partial class PortraitHelper : Tweak
         }, delay: CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token); // TODO: find out when it's safe to check again instead of randomly picking a delay. ping may vary
     }
 
-    private unsafe void NotifyMismatchOrOpenPortraitEditor()
+    private unsafe void NotifyMismatch()
     {
         var text = t("PortraitHelper.GearChecksumMismatch"); // based on LogMessage#5876
 
@@ -829,7 +828,7 @@ public partial class PortraitHelper : Tweak
         return GearsetChecksumData.GenerateChecksum(checksumData.Ptr->ItemIds, checksumData.Ptr->StainIds, gearVisibilityFlag);
     }
 
-    private unsafe void SendPortraitUpdate(BannerModuleEntry* banner)
+    private unsafe bool SendPortraitUpdate(BannerModuleEntry* banner)
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
 
@@ -837,41 +836,41 @@ public partial class PortraitHelper : Tweak
         if (raptureGearsetModule->IsValidGearset(gearsetId) == 0)
         {
             Warning("No Portrait Update: Gearset invalid");
-            return;
+            return false;
         }
 
         var gearset = raptureGearsetModule->GetGearset(gearsetId);
         if (gearset == null)
         {
             Warning("No Portrait Update: Gearset is null");
-            return;
+            return false;
         }
 
         var bannerIndex = *(byte*)((nint)gearset + 0x36);
         if (bannerIndex == 0) // no banner linked
         {
             Information("No Portrait Update: Gearset not linked to Banner");
-            return;
+            return false;
         }
 
         if (banner->BannerIndex != bannerIndex - 1)
         {
             Warning($"No Portrait Update: Banner index mismatch (Banner: {banner->BannerIndex}, Gearset Banner Link: {bannerIndex - 1})");
-            return;
+            return false;
         }
 
         var currentChecksum = GetEquippedGearChecksum();
         if (banner->GearChecksum == currentChecksum)
         {
             Information("No Portrait Update: Checksum still matches");
-            return;
+            return false;
         }
 
         var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? 0);
         if (localPlayer == null)
         {
             Warning("No Portrait Update: LocalPlayer is null");
-            return;
+            return false;
         }
 
         var helper = HaselUIModule.Instance()->GetVf35Struct()->BannerModuleHelper;
@@ -887,13 +886,13 @@ public partial class PortraitHelper : Tweak
         if (!helper->IsBannerNotExpired(banner, 1))
         {
             Warning("No Portrait Update: Banner expired");
-            return;
+            return false;
         }
 
         if (!helper->IsBannerCharacterDataNotExpired(banner, 1))
         {
             Warning("No Portrait Update: Banner character data expired");
-            return;
+            return false;
         }
 
         using var bannerUpdateData = new DisposableCreatable<BannerUpdateData>();
@@ -901,16 +900,18 @@ public partial class PortraitHelper : Tweak
         if (!helper->InitializeBannerUpdateData(bannerUpdateData))
         {
             Warning("No Portrait Update: InitializeBannerUpdateData failed");
-            return;
+            return false;
         }
 
         if (!helper->CopyBannerEntryToBannerUpdateData(bannerUpdateData, banner))
         {
             Warning("No Portrait Update: CopyBannerEntryToBannerUpdateData failed");
-            return;
+            return false;
         }
 
-        if (helper->SendBannerUpdateData(bannerUpdateData))
+        var result = helper->SendBannerUpdateData(bannerUpdateData);
+
+        if (result)
         {
             Log("Portrait Update sent");
         }
@@ -918,5 +919,7 @@ public partial class PortraitHelper : Tweak
         {
             Warning("Portrait Update failed to send");
         }
+
+        return result;
     }
 }
