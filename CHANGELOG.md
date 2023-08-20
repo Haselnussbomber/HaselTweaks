@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Auto Sorter
+
+- **Fixed:** An issue where the `/isort` commands would use parameters based on the plugin language instead of the client language.
+
 ### Portrait Helper
 
 - **Added:** A new option "Automatically update portrait" has been added. Thanks to @Rycko1 for helping!  
@@ -1077,6 +1081,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[16.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.1.3...v16.2.0
 [16.1.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.1.2...v16.1.3
 [16.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.1.1...v16.1.2
 [16.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.1.0...v16.1.1

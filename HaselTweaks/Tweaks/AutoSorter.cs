@@ -96,7 +96,7 @@ public unsafe class AutoSorter : Tweak
 
     public static string GetLocalizedParam(uint rowId, string? fallback = null)
     {
-        var param = GetSheetText<TextCommandParam>(rowId, "Param");
+        var param = Service.DataManager.GetExcelSheet<TextCommandParam>(Service.ClientState.ClientLanguage)?.GetRow(rowId)?.Param.RawString;
         return string.IsNullOrEmpty(param) ? fallback ?? "" : param.ToLower();
     }
 
@@ -106,7 +106,7 @@ public unsafe class AutoSorter : Tweak
 
         if (!string.IsNullOrEmpty(key) && dict.TryGetValue(key, out var rowId))
         {
-            var param = GetSheetText<TextCommandParam>(rowId, "Param");
+            var param = Service.DataManager.GetExcelSheet<TextCommandParam>(Service.ClientState.ClientLanguage)?.GetRow(rowId)?.Param.RawString;
 
             if (!string.IsNullOrEmpty(param))
             {
