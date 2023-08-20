@@ -182,19 +182,16 @@ public unsafe class GearSetGridWindow : Window
                 }
                 .Draw();
 
-                var itemSpacing = ImGui.GetStyle().ItemSpacing;
-                var itemInnerSpacing = ImGui.GetStyle().ItemInnerSpacing;
-                var iconSize = 20 * ImGuiHelpers.GlobalScale;
-                var itemStartPos = startPos + new Vector2(region.X - iconSize - itemSpacing.X, rowHeight / 2f - iconSize / 2f); // start from the right
+                var iconSize = 28 * ImGuiHelpers.GlobalScale;
+                var itemStartPos = startPos + new Vector2(region.X / 2f - iconSize / 2f, ImGui.GetStyle().ItemInnerSpacing.Y); // start from the right
 
                 // class icon
                 ImGui.SetCursorPos(itemStartPos);
-                Service.TextureManager.GetIcon(62000 + gearset->ClassJob).Draw(iconSize);
+                Service.TextureManager.GetIcon(62100 + gearset->ClassJob).Draw(iconSize);
 
                 // gearset number
                 var text = $"{gearsetIndex + 1}";
-                var textSize = ImGui.CalcTextSize(text);
-                ImGui.SetCursorPos(itemStartPos - new Vector2(textSize.X + itemInnerSpacing.X, 0));
+                ImGui.SetCursorPos(itemStartPos + new Vector2(iconSize / 2f - ImGui.CalcTextSize(text).X / 2f, iconSize));
                 ImGui.TextUnformatted(text);
             }
 
