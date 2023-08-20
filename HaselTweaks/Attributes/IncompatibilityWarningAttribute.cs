@@ -3,9 +3,9 @@ using System.Linq;
 namespace HaselTweaks;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class IncompatibilityWarning : Attribute
+public class IncompatibilityWarningAttribute : Attribute
 {
-    public IncompatibilityWarning(
+    public IncompatibilityWarningAttribute(
         string InternalName,
         params string[] ConfigNames)
     {

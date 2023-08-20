@@ -14,7 +14,7 @@ public abstract unsafe class Tweak
     private Type? _type;
     private string? _internalName;
     private TweakFlags? _flags;
-    private IncompatibilityWarning[]? _incompatibilityWarnings;
+    private IncompatibilityWarningAttribute[]? _incompatibilityWarnings;
 
     public Type CachedType
         => _type ??= GetType();
@@ -31,8 +31,8 @@ public abstract unsafe class Tweak
     public TweakFlags Flags
         => _flags ??= CachedType.GetCustomAttribute<TweakAttribute>()?.Flags ?? TweakFlags.None;
 
-    public IncompatibilityWarning[] IncompatibilityWarnings
-        => _incompatibilityWarnings ??= CachedType.GetCustomAttributes<IncompatibilityWarning>().ToArray();
+    public IncompatibilityWarningAttribute[] IncompatibilityWarnings
+        => _incompatibilityWarnings ??= CachedType.GetCustomAttributes<IncompatibilityWarningAttribute>().ToArray();
 
     public virtual void DrawCustomConfig() { }
     public virtual void OnConfigWindowClose() { }
