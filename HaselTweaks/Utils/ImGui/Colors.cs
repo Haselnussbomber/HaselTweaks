@@ -6,7 +6,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselTweaks.Extensions;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
-using UIColor = HaselTweaks.Sheets.UIColor;
 
 namespace HaselTweaks.Utils;
 
@@ -29,17 +28,7 @@ public static class Colors
         => HaselAtkModule.Instance()->ActiveColorThemeType == 1;
 
     public static ImColor GetUIColor(uint id)
-    {
-        var colorThemeType = 0;
-        unsafe
-        {
-            colorThemeType = HaselAtkModule.Instance()->ActiveColorThemeType;
-        }
-
-        var row = GetRow<UIColor>(id)!;
-        var color = row.Colors[colorThemeType];
-        return (ImColor)color.Reverse();
-    }
+        => (ImColor)GetRow<UIColor>(id)!.UIForeground.Reverse();
 
     private static readonly Lazy<Dictionary<byte, ImColor>> ItemRarityColors = new(()
         => GetSheet<Item>()
