@@ -236,12 +236,12 @@ public partial class PortraitHelper : Tweak
         if (DateTime.Now - _lastClipboardCheck <= TimeSpan.FromMilliseconds(100))
             return;
 
-        if (!PInvoke.IsClipboardFormatAvailable((uint)CLIPBOARD_FORMAT.CF_TEXT))
-            return;
-
         var clipboardSequenceNumber = PInvoke.GetClipboardSequenceNumber();
 
         if (_lastClipboardSequenceNumber == clipboardSequenceNumber)
+            return;
+
+        if (!PInvoke.IsClipboardFormatAvailable((uint)CLIPBOARD_FORMAT.CF_TEXT))
             return;
 
         if (!PInvoke.OpenClipboard(HWND.Null))
