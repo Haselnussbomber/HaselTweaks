@@ -705,7 +705,7 @@ public unsafe class AutoSorter : Tweak
 
             var cmd = $"/itemsort clear {category}";
             Log($"Executing {cmd}");
-            Chat.SendMessage(cmd);
+            HaselShellCommandModule.ExecuteCommand(cmd);
 
             foreach (var rule in group)
             {
@@ -725,12 +725,12 @@ public unsafe class AutoSorter : Tweak
 
                 cmd = $"/itemsort condition {category} {condition} {order}";
                 Log($"Executing {cmd}");
-                Chat.SendMessage(cmd);
+                HaselShellCommandModule.ExecuteCommand(cmd);
             }
 
             cmd = $"/itemsort execute {category}";
             Log($"Executing {cmd}");
-            Chat.SendMessage(cmd);
+            HaselShellCommandModule.ExecuteCommand(cmd);
         }
         catch (Exception ex)
         {
