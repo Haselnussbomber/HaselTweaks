@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Commands
+
+- **Fixed:** The rarity color of item links was incorrect.
+
+### Gear Set Grid
+
+- **Changed:** The id column now shows the colored, framed job icon with the id underneath.
+
 ## [16.2.0] (2023-08-20)
 
 ### Auto Sorter
