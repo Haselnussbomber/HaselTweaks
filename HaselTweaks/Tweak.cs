@@ -23,7 +23,7 @@ public abstract unsafe class Tweak
         => _internalName ??= CachedType.Name;
 
     public string Name
-        => Service.TranslationManager.TryGetTranslation($"{InternalName}.Tweak.Name", out var text) ? text : string.Empty;
+        => Service.TranslationManager.TryGetTranslation($"{InternalName}.Tweak.Name", out var text) ? text : InternalName;
 
     public string Description
         => Service.TranslationManager.TryGetTranslation($"{InternalName}.Tweak.Description", out var text) ? text : string.Empty;
