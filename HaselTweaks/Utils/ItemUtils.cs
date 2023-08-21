@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using Dalamud;
+using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Utility;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Utils;
@@ -50,17 +53,77 @@ public static class ItemUtils
         };
     }
 
-    public static SeString GetItemLink(uint id)
+    // TODO(v9): replace with SeString.CreateItemLink
+    public static SeString GetItemLink(uint itemId, ItemPayload.ItemKind kind = ItemPayload.ItemKind.Normal)
     {
-        var item = GetRow<Item>(id);
-        if (item == null)
-            return new SeString(new TextPayload($"Item#{id}"));
+        string? displayName;
+        var rarity = 1; // default: white
+        switch (kind)
+        {
+            case ItemPayload.ItemKind.Normal:
+            case ItemPayload.ItemKind.Collectible:
+            case ItemPayload.ItemKind.Hq:
+                var item = GetRow<Item>(itemId)!;
+                displayName = item.Name.ToDalamudString().TextValue;
+                rarity = item.Rarity;
+                break;
+            case ItemPayload.ItemKind.EventItem:
+                displayName = GetRow<EventItem>(itemId)?.Name.ToDalamudString().TextValue;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
+        }
 
+        if (displayName == null)
+        {
+            throw new Exception("Invalid item ID specified, could not determine item name.");
+        }
 
-        var link = SeString.CreateItemLink(item, false);
-        // TODO: remove in Dalamud v9
-        link.Payloads.Add(UIGlowPayload.UIGlowOff);
-        link.Payloads.Add(UIForegroundPayload.UIForegroundOff);
-        return link;
+        if (kind == ItemPayload.ItemKind.Hq)
+        {
+            displayName += $" {(char)SeIconChar.HighQuality}";
+        }
+        else if (kind == ItemPayload.ItemKind.Collectible)
+        {
+            displayName += $" {(char)SeIconChar.Collectible}";
+        }
+
+        var textColor = (ushort)(549 + (rarity - 1) * 2);
+        var textGlowColor = (ushort)(textColor + 1);
+
+        var sb = new SeStringBuilder()
+            .AddUiForeground(textColor)
+            .AddUiGlow(textGlowColor)
+            .Add(new ItemPayload(itemId, kind));
+
+        sb.BuiltString.Payloads.AddRange(TextArrowPayloads);
+
+        return sb.AddText(displayName)
+            .AddUiGlowOff()
+            .AddUiForegroundOff()
+            .Add(RawPayload.LinkTerminator)
+            .Build();
+    }
+
+    // TODO(v9): remove
+    private static IEnumerable<Payload> TextArrowPayloads
+    {
+        get
+        {
+            var markerSpace = Service.ClientState.ClientLanguage switch
+            {
+                ClientLanguage.German => " ",
+                ClientLanguage.French => " ",
+                _ => string.Empty,
+            };
+            return new List<Payload>
+            {
+                new UIForegroundPayload(500),
+                new UIGlowPayload(501),
+                new TextPayload($"{(char)SeIconChar.LinkMarker}{markerSpace}"),
+                UIGlowPayload.UIGlowOff,
+                UIForegroundPayload.UIForegroundOff,
+            };
+        }
     }
 }
