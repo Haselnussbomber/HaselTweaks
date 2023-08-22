@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Dalamud.Interface;
@@ -7,6 +8,7 @@ using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselTweaks.Records;
 using HaselTweaks.Structs;
 using HaselTweaks.Structs.Agents;
 using ImGuiNET;
@@ -31,9 +33,12 @@ public partial class ImGuiUtils
             if (!popup.Success)
                 return;
 
-            foreach (var entry in this)
+            var visibleEntries = this.Where(entry => entry.Visible);
+            var count = visibleEntries.Count();
+            var i = 0;
+            foreach (var entry in visibleEntries)
             {
-                entry.Draw();
+                entry.Draw(new IterationArgs(i++, count));
             }
         }
     }
@@ -46,7 +51,23 @@ public partial class ImGuiUtils
         public bool LoseFocusOnClick { get; set; }
         public Action? ClickCallback { get; set; }
         public Action? HoverCallback { get; set; }
-        public void Draw();
+        public void Draw(IterationArgs args);
+    }
+
+    public record ContextMenuSeparator : IContextMenuEntry
+    {
+        public bool Visible { get; set; } = true;
+        public bool Enabled { get; set; } = true;
+        public bool LoseFocusOnClick { get; set; } = false;
+        public string Label { get; set; } = string.Empty;
+        public Action? ClickCallback { get; set; } = null;
+        public Action? HoverCallback { get; set; } = null;
+
+        public void Draw(IterationArgs args)
+        {
+            if (!args.IsFirst && !args.IsLast)
+                ImGui.Separator();
+        }
     }
 
     public record ContextMenuEntry : IContextMenuEntry
@@ -58,11 +79,8 @@ public partial class ImGuiUtils
         public Action? ClickCallback { get; set; } = null;
         public Action? HoverCallback { get; set; } = null;
 
-        public void Draw()
+        public void Draw(IterationArgs args)
         {
-            if (!Visible)
-                return;
-
             if (ImGui.MenuItem(Label, Enabled))
             {
                 ClickCallback?.Invoke();
@@ -107,7 +125,7 @@ public partial class ImGuiUtils
         public static ContextMenuEntry CreateGarlandTools(uint ItemId)
             => new()
             {
-                Label = t("ItemSearch.OpenOnGarlandTools"),
+                Label = t("ItemContextMenu.OpenOnGarlandTools"),
                 ClickCallback = () =>
                 {
                     Task.Run(() => Util.OpenLink($"https://www.garlandtools.org/db/#item/{ItemId}"));
@@ -142,7 +160,7 @@ public partial class ImGuiUtils
             => new()
             {
                 Visible = ItemSearchUtils.CanSearchForItem(ItemId),
-                Label = t("ItemSearch.SearchTheMarkets"),
+                Label = t("ItemContextMenu.SearchTheMarkets"),
                 LoseFocusOnClick = true,
                 ClickCallback = () =>
                 {
