@@ -24,7 +24,6 @@ namespace HaselTweaks.Windows;
 public partial class PluginWindow : Window, IDisposable
 {
     private const uint SidebarWidth = 250;
-    private const uint ConfigWidth = SidebarWidth * 2;
     private const string LogoManifestResource = "HaselTweaks.Assets.Logo.svg";
 
     private string _selectedTweak = string.Empty;
@@ -39,7 +38,7 @@ public partial class PluginWindow : Window, IDisposable
     public PluginWindow() : base("HaselTweaks")
     {
         var style = ImGui.GetStyle();
-        var width = SidebarWidth + ConfigWidth + style.ItemSpacing.X + style.FramePadding.X * 2;
+        var width = SidebarWidth * 3 + style.ItemSpacing.X + style.FramePadding.X * 2;
 
         Namespace = "HaselTweaksConfig";
 
@@ -89,7 +88,7 @@ public partial class PluginWindow : Window, IDisposable
         if (_isLogoLoading)
             return;
 
-        _renderedLogoSize.X = (int)(_logoSize.X * (_logoSize.X / ConfigWidth * 0.6f) * ImGui.GetIO().FontGlobalScale);
+        _renderedLogoSize.X = (int)(_logoSize.X * (_logoSize.X / (SidebarWidth * 2) * 0.6f) * ImGui.GetIO().FontGlobalScale);
         _renderedLogoSize.Y = (int)(_logoSize.Y * (_renderedLogoSize.X / (float)_logoSize.X));
 
         if (_renderedLogoSize.X <= 0 || _renderedLogoSize.Y <= 0)
@@ -301,8 +300,7 @@ public partial class PluginWindow : Window, IDisposable
 
     private void DrawConfig()
     {
-        var scale = ImGui.GetIO().FontGlobalScale;
-        using var child = ImRaii.Child("##Config", new Vector2(ConfigWidth * scale, -1), true);
+        using var child = ImRaii.Child("##Config", new Vector2(-1), true);
         if (!child.Success)
             return;
 
