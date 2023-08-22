@@ -1320,6 +1320,10 @@
     "de": "Fügt dem Gegenstand-Kontextmenü einen Eintrag hinzu, mit dem man schnell nach dem Gegenstand auf dem Marktbrett suchen kann. Nur sichtbar, wenn die Gegenstandssuche (Marktbrett) geöffnet ist!\n\nUnterstützt Kontextmenüs in den folgenden Fenstern:\n- Chat\n- Handwerker-Notizbuch\n- Ixal-Lieferaufträge (über /timers)\n- Liefereinsätze (über /timers)\n- Inventar\n- Materialliste\n- Rezeptbaum\n"
   },
 
+  "ItemSearch.OpenOnGarlandTools": {
+    "en": "Open on Garland Tools",
+    "de": "Auf Garland Tools öffnen"
+  },
   "ItemSearch.SearchTheMarkets": {
     "en": "Search the markets",
     "de": "Auf den Märkten suchen",

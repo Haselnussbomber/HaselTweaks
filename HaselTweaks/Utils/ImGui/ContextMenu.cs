@@ -40,27 +40,27 @@ public partial class ImGuiUtils
 
     public interface IContextMenuEntry
     {
+        public bool Visible { get; set; }
         public bool Enabled { get; set; }
-        public bool Hidden { get; set; }
         public string Label { get; set; }
+        public bool LoseFocusOnClick { get; set; }
         public Action? ClickCallback { get; set; }
         public Action? HoverCallback { get; set; }
-        public bool LoseFocusOnClick { get; set; }
         public void Draw();
     }
 
     public record ContextMenuEntry : IContextMenuEntry
     {
+        public bool Visible { get; set; } = true;
         public bool Enabled { get; set; } = true;
-        public bool Hidden { get; set; } = false;
+        public bool LoseFocusOnClick { get; set; } = false;
         public string Label { get; set; } = string.Empty;
         public Action? ClickCallback { get; set; } = null;
         public Action? HoverCallback { get; set; } = null;
-        public bool LoseFocusOnClick { get; set; } = false;
 
         public void Draw()
         {
-            if (Hidden)
+            if (!Visible)
                 return;
 
             if (ImGui.MenuItem(Label, Enabled))
@@ -81,7 +81,7 @@ public partial class ImGuiUtils
         public static unsafe ContextMenuEntry CreateTryOn(uint ItemId, uint GlamourItemId = 0, byte StainId = 0)
             => new()
             {
-                Hidden = !ItemUtils.CanTryOn(ItemId),
+                Visible = ItemUtils.CanTryOn(ItemId),
                 Label = GetAddonText(2426), // "Try On"
                 LoseFocusOnClick = true,
                 ClickCallback = () =>
@@ -107,7 +107,7 @@ public partial class ImGuiUtils
         public static ContextMenuEntry CreateGarlandTools(uint ItemId)
             => new()
             {
-                Label = "Open on GarlandTools",
+                Label = t("ItemSearch.OpenOnGarlandTools"),
                 ClickCallback = () =>
                 {
                     Task.Run(() => Util.OpenLink($"https://www.garlandtools.org/db/#item/{ItemId}"));
@@ -141,7 +141,7 @@ public partial class ImGuiUtils
         public static ContextMenuEntry CreateItemSearch(uint ItemId)
             => new()
             {
-                Hidden = !ItemSearchUtils.CanSearchForItem(ItemId),
+                Visible = ItemSearchUtils.CanSearchForItem(ItemId),
                 Label = t("ItemSearch.SearchTheMarkets"),
                 LoseFocusOnClick = true,
                 ClickCallback = () =>
@@ -153,8 +153,8 @@ public partial class ImGuiUtils
         public static unsafe ContextMenuEntry CreateGearsetLinkGlamour(GearsetEntry* gearset)
             => new()
             {
+                Visible = gearset->GlamourSetLink == 0,
                 Enabled = UIState.Instance()->IsUnlockLinkUnlocked(15),
-                Hidden = gearset->GlamourSetLink != 0,
                 Label = GetAddonText(4394),
                 LoseFocusOnClick = true,
                 ClickCallback = () =>
@@ -166,8 +166,8 @@ public partial class ImGuiUtils
         public static unsafe ContextMenuEntry CreateGearsetUnlinkGlamour(GearsetEntry* gearset)
             => new()
             {
+                Visible = gearset->GlamourSetLink != 0,
                 Enabled = UIState.Instance()->IsUnlockLinkUnlocked(15),
-                Hidden = gearset->GlamourSetLink == 0,
                 Label = GetAddonText(4396),
                 ClickCallback = () =>
                 {
@@ -178,8 +178,8 @@ public partial class ImGuiUtils
         public static unsafe ContextMenuEntry CreateGearsetChangeGlamour(GearsetEntry* gearset)
             => new()
             {
+                Visible = gearset->GlamourSetLink != 0,
                 Enabled = UIState.Instance()->IsUnlockLinkUnlocked(15),
-                Hidden = gearset->GlamourSetLink == 0,
                 Label = GetAddonText(4395),
                 ClickCallback = () =>
                 {
