@@ -63,7 +63,7 @@ public partial class Plugin : IDalamudPlugin
             Service.AddonObserver.AddonClose += AddonObserver_AddonClose;
 
             Service.PluginInterface.UiBuilder.Draw += OnDraw;
-            Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
+            Service.PluginInterface.UiBuilder.OpenMainUi += OnOpenMainUi;
 
             Service.CommandManager.RemoveHandler("/haseltweaks");
             Service.CommandManager.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
@@ -173,7 +173,7 @@ public partial class Plugin : IDalamudPlugin
         }
     }
 
-    private void OnOpenConfigUi()
+    private void OnOpenMainUi()
     {
         _pluginWindow!.Toggle();
     }
@@ -193,7 +193,7 @@ public partial class Plugin : IDalamudPlugin
         Service.ClientState.Logout -= ClientState_Logout;
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
         Service.PluginInterface.UiBuilder.Draw -= OnDraw;
-        Service.PluginInterface.UiBuilder.OpenConfigUi -= OnOpenConfigUi;
+        Service.PluginInterface.UiBuilder.OpenMainUi -= OnOpenMainUi;
 
         Service.CommandManager.RemoveHandler("/haseltweaks");
 
