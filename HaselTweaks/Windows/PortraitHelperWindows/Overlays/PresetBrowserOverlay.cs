@@ -38,8 +38,10 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         };
     }
 
-    public void Dispose()
+    public new void Dispose()
     {
+        base.Dispose();
+
         foreach (var (_, card) in PresetCards)
             card.Dispose();
     }

@@ -9,7 +9,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselTweaks.Records;
-using HaselTweaks.Structs;
 using HaselTweaks.Structs.Agents;
 using ImGuiNET;
 using GearsetEntry = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetEntry;

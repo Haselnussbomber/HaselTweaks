@@ -1,9 +1,7 @@
-using System.Numerics;
 using Dalamud.Interface.Raii;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Common.Math;
 using HaselTweaks.Enums.PortraitHelper;
-using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;

@@ -124,12 +124,14 @@ public partial class PortraitHelper : Tweak
         if (AdvancedImportOverlay != null && Plugin.WindowSystem.Windows.Contains(AdvancedImportOverlay))
         {
             Plugin.WindowSystem.RemoveWindow(AdvancedImportOverlay);
+            AdvancedImportOverlay.Dispose();
             AdvancedImportOverlay = null;
         }
 
         if (AdvancedEditOverlay != null && Plugin.WindowSystem.Windows.Contains(AdvancedEditOverlay))
         {
             Plugin.WindowSystem.RemoveWindow(AdvancedEditOverlay);
+            AdvancedEditOverlay.Dispose();
             AdvancedEditOverlay = null;
         }
 
@@ -143,6 +145,7 @@ public partial class PortraitHelper : Tweak
         if (AlignmentToolSettingsOverlay != null && Plugin.WindowSystem.Windows.Contains(AlignmentToolSettingsOverlay))
         {
             Plugin.WindowSystem.RemoveWindow(AlignmentToolSettingsOverlay);
+            AlignmentToolSettingsOverlay.Dispose();
             AlignmentToolSettingsOverlay = null;
         }
     }

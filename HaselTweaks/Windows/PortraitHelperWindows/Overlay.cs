@@ -1,4 +1,5 @@
 using System.Numerics;
+using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -9,8 +10,12 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
-public abstract unsafe class Overlay : Window
+public abstract unsafe class Overlay : Window, IDisposable
 {
+    private ImRaii.Color? _windowBg;
+    private ImRaii.Style? _windowPadding;
+    private ImRaii.Color? _windowText;
+
     public PortraitHelper Tweak { get; init; }
 
     protected bool IsWindow { get; set; }
@@ -37,7 +42,13 @@ public abstract unsafe class Overlay : Window
         DisableWindowSounds = true;
         RespectCloseHotkey = false;
 
+        Update();
         UpdateWindow();
+    }
+
+    public void Dispose()
+    {
+        OnClose();
     }
 
     public override bool DrawConditions()
@@ -53,6 +64,13 @@ public abstract unsafe class Overlay : Window
 
     public override void OnClose()
     {
+        _windowPadding?.Dispose();
+        _windowPadding = null;
+        _windowText?.Dispose();
+        _windowText = null;
+        _windowBg?.Dispose();
+        _windowBg = null;
+
         ToggleUiVisibility(true);
     }
 
@@ -63,8 +81,6 @@ public abstract unsafe class Overlay : Window
         ToggleUiVisibility(isWindow);
 
         IsWindow = isWindow;
-
-        // TODO: update position if window is dragged, lol
     }
 
     public override void PreDraw()
@@ -75,37 +91,30 @@ public abstract unsafe class Overlay : Window
         {
             if (Type == OverlayType.LeftPane)
             {
-                ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+                _windowPadding = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.Zero);
             }
 
             if (Colors.IsLightTheme)
             {
-                ImGui.PushStyleColor(ImGuiCol.Text, (uint)Colors.GetUIColor(2));
+                _windowText = ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.GetUIColor(2));
             }
 
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, 0);
+            _windowBg = ImRaii.PushColor(ImGuiCol.WindowBg, 0);
         }
     }
 
     public override void Draw()
     {
-        if (!IsWindow)
-        {
-            ImGui.PopStyleColor();
-
-            if (Type == OverlayType.LeftPane)
-            {
-                ImGui.PopStyleVar();
-            }
-        }
+        _windowPadding?.Dispose();
+        _windowPadding = null;
+        _windowBg?.Dispose();
+        _windowBg = null;
     }
 
     public override void PostDraw()
     {
-        if (!IsWindow && Colors.IsLightTheme)
-        {
-            ImGui.PopStyleColor();
-        }
+        _windowText?.Dispose();
+        _windowText = null;
 
         UpdateWindow();
     }
