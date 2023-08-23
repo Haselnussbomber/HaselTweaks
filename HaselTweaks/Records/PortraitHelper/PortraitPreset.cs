@@ -1,8 +1,9 @@
 using System.IO;
 using Dalamud.Logging;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using FFXIVClientStructs.FFXIV.Common.Math;
 using HaselTweaks.Extensions;
 using HaselTweaks.JsonConverters;
-using HaselTweaks.Structs;
 using Newtonsoft.Json;
 
 namespace HaselTweaks.Records.PortraitHelper;

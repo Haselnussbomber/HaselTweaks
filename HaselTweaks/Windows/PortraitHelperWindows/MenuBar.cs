@@ -3,6 +3,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Enums.PortraitHelper;
@@ -12,7 +13,6 @@ using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using ImGuiNET;
-using static HaselTweaks.Structs.AgentBannerEditorState;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
@@ -52,7 +52,7 @@ public unsafe class MenuBar : Window
 
         _initialPreset = Tweak.StateToPreset();
 
-        if (AgentBannerEditor->EditorState->OpenType == EditorOpenType.AdventurerPlate)
+        if (AgentBannerEditor->EditorState->OpenType == AgentBannerEditorState.EditorOpenType.AdventurerPlate)
         {
             _portraitName = GetAddonText(14761) ?? "Adventurer Plate";
         }

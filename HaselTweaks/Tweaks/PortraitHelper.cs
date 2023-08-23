@@ -28,7 +28,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Ole;
-using static HaselTweaks.Structs.AgentBannerEditorState;
+using static FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentBannerEditorState;
 using DalamudFramework = Dalamud.Game.Framework;
 
 namespace HaselTweaks.Tweaks;
@@ -731,13 +731,13 @@ public partial class PortraitHelper : Tweak
         if (banner == null) // banner not found
             return;
 
-        if (banner->GearChecksum == GetEquippedGearChecksum())
+        if (banner->Checksum == GetEquippedGearChecksum())
         {
-            Log($"Gear checksum matches! (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
+            Log($"Gear checksum matches! (Portrait: {banner->Checksum:X}, Equipped: {GetEquippedGearChecksum():X})");
             return;
         }
 
-        Log($"Gear checksum mismatch detected! (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
+        Log($"Gear checksum mismatch detected! (Portrait: {banner->Checksum:X}, Equipped: {GetEquippedGearChecksum():X})");
 
         if (!isJobChange && Config.ReequipGearsetOnUpdate && gearset->GlamourSetLink > 0 && GameMain.IsInSanctuary())
         {
@@ -764,14 +764,14 @@ public partial class PortraitHelper : Tweak
 
         Service.Framework.RunOnTick(() =>
         {
-            if (banner->GearChecksum != GetEquippedGearChecksum())
+            if (banner->Checksum != GetEquippedGearChecksum())
             {
-                Log($"Gear checksum still mismatching (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X}), opening Banner Editor");
+                Log($"Gear checksum still mismatching (Portrait: {banner->Checksum:X}, Equipped: {GetEquippedGearChecksum():X}), opening Banner Editor");
                 NotifyMismatch();
             }
             else
             {
-                Log($"Gear checksum matches now (Portrait: {banner->GearChecksum:X}, Equipped: {GetEquippedGearChecksum():X})");
+                Log($"Gear checksum matches now (Portrait: {banner->Checksum:X}, Equipped: {GetEquippedGearChecksum():X})");
             }
         }, delay: CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token); // TODO: find out when it's safe to check again instead of randomly picking a delay. ping may vary
     }
@@ -869,7 +869,7 @@ public partial class PortraitHelper : Tweak
         }
 
         var currentChecksum = GetEquippedGearChecksum();
-        if (banner->GearChecksum == currentChecksum)
+        if (banner->Checksum == currentChecksum)
         {
             Information("No Portrait Update: Checksum still matches");
             return false;
@@ -908,7 +908,7 @@ public partial class PortraitHelper : Tweak
 
         // update Banner
         banner->LastUpdated = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        banner->GearChecksum = currentChecksum;
+        banner->Checksum = currentChecksum;
         helper->CopyRaceGenderHeightTribe(banner, localPlayer);
         BannerModule.Instance()->UserFileEvent.HasChanges = true;
 

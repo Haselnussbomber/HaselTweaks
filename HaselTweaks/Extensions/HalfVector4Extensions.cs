@@ -1,4 +1,4 @@
-using HaselTweaks.Structs;
+using FFXIVClientStructs.FFXIV.Common.Math;
 
 namespace HaselTweaks.Extensions;
 

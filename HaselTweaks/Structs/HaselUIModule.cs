@@ -9,7 +9,4 @@ public unsafe partial struct HaselUIModule
 
     [VirtualFunction(35)]
     public readonly partial UIModuleVf35Struct* GetVf35Struct(); // I have absolutely no idea
-
-    [VirtualFunction(58)]
-    public readonly partial BannerModule* GetBannerModule();
 }

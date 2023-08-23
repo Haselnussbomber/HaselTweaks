@@ -1,3 +1,5 @@
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+
 namespace HaselTweaks.Structs;
 
 [StructLayout(LayoutKind.Sequential, Size = 4 * 14 + 14)]

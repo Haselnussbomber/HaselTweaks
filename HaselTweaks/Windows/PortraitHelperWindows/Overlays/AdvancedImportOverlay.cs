@@ -1,6 +1,7 @@
 using System.Numerics;
 using Dalamud.Interface.Raii;
 using Dalamud.Memory;
+using FFXIVClientStructs.FFXIV.Common.Math;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
@@ -266,7 +267,7 @@ public unsafe class AdvancedImportOverlay : Overlay
 
     private static void DrawColor(byte r, byte g, byte b)
     {
-        var vec = new Vector3(r / 255f, g / 255f, b / 255f);
+        var vec = new System.Numerics.Vector3(r / 255f, g / 255f, b / 255f);
         using var table = ImRaii.Table("##Table", 4);
         if (!table.Success)
             return;

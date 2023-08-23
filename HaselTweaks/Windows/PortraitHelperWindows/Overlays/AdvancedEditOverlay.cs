@@ -1,6 +1,7 @@
 using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
+using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -25,7 +26,7 @@ public unsafe class AdvancedEditOverlay : Overlay
         if (character == null)
             return;
 
-        var timelinePtr = character->ActionTimelineManager.BaseAnimation;
+        var timelinePtr = ((ActionTimelineManager*)((nint)character + 0x920))->BaseAnimation;
         if (timelinePtr == null)
             return;
 
@@ -221,9 +222,10 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
+            var c60 = (CharacterC60*)((nint)character + 0xC60);
             var eyeDirection = new Vector2(
-                character->FacialAnimationManager.EyeDirection.X,
-                character->FacialAnimationManager.EyeDirection.Y
+                c60->EyeDirection.X,
+                c60->EyeDirection.Y
             );
 
             if (ImGui.DragFloat2($"##DragFloat2", ref eyeDirection, 0.001f))
@@ -245,9 +247,10 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
+            var c60 = (CharacterC60*)((nint)character + 0xC60);
             var headDirection = new Vector2(
-                character->FacialAnimationManager.HeadDirection.X,
-                character->FacialAnimationManager.HeadDirection.Y
+                c60->HeadDirection.X,
+                c60->HeadDirection.Y
             );
 
             if (ImGui.DragFloat2($"##DragFloat2", ref headDirection, 0.001f))
@@ -278,7 +281,7 @@ public unsafe class AdvancedEditOverlay : Overlay
                 var clampedValue = Math.Clamp(timestampAfter, 0, _timelineLength);
                 _timestamp = (float)Math.Round(clampedValue, 1);
 
-                var timelinePtr = character->ActionTimelineManager.BaseAnimation;
+                var timelinePtr = ((ActionTimelineManager*)((nint)character + 0x920))->BaseAnimation;
                 if (timelinePtr != null)
                 {
                     var timeline = *timelinePtr;
@@ -286,7 +289,7 @@ public unsafe class AdvancedEditOverlay : Overlay
                     {
                         timeline->CurrentTimestamp = clampedValue;
                         state->CharaView->SetPoseTimed(character->ActionTimelineManager.BannerTimelineRowId, clampedValue);
-                        state->CharaView->Base.ToggleAnimationPaused(true);
+                        state->CharaView->Base.ToggleAnimationPlayback(true);
                         AddonBannerEditor->PlayAnimationCheckbox->SetValue(false);
 
                         if (!AgentBannerEditor->EditorState->HasDataChanged)
