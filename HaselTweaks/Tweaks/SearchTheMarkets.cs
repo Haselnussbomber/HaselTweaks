@@ -45,7 +45,7 @@ public unsafe class SearchTheMarkets : Tweak
         {
             var text = new SeStringBuilder()
                 .AddUiForeground("\uE078 ", 32)
-                .AddText(t("ItemSearch.SearchTheMarkets"))
+                .AddText(t("ItemContextMenu.SearchTheMarkets"))
                 .BuiltString;
 
             _contextMenuItemGame = new(
