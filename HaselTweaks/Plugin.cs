@@ -27,7 +27,7 @@ public partial class Plugin : IDalamudPlugin
         Service.Initialize(pluginInterface);
         Task.Run(Setup);
 
-        // speeds up opening PluginWindow for the first time by ~200ms, lol
+        // speeds up displaying the logo in PluginWindow for the first time after loading the plugin by ~200ms
         Task.Run(() => SvgDocument.FromSvg<SvgDocument>("<svg style=\"fill:#fff\" />"));
     }
 
