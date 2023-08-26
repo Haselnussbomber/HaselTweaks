@@ -1,14 +1,14 @@
 # Changelog
 
-## [Unreleased]
+## [16.2.1] (2023-08-26)
 
 ### Commands
 
-- **Fixed:** The rarity color of item links was incorrect.
+- **Fixed:** The rarity color of item links could have been incorrect depending on the UI theme (I misinterpreted the UI colors sheet).
 
 ### Gear Set Grid
 
-- **Changed:** The id column now shows the colored, framed job icon with the id underneath.
+- **Changed:** The Id column now uses the colored, framed job icon, and the layout has been changed to place the icon above the Id.
 
 ## [16.2.0] (2023-08-20)
 
@@ -1091,6 +1091,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[16.2.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.2.0...v16.2.1
 [16.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.1.3...v16.2.0
 [16.1.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.1.2...v16.1.3
 [16.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.1.1...v16.1.2
