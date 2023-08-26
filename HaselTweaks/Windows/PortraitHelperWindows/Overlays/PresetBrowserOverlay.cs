@@ -5,7 +5,6 @@ using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Memory;
 using HaselTweaks.Records.PortraitHelper;
-using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using ImGuiNET;
@@ -26,10 +25,12 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
     private int _reorderTagOldIndex = -1;
     private int _reorderTagNewIndex = -1;
 
-    public PresetBrowserOverlay(PortraitHelper tweak) : base(t("PortraitHelperWindows.PresetBrowserOverlay.Title"), tweak)
+    public PresetBrowserOverlay() : base(t("PortraitHelperWindows.PresetBrowserOverlay.Title"))
     {
         DeleteTagDialog = new(this);
         DeletePresetDialog = new(this);
+
+        Flags |= ImGuiWindowFlags.NoInputs; // HACK: fixes scrolling for like 1px
 
         SizeConstraints = new WindowSizeConstraints
         {
@@ -42,7 +43,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
     {
         base.Dispose();
 
-        foreach (var (_, card) in PresetCards)
+        foreach (var card in PresetCards.Values)
             card.Dispose();
     }
 
@@ -135,7 +136,8 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         using (ImRaii.PushColor(ImGuiCol.Text, DefaultImGuiTextColor))
         {
-            if (ImGui.BeginPopupContextItem($"##PresetBrowser_SideBar_Tag{tag.Id}Popup"))
+            using var popup = ImRaii.ContextPopupItem($"##PresetBrowser_SideBar_Tag{tag.Id}Popup");
+            if (popup.Success)
             {
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label")))
                 {
@@ -156,8 +158,6 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
                 {
                     removeUnusedTags = true;
                 }
-
-                ImGui.EndPopup();
             }
         }
 
@@ -226,15 +226,14 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         using (ImRaii.PushColor(ImGuiCol.Text, DefaultImGuiTextColor))
         {
-            if (ImGui.BeginPopupContextItem("##PresetBrowser_SideBar_AllPopup"))
+            using var popup = ImRaii.ContextPopupItem("##PresetBrowser_SideBar_AllPopup");
+            if (popup.Success)
             {
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label")))
                     CreateTagDialog.Open();
 
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label")))
                     removeUnusedTags = true;
-
-                ImGui.EndPopup();
             }
         }
 

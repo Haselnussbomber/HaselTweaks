@@ -1,10 +1,17 @@
 using System.IO;
 using Dalamud.Logging;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Common.Math;
+using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Extensions;
 using HaselTweaks.JsonConverters;
+using HaselTweaks.Structs;
+using HaselTweaks.Utils;
 using Newtonsoft.Json;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.System.Ole;
 
 namespace HaselTweaks.Records.PortraitHelper;
 
@@ -202,5 +209,372 @@ public sealed record PortraitPreset
         }
 
         return null;
+    }
+
+    public async void ToClipboard()
+    {
+        await ClipboardUtils.OpenClipboard();
+        try
+        {
+            PInvoke.EmptyClipboard();
+
+            var clipboardText = Marshal.StringToHGlobalAnsi(ToExportedString());
+            if (PInvoke.SetClipboardData((uint)CLIPBOARD_FORMAT.CF_TEXT, (HANDLE)clipboardText) != 0)
+                Tweaks.PortraitHelper.ClipboardPreset = this;
+        }
+        catch (Exception e)
+        {
+            PluginLog.Error(e, "Error during PortraitPreset.ToClipboard");
+        }
+        finally
+        {
+            PInvoke.CloseClipboard();
+        }
+    }
+
+    public static unsafe PortraitPreset? FromState()
+    {
+        var state = GetAgent<AgentBannerEditor>()->EditorState;
+        var preset = new PortraitPreset();
+
+        using var portraitData = new DisposableStruct<ExportedPortraitData>();
+        state->CharaView->ExportPortraitData(portraitData);
+        preset.ReadExportedPortraitData(portraitData);
+
+        preset.BannerFrame = state->BannerEntry.BannerFrame;
+        preset.BannerDecoration = state->BannerEntry.BannerDecoration;
+
+        return preset;
+    }
+
+    public unsafe void ToState(ImportFlags importFlags)
+    {
+        if (!TryGetAddon<AddonBannerEditor>(AgentId.BannerEditor, out var addonBannerEditor))
+            return;
+
+        PluginLog.Debug($"Importing Preset {ToExportedString()} with ImportFlags {importFlags}");
+
+        var state = GetAgent<AgentBannerEditor>()->EditorState;
+        var bannerEntry = state->BannerEntry;
+
+        // read current portrait and then overwrite what the flags allow below
+        using var tempPortraitDataHolder = new DisposableStruct<ExportedPortraitData>();
+        var tempPortraitData = tempPortraitDataHolder.Ptr;
+
+        state->CharaView->ExportPortraitData(tempPortraitData);
+
+        var hasBgChanged =
+            importFlags.HasFlag(ImportFlags.BannerBg) &&
+            tempPortraitData->BannerBg != BannerBg;
+
+        var hasFrameChanged =
+            importFlags.HasFlag(ImportFlags.BannerFrame) &&
+            bannerEntry.BannerFrame != BannerFrame;
+
+        var hasDecorationChanged =
+            importFlags.HasFlag(ImportFlags.BannerDecoration) &&
+            bannerEntry.BannerDecoration != BannerDecoration;
+
+        var hasBannerTimelineChanged =
+            importFlags.HasFlag(ImportFlags.BannerTimeline) &&
+            tempPortraitData->BannerTimeline != BannerTimeline;
+
+        var hasExpressionChanged =
+            importFlags.HasFlag(ImportFlags.Expression) &&
+            tempPortraitData->Expression != Expression;
+
+        var hasAmbientLightingBrightnessChanged =
+            importFlags.HasFlag(ImportFlags.AmbientLightingBrightness) &&
+            tempPortraitData->AmbientLightingBrightness != AmbientLightingBrightness;
+
+        var hasAmbientLightingColorChanged =
+            importFlags.HasFlag(ImportFlags.AmbientLightingColor) && (
+                tempPortraitData->AmbientLightingColorRed != AmbientLightingColorRed ||
+                tempPortraitData->AmbientLightingColorGreen != AmbientLightingColorGreen ||
+                tempPortraitData->AmbientLightingColorBlue != AmbientLightingColorBlue
+            );
+
+        var hasDirectionalLightingBrightnessChanged =
+            importFlags.HasFlag(ImportFlags.DirectionalLightingBrightness) &&
+            tempPortraitData->DirectionalLightingBrightness != DirectionalLightingBrightness;
+
+        var hasDirectionalLightingColorChanged =
+            importFlags.HasFlag(ImportFlags.DirectionalLightingColor) && (
+                tempPortraitData->DirectionalLightingColorRed != DirectionalLightingColorRed ||
+                tempPortraitData->DirectionalLightingColorGreen != DirectionalLightingColorGreen ||
+                tempPortraitData->DirectionalLightingColorBlue != DirectionalLightingColorBlue
+            );
+
+        var hasDirectionalLightingVerticalAngleChanged =
+            importFlags.HasFlag(ImportFlags.DirectionalLightingVerticalAngle) &&
+            tempPortraitData->DirectionalLightingVerticalAngle != DirectionalLightingVerticalAngle;
+
+        var hasDirectionalLightingHorizontalAngleChanged =
+            importFlags.HasFlag(ImportFlags.DirectionalLightingHorizontalAngle) &&
+            tempPortraitData->DirectionalLightingHorizontalAngle != DirectionalLightingHorizontalAngle;
+
+        var hasAnimationProgressChanged =
+            importFlags.HasFlag(ImportFlags.AnimationProgress) &&
+            !tempPortraitData->AnimationProgress.IsApproximately(AnimationProgress, 0.01f);
+
+        var hasCameraPositionChanged =
+            importFlags.HasFlag(ImportFlags.CameraPosition) &&
+            !tempPortraitData->CameraPosition.IsApproximately(CameraPosition);
+
+        var hasCameraTargetChanged =
+            importFlags.HasFlag(ImportFlags.CameraTarget) &&
+            !tempPortraitData->CameraTarget.IsApproximately(CameraTarget);
+
+        var hasHeadDirectionChanged =
+            importFlags.HasFlag(ImportFlags.HeadDirection) &&
+            !tempPortraitData->HeadDirection.IsApproximately(HeadDirection);
+
+        var hasEyeDirectionChanged =
+            importFlags.HasFlag(ImportFlags.EyeDirection) &&
+            !tempPortraitData->EyeDirection.IsApproximately(EyeDirection);
+
+        var hasCameraZoomChanged =
+            importFlags.HasFlag(ImportFlags.CameraZoom) &&
+            tempPortraitData->CameraZoom != CameraZoom;
+
+        var hasImageRotationChanged =
+            importFlags.HasFlag(ImportFlags.ImageRotation) &&
+            tempPortraitData->ImageRotation != ImageRotation;
+
+        if (hasBgChanged)
+        {
+            PluginLog.Debug($"- BannerBg changed from {tempPortraitData->BannerBg} to {BannerBg}");
+
+            bannerEntry.BannerBg = BannerBg;
+            tempPortraitData->BannerBg = BannerBg;
+
+            addonBannerEditor->BackgroundDropdown->SetValue(GetListIndex(state->BackgroundItems, state->BackgroundItemsCount, BannerBg));
+        }
+
+        if (hasFrameChanged)
+        {
+            PluginLog.Debug($"- BannerFrame changed from {bannerEntry.BannerFrame} to {BannerFrame}");
+
+            state->SetFrame(BannerFrame);
+
+            addonBannerEditor->FrameDropdown->SetValue(GetListIndex(state->FrameItems, state->FrameItemsCount, BannerFrame));
+        }
+
+        if (hasDecorationChanged)
+        {
+            PluginLog.Debug($"- BannerDecoration changed from {bannerEntry.BannerDecoration} to {BannerDecoration}");
+
+            state->SetAccent(BannerDecoration);
+
+            addonBannerEditor->AccentDropdown->SetValue(GetListIndex(state->AccentItems, state->AccentItemsCount, BannerDecoration));
+        }
+
+        if (hasBgChanged || hasFrameChanged || hasDecorationChanged)
+        {
+            PluginLog.Debug("- Preset changed");
+
+            var presetIndex = state->GetPresetIndex(bannerEntry.BannerBg, bannerEntry.BannerFrame, bannerEntry.BannerDecoration);
+            if (presetIndex < 0)
+            {
+                presetIndex = addonBannerEditor->NumPresets - 1;
+
+                addonBannerEditor->PresetDropdown->List->SetListLength(addonBannerEditor->NumPresets); // increase to maximum, so "Custom" is displayed
+            }
+
+            addonBannerEditor->PresetDropdown->SetValue(presetIndex);
+        }
+
+        if (hasBannerTimelineChanged)
+        {
+            PluginLog.Debug($"- BannerTimeline changed from {tempPortraitData->BannerTimeline} to {BannerTimeline}");
+
+            bannerEntry.BannerTimeline = BannerTimeline;
+            tempPortraitData->BannerTimeline = BannerTimeline;
+
+            addonBannerEditor->PoseDropdown->SetValue(GetListIndex(state->BannerTimelineItems, state->BannerTimelineItemsCount, BannerTimeline));
+        }
+
+        if (hasExpressionChanged)
+        {
+            PluginLog.Debug($"- Expression changed from {tempPortraitData->Expression} to {Expression}");
+
+            bannerEntry.Expression = Expression;
+            tempPortraitData->Expression = Expression;
+
+            addonBannerEditor->ExpressionDropdown->SetValue(GetExpressionListIndex(state->ExpressionItems, state->ExpressionItemsCount, Expression));
+        }
+
+        if (hasAmbientLightingBrightnessChanged)
+        {
+            PluginLog.Debug($"- AmbientLightingBrightness changed from {tempPortraitData->AmbientLightingBrightness} to {AmbientLightingBrightness}");
+
+            tempPortraitData->AmbientLightingBrightness = AmbientLightingBrightness;
+
+            addonBannerEditor->AmbientLightingBrightnessSlider->SetValue(AmbientLightingBrightness);
+        }
+
+        if (hasAmbientLightingColorChanged)
+        {
+            PluginLog.Debug($"- AmbientLightingColor changed from {tempPortraitData->AmbientLightingColorRed}, {tempPortraitData->AmbientLightingColorGreen}, {tempPortraitData->AmbientLightingColorBlue} to {AmbientLightingColorRed}, {AmbientLightingColorGreen}, {AmbientLightingColorBlue}");
+
+            tempPortraitData->AmbientLightingColorRed = AmbientLightingColorRed;
+            tempPortraitData->AmbientLightingColorGreen = AmbientLightingColorGreen;
+            tempPortraitData->AmbientLightingColorBlue = AmbientLightingColorBlue;
+
+            addonBannerEditor->AmbientLightingColorRedSlider->SetValue(AmbientLightingColorRed);
+            addonBannerEditor->AmbientLightingColorGreenSlider->SetValue(AmbientLightingColorGreen);
+            addonBannerEditor->AmbientLightingColorBlueSlider->SetValue(AmbientLightingColorBlue);
+        }
+
+        if (hasDirectionalLightingBrightnessChanged)
+        {
+            PluginLog.Debug($"- DirectionalLightingBrightness changed from {tempPortraitData->DirectionalLightingBrightness} to {DirectionalLightingBrightness}");
+
+            tempPortraitData->DirectionalLightingBrightness = DirectionalLightingBrightness;
+
+            addonBannerEditor->DirectionalLightingBrightnessSlider->SetValue(DirectionalLightingBrightness);
+        }
+
+        if (hasDirectionalLightingColorChanged)
+        {
+            PluginLog.Debug($"- DirectionalLightingColor changed from {tempPortraitData->DirectionalLightingColorRed}, {tempPortraitData->DirectionalLightingColorGreen}, {tempPortraitData->DirectionalLightingColorBlue} to {DirectionalLightingColorRed}, {DirectionalLightingColorGreen}, {DirectionalLightingColorBlue}");
+
+            tempPortraitData->DirectionalLightingColorRed = DirectionalLightingColorRed;
+            tempPortraitData->DirectionalLightingColorGreen = DirectionalLightingColorGreen;
+            tempPortraitData->DirectionalLightingColorBlue = DirectionalLightingColorBlue;
+
+            addonBannerEditor->DirectionalLightingColorRedSlider->SetValue(DirectionalLightingColorRed);
+            addonBannerEditor->DirectionalLightingColorGreenSlider->SetValue(DirectionalLightingColorGreen);
+            addonBannerEditor->DirectionalLightingColorBlueSlider->SetValue(DirectionalLightingColorBlue);
+        }
+
+        if (hasDirectionalLightingVerticalAngleChanged)
+        {
+            PluginLog.Debug($"- DirectionalLightingVerticalAngle changed from {tempPortraitData->DirectionalLightingVerticalAngle} to {DirectionalLightingVerticalAngle}");
+
+            tempPortraitData->DirectionalLightingVerticalAngle = DirectionalLightingVerticalAngle;
+
+            addonBannerEditor->DirectionalLightingVerticalAngleSlider->SetValue(DirectionalLightingVerticalAngle);
+        }
+
+        if (hasDirectionalLightingHorizontalAngleChanged)
+        {
+            PluginLog.Debug($"- DirectionalLightingHorizontalAngle changed from {tempPortraitData->DirectionalLightingHorizontalAngle} to {DirectionalLightingHorizontalAngle}");
+
+            tempPortraitData->DirectionalLightingHorizontalAngle = DirectionalLightingHorizontalAngle;
+
+            addonBannerEditor->DirectionalLightingHorizontalAngleSlider->SetValue(DirectionalLightingHorizontalAngle);
+        }
+
+        if (hasAnimationProgressChanged)
+        {
+            PluginLog.Debug($"- AnimationProgress changed from {tempPortraitData->AnimationProgress} to {AnimationProgress}");
+
+            tempPortraitData->AnimationProgress = AnimationProgress;
+        }
+
+        if (hasCameraPositionChanged)
+        {
+            PluginLog.Debug($"- CameraPosition changed from {tempPortraitData->CameraPosition.X}, {tempPortraitData->CameraPosition.Y}, {tempPortraitData->CameraPosition.Z}, {tempPortraitData->CameraPosition.W} to {CameraPosition.X}, {CameraPosition.Y}, {CameraPosition.Z}, {CameraPosition.W}");
+
+            tempPortraitData->CameraPosition = CameraPosition;
+        }
+
+        if (hasCameraTargetChanged)
+        {
+            PluginLog.Debug($"- CameraTarget changed from {tempPortraitData->CameraTarget.X}, {tempPortraitData->CameraTarget.Y}, {tempPortraitData->CameraTarget.Z}, {tempPortraitData->CameraTarget.W} to {CameraTarget.X}, {CameraTarget.Y}, {CameraTarget.Z}, {CameraTarget.W}");
+
+            tempPortraitData->CameraTarget = CameraTarget;
+        }
+
+        if (hasHeadDirectionChanged)
+        {
+            PluginLog.Debug($"- HeadDirection changed from {tempPortraitData->HeadDirection.X}, {tempPortraitData->HeadDirection.Y} to {HeadDirection.X}, {HeadDirection.Y}");
+
+            tempPortraitData->HeadDirection = HeadDirection;
+        }
+
+        if (hasEyeDirectionChanged)
+        {
+            PluginLog.Debug($"- EyeDirection changed from {tempPortraitData->EyeDirection.X}, {tempPortraitData->EyeDirection.Y} to {EyeDirection.X}, {EyeDirection.Y}");
+
+            tempPortraitData->EyeDirection = EyeDirection;
+        }
+
+        if (hasCameraZoomChanged)
+        {
+            PluginLog.Debug($"- CameraZoom changed from {tempPortraitData->CameraZoom} to {CameraZoom}");
+
+            tempPortraitData->CameraZoom = CameraZoom;
+
+            addonBannerEditor->CameraZoomSlider->SetValue(CameraZoom);
+        }
+
+        if (hasImageRotationChanged)
+        {
+            PluginLog.Debug($"- ImageRotation changed from {tempPortraitData->ImageRotation} to {ImageRotation}");
+
+            tempPortraitData->ImageRotation = ImageRotation;
+
+            addonBannerEditor->ImageRotation->SetValue(ImageRotation);
+        }
+
+        state->CharaView->ImportPortraitData(tempPortraitData);
+
+        addonBannerEditor->PlayAnimationCheckbox->SetValue(false);
+        addonBannerEditor->HeadFacingCameraCheckbox->SetValue(false);
+        addonBannerEditor->EyesFacingCameraCheckbox->SetValue(false);
+
+        state->SetHasChanged(
+            state->HasDataChanged ||
+            hasBgChanged ||
+            hasFrameChanged ||
+            hasDecorationChanged ||
+            hasBannerTimelineChanged ||
+            hasExpressionChanged ||
+            hasAmbientLightingBrightnessChanged ||
+            hasAmbientLightingColorChanged ||
+            hasDirectionalLightingBrightnessChanged ||
+            hasDirectionalLightingColorChanged ||
+            hasDirectionalLightingVerticalAngleChanged ||
+            hasDirectionalLightingHorizontalAngleChanged ||
+            hasAnimationProgressChanged ||
+            hasCameraPositionChanged ||
+            hasCameraTargetChanged ||
+            hasHeadDirectionChanged ||
+            hasEyeDirectionChanged ||
+            hasCameraZoomChanged ||
+            hasImageRotationChanged
+        );
+
+        PluginLog.Debug("Import complete");
+    }
+
+    private static unsafe int GetListIndex(AgentBannerEditorState.GenericDropdownItem** items, uint itemCount, ushort id)
+    {
+        for (var i = 0; i < itemCount; i++)
+        {
+            var entry = items[i];
+            if (entry->Id == id && entry->Data != 0)
+            {
+                return i;
+            }
+        }
+
+        return 0;
+    }
+
+    private static unsafe int GetExpressionListIndex(AgentBannerEditorState.ExpressionDropdownItem** items, uint itemCount, ushort id)
+    {
+        for (var i = 0; i < itemCount; i++)
+        {
+            var entry = items[i];
+            if (entry->Id == id && entry->Data != 0)
+            {
+                return i;
+            }
+        }
+
+        return 0;
     }
 }

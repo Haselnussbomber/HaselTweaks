@@ -24,7 +24,7 @@ public record Texture : IDisposable
         Uv1 = uv1;
     }
 
-    void IDisposable.Dispose()
+    public void Dispose()
     {
         Unload();
     }

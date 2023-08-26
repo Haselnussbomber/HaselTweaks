@@ -1,5 +1,6 @@
 using Dalamud.Interface.Raii;
 using Dalamud.Memory;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Common.Math;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -11,7 +12,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
 public unsafe class AdvancedImportOverlay : Overlay
 {
-    public AdvancedImportOverlay(PortraitHelper tweak) : base(t("PortraitHelperWindows.AdvancedImportOverlay.Title"), tweak)
+    public AdvancedImportOverlay() : base(t("PortraitHelperWindows.AdvancedImportOverlay.Title"))
     {
     }
 
@@ -19,7 +20,7 @@ public unsafe class AdvancedImportOverlay : Overlay
     {
         base.Draw();
 
-        if (Tweak.ClipboardPreset == null)
+        if (PortraitHelper.ClipboardPreset == null)
         {
             IsOpen = false;
             return;
@@ -28,23 +29,23 @@ public unsafe class AdvancedImportOverlay : Overlay
         if (IsWindow)
             ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y * 2);
 
-        var state = AgentBannerEditor->EditorState;
+        var state = GetAgent<AgentBannerEditor>()->EditorState;
         var unknown = GetAddonText(624) ?? "Unknown";
 
         if (ImGui.Button(GetAddonText(14923) ?? "Select All"))
-            Tweak.CurrentImportFlags = ImportFlags.All;
+            PortraitHelper.CurrentImportFlags = ImportFlags.All;
 
         ImGui.SameLine();
 
         if (ImGui.Button(GetAddonText(14924) ?? "Deselect All"))
-            Tweak.CurrentImportFlags = ImportFlags.None;
+            PortraitHelper.CurrentImportFlags = ImportFlags.None;
 
         ImGui.SameLine();
 
         if (ImGui.Button(t("PortraitHelperWindows.AdvancedImportOverlay.ImportSelectedSettingsButton.Label")))
         {
-            Tweak.PresetToState(Tweak.ClipboardPreset, Tweak.CurrentImportFlags);
-            Tweak.CloseWindows();
+            PortraitHelper.ClipboardPreset.ToState(PortraitHelper.CurrentImportFlags);
+            PortraitHelper.CloseOverlays();
         }
 
         ImGuiUtils.DrawSection(GetAddonText(14684) ?? "Design", RespectUiTheme: !IsWindow);
@@ -52,31 +53,31 @@ public unsafe class AdvancedImportOverlay : Overlay
         DrawImportSetting(
             GetAddonText(14687) ?? "Background",
             ImportFlags.BannerBg,
-            () => ImGui.TextUnformatted(GetSheetText<BannerBg>(Tweak.ClipboardPreset.BannerBg, "Name") ?? unknown)
+            () => ImGui.TextUnformatted(GetSheetText<BannerBg>(PortraitHelper.ClipboardPreset.BannerBg, "Name") ?? unknown)
         );
 
         DrawImportSetting(
             GetAddonText(14688) ?? "Frame",
             ImportFlags.BannerFrame,
-            () => ImGui.TextUnformatted(GetSheetText<BannerFrame>(Tweak.ClipboardPreset.BannerFrame, "Name") ?? unknown)
+            () => ImGui.TextUnformatted(GetSheetText<BannerFrame>(PortraitHelper.ClipboardPreset.BannerFrame, "Name") ?? unknown)
         );
 
         DrawImportSetting(
             GetAddonText(14689) ?? "Accent",
             ImportFlags.BannerDecoration,
-            () => ImGui.TextUnformatted(GetSheetText<BannerDecoration>(Tweak.ClipboardPreset.BannerDecoration, "Name") ?? unknown)
+            () => ImGui.TextUnformatted(GetSheetText<BannerDecoration>(PortraitHelper.ClipboardPreset.BannerDecoration, "Name") ?? unknown)
         );
 
         DrawImportSetting(
             GetAddonText(14711) ?? "Zoom",
             ImportFlags.CameraZoom,
-            () => ImGui.TextUnformatted(Tweak.ClipboardPreset.CameraZoom.ToString())
+            () => ImGui.TextUnformatted(PortraitHelper.ClipboardPreset.CameraZoom.ToString())
         );
 
         DrawImportSetting(
             GetAddonText(14712) ?? "Rotation",
             ImportFlags.ImageRotation,
-            () => ImGui.TextUnformatted(Tweak.ClipboardPreset.ImageRotation.ToString())
+            () => ImGui.TextUnformatted(PortraitHelper.ClipboardPreset.ImageRotation.ToString())
         );
 
         ImGuiUtils.DrawSection(GetAddonText(14685) ?? "Character", RespectUiTheme: !IsWindow);
@@ -86,7 +87,7 @@ public unsafe class AdvancedImportOverlay : Overlay
             ImportFlags.BannerTimeline,
             () =>
             {
-                var id = Tweak.ClipboardPreset.BannerTimeline;
+                var id = PortraitHelper.ClipboardPreset.BannerTimeline;
                 var poseName = GetSheetText<BannerTimeline>(id, "Name");
 
                 if (string.IsNullOrEmpty(poseName))
@@ -124,7 +125,7 @@ public unsafe class AdvancedImportOverlay : Overlay
             ImportFlags.Expression,
             () =>
             {
-                var id = Tweak.ClipboardPreset.Expression;
+                var id = PortraitHelper.ClipboardPreset.Expression;
                 var expressionName = unknown;
 
                 if (id == 0)
@@ -151,31 +152,31 @@ public unsafe class AdvancedImportOverlay : Overlay
         DrawImportSetting(
             t("PortraitHelperWindows.Setting.AnimationTimestamp.Label"),
             ImportFlags.AnimationProgress,
-            () => ImGui.TextUnformatted(t("PortraitHelperWindows.Setting.AnimationTimestamp.ValueFormat", Tweak.ClipboardPreset.AnimationProgress))
+            () => ImGui.TextUnformatted(t("PortraitHelperWindows.Setting.AnimationTimestamp.ValueFormat", PortraitHelper.ClipboardPreset.AnimationProgress))
         );
 
         DrawImportSetting(
             GetAddonText(5972) ?? "Camera Position",
             ImportFlags.CameraPosition,
-            () => DrawHalfVector4(Tweak.ClipboardPreset.CameraPosition)
+            () => DrawHalfVector4(PortraitHelper.ClipboardPreset.CameraPosition)
         );
 
         DrawImportSetting(
             t("PortraitHelperWindows.Setting.CameraTarget.Label"),
             ImportFlags.CameraTarget,
-            () => DrawHalfVector4(Tweak.ClipboardPreset.CameraTarget)
+            () => DrawHalfVector4(PortraitHelper.ClipboardPreset.CameraTarget)
         );
 
         DrawImportSetting(
             t("PortraitHelperWindows.Setting.HeadDirection.Label"),
             ImportFlags.HeadDirection,
-            () => DrawHalfVector2(Tweak.ClipboardPreset.HeadDirection)
+            () => DrawHalfVector2(PortraitHelper.ClipboardPreset.HeadDirection)
         );
 
         DrawImportSetting(
             t("PortraitHelperWindows.Setting.EyeDirection.Label"),
             ImportFlags.EyeDirection,
-            () => DrawHalfVector2(Tweak.ClipboardPreset.EyeDirection)
+            () => DrawHalfVector2(PortraitHelper.ClipboardPreset.EyeDirection)
         );
 
         ImGuiUtils.DrawSection(GetAddonText(14692) ?? "Ambient Lighting", RespectUiTheme: !IsWindow);
@@ -186,16 +187,16 @@ public unsafe class AdvancedImportOverlay : Overlay
         DrawImportSetting(
             labelBrightness,
             ImportFlags.AmbientLightingBrightness,
-            () => ImGui.TextUnformatted(Tweak.ClipboardPreset.AmbientLightingBrightness.ToString())
+            () => ImGui.TextUnformatted(PortraitHelper.ClipboardPreset.AmbientLightingBrightness.ToString())
         );
 
         DrawImportSetting(
             labelColor,
             ImportFlags.AmbientLightingColor,
             () => DrawColor(
-                Tweak.ClipboardPreset.AmbientLightingColorRed,
-                Tweak.ClipboardPreset.AmbientLightingColorGreen,
-                Tweak.ClipboardPreset.AmbientLightingColorBlue
+                PortraitHelper.ClipboardPreset.AmbientLightingColorRed,
+                PortraitHelper.ClipboardPreset.AmbientLightingColorGreen,
+                PortraitHelper.ClipboardPreset.AmbientLightingColorBlue
             )
         );
 
@@ -204,29 +205,29 @@ public unsafe class AdvancedImportOverlay : Overlay
         DrawImportSetting(
             labelBrightness,
             ImportFlags.DirectionalLightingBrightness,
-            () => ImGui.TextUnformatted(Tweak.ClipboardPreset.DirectionalLightingBrightness.ToString())
+            () => ImGui.TextUnformatted(PortraitHelper.ClipboardPreset.DirectionalLightingBrightness.ToString())
         );
 
         DrawImportSetting(
             labelColor,
             ImportFlags.DirectionalLightingColor,
             () => DrawColor(
-                Tweak.ClipboardPreset.DirectionalLightingColorRed,
-                Tweak.ClipboardPreset.DirectionalLightingColorGreen,
-                Tweak.ClipboardPreset.DirectionalLightingColorBlue
+                PortraitHelper.ClipboardPreset.DirectionalLightingColorRed,
+                PortraitHelper.ClipboardPreset.DirectionalLightingColorGreen,
+                PortraitHelper.ClipboardPreset.DirectionalLightingColorBlue
             )
         );
 
         DrawImportSetting(
             GetAddonText(14696) ?? "Vertical Angle",
             ImportFlags.DirectionalLightingVerticalAngle,
-            () => ImGui.TextUnformatted(Tweak.ClipboardPreset.DirectionalLightingVerticalAngle.ToString())
+            () => ImGui.TextUnformatted(PortraitHelper.ClipboardPreset.DirectionalLightingVerticalAngle.ToString())
         );
 
         DrawImportSetting(
             GetAddonText(14695) ?? "Horizontal Angle",
             ImportFlags.DirectionalLightingHorizontalAngle,
-            () => ImGui.TextUnformatted(Tweak.ClipboardPreset.DirectionalLightingHorizontalAngle.ToString())
+            () => ImGui.TextUnformatted(PortraitHelper.ClipboardPreset.DirectionalLightingHorizontalAngle.ToString())
         );
 
         if (IsWindow)
@@ -239,26 +240,26 @@ public unsafe class AdvancedImportOverlay : Overlay
 
         ImGui.Columns(2, "##Columns", false);
 
-        var isEnabled = Tweak.CurrentImportFlags.HasFlag(flag);
-        if (ImGui.Checkbox("##Checkbox", ref isEnabled))
+        var isEnabled = PortraitHelper.CurrentImportFlags.HasFlag(flag);
+        var disabledColor = (Structs.ImColor)ImGui.GetColorU32(ImGuiCol.Text);
+        disabledColor.A = 0.5f;
+        using var textColor = !isEnabled ? ImRaii.PushColor(ImGuiCol.Text, (uint)disabledColor) : null;
+
+        if (ImGui.Checkbox(label + "##Checkbox", ref isEnabled))
         {
             if (isEnabled)
-                Tweak.CurrentImportFlags |= flag;
+                PortraitHelper.CurrentImportFlags |= flag;
             else
-                Tweak.CurrentImportFlags &= ~flag;
+                PortraitHelper.CurrentImportFlags &= ~flag;
         }
 
-        if (!isEnabled)
-            ImGui.BeginDisabled();
+        textColor?.Dispose();
 
-        ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
-        ImGui.TextUnformatted(label);
-
-        ImGui.NextColumn();
-        drawFn();
-
-        if (!isEnabled)
-            ImGui.EndDisabled();
+        using (ImRaii.Disabled(!isEnabled))
+        {
+            ImGui.NextColumn();
+            drawFn();
+        }
 
         ImGui.Columns(1);
     }

@@ -20,30 +20,15 @@ public unsafe partial class AetherCurrentHelper : Tweak
         public bool CenterDistance = true;
     }
 
-    private AetherCurrentHelperWindow? _window;
-
     public override void Disable()
-        => CloseWindow();
+    {
+        Service.WindowManager.CloseWindow<AetherCurrentHelperWindow>();
+    }
 
     public void OpenWindow(AetherCurrentCompFlgSet compFlgSet)
     {
-        if (_window != null)
-        {
-            _window.SetCompFlgSet(compFlgSet);
-            return;
-        }
-
-        Plugin.WindowSystem.AddWindow(_window = new(this, compFlgSet));
-        _window.IsOpen = true;
-    }
-
-    public void CloseWindow()
-    {
-        if (_window == null)
-            return;
-
-        Plugin.WindowSystem.RemoveWindow(_window);
-        _window = null;
+        var window = Service.WindowManager.OpenWindow<AetherCurrentHelperWindow>();
+        window.CompFlgSet = compFlgSet;
     }
 
     [VTableHook<AgentAetherCurrent>((int)AgentInterfaceVfs.ReceiveEvent)]

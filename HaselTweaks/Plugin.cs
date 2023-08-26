@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Dalamud.Game.Command;
-using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
@@ -16,11 +15,8 @@ public partial class Plugin : IDalamudPlugin
 {
     public string Name => "HaselTweaks";
 
-    internal static WindowSystem WindowSystem = new("HaselTweaks");
-    internal static HashSet<Tweak> Tweaks = null!;
+    internal static HashSet<Tweak> Tweaks = null!; // filled by generator (InitializeTweaks)
     internal static Configuration Config = null!;
-
-    private PluginWindow? _pluginWindow;
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
@@ -62,7 +58,6 @@ public partial class Plugin : IDalamudPlugin
             Service.AddonObserver.AddonOpen += AddonObserver_AddonOpen;
             Service.AddonObserver.AddonClose += AddonObserver_AddonClose;
 
-            Service.PluginInterface.UiBuilder.Draw += OnDraw;
             Service.PluginInterface.UiBuilder.OpenMainUi += OnOpenMainUi;
 
             Service.CommandManager.RemoveHandler("/haseltweaks");
@@ -70,8 +65,6 @@ public partial class Plugin : IDalamudPlugin
             {
                 HelpMessage = "Show Window"
             });
-
-            WindowSystem.AddWindow(_pluginWindow = new PluginWindow());
         });
     }
 
@@ -161,26 +154,14 @@ public partial class Plugin : IDalamudPlugin
         }
     }
 
-    private void OnDraw()
-    {
-        try
-        {
-            WindowSystem.Draw();
-        }
-        catch (Exception ex)
-        {
-            PluginLog.Error(ex, "Unexpected exception in OnDraw");
-        }
-    }
-
     private void OnOpenMainUi()
     {
-        _pluginWindow!.Toggle();
+        Service.WindowManager.OpenWindow<PluginWindow>();
     }
 
     private void OnCommand(string command, string args)
     {
-        _pluginWindow!.Toggle();
+        Service.WindowManager.ToggleWindow<PluginWindow>();
     }
 
     void IDisposable.Dispose()
@@ -192,7 +173,6 @@ public partial class Plugin : IDalamudPlugin
         Service.ClientState.Login -= ClientState_Login;
         Service.ClientState.Logout -= ClientState_Logout;
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
-        Service.PluginInterface.UiBuilder.Draw -= OnDraw;
         Service.PluginInterface.UiBuilder.OpenMainUi -= OnOpenMainUi;
 
         Service.CommandManager.RemoveHandler("/haseltweaks");
@@ -209,17 +189,7 @@ public partial class Plugin : IDalamudPlugin
             }
         }
 
-        Tweaks = null!;
-
-        WindowSystem.RemoveAllWindows();
-        WindowSystem = null!;
-
-        _pluginWindow?.Dispose();
-        _pluginWindow = null;
-
         Config?.Save();
-        Config = null!;
-
         Service.Dispose();
     }
 }

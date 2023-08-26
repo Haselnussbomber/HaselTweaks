@@ -1,4 +1,4 @@
-using HaselTweaks.Tweaks;
+using Dalamud.Interface.Raii;
 using HaselTweaks.Utils;
 using ImGuiNET;
 
@@ -8,7 +8,7 @@ public unsafe class AlignmentToolSettingsOverlay : Overlay
 {
     protected override OverlayType Type => OverlayType.LeftPane;
 
-    public AlignmentToolSettingsOverlay(PortraitHelper tweak) : base(t("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title"), tweak)
+    public AlignmentToolSettingsOverlay() : base(t("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title"))
     {
     }
 
@@ -25,9 +25,7 @@ public unsafe class AlignmentToolSettingsOverlay : Overlay
 
         changed |= ImGui.Checkbox(t("PortraitHelperWindows.AlignmentToolSettingsOverlay.ShowAlignmentTool.Label"), ref Config.ShowAlignmentTool);
 
-        var enabled = Config.ShowAlignmentTool;
-        if (!enabled)
-            ImGui.BeginDisabled();
+        using var _ = ImRaii.Disabled(!Config.ShowAlignmentTool);
 
         ImGui.Spacing();
         ImGui.Separator();
@@ -52,8 +50,5 @@ public unsafe class AlignmentToolSettingsOverlay : Overlay
         {
             Plugin.Config.Save();
         }
-
-        if (!enabled)
-            ImGui.EndDisabled();
     }
 }

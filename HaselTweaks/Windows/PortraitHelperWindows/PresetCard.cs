@@ -28,7 +28,6 @@ public class PresetCard : IDisposable
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
     public static Vector2 PortraitSize { get; } = new(576, 960); // native texture size
 
-    private bool _isDisposed;
     private readonly CancellationTokenSource _closeTokenSource = new();
 
     private readonly PresetBrowserOverlay _overlay;
@@ -59,26 +58,14 @@ public class PresetCard : IDisposable
 
     public void Dispose()
     {
-        if (_isDisposed)
-            return;
-
         _closeTokenSource.Cancel();
         _closeTokenSource.Dispose();
-
         _image?.Dispose();
-        _image = null;
-
         _textureWrap?.Dispose();
-        _textureWrap = null;
-
-        _isDisposed = true;
     }
 
     public void Draw(float scale, uint defaultImGuiTextColor)
     {
-        if (_isDisposed)
-            return;
-
         Update(scale);
 
         var style = ImGui.GetStyle();
@@ -180,19 +167,20 @@ public class PresetCard : IDisposable
 
             if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
             {
-                _overlay.Tweak.PresetToState(_preset.Preset, ImportFlags.All);
-                _overlay.Tweak.CloseWindows();
+                _preset.Preset?.ToState(ImportFlags.All);
+                PortraitHelper.CloseOverlays();
             }
         }
 
         using (ImRaii.PushColor(ImGuiCol.Text, defaultImGuiTextColor))
         {
-            if (ImGui.BeginPopupContextItem($"{_preset.Id}_Popup"))
+            using var popup = ImRaii.ContextPopupItem($"{_preset.Id}_Popup");
+            if (popup.Success)
             {
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.LoadPreset.Label")))
                 {
-                    _overlay.Tweak.PresetToState(_preset.Preset, ImportFlags.All);
-                    _overlay.Tweak.CloseWindows();
+                    _preset.Preset?.ToState(ImportFlags.All);
+                    PortraitHelper.CloseOverlays();
                 }
 
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.EditPreset.Label")))
@@ -202,7 +190,7 @@ public class PresetCard : IDisposable
 
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.ExportToClipboard.Label")))
                 {
-                    _overlay.Tweak.PresetToClipboard(_preset.Preset);
+                    _preset.Preset?.ToClipboard();
                 }
 
                 if (_image != null && ImGui.BeginMenu(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Label")))
@@ -236,8 +224,6 @@ public class PresetCard : IDisposable
                 {
                     _overlay.DeletePresetDialog.Open(_preset);
                 }
-
-                ImGui.EndPopup();
             }
         }
     }
@@ -275,24 +261,32 @@ public class PresetCard : IDisposable
         if (!flags.HasFlag(CopyImageFlags.NoFrame) && _bannerFrameImage != null)
         {
             var iconId = _bannerFrameImage.Value;
-            var texture = Service.DataManager.GetFile<TexFile>($"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex");
-            if (texture != null)
+            var iconPath = Service.TextureProvider.GetIconPath((uint)iconId);
+            if (iconPath != null)
             {
-                using var image = Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
-                image.Mutate(x => x.Resize(tempImage.Width, tempImage.Height));
-                tempImage.Mutate(x => x.DrawImage(image, 1f));
+                var texture = Service.DataManager.GetFile<TexFile>(iconPath);
+                if (texture != null)
+                {
+                    using var image = Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
+                    image.Mutate(x => x.Resize(tempImage.Width, tempImage.Height));
+                    tempImage.Mutate(x => x.DrawImage(image, 1f));
+                }
             }
         }
 
         if (!flags.HasFlag(CopyImageFlags.NoDecoration) && _bannerDecorationImage != null)
         {
             var iconId = _bannerDecorationImage.Value;
-            var texture = Service.DataManager.GetFile<TexFile>($"ui/icon/{iconId / 1000:D3}000/{iconId:D6}_hr1.tex");
-            if (texture != null)
+            var iconPath = Service.TextureProvider.GetIconPath((uint)iconId);
+            if (iconPath != null)
             {
-                using var image = Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
-                image.Mutate(x => x.Resize(tempImage.Width, tempImage.Height));
-                tempImage.Mutate(x => x.DrawImage(image, 1f));
+                var texture = Service.DataManager.GetFile<TexFile>(iconPath);
+                if (texture != null)
+                {
+                    using var image = Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
+                    image.Mutate(x => x.Resize(tempImage.Width, tempImage.Height));
+                    tempImage.Mutate(x => x.DrawImage(image, 1f));
+                }
             }
         }
 
@@ -323,7 +317,7 @@ public class PresetCard : IDisposable
 
             if (!string.IsNullOrEmpty(_preset.TextureHash) && DateTime.Now - _lastTextureCheck > TimeSpan.FromSeconds(1))
             {
-                var thumbPath = PortraitHelper.Configuration.GetPortraitThumbnailPath(_preset.TextureHash);
+                var thumbPath = PortraitHelper.GetPortraitThumbnailPath(_preset.TextureHash);
 
                 if (File.Exists(thumbPath))
                 {

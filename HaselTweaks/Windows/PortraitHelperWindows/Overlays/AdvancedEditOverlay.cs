@@ -1,8 +1,8 @@
 using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselTweaks.Structs;
-using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
 
@@ -15,13 +15,13 @@ public unsafe class AdvancedEditOverlay : Overlay
     private float _timestamp;
     private float _timelineLength;
 
-    public AdvancedEditOverlay(PortraitHelper tweak) : base(t("PortraitHelperWindows.AdvancedEditOverlay.Title"), tweak)
+    public AdvancedEditOverlay() : base(t("PortraitHelperWindows.AdvancedEditOverlay.Title"))
     {
     }
 
     public override void OnOpen()
     {
-        var state = AgentBannerEditor->EditorState;
+        var state = GetAgent<AgentBannerEditor>()->EditorState;
         var character = state->CharaView->Base.GetCharacter();
         if (character == null)
             return;
@@ -34,7 +34,7 @@ public unsafe class AdvancedEditOverlay : Overlay
         if (timeline == null)
             return;
 
-        _timestamp = (float)Math.Round(AgentBannerEditor->EditorState->CharaView->GetAnimationTime(), 1);
+        _timestamp = (float)Math.Round(GetAgent<AgentBannerEditor>()->EditorState->CharaView->GetAnimationTime(), 1);
         _timelineLength = timeline->AnimationLength;
     }
 
@@ -42,7 +42,7 @@ public unsafe class AdvancedEditOverlay : Overlay
     {
         base.Update();
 
-        var charaViewTimestamp = (float)Math.Round(AgentBannerEditor->EditorState->CharaView->GetAnimationTime(), 1);
+        var charaViewTimestamp = (float)Math.Round(GetAgent<AgentBannerEditor>()->EditorState->CharaView->GetAnimationTime(), 1);
         if (charaViewTimestamp != 0 && _timestamp != charaViewTimestamp)
         {
             _timestamp = charaViewTimestamp;
@@ -53,9 +53,10 @@ public unsafe class AdvancedEditOverlay : Overlay
     {
         base.Draw();
 
-        var style = ImGui.GetStyle();
+        var agentBannerEditor = GetAgent<AgentBannerEditor>();
+        var addonBannerEditor = GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
 
-        var state = AgentBannerEditor->EditorState;
+        var state = agentBannerEditor->EditorState;
         var character = state->CharaView->Base.GetCharacter();
         if (character == null)
             return;
@@ -101,8 +102,8 @@ public unsafe class AdvancedEditOverlay : Overlay
                     scale * (pitch - state->CharaView->CameraPitch)
                 );
 
-                if (!AgentBannerEditor->EditorState->HasDataChanged)
-                    AgentBannerEditor->EditorState->SetHasChanged(true);
+                if (!agentBannerEditor->EditorState->HasDataChanged)
+                    agentBannerEditor->EditorState->SetHasChanged(true);
             }
 
             ImGui.TableNextRow();
@@ -124,8 +125,8 @@ public unsafe class AdvancedEditOverlay : Overlay
                     scale * (pitch - state->CharaView->CameraPitch)
                 );
 
-                if (!AgentBannerEditor->EditorState->HasDataChanged)
-                    AgentBannerEditor->EditorState->SetHasChanged(true);
+                if (!agentBannerEditor->EditorState->HasDataChanged)
+                    agentBannerEditor->EditorState->SetHasChanged(true);
             }
 
             ImGui.TableNextRow();
@@ -144,8 +145,8 @@ public unsafe class AdvancedEditOverlay : Overlay
                     scale * (distance - state->CharaView->CameraDistance)
                 );
 
-                if (!AgentBannerEditor->EditorState->HasDataChanged)
-                    AgentBannerEditor->EditorState->SetHasChanged(true);
+                if (!agentBannerEditor->EditorState->HasDataChanged)
+                    agentBannerEditor->EditorState->SetHasChanged(true);
             }
         }
 
@@ -171,8 +172,8 @@ public unsafe class AdvancedEditOverlay : Overlay
                     scale * (pos.Y - state->CharaView->CameraTarget.Y)
                 );
 
-                if (!AgentBannerEditor->EditorState->HasDataChanged)
-                    AgentBannerEditor->EditorState->SetHasChanged(true);
+                if (!agentBannerEditor->EditorState->HasDataChanged)
+                    agentBannerEditor->EditorState->SetHasChanged(true);
             }
         }
 
@@ -185,30 +186,30 @@ public unsafe class AdvancedEditOverlay : Overlay
 
             ImGui.TableNextColumn();
 
-            var itemWidth = (ImGui.GetColumnWidth() - style.ItemInnerSpacing.X) / 2f - 0.5f;
+            var itemWidth = (ImGui.GetColumnWidth() - ImGui.GetStyle().ItemInnerSpacing.X) / 2f - 0.5f;
             ImGui.SetNextItemWidth(itemWidth);
 
             var zoom = (int)state->CharaView->CameraZoom;
             if (ImGui.DragInt($"##DragFloatZoom", ref zoom, 1, 0, 200))
             {
                 state->CharaView->SetCameraZoom((byte)zoom);
-                AddonBannerEditor->CameraZoomSlider->SetValue(zoom);
+                addonBannerEditor->CameraZoomSlider->SetValue(zoom);
 
-                if (!AgentBannerEditor->EditorState->HasDataChanged)
-                    AgentBannerEditor->EditorState->SetHasChanged(true);
+                if (!agentBannerEditor->EditorState->HasDataChanged)
+                    agentBannerEditor->EditorState->SetHasChanged(true);
             }
 
-            ImGui.SameLine(0, style.ItemInnerSpacing.X);
+            ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
             ImGui.SetNextItemWidth(itemWidth + 0.5f);
 
             var rotation = (int)state->CharaView->ImageRotation;
             if (ImGui.DragInt($"##DragFloatRotation", ref rotation, 1, -90, 90))
             {
                 state->CharaView->ImageRotation = (short)rotation;
-                AddonBannerEditor->ImageRotation->SetValue(rotation);
+                addonBannerEditor->ImageRotation->SetValue(rotation);
 
-                if (!AgentBannerEditor->EditorState->HasDataChanged)
-                    AgentBannerEditor->EditorState->SetHasChanged(true);
+                if (!agentBannerEditor->EditorState->HasDataChanged)
+                    agentBannerEditor->EditorState->SetHasChanged(true);
             }
         }
 
@@ -232,8 +233,8 @@ public unsafe class AdvancedEditOverlay : Overlay
             {
                 state->CharaView->SetEyeDirection(eyeDirection.X, eyeDirection.Y);
 
-                if (!AgentBannerEditor->EditorState->HasDataChanged)
-                    AgentBannerEditor->EditorState->SetHasChanged(true);
+                if (!agentBannerEditor->EditorState->HasDataChanged)
+                    agentBannerEditor->EditorState->SetHasChanged(true);
             }
         }
 
@@ -257,8 +258,8 @@ public unsafe class AdvancedEditOverlay : Overlay
             {
                 state->CharaView->SetHeadDirection(headDirection.X, headDirection.Y);
 
-                if (!AgentBannerEditor->EditorState->HasDataChanged)
-                    AgentBannerEditor->EditorState->SetHasChanged(true);
+                if (!agentBannerEditor->EditorState->HasDataChanged)
+                    agentBannerEditor->EditorState->SetHasChanged(true);
             }
         }
 
@@ -290,10 +291,10 @@ public unsafe class AdvancedEditOverlay : Overlay
                         timeline->CurrentTimestamp = clampedValue;
                         state->CharaView->SetPoseTimed(character->ActionTimelineManager.BannerTimelineRowId, clampedValue);
                         state->CharaView->Base.ToggleAnimationPlayback(true);
-                        AddonBannerEditor->PlayAnimationCheckbox->SetValue(false);
+                        addonBannerEditor->PlayAnimationCheckbox->SetValue(false);
 
-                        if (!AgentBannerEditor->EditorState->HasDataChanged)
-                            AgentBannerEditor->EditorState->SetHasChanged(true);
+                        if (!agentBannerEditor->EditorState->HasDataChanged)
+                            agentBannerEditor->EditorState->SetHasChanged(true);
                     }
                 }
             }

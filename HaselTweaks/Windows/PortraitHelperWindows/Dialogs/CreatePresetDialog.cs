@@ -118,7 +118,7 @@ public class CreatePresetDialog : ConfirmationDialog
             _image.CopyPixelDataTo(pixelData);
 
             var hash = BitConverter.ToInt64(XxHash64.Hash(pixelData)).ToString("x");
-            var thumbPath = PortraitHelper.Configuration.GetPortraitThumbnailPath(hash);
+            var thumbPath = PortraitHelper.GetPortraitThumbnailPath(hash);
 
             _image.SaveAsPng(thumbPath, new PngEncoder
             {

@@ -16,14 +16,12 @@ public abstract unsafe class Overlay : Window, IDisposable
     private ImRaii.Style? _windowPadding;
     private ImRaii.Color? _windowText;
 
-    public PortraitHelper Tweak { get; init; }
-
     protected bool IsWindow { get; set; }
 
     protected uint DefaultImGuiTextColor { get; set; }
 
-    public AgentBannerEditor* AgentBannerEditor => Tweak.AgentBannerEditor;
-    public AddonBannerEditor* AddonBannerEditor => Tweak.AddonBannerEditor;
+    private AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
+    private AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
 
     protected static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
 
@@ -35,10 +33,8 @@ public abstract unsafe class Overlay : Window, IDisposable
 
     protected virtual OverlayType Type => OverlayType.Window;
 
-    public Overlay(string name, PortraitHelper tweak) : base(name)
+    public Overlay(string name) : base(name)
     {
-        Tweak = tweak;
-
         DisableWindowSounds = true;
         RespectCloseHotkey = false;
 
@@ -65,20 +61,20 @@ public abstract unsafe class Overlay : Window, IDisposable
     public override void OnClose()
     {
         _windowPadding?.Dispose();
-        _windowPadding = null;
         _windowText?.Dispose();
-        _windowText = null;
         _windowBg?.Dispose();
-        _windowBg = null;
 
         ToggleUiVisibility(true);
+
+        IsOpen = false;
     }
 
     public override void Update()
     {
         var isWindow = ImGui.GetIO().FontGlobalScale > 1;
+        var isCloseDialogOpen = AgentBannerEditor->EditorState->CloseDialogAddonId != 0;
 
-        ToggleUiVisibility(isWindow);
+        ToggleUiVisibility(isWindow || isCloseDialogOpen);
 
         IsWindow = isWindow;
     }

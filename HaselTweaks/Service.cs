@@ -17,6 +17,7 @@ public class Service
     public static TranslationManager TranslationManager { get; private set; } = null!;
     public static StringManager StringManager { get; private set; } = null!;
     public static TextureManager TextureManager { get; private set; } = null!;
+    public static WindowManager WindowManager { get; private set; } = null!;
 
     public static DalamudPluginInterface PluginInterface { get; private set; } = null!;
 
@@ -45,6 +46,7 @@ public class Service
         TranslationManager = new(PluginInterface, ClientState);
         StringManager = new();
         TextureManager = new();
+        WindowManager = new(pluginInterface);
     }
 
     public static void Dispose()
@@ -52,5 +54,6 @@ public class Service
         AddonObserver.Dispose();
         TranslationManager.Dispose();
         TextureManager.Dispose();
+        WindowManager.Dispose();
     }
 }

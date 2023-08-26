@@ -25,14 +25,11 @@ public unsafe class GearSetGridWindow : Window
     private static readonly float ItemCellWidth = IconSize.X;
     public static GearSetGrid.Configuration Config => Plugin.Config.Tweaks.GearSetGrid;
 
-    private readonly GearSetGrid _tweak;
     private bool _resetSize;
     private bool _resetScrollPosition;
 
-    public GearSetGridWindow(GearSetGrid tweak) : base(t("GearSetGridWindow.Title"))
+    public GearSetGridWindow() : base(t("GearSetGridWindow.Title"))
     {
-        _tweak = tweak;
-
         base.Namespace = "HaselTweaks_GearSetGrid";
         base.DisableWindowSounds = Config.AutoOpenWithGearSetList;
         base.IsOpen = true;
