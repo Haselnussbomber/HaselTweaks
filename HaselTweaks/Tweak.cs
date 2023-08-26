@@ -15,6 +15,7 @@ public abstract unsafe class Tweak
     private string? _internalName;
     private TweakFlags? _flags;
     private IncompatibilityWarningAttribute[]? _incompatibilityWarnings;
+    private bool _disposed;
 
     public Type CachedType
         => _type ??= GetType();
@@ -161,6 +162,9 @@ public abstract unsafe class Tweak
 
     internal void DisposeInternal()
     {
+        if (_disposed)
+            return;
+
         DisableInternal();
 
         try
@@ -184,6 +188,7 @@ public abstract unsafe class Tweak
         }
 
         Ready = false;
+        _disposed = true;
     }
 
     internal void OnFrameworkUpdateInternal(Framework framework)

@@ -54,6 +54,5 @@ public class Service
         AddonObserver.Dispose();
         TranslationManager.Dispose();
         TextureManager.Dispose();
-        WindowManager.Dispose();
     }
 }

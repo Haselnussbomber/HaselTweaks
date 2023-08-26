@@ -26,7 +26,9 @@ public record Texture : IDisposable
 
     public void Dispose()
     {
-        Unload();
+        _textureWrap?.Dispose();
+        _textureWrap = null;
+        GC.SuppressFinalize(this);
     }
 
     public string Path { get; }
@@ -48,7 +50,10 @@ public record Texture : IDisposable
             ImGui.Dummy(size);
 
             if (_textureWrap != null && _lastRender < DateTime.UtcNow - KeepAliveTime)
-                Unload();
+            {
+                _textureWrap?.Dispose();
+                _textureWrap = null;
+            }
             return;
         }
 
@@ -95,14 +100,5 @@ public record Texture : IDisposable
         }
 
         return tex;
-    }
-
-    public void Unload()
-    {
-        if (_textureWrap == null)
-            return;
-
-        _textureWrap?.Dispose();
-        _textureWrap = null;
     }
 }

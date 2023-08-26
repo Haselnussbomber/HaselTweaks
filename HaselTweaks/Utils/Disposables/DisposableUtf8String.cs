@@ -62,7 +62,12 @@ public unsafe class DisposableUtf8String : DisposableCreatable<Utf8String>, IDis
 
     public new void Dispose()
     {
+        if (Ptr == null)
+            return;
+
         Ptr->Dtor();
         base.Dispose();
+
+        GC.SuppressFinalize(this);
     }
 }

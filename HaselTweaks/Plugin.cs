@@ -6,6 +6,7 @@ using Dalamud.Game.Command;
 using Dalamud.Logging;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using HaselTweaks.Services;
 using HaselTweaks.Windows;
 using Svg;
 using DalamudFramework = Dalamud.Game.Framework;
@@ -18,6 +19,8 @@ public partial class Plugin : IDalamudPlugin
 
     internal static HashSet<Tweak> Tweaks = null!; // filled by generator (InitializeTweaks)
     internal static Configuration Config = null!;
+
+    private bool _disposed;
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
@@ -170,6 +173,9 @@ public partial class Plugin : IDalamudPlugin
 
     void IDisposable.Dispose()
     {
+        if (_disposed)
+            return;
+
         Service.TranslationManager.OnLanguageChange -= OnLanguageChange;
         Service.AddonObserver.AddonClose -= AddonObserver_AddonClose;
         Service.AddonObserver.AddonOpen -= AddonObserver_AddonOpen;
@@ -180,6 +186,8 @@ public partial class Plugin : IDalamudPlugin
         Service.PluginInterface.UiBuilder.OpenMainUi -= OnOpenMainUi;
 
         Service.CommandManager.RemoveHandler("/haseltweaks");
+
+        Service.WindowManager.Dispose();
 
         foreach (var tweak in Tweaks)
         {
@@ -195,5 +203,8 @@ public partial class Plugin : IDalamudPlugin
 
         Config?.Save();
         Service.Dispose();
+
+        _disposed = true;
+        GC.SuppressFinalize(this);
     }
 }

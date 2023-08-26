@@ -60,6 +60,8 @@ public partial class PluginWindow : Window, IDisposable
     public void Dispose()
     {
         _logoTextureWrap?.Dispose();
+        _logoTextureWrap = null;
+        GC.SuppressFinalize(this);
     }
 
     private Tweak? SelectedTweak => Plugin.Tweaks.FirstOrDefault(t => t.InternalName == _selectedTweak);

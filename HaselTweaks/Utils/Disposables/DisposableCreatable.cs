@@ -5,7 +5,7 @@ namespace HaselTweaks.Utils;
 // based on FFXIVClientStructs.Interop.Pointer
 public unsafe class DisposableCreatable<T> : IDisposable where T : unmanaged, ICreatable
 {
-    public T* Ptr { get; }
+    public T* Ptr { get; private set; }
 
     public DisposableCreatable(IMemorySpace* memorySpace = null)
     {
@@ -28,6 +28,12 @@ public unsafe class DisposableCreatable<T> : IDisposable where T : unmanaged, IC
 
     public void Dispose()
     {
+        if (Ptr == null)
+            return;
+
         IMemorySpace.Free(Ptr);
+        Ptr = null;
+
+        GC.SuppressFinalize(this);
     }
 }

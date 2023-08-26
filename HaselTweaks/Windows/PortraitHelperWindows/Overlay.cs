@@ -45,6 +45,21 @@ public abstract unsafe class Overlay : Window, IDisposable
     public void Dispose()
     {
         OnClose();
+        GC.SuppressFinalize(this);
+    }
+
+    public override void OnClose()
+    {
+        _windowPadding?.Dispose();
+        _windowPadding = null;
+        _windowText?.Dispose();
+        _windowText = null;
+        _windowBg?.Dispose();
+        _windowBg = null;
+
+        ToggleUiVisibility(true);
+
+        IsOpen = false;
     }
 
     public override bool DrawConditions()
@@ -56,17 +71,6 @@ public abstract unsafe class Overlay : Window, IDisposable
         var isCloseDialogOpen = AgentBannerEditor->EditorState->CloseDialogAddonId != 0;
 
         return IsOpen && !isContextMenuOpen && !isCloseDialogOpen;
-    }
-
-    public override void OnClose()
-    {
-        _windowPadding?.Dispose();
-        _windowText?.Dispose();
-        _windowBg?.Dispose();
-
-        ToggleUiVisibility(true);
-
-        IsOpen = false;
     }
 
     public override void Update()

@@ -5,7 +5,7 @@ namespace HaselTweaks.Utils;
 // based on FFXIVClientStructs.Interop.Pointer
 public unsafe class DisposableStruct<T> : IDisposable where T : unmanaged
 {
-    public T* Ptr { get; }
+    public T* Ptr { get; private set; }
 
     public DisposableStruct(IMemorySpace* memorySpace = null)
     {
@@ -28,6 +28,12 @@ public unsafe class DisposableStruct<T> : IDisposable where T : unmanaged
 
     public void Dispose()
     {
+        if (Ptr == null)
+            return;
+
         IMemorySpace.Free(Ptr);
+        Ptr = null;
+
+        GC.SuppressFinalize(this);
     }
 }

@@ -26,9 +26,9 @@ namespace HaselTweaks.Windows.PortraitHelperWindows;
 public class PresetCard : IDisposable
 {
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
-    public static Vector2 PortraitSize { get; } = new(576, 960); // native texture size
+    public static readonly Vector2 PortraitSize = new(576, 960); // native texture size
 
-    private readonly CancellationTokenSource _closeTokenSource = new();
+    private CancellationTokenSource? _closeTokenSource;
 
     private readonly PresetBrowserOverlay _overlay;
     private readonly SavedPreset _preset;
@@ -58,10 +58,14 @@ public class PresetCard : IDisposable
 
     public void Dispose()
     {
-        _closeTokenSource.Cancel();
-        _closeTokenSource.Dispose();
+        _closeTokenSource?.Cancel();
+        _closeTokenSource?.Dispose();
+        _closeTokenSource = null;
         _image?.Dispose();
+        _image = null;
         _textureWrap?.Dispose();
+        _textureWrap = null;
+        GC.SuppressFinalize(this);
     }
 
     public void Draw(float scale, uint defaultImGuiTextColor)
@@ -322,6 +326,7 @@ public class PresetCard : IDisposable
                 if (File.Exists(thumbPath))
                 {
                     _isImageLoading = true;
+                    _closeTokenSource ??= new();
                     Task.Run(async () =>
                     {
                         try
@@ -357,6 +362,7 @@ public class PresetCard : IDisposable
         {
             _textureWrap?.Dispose();
             _isImageUpdatePending = false;
+            _closeTokenSource ??= new();
 
             Task.Run(() =>
             {
