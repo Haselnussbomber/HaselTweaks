@@ -76,6 +76,8 @@ public partial class PluginWindow : Window, IDisposable
                 tweak.OnConfigWindowClose();
             }
         }
+
+        Service.WindowManager.CloseWindow<PluginWindow>();
     }
 
     public override void Update()

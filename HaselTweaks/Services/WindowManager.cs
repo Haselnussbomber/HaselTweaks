@@ -34,23 +34,25 @@ public class WindowManager : WindowSystem, IDisposable
 
     public T OpenWindow<T>() where T : Window, new()
     {
-        if (!Windows.FindFirst(w => w.GetType() == typeof(T), out var window))
+        var window = GetWindow<T>();
+        if (window is null)
         {
             AddWindow(window = new T());
         }
 
         window.IsOpen = true;
 
-        return (T)window;
+        return window;
     }
 
     public void CloseWindow<T>() where T : Window
     {
-        if (Windows.FindFirst(w => w.GetType() == typeof(T), out var window))
-        {
-            (window as IDisposable)?.Dispose();
-            RemoveWindow(window);
-        }
+        var window = GetWindow<T>();
+        if (window is null)
+            return;
+
+        (window as IDisposable)?.Dispose();
+        RemoveWindow(window);
     }
 
     public void ToggleWindow<T>() where T : Window, new()
