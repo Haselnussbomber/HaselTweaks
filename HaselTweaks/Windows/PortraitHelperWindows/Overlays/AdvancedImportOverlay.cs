@@ -234,7 +234,7 @@ public unsafe class AdvancedImportOverlay : Overlay
             ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);
     }
 
-    private void DrawImportSetting(string label, ImportFlags flag, System.Action drawFn)
+    private static void DrawImportSetting(string label, ImportFlags flag, System.Action drawFn)
     {
         using var id = ImRaii.PushId(flag.ToString());
 
@@ -281,7 +281,7 @@ public unsafe class AdvancedImportOverlay : Overlay
         ImGui.TableNextColumn();
         ImGui.ColorEdit3("##ColorEdit3", ref vec, ImGuiColorEditFlags.NoPicker | ImGuiColorEditFlags.NoOptions | ImGuiColorEditFlags.NoLabel | ImGuiColorEditFlags.NoInputs);
 
-        void drawColumn(string label, Half value)
+        static void drawColumn(string label, Half value)
         {
             ImGui.TableNextColumn();
             label = t("PortraitHelperWindows.AdvancedImportOverlay.ColorInput." + label);
@@ -310,7 +310,7 @@ public unsafe class AdvancedImportOverlay : Overlay
 
         ImGui.TableNextRow();
 
-        void drawColumn(string label, Half value)
+        static void drawColumn(string label, Half value)
         {
             ImGui.TableNextColumn();
             label = t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput." + label);
@@ -340,7 +340,7 @@ public unsafe class AdvancedImportOverlay : Overlay
 
         ImGui.TableNextRow();
 
-        void drawColumn(string label, Half value)
+        static void drawColumn(string label, Half value)
         {
             ImGui.TableNextColumn();
             label = t("PortraitHelperWindows.AdvancedImportOverlay.VectorInput." + label);

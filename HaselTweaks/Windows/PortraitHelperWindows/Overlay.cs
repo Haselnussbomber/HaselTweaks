@@ -20,8 +20,8 @@ public abstract unsafe class Overlay : Window, IDisposable
 
     protected uint DefaultImGuiTextColor { get; set; }
 
-    private AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
-    private AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
+    private static AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
+    private static AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
 
     protected static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
 

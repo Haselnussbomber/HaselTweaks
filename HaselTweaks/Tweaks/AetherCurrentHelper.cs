@@ -25,7 +25,7 @@ public unsafe partial class AetherCurrentHelper : Tweak
         Service.WindowManager.CloseWindow<AetherCurrentHelperWindow>();
     }
 
-    public void OpenWindow(AetherCurrentCompFlgSet compFlgSet)
+    public static void OpenWindow(AetherCurrentCompFlgSet compFlgSet)
     {
         var window = Service.WindowManager.OpenWindow<AetherCurrentHelperWindow>();
         window.CompFlgSet = compFlgSet;

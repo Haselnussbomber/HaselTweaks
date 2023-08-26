@@ -9,7 +9,7 @@ public unsafe partial struct HaselShellCommandModule
     public static HaselShellCommandModule* Instance() => (HaselShellCommandModule*)UIModule.Instance()->GetRaptureShellModule();
 
     [MemberFunction("E8 ?? ?? ?? ?? FE 86 ?? ?? ?? ?? C7 86")]
-    public partial byte* ExecuteCommandInner(Utf8String* command, UIModule* uiModule);
+    public readonly partial byte* ExecuteCommandInner(Utf8String* command, UIModule* uiModule);
 
     public static void ExecuteCommand(string command)
     {

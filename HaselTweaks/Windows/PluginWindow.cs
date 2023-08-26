@@ -374,7 +374,7 @@ public partial class PluginWindow : Window, IDisposable
             ImGui.SameLine();
             var cursorPosX = ImGui.GetCursorPosX();
 
-            string getConfigName(string tweakName, string configName)
+            static string getConfigName(string tweakName, string configName)
                 => t($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{tweakName}.Config.{configName}");
 
             if (tweak.IncompatibilityWarnings.Length == 1)

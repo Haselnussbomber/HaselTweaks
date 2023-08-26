@@ -21,8 +21,8 @@ public unsafe class MenuBar : Window
 {
     private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
 
-    private AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
-    private AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
+    private static AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
+    private static AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
 
     private PortraitPreset? _initialPreset;
     private string _portraitName = string.Empty;
