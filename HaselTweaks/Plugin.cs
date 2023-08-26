@@ -7,6 +7,7 @@ using Dalamud.Logging;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using HaselTweaks.Windows;
+using Svg;
 using DalamudFramework = Dalamud.Game.Framework;
 
 namespace HaselTweaks;
@@ -22,6 +23,9 @@ public partial class Plugin : IDalamudPlugin
     {
         Service.Initialize(pluginInterface);
         Task.Run(Setup);
+
+        // speeds up opening PluginWindow for the first time by ~200ms, lol
+        Task.Run(() => SvgDocument.FromSvg<SvgDocument>("<svg style=\"fill:#fff\" />"));
     }
 
     private void Setup()

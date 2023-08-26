@@ -29,7 +29,7 @@ public partial class PluginWindow : Window, IDisposable
     private string _selectedTweak = string.Empty;
     private bool _isLogoLoading;
     private TextureWrap? _logoTextureWrap;
-    private readonly Point _logoSize = new(708, 220);
+    private readonly Point _logoSize = new(580, 180);
     private Point _renderedLogoSize = new(0, 0);
 
     [GeneratedRegex("\\.0$")]
@@ -90,7 +90,7 @@ public partial class PluginWindow : Window, IDisposable
         if (_isLogoLoading)
             return;
 
-        _renderedLogoSize.X = (int)(_logoSize.X * (_logoSize.X / (SidebarWidth * 2) * 0.6f) * ImGui.GetIO().FontGlobalScale);
+        _renderedLogoSize.X = (int)(_logoSize.X * (_logoSize.X / (SidebarWidth * 2) * 0.75f) * ImGui.GetIO().FontGlobalScale);
         _renderedLogoSize.Y = (int)(_logoSize.Y * (_renderedLogoSize.X / (float)_logoSize.X));
 
         if (_renderedLogoSize.X <= 0 || _renderedLogoSize.Y <= 0)
@@ -112,9 +112,7 @@ public partial class PluginWindow : Window, IDisposable
                     return;
                 }
 
-                using var reader = new StreamReader(stream);
-                var svgDocument = SvgDocument.FromSvg<SvgDocument>(reader.ReadToEnd());
-
+                var svgDocument = SvgDocument.Open<SvgDocument>(stream);
                 using var bitmap = svgDocument.Draw(_renderedLogoSize.X, _renderedLogoSize.Y);
                 using var memoryStream = new MemoryStream();
 
