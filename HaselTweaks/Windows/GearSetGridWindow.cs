@@ -173,10 +173,10 @@ public unsafe class GearSetGridWindow : Window
 
                 new ImGuiContextMenu("##GearsetContext")
                 {
-                    ImGuiContextMenu.CreateGearsetLinkGlamour(gearset),
-                    ImGuiContextMenu.CreateGearsetChangeGlamour(gearset),
-                    ImGuiContextMenu.CreateGearsetUnlinkGlamour(gearset),
-                    ImGuiContextMenu.CreateGearsetChangePortrait(gearset)
+                    ImGuiContextMenu.CreateGearsetLinkGlamour(gearset->ID),
+                    ImGuiContextMenu.CreateGearsetChangeGlamour(gearset->ID),
+                    ImGuiContextMenu.CreateGearsetUnlinkGlamour(gearset->ID),
+                    ImGuiContextMenu.CreateGearsetChangePortrait(gearset->ID)
                 }
                 .Draw();
 
@@ -304,7 +304,7 @@ public unsafe class GearSetGridWindow : Window
             ImGuiContextMenu.CreateTryOn(item.RowId, slot->GlamourId, slot->Stain),
             ImGuiContextMenu.CreateItemFinder(item.RowId),
             ImGuiContextMenu.CreateCopyItemName(item.RowId),
-            ImGuiContextMenu.CreateGarlandTools(item.RowId),
+            ImGuiContextMenu.CreateOpenOnGarlandTools(item.RowId),
             ImGuiContextMenu.CreateItemSearch(item.RowId),
         }
         .Draw();

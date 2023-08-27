@@ -15,7 +15,6 @@ namespace HaselTweaks;
 public class Service
 {
     public static TranslationManager TranslationManager => HaselCommonBase.TranslationManager;
-    public static StringManager StringManager => HaselCommonBase.StringManager;
     public static TextureManager TextureManager => HaselCommonBase.TextureManager;
     public static WindowManager WindowManager => HaselCommonBase.WindowManager;
 
