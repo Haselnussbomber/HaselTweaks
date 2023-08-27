@@ -241,7 +241,7 @@ public unsafe class Commands : Tweak
 
         var stain = GetRow<Stain>(targetCharacter->DrawData.Legs.Stain)!;
         var name = new SeStringBuilder()
-            .AddUiForeground(MemoryHelper.ReadStringNullTerminated((nint)targetCharacter->GameObject.Name), 1)
+            .AddUiForeground(MemoryHelper.ReadString((nint)targetCharacter->GameObject.Name, 0x40), 1)
             .Build();
 
         var sb = new SeStringBuilder()

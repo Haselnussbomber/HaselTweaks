@@ -11,7 +11,6 @@ using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Structs.Addons;
-using HaselTweaks.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
@@ -240,7 +239,7 @@ public unsafe partial class LockWindowPosition : Tweak
     {
         if (atkUnitBase != null)
         {
-            var name = MemoryHelper.ReadStringNullTerminated((nint)atkUnitBase->Name);
+            var name = MemoryHelper.ReadString((nint)atkUnitBase->Name, 0x20);
             var isLocked = Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == name);
 
             if (Config.Inverted)
@@ -263,7 +262,7 @@ public unsafe partial class LockWindowPosition : Tweak
                 var atkUnitBase = *(AtkUnitBase**)(a2 + 8);
                 if (atkUnitBase != null && atkUnitBase->WindowNode != null && atkUnitBase->WindowCollisionNode != null)
                 {
-                    var name = MemoryHelper.ReadStringNullTerminated((nint)atkUnitBase->Name);
+                    var name = MemoryHelper.ReadString((nint)atkUnitBase->Name, 0x20);
                     if (!IgnoredAddons.Contains(name))
                     {
                         _hoveredWindowName = name;
@@ -323,7 +322,7 @@ public unsafe partial class LockWindowPosition : Tweak
             var addon = GetAddon<AtkUnitBase>((ushort)addonId);
             if (addon != null)
             {
-                var name = MemoryHelper.ReadStringNullTerminated((nint)addon->Name);
+                var name = MemoryHelper.ReadString((nint)addon->Name, 0x20);
 
                 if (!IgnoredAddons.Contains(name))
                 {
@@ -362,7 +361,7 @@ public unsafe partial class LockWindowPosition : Tweak
         {
             if (TryGetAddon<AtkUnitBase>((ushort)GetAgent<AgentContext>()->OwnerAddon, out var addon))
             {
-                var name = MemoryHelper.ReadStringNullTerminated((nint)addon->Name);
+                var name = MemoryHelper.ReadString((nint)addon->Name, 0x20);
 
                 var entry = Config.LockedWindows.FirstOrDefault(entry => entry?.Name == name, null);
                 var isLocked = eventParam == EventParamLock;

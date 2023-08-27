@@ -135,7 +135,7 @@ public unsafe class GearSetGridWindow : Window
 
             using var id = ImRaii.PushId($"Gearset_{gearsetIndex}");
 
-            var name = MemoryHelper.ReadStringNullTerminated((nint)gearset->Name);
+            var name = MemoryHelper.ReadString((nint)gearset->Name, 0x2F);
 
             if (Config.ConvertSeparators && name == Config.SeparatorFilter)
             {
@@ -254,7 +254,7 @@ public unsafe class GearSetGridWindow : Window
 
             var item = (GearsetItem*)((nint)gearset->ItemsData + GearsetItem.Size * slotIndex);
             if (item->ItemID == itemId)
-                list.Add(new(gearset->ID, MemoryHelper.ReadStringNullTerminated((nint)gearset->Name)));
+                list.Add(new(gearset->ID, MemoryHelper.ReadString((nint)gearset->Name, 0x2F)));
         }
 
         return list;

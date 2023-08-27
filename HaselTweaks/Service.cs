@@ -31,7 +31,6 @@ public class Service
     [PluginService] public static IDtrBar DtrBar { get; private set; } = null!;
     [PluginService] public static IGameConfig GameConfig { get; private set; } = null!;
     [PluginService] public static IGameGui GameGui { get; private set; } = null!;
-    [PluginService] public static IGamepadState GamepadState { get; private set; } = null!;
     [PluginService] public static IObjectTable ObjectTable { get; private set; } = null!;
     [PluginService] public static ISigScanner SigScanner { get; private set; } = null!;
     [PluginService] public static ITargetManager TargetManager { get; private set; } = null!;
