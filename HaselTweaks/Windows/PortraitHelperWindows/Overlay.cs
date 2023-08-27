@@ -3,6 +3,7 @@ using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;

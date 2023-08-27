@@ -1,6 +1,7 @@
 using System.Reflection;
 using Dalamud.Interface;
-using HaselTweaks.Utils;
+using HaselCommon;
+using HaselCommon.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks;
@@ -28,7 +29,7 @@ public class StringConfigAttribute : BaseConfigAttribute
             OnChangeInternal(tweak, fieldInfo);
         }
 
-        if (Service.TranslationManager.TryGetTranslation($"{tweak.InternalName}.Config.{fieldInfo.Name}.Description", out var description))
+        if (HaselCommonBase.TranslationManager.TryGetTranslation($"{tweak.InternalName}.Config.{fieldInfo.Name}.Description", out var description))
         {
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);
         }

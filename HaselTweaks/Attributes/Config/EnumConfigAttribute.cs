@@ -1,7 +1,8 @@
 using System.Reflection;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
-using HaselTweaks.Utils;
+using HaselCommon;
+using HaselCommon.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks;
@@ -42,7 +43,7 @@ public class EnumConfigAttribute : BaseConfigAttribute
         }
         combo?.Dispose();
 
-        if (Service.TranslationManager.TryGetTranslation($"{tweak.InternalName}.Config.{fieldInfo.Name}.Description", out var description))
+        if (HaselCommonBase.TranslationManager.TryGetTranslation($"{tweak.InternalName}.Config.{fieldInfo.Name}.Description", out var description))
         {
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);
         }

@@ -38,21 +38,6 @@ public static class ItemUtils
         return dict;
     });
 
-    public static bool CanTryOn(uint rowId)
-    {
-        var item = GetRow<Item>(rowId)!;
-
-        // see "E8 ?? ?? ?? ?? 85 C0 48 8B 03"
-        return item.EquipSlotCategory.Row switch
-        {
-            2 when item.FilterGroup != 3 => false, // any OffHand that's not a Shield
-            6 => false, // Waist
-            17 => false, // SoulCrystal
-
-            _ => true
-        };
-    }
-
     // TODO(v9): replace with SeString.CreateItemLink
     public static SeString GetItemLink(uint itemId, ItemPayload.ItemKind kind = ItemPayload.ItemKind.Normal)
     {

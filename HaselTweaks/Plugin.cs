@@ -6,7 +6,7 @@ using Dalamud.Game.Command;
 using Dalamud.Logging;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
-using HaselTweaks.Services;
+using HaselCommon;
 using HaselTweaks.Windows;
 using Svg;
 using DalamudFramework = Dalamud.Game.Framework;
@@ -24,7 +24,8 @@ public partial class Plugin : IDalamudPlugin
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
-        Service.Initialize(pluginInterface);
+        pluginInterface.Create<Service>();
+        HaselCommonBase.Initialize(pluginInterface);
         Task.Run(Setup);
 
         // speeds up displaying the logo in PluginWindow for the first time after loading the plugin by ~200ms
@@ -40,8 +41,8 @@ public partial class Plugin : IDalamudPlugin
             InitializeTweaks();
 
             Config = Configuration.Load(Tweaks.Select(t => t.InternalName));
-            Service.TranslationManager.Initialize("HaselTweaks.Translations.json", Config);
-            Service.TranslationManager.OnLanguageChange += OnLanguageChange;
+            HaselCommonBase.TranslationManager.Initialize("HaselTweaks.Translations.json", Config);
+            HaselCommonBase.TranslationManager.OnLanguageChange += OnLanguageChange;
 
             foreach (var tweak in Tweaks)
             {
@@ -62,8 +63,8 @@ public partial class Plugin : IDalamudPlugin
             Service.ClientState.Login += ClientState_Login;
             Service.ClientState.Logout += ClientState_Logout;
             Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
-            Service.AddonObserver.AddonOpen += AddonObserver_AddonOpen;
-            Service.AddonObserver.AddonClose += AddonObserver_AddonClose;
+            HaselCommonBase.AddonObserver.AddonOpen += AddonObserver_AddonOpen;
+            HaselCommonBase.AddonObserver.AddonClose += AddonObserver_AddonClose;
 
             Service.PluginInterface.UiBuilder.OpenMainUi += OnOpenMainUi;
 
@@ -176,9 +177,9 @@ public partial class Plugin : IDalamudPlugin
         if (_disposed)
             return;
 
-        Service.TranslationManager.OnLanguageChange -= OnLanguageChange;
-        Service.AddonObserver.AddonClose -= AddonObserver_AddonClose;
-        Service.AddonObserver.AddonOpen -= AddonObserver_AddonOpen;
+        HaselCommonBase.TranslationManager.OnLanguageChange -= OnLanguageChange;
+        HaselCommonBase.AddonObserver.AddonClose -= AddonObserver_AddonClose;
+        HaselCommonBase.AddonObserver.AddonOpen -= AddonObserver_AddonOpen;
         Service.Framework.Update -= OnFrameworkUpdate;
         Service.ClientState.Login -= ClientState_Login;
         Service.ClientState.Logout -= ClientState_Logout;
@@ -202,7 +203,7 @@ public partial class Plugin : IDalamudPlugin
         }
 
         Config?.Save();
-        Service.Dispose();
+        HaselCommonBase.Dispose();
 
         _disposed = true;
         GC.SuppressFinalize(this);

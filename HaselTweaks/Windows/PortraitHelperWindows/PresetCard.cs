@@ -7,6 +7,7 @@ using Dalamud.Interface.Raii;
 using Dalamud.Logging;
 using Dalamud.Memory;
 using Dalamud.Utility;
+using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -19,7 +20,7 @@ using Lumina.Excel.GeneratedSheets;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using Color = HaselTweaks.Structs.ImColor;
+using Color = HaselCommon.Structs.ImColor;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 

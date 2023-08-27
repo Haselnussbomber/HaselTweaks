@@ -1,6 +1,7 @@
 using System.Reflection;
 using Dalamud.Interface;
-using HaselTweaks.Utils;
+using HaselCommon;
+using HaselCommon.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks;
@@ -18,7 +19,7 @@ public class BoolConfigAttribute : BaseConfigAttribute
             OnChangeInternal(tweak, fieldInfo);
         }
 
-        if (Service.TranslationManager.TryGetTranslation($"{tweak.InternalName}.Config.{fieldInfo.Name}.Description", out var description))
+        if (HaselCommonBase.TranslationManager.TryGetTranslation($"{tweak.InternalName}.Config.{fieldInfo.Name}.Description", out var description))
         {
             ImGuiUtils.PushCursorY(-3);
             using var descriptionIndent = ImGuiUtils.ConfigIndent();

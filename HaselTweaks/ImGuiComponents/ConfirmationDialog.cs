@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Interface.Raii;
-using HaselTweaks.Utils;
+using HaselCommon.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks.ImGuiComponents;

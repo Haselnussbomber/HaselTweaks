@@ -1,6 +1,7 @@
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using Windows.Win32;

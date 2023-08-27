@@ -8,6 +8,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;

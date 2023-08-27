@@ -1,6 +1,6 @@
 using System.Reflection;
 using Dalamud.Interface;
-using HaselTweaks.Utils;
+using HaselCommon.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks;
@@ -17,7 +17,7 @@ public abstract class BaseConfigAttribute : Attribute
         tweak.CachedType.GetMethod(nameof(Tweak.OnConfigChange), BindingFlags.Instance | BindingFlags.Public)?.Invoke(tweak, new[] { fieldInfo.Name });
     }
 
-    protected bool DrawResetButton(string defaultValueString)
+    protected static bool DrawResetButton(string defaultValueString)
     {
         if (string.IsNullOrEmpty(defaultValueString))
             return false;

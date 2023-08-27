@@ -1,5 +1,6 @@
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using HaselCommon.Utils;
 using HaselTweaks.Utils;
 
 namespace HaselTweaks.Structs;

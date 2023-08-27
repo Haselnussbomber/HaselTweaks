@@ -6,15 +6,17 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
-using ImColor = HaselTweaks.Structs.ImColor;
+using ImColor = HaselCommon.Structs.ImColor;
 
 namespace HaselTweaks.Windows;
 
@@ -207,7 +209,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
             _questNameCache.Add(quest.RowId, questName);
         }
         ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {questName}");
-        ImGui.TextUnformatted(GetHumanReadableCoords(quest.IssuerLocation.Value!) + " | " + GetENpcResidentName(quest.IssuerStart));
+        ImGui.TextUnformatted($"{GetHumanReadableCoords(quest.IssuerLocation.Value!)} | {GetRow<ENpcResident>(quest.IssuerStart)!.Singular.ToDalamudString()}");
 
         // Actions
         ImGui.TableNextColumn();
@@ -237,7 +239,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
 
         // Content
         ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {GetEObjName(eobj.RowId)}");
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {GetRow<EObjName>(eobj.RowId)!.Singular.ToDalamudString()}");
         ImGui.TextUnformatted(GetHumanReadableCoords(level!));
 
         // Actions

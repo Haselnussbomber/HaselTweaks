@@ -4,6 +4,7 @@ using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Memory;
+using HaselCommon.Utils;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
@@ -45,6 +46,8 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         foreach (var card in PresetCards.Values)
             card.Dispose();
+
+        GC.SuppressFinalize(this);
     }
 
     public override void Draw()

@@ -4,9 +4,11 @@ using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselCommon.Utils;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -170,12 +172,12 @@ public unsafe class GearSetGridWindow : Window
                     }
                 }
 
-                new ImGuiUtils.ContextMenu("##GearsetContext")
+                new ImGuiContextMenu("##GearsetContext")
                 {
-                    ImGuiUtils.ContextMenuEntry.CreateGearsetLinkGlamour(gearset),
-                    ImGuiUtils.ContextMenuEntry.CreateGearsetChangeGlamour(gearset),
-                    ImGuiUtils.ContextMenuEntry.CreateGearsetUnlinkGlamour(gearset),
-                    ImGuiUtils.ContextMenuEntry.CreateGearsetChangePortrait(gearset)
+                    ImGuiContextMenu.CreateGearsetLinkGlamour(gearset),
+                    ImGuiContextMenu.CreateGearsetChangeGlamour(gearset),
+                    ImGuiContextMenu.CreateGearsetUnlinkGlamour(gearset),
+                    ImGuiContextMenu.CreateGearsetChangePortrait(gearset)
                 }
                 .Draw();
 
@@ -298,13 +300,13 @@ public unsafe class GearSetGridWindow : Window
 
         ImGui.SetCursorPos(startPos + new Vector2(0, (IconSize.Y - 3) * ImGuiHelpers.GlobalScale));
 
-        new ImGuiUtils.ContextMenu(popupKey)
+        new ImGuiContextMenu(popupKey)
         {
-            ImGuiUtils.ContextMenuEntry.CreateTryOn(item.RowId, slot->GlamourId, slot->Stain),
-            ImGuiUtils.ContextMenuEntry.CreateItemFinder(item.RowId),
-            ImGuiUtils.ContextMenuEntry.CreateCopyItemName(item.RowId),
-            ImGuiUtils.ContextMenuEntry.CreateGarlandTools(item.RowId),
-            ImGuiUtils.ContextMenuEntry.CreateItemSearch(item.RowId),
+            ImGuiContextMenu.CreateTryOn(item.RowId, slot->GlamourId, slot->Stain),
+            ImGuiContextMenu.CreateItemFinder(item.RowId),
+            ImGuiContextMenu.CreateCopyItemName(item.RowId),
+            ImGuiContextMenu.CreateGarlandTools(item.RowId),
+            CustomContextMenuEntries.CreateItemSearch(item.RowId),
         }
         .Draw();
 
@@ -312,7 +314,7 @@ public unsafe class GearSetGridWindow : Window
         {
             using (ImRaii.Tooltip())
             {
-                ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(item.Rarity), GetItemName(item.RowId));
+                ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(item.Rarity), GetRow<Item>(item.RowId)!.Singular.ToDalamudString().ToString());
 
                 var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
                 if (holdingShift)
@@ -335,7 +337,7 @@ public unsafe class GearSetGridWindow : Window
                     ImGui.TextUnformatted(t("GearSetGridWindow.ItemTooltip.LabelGlamour"));
                     var glamourItem = GetRow<Item>(slot->GlamourId)!;
                     ImGuiUtils.SameLineSpace();
-                    ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(glamourItem.Rarity), GetItemName(slot->GlamourId));
+                    ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(glamourItem.Rarity), GetRow<Item>(slot->GlamourId)!.Singular.ToDalamudString().ToString());
 
                     if (holdingShift)
                     {

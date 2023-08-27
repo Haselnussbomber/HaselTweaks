@@ -8,16 +8,19 @@ using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
+using HaselCommon;
+using HaselCommon.Enums;
+using HaselCommon.Services;
+using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Extensions;
-using HaselTweaks.Services;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using ImGuiScene;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Svg;
-using ImColor = HaselTweaks.Structs.ImColor;
+using ImColor = HaselCommon.Structs.ImColor;
 
 namespace HaselTweaks.Windows;
 
@@ -151,12 +154,12 @@ public partial class PluginWindow : Window, IDisposable
                         ? $"Override: {type} ({code})"
                         : $"Override: {type} ({code} is not supported, using fallback {TranslationManager.DefaultLanguage})";
                 }
-                if (ImGui.MenuItem(GetLabel("Dalamud", Service.PluginInterface.UiLanguage), "", Service.TranslationManager.Override == PluginLanguageOverride.Dalamud))
+                if (ImGui.MenuItem(GetLabel("Dalamud", Service.PluginInterface.UiLanguage), "", HaselCommonBase.TranslationManager.Override == PluginLanguageOverride.Dalamud))
                 {
                     Service.TranslationManager.Override = PluginLanguageOverride.Dalamud;
                 }
 
-                if (ImGui.MenuItem(GetLabel("Client", Service.ClientState.ClientLanguage.ToCode()), "", Service.TranslationManager.Override == PluginLanguageOverride.Client))
+                if (ImGui.MenuItem(GetLabel("Client", Service.ClientState.ClientLanguage.ToCode()), "", HaselCommonBase.TranslationManager.Override == PluginLanguageOverride.Client))
                 {
                     Service.TranslationManager.Override = PluginLanguageOverride.Client;
                 }
