@@ -45,7 +45,7 @@ public class Service
         AddonObserver = new();
         TranslationManager = new(PluginInterface, ClientState);
         StringManager = new();
-        TextureManager = new();
+        TextureManager = new(Framework);
         WindowManager = new(pluginInterface);
     }
 

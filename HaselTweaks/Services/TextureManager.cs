@@ -1,34 +1,40 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Game;
-using Dalamud.Memory;
 using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using HaselTweaks.Extensions;
 using HaselTweaks.Records;
-using HaselTweaks.Structs;
 
 namespace HaselTweaks.Services;
 
 public class TextureManager : IDisposable
 {
+    private static readonly string[] ThemePaths = { "", "light/", "third/", "fourth/" };
+
+    private readonly Framework _framework;
+
     private readonly Dictionary<(string Path, int Version, Vector2? Uv0, Vector2? Uv1), Texture> _cache = new();
     private readonly Dictionary<(uint IconId, bool IsHq), Texture> _iconTexCache = new();
     private readonly Dictionary<(string UldName, uint PartListId, uint PartId), Texture> _uldTexCache = new();
 
-    public TextureManager()
+    public TextureManager(Framework framework)
     {
-        Service.Framework.Update += Framework_Update;
+        _framework = framework;
+
+        framework.Update += OnFrameworkUpdate;
     }
 
     public void Dispose()
     {
-        Service.Framework.Update -= Framework_Update;
+        _framework.Update -= OnFrameworkUpdate;
+
         _iconTexCache.Clear();
         _uldTexCache.Clear();
         _cache.Dispose();
     }
 
-    private void Framework_Update(Framework framework)
+    private void OnFrameworkUpdate(Framework framework)
     {
         lock (_cache)
         {
@@ -75,7 +81,7 @@ public class TextureManager : IDisposable
     public Texture GetIcon(int iconId)
         => GetIcon((uint)iconId);
 
-    public Texture GetPart(string uldName, uint partListId, uint partIndex)
+    public unsafe Texture GetPart(string uldName, uint partListId, uint partIndex)
     {
         var key = (uldName, partListId, partIndex);
 
@@ -95,13 +101,7 @@ public class TextureManager : IDisposable
         if (!uld.Uld.AssetData.FindFirst((asset) => asset.Id == part.TextureId, out var asset))
             return Get(Texture.EmptyIconPath);
 
-        var colorThemeType = 0;
-        var colorThemePath = "";
-        unsafe
-        {
-            colorThemeType = HaselAtkModule.Instance()->ActiveColorThemeType;
-            colorThemePath = MemoryHelper.ReadStringNullTerminated((nint)Statics.ColorThemeTypePaths()[colorThemeType]);
-        }
+        var colorThemePath = ThemePaths[RaptureAtkModule.Instance()->AtkModule.ActiveColorThemeType];
 
         var assetPath = new string(asset.Path, 0, asset.Path.IndexOf('\0'));
 
