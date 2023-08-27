@@ -10,7 +10,6 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Utils;
 using HaselTweaks.Tweaks;
-using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using GearsetEntry = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetEntry;
@@ -306,7 +305,7 @@ public unsafe class GearSetGridWindow : Window
             ImGuiContextMenu.CreateItemFinder(item.RowId),
             ImGuiContextMenu.CreateCopyItemName(item.RowId),
             ImGuiContextMenu.CreateGarlandTools(item.RowId),
-            CustomContextMenuEntries.CreateItemSearch(item.RowId),
+            ImGuiContextMenu.CreateItemSearch(item.RowId),
         }
         .Draw();
 

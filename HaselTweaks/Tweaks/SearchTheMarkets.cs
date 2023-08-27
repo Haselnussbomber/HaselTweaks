@@ -1,8 +1,11 @@
 using Dalamud.ContextMenu;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Logging;
+using HaselCommon.Extensions.Sheets;
+using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
+using Lumina.Excel.GeneratedSheets;
 using AgentRecipeNote = HaselTweaks.Structs.AgentRecipeNote;
 
 namespace HaselTweaks.Tweaks;
@@ -97,7 +100,7 @@ public unsafe class SearchTheMarkets : Tweak
                 break;
         }
 
-        if (!ItemSearchUtils.CanSearchForItem(_itemId))
+        if (!GetRow<Item>(_itemId)!.CanSearchForItem())
             return;
 
         args.AddCustomItem(_contextMenuItemGame);
@@ -107,7 +110,7 @@ public unsafe class SearchTheMarkets : Tweak
     {
         _itemId = args.ItemId;
 
-        if (!ItemSearchUtils.CanSearchForItem(_itemId))
+        if (!GetRow<Item>(_itemId)!.CanSearchForItem())
             return;
 
         args.AddCustomItem(_contextMenuItemInventory);

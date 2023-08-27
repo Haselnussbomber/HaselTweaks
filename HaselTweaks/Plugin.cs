@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Dalamud.Game.Command;
 using Dalamud.Logging;
@@ -41,7 +43,13 @@ public partial class Plugin : IDalamudPlugin
             InitializeTweaks();
 
             Config = Configuration.Load(Tweaks.Select(t => t.InternalName));
-            HaselCommonBase.TranslationManager.Initialize("HaselTweaks.Translations.json", Config);
+
+            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("HaselTweaks.Translations.json")
+                ?? throw new Exception($"Could not find translations resource \"HaselTweaks.Translations.json\".");
+
+            var translations = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(stream) ?? new();
+
+            HaselCommonBase.TranslationManager.Initialize(translations, Config);
             HaselCommonBase.TranslationManager.OnLanguageChange += OnLanguageChange;
 
             foreach (var tweak in Tweaks)
