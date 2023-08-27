@@ -3,6 +3,7 @@ using System.Linq;
 using System.Numerics;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using HaselTweaks.Extensions;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
@@ -25,7 +26,7 @@ public static class Colors
     public static ImColor Grey4 { get; } = new(0.3f, 0.3f, 0.3f);
 
     public static unsafe bool IsLightTheme
-        => HaselAtkModule.Instance()->ActiveColorThemeType == 1;
+        => RaptureAtkModule.Instance()->AtkModule.ActiveColorThemeType == 1;
 
     public static ImColor GetUIColor(uint id)
         => (ImColor)GetRow<UIColor>(id)!.UIForeground.Reverse();
