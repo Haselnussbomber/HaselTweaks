@@ -4,6 +4,7 @@ using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Memory;
+using HaselCommon.Extensions;
 using HaselCommon.Utils;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Utils;
@@ -119,7 +120,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
                 if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
                 {
                     var tagId = MemoryHelper.Read<Guid>(payload.Data).ToString();
-                    _reorderTagOldIndex = Config.PresetTags.IndexOf((tag) => tag.Id.ToString() == tagId);
+                    _reorderTagOldIndex = Config.PresetTags.AsEnumerable().IndexOf((tag) => tag.Id.ToString() == tagId);
                     _reorderTagNewIndex = Config.PresetTags.IndexOf(tag);
                 }
 

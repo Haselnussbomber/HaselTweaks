@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Dalamud.Interface.Raii;
 using Dalamud.Logging;
 using Dalamud.Memory;
 using Dalamud.Utility;
+using HaselCommon.Extensions;
 using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
@@ -151,7 +153,7 @@ public class PresetCard : IDisposable
                     if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
                     {
                         var presetId = MemoryHelper.Read<Guid>(payload.Data).ToString();
-                        var oldIndex = Config.Presets.IndexOf((preset) => preset.Id.ToString() == presetId);
+                        var oldIndex = Config.Presets.AsEnumerable().IndexOf((preset) => preset.Id.ToString() == presetId);
                         var newIndex = Config.Presets.IndexOf(_preset);
                         var item = Config.Presets[oldIndex];
                         Config.Presets.RemoveAt(oldIndex);

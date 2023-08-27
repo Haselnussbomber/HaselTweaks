@@ -3,6 +3,7 @@ using System.Linq;
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Interface.Raii;
+using HaselCommon.Extensions;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using ImGuiNET;
