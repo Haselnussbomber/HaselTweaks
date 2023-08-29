@@ -49,6 +49,11 @@ public unsafe class GearSetGridWindow : Window
         _resetScrollPosition = true;
     }
 
+    public override void OnClose()
+    {
+        Service.WindowManager.CloseWindow<GearSetGridWindow>();
+    }
+
     public override void PreDraw()
     {
         if (_resetSize)
