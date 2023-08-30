@@ -39,9 +39,9 @@
       },
       "SixLabors.ImageSharp": {
         "type": "Direct",
-        "requested": "[3.0.1, )",
-        "resolved": "3.0.1",
-        "contentHash": "o0v/J6SJwp3RFrzR29beGx0cK7xcMRgOyIuw8ZNLQyNnBhiyL/vIQKn7cfycthcWUPG3XezUjFwBWzkcUUDFbg=="
+        "requested": "[3.0.2, )",
+        "resolved": "3.0.2",
+        "contentHash": "PlwUHnLZ67G1i0xXDYQJYbFiJsvXiEFWtKdV0QvY9j+dFasYbl+vWXXY42/asTsNjchsH5BLuoRzlf8Fa8lzpg=="
       },
       "Svg": {
         "type": "Direct",
