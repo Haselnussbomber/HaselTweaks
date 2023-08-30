@@ -179,7 +179,7 @@ public unsafe class Commands : Tweak
             .AddUiForeground("\uE078 ", 32);
 
         var name = new SeStringBuilder()
-            .AddUiForeground(GetRow<Mount>(mount.RowId)!.Singular.ToDalamudString().ToString(), 1)
+            .AddUiForeground(GetMountName(mount.RowId), 1)
             .Build();
 
         var itemAction = FindRow<ItemAction>(row => row?.Type == 1322 && row.Data[0] == mount.RowId);

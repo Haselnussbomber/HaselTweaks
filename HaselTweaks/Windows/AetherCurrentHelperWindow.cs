@@ -209,7 +209,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
             _questNameCache.Add(quest.RowId, questName);
         }
         ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {questName}");
-        ImGui.TextUnformatted($"{GetHumanReadableCoords(quest.IssuerLocation.Value!)} | {GetRow<ENpcResident>(quest.IssuerStart)!.Singular.ToDalamudString()}");
+        ImGui.TextUnformatted($"{GetHumanReadableCoords(quest.IssuerLocation.Value!)} | {GetENpcResidentName(quest.IssuerStart)}");
 
         // Actions
         ImGui.TableNextColumn();
@@ -239,7 +239,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
 
         // Content
         ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {GetRow<EObjName>(eobj.RowId)!.Singular.ToDalamudString()}");
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {GetEObjName(eobj.RowId)}");
         ImGui.TextUnformatted(GetHumanReadableCoords(level!));
 
         // Actions
