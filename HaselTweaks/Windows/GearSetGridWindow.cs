@@ -4,7 +4,6 @@ using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
-using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -318,7 +317,7 @@ public unsafe class GearSetGridWindow : Window
         {
             using (ImRaii.Tooltip())
             {
-                ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(item.Rarity), GetRow<Item>(item.RowId)!.Singular.ToDalamudString().ToString());
+                ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(item.Rarity), GetItemName(item.RowId));
 
                 var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
                 if (holdingShift)
@@ -341,7 +340,7 @@ public unsafe class GearSetGridWindow : Window
                     ImGui.TextUnformatted(t("GearSetGridWindow.ItemTooltip.LabelGlamour"));
                     var glamourItem = GetRow<Item>(slot->GlamourId)!;
                     ImGuiUtils.SameLineSpace();
-                    ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(glamourItem.Rarity), GetRow<Item>(slot->GlamourId)!.Singular.ToDalamudString().ToString());
+                    ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(glamourItem.Rarity), GetItemName(slot->GlamourId));
 
                     if (holdingShift)
                     {
