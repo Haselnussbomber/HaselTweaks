@@ -98,7 +98,7 @@ public unsafe class SearchTheMarkets : Tweak
                 break;
         }
 
-        if (!GetRow<Item>(_itemId)!.CanSearchForItem)
+        if (!GetRow<ExtendedItem>(_itemId)!.CanSearchForItem)
             return;
 
         args.AddCustomItem(_contextMenuItemGame);
@@ -108,7 +108,7 @@ public unsafe class SearchTheMarkets : Tweak
     {
         _itemId = args.ItemId;
 
-        if (!GetRow<Item>(_itemId)!.CanSearchForItem)
+        if (!GetRow<ExtendedItem>(_itemId)!.CanSearchForItem)
             return;
 
         args.AddCustomItem(_contextMenuItemInventory);
