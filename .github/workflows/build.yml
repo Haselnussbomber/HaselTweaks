@@ -24,7 +24,7 @@ jobs:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Download Build Artifact
         uses: actions/download-artifact@v3
