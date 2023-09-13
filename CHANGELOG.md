@@ -6,7 +6,7 @@ A lot of internal restructuring due to my new HaselCommon library, which is now 
 
 ### Gear Set Grid
 
-- **Fixed:** Closing the window didn't remove it from the WindowManager, so had to use the command twice to reopen it.
+- **Fixed:** Closing the window didn't remove it from the WindowManager, making it difficult to reopen.
 
 ## [16.2.1] (2023-08-26)
 
