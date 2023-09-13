@@ -26,22 +26,16 @@ public unsafe class MinimapAdjustments : Tweak
         public bool HideWeather = true;
     }
 
-    private static AtkUnitBase* NaviMap => GetAddon<AtkUnitBase>("_NaviMap");
-    private static AtkResNode* CollisionNode => GetNode<AtkResNode>(NaviMap, 19);
-    private static AtkResNode* CoordsNode => GetNode<AtkResNode>(NaviMap, 5);
-    private static AtkResNode* WeatherNode => GetNode<AtkResNode>(NaviMap, 14);
-    private static AtkResNode* MapNode => GetNode<AtkResNode>(NaviMap, 17);
-
     public override void Disable()
     {
-        if (!IsAddonOpen("_NaviMap"))
+        if (!TryGetAddon<AtkUnitBase>("_NaviMap", out var naviMap))
             return;
 
         // reset visibility
-        UpdateVisibility(true);
+        UpdateVisibility(naviMap, true);
 
         // add back circular collision flag
-        UpdateCollision(false);
+        UpdateCollision(naviMap, false);
     }
 
     public override void OnConfigChange(string fieldName)
@@ -49,36 +43,37 @@ public unsafe class MinimapAdjustments : Tweak
         if (fieldName is nameof(Configuration.HideCoords)
                       or nameof(Configuration.HideWeather))
         {
-            if (!IsAddonOpen("_NaviMap"))
+            if (!TryGetAddon<AtkUnitBase>("_NaviMap", out var naviMap))
                 return;
 
-            CoordsNode->ToggleVisibility(!Config.HideCoords);
-            WeatherNode->ToggleVisibility(!Config.HideWeather);
+            GetNode<AtkResNode>(naviMap, 5)->ToggleVisibility(!Config.HideCoords);
+            GetNode<AtkResNode>(naviMap, 14)->ToggleVisibility(!Config.HideWeather);
         }
     }
 
     public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
     {
-        if (!IsAddonOpen("_NaviMap"))
+        if (!TryGetAddon<AtkUnitBase>("_NaviMap", out var naviMap))
             return;
 
-        UpdateVisibility(RaptureAtkModule.Instance()->AtkModule.IntersectingAddon == NaviMap);
-        UpdateCollision(Config.Square);
+        UpdateVisibility(naviMap, RaptureAtkModule.Instance()->AtkModule.IntersectingAddon == naviMap);
+        UpdateCollision(naviMap, Config.Square);
     }
 
-    private static void UpdateVisibility(bool hovered)
+    private static void UpdateVisibility(AtkUnitBase* naviMap, bool hovered)
     {
-        if (Config.HideCoords) CoordsNode->ToggleVisibility(hovered);
-        if (Config.HideWeather) WeatherNode->ToggleVisibility(hovered);
+        if (Config.HideCoords) GetNode<AtkResNode>(naviMap, 5)->ToggleVisibility(hovered);
+        if (Config.HideWeather) GetNode<AtkResNode>(naviMap, 14)->ToggleVisibility(hovered);
 
         var alpha = (byte)Math.Clamp((hovered ? Config.HoverOpacity : Config.DefaultOpacity) * 255f, 0, 255);
-        if (MapNode->Color.A != alpha)
-            MapNode->Color.A = alpha;
+        var mapNode = GetNode<AtkResNode>(naviMap, 17);
+        if (mapNode->Color.A != alpha)
+            mapNode->Color.A = alpha;
     }
 
-    private static void UpdateCollision(bool square)
+    private static void UpdateCollision(AtkUnitBase* naviMap, bool square)
     {
-        var collisionNode = CollisionNode;
+        var collisionNode = GetNode<AtkResNode>(naviMap, 19);
         if (collisionNode == null)
             return;
 
