@@ -7,6 +7,7 @@ using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselCommon.Sheets;
 using HaselCommon.Utils;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
@@ -177,10 +178,10 @@ public unsafe class GearSetGridWindow : Window
 
                 new ImGuiContextMenu("##GearsetContext")
                 {
-                    ImGuiContextMenu.CreateGearsetLinkGlamour(gearset->ID),
-                    ImGuiContextMenu.CreateGearsetChangeGlamour(gearset->ID),
-                    ImGuiContextMenu.CreateGearsetUnlinkGlamour(gearset->ID),
-                    ImGuiContextMenu.CreateGearsetChangePortrait(gearset->ID)
+                    ImGuiContextMenu.CreateGearsetLinkGlamour(gearset),
+                    ImGuiContextMenu.CreateGearsetChangeGlamour(gearset),
+                    ImGuiContextMenu.CreateGearsetUnlinkGlamour(gearset),
+                    ImGuiContextMenu.CreateGearsetChangePortrait(gearset)
                 }
                 .Draw();
 
@@ -227,7 +228,7 @@ public unsafe class GearSetGridWindow : Window
                     continue;
                 }
 
-                var item = GetRow<Item>(itemId);
+                var item = GetRow<ExtendedItem>(itemId);
                 if (item == null)
                     continue;
 
@@ -264,7 +265,7 @@ public unsafe class GearSetGridWindow : Window
         return list;
     }
 
-    public void DrawItemIcon(GearsetEntry* gearset, uint slotIndex, GearsetItem* slot, Item item, string key)
+    public void DrawItemIcon(GearsetEntry* gearset, uint slotIndex, GearsetItem* slot, ExtendedItem item, string key)
     {
         var popupKey = $"##ItemContextMenu_{key}_{item.RowId}_Tooltip";
 
@@ -305,11 +306,11 @@ public unsafe class GearSetGridWindow : Window
 
         new ImGuiContextMenu(popupKey)
         {
-            ImGuiContextMenu.CreateTryOn(item.RowId, slot->GlamourId, slot->Stain),
+            ImGuiContextMenu.CreateTryOn(item, slot->GlamourId, slot->Stain),
             ImGuiContextMenu.CreateItemFinder(item.RowId),
             ImGuiContextMenu.CreateCopyItemName(item.RowId),
             ImGuiContextMenu.CreateOpenOnGarlandTools(item.RowId),
-            ImGuiContextMenu.CreateItemSearch(item.RowId),
+            ImGuiContextMenu.CreateItemSearch(item),
         }
         .Draw();
 

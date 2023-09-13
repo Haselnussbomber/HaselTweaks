@@ -15,7 +15,7 @@ public unsafe class SearchTheMarkets : Tweak
     private GameObjectContextMenuItem _contextMenuItemGame = null!;
     private InventoryContextMenuItem _contextMenuItemInventory = null!;
 
-    private uint _itemId;
+    private ExtendedItem? _item = null;
 
     public override void Enable()
     {
@@ -51,12 +51,12 @@ public unsafe class SearchTheMarkets : Tweak
 
             _contextMenuItemGame = new(
                 text,
-                (_) => { ItemSearchUtils.Search(_itemId); _itemId = 0; },
+                (_) => { ItemSearchUtils.Search(_item!); _item = null; },
                 false);
 
             _contextMenuItemInventory = new(
                 text,
-                (_) => { ItemSearchUtils.Search(_itemId); _itemId = 0; },
+                (_) => { ItemSearchUtils.Search(_item!); _item = null; },
                 false);
         }
         catch (Exception ex)
@@ -71,34 +71,40 @@ public unsafe class SearchTheMarkets : Tweak
         if (args.ParentAddonName is not ("RecipeNote" or "RecipeMaterialList" or "RecipeTree" or "ChatLog" or "ContentsInfoDetail" or "DailyQuestSupply"))
             return;
 
-        _itemId = 0u;
+        _item = null;
 
+        var itemId = 0u;
         switch (args.ParentAddonName)
         {
             case "RecipeNote":
-                _itemId = GetAgent<AgentRecipeNote>()->ContextMenuResultItemId;
+                itemId = GetAgent<AgentRecipeNote>()->ContextMenuResultItemId;
                 break;
 
             case "RecipeTree":
             case "RecipeMaterialList":
                 // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
-                _itemId = GetAgent<AgentRecipeItemContext>()->ResultItemId;
+                itemId = GetAgent<AgentRecipeItemContext>()->ResultItemId;
                 break;
 
             case "ChatLog":
-                _itemId = GetAgent<AgentChatLog>()->ContextItemId;
+                itemId = GetAgent<AgentChatLog>()->ContextItemId;
                 break;
 
             case "ContentsInfoDetail":
-                _itemId = GetAgent<AgentContentsTimer>()->ContextMenuItemId;
+                itemId = GetAgent<AgentContentsTimer>()->ContextMenuItemId;
                 break;
 
             case "DailyQuestSupply":
-                _itemId = GetAgent<AgentDailyQuestSupply>()->ContextMenuItemId;
+                itemId = GetAgent<AgentDailyQuestSupply>()->ContextMenuItemId;
                 break;
         }
 
-        if (!GetRow<ExtendedItem>(_itemId)!.CanSearchForItem)
+        if (itemId == 0)
+            return;
+
+        _item = GetRow<ExtendedItem>(itemId);
+
+        if (_item == null || !_item.CanSearchForItem)
             return;
 
         args.AddCustomItem(_contextMenuItemGame);
@@ -106,9 +112,12 @@ public unsafe class SearchTheMarkets : Tweak
 
     private void ContextMenu_OnOpenInventoryContextMenu(InventoryContextMenuOpenArgs args)
     {
-        _itemId = args.ItemId;
+        if (args.ItemId == 0)
+            return;
 
-        if (!GetRow<ExtendedItem>(_itemId)!.CanSearchForItem)
+        _item = GetRow<ExtendedItem>(args.ItemId);
+
+        if (_item == null || !_item.CanSearchForItem)
             return;
 
         args.AddCustomItem(_contextMenuItemInventory);
