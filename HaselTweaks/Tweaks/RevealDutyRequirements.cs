@@ -1,6 +1,5 @@
 using Dalamud.Utility.Signatures;
 using HaselCommon.Utils;
-using HaselTweaks.Utils;
 
 namespace HaselTweaks.Tweaks;
 

@@ -31,17 +31,17 @@ public unsafe class GearSetGridWindow : Window
 
     public GearSetGridWindow() : base(t("GearSetGridWindow.Title"))
     {
-        base.Namespace = "HaselTweaks_GearSetGrid";
-        base.DisableWindowSounds = Config.AutoOpenWithGearSetList;
-        base.IsOpen = true;
+        Namespace = "HaselTweaks_GearSetGrid";
+        DisableWindowSounds = Config.AutoOpenWithGearSetList;
+        IsOpen = true;
 
-        base.Flags |= ImGuiWindowFlags.NoCollapse;
+        Flags |= ImGuiWindowFlags.NoCollapse;
 
         if (Plugin.Config.LockedImGuiWindows.Contains(nameof(GearSetGridWindow)))
-            base.Flags |= ImGuiWindowFlags.NoMove;
+            Flags |= ImGuiWindowFlags.NoMove;
 
-        base.Size = DefaultWindowSize;
-        base.SizeCondition = ImGuiCond.FirstUseEver;
+        Size = DefaultWindowSize;
+        SizeCondition = ImGuiCond.FirstUseEver;
     }
 
     public override void OnOpen()
@@ -58,13 +58,13 @@ public unsafe class GearSetGridWindow : Window
     {
         if (_resetSize)
         {
-            base.Size = DefaultWindowSize;
-            base.SizeCondition = ImGuiCond.Always;
+            Size = DefaultWindowSize;
+            SizeCondition = ImGuiCond.Always;
             _resetSize = false;
         }
         else
         {
-            base.SizeCondition = ImGuiCond.FirstUseEver;
+            SizeCondition = ImGuiCond.FirstUseEver;
         }
     }
 
@@ -82,11 +82,11 @@ public unsafe class GearSetGridWindow : Window
                 if (ImGui.MenuItem(
                     t("ImGuiWindow.ContextMenuItem.LockPosition"),
                     null,
-                    base.Flags.HasFlag(ImGuiWindowFlags.NoMove)))
+                    Flags.HasFlag(ImGuiWindowFlags.NoMove)))
                 {
-                    base.Flags ^= ImGuiWindowFlags.NoMove;
+                    Flags ^= ImGuiWindowFlags.NoMove;
 
-                    if (base.Flags.HasFlag(ImGuiWindowFlags.NoMove))
+                    if (Flags.HasFlag(ImGuiWindowFlags.NoMove))
                     {
                         if (!Plugin.Config.LockedImGuiWindows.Contains(nameof(GearSetGridWindow)))
                         {

@@ -5,7 +5,6 @@ using FFXIVClientStructs.FFXIV.Common.Math;
 using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Tweaks;
-using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using ImColor = HaselCommon.Structs.ImColor;

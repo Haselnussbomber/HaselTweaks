@@ -11,7 +11,6 @@ using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
-using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using ImGuiNET;
@@ -160,7 +159,7 @@ public unsafe class MenuBar : Window
         ImGui.SameLine();
         if (ImGuiUtils.IconButton("SaveAsPreset", FontAwesomeIcon.Download, t("PortraitHelperWindows.MenuBar.SaveAsPreset.Label")))
         {
-            _saveAsPresetDialog.Open(_portraitName, PortraitPreset.FromState(), Tweaks.PortraitHelper.GetCurrentCharaViewImage());
+            _saveAsPresetDialog.Open(_portraitName, PortraitPreset.FromState(), PortraitHelper.GetCurrentCharaViewImage());
         }
 
         ImGui.SameLine();

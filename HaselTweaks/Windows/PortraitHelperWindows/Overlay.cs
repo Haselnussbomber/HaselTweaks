@@ -6,7 +6,6 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
-using HaselTweaks.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;

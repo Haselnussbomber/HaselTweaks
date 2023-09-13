@@ -15,7 +15,6 @@ using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Records;
 using HaselTweaks.Structs;
-using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 

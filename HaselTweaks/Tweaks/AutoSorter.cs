@@ -11,7 +11,6 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
-using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 
@@ -634,7 +633,7 @@ public unsafe class AutoSorter : Tweak
 
             for (var i = 0; i < itemOrderModule->ArmourySorterSpan.Length; i++)
             {
-                var sorter = itemOrderModule->ArmourySorterSpan[i].Value;
+                var sorter = AsPointer(ref itemOrderModule->ArmourySorterSpan[i])->Value;
                 if (sorter != null && sorter->SortFunctionIndex != -1)
                 {
                     Debug($"ItemOrderModule: Sorter #{i} ({sorter->InventoryType}) is busy, waiting.");

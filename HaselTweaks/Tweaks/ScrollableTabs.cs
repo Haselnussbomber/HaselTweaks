@@ -3,7 +3,6 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
-using HaselTweaks.Utils;
 using Windows.Win32;
 using AddonAOZNotebook = HaselTweaks.Structs.AddonAOZNotebook;
 using HaselAtkComponentRadioButton = HaselTweaks.Structs.AtkComponentRadioButton;

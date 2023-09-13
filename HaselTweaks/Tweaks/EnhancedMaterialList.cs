@@ -11,7 +11,6 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
-using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;
 using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 

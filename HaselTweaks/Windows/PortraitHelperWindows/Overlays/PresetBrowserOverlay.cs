@@ -7,7 +7,6 @@ using Dalamud.Memory;
 using HaselCommon.Extensions;
 using HaselCommon.Utils;
 using HaselTweaks.Records.PortraitHelper;
-using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using ImGuiNET;
 

@@ -6,7 +6,6 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
-using HaselTweaks.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;

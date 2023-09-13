@@ -4,7 +4,6 @@ using Dalamud.Interface.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
-using HaselTweaks.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
