@@ -1,5 +1,13 @@
 # Changelog
 
+## [16.2.2] (2023-09-13)
+
+A lot of internal restructuring due to my new HaselCommon library, which is now used in all my plugins. I hope it works fine!
+
+### Gear Set Grid
+
+- **Fixed:** Closing the window didn't remove it from the WindowManager, so had to use the command twice to reopen it.
+
 ## [16.2.1] (2023-08-26)
 
 ### Commands
@@ -1091,6 +1099,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[16.2.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.2.1...v16.2.2
 [16.2.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.2.0...v16.2.1
 [16.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.1.3...v16.2.0
 [16.1.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.1.2...v16.1.3
