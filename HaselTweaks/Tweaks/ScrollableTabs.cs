@@ -670,10 +670,10 @@ ResetWheelState:
 
         for (var i = 0; i < AddonBuddy.NUM_TABS; i++)
         {
-            var button = addon->RadioButtonsSpan[i];
-            if (button.Value != null)
+            var button = AsPointer(ref addon->RadioButtonsSpan[i]);
+            if (button->Value != null)
             {
-                button.Value->SetSelected(i == addon->TabIndex);
+                button->Value->SetSelected(i == addon->TabIndex);
             }
         }
     }
@@ -724,10 +724,10 @@ ResetWheelState:
 
         for (var i = 0; i < addon->TabCount; i++)
         {
-            var button = addon->RadioButtonsSpan[i];
-            if (button.Value != null)
+            var button = AsPointer(ref addon->RadioButtonsSpan[i]);
+            if (button->Value != null)
             {
-                button.Value->SetSelected(i == addon->TabIndex);
+                button->Value->SetSelected(i == addon->TabIndex);
             }
         }
     }

@@ -94,7 +94,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
             // skip crafters as they already have ButtonClick events
             if (IsCrafter(i)) continue;
 
-            var node = addon->ButtonNodesSpan[i].Value;
+            var node = AsPointer(ref addon->ButtonNodesSpan[i])->Value;
             if (node == null) continue;
 
             var collisionNode = (AtkCollisionNode*)node->AtkComponentBase.UldManager.RootNode;
@@ -114,7 +114,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
         {
-            var node = addon->ButtonNodesSpan[i].Value;
+            var node = AsPointer(ref addon->ButtonNodesSpan[i])->Value;
             if (node == null)
                 continue;
 
@@ -151,7 +151,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         if (eventParam < 2)
             goto OriginalReceiveEventCode;
 
-        var node = addon->ButtonNodesSpan[eventParam - 2].Value;
+        var node = AsPointer(ref addon->ButtonNodesSpan[eventParam - 2])->Value;
         if (node == null || node->AtkComponentBase.OwnerNode == null)
             goto OriginalReceiveEventCode;
 
@@ -195,10 +195,10 @@ OriginalReceiveEventCode:
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
-            var entry = addon->ClassEntriesSpan[i];
-            if (entry.Base == null) continue;
+            var entry = AsPointer(ref addon->ClassEntriesSpan[i]);
+            if (entry->Base == null) continue;
 
-            var collisionNode = (AtkCollisionNode*)entry.Base->UldManager.RootNode;
+            var collisionNode = (AtkCollisionNode*)entry->Base->UldManager.RootNode;
             if (collisionNode == null) continue;
 
             collisionNode->AtkResNode.AddEvent(AtkEventType.MouseClick, (uint)i | 0x10000, eventListener, null, false);
@@ -213,14 +213,14 @@ OriginalReceiveEventCode:
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
-            var entry = addon->ClassEntriesSpan[i];
-            if (entry.Base == null || entry.Icon == null) continue;
+            var entry = AsPointer(ref addon->ClassEntriesSpan[i]);
+            if (entry->Base == null || entry->Icon == null) continue;
 
-            var collisionNode = (AtkCollisionNode*)entry.Base->UldManager.RootNode;
+            var collisionNode = (AtkCollisionNode*)entry->Base->UldManager.RootNode;
             if (collisionNode == null) continue;
 
             // if job is unlocked, it has full alpha
-            var isUnlocked = entry.Icon->AtkResNode.Color.A == 255;
+            var isUnlocked = entry->Icon->AtkResNode.Color.A == 255;
 
             if (isUnlocked)
                 collisionNode->AtkResNode.Flags_2 |= 1 << 20; // add Cursor Pointer flag
@@ -239,17 +239,17 @@ OriginalReceiveEventCode:
         if (entryId is < 0 or > AddonPvPCharacter.NUM_CLASSES)
             goto OriginalPvPReceiveEventCode;
 
-        var entry = addon->ClassEntriesSpan[entryId];
+        var entry = AsPointer(ref addon->ClassEntriesSpan[entryId]);
 
-        if (entry.Base == null || entry.Base->OwnerNode == null || entry.Icon == null)
+        if (entry->Base == null || entry->Base->OwnerNode == null || entry->Icon == null)
             goto OriginalPvPReceiveEventCode;
 
         // if job is unlocked, it has full alpha
-        var isUnlocked = entry.Icon->AtkResNode.Color.A == 255;
+        var isUnlocked = entry->Icon->AtkResNode.Color.A == 255;
         if (!isUnlocked)
             goto OriginalPvPReceiveEventCode;
 
-        if (ProcessEvents(entry.Base->OwnerNode, entry.Icon, eventType))
+        if (ProcessEvents(entry->Base->OwnerNode, entry->Icon, eventType))
             return 0;
 
 OriginalPvPReceiveEventCode:
