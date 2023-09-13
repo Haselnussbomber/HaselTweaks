@@ -5,7 +5,6 @@ EXECUTION_STATE
 
 // winuser.h
 
-GetForegroundWindow
 GetActiveWindow
 WM_MOUSEWHEEL
 WHEEL_DELTA
