@@ -135,8 +135,8 @@ public unsafe partial class CustomChatTimestamp : Tweak
 
     public void ReloadChat()
     {
-        // see "E8 ?? ?? ?? ?? BD ?? ?? ?? ?? 49 8B 0E"
+        var raptureLogModule = RaptureLogModule.Instance();
         for (var i = 0; i < 4; i++)
-            *(bool*)((nint)RaptureLogModule.Instance() + 0x33E8 + i) = true;
+            raptureLogModule->ChatTabsPendingReload[i] = 1;
     }
 }
