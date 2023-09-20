@@ -16,7 +16,6 @@ using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
-using HaselTweaks.Windows;
 using HaselTweaks.Windows.PortraitHelperWindows;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using SharpDX;

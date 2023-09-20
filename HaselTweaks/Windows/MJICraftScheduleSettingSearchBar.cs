@@ -45,18 +45,18 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
 
         if (lastQuery != Query)
         {
-            var entries = new Dictionary<string, uint>();
+            var entries = new List<string>();
             foreach (var ptr in Addon->TreeList->Items.Span)
             {
                 var item = ptr.Value;
                 if (item != null)
                 {
                     var itemName = MemoryHelper.ReadStringNullTerminated(*(nint*)item->Title);
-                    entries.TryAdd(itemName.ToLower(), item->Data->RowId);
+                    entries.Add(itemName.ToLower());
                 }
             }
 
-            var result = FuzzySharp.Process.ExtractTop(Query, entries.Keys, (entry) => entry, limit: 1).First();
+            var result = FuzzySharp.Process.ExtractTop(Query.ToLower(), entries, (entry) => entry, limit: 1).First();
             if (result.Index >= 0 && result.Index < entries.Count)
             {
                 var item = Addon->TreeList->GetItem((uint)result.Index);
