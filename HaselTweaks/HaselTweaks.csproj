@@ -52,6 +52,7 @@
   <ItemGroup>
     <PackageReference Include="DalamudPackager" Version="2.1.11" />
     <PackageReference Include="Dalamud.ContextMenu" Version="1.2.3" />
+    <PackageReference Include="FuzzySharp" Version="2.0.2" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.18-beta" PrivateAssets="All" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />

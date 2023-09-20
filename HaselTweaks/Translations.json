@@ -491,6 +491,30 @@
     "de": "Farbanpassung deaktivieren"
   },
 
+  "EnhancedIsleworksAgenda.Tweak.Name": {
+    "en": "Enhanced Isleworks Agenda"
+  },
+  "EnhancedIsleworksAgenda.Tweak.Description": {
+    "en": "Slightly improves the Isleworks \"Set Agenda\" window.",
+    "de": "Verbessert etwas das \"Plan aufstellen\"-Fenster des Atelierplans."
+  },
+  "EnhancedIsleworksAgenda.Config.EnableSearchBar.Label": {
+    "en": "Enable Search Bar",
+    "de": "Suchleiste aktivieren"
+  },
+  "EnhancedIsleworksAgenda.Config.EnableSearchBar.Description": {
+    "en": "The search bar is automatically shown and focused when the \"Set Agenda\" window opens. Based on the entered item name, the fuzzy search (lowercase only) selects the item on the right side of the window. Pressing the Enter key confirms the selected item, just like by pressing the \"Schedule\" button.",
+    "de": "Die Suchleiste wird automatisch angezeigt und fokussiert, wenn das \"Plan aufstellen\"-Fenster geöffnet wird. Basierend auf dem eingegebenen Gegenstandsnamen wird mittels unscharfe Suche (nur Kleinbuchstaben) der Gegenstand auf der rechten Seite des Fensters ausgewählt. Durch Drücken der Eingabetaste wird der Gegenstand - wie beim Drücken der Schaltfläche \"Plan erstellen\" - eingeplant."
+  },
+  "EnhancedIsleworksAgenda.MJICraftScheduleSettingSearchBar.QueryHint": {
+    "en": "Search...",
+    "de": "Suche..."
+  },
+  "EnhancedIsleworksAgenda.Config.DisableTreeListTooltips.Label": {
+    "en": "Disable item tooltips in the list",
+    "de": "Deaktiviere Gegenstands-Tooltips in der Liste"
+  },
+
   "EnhancedLoginLogout.Tweak.Name": {
     "en": "Enhanced Login/Logout"
   },

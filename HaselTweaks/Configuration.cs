@@ -38,6 +38,7 @@ public class TweakConfigs
     public CustomChatTimestamp.Configuration CustomChatTimestamp { get; init; } = new();
     public DTR.Configuration DTR { get; init; } = new();
     public EnhancedExpBar.Configuration EnhancedExpBar { get; init; } = new();
+    public EnhancedIsleworksAgenda.Configuration EnhancedIsleworksAgenda { get; init; } = new();
     public EnhancedLoginLogout.Configuration EnhancedLoginLogout { get; init; } = new();
     public EnhancedMaterialList.Configuration EnhancedMaterialList { get; init; } = new();
     public ForcedCutsceneMusic.Configuration ForcedCutsceneMusic { get; init; } = new();

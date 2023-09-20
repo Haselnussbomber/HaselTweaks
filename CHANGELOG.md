@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Enhanced Isleworks Agenda
+
+Slightly improves the Isleworks "Set Agenda" window.
+
+Options:
+
+- Enable Search Bar: The search bar is automatically shown and focused when the \"Set Agenda\" window opens. Based on the entered item name, the fuzzy search (lowercase only) selects the item on the right side of the window. Pressing the Enter key confirms the selected item, just like by pressing the \"Schedule\" button.
+- Disable item tooltips in the list
+
 ## [16.2.2] (2023-09-13)
 
 A lot of internal restructuring due to my new HaselCommon library, which is now used in all my plugins. I hope it works fine!
