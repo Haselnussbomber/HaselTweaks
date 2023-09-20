@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
 using System.Text.RegularExpressions;
-using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface;
 using Dalamud.Interface.Raii;
 using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using HaselCommon.Sheets;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
@@ -21,8 +21,6 @@ namespace HaselTweaks.Windows;
 public unsafe partial class AetherCurrentHelperWindow : Window
 {
     private readonly AgentAetherCurrent* _agentAetherCurrent;
-    private readonly Dictionary<uint, EObj?> _eObjCache = new(); // key is AetherCurrent.RowId
-    private readonly Dictionary<uint, Level?> _levelCache = new(); // key is Level.RowId
     private readonly Dictionary<uint, string> _questNameCache = new(); // key is Quest.RowId, value is stripped from private use utf8 chars
     private bool _hideUnlocked = true;
 
@@ -195,6 +193,8 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         var quest = GetRow<Quest>(questId);
         if (questId == 0 || quest == null) return;
 
+        var extendedIssuerLocation = (ExtendedLevel)quest.IssuerLocation.Value!;
+
         // Icon
         ImGui.TableNextColumn();
         Service.TextureManager.GetIcon(quest.JournalGenre.Value!.Icon).Draw(40);
@@ -207,7 +207,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
             _questNameCache.Add(quest.RowId, questName);
         }
         ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {questName}");
-        ImGui.TextUnformatted($"{GetHumanReadableCoords(quest.IssuerLocation.Value!)} | {GetENpcResidentName(quest.IssuerStart)}");
+        ImGui.TextUnformatted($"{GetHumanReadableCoords(extendedIssuerLocation)} | {GetENpcResidentName(quest.IssuerStart)}");
 
         // Actions
         ImGui.TableNextColumn();
@@ -215,21 +215,22 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y) * 2));
         if (selected)
         {
-            OpenMapLocation(quest.IssuerLocation.Value);
+            extendedIssuerLocation.OpenMap();
         }
         ImGui.SameLine();
 
-        DrawUnlockStatus(isUnlocked, quest.IssuerLocation.Value);
+        DrawUnlockStatus(isUnlocked, extendedIssuerLocation);
         ImGui.SameLine(); // for padding
         ImGui.Dummy(new Vector2(0, 0));
     }
 
     private void DrawEObject(int index, bool isUnlocked, AetherCurrent aetherCurrent)
     {
-        var eobj = GetEObjByData(aetherCurrent.RowId);
+        var eobj = ExtendedEObj.GetByDataId(aetherCurrent.RowId);
         if (eobj == null) return;
 
-        var level = GetLevelByObjectId(eobj.RowId);
+        var level = ExtendedLevel.GetByObjectId(eobj.RowId);
+        if (level == null) return;
 
         // Icon
         ImGui.TableNextColumn();
@@ -246,7 +247,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         ImGui.Selectable($"##AetherCurrent_{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y) * 2));
         if (selected)
         {
-            OpenMapLocation(level);
+            level.OpenMap();
         }
         ImGui.SameLine();
 
@@ -255,9 +256,9 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         ImGui.Dummy(new Vector2(0, 0));
     }
 
-    private static void DrawUnlockStatus(bool isUnlocked, Level? level)
+    private static void DrawUnlockStatus(bool isUnlocked, ExtendedLevel level)
     {
-        var isSameTerritory = level?.Territory.Row == Service.ClientState.TerritoryType;
+        var isSameTerritory = level.Territory.Row == Service.ClientState.TerritoryType;
         ImGuiUtils.PushCursorY(11);
 
         if (isUnlocked && !Config.AlwaysShowDistance)
@@ -268,7 +269,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         {
             if (isSameTerritory)
             {
-                var distance = GetDistance(level);
+                var distance = level.GetDistanceFromPlayer();
                 if (distance < float.MaxValue)
                 {
                     var direction = distance > 1 ? GetCompassDirection(level) : string.Empty;
@@ -315,76 +316,12 @@ public unsafe partial class AetherCurrentHelperWindow : Window
         ImGuiUtils.TextUnformattedColored(Colors.Green, icon);
     }
 
-    private EObj? GetEObjByData(uint aetherCurrentId)
+    private static string GetHumanReadableCoords(ExtendedLevel level)
     {
-        if (!_eObjCache.TryGetValue(aetherCurrentId, out var value))
-        {
-            value = FindRow<EObj>(row => row?.Data == aetherCurrentId);
-            _eObjCache.Add(aetherCurrentId, value);
-        }
-
-        return value;
-    }
-
-    private Level? GetLevelByObjectId(uint objId)
-    {
-        if (!_levelCache.TryGetValue(objId, out var value))
-        {
-            value = FindRow<Level>(row => row?.Object == objId);
-            _levelCache.Add(objId, value);
-        }
-
-        return value;
-    }
-
-    private static Vector2 GetLevelPos(Level level)
-    {
-        var map = level.Map.Value;
-        var c = map!.SizeFactor / 100.0f;
-        var x = 41.0f / c * (((level.X + map.OffsetX) * c + 1024.0f) / 2048.0f) + 1f;
-        var y = 41.0f / c * (((level.Z + map.OffsetY) * c + 1024.0f) / 2048.0f) + 1f;
-        return new(x, y);
-    }
-
-    private static string GetHumanReadableCoords(Level level)
-    {
-        var coords = GetLevelPos(level);
+        var coords = level.GetCoords();
         var x = coords.X.ToString("0.0", CultureInfo.InvariantCulture);
         var y = coords.Y.ToString("0.0", CultureInfo.InvariantCulture);
         return t("AetherCurrentHelperWindow.Coords", x, y);
-    }
-
-    private static void OpenMapLocation(Level? level)
-    {
-        if (level == null)
-            return;
-
-        var map = level?.Map?.Value;
-        var terr = map?.TerritoryType?.Value;
-
-        if (terr == null)
-            return;
-
-        Service.GameGui.OpenMapWithMapLink(new MapLinkPayload(
-            terr.RowId,
-            map!.RowId,
-            (int)(level!.X * 1_000f),
-            (int)(level.Z * 1_000f)
-        ));
-    }
-
-    public static float GetDistance(Level? level)
-    {
-        var localPlayer = Service.ClientState.LocalPlayer;
-        if (localPlayer == null || level == null || level.Territory.Row != Service.ClientState.TerritoryType)
-        {
-            return float.MaxValue; // far, far away
-        }
-
-        return Vector2.Distance(
-            new Vector2(localPlayer.Position.X, localPlayer.Position.Z),
-            new Vector2(level.X, level.Z)
-        );
     }
 
     private static readonly string[] CompassHeadings = new string[] { "E", "NE", "N", "NW", "W", "SW", "S", "SE" };
