@@ -6,8 +6,9 @@ using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.SheetLookup;
+using HaselCommon.Sheets;
 using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
@@ -211,7 +212,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         var rowData = **(nint**)(a5 + 0x08);
         var itemId = *(uint*)(rowData + 0x04);
 
-        var item = GetRow<Item>(itemId);
+        var item = GetRow<ExtendedItem>(itemId);
         if (item == null)
             return;
 
@@ -224,7 +225,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
         var (totalPoints, point, cost, isSameZone, placeName) = tuple.Value;
 
-        OpenMapWithGatheringPoint(point, item);
+        point.OpenMap(item);
     }
 
     [AddressHook<AddonRecipeMaterialList>(nameof(AddonRecipeMaterialList.Addresses.SetupRow))]
@@ -325,24 +326,20 @@ originalAddItemContextMenuEntries:
         return AgentRecipeItemContext_AddItemContextMenuEntriesHook.OriginalDisposeSafe(agent, itemId, flags, itemName);
     }
 
-    private (int, GatheringPoint, uint, bool, SeString)? GetPointForItem(uint itemId)
+    private (int, ExtendedGatheringPoint, uint, bool, SeString)? GetPointForItem(uint itemId)
     {
-        var gatheringItem = FindRow<GatheringItem>(row => row?.Item == itemId);
+        var gatheringItem = ItemGatheringItemLookup.First(itemId);
         if (gatheringItem == null)
             return null;
 
-        var gatheringPointSheet = GetSheet<GatheringPoint>();
+        var gatheringPointSheet = GetSheet<ExtendedGatheringPoint>();
         var gatheringPoints = GetSheet<GatheringPointBase>()
             .Where(row => row.Item.Any(item => item == gatheringItem.RowId))
             .Select(row => gatheringPointSheet.FirstOrDefault(gprow => gprow?.GatheringPointBase.Row == row.RowId && gprow.TerritoryType.Row > 1, null))
             .Where(row => row != null)
-            /* not needed?
-            .GroupBy(row => row!.RowId)
-            .Select(rows => rows.First())
-            */
             .ToList();
 
-        if (gatheringPoints == null || !gatheringPoints.Any())
+        if (!gatheringPoints.Any())
             return null;
 
         var currentTerritoryTypeId = GameMain.Instance()->CurrentTerritoryTypeId;
@@ -367,80 +364,5 @@ originalAddItemContextMenuEntries:
 
         var placeName = point.TerritoryType.Value?.PlaceName.Value?.Name.ToDalamudString();
         return placeName == null ? null : (gatheringPoints.Count, point, cost, isSameZone, placeName);
-    }
-
-    public bool OpenMapWithGatheringPoint(GatheringPoint? gatheringPoint, Item? item = null)
-    {
-        if (gatheringPoint == null)
-            return false;
-
-        var territoryType = gatheringPoint.TerritoryType.Value;
-        if (territoryType == null)
-            return false;
-
-        var gatheringPointBase = gatheringPoint.GatheringPointBase.Value;
-        if (gatheringPointBase == null)
-            return false;
-
-        var exportedPoint = GetRow<ExportedGatheringPoint>(gatheringPointBase.RowId);
-        if (exportedPoint == null)
-            return false;
-
-        var gatheringType = exportedPoint.GatheringType.Value;
-        if (gatheringType == null)
-            return false;
-
-        var raptureTextModule = RaptureTextModule.Instance();
-
-        var levelText = gatheringPointBase.GatheringLevel == 1
-            ? raptureTextModule->GetAddonText(242) // "Lv. ???"
-            : raptureTextModule->FormatAddonText2(35, gatheringPointBase.GatheringLevel, 0);
-        var gatheringPointName = Statics.GetGatheringPointName(
-            &raptureTextModule,
-            (byte)exportedPoint.GatheringType.Row,
-            exportedPoint.GatheringPointType
-        );
-
-        using var tooltip = new DisposableUtf8String(levelText);
-        tooltip.AppendString(" ");
-        tooltip.AppendString(gatheringPointName);
-
-        var iconId = Statics.IsGatheringPointRare(exportedPoint.GatheringPointType) == 0
-            ? gatheringType.IconMain
-            : gatheringType.IconOff;
-
-        var agentMap = GetAgent<AgentMap>();
-        agentMap->TempMapMarkerCount = 0;
-        agentMap->AddGatheringTempMarker(
-            4u,
-            (int)Math.Round(exportedPoint.X),
-            (int)Math.Round(exportedPoint.Y),
-            (uint)iconId,
-            exportedPoint.Radius,
-            tooltip
-        );
-
-        var titleBuilder = new SeStringBuilder().AddText("\uE078");
-        if (item != null)
-        {
-            titleBuilder
-                .AddText(" ")
-                .AddUiForeground(549)
-                .AddUiGlow(550)
-                .Append(item.Name.ToDalamudString())
-                .AddUiGlowOff()
-                .AddUiForegroundOff();
-        }
-
-        using var title = new DisposableUtf8String(titleBuilder.BuiltString);
-
-        var mapInfo = stackalloc OpenMapInfo[1];
-        mapInfo->Type = FFXIVClientStructs.FFXIV.Client.UI.Agent.MapType.GatheringLog;
-        mapInfo->MapId = territoryType.Map.Row;
-        mapInfo->TerritoryId = territoryType.RowId;
-        mapInfo->TitleString = *title.Ptr;
-        agentMap->OpenMap(mapInfo);
-
-        return true;
     }
 }
