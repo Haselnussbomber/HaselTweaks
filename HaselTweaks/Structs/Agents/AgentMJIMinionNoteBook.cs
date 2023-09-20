@@ -34,17 +34,13 @@ public unsafe partial struct AgentMJIMinionNoteBook
     {
         if (SelectedMinion != null)
         {
-            var ptr = (byte*)Marshal.AllocHGlobal(3);
+            var bytes = stackalloc byte[3];
 
-            *ptr = (byte)CurrentView;
-            *(ptr + 1) = SelectedMinion->TabIndex;
-            *(ptr + 2) = SelectedMinion->SlotIndex;
+            bytes[0] = (byte)CurrentView;
+            bytes[1] = SelectedMinion->TabIndex;
+            bytes[2] = SelectedMinion->SlotIndex;
 
-            var value = GetSelectedMinionId(ptr, ptr + 1, ptr + 2);
-
-            Marshal.FreeHGlobal((nint)ptr);
-
-            return value;
+            return GetSelectedMinionId(bytes, bytes + 1, bytes + 2);
         }
 
         return 0;
