@@ -108,7 +108,7 @@ internal sealed class VTableHookGenerator : IIncrementalGenerator
 
         public void RenderSetupHook(IndentedStringBuilder builder)
         {
-            builder.AppendLine($"{MethodInfo.Name}Hook = Dalamud.Hooking.Hook<{MethodInfo.Name}Delegate>.FromAddress(*(nint*)({structName}.StaticAddressPointers.VTable + 8 * {vTableIndex}), {MethodInfo.Name});");
+            builder.AppendLine($"{MethodInfo.Name}Hook = Dalamud.Hooking.Hook<{MethodInfo.Name}Delegate>.FromFunctionPointerVariable((nint)({structName}.StaticAddressPointers.VTable + 8 * {vTableIndex}), {MethodInfo.Name});");
         }
     }
 
