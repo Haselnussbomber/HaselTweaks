@@ -26,8 +26,7 @@ public partial class Plugin : IDalamudPlugin
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
-        pluginInterface.Create<Service>();
-        HaselCommonBase.Initialize(pluginInterface);
+        Service.Initialize(pluginInterface);
         Task.Run(Setup);
 
         // speeds up displaying the logo in PluginWindow for the first time after loading the plugin by ~200ms
@@ -210,9 +209,12 @@ public partial class Plugin : IDalamudPlugin
         }
 
         Config?.Save();
-        HaselCommonBase.Dispose();
+
+        Service.Dispose();
+
+        Tweaks = null!;
+        Config = null!;
 
         _disposed = true;
-        GC.SuppressFinalize(this);
     }
 }

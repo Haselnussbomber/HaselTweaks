@@ -14,9 +14,9 @@ namespace HaselTweaks;
 
 public class Service
 {
-    public static TranslationManager TranslationManager => HaselCommonBase.TranslationManager;
-    public static TextureManager TextureManager => HaselCommonBase.TextureManager;
-    public static WindowManager WindowManager => HaselCommonBase.WindowManager;
+    public static TranslationManager TranslationManager = null!;
+    public static TextureManager TextureManager = null!;
+    public static WindowManager WindowManager = null!;
 
     [PluginService] public static DalamudPluginInterface PluginInterface { get; private set; } = null!;
     [PluginService] public static ChatGui ChatGui { get; private set; } = null!;
@@ -34,4 +34,25 @@ public class Service
     [PluginService] public static ISigScanner SigScanner { get; private set; } = null!;
     [PluginService] public static ITargetManager TargetManager { get; private set; } = null!;
     [PluginService] public static ITextureProvider TextureProvider { get; private set; } = null!;
+
+    internal static void Initialize(DalamudPluginInterface pluginInterface)
+    {
+        PluginInterface = pluginInterface;
+        pluginInterface.Create<Service>();
+
+        HaselCommonBase.Initialize(pluginInterface);
+
+        TranslationManager = HaselCommonBase.TranslationManager;
+        TextureManager = HaselCommonBase.TextureManager;
+        WindowManager = HaselCommonBase.WindowManager;
+    }
+
+    internal static void Dispose()
+    {
+        TranslationManager = null!;
+        TextureManager = null!;
+        WindowManager = null!;
+
+        HaselCommonBase.Dispose();
+    }
 }
