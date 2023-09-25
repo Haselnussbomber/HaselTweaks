@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Numerics;
-using Dalamud.Interface;
-using Dalamud.Interface.Raii;
+using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game;
@@ -134,7 +134,7 @@ public unsafe class GearSetGridWindow : Window
         var raptureGearsetModule = RaptureGearsetModule.Instance();
         for (var gearsetIndex = 0; gearsetIndex < InventoryManager.Instance()->GetPermittedGearsetCount(); gearsetIndex++)
         {
-            var gearset = raptureGearsetModule->Gearset[gearsetIndex];
+            var gearset = raptureGearsetModule->GetGearset(gearsetIndex);
             if (!gearset->Flags.HasFlag(GearsetFlag.Exists))
                 continue;
 
@@ -198,13 +198,13 @@ public unsafe class GearSetGridWindow : Window
                 ImGui.TextUnformatted(text);
             }
 
-            for (uint slotIndex = 0; slotIndex < NUM_SLOTS; slotIndex++)
+            for (var slotIndex = 0u; slotIndex < NUM_SLOTS; slotIndex++)
             {
                 // skip obsolete belt slot
                 if (slotIndex == 5)
                     continue;
 
-                var slot = (GearsetItem*)((nint)gearset->ItemsData + GearsetItem.Size * slotIndex);
+                var slot = AsPointer(ref gearset->ItemsSpan[(int)slotIndex]);
                 var itemId = slot->ItemID % 1000000; // strip HQ
 
                 ImGui.TableNextColumn();
@@ -253,11 +253,11 @@ public unsafe class GearSetGridWindow : Window
         var raptureGearsetModule = RaptureGearsetModule.Instance();
         for (var gearsetIndex = 0; gearsetIndex < InventoryManager.Instance()->GetPermittedGearsetCount(); gearsetIndex++)
         {
-            var gearset = raptureGearsetModule->Gearset[gearsetIndex];
+            var gearset = raptureGearsetModule->GetGearset(gearsetIndex);
             if (!gearset->Flags.HasFlag(GearsetFlag.Exists))
                 continue;
 
-            var item = (GearsetItem*)((nint)gearset->ItemsData + GearsetItem.Size * slotIndex);
+            var item = AsPointer(ref gearset->ItemsSpan[(int)slotIndex]);
             if (item->ItemID == itemId)
                 list.Add(new(gearset->ID, MemoryHelper.ReadString((nint)gearset->Name, 0x2F)));
         }

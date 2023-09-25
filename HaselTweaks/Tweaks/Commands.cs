@@ -7,7 +7,6 @@ using Dalamud.Memory;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;
 using GameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 using ObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
@@ -55,7 +54,6 @@ public unsafe class Commands : Tweak
     {
         if (Config.EnableItemLinkCommand)
         {
-            Service.CommandManager.RemoveHandler(ItemLinkCommand);
             Service.CommandManager.AddHandler(ItemLinkCommand, new CommandInfo(OnItemLinkCommand)
             {
                 HelpMessage = $"Usage: {ItemLinkCommand} <id>",
@@ -65,7 +63,6 @@ public unsafe class Commands : Tweak
 
         if (Config.EnableWhatMountCommand)
         {
-            Service.CommandManager.RemoveHandler(WhatMountCommand);
             Service.CommandManager.AddHandler(WhatMountCommand, new CommandInfo(OnWhatMountCommand)
             {
                 HelpMessage = $"Usage: {WhatMountCommand}",
@@ -75,7 +72,6 @@ public unsafe class Commands : Tweak
 
         if (Config.EnableWhatBardingCommand)
         {
-            Service.CommandManager.RemoveHandler(WhatBardingCommand);
             Service.CommandManager.AddHandler(WhatBardingCommand, new CommandInfo(OnWhatBardingCommand)
             {
                 HelpMessage = $"Usage: {WhatBardingCommand}",
@@ -128,9 +124,9 @@ public unsafe class Commands : Tweak
 
         var sb = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
-            .Append(tSe("Commands.ItemLink.Item", idStr, ItemUtils.GetItemLink(id)));
+            .Append(tSe("Commands.ItemLink.Item", idStr, SeString.CreateItemLink(id)));
 
-        Service.ChatGui.PrintChat(new XivChatEntry
+        Service.ChatGui.Print(new XivChatEntry
         {
             Message = sb.Build(),
             Type = XivChatType.Echo
@@ -185,7 +181,7 @@ public unsafe class Commands : Tweak
         var itemAction = FindRow<ItemAction>(row => row?.Type == 1322 && row.Data[0] == mount.RowId);
         if (itemAction == null || itemAction.RowId == 0)
         {
-            Service.ChatGui.PrintChat(new XivChatEntry
+            Service.ChatGui.Print(new XivChatEntry
             {
                 Message = sb
                     .Append(tSe("Commands.WhatMount.WithoutItem", name))
@@ -198,7 +194,7 @@ public unsafe class Commands : Tweak
         var item = FindRow<Item>(row => row?.ItemAction.Row == itemAction!.RowId);
         if (item == null)
         {
-            Service.ChatGui.PrintChat(new XivChatEntry
+            Service.ChatGui.Print(new XivChatEntry
             {
                 Message = sb
                     .Append(tSe("Commands.WhatMount.WithoutItem", name))
@@ -208,10 +204,9 @@ public unsafe class Commands : Tweak
             return;
         }
 
-        var seItemLink = ItemUtils.GetItemLink(item.RowId);
-        sb.Append(tSe("Commands.WhatMount.WithItem", name, seItemLink));
+        sb.Append(tSe("Commands.WhatMount.WithItem", name, SeString.CreateItemLink(item.RowId)));
 
-        Service.ChatGui.PrintChat(new XivChatEntry
+        Service.ChatGui.Print(new XivChatEntry
         {
             Message = sb.Build(),
             Type = XivChatType.Echo
@@ -257,7 +252,7 @@ public unsafe class Commands : Tweak
             .Add(NewLinePayload.Payload)
             .AddText($"  {GetAddonText(4993)}: {legsRow?.Name.ToDalamudString().ToString() ?? GetAddonText(4994)}");
 
-        Service.ChatGui.PrintChat(new XivChatEntry
+        Service.ChatGui.Print(new XivChatEntry
         {
             Message = sb.Build(),
             Type = XivChatType.Echo

@@ -2,8 +2,7 @@ using System.Collections.Generic;
 using System.IO.Hashing;
 using System.Linq;
 using System.Threading.Tasks;
-using Dalamud.Interface.Raii;
-using Dalamud.Logging;
+using Dalamud.Interface.Utility.Raii;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -105,7 +104,7 @@ public class CreatePresetDialog : ConfirmationDialog
     {
         if (_preset == null || _image == null || string.IsNullOrEmpty(_name?.Trim()))
         {
-            PluginLog.Error("Could not save portrait: data missing"); // TODO: show error
+            Service.PluginLog.Error("Could not save portrait: data missing"); // TODO: show error
             Close();
             return;
         }

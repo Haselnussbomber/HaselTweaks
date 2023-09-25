@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using Dalamud.Game;
 using Dalamud.Game.ClientState.Keys;
-using Dalamud.Interface.Raii;
+using Dalamud.Interface.Utility.Raii;
 using HaselCommon.Extensions;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
@@ -127,7 +126,7 @@ public unsafe class BackgroundMusicKeybind : Tweak
 
     private bool _isPressingKeybind;
 
-    public override void OnFrameworkUpdate(Framework framework)
+    public override void OnFrameworkUpdate()
     {
         if (!Config.Keybind.All(key => Service.KeyState[key]))
         {

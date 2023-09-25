@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using Dalamud.Logging;
 using Newtonsoft.Json;
 
 namespace HaselTweaks.Records.PortraitHelper;
@@ -44,7 +43,7 @@ public record SavedPreset
             }
             catch (Exception ex)
             {
-                PluginLog.Error(ex, $"Could not delete \"{thumbPath}\"");
+                Service.PluginLog.Error(ex, $"Could not delete \"{thumbPath}\"");
             }
         }
 

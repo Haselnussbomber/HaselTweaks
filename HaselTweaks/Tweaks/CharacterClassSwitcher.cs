@@ -308,7 +308,7 @@ OriginalPvPReceiveEventCode:
         for (var id = 0; id < 100; id++)
         {
             // skip if invalid
-            if (gearsetModule->IsValidGearset(id) == 0)
+            if (!gearsetModule->IsValidGearset(id))
                 continue;
 
             var gearset = gearsetModule->GetGearset(id);

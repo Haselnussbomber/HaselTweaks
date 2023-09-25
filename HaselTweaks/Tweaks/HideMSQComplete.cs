@@ -31,7 +31,7 @@ public unsafe partial class HideMSQComplete : Tweak
     private static void Update()
     {
         var agentScenarioTree = GetAgent<AgentScenarioTree>();
-        UpdateVisibility(agentScenarioTree->Data != null && agentScenarioTree->Data->NextId != 0);
+        UpdateVisibility(agentScenarioTree->Data != null && agentScenarioTree->Data->CurrentScenarioQuest != 0);
     }
 
     private static void UpdateVisibility(bool visible)

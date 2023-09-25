@@ -1,6 +1,6 @@
 using System.Globalization;
 using System.Reflection;
-using Dalamud.Interface;
+using Dalamud.Interface.Utility;
 using HaselCommon;
 using HaselCommon.Utils;
 using ImGuiNET;

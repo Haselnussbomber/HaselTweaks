@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Numerics;
-using Dalamud.Interface.Raii;
+using Dalamud.Interface.Utility.Raii;
 using HaselCommon.Utils;
 using ImGuiNET;
 

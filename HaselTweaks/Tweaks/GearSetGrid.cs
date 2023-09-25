@@ -67,7 +67,6 @@ public unsafe partial class GearSetGrid : Tweak
     {
         if (Config.RegisterCommand)
         {
-            Service.CommandManager.RemoveHandler(GSGCommand);
             Service.CommandManager.AddHandler(GSGCommand, new CommandInfo(OnGsgCommand)
             {
                 HelpMessage = $"Usage: {GSGCommand} <id>",

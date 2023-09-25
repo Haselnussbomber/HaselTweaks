@@ -5,20 +5,16 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Dalamud.Game.Command;
-using Dalamud.Logging;
 using Dalamud.Plugin;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using Dalamud.Plugin.Services;
 using HaselCommon;
 using HaselTweaks.Windows;
 using Svg;
-using DalamudFramework = Dalamud.Game.Framework;
 
 namespace HaselTweaks;
 
 public partial class Plugin : IDalamudPlugin
 {
-    public string Name => "HaselTweaks";
-
     internal static HashSet<Tweak> Tweaks = null!; // filled by generator (InitializeTweaks)
     internal static Configuration Config = null!;
 
@@ -62,7 +58,7 @@ public partial class Plugin : IDalamudPlugin
                 }
                 catch (Exception ex)
                 {
-                    PluginLog.Error(ex, $"Failed enabling tweak '{tweak.InternalName}'.");
+                    Service.PluginLog.Error(ex, $"Failed enabling tweak '{tweak.InternalName}'.");
                 }
             }
 
@@ -73,9 +69,8 @@ public partial class Plugin : IDalamudPlugin
             HaselCommonBase.AddonObserver.AddonOpen += AddonObserver_AddonOpen;
             HaselCommonBase.AddonObserver.AddonClose += AddonObserver_AddonClose;
 
-            Service.PluginInterface.UiBuilder.OpenMainUi += OnOpenMainUi;
+            Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
 
-            Service.CommandManager.RemoveHandler("/haseltweaks");
             Service.CommandManager.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
             {
                 HelpMessage = "Show Window"
@@ -86,7 +81,7 @@ public partial class Plugin : IDalamudPlugin
     private static void InitializeResolver()
     {
         string gameVersion;
-        unsafe { gameVersion = Framework.Instance()->GameVersion.Base; }
+        unsafe { gameVersion = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GameVersion.Base; }
         if (string.IsNullOrEmpty(gameVersion))
             throw new Exception("Unable to read game version.");
 
@@ -117,18 +112,18 @@ public partial class Plugin : IDalamudPlugin
         }
     }
 
-    private void OnFrameworkUpdate(DalamudFramework framework)
+    private void OnFrameworkUpdate(IFramework framework)
     {
         foreach (var tweak in Tweaks)
         {
             if (!tweak.Enabled)
                 continue;
 
-            tweak.OnFrameworkUpdateInternal(framework);
+            tweak.OnFrameworkUpdateInternal();
         }
     }
 
-    private void ClientState_Login(object? sender, EventArgs e)
+    private void ClientState_Login()
     {
         foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
         {
@@ -136,7 +131,7 @@ public partial class Plugin : IDalamudPlugin
         }
     }
 
-    private void ClientState_Logout(object? sender, EventArgs e)
+    private void ClientState_Logout()
     {
         foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
         {
@@ -144,7 +139,7 @@ public partial class Plugin : IDalamudPlugin
         }
     }
 
-    private void ClientState_TerritoryChanged(object? sender, ushort id)
+    private void ClientState_TerritoryChanged(ushort id)
     {
         foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
         {
@@ -168,7 +163,7 @@ public partial class Plugin : IDalamudPlugin
         }
     }
 
-    private void OnOpenMainUi()
+    private void OnOpenConfigUi()
     {
         Service.WindowManager.OpenWindow<PluginWindow>();
     }
@@ -190,7 +185,7 @@ public partial class Plugin : IDalamudPlugin
         Service.ClientState.Login -= ClientState_Login;
         Service.ClientState.Logout -= ClientState_Logout;
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
-        Service.PluginInterface.UiBuilder.OpenMainUi -= OnOpenMainUi;
+        Service.PluginInterface.UiBuilder.OpenConfigUi -= OnOpenConfigUi;
 
         Service.CommandManager.RemoveHandler("/haseltweaks");
 
@@ -204,7 +199,7 @@ public partial class Plugin : IDalamudPlugin
             }
             catch (Exception ex)
             {
-                PluginLog.Error(ex, $"Failed disposing tweak '{tweak.InternalName}'.");
+                Service.PluginLog.Error(ex, $"Failed disposing tweak '{tweak.InternalName}'.");
             }
         }
 

@@ -1,6 +1,7 @@
 using System.Numerics;
 using Dalamud.Interface;
-using Dalamud.Interface.Raii;
+using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Utils;

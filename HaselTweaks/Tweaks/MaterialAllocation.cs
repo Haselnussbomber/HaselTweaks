@@ -1,10 +1,10 @@
 using Dalamud.Game.Text;
+using Dalamud.Game.Text.SeStringHandling;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Structs.Agents;
-using HaselTweaks.Utils;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
@@ -118,9 +118,9 @@ public unsafe partial class MaterialAllocation : Tweak
                 var item = pouchRow.Item.Value;
                 if (itemId != 0 && item != null)
                 {
-                    Service.ChatGui.PrintChat(new XivChatEntry
+                    Service.ChatGui.Print(new XivChatEntry
                     {
-                        Message = tSe("MaterialAllocation.ItemIsNotGatherable", ItemUtils.GetItemLink(item.RowId)),
+                        Message = tSe("MaterialAllocation.ItemIsNotGatherable", SeString.CreateItemLink(item.RowId)),
                         Type = XivChatType.Echo
                     });
                 }

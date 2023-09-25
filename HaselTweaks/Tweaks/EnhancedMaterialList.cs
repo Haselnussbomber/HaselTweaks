@@ -76,7 +76,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         }
     }
 
-    public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
+    public override void OnFrameworkUpdate()
     {
         RefreshRecipeMaterialList();
         RefreshRecipeTree();

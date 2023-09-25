@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using Dalamud.Interface;
-using Dalamud.Interface.Raii;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;

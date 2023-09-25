@@ -1,10 +1,10 @@
-using Dalamud.Game;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
+using Dalamud.Interface.Utility;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselCommon;
@@ -105,7 +105,7 @@ public unsafe class DTR : Tweak
         DtrBusy = null;
     }
 
-    public override void OnFrameworkUpdate(Framework framework)
+    public override void OnFrameworkUpdate()
     {
         UpdateInstance();
         UpdateFPS();

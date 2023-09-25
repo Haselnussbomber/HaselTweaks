@@ -1,4 +1,4 @@
-using Dalamud.Interface.Raii;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Common.Math;

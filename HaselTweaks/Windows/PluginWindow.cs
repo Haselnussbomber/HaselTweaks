@@ -5,9 +5,10 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Dalamud.Interface;
-using Dalamud.Interface.Raii;
+using Dalamud.Interface.Internal;
+using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
-using Dalamud.Logging;
 using HaselCommon;
 using HaselCommon.Enums;
 using HaselCommon.Extensions;
@@ -15,7 +16,6 @@ using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using ImGuiNET;
-using ImGuiScene;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Svg;
@@ -30,7 +30,7 @@ public partial class PluginWindow : Window, IDisposable
 
     private string _selectedTweak = string.Empty;
     private bool _isLogoLoading;
-    private TextureWrap? _logoTextureWrap;
+    private IDalamudTextureWrap? _logoTextureWrap;
     private readonly Point _logoSize = new(580, 180);
     private Point _renderedLogoSize = new(0, 0);
 
@@ -112,7 +112,7 @@ public partial class PluginWindow : Window, IDisposable
                 using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(LogoManifestResource);
                 if (stream == null)
                 {
-                    PluginLog.Error("ManifestResource {0} not found", LogoManifestResource);
+                    Service.PluginLog.Error("ManifestResource {0} not found", LogoManifestResource);
                     return;
                 }
 
@@ -132,7 +132,7 @@ public partial class PluginWindow : Window, IDisposable
             }
             catch (Exception ex)
             {
-                PluginLog.Error(ex, "Error while loading logo");
+                Service.PluginLog.Error(ex, "Error while loading logo");
             }
             finally
             {
