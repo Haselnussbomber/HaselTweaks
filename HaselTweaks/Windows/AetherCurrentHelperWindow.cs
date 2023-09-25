@@ -191,9 +191,12 @@ public unsafe partial class AetherCurrentHelperWindow : Window
             questId = 69793; // In Agama's Footsteps
 
         var quest = GetRow<Quest>(questId);
-        if (questId == 0 || quest == null) return;
+        if (questId == 0 || quest == null || quest.IssuerLocation.Row == 0)
+            return;
 
-        var extendedIssuerLocation = (ExtendedLevel)quest.IssuerLocation.Value!;
+        var extendedIssuerLocation = GetRow<ExtendedLevel>(quest.IssuerLocation.Row);
+        if (extendedIssuerLocation == null)
+            return;
 
         // Icon
         ImGui.TableNextColumn();
