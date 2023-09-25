@@ -1,5 +1,16 @@
 # Changelog
 
+## [17.0.2] (2023-09-25)
+
+### HaselTweaks
+
+- **Internal:** VirtualFunctions are now hooked with `Hook<>.FromFunctionPointerVariable()` instead of `Hook<>.FromAddress()`. I hope it works fine!
+- **Internal:** Improved clean-up when the plugin unloads.
+
+### Aether Current Helper
+
+- **Fixed:** The list didn't render (probably since v16.2.2). Sorry, that I didn't noticed it until now.
+
 ## [17.0.1] (2023-09-20)
 
 ### Enhanced Isleworks Agenda
@@ -1116,6 +1127,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[17.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v17.0.2...v17.0.2
 [17.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v17.0.0...v17.0.1
 [17.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.2.2...v17.0.0
 [16.2.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v16.2.1...v16.2.2
