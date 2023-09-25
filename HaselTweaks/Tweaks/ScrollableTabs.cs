@@ -5,6 +5,7 @@ using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using Windows.Win32;
 using AddonAOZNotebook = HaselTweaks.Structs.AddonAOZNotebook;
+using AddonGSInfoCardList = HaselTweaks.Structs.AddonGSInfoCardList;
 using HaselAtkComponentRadioButton = HaselTweaks.Structs.AtkComponentRadioButton;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
@@ -293,11 +294,11 @@ public unsafe partial class ScrollableTabs : Tweak
         }
         else if (Config.HandleGoldSaucerCardList && name == "GSInfoCardList")
         {
-            UpdateTabSwitcher((nint)unitBase, &((AddonGoldSaucerCardList*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((nint)unitBase, &((AddonGSInfoCardList*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleGoldSaucerCardDeckEdit && name == "GSInfoEditDeck")
         {
-            UpdateTabSwitcher((nint)unitBase, &((AddonGoldSaucerCardDeckEdit*)unitBase)->TabSwitcher);
+            UpdateTabSwitcher((nint)unitBase, &((AddonGSInfoEditDeck*)unitBase)->TabSwitcher);
         }
         else if (Config.HandleLovmPaletteEdit && name == "LovmPaletteEdit")
         {
