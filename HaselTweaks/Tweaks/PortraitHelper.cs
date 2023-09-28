@@ -313,14 +313,15 @@ public partial class PortraitHelper : Tweak
 
     private unsafe uint GetEquippedGearChecksum()
     {
-        using var checksumData = new DisposableStruct<GearsetChecksumData>();
+        var itemIds = stackalloc uint[14];
+        var stainIds = stackalloc byte[14];
         var container = InventoryManager.Instance()->GetInventoryContainer(InventoryType.EquippedItems);
 
         for (var i = 0; i < 14; i++)
         {
             var item = container->Items[i];
-            checksumData.Ptr->ItemIds[i] = item.GlamourID != 0 ? item.GlamourID : item.ItemID;
-            checksumData.Ptr->StainIds[i] = item.Stain;
+            itemIds[i] = item.GlamourID != 0 ? item.GlamourID : item.ItemID;
+            stainIds[i] = item.Stain;
         }
 
         GetAgent<AgentStatus>()->UpdateGearVisibilityInNumberArray();
@@ -338,7 +339,7 @@ public partial class PortraitHelper : Tweak
         if (numberArray->IntArray[270] == 1)
             gearVisibilityFlag |= BannerGearVisibilityFlag.VisorClosed;
 
-        return GearsetChecksumData.GenerateChecksum(checksumData.Ptr->ItemIds, checksumData.Ptr->StainIds, gearVisibilityFlag);
+        return BannerModuleEntry.GenerateChecksum(itemIds, stainIds, gearVisibilityFlag);
     }
 
     private unsafe bool SendPortraitUpdate(BannerModuleEntry* banner)
