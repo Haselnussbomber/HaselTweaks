@@ -2,14 +2,9 @@
 
 ## [17.0.2] (2023-09-25)
 
-### HaselTweaks
-
-- **Internal:** VirtualFunctions are now hooked with `Hook<>.FromFunctionPointerVariable()` instead of `Hook<>.FromAddress()`. I hope it works fine!
-- **Internal:** Improved clean-up when the plugin unloads.
-
 ### Aether Current Helper
 
-- **Fixed:** The list didn't render (probably since v16.2.2). Sorry, that I didn't noticed it until now.
+- **Fixed:** The list didn't render due to an error.
 
 ## [17.0.1] (2023-09-20)
 
