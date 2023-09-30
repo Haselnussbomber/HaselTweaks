@@ -1,4 +1,5 @@
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
@@ -96,7 +97,7 @@ public unsafe partial class ScrollableTabs : Tweak
     [AddressHook<Statics>(nameof(Statics.Addresses.WindowProcHandler))]
     private ulong WindowProcHandler(nint hwnd, int uMsg, int wParam)
     {
-        if (hwnd == PInvoke.GetActiveWindow() && uMsg == PInvoke.WM_MOUSEWHEEL)
+        if (uMsg == PInvoke.WM_MOUSEWHEEL && !Framework.Instance()->WindowInactive)
         {
             _wheelState = (short)Math.Clamp((wParam >> 16) / PInvoke.WHEEL_DELTA * (Config.Invert ? -1 : 1), -1, 1);
 
