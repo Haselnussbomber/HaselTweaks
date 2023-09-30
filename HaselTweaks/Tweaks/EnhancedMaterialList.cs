@@ -9,7 +9,6 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.SheetLookup;
 using HaselCommon.Sheets;
-using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
@@ -141,7 +140,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         if (_recipeMaterialListRefreshPending)
         {
             Log("Refreshing RecipeMaterialList");
-            using var atkEvent = new DisposableStruct<AtkEvent>();
+            var atkEvent = stackalloc AtkEvent[1];
             recipeMaterialList->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 1, atkEvent, 0);
 
             _recipeMaterialListRefreshPending = false;
@@ -171,7 +170,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         }
 
         Log("Refreshing RecipeTree");
-        using var atkEvent = new DisposableStruct<AtkEvent>();
+        var atkEvent = stackalloc AtkEvent[1];
         recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, atkEvent, 0);
 
         _lastRecipeTreeRefresh = DateTime.Now;

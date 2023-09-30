@@ -2,7 +2,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using Windows.Win32;
 using AddonAOZNotebook = HaselTweaks.Structs.AddonAOZNotebook;
@@ -173,6 +172,7 @@ public unsafe partial class ScrollableTabs : Tweak
                 break;
 
             // Key Items (part of Inventory)
+            case "InventoryEvent":
             case "InventoryEventGrid":
                 name = "InventoryEvent";
                 break;
@@ -396,16 +396,16 @@ ResetWheelState:
         if (addon->TabIndex == AddonInventory.NUM_TABS - 1 && _wheelState > 0)
         {
             // inside "48 89 6C 24 ?? 56 48 83 EC 20 0F B7 C2", a3 != 17
-            using var values = new DisposableStructArray<AtkValue>(3);
+            var values = stackalloc AtkValue[3];
 
-            values[0]->ChangeType(ValueType.Int);
-            values[0]->Int = 22;
+            values[0].ChangeType(ValueType.Int);
+            values[0].Int = 22;
 
-            values[1]->ChangeType(ValueType.Int);
-            values[1]->Int = addon->Unk228;
+            values[1].ChangeType(ValueType.Int);
+            values[1].Int = addon->Unk228;
 
-            values[2]->ChangeType(ValueType.UInt);
-            values[2]->UInt = 0;
+            values[2].ChangeType(ValueType.UInt);
+            values[2].UInt = 0;
 
             addon->AtkUnitBase.FireCallback(3, values);
         }
@@ -425,16 +425,16 @@ ResetWheelState:
         if (addon->TabIndex == 0 && _wheelState < 0)
         {
             // inside Vf68, fn call before return with a2 being 2
-            using var values = new DisposableStructArray<AtkValue>(3);
+            var values = stackalloc AtkValue[3];
 
-            values[0]->ChangeType(ValueType.Int);
-            values[0]->Int = 22;
+            values[0].ChangeType(ValueType.Int);
+            values[0].Int = 22;
 
-            values[1]->ChangeType(ValueType.Int);
-            values[1]->Int = addon->Unk280;
+            values[1].ChangeType(ValueType.Int);
+            values[1].Int = addon->Unk280;
 
-            values[2]->ChangeType(ValueType.UInt);
-            values[2]->UInt = 2;
+            values[2].ChangeType(ValueType.UInt);
+            values[2].UInt = 2;
 
             addon->AtkUnitBase.FireCallback(3, values);
         }
@@ -545,7 +545,7 @@ ResetWheelState:
             return;
 
         // fake event, so it can call SetEventIsHandled
-        using var atkEvent = new DisposableStruct<AtkEvent>();
+        var atkEvent = stackalloc AtkEvent[1];
         addon->SetTab(tabIndex, atkEvent);
     }
 
@@ -554,7 +554,7 @@ ResetWheelState:
         if (IntersectingCollisionNode == addon->DescriptionCollisionNode)
             return;
 
-        using var atkEvent = new DisposableStruct<AtkEvent>();
+        var atkEvent = stackalloc AtkEvent[1];
         var eventParam = Math.Clamp(addon->CurrentNoteIndex % 10 + _wheelState, -1, addon->MaxNoteIndex - 1);
 
         if (eventParam == -1)
