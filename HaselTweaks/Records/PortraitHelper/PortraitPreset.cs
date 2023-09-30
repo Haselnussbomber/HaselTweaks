@@ -4,7 +4,6 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Common.Math;
 using HaselCommon.Extensions;
-using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.JsonConverters;
 using HaselTweaks.Structs;
@@ -238,7 +237,7 @@ public sealed record PortraitPreset
         var state = GetAgent<AgentBannerEditor>()->EditorState;
         var preset = new PortraitPreset();
 
-        using var portraitData = new DisposableStruct<ExportedPortraitData>();
+        var portraitData = stackalloc ExportedPortraitData[1];
         state->CharaView->ExportPortraitData(portraitData);
         preset.ReadExportedPortraitData(portraitData);
 
@@ -259,8 +258,7 @@ public sealed record PortraitPreset
         var bannerEntry = state->BannerEntry;
 
         // read current portrait and then overwrite what the flags allow below
-        using var tempPortraitDataHolder = new DisposableStruct<ExportedPortraitData>();
-        var tempPortraitData = tempPortraitDataHolder.Ptr;
+        var tempPortraitData = stackalloc ExportedPortraitData[1];
 
         state->CharaView->ExportPortraitData(tempPortraitData);
 
