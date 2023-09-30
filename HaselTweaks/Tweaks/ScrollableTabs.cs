@@ -440,7 +440,14 @@ ResetWheelState:
         }
         else
         {
-            var tabIndex = GetTabIndex(addon->TabIndex, addon->NumTabs);
+            var numEnabledButtons = 0;
+            foreach (ref var button in addon->ButtonsSpan)
+            {
+                if ((button.Value->AtkComponentButton.Flags & 0x40000) != 0)
+                    numEnabledButtons++;
+            }
+
+            var tabIndex = GetTabIndex(addon->TabIndex, numEnabledButtons);
 
             if (addon->TabIndex == tabIndex)
                 return;
