@@ -12,7 +12,6 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
@@ -403,7 +402,8 @@ public partial class PortraitHelper : Tweak
             return false;
         }
 
-        using var bannerUpdateData = new DisposableCreatable<BannerUpdateData>();
+        var bannerUpdateData = stackalloc BannerUpdateData[1];
+        bannerUpdateData->Ctor();
 
         if (!helper->InitializeBannerUpdateData(bannerUpdateData))
         {
