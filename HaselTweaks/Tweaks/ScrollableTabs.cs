@@ -102,7 +102,7 @@ public unsafe partial class ScrollableTabs : Tweak
             _wheelState = (short)Math.Clamp((wParam >> 16) / PInvoke.WHEEL_DELTA * (Config.Invert ? -1 : 1), -1, 1);
 
             if (_wheelState != 0)
-                Service.Framework.RunOnFrameworkThread(Update);
+                Update();
         }
 
         return WindowProcHandlerHook.OriginalDisposeSafe(hwnd, uMsg, wParam);
