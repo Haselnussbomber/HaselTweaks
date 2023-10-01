@@ -398,13 +398,13 @@ ResetWheelState:
             // inside "48 89 6C 24 ?? 56 48 83 EC 20 0F B7 C2", a3 != 17
             var values = stackalloc AtkValue[3];
 
-            values[0].ChangeType(ValueType.Int);
+            values[0].Type = ValueType.Int;
             values[0].Int = 22;
 
-            values[1].ChangeType(ValueType.Int);
+            values[1].Type = ValueType.Int;
             values[1].Int = addon->Unk228;
 
-            values[2].ChangeType(ValueType.UInt);
+            values[2].Type = ValueType.UInt;
             values[2].UInt = 0;
 
             addon->AtkUnitBase.FireCallback(3, values);
@@ -427,13 +427,13 @@ ResetWheelState:
             // inside Vf68, fn call before return with a2 being 2
             var values = stackalloc AtkValue[3];
 
-            values[0].ChangeType(ValueType.Int);
+            values[0].Type = ValueType.Int;
             values[0].Int = 22;
 
-            values[1].ChangeType(ValueType.Int);
+            values[1].Type = ValueType.Int;
             values[1].Int = addon->Unk280;
 
-            values[2].ChangeType(ValueType.UInt);
+            values[2].Type = ValueType.UInt;
             values[2].UInt = 2;
 
             addon->AtkUnitBase.FireCallback(3, values);
