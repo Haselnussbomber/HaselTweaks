@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Scrollable Tabs
+
+- **Fixed:** Due to an incorrect tab count, it was possible to scroll into hidden tabs of the Key Items window (normal inventory).
+
 ## [17.0.2] (2023-09-25)
 
 ### Aether Current Helper
