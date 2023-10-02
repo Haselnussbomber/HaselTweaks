@@ -77,11 +77,11 @@ public unsafe class MinimapAdjustments : Tweak
         if (collisionNode == null)
             return;
 
-        var hasCircularCollisionFlag = (collisionNode->Flags_2 & (1 << 23)) != 0;
+        var hasCircularCollisionFlag = (collisionNode->DrawFlags & (1 << 23)) != 0;
 
         if (square && hasCircularCollisionFlag)
-            collisionNode->Flags_2 &= ~(uint)(1 << 23); // remove circular collision flag
+            collisionNode->DrawFlags &= ~(uint)(1 << 23); // remove circular collision flag
         else if (!square && !hasCircularCollisionFlag)
-            collisionNode->Flags_2 |= 1 << 23; // add circular collision flag
+            collisionNode->DrawFlags |= 1 << 23; // add circular collision flag
     }
 }

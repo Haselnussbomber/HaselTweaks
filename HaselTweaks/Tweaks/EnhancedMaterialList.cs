@@ -265,7 +265,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         // when you don't know how to add text nodes... Sadge
 
         nameNode->AtkResNode.Y = 14;
-        nameNode->AtkResNode.Flags_2 |= 0x1;
+        nameNode->AtkResNode.DrawFlags |= 0x1;
 
         nameNode->TextFlags = 192; // allow multiline text (not sure on the actual flags it sets though)
         nameNode->LineSpacing = 17;

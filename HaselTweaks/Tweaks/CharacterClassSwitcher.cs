@@ -138,9 +138,9 @@ public unsafe partial class CharacterClassSwitcher : Tweak
             var isUnlocked = imageNode->AtkResNode.Color.A == 255;
 
             if (isUnlocked)
-                collisionNode->AtkResNode.Flags_2 |= 1 << 20; // add Cursor Pointer flag
+                collisionNode->AtkResNode.DrawFlags |= 1 << 20; // add Cursor Pointer flag
             else
-                collisionNode->AtkResNode.Flags_2 &= ~(uint)(1 << 20); // remove Cursor Pointer flag
+                collisionNode->AtkResNode.DrawFlags &= ~(uint)(1 << 20); // remove Cursor Pointer flag
         }
     }
 
@@ -223,9 +223,9 @@ OriginalReceiveEventCode:
             var isUnlocked = entry->Icon->AtkResNode.Color.A == 255;
 
             if (isUnlocked)
-                collisionNode->AtkResNode.Flags_2 |= 1 << 20; // add Cursor Pointer flag
+                collisionNode->AtkResNode.DrawFlags |= 1 << 20; // add Cursor Pointer flag
             else
-                collisionNode->AtkResNode.Flags_2 &= ~(uint)(1 << 20); // remove Cursor Pointer flag
+                collisionNode->AtkResNode.DrawFlags &= ~(uint)(1 << 20); // remove Cursor Pointer flag
         }
     }
 
