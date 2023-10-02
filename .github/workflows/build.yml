@@ -47,13 +47,24 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore --locked-mode
 
+      - name: Determine Dalamud Branch
+        id: branch
+        run: |
+          if [[ -n "${{ github.event.inputs.dalamud_branch }}" ]]; then
+            echo "branch=${{ github.event.inputs.dalamud_branch }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.ref }}" == "refs/heads/stg" ]] || [[ "${{ github.event.head_commit.message }}" == "[stg]"* ]]; then
+            echo "branch=stg" >> $GITHUB_OUTPUT
+          else
+            echo "branch=master" >> $GITHUB_OUTPUT
+          fi
+
       - name: Download Dalamud
         env:
           DALAMUD_URL: >
             ${{ fromJson('{
               "master": "https://goatcorp.github.io/dalamud-distrib/latest.zip",
               "stg": "https://goatcorp.github.io/dalamud-distrib/stg/latest.zip"
-            }')[github.event.inputs.dalamud_branch || (contains(github.event.head_commit.message, '[stg]') || startsWith(github.ref, 'refs/heads/stg') && 'stg') || 'master'] }}
+            }')[steps.branch.outputs.branch] }}
         run: |
           curl -o latest.zip ${{ env.DALAMUD_URL }}
           unzip latest.zip -d ~/dalamud/
