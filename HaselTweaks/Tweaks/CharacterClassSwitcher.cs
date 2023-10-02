@@ -94,7 +94,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
             // skip crafters as they already have ButtonClick events
             if (IsCrafter(i)) continue;
 
-            var node = AsPointer(ref addon->ButtonNodesSpan[i])->Value;
+            var node = addon->ButtonNodesSpan.GetPointer(i)->Value;
             if (node == null) continue;
 
             var collisionNode = (AtkCollisionNode*)node->AtkComponentBase.UldManager.RootNode;
@@ -114,7 +114,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
         {
-            var node = AsPointer(ref addon->ButtonNodesSpan[i])->Value;
+            var node = addon->ButtonNodesSpan.GetPointer(i)->Value;
             if (node == null)
                 continue;
 
@@ -151,7 +151,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         if (eventParam < 2)
             goto OriginalReceiveEventCode;
 
-        var node = AsPointer(ref addon->ButtonNodesSpan[eventParam - 2])->Value;
+        var node = addon->ButtonNodesSpan.GetPointer(eventParam - 2)->Value;
         if (node == null || node->AtkComponentBase.OwnerNode == null)
             goto OriginalReceiveEventCode;
 
@@ -195,7 +195,7 @@ OriginalReceiveEventCode:
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
-            var entry = AsPointer(ref addon->ClassEntriesSpan[i]);
+            var entry = addon->ClassEntriesSpan.GetPointer(i);
             if (entry->Base == null) continue;
 
             var collisionNode = (AtkCollisionNode*)entry->Base->UldManager.RootNode;
@@ -213,7 +213,7 @@ OriginalReceiveEventCode:
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
-            var entry = AsPointer(ref addon->ClassEntriesSpan[i]);
+            var entry = addon->ClassEntriesSpan.GetPointer(i);
             if (entry->Base == null || entry->Icon == null) continue;
 
             var collisionNode = (AtkCollisionNode*)entry->Base->UldManager.RootNode;
@@ -239,7 +239,7 @@ OriginalReceiveEventCode:
         if (entryId is < 0 or > AddonPvPCharacter.NUM_CLASSES)
             goto OriginalPvPReceiveEventCode;
 
-        var entry = AsPointer(ref addon->ClassEntriesSpan[entryId]);
+        var entry = addon->ClassEntriesSpan.GetPointer(entryId);
 
         if (entry->Base == null || entry->Base->OwnerNode == null || entry->Icon == null)
             goto OriginalPvPReceiveEventCode;

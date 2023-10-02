@@ -44,7 +44,7 @@ public unsafe partial class MaterialAllocation : Tweak
 
             for (var i = 0; i < 3; i++)
             {
-                var button = AsPointer(ref addon->RadioButtonsSpan[i]);
+                var button = addon->RadioButtonsSpan.GetPointer(i);
                 if (button->Value != null)
                 {
                     button->Value->SetSelected(i == Config.LastSelectedTab);

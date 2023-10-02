@@ -204,7 +204,7 @@ public unsafe class GearSetGridWindow : Window
                 if (slotIndex == 5)
                     continue;
 
-                var slot = AsPointer(ref gearset->ItemsSpan[(int)slotIndex]);
+                var slot = gearset->ItemsSpan.GetPointer((int)slotIndex);
                 var itemId = slot->ItemID % 1000000; // strip HQ
 
                 ImGui.TableNextColumn();
@@ -257,7 +257,7 @@ public unsafe class GearSetGridWindow : Window
             if (!gearset->Flags.HasFlag(GearsetFlag.Exists))
                 continue;
 
-            var item = AsPointer(ref gearset->ItemsSpan[(int)slotIndex]);
+            var item = gearset->ItemsSpan.GetPointer((int)slotIndex);
             if (item->ItemID == itemId)
                 list.Add(new(gearset->ID, MemoryHelper.ReadString((nint)gearset->Name, 0x2F)));
         }

@@ -679,7 +679,7 @@ ResetWheelState:
 
         for (var i = 0; i < AddonBuddy.NUM_TABS; i++)
         {
-            var button = AsPointer(ref addon->RadioButtonsSpan[i]);
+            var button = addon->RadioButtonsSpan.GetPointer(i);
             if (button->Value != null)
             {
                 button->Value->SetSelected(i == addon->TabIndex);
@@ -733,7 +733,7 @@ ResetWheelState:
 
         for (var i = 0; i < addon->TabCount; i++)
         {
-            var button = AsPointer(ref addon->RadioButtonsSpan[i]);
+            var button = addon->RadioButtonsSpan.GetPointer(i);
             if (button->Value != null)
             {
                 button->Value->SetSelected(i == addon->TabIndex);

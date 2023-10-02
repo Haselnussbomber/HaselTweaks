@@ -632,7 +632,7 @@ public unsafe class AutoSorter : Tweak
 
             for (var i = 0; i < itemOrderModule->ArmourySorterSpan.Length; i++)
             {
-                var sorter = AsPointer(ref itemOrderModule->ArmourySorterSpan[i])->Value;
+                var sorter = itemOrderModule->ArmourySorterSpan.GetPointer(i)->Value;
                 if (sorter != null && sorter->SortFunctionIndex != -1)
                 {
                     Debug($"ItemOrderModule: Sorter #{i} ({sorter->InventoryType}) is busy, waiting.");
