@@ -3,7 +3,7 @@ using System.Linq;
 using System.Numerics;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface;
-using Dalamud.Interface.Raii;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;

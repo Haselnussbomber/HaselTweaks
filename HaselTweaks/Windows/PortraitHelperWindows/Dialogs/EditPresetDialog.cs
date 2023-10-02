@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Dalamud.Interface.Raii;
+using Dalamud.Interface.Utility.Raii;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;

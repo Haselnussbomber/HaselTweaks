@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Dalamud.Game;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Interface;
-using Dalamud.Interface.Raii;
+using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
@@ -503,7 +502,7 @@ public unsafe class AutoSorter : Tweak
         _queue.Clear();
     }
 
-    public override void OnFrameworkUpdate(Framework framework)
+    public override void OnFrameworkUpdate()
     {
         if (!Service.ClientState.IsLoggedIn)
             return;
@@ -665,7 +664,7 @@ public unsafe class AutoSorter : Tweak
                 return;
             }
 
-            var raptureShellModule = RaptureShellModule.Instance;
+            var raptureShellModule = RaptureShellModule.Instance();
             if (raptureShellModule == null)
             {
                 Warning("Could not resolve RaptureShellModule");

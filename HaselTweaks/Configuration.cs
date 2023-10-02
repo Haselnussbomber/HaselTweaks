@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using Dalamud.Configuration;
 using Dalamud.Interface.Internal.Notifications;
-using Dalamud.Logging;
 using HaselCommon.Enums;
 using HaselCommon.Interfaces;
 using HaselTweaks.Tweaks;
@@ -67,7 +66,7 @@ public partial class Configuration
         }
         catch (Exception ex)
         {
-            PluginLog.Error(ex, "Could not load configuration, creating a new one");
+            Service.PluginLog.Error(ex, "Could not load configuration, creating a new one");
 
             Service.PluginInterface.UiBuilder.AddNotification(
                 t("HaselTweaks.Config.CouldNotLoadConfigNotification.Text"),
@@ -108,7 +107,7 @@ public partial class Configuration
                 // re-enable renamed tweaks
                 if (renamedTweaks.TryGetValue(tweakName, out var newTweakName))
                 {
-                    PluginLog.Log($"Renamed Tweak: {tweakName} => {newTweakName}");
+                    Service.PluginLog.Information($"Renamed Tweak: {tweakName} => {newTweakName}");
 
                     // copy renamed tweak config
                     var tweakConfig = (JObject?)tweakConfigs[tweakName];
@@ -146,7 +145,7 @@ public partial class Configuration
         }
         catch (Exception ex)
         {
-            PluginLog.Error(ex, "Could not migrate configuration");
+            Service.PluginLog.Error(ex, "Could not migrate configuration");
             // continue, for now
         }
 
@@ -155,7 +154,7 @@ public partial class Configuration
 
     internal void Save()
     {
-        PluginLog.Information("Configuration saved.");
+        Service.PluginLog.Information("Configuration saved.");
         Service.PluginInterface.SavePluginConfig(this);
     }
 }

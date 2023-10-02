@@ -25,7 +25,6 @@ using SixLabors.ImageSharp.PixelFormats;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Ole;
-using DalamudFramework = Dalamud.Game.Framework;
 
 namespace HaselTweaks.Tweaks;
 
@@ -97,7 +96,7 @@ public partial class PortraitHelper : Tweak
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
         var gearsetId = raptureGearsetModule->CurrentGearsetIndex;
-        if (raptureGearsetModule->IsValidGearset(gearsetId) == 0)
+        if (!raptureGearsetModule->IsValidGearset(gearsetId))
             return;
 
         GetAgent<AgentBannerEditor>()->OpenForGearset(gearsetId);
@@ -131,7 +130,7 @@ public partial class PortraitHelper : Tweak
         Service.WindowManager.CloseWindow<AlignmentToolSettingsOverlay>();
     }
 
-    public override unsafe void OnFrameworkUpdate(DalamudFramework framework)
+    public override unsafe void OnFrameworkUpdate()
     {
         var currentJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
         if (currentJob != 0 && currentJob != _lastJob)
@@ -214,7 +213,7 @@ public partial class PortraitHelper : Tweak
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
 
-        if (raptureGearsetModule->IsValidGearset(gearsetId) == 0)
+        if (!raptureGearsetModule->IsValidGearset(gearsetId))
             return;
 
         var gearset = raptureGearsetModule->GetGearset(gearsetId);
@@ -287,7 +286,7 @@ public partial class PortraitHelper : Tweak
             .AddUiForeground("\uE078 ", 32);
 
         var raptureGearsetModule = RaptureGearsetModule.Instance();
-        if (raptureGearsetModule->IsValidGearset(raptureGearsetModule->CurrentGearsetIndex) == 1)
+        if (raptureGearsetModule->IsValidGearset(raptureGearsetModule->CurrentGearsetIndex))
         {
             if (_openPortraitEditPayload != null)
             {
@@ -346,7 +345,7 @@ public partial class PortraitHelper : Tweak
         var raptureGearsetModule = RaptureGearsetModule.Instance();
 
         var gearsetId = raptureGearsetModule->CurrentGearsetIndex;
-        if (raptureGearsetModule->IsValidGearset(gearsetId) == 0)
+        if (!raptureGearsetModule->IsValidGearset(gearsetId))
         {
             Warning("No Portrait Update: Gearset invalid");
             return false;

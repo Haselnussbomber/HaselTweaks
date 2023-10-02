@@ -1,9 +1,9 @@
 using Dalamud.ContextMenu;
 using Dalamud.Game.Text.SeStringHandling;
-using Dalamud.Logging;
 using HaselCommon.Sheets;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
+using AgentChatLog = HaselTweaks.Structs.AgentChatLog;
 using AgentRecipeNote = HaselTweaks.Structs.AgentRecipeNote;
 
 namespace HaselTweaks.Tweaks;
@@ -11,11 +11,16 @@ namespace HaselTweaks.Tweaks;
 [Tweak]
 public unsafe class SearchTheMarkets : Tweak
 {
-    private readonly DalamudContextMenu _contextMenu = new();
+    private DalamudContextMenu _contextMenu = null!;
     private GameObjectContextMenuItem _contextMenuItemGame = null!;
     private InventoryContextMenuItem _contextMenuItemInventory = null!;
 
     private ExtendedItem? _item = null;
+
+    public SearchTheMarkets()
+    {
+        _contextMenu = new(Service.PluginInterface);
+    }
 
     public override void Enable()
     {
@@ -37,7 +42,10 @@ public unsafe class SearchTheMarkets : Tweak
 
     public override void Dispose()
     {
-        _contextMenu.Dispose();
+        _contextMenu?.Dispose();
+        _contextMenu = null!;
+        _contextMenuItemGame = null!;
+        _contextMenuItemInventory = null!;
     }
 
     private void SetupContextMenus()
@@ -61,7 +69,7 @@ public unsafe class SearchTheMarkets : Tweak
         }
         catch (Exception ex)
         {
-            PluginLog.Error(ex, "Unable to construct context menu entries");
+            Error(ex, "Unable to construct context menu entries");
             Ready = false;
         }
     }

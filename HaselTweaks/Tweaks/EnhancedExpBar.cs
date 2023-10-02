@@ -80,7 +80,7 @@ public unsafe partial class EnhancedExpBar : Tweak
     private uint _lastIslandExperience = 0;
     private ushort _lastSyncedFateId = 0;
 
-    public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
+    public override void OnFrameworkUpdate()
     {
         var pvpProfile = PvPProfile.Instance();
         if (pvpProfile != null && pvpProfile->IsLoaded == 0x01 && (_lastSeriesXp != pvpProfile->SeriesExperience || _lastSeriesClaimedRank != pvpProfile->SeriesClaimedRank))
@@ -122,7 +122,7 @@ public unsafe partial class EnhancedExpBar : Tweak
     private void ClientState_LeavePvP()
         => _isUpdatePending = true;
 
-    private void ClientState_TerritoryChanged(object? sender, ushort territoryType)
+    private void ClientState_TerritoryChanged(ushort territoryType)
         => _isUpdatePending = true;
 
     private void RunUpdate()

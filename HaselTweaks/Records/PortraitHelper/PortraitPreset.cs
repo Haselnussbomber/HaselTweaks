@@ -1,5 +1,4 @@
 using System.IO;
-using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Common.Math;
@@ -197,7 +196,7 @@ public sealed record PortraitPreset
                     break;
 
                 default:
-                    PluginLog.Error($"Unknown Preset version {preset.Version}");
+                    Service.PluginLog.Error($"Unknown Preset version {preset.Version}");
                     return null;
             }
 
@@ -205,7 +204,7 @@ public sealed record PortraitPreset
         }
         catch (Exception ex)
         {
-            PluginLog.Error(ex, $"Error reading Preset: {ex.Message}");
+            Service.PluginLog.Error(ex, $"Error reading Preset: {ex.Message}");
         }
 
         return null;
@@ -224,7 +223,7 @@ public sealed record PortraitPreset
         }
         catch (Exception e)
         {
-            PluginLog.Error(e, "Error during PortraitPreset.ToClipboard");
+            Service.PluginLog.Error(e, "Error during PortraitPreset.ToClipboard");
         }
         finally
         {
@@ -252,7 +251,7 @@ public sealed record PortraitPreset
         if (!TryGetAddon<AddonBannerEditor>(AgentId.BannerEditor, out var addonBannerEditor))
             return;
 
-        PluginLog.Debug($"Importing Preset {ToExportedString()} with ImportFlags {importFlags}");
+        Service.PluginLog.Debug($"Importing Preset {ToExportedString()} with ImportFlags {importFlags}");
 
         var state = GetAgent<AgentBannerEditor>()->EditorState;
         var bannerEntry = state->BannerEntry;
@@ -342,7 +341,7 @@ public sealed record PortraitPreset
 
         if (hasBgChanged)
         {
-            PluginLog.Debug($"- BannerBg changed from {tempPortraitData->BannerBg} to {BannerBg}");
+            Service.PluginLog.Debug($"- BannerBg changed from {tempPortraitData->BannerBg} to {BannerBg}");
 
             bannerEntry.BannerBg = BannerBg;
             tempPortraitData->BannerBg = BannerBg;
@@ -352,7 +351,7 @@ public sealed record PortraitPreset
 
         if (hasFrameChanged)
         {
-            PluginLog.Debug($"- BannerFrame changed from {bannerEntry.BannerFrame} to {BannerFrame}");
+            Service.PluginLog.Debug($"- BannerFrame changed from {bannerEntry.BannerFrame} to {BannerFrame}");
 
             state->SetFrame(BannerFrame);
 
@@ -361,7 +360,7 @@ public sealed record PortraitPreset
 
         if (hasDecorationChanged)
         {
-            PluginLog.Debug($"- BannerDecoration changed from {bannerEntry.BannerDecoration} to {BannerDecoration}");
+            Service.PluginLog.Debug($"- BannerDecoration changed from {bannerEntry.BannerDecoration} to {BannerDecoration}");
 
             state->SetAccent(BannerDecoration);
 
@@ -370,7 +369,7 @@ public sealed record PortraitPreset
 
         if (hasBgChanged || hasFrameChanged || hasDecorationChanged)
         {
-            PluginLog.Debug("- Preset changed");
+            Service.PluginLog.Debug("- Preset changed");
 
             var presetIndex = state->GetPresetIndex(bannerEntry.BannerBg, bannerEntry.BannerFrame, bannerEntry.BannerDecoration);
             if (presetIndex < 0)
@@ -385,7 +384,7 @@ public sealed record PortraitPreset
 
         if (hasBannerTimelineChanged)
         {
-            PluginLog.Debug($"- BannerTimeline changed from {tempPortraitData->BannerTimeline} to {BannerTimeline}");
+            Service.PluginLog.Debug($"- BannerTimeline changed from {tempPortraitData->BannerTimeline} to {BannerTimeline}");
 
             bannerEntry.BannerTimeline = BannerTimeline;
             tempPortraitData->BannerTimeline = BannerTimeline;
@@ -395,7 +394,7 @@ public sealed record PortraitPreset
 
         if (hasExpressionChanged)
         {
-            PluginLog.Debug($"- Expression changed from {tempPortraitData->Expression} to {Expression}");
+            Service.PluginLog.Debug($"- Expression changed from {tempPortraitData->Expression} to {Expression}");
 
             bannerEntry.Expression = Expression;
             tempPortraitData->Expression = Expression;
@@ -405,7 +404,7 @@ public sealed record PortraitPreset
 
         if (hasAmbientLightingBrightnessChanged)
         {
-            PluginLog.Debug($"- AmbientLightingBrightness changed from {tempPortraitData->AmbientLightingBrightness} to {AmbientLightingBrightness}");
+            Service.PluginLog.Debug($"- AmbientLightingBrightness changed from {tempPortraitData->AmbientLightingBrightness} to {AmbientLightingBrightness}");
 
             tempPortraitData->AmbientLightingBrightness = AmbientLightingBrightness;
 
@@ -414,7 +413,7 @@ public sealed record PortraitPreset
 
         if (hasAmbientLightingColorChanged)
         {
-            PluginLog.Debug($"- AmbientLightingColor changed from {tempPortraitData->AmbientLightingColorRed}, {tempPortraitData->AmbientLightingColorGreen}, {tempPortraitData->AmbientLightingColorBlue} to {AmbientLightingColorRed}, {AmbientLightingColorGreen}, {AmbientLightingColorBlue}");
+            Service.PluginLog.Debug($"- AmbientLightingColor changed from {tempPortraitData->AmbientLightingColorRed}, {tempPortraitData->AmbientLightingColorGreen}, {tempPortraitData->AmbientLightingColorBlue} to {AmbientLightingColorRed}, {AmbientLightingColorGreen}, {AmbientLightingColorBlue}");
 
             tempPortraitData->AmbientLightingColorRed = AmbientLightingColorRed;
             tempPortraitData->AmbientLightingColorGreen = AmbientLightingColorGreen;
@@ -427,7 +426,7 @@ public sealed record PortraitPreset
 
         if (hasDirectionalLightingBrightnessChanged)
         {
-            PluginLog.Debug($"- DirectionalLightingBrightness changed from {tempPortraitData->DirectionalLightingBrightness} to {DirectionalLightingBrightness}");
+            Service.PluginLog.Debug($"- DirectionalLightingBrightness changed from {tempPortraitData->DirectionalLightingBrightness} to {DirectionalLightingBrightness}");
 
             tempPortraitData->DirectionalLightingBrightness = DirectionalLightingBrightness;
 
@@ -436,7 +435,7 @@ public sealed record PortraitPreset
 
         if (hasDirectionalLightingColorChanged)
         {
-            PluginLog.Debug($"- DirectionalLightingColor changed from {tempPortraitData->DirectionalLightingColorRed}, {tempPortraitData->DirectionalLightingColorGreen}, {tempPortraitData->DirectionalLightingColorBlue} to {DirectionalLightingColorRed}, {DirectionalLightingColorGreen}, {DirectionalLightingColorBlue}");
+            Service.PluginLog.Debug($"- DirectionalLightingColor changed from {tempPortraitData->DirectionalLightingColorRed}, {tempPortraitData->DirectionalLightingColorGreen}, {tempPortraitData->DirectionalLightingColorBlue} to {DirectionalLightingColorRed}, {DirectionalLightingColorGreen}, {DirectionalLightingColorBlue}");
 
             tempPortraitData->DirectionalLightingColorRed = DirectionalLightingColorRed;
             tempPortraitData->DirectionalLightingColorGreen = DirectionalLightingColorGreen;
@@ -449,7 +448,7 @@ public sealed record PortraitPreset
 
         if (hasDirectionalLightingVerticalAngleChanged)
         {
-            PluginLog.Debug($"- DirectionalLightingVerticalAngle changed from {tempPortraitData->DirectionalLightingVerticalAngle} to {DirectionalLightingVerticalAngle}");
+            Service.PluginLog.Debug($"- DirectionalLightingVerticalAngle changed from {tempPortraitData->DirectionalLightingVerticalAngle} to {DirectionalLightingVerticalAngle}");
 
             tempPortraitData->DirectionalLightingVerticalAngle = DirectionalLightingVerticalAngle;
 
@@ -458,7 +457,7 @@ public sealed record PortraitPreset
 
         if (hasDirectionalLightingHorizontalAngleChanged)
         {
-            PluginLog.Debug($"- DirectionalLightingHorizontalAngle changed from {tempPortraitData->DirectionalLightingHorizontalAngle} to {DirectionalLightingHorizontalAngle}");
+            Service.PluginLog.Debug($"- DirectionalLightingHorizontalAngle changed from {tempPortraitData->DirectionalLightingHorizontalAngle} to {DirectionalLightingHorizontalAngle}");
 
             tempPortraitData->DirectionalLightingHorizontalAngle = DirectionalLightingHorizontalAngle;
 
@@ -467,42 +466,42 @@ public sealed record PortraitPreset
 
         if (hasAnimationProgressChanged)
         {
-            PluginLog.Debug($"- AnimationProgress changed from {tempPortraitData->AnimationProgress} to {AnimationProgress}");
+            Service.PluginLog.Debug($"- AnimationProgress changed from {tempPortraitData->AnimationProgress} to {AnimationProgress}");
 
             tempPortraitData->AnimationProgress = AnimationProgress;
         }
 
         if (hasCameraPositionChanged)
         {
-            PluginLog.Debug($"- CameraPosition changed from {tempPortraitData->CameraPosition.X}, {tempPortraitData->CameraPosition.Y}, {tempPortraitData->CameraPosition.Z}, {tempPortraitData->CameraPosition.W} to {CameraPosition.X}, {CameraPosition.Y}, {CameraPosition.Z}, {CameraPosition.W}");
+            Service.PluginLog.Debug($"- CameraPosition changed from {tempPortraitData->CameraPosition.X}, {tempPortraitData->CameraPosition.Y}, {tempPortraitData->CameraPosition.Z}, {tempPortraitData->CameraPosition.W} to {CameraPosition.X}, {CameraPosition.Y}, {CameraPosition.Z}, {CameraPosition.W}");
 
             tempPortraitData->CameraPosition = CameraPosition;
         }
 
         if (hasCameraTargetChanged)
         {
-            PluginLog.Debug($"- CameraTarget changed from {tempPortraitData->CameraTarget.X}, {tempPortraitData->CameraTarget.Y}, {tempPortraitData->CameraTarget.Z}, {tempPortraitData->CameraTarget.W} to {CameraTarget.X}, {CameraTarget.Y}, {CameraTarget.Z}, {CameraTarget.W}");
+            Service.PluginLog.Debug($"- CameraTarget changed from {tempPortraitData->CameraTarget.X}, {tempPortraitData->CameraTarget.Y}, {tempPortraitData->CameraTarget.Z}, {tempPortraitData->CameraTarget.W} to {CameraTarget.X}, {CameraTarget.Y}, {CameraTarget.Z}, {CameraTarget.W}");
 
             tempPortraitData->CameraTarget = CameraTarget;
         }
 
         if (hasHeadDirectionChanged)
         {
-            PluginLog.Debug($"- HeadDirection changed from {tempPortraitData->HeadDirection.X}, {tempPortraitData->HeadDirection.Y} to {HeadDirection.X}, {HeadDirection.Y}");
+            Service.PluginLog.Debug($"- HeadDirection changed from {tempPortraitData->HeadDirection.X}, {tempPortraitData->HeadDirection.Y} to {HeadDirection.X}, {HeadDirection.Y}");
 
             tempPortraitData->HeadDirection = HeadDirection;
         }
 
         if (hasEyeDirectionChanged)
         {
-            PluginLog.Debug($"- EyeDirection changed from {tempPortraitData->EyeDirection.X}, {tempPortraitData->EyeDirection.Y} to {EyeDirection.X}, {EyeDirection.Y}");
+            Service.PluginLog.Debug($"- EyeDirection changed from {tempPortraitData->EyeDirection.X}, {tempPortraitData->EyeDirection.Y} to {EyeDirection.X}, {EyeDirection.Y}");
 
             tempPortraitData->EyeDirection = EyeDirection;
         }
 
         if (hasCameraZoomChanged)
         {
-            PluginLog.Debug($"- CameraZoom changed from {tempPortraitData->CameraZoom} to {CameraZoom}");
+            Service.PluginLog.Debug($"- CameraZoom changed from {tempPortraitData->CameraZoom} to {CameraZoom}");
 
             tempPortraitData->CameraZoom = CameraZoom;
 
@@ -511,7 +510,7 @@ public sealed record PortraitPreset
 
         if (hasImageRotationChanged)
         {
-            PluginLog.Debug($"- ImageRotation changed from {tempPortraitData->ImageRotation} to {ImageRotation}");
+            Service.PluginLog.Debug($"- ImageRotation changed from {tempPortraitData->ImageRotation} to {ImageRotation}");
 
             tempPortraitData->ImageRotation = ImageRotation;
 
@@ -546,7 +545,7 @@ public sealed record PortraitPreset
             hasImageRotationChanged
         );
 
-        PluginLog.Debug("Import complete");
+        Service.PluginLog.Debug("Import complete");
     }
 
     private static unsafe int GetListIndex(AgentBannerEditorState.GenericDropdownItem** items, uint itemCount, ushort id)

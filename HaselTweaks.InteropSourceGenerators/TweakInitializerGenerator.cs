@@ -67,7 +67,7 @@ internal sealed class TweakInitializerGenerator : IIncrementalGenerator
             builder.AppendLine("catch (Exception ex)");
             builder.AppendLine("{");
             builder.Indent();
-            builder.AppendLine("PluginLog.Error(ex, \"[" + tweakNames[i] + "] Error during initialization\");");
+            builder.AppendLine("Service.PluginLog.Error(ex, \"[" + tweakNames[i] + "] Error during initialization\");");
             builder.DecrementIndent();
             builder.AppendLine("}");
             builder.AppendLine("");

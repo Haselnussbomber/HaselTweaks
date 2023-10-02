@@ -108,7 +108,7 @@ internal sealed class AddressHookGenerator : IIncrementalGenerator
 
         public void RenderSetupHook(IndentedStringBuilder builder)
         {
-            builder.AppendLine($"{MethodInfo.Name}Hook = Dalamud.Hooking.Hook<{MethodInfo.Name}Delegate>.FromAddress((nint){structName}.Addresses.{addressName}.Value, {MethodInfo.Name});");
+            builder.AppendLine($"{MethodInfo.Name}Hook = HaselTweaks.Service.GameInteropProvider.HookFromAddress<{MethodInfo.Name}Delegate>((nint){structName}.Addresses.{addressName}.Value, {MethodInfo.Name});");
         }
     }
 

@@ -4,8 +4,8 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Dalamud.Interface;
-using Dalamud.Interface.Raii;
-using Dalamud.Logging;
+using Dalamud.Interface.Internal;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
 using Dalamud.Utility;
 using HaselCommon.Extensions;
@@ -16,7 +16,6 @@ using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using ImGuiNET;
-using ImGuiScene;
 using Lumina.Data.Files;
 using Lumina.Excel.GeneratedSheets;
 using SixLabors.ImageSharp;
@@ -42,7 +41,7 @@ public class PresetCard : IDisposable
 
     private string? _textureHash;
     private Image<Rgba32>? _image;
-    private TextureWrap? _textureWrap;
+    private IDalamudTextureWrap? _textureWrap;
     private DateTime _lastTextureCheck = DateTime.MinValue;
 
     private float _lastScale;
@@ -340,7 +339,7 @@ public class PresetCard : IDisposable
                         }
                         catch (Exception ex)
                         {
-                            PluginLog.Error(ex, "Error while loading thumbnail");
+                            Service.PluginLog.Error(ex, "Error while loading thumbnail");
                             _isImageLoading = false;
                             _doesImageFileExist = false;
                         }
@@ -391,7 +390,7 @@ public class PresetCard : IDisposable
                 }
                 catch (Exception ex)
                 {
-                    PluginLog.Error(ex, "Error while resizing/loading thumbnail");
+                    Service.PluginLog.Error(ex, "Error while resizing/loading thumbnail");
                 }
                 finally
                 {

@@ -51,7 +51,7 @@ public unsafe class MinimapAdjustments : Tweak
         }
     }
 
-    public override void OnFrameworkUpdate(Dalamud.Game.Framework framework)
+    public override void OnFrameworkUpdate()
     {
         if (!TryGetAddon<AtkUnitBase>("_NaviMap", out var naviMap))
             return;

@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Dalamud.Game;
 using Dalamud.Hooking;
-using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 using HaselTweaks.Enums;
 
@@ -47,7 +45,7 @@ public abstract unsafe class Tweak
     {
         try
         {
-            SignatureHelper.Initialise(this);
+            Service.GameInteropProvider.InitializeFromAttributes(this);
         }
         catch (SignatureException ex)
         {
@@ -191,11 +189,11 @@ public abstract unsafe class Tweak
         _disposed = true;
     }
 
-    internal void OnFrameworkUpdateInternal(Framework framework)
+    internal void OnFrameworkUpdateInternal()
     {
         try
         {
-            OnFrameworkUpdate(framework);
+            OnFrameworkUpdate();
         }
         catch (Exception ex)
         {
@@ -282,7 +280,7 @@ public abstract unsafe class Tweak
     public virtual void Dispose() { }
     public virtual void OnConfigChange(string fieldName) { }
     public virtual void OnLanguageChange() { }
-    public virtual void OnFrameworkUpdate(Framework framework) { }
+    public virtual void OnFrameworkUpdate() { }
     public virtual void OnLogin() { }
     public virtual void OnLogout() { }
     public virtual void OnTerritoryChanged(ushort id) { }
@@ -298,40 +296,40 @@ public abstract unsafe class Tweak
         => Information(exception, messageTemplate, values);
 
     protected void Verbose(string messageTemplate, params object[] values)
-        => PluginLog.Verbose($"[{InternalName}] {messageTemplate}", values);
+        => Service.PluginLog.Verbose($"[{InternalName}] {messageTemplate}", values);
 
     protected void Verbose(Exception exception, string messageTemplate, params object[] values)
-        => PluginLog.Verbose(exception, $"[{InternalName}] {messageTemplate}", values);
+        => Service.PluginLog.Verbose(exception, $"[{InternalName}] {messageTemplate}", values);
 
     protected void Debug(string messageTemplate, params object[] values)
-        => PluginLog.Debug($"[{InternalName}] {messageTemplate}", values);
+        => Service.PluginLog.Debug($"[{InternalName}] {messageTemplate}", values);
 
     protected void Debug(Exception exception, string messageTemplate, params object[] values)
-        => PluginLog.Debug(exception, $"[{InternalName}] {messageTemplate}", values);
+        => Service.PluginLog.Debug(exception, $"[{InternalName}] {messageTemplate}", values);
 
     protected void Information(string messageTemplate, params object[] values)
-        => PluginLog.Information($"[{InternalName}] {messageTemplate}", values);
+        => Service.PluginLog.Information($"[{InternalName}] {messageTemplate}", values);
 
     protected void Information(Exception exception, string messageTemplate, params object[] values)
-        => PluginLog.Information(exception, $"[{InternalName}] {messageTemplate}", values);
+        => Service.PluginLog.Information(exception, $"[{InternalName}] {messageTemplate}", values);
 
     protected void Warning(string messageTemplate, params object[] values)
-        => PluginLog.Warning($"[{InternalName}] {messageTemplate}", values);
+        => Service.PluginLog.Warning($"[{InternalName}] {messageTemplate}", values);
 
     protected void Warning(Exception exception, string messageTemplate, params object[] values)
-        => PluginLog.Warning(exception, $"[{InternalName}] {messageTemplate}", values);
+        => Service.PluginLog.Warning(exception, $"[{InternalName}] {messageTemplate}", values);
 
     protected void Error(string messageTemplate, params object[] values)
-        => PluginLog.Error($"[{InternalName}] {messageTemplate}", values);
+        => Service.PluginLog.Error($"[{InternalName}] {messageTemplate}", values);
 
     protected void Error(Exception exception, string messageTemplate, params object[] values)
-        => PluginLog.Error(exception, $"[{InternalName}] {messageTemplate}", values);
+        => Service.PluginLog.Error(exception, $"[{InternalName}] {messageTemplate}", values);
 
     protected void Fatal(string messageTemplate, params object[] values)
-        => PluginLog.Fatal($"[{InternalName}] {messageTemplate}", values);
+        => Service.PluginLog.Fatal($"[{InternalName}] {messageTemplate}", values);
 
     protected void Fatal(Exception exception, string messageTemplate, params object[] values)
-        => PluginLog.Fatal(exception, $"[{InternalName}] {messageTemplate}", values);
+        => Service.PluginLog.Fatal(exception, $"[{InternalName}] {messageTemplate}", values);
 
     #endregion
 }
