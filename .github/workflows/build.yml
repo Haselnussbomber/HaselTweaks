@@ -15,6 +15,15 @@ on:
       - LICENSE
       - README.md
   workflow_dispatch:
+    inputs:
+      dalamud_branch:
+        description: 'Dalamud Branch'
+        required: true
+        default: 'master'
+        type: choice
+        options:
+          - master
+          - stg
 
 jobs:
   build:
@@ -39,16 +48,15 @@ jobs:
         run: dotnet restore --locked-mode
 
       - name: Download Dalamud
-        if: "!(contains(github.event.head_commit.message, '[stg]') || startsWith(github.ref, 'refs/heads/stg'))"
+        env:
+          DALAMUD_URL: >
+            ${{ fromJson('{
+              "master": "https://goatcorp.github.io/dalamud-distrib/latest.zip",
+              "stg": "https://goatcorp.github.io/dalamud-distrib/stg/latest.zip"
+            }')[github.event.inputs.dalamud_branch || (contains(github.event.head_commit.message, '[stg]') || startsWith(github.ref, 'refs/heads/stg') && 'stg') || 'master'] }}
         run: |
-          curl -o latest.zip https://goatcorp.github.io/dalamud-distrib/latest.zip
+          curl -o latest.zip ${{ env.DALAMUD_URL }}
           unzip latest.zip -d ~/dalamud/
-
-      - name: Download Dalamud (staging)
-        if: "contains(github.event.head_commit.message, '[stg]') || startsWith(github.ref, 'refs/heads/stg')"
-        run: |
-            curl -o latest.zip https://goatcorp.github.io/dalamud-distrib/stg/latest.zip
-            unzip latest.zip -d ~/dalamud/
 
       - name: Build
         run: dotnet build -c Release -clp:NoSummary
