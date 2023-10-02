@@ -19,6 +19,8 @@ public class BoolConfigAttribute : BaseConfigAttribute
             OnChangeInternal(tweak, fieldInfo);
         }
 
+        DrawConfigInfos(fieldInfo);
+
         if (HaselCommonBase.TranslationManager.TryGetTranslation($"{tweak.InternalName}.Config.{fieldInfo.Name}.Description", out var description))
         {
             ImGuiUtils.PushCursorY(-3);

@@ -47,10 +47,10 @@ public partial class PortraitHelper : Tweak
         [BoolConfig]
         public bool NotifyGearChecksumMismatch = true;
 
-        [BoolConfig]
+        [BoolConfig, NetworkWarning]
         public bool ReequipGearsetOnUpdate = false;
 
-        [BoolConfig]
+        [BoolConfig, NetworkWarning]
         public bool AutoUpdatePotraitOnGearUpdate = false;
     }
 

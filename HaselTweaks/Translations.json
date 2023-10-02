@@ -23,6 +23,10 @@
     "en": "Incompatibility Warning",
     "de": "Inkompatibilitätswarnung"
   },
+  "HaselTweaks.Config.NetworkRequestWarning": {
+    "en": "This option automatically sends additional network requests,\nwhich would normally require user interaction.\nAlthough carefully programmed, its use is at your own risk.",
+    "de": "Diese Option sendet automatisch zusätzliche Netzwerkanfragen,\ndie normalerweise eine Benutzerinteraktion erfordern würden.\nTrotz sorgfältiger Programmierung erfolgt die Nutzung auf eigene Gefahr."
+  },
   "HaselTweaks.Config.SectionTitle.Configuration": {
     "en": "Configuration",
     "de": "Konfiguration"

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Reflection;
 using Dalamud.Interface;
 using HaselCommon.Utils;
@@ -15,6 +16,23 @@ public abstract class BaseConfigAttribute : Attribute
     {
         Plugin.Config.Save();
         tweak.CachedType.GetMethod(nameof(Tweak.OnConfigChange), BindingFlags.Instance | BindingFlags.Public)?.Invoke(tweak, new[] { fieldInfo.Name });
+    }
+
+    protected static void DrawConfigInfos(FieldInfo fieldInfo)
+    {
+        var attributes = fieldInfo.GetCustomAttributes<ConfigInfoAttribute>();
+        if (!attributes.Any())
+            return;
+
+        foreach (var attribute in attributes)
+        {
+            ImGui.SameLine();
+            ImGuiUtils.Icon(attribute.Icon, attribute.Color);
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip(t(attribute.Translationkey));
+            }
+        }
     }
 
     protected static bool DrawResetButton(string defaultValueString)
