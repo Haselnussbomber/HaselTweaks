@@ -414,7 +414,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
             return;
         }
 
-        _pet->Character.SetupBNpc(bNpcId);
+        ((HaselCharacter*)_pet)->CharacterStruct1418.SetupBNpc(bNpcId);
 
         ApplyPetPosition();
 
