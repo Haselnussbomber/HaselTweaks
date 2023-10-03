@@ -8,5 +8,5 @@ public unsafe partial struct AddonFishGuide2
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x220)] public TabSwitcher TabSwitcher;
+    [FieldOffset(0x290)] public TabSwitcher TabSwitcher;
 }
