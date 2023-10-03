@@ -224,10 +224,10 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
-            var c60 = (CharacterC60*)((nint)character + 0xC60);
+            var cb0 = (CharacterCB0*)((nint)character + 0xCB0);
             var eyeDirection = new Vector2(
-                c60->EyeDirection.X,
-                c60->EyeDirection.Y
+                cb0->EyeDirection.X,
+                cb0->EyeDirection.Y
             );
 
             if (ImGui.DragFloat2($"##DragFloat2", ref eyeDirection, 0.001f))
@@ -249,10 +249,10 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
-            var c60 = (CharacterC60*)((nint)character + 0xC60);
+            var cb0 = (CharacterCB0*)((nint)character + 0xCB0);
             var headDirection = new Vector2(
-                c60->HeadDirection.X,
-                c60->HeadDirection.Y
+                cb0->HeadDirection.X,
+                cb0->HeadDirection.Y
             );
 
             if (ImGui.DragFloat2($"##DragFloat2", ref headDirection, 0.001f))
