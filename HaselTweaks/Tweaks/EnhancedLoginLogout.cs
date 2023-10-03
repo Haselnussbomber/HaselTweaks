@@ -623,8 +623,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     #region Logout: Clear Tell History
 
-    [VTableHook<UIModule>(110)]
-    public void UIModule_vf110(UIModule* self, int a2, uint a3, nint a4)
+    [VTableHook<UIModule>(111)]
+    public void UIModule_vf111(UIModule* self, int a2, uint a3, nint a4)
     {
         if (a2 == 7) // logout
         {
@@ -632,7 +632,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
                 AcquaintanceModule.Instance()->ClearTellHistory(); // this is what /cleartellhistory calls
         }
 
-        UIModule_vf110Hook.OriginalDisposeSafe(self, a2, a3, a4);
+        UIModule_vf111Hook.OriginalDisposeSafe(self, a2, a3, a4);
     }
 
     #endregion
