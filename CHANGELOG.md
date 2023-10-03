@@ -7,6 +7,10 @@
 - **Added:** Options that automatically send network requests are now marked with a yellow bolt ⚡ icon. Not that anything has happened, but I just wanted to let the user know that they are using it at their own risk.
   - At the moment this only applies to Portrait Helper.
 
+### Enhanced Experience Bar
+
+- **Fixed:** Companion Bar no longer shows 0/0 experience on rank 20.
+
 ### Scrollable Tabs
 
 - **Fixed:** Due to an incorrect tab count, it was possible to scroll into hidden tabs of the Key Items window (normal inventory).

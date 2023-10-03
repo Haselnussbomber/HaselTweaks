@@ -155,7 +155,10 @@ public unsafe partial class EnhancedExpBar : Tweak
         if (nineGridNode == null)
             goto OriginalOnRequestedUpdate;
 
-        if (Service.ClientState.LocalPlayer?.ClassJob.GameData == null)
+        if (Service.ClientState.LocalPlayer == null)
+            goto OriginalOnRequestedUpdateWithColorReset;
+
+        if (Service.ClientState.LocalPlayer.ClassJob.GameData == null)
             goto OriginalOnRequestedUpdateWithColorReset;
 
         var leftText = GetNode<AtkTextNode>(&addon->AtkUnitBase, 4);
@@ -255,7 +258,8 @@ CompanionBar:
             level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
             requiredExperience = GetRow<BuddyRank>(currentRank)!.ExpRequired;
 
-            leftText->SetText($"{job}  {levelLabel} {level}   {buddy.CurrentXP}/{requiredExperience}");
+            var xpText = requiredExperience == 0 ? "" : $"   {buddy.CurrentXP}/{requiredExperience}";
+            leftText->SetText($"{job}  {levelLabel} {level}{xpText}");
 
             gaugeBar->SetSecondaryValue(0); // rested experience bar
 
