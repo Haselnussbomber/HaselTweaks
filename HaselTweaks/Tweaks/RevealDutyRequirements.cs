@@ -10,13 +10,13 @@ public class RevealDutyRequirements : Tweak
         48 8B C8   mov     rcx, rax
         48 8B D8   mov     rbx, rax
         48 8B 10   mov     rdx, [rax]
-        FF 52 68   call    qword ptr [rdx+68h]
+        FF 52 70   call    qword ptr [rdx+70h]
         84 C0      test    al, al
         74 1B      jz      short loc_1409F9B09    <- removing this jz by replacing it with two nops
 
         that way the code doesn't jump to the else {...} which sets the duty name to "???" (Addon#102598)
      */
-    [Signature("48 8B C8 48 8B D8 48 8B 10 FF 52 68 84 C0 74 1B")]
+    [Signature("48 8B C8 48 8B D8 48 8B 10 FF 52 70 84 C0 74 1B")]
     private nint Address { get; init; }
     private byte[]? _originalBytes;
 
