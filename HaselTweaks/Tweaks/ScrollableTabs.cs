@@ -323,7 +323,7 @@ public unsafe partial class ScrollableTabs : Tweak
         }
         else if (Config.HandleMJIMinionNoteBook && name == "MJIMinionNoteBook")
         {
-            UpdateMJIMountMinion((AddonMJIMinionNoteBook*)unitBase);
+            UpdateMJIMinionNoteBook((AddonMJIMinionNoteBook*)unitBase);
         }
         else if (Config.HandleCurrency && name == "Currency")
         {
@@ -601,7 +601,7 @@ ResetWheelState:
         }
     }
 
-    private void UpdateMJIMountMinion(AddonMJIMinionNoteBook* addon)
+    private void UpdateMJIMinionNoteBook(AddonMJIMinionNoteBook* addon)
     {
         var agent = GetAgent<AgentMJIMinionNoteBook>();
 
