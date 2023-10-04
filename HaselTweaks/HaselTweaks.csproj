@@ -1,21 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <Version>17.0.2</Version>
-    <TargetFramework>net7.0-windows</TargetFramework>
-    <Platforms>x64</Platforms>
-    <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <OutputPath>..\bin\</OutputPath>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
+  <Import Project="Dalamud.Plugin.Bootstrap.targets"/>
 
   <PropertyGroup>
-    <DalamudLibPath>$(AppData)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+    <Version>17.0.2</Version>
+    <OutputPath>..\bin\</OutputPath>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
@@ -23,11 +13,6 @@
     <Deterministic>true</Deterministic>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedAllSources>true</EmbedAllSources>
-    <DalamudLibPath>$(HOME)/dalamud/</DalamudLibPath>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <AssemblySearchPaths>$(AssemblySearchPaths);$(DalamudLibPath);</AssemblySearchPaths>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,20 +21,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Dalamud" Private="false" />
-    <Reference Include="FFXIVClientStructs" Private="false" />
-    <Reference Include="ImGui.NET" Private="false" />
-    <Reference Include="ImGuiScene" Private="false" />
-    <Reference Include="Lumina" Private="false" />
-    <Reference Include="Lumina.Excel" Private="false" />
-    <Reference Include="Newtonsoft.Json" Private="false" />
     <Reference Include="SharpDX" Private="false" />
     <Reference Include="SharpDX.Direct3D11" Private="false" />
     <Reference Include="SharpDX.DXGI" Private="false" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DalamudPackager" Version="2.1.12" />
     <PackageReference Include="Dalamud.ContextMenu" Version="1.3.1" />
     <PackageReference Include="FuzzySharp" Version="2.0.2" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
