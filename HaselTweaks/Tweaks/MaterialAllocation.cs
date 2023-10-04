@@ -158,8 +158,7 @@ handled:
             if (gatherItemPtr.Value == null || gatherItemPtr.Value->ItemId != itemId)
                 continue;
 
-            agent->Data->SelectedItemIndex = index;
-            agent->Data->Flags |= 2;
+            agent->SelectItem(index);
             break;
         }
     }

@@ -15,13 +15,13 @@ Opens a small window next to the Glamour Dresser with a list of items that can b
 
 - **Fixed:** Companion Bar no longer shows 0/0 experience on rank 20.
 
+### Material Allocation
+
+- **Fixed:** Sanctuary Gathering Log did not update the map for items gathered in the cave.
+
 ### Scrollable Tabs
 
 - **Fixed:** Due to an incorrect tab count, it was possible to scroll into hidden tabs of the Key Items window (normal inventory).
-
-### Known Issues
-
-- **Material Allocation:** Sanctuary Gathering Log does not change map for items in the cave.
 
 ## [17.0.2] (2023-09-25)
 
