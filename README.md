@@ -159,6 +159,10 @@ Configuration options:
 - Convert separator gear set with spacing: When using separator gear sets (e.g. a gearset with name ===========) this option automatically converts it into spacing between rows (in the Gear Set Grid).
   - Spacing between rows can be fully eliminated with the "Disable spacing" option.
 
+### Glamour Dresser Armoire Alert
+
+Opens a small window next to the Glamour Dresser with a list of items that can be stored in the Armoire (only visible if qualified items were found).
+
 ### Hide MSQ Complete
 
 Hides the Main Scenario Guide when the MSQ is completed, but still displays Job quests.

@@ -9,7 +9,7 @@
 
 ## New Tweak: Glamour Dresser Armoire Alert
 
-Opens a small window next to the Glamour Dresser with a list of items that can be stored in the Armoire (only visible if items are eligible).
+Opens a small window next to the Glamour Dresser with a list of items that can be stored in the Armoire (only visible if qualified items were found).
 
 ### Enhanced Experience Bar
 

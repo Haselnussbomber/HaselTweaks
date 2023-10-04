@@ -162,6 +162,6 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
     private void RestoreItem(uint itemIndex)
     {
         var mirageManager = (HaselMirageManager*)MirageManager.Instance();
-        UpdatePending = mirageManager->ExtractPrismBoxItem(itemIndex);
+        UpdatePending = mirageManager->RestorePrismBoxItem(itemIndex);
     }
 }

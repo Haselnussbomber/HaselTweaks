@@ -739,7 +739,7 @@
     "en": "Glamour Dresser Armoire Alert"
   },
   "GlamourDresserArmoireAlert.Tweak.Description": {
-    "en": "Opens a small window next to the Glamour Dresser with a list of items that can be stored in the Armoire (only visible if eligible items were found).",
+    "en": "Opens a small window next to the Glamour Dresser with a list of items that can be stored in the Armoire (only visible if qualified items were found).",
     "de": "Öffnet ein kleines Fenster neben der Projektionskommode mit einer Liste von Gegenständen, die im Kostbarkeitenkabinett aufbewahrt werden können (nur sichtbar, wenn qualifizierte Gegenstände gefunden wurden)."
   },
   "GlamourDresserArmoireAlertWindow.Title": {
