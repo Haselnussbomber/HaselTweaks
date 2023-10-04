@@ -735,6 +735,21 @@
     "ja": "これらのギアセットでも使用されます："
   },
 
+  "GlamourDresserArmoireAlert.Tweak.Name": {
+    "en": "Glamour Dresser Armoire Alert"
+  },
+  "GlamourDresserArmoireAlert.Tweak.Description": {
+    "en": "Opens a small window next to the Glamour Dresser with a list of items that can be stored in the Armoire (only visible if eligible items were found).",
+    "de": "Öffnet ein kleines Fenster neben der Projektionskommode mit einer Liste von Gegenständen, die im Kostbarkeitenkabinett aufbewahrt werden können (nur sichtbar, wenn qualifizierte Gegenstände gefunden wurden)."
+  },
+  "GlamourDresserArmoireAlertWindow.Title": {
+    "en": "[HaselTweaks] Glamour Dresser Armoire Alert"
+  },
+  "GlamourDresserArmoireAlertWindow.Info": {
+    "en": "These items can be stored in the Armoire! Click to restore item.",
+    "de": "Diese Gegenstände können im Kostbarkeitenkabinett aufbewahrt werden! Anklicken, um in Ausrüstung zurückzuverwandeln."
+  },
+
   "HideMSQComplete.Tweak.Name": {
     "en": "Hide MSQ Complete"
   },

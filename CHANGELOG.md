@@ -7,6 +7,10 @@
 - **Added:** Options that automatically send network requests are now marked with a yellow bolt ⚡ icon. Not that anything has happened, but I just wanted to let the user know that they are using it at their own risk.
   - At the moment this only applies to Portrait Helper.
 
+## New Tweak: Glamour Dresser Armoire Alert
+
+Opens a small window next to the Glamour Dresser with a list of items that can be stored in the Armoire (only visible if items are eligible).
+
 ### Enhanced Experience Bar
 
 - **Fixed:** Companion Bar no longer shows 0/0 experience on rank 20.
@@ -14,6 +18,10 @@
 ### Scrollable Tabs
 
 - **Fixed:** Due to an incorrect tab count, it was possible to scroll into hidden tabs of the Key Items window (normal inventory).
+
+### Known Issues
+
+- **Material Allocation:** Sanctuary Gathering Log does not change map for items in the cave.
 
 ## [17.0.2] (2023-09-25)
 

@@ -70,7 +70,8 @@ public unsafe class GearSetGridWindow : Window
 
     public override void Draw()
     {
-        using (var windowContext = ImRaii.ContextPopup(nameof(GearSetGridWindow)))
+        var windowName = nameof(GearSetGridWindow);
+        using (var windowContext = ImRaii.ContextPopup(windowName))
         {
             if (windowContext.Success)
             {
@@ -88,17 +89,17 @@ public unsafe class GearSetGridWindow : Window
 
                     if (Flags.HasFlag(ImGuiWindowFlags.NoMove))
                     {
-                        if (!Plugin.Config.LockedImGuiWindows.Contains(nameof(GearSetGridWindow)))
+                        if (!Plugin.Config.LockedImGuiWindows.Contains(windowName))
                         {
-                            Plugin.Config.LockedImGuiWindows.Add(nameof(GearSetGridWindow));
+                            Plugin.Config.LockedImGuiWindows.Add(windowName);
                             Plugin.Config.Save();
                         }
                     }
                     else
                     {
-                        if (Plugin.Config.LockedImGuiWindows.Contains(nameof(GearSetGridWindow)))
+                        if (Plugin.Config.LockedImGuiWindows.Contains(windowName))
                         {
-                            Plugin.Config.LockedImGuiWindows.Remove(nameof(GearSetGridWindow));
+                            Plugin.Config.LockedImGuiWindows.Remove(windowName);
                             Plugin.Config.Save();
                         }
                     }
