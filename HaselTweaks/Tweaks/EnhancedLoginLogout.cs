@@ -94,7 +94,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         _currentEntry = new(character, entry);
 
-        character->VoiceId = entry->CharacterInfo.VoiceId;
+        character->Vfx.VoiceId = entry->CharacterInfo.VoiceId;
 
         SpawnPet();
 
