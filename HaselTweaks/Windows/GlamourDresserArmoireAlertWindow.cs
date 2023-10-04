@@ -6,10 +6,10 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using HaselCommon.SheetLookup;
 using HaselCommon.Sheets;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
+using HaselTweaks.Tweaks;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 
@@ -58,7 +58,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
 
         Categories.Clear();
 
-        Service.PluginLog.Info("[GlamourDresserHelper] Updating...");
+        Service.PluginLog.Info($"[{nameof(GlamourDresserArmoireAlert)}] Updating...");
 
         for (var i = 0u; i < NumPrismBoxSlots; i++)
         {
