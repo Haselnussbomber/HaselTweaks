@@ -78,7 +78,7 @@ public unsafe partial class MaterialAllocation : Tweak
             && agent->Data != null
             && agent->Data->Status == 3
             && (agent->Data->Flags & 2) != 2 // refresh pending
-            && agent->Data->GatherItemPtrs != null;
+            && agent->Data->GatherItems.Size() != 0;
 
         AgentMJIGatheringNoteBook_UpdateHook.OriginalDisposeSafe(agent);
 
@@ -152,10 +152,10 @@ handled:
 
     private void UpdateGatheringNoteBookItem(AgentMJIGatheringNoteBook* agent, uint itemId)
     {
-        for (var index = 0u; index < agent->Data->ItemCount; index++)
+        for (var index = 0u; index < agent->Data->GatherItems.Size(); index++)
         {
-            var gatherItem = agent->Data->GatherItemPtrs[index];
-            if (gatherItem == null || gatherItem->ItemId != itemId)
+            var gatherItemPtr = agent->Data->GatherItems.Get(index);
+            if (gatherItemPtr.Value == null || gatherItemPtr.Value->ItemId != itemId)
                 continue;
 
             agent->Data->SelectedItemIndex = index;

@@ -2,6 +2,7 @@ using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using FFXIVClientStructs.STD;
 
 namespace HaselTweaks.Structs.Agents;
 
@@ -22,7 +23,7 @@ public unsafe struct AgentMJIGatheringNoteBook_Data
 
     [FieldOffset(0x70)] public uint ItemCount;
 
-    [FieldOffset(0xC0)] public AgentMJIGatheringNoteBook_Data_GatherItem** GatherItemPtrs; // sorted
+    [FieldOffset(0xC0)] public StdVector<Pointer<AgentMJIGatheringNoteBook_Data_GatherItem>> GatherItems; // sorted
 
     [FieldOffset(0x1C8)] public uint SelectedItemIndex;
     [FieldOffset(0x1CC)] public byte Flags;
