@@ -493,7 +493,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
         if (intro != 0 && loop != 0)
         {
-            _currentEntry.HaselCharacter->ActionTimelineManager.PlayActionTimeline(intro, loop);
+            ((ActionTimelineManager*)(nint)(&_currentEntry.Character->ActionTimelineManager))->PlayActionTimeline(intro, loop);
         }
         else if (loop != 0)
         {

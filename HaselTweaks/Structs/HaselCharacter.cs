@@ -3,8 +3,6 @@ namespace HaselTweaks.Structs;
 [StructLayout(LayoutKind.Explicit)]
 public unsafe partial struct HaselCharacter
 {
-    [FieldOffset(0x970)] public ActionTimelineManager ActionTimelineManager;
-
     // [MemberFunction("E8 ?? ?? ?? ?? 83 FE 4F")]
     // public partial void Rotate(float value);
 

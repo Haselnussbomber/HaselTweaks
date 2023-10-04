@@ -27,7 +27,7 @@ public unsafe class AdvancedEditOverlay : Overlay
         if (character == null)
             return;
 
-        var timelinePtr = ((ActionTimelineManager*)((nint)character + 0x920))->BaseAnimation;
+        var timelinePtr = ((ActionTimelineManager*)(nint)(&character->ActionTimelineManager))->BaseAnimation;
         if (timelinePtr == null)
             return;
 
@@ -283,7 +283,7 @@ public unsafe class AdvancedEditOverlay : Overlay
                 var clampedValue = Math.Clamp(timestampAfter, 0, _timelineLength);
                 _timestamp = (float)Math.Round(clampedValue, 1);
 
-                var timelinePtr = ((ActionTimelineManager*)((nint)character + 0x920))->BaseAnimation;
+                var timelinePtr = ((ActionTimelineManager*)(nint)(&character->ActionTimelineManager))->BaseAnimation;
                 if (timelinePtr != null)
                 {
                     var timeline = *timelinePtr;
