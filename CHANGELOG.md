@@ -1,5 +1,24 @@
 # Changelog
 
+## [Unreleased]
+
+### Character Class Switcher
+
+- **Fixed:** Tweak didn't work due to shifted AtkUnitBase functions.
+
+### Portrait Helper
+
+- **Fixed:** Gear checksum mismatched due to shifted number array.
+
+### Lock Window Position
+
+- **Fixed:** Gear Set List window lock didn't work due to shifted AtkUnitBase functions.
+
+### Scrollable Tabs
+
+- **Fixed:** Currency window didn't switch tabs due to shifted number array.
+- **Fixed:** Character -> Reputation didn't switch expansions due to shifted number array.
+
 ## [18.0.2] (2023-10-04)
 
 ### Portrait Helper
