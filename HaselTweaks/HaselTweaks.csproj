@@ -3,7 +3,7 @@
   <Import Project="Dalamud.Plugin.Bootstrap.targets"/>
 
   <PropertyGroup>
-    <Version>18.0.3</Version>
+    <Version>18.0.4</Version>
     <OutputPath>..\bin\</OutputPath>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
