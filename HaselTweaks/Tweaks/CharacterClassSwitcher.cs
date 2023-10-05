@@ -151,22 +151,33 @@ public unsafe partial class CharacterClassSwitcher : Tweak
     [VTableHook<AddonCharacterClass>((int)AtkUnitBaseVfs.ReceiveEvent)]
     private nint AddonCharacterClass_ReceiveEvent(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
+        if (HandleAddonCharacterClassEvent(addon, eventType, eventParam))
+        {
+            // handled
+            return 0;
+        }
+
+        return AddonCharacterClass_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
+    }
+
+    private bool HandleAddonCharacterClassEvent(AddonCharacterClass* addon, AtkEventType eventType, int eventParam)
+    {
         // skip events for tabs
         if (eventParam < 2)
-            goto OriginalReceiveEventCode;
+            return false;
 
         var node = addon->ButtonNodesSpan.GetPointer(eventParam - 2)->Value;
         if (node == null || node->AtkComponentBase.OwnerNode == null)
-            goto OriginalReceiveEventCode;
+            return false;
 
         var imageNode = GetNode<AtkImageNode>(&node->AtkComponentBase, 4);
         if (imageNode == null)
-            goto OriginalReceiveEventCode;
+            return false;
 
         // if job is unlocked, it has full alpha
         var isUnlocked = imageNode->AtkResNode.Color.A == 255;
         if (!isUnlocked)
-            goto OriginalReceiveEventCode;
+            return false;
 
         // special handling for crafters
         if (IsCrafter(eventParam - 2))
@@ -178,16 +189,11 @@ public unsafe partial class CharacterClassSwitcher : Tweak
             if (isClick && !Service.KeyState[VirtualKey.SHIFT])
             {
                 SwitchClassJob(8 + (uint)eventParam - 22);
-                return 0;
+                return true;
             }
         }
-        else if (ProcessEvents(node->AtkComponentBase.OwnerNode, imageNode, eventType))
-        {
-            return 0;
-        }
 
-OriginalReceiveEventCode:
-        return AddonCharacterClass_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
+        return ProcessEvents(node->AtkComponentBase.OwnerNode, imageNode, eventType);
     }
 
     [VTableHook<AddonPvPCharacter>((int)AtkUnitBaseVfs.OnSetup)]
@@ -236,28 +242,34 @@ OriginalReceiveEventCode:
     [VTableHook<AddonPvPCharacter>((int)AtkUnitBaseVfs.ReceiveEvent)]
     private nint AddonPvPCharacter_ReceiveEvent(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
+        if (HandleAddonPvPCharacterEvent(addon, eventType, eventParam))
+        {
+            // handled
+            return 0;
+        }
+
+        return AddonPvPCharacter_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
+    }
+
+    private bool HandleAddonPvPCharacterEvent(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam)
+    {
         if ((eventParam & 0xFFFF0000) != 0x10000)
-            goto OriginalPvPReceiveEventCode;
+            return false;
 
         var entryId = eventParam & 0x0000FFFF;
         if (entryId is < 0 or > AddonPvPCharacter.NUM_CLASSES)
-            goto OriginalPvPReceiveEventCode;
+            return false;
 
         var entry = addon->ClassEntriesSpan.GetPointer(entryId);
-
         if (entry->Base == null || entry->Base->OwnerNode == null || entry->Icon == null)
-            goto OriginalPvPReceiveEventCode;
+            return false;
 
         // if job is unlocked, it has full alpha
         var isUnlocked = entry->Icon->AtkResNode.Color.A == 255;
         if (!isUnlocked)
-            goto OriginalPvPReceiveEventCode;
+            return false;
 
-        if (ProcessEvents(entry->Base->OwnerNode, entry->Icon, eventType))
-            return 0;
-
-OriginalPvPReceiveEventCode:
-        return AddonPvPCharacter_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
+        return ProcessEvents(entry->Base->OwnerNode, entry->Icon, eventType);
     }
 
     /// <returns>Boolean whether original code should be skipped (true) or not (false)</returns>
