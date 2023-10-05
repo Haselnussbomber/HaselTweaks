@@ -643,7 +643,7 @@ ResetWheelState:
     private void UpdateCurrency(AtkUnitBase* addon)
     {
         var atkStage = AtkStage.GetSingleton();
-        var numberArray = atkStage->GetNumberArrayData()[79];
+        var numberArray = atkStage->GetNumberArrayData()[80];
         var currentTab = numberArray->IntArray[0];
 
         var newTab = GetTabIndex(currentTab, 4);
@@ -775,6 +775,6 @@ ResetWheelState:
         addon->SelectedExpansion = tabIndex;
 
         var atkStage = AtkStage.GetSingleton();
-        addon->UpdateDisplay(atkStage->GetNumberArrayData()[62], atkStage->GetStringArrayData()[57]);
+        addon->UpdateDisplay(atkStage->GetNumberArrayData()[63], atkStage->GetStringArrayData()[58]);
     }
 }

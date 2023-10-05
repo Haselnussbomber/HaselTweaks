@@ -12,5 +12,5 @@ public unsafe partial struct AddonCharacterRepute
     [FieldOffset(0x298)] public int ExpansionsCount;
 
     [MemberFunction("E8 ?? ?? ?? ?? EB 07 33 D2 E8 ?? ?? ?? ?? 48 8B 5C 24 ?? 48 8B 6C 24 ?? 48 8B 74 24 ?? 48 8B 7C 24 ?? 48 83 C4 50")]
-    public readonly partial void UpdateDisplay(NumberArrayData* numberArray62, StringArrayData* stringArray57);
+    public readonly partial void UpdateDisplay(NumberArrayData* numberArray63, StringArrayData* stringArray58);
 }
