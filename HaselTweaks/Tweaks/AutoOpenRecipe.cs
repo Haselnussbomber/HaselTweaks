@@ -91,87 +91,91 @@ public unsafe partial class AutoOpenRecipe : Tweak
     [AddressHook<Statics>(nameof(Statics.Addresses.UpdateQuestWork))]
     public nint UpdateQuestWork(ushort index, nint questData, bool a3, bool a4, bool a5)
     {
+        OnQuestWorkUpdate(questData);
+        return UpdateQuestWorkHook.OriginalDisposeSafe(index, questData, a3, a4, a5);
+    }
+
+    private void OnQuestWorkUpdate(nint questData)
+    {
         var questId = *(ushort*)questData;
-        Debug($"UpdateQuestWork({index}, {questId} / {*(byte*)(questData + 2)}, {a3}, {a4}, {a5})");
+        var sequence = *(byte*)(questData + 2);
+
+        Debug($"OnQuestWorkUpdate: questId = {questId}, sequence = {sequence}");
 
         // DailyQuestWork gets updated before QuestWork, so we can check here if it's a daily quest
-        if (questId > 0)
+        if (questId == 0)
+            return;
+
+        var quest = GetRow<Quest>((uint)questId | 0x10000);
+        if (quest?.RowId == 0)
         {
-            var quest = GetRow<Quest>((uint)questId | 0x10000);
-            if (quest?.RowId == 0)
-            {
-                Warning($"Ignoring quest #{questId}: Quest not found");
-                goto originalUpdateQuestWork;
-            }
-
-            var questManager = QuestManager.Instance();
-            if (questManager == null)
-            {
-                Warning("Could not resolve QuestManager");
-                goto originalUpdateQuestWork;
-            }
-
-            var isDailyQuest = questManager->GetDailyQuestById(questId) != null;
-            var isTribalQuest = quest!.BeastTribe.Row != 0;
-            if (!(isDailyQuest || isTribalQuest))
-            {
-                Warning($"Ignoring quest #{questId}: Quest is not a daily quest or tribal quest");
-                goto originalUpdateQuestWork;
-            }
-
-            var sequence = *(byte*)(questData + 2);
-            var todoOffset = quest!.ToDoCompleteSeq.IndexOf(sequence);
-            if (todoOffset < 0 || todoOffset >= quest.ToDoQty.Length)
-                goto originalUpdateQuestWork;
-
-            var localPlayer = (BattleChara*)(Service.ClientState.LocalPlayer?.Address ?? 0);
-            if (localPlayer == null)
-                goto originalUpdateQuestWork;
-
-            var eventFramework = EventFramework.Instance();
-            if (eventFramework == null)
-            {
-                Warning("Could not resolve EventFramework");
-                goto originalUpdateQuestWork;
-            }
-
-            var questEventHandler = eventFramework->GetEventHandlerById(questId);
-            if (questEventHandler == null)
-                goto originalUpdateQuestWork;
-
-            var todoCount = quest.ToDoQty[todoOffset];
-            for (var todoIndex = todoOffset; todoIndex < todoOffset + todoCount; todoIndex++)
-            {
-                uint numHave, numNeeded, itemId;
-                Statics.GetTodoArgs(questEventHandler, localPlayer, todoIndex, &numHave, &numNeeded, &itemId);
-                Debug($"TodoArgs #{todoIndex}: {numHave}/{numNeeded} of {itemId}");
-
-                if (itemId == 0)
-                {
-                    foreach (var q in QuestTodos)
-                    {
-                        if (q.QuestId == questId && q.TodoIndex == todoIndex)
-                        {
-                            var scriptArgIndex = quest.ScriptInstruction
-                                .IndexOf(entry => entry.RawString == q.ScriptArgName);
-
-                            itemId = quest.ScriptArg.ElementAtOrDefault(scriptArgIndex);
-                            Debug($"Using fallback script value {itemId}");
-                            break;
-                        }
-                    }
-                }
-
-                if (numHave < numNeeded && itemId != 0)
-                {
-                    OpenRecipe(itemId % 1000000, numNeeded);
-                    break;
-                }
-            }
+            Warning($"Ignoring quest #{questId}: Quest not found");
+            return;
         }
 
-originalUpdateQuestWork:
-        return UpdateQuestWorkHook.OriginalDisposeSafe(index, questData, a3, a4, a5);
+        var questManager = QuestManager.Instance();
+        if (questManager == null)
+        {
+            Warning("Could not resolve QuestManager");
+            return;
+        }
+
+        var isDailyQuest = questManager->GetDailyQuestById(questId) != null;
+        var isTribalQuest = quest!.BeastTribe.Row != 0;
+        if (!(isDailyQuest || isTribalQuest))
+        {
+            Warning($"Ignoring quest #{questId}: Quest is not a daily quest or tribal quest");
+            return;
+        }
+
+        var todoOffset = quest!.ToDoCompleteSeq.IndexOf(sequence);
+        if (todoOffset < 0 || todoOffset >= quest.ToDoQty.Length)
+            return;
+
+        var localPlayer = (BattleChara*)(Service.ClientState.LocalPlayer?.Address ?? 0);
+        if (localPlayer == null)
+            return;
+
+        var eventFramework = EventFramework.Instance();
+        if (eventFramework == null)
+        {
+            Warning("Could not resolve EventFramework");
+            return;
+        }
+
+        var questEventHandler = eventFramework->GetEventHandlerById(questId);
+        if (questEventHandler == null)
+            return;
+
+        var todoCount = quest.ToDoQty[todoOffset];
+        for (var todoIndex = todoOffset; todoIndex < todoOffset + todoCount; todoIndex++)
+        {
+            uint numHave, numNeeded, itemId;
+            Statics.GetTodoArgs(questEventHandler, localPlayer, todoIndex, &numHave, &numNeeded, &itemId);
+            Debug($"TodoArgs #{todoIndex}: {numHave}/{numNeeded} of {itemId}");
+
+            if (itemId == 0)
+            {
+                foreach (var q in QuestTodos)
+                {
+                    if (q.QuestId == questId && q.TodoIndex == todoIndex)
+                    {
+                        var scriptArgIndex = quest.ScriptInstruction
+                            .IndexOf(entry => entry.RawString == q.ScriptArgName);
+
+                        itemId = quest.ScriptArg.ElementAtOrDefault(scriptArgIndex);
+                        Debug($"Using fallback script value {itemId}");
+                        break;
+                    }
+                }
+            }
+
+            if (numHave < numNeeded && itemId != 0)
+            {
+                OpenRecipe(itemId % 1000000, numNeeded);
+                break;
+            }
+        }
     }
 
     private void OpenRecipe(uint resultItemId, uint amount)
