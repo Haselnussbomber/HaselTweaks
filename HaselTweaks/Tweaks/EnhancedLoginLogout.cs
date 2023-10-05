@@ -432,13 +432,12 @@ public unsafe partial class EnhancedLoginLogout : Tweak
         _pet = null;
     }
 
-    // easier than setting position, lel
     public void ApplyPetPosition()
     {
         if (_pet == null)
             return;
 
-        ((HaselCharacter*)_pet)->SetPosition(Config.PetPosition.X, Config.PetPosition.Y, Config.PetPosition.Z);
+        _pet->Character.GameObject.SetPosition(Config.PetPosition.X, Config.PetPosition.Y, Config.PetPosition.Z);
     }
 
     #endregion
