@@ -324,7 +324,7 @@ public partial class PortraitHelper : Tweak
 
         GetAgent<AgentStatus>()->UpdateGearVisibilityInNumberArray();
 
-        var numberArray = AtkStage.GetSingleton()->GetNumberArrayData()[62];
+        var numberArray = AtkStage.GetSingleton()->GetNumberArrayData()[63];
 
         var gearVisibilityFlag = BannerGearVisibilityFlag.None;
 
