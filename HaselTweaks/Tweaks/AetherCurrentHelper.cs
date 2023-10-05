@@ -25,42 +25,48 @@ public unsafe partial class AetherCurrentHelper : Tweak
         Service.WindowManager.CloseWindow<AetherCurrentHelperWindow>();
     }
 
-    public static void OpenWindow(AetherCurrentCompFlgSet compFlgSet)
-    {
-        var window = Service.WindowManager.OpenWindow<AetherCurrentHelperWindow>();
-        window.CompFlgSet = compFlgSet;
-    }
-
     [VTableHook<AgentAetherCurrent>((int)AgentInterfaceVfs.ReceiveEvent)]
     private AtkValue* AgentAetherCurrent_ReceiveEvent(AgentAetherCurrent* agent, AtkValue* eventData, AtkValue* atkValue, uint valueCount, nint eventKind)
     {
+        if (OpenWindow(agent, atkValue))
+        {
+            // handled, just like in the original code
+            eventData->Type = ValueType.Bool;
+            eventData->Byte = 0;
+            return eventData;
+        }
+
+        return AgentAetherCurrent_ReceiveEventHook.OriginalDisposeSafe(agent, eventData, atkValue, valueCount, eventKind);
+    }
+
+    public static bool OpenWindow(AgentAetherCurrent* agent, AtkValue* atkValue)
+    {
         if (Service.KeyState[VirtualKey.SHIFT])
-            goto OriginalCode;
+            return false;
 
-        if (atkValue == null || atkValue->Type != ValueType.Int || atkValue->Int != 0)
-            goto OriginalCode;
+        if (atkValue == null)
+            return false;
 
-        var atkValue2 = (AtkValue*)((nint)atkValue + 0x10);
-        if (atkValue2->Type != ValueType.Int)
-            goto OriginalCode;
+        ref var firstAtkValue = ref atkValue[0];
+        if (firstAtkValue.Type != ValueType.Int || firstAtkValue.Int != 0)
+            return false;
 
-        var rawIndex = (uint)(atkValue2->Int + 6 * agent->TabIndex);
+        ref var secondAtkValue = ref atkValue[1];
+        if (secondAtkValue.Type != ValueType.Int)
+            return false;
+
+        var rawIndex = (uint)(secondAtkValue.Int + 6 * agent->TabIndex);
         var index = rawIndex + 1;
         if (index < 19)
             index = rawIndex;
 
         var compFlgSet = GetRow<AetherCurrentCompFlgSet>(index + 1);
         if (compFlgSet == null)
-            goto OriginalCode;
+            return false;
 
-        OpenWindow(compFlgSet);
+        var window = Service.WindowManager.OpenWindow<AetherCurrentHelperWindow>();
+        window.CompFlgSet = compFlgSet;
 
-        // handled, just like in the original code
-        eventData->Type = ValueType.Bool;
-        eventData->Byte = 0;
-        return eventData;
-
-OriginalCode:
-        return AgentAetherCurrent_ReceiveEventHook.OriginalDisposeSafe(agent, eventData, atkValue, valueCount, eventKind);
+        return true;
     }
 }
