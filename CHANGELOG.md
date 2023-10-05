@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Lock Window Position
+
+- **Fixed:** Game crashed upon clicking the context menu entry.
+
 ## [18.0.3] (2023-10-05)
 
 ### Character Class Switcher
