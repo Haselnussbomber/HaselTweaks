@@ -10,8 +10,6 @@ public unsafe partial struct HaselRaptureAtkUnitManager
     public static HaselRaptureAtkUnitManager* Instance()
         => (HaselRaptureAtkUnitManager*)&RaptureAtkModule.Instance()->RaptureAtkUnitManager;
 
-    [FieldOffset(0x9CF8)] public UIModule.UiFlags UiFlags;
-
     [VirtualFunction(6)]
     public readonly partial bool Vf6(nint a2);
 }

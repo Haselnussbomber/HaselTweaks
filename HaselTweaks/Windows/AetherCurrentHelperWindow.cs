@@ -54,7 +54,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
     }
 
     public override bool DrawConditions()
-        => CompFlgSet != null && Service.ClientState.IsLoggedIn && !HaselRaptureAtkUnitManager.Instance()->UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
+        => CompFlgSet != null && Service.ClientState.IsLoggedIn && !RaptureAtkModule.Instance()->RaptureAtkUnitManager.UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
 
     public override unsafe void Draw()
     {
