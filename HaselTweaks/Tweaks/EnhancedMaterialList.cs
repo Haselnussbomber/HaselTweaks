@@ -194,7 +194,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
         return ret;
     }
 
-    [VTableHook<AddonRecipeMaterialList>((int)AtkResNodeVfs.ReceiveEvent)]
+    [VTableHook<AddonRecipeMaterialList>((int)AtkUnitBaseVfs.ReceiveEvent)]
     public void AddonRecipeMaterialList_ReceiveEvent(AddonRecipeMaterialList* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
         AddonRecipeMaterialList_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);

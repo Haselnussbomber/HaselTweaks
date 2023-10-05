@@ -89,7 +89,7 @@ public unsafe partial class MaterialAllocation : Tweak
         }
     }
 
-    [VTableHook<AddonMJICraftMaterialConfirmation>((int)AtkResNodeVfs.ReceiveEvent)]
+    [VTableHook<AddonMJICraftMaterialConfirmation>((int)AtkUnitBaseVfs.ReceiveEvent)]
     public void AddonMJICraftMaterialConfirmation_ReceiveEvent(AddonMJICraftMaterialConfirmation* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
         if (eventParam is > 0 and < 4 && Config.SaveLastSelectedTab)

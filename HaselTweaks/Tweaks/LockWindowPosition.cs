@@ -218,7 +218,7 @@ public unsafe partial class LockWindowPosition : Tweak
     }
 
     // block GearSetList from moving when opened by Character
-    [VTableHook<AddonGearSetList>((int)AtkResNodeVfs.OnSetup)]
+    [VTableHook<AddonGearSetList>((int)AtkUnitBaseVfs.OnSetup)]
     public nint AddonGearSetList_OnSetup(AddonGearSetList* addon, uint numAtkValues, AtkValue* atkValues)
     {
         var result = AddonGearSetList_OnSetupHook.OriginalDisposeSafe(addon, numAtkValues, atkValues);

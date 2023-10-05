@@ -83,7 +83,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         return id >= 20 && id <= 27;
     }
 
-    [VTableHook<AddonCharacterClass>((int)AtkResNodeVfs.OnSetup)]
+    [VTableHook<AddonCharacterClass>((int)AtkUnitBaseVfs.OnSetup)]
     private nint AddonCharacterClass_OnSetup(AddonCharacterClass* addon, uint numAtkValues, AtkValue* atkValues)
     {
         var result = AddonCharacterClass_OnSetupHook!.OriginalDisposeSafe(addon, numAtkValues, atkValues);
@@ -107,9 +107,11 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         return result;
     }
 
-    [VTableHook<AddonCharacterClass>((int)AtkResNodeVfs.OnUpdate)]
+    [VTableHook<AddonCharacterClass>((int)AtkUnitBaseVfs.OnRequestedUpdate)]
     private void AddonCharacterClass_OnUpdate(AddonCharacterClass* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
+        Debug($"AddonCharacterClass_OnUpdate");
+
         AddonCharacterClass_OnUpdateHook.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
@@ -137,6 +139,8 @@ public unsafe partial class CharacterClassSwitcher : Tweak
             // if job is unlocked, it has full alpha
             var isUnlocked = imageNode->AtkResNode.Color.A == 255;
 
+            Debug($"unlock: {i} - {isUnlocked}");
+
             if (isUnlocked)
                 collisionNode->AtkResNode.DrawFlags |= 1 << 20; // add Cursor Pointer flag
             else
@@ -144,7 +148,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         }
     }
 
-    [VTableHook<AddonCharacterClass>((int)AtkResNodeVfs.ReceiveEvent)]
+    [VTableHook<AddonCharacterClass>((int)AtkUnitBaseVfs.ReceiveEvent)]
     private nint AddonCharacterClass_ReceiveEvent(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
         // skip events for tabs
@@ -186,7 +190,7 @@ OriginalReceiveEventCode:
         return AddonCharacterClass_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
     }
 
-    [VTableHook<AddonPvPCharacter>((int)AtkResNodeVfs.OnSetup)]
+    [VTableHook<AddonPvPCharacter>((int)AtkUnitBaseVfs.OnSetup)]
     private void AddonPvPCharacter_OnSetup(AddonPvPCharacter* addon, uint numAtkValues, AtkValue* atkValues)
     {
         AddonPvPCharacter_OnSetupHook.OriginalDisposeSafe(addon, numAtkValues, atkValues);
@@ -229,7 +233,7 @@ OriginalReceiveEventCode:
         }
     }
 
-    [VTableHook<AddonPvPCharacter>((int)AtkResNodeVfs.ReceiveEvent)]
+    [VTableHook<AddonPvPCharacter>((int)AtkUnitBaseVfs.ReceiveEvent)]
     private nint AddonPvPCharacter_ReceiveEvent(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
         if ((eventParam & 0xFFFF0000) != 0x10000)
