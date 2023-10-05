@@ -405,7 +405,7 @@ public unsafe partial class LockWindowPosition : Tweak
             .AddText(text)
             .Encode();
 
-        var handler = (nint)AtkStage.GetSingleton()->RaptureAtkUnitManager + 0x9C88; // see vtbl ptr in ctor
+        var handler = (nint)AtkStage.GetSingleton()->RaptureAtkUnitManager + 0x9C90; // see vtbl ptr in ctor
         fixed (byte* ptr = &bytes[0])
         {
             GetAgent<AgentContext>()->AddMenuItem(ptr, (void*)handler, eventParam);
