@@ -110,8 +110,6 @@ public unsafe partial class CharacterClassSwitcher : Tweak
     [VTableHook<AddonCharacterClass>((int)AtkUnitBaseVfs.OnRequestedUpdate)]
     private void AddonCharacterClass_OnUpdate(AddonCharacterClass* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        Debug($"AddonCharacterClass_OnUpdate");
-
         AddonCharacterClass_OnUpdateHook.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
@@ -138,9 +136,6 @@ public unsafe partial class CharacterClassSwitcher : Tweak
 
             // if job is unlocked, it has full alpha
             var isUnlocked = imageNode->AtkResNode.Color.A == 255;
-
-            Debug($"unlock: {i} - {isUnlocked}");
-
             if (isUnlocked)
                 collisionNode->AtkResNode.DrawFlags |= 1 << 20; // add Cursor Pointer flag
             else
