@@ -49,7 +49,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
             for (var i = 0u; i < Addon->TreeList->Items.Size(); i++)
             {
                 var item = Addon->TreeList->Items.Get(i).Value;
-                if (item != null && item->Title != null)
+                if (item != null && item->Title != null && item->Data->Type != AtkComponentTreeListItemType.CollapsibleGroupHeader)
                 {
                     var titlePtr = *(nint*)item->Title;
                     if (titlePtr != 0)
@@ -63,17 +63,26 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
                 }
             }
 
-            var result = FuzzySharp.Process.ExtractTop((Index: 0u, ItemName: Query.ToLower()), entries, (entry) => entry.ItemName, limit: 1).First();
-            if (result.Index >= 0 && result.Index < entries.Count)
+            var result = FuzzySharp.Process.ExtractTop((Index: 0u, ItemName: Query.ToLower()), entries, (entry) => entry.ItemName, limit: 1).FirstOrDefault();
+            if (result != null && result.Value != default)
             {
                 var index = result.Value.Index;
                 var item = Addon->TreeList->GetItem(index);
-                if (item != null && item->Data->Type != AtkComponentTreeListItemType.CollapsibleGroupHeader)
+                if (item != null)
                 {
-                    var evt = stackalloc AtkEvent[1];
-                    var a5 = stackalloc uint[4];
-                    a5[4] = index;
-                    Addon->AtkUnitBase.ReceiveEvent(AtkEventType.ListItemToggle, 1, evt, (nint)a5);
+                    // find parent group and expand it
+                    for (var i = index; i >= 0; i--)
+                    {
+                        var headerItem = Addon->TreeList->Items.Get(i).Value;
+                        if (headerItem != null && headerItem->Data != null && headerItem->Data->Type == AtkComponentTreeListItemType.CollapsibleGroupHeader)
+                        {
+                            Addon->TreeList->ExpandGroup(headerItem, false);
+                            Addon->TreeList->LayoutRefreshPending = 1;
+                            break;
+                        }
+                    }
+
+                    Addon->TreeList->SelectItem(index, true); // if it would only scroll the selected item into view... oh well
                 }
             }
         }
