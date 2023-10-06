@@ -51,8 +51,15 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
                 var item = Addon->TreeList->Items.Get(i).Value;
                 if (item != null && item->Title != null)
                 {
-                    var itemName = MemoryHelper.ReadStringNullTerminated(*(nint*)item->Title);
-                    entries.Add((i, itemName.ToLower()));
+                    var titlePtr = *(nint*)item->Title;
+                    if (titlePtr != 0)
+                    {
+                        var itemName = MemoryHelper.ReadStringNullTerminated(titlePtr);
+                        if (!string.IsNullOrEmpty(itemName))
+                        {
+                            entries.Add((i, itemName.ToLower()));
+                        }
+                    }
                 }
             }
 
