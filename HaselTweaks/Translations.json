@@ -746,8 +746,8 @@
     "en": "[HaselTweaks] Glamour Dresser Armoire Alert"
   },
   "GlamourDresserArmoireAlertWindow.Info": {
-    "en": "These items can be stored in the Armoire! Click to restore item.",
-    "de": "Diese Gegenstände können im Kostbarkeitenkabinett aufbewahrt werden! Anklicken, um in Ausrüstung zurückzuverwandeln."
+    "en": "These items can be stored in the Armoire!\nClick to restore item.",
+    "de": "Diese Gegenstände können im Kostbarkeitenkabinett aufbewahrt werden!\nAnklicken, um in Ausrüstung zurückzuverwandeln."
   },
 
   "HideMSQComplete.Tweak.Name": {

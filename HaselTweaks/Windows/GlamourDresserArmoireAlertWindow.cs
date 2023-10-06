@@ -94,7 +94,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
 
     public override void Draw()
     {
-        ImGui.TextWrapped(t("GlamourDresserHelperWindow.Info"));
+        ImGui.TextWrapped(t("GlamourDresserArmoireAlertWindow.Info"));
 
         foreach (var (categoryId, categoryDict) in Categories.OrderBy(kv => kv.Key))
         {
