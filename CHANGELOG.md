@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Simple Aethernet List
+
+Simplifies the behavior of the Aethernet list: mouseover selects the aetheryte and a click teleports you.
+
 ## [18.0.4] (2023-10-06)
 
 ### Lock Window Position

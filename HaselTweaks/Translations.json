@@ -1363,6 +1363,14 @@
     "de": "Fügt dem Gegenstand-Kontextmenü einen Eintrag hinzu, mit dem man schnell nach dem Gegenstand auf dem Marktbrett suchen kann. Nur sichtbar, wenn die Gegenstandssuche (Marktbrett) geöffnet ist!\n\nUnterstützt Kontextmenüs in den folgenden Fenstern:\n- Chat\n- Handwerker-Notizbuch\n- Ixal-Lieferaufträge (über /timers)\n- Liefereinsätze (über /timers)\n- Inventar\n- Materialliste\n- Rezeptbaum\n"
   },
 
+  "SimpleAethernetList.Tweak.Name": {
+    "en": "Simple Aethernet List"
+  },
+  "SimpleAethernetList.Tweak.Description": {
+    "en": "Simplifies the behavior of the Aethernet list: mouseover selects the aetheryte and a click teleports you.",
+    "de": "Vereinfacht das Verhalten der Ätherytennetz-Liste: Maus über den Eintrag fahren wählt den Ätheryten aus und ein Klick teleportiert dich."
+  },
+
   "ImGuiWindow.ContextMenuItem.ResetSize": {
     "en": "Reset size",
     "de": "Größe zurücksetzen",

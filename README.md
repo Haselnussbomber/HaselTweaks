@@ -266,3 +266,7 @@ Supports context menus in the following windows:
 - Inventory
 - Materials List
 - Recipe Tree
+
+### Simple Aethernet List
+
+Simplifies the behavior of the Aethernet list: mouseover selects the aetheryte and a click teleports you.
