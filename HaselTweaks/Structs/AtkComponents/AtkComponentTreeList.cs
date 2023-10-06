@@ -17,7 +17,7 @@ public unsafe partial struct AtkComponentTreeList
 [StructLayout(LayoutKind.Explicit)]
 public unsafe struct AtkComponentTreeListItem
 {
-    [FieldOffset(0)] public AtkComponentTreeListItemData* Data; // StdVector?
+    [FieldOffset(0)] public AtkComponentTreeListItemData* Data;
 
     [FieldOffset(0x18)] public byte** Title;
 
@@ -28,13 +28,13 @@ public unsafe struct AtkComponentTreeListItem
 public unsafe struct AtkComponentTreeListItemData
 {
     [FieldOffset(0)] public AtkComponentTreeListItemType Type;
-    // [FieldOffset(0x4)] public uint ???;
-    [FieldOffset(0x8)] public uint RowId; // perhaps?
+    // seems to be addon-specific data from here on
 }
 
 public enum AtkComponentTreeListItemType : uint
 {
     Leaf = 0,
     LastLeafInGroup = 1,
-    Group = 2,
+    CollapsibleGroupHeader = 2, // see AddonMJICraftScheduleSetting
+    GroupHeader = 4, // always expanded, see AddonTelepotTown
 }

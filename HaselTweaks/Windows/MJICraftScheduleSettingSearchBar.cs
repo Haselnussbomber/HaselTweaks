@@ -60,7 +60,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
             if (result.Index >= 0 && result.Index < entries.Count)
             {
                 var item = Addon->TreeList->GetItem((uint)result.Index);
-                if (item != null && item->Data->Type != AtkComponentTreeListItemType.Group)
+                if (item != null && item->Data->Type != AtkComponentTreeListItemType.CollapsibleGroupHeader)
                 {
                     var evt = stackalloc AtkEvent[1];
                     var a5 = stackalloc uint[4];
