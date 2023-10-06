@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Glamour Dresser Armoire Alert
+
+- **Fixed:** Info text didn't display correctly.
+
 ## [19.0.2] (2023-10-06)
 
 ### Enhanced Isleworks Agenda
