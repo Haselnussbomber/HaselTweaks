@@ -9,6 +9,7 @@ public unsafe partial struct AtkComponentTreeList
     [FieldOffset(0)] public FFXIVClientStructs.FFXIV.Component.GUI.AtkComponentTreeList Base;
 
     [FieldOffset(0x1A8)] public StdVector<Pointer<AtkComponentTreeListItem>> Items;
+
     [FieldOffset(0x21C)] public byte LayoutRefreshPending;
 
     [VirtualFunction(31)]
@@ -34,7 +35,7 @@ public unsafe struct AtkComponentTreeListItem
 
     [FieldOffset(0x30)] public AtkComponentListItemRenderer* Renderer;
 
-    [FieldOffset(0x42)] public byte Flags;
+    [FieldOffset(0x42)] public byte Flags; // for groups: 1 = expanded
     [FieldOffset(0x43)] public byte Flags2;
 }
 
