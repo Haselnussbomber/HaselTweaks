@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Isleworks Agenda
+
+- **Changed:** The search automatically selects the item in the list now!
+
 ## [19.0.1] (2023-10-06)
 
 ### Enhanced Isleworks Agenda
