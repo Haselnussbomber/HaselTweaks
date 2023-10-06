@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [19.0.0] (2023-10-06)
 
 ### New Tweak: Simple Aethernet List
 
@@ -1190,6 +1190,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[19.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v18.0.4...v19.0.0
 [18.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v18.0.3...v18.0.4
 [18.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v18.0.2...v18.0.3
 [18.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v18.0.1...v18.0.2
