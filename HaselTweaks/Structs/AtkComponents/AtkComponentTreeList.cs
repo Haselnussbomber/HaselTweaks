@@ -18,27 +18,12 @@ public unsafe partial struct AtkComponentTreeList
     [VirtualFunction(32)]
     public readonly partial void DeselectItem();
 
-    [MemberFunction("E8 ?? ?? ?? ?? 44 39 BD ?? ?? ?? ??")]
-    public readonly partial void LoadAtkValues(
-        uint atkValuesCount,
-        AtkValue* atkValues,
-        uint uintValuesOffset,
-        uint stringValuesOffset,
-        uint uintValuesCountPerItem,
-        uint stringValuesCountPerItem,
-        uint itemCount,
-        nint a9);
-
     // this collapses all other groups too, pretty handy
     [MemberFunction("E8 ?? ?? ?? ?? 44 88 AB ?? ?? ?? ?? 80 4F 42 10")]
     public readonly partial void ExpandGroup(AtkComponentTreeListItem* group, bool a3 = false);
 
     [MemberFunction("E8 ?? ?? ?? ?? 44 38 60 45")]
     public readonly partial AtkComponentTreeListItem* GetItem(uint index);
-
-    // only creates it, doesn't add it to the list
-    [MemberFunction("E8 ?? ?? ?? ?? 48 8B D8 45 85 ED")]
-    public readonly partial AtkComponentTreeListItem* CreateItem();
 }
 
 [StructLayout(LayoutKind.Explicit, Size = 0x48)]
