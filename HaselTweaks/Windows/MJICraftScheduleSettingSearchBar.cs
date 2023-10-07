@@ -49,7 +49,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
             for (var i = 0u; i < Addon->TreeList->Items.Size(); i++)
             {
                 var item = Addon->TreeList->Items.Get(i).Value;
-                if (item != null && item->StringValues.Size() > 0 && item->UIntValues.Size() > 0 && item->UIntValues.Get(0) != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
+                if (item != null && item->StringValues.Size() >= 1 && item->UIntValues.Size() >= 1 && item->UIntValues.Get(0) != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
                 {
                     var titlePtr = item->StringValues.Get(0).Value;
                     if (titlePtr != null)
@@ -74,7 +74,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
                     for (var i = index; i >= 0; i--)
                     {
                         var headerItem = Addon->TreeList->Items.Get(i).Value;
-                        if (headerItem != null && headerItem->UIntValues.Size() > 0 && headerItem->UIntValues.Get(0) == (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
+                        if (headerItem != null && headerItem->UIntValues.Size() >= 1 && headerItem->UIntValues.Get(0) == (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
                         {
                             Addon->TreeList->ExpandGroup(headerItem, false);
                             Addon->TreeList->LayoutRefreshPending = 1;

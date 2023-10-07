@@ -60,7 +60,7 @@ public unsafe partial class EnhancedIsleworksAgenda : Tweak
         {
             var index = *(uint*)(a5 + 0x10);
             var itemPtr = addon->TreeList->GetItem(index);
-            if (itemPtr != null)
+            if (itemPtr != null && itemPtr->UIntValues.Size() >= 1)
             {
                 if (itemPtr->UIntValues.Get(0) != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
                 {
