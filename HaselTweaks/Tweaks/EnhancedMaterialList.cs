@@ -300,29 +300,32 @@ public unsafe partial class EnhancedMaterialList : Tweak
     [AddressHook<AgentRecipeItemContext>(nameof(AgentRecipeItemContext.Addresses.AddItemContextMenuEntries))]
     public nint AgentRecipeItemContext_AddItemContextMenuEntries(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
     {
+        UpdateContextMenuFlag(itemId, ref flags);
+        return AgentRecipeItemContext_AddItemContextMenuEntriesHook.OriginalDisposeSafe(agent, itemId, flags, itemName);
+    }
+
+    private void UpdateContextMenuFlag(uint itemId, ref byte flags)
+    {
         if (!_handleRecipeResultItemContextMenu)
-            goto originalAddItemContextMenuEntries;
+            return;
 
         _handleRecipeResultItemContextMenu = false;
 
         if (!Config.AddSearchForItemByCraftingMethodContextMenuEntry)
-            goto originalAddItemContextMenuEntries;
+            return;
 
         if (!IsAddonOpen(AgentId.RecipeMaterialList))
-            goto originalAddItemContextMenuEntries;
+            return;
 
         var agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>();
         if (agentRecipeMaterialList->Recipe == null || agentRecipeMaterialList->Recipe->ResultItemId != itemId)
-            goto originalAddItemContextMenuEntries;
+            return;
 
         var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? 0);
         if (localPlayer == null || localPlayer->EventState == 5)
-            goto originalAddItemContextMenuEntries;
+            return;
 
         flags |= 2;
-
-originalAddItemContextMenuEntries:
-        return AgentRecipeItemContext_AddItemContextMenuEntriesHook.OriginalDisposeSafe(agent, itemId, flags, itemName);
     }
 
     private (int, ExtendedGatheringPoint, uint, bool, SeString)? GetPointForItem(uint itemId)

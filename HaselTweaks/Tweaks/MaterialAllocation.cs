@@ -92,15 +92,27 @@ public unsafe partial class MaterialAllocation : Tweak
     [VTableHook<AddonMJICraftMaterialConfirmation>((int)AtkUnitBaseVfs.ReceiveEvent)]
     public void AddonMJICraftMaterialConfirmation_ReceiveEvent(AddonMJICraftMaterialConfirmation* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
+        if (HandleEvent(addon, eventParam, a5))
+        {
+            atkEvent->SetEventIsHandled();
+            return;
+        }
+
+        AddonMJICraftMaterialConfirmation_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
+    }
+
+    private bool HandleEvent(AddonMJICraftMaterialConfirmation* addon, int eventParam, nint a5)
+    {
         if (eventParam is > 0 and < 4 && Config.SaveLastSelectedTab)
         {
             Config.LastSelectedTab = (byte)(eventParam - 1);
+            return false;
         }
 
         if (eventParam == 9902)
         {
             if (!Config.OpenGatheringLogOnItemClick)
-                goto handled;
+                return true;
 
             //var itemRenderer = *(AtkComponentListItemRenderer**)a5;
             var index = *(int*)(a5 + 0x10);
@@ -109,7 +121,7 @@ public unsafe partial class MaterialAllocation : Tweak
 
             var pouchRow = GetRow<MJIItemPouch>(id);
             if (pouchRow == null || pouchRow.Item.Row == 0)
-                goto handled;
+                return true;
 
             var itemId = pouchRow.Item.Row;
 
@@ -125,7 +137,7 @@ public unsafe partial class MaterialAllocation : Tweak
                         Type = XivChatType.Echo
                     });
                 }
-                goto handled;
+                return true;
             }
 
             var agentMJIGatheringNoteBook = GetAgent<AgentMJIGatheringNoteBook>();
@@ -142,12 +154,10 @@ public unsafe partial class MaterialAllocation : Tweak
                 agentMJIGatheringNoteBook->AgentInterface.Show();
             }
 
-handled:
-            atkEvent->SetEventIsHandled();
-            return;
+            return true;
         }
 
-        AddonMJICraftMaterialConfirmation_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
+        return false;
     }
 
     private void UpdateGatheringNoteBookItem(AgentMJIGatheringNoteBook* agent, uint itemId)

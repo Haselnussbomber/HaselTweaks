@@ -1,3 +1,4 @@
+using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -126,11 +127,17 @@ public unsafe partial class ScrollableTabs : Tweak
 
         var hoveredUnitBase = IntersectingAddon;
         if (hoveredUnitBase == null)
-            goto ResetWheelState;
+        {
+            _wheelState = 0;
+            return;
+        }
 
-        var name = Marshal.PtrToStringAnsi((nint)hoveredUnitBase->Name);
+        var name = MemoryHelper.ReadString((nint)hoveredUnitBase->Name, 0x20);
         if (string.IsNullOrEmpty(name))
-            goto ResetWheelState;
+        {
+            _wheelState = 0;
+            return;
+        }
 
         // parent lookup
         switch (name)
@@ -237,11 +244,15 @@ public unsafe partial class ScrollableTabs : Tweak
 #if DEBUG
                 Verbose($"Unhandled AtkUnitBase: {name}");
 #endif
-                goto ResetWheelState;
+                _wheelState = 0;
+                return;
         }
 
         if (!TryGetAddon<AtkUnitBase>(name, out var unitBase))
-            goto ResetWheelState;
+        {
+            _wheelState = 0;
+            return;
+        }
 
         if (Config.HandleArmouryBoard && name == "ArmouryBoard")
         {
@@ -345,14 +356,11 @@ public unsafe partial class ScrollableTabs : Tweak
         {
             var addonCharacter = name == "Character" ? (AddonCharacter*)unitBase : GetAddon<AddonCharacter>("Character");
 
-            if (addonCharacter == null)
-                goto ResetWheelState;
-
-            if (!addonCharacter->EmbeddedAddonLoaded)
-                goto ResetWheelState;
-
-            if (IntersectingCollisionNode == addonCharacter->CharacterPreviewCollisionNode)
-                goto ResetWheelState;
+            if (addonCharacter == null || !addonCharacter->EmbeddedAddonLoaded || IntersectingCollisionNode == addonCharacter->CharacterPreviewCollisionNode)
+            {
+                _wheelState = 0;
+                return;
+            }
 
             switch (name)
             {
@@ -374,7 +382,6 @@ public unsafe partial class ScrollableTabs : Tweak
             }
         }
 
-ResetWheelState:
         _wheelState = 0;
     }
 

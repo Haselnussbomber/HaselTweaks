@@ -19,7 +19,7 @@ public unsafe partial class SimpleAethernetList : Tweak
                 var item = addon->List->GetItem(index);
                 if (item != null && item->UIntValues.Size() >= 4)
                 {
-                    agent->Data->SelectedAetheryte = (byte)item->UIntValues.Get(3); 
+                    agent->Data->SelectedAetheryte = (byte)item->UIntValues.Get(3);
                     agent->Data->Flags |= 2;
                     return;
                 }
