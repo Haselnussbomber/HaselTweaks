@@ -21,7 +21,8 @@ public unsafe partial class CharacterClassSwitcher : Tweak
         public bool DisableTooltips = false;
     }
 
-    private bool _tooltipPatchApplied;
+    private MemoryReplacement? TooltipPatch;
+    private MemoryReplacement? PvpTooltipPatch;
 
     /* Address for AddonCharacterClass Tooltip Patch
 
@@ -47,34 +48,33 @@ public unsafe partial class CharacterClassSwitcher : Tweak
 
     public override void Enable()
     {
-        ApplyTooltipPatch(Config.DisableTooltips);
+        TooltipPatch = new(TooltipAddress + 8, new byte[] { 0xEB });
+        PvpTooltipPatch = new(PvPTooltipAddress, new byte[] { 0xEB, 0x63 });
+
+        if (Config.DisableTooltips)
+        {
+            TooltipPatch.Enable();
+            PvpTooltipPatch.Enable();
+        }
     }
 
     public override void Disable()
     {
-        ApplyTooltipPatch(false);
+        TooltipPatch?.Disable();
+        PvpTooltipPatch?.Disable();
     }
 
     public override void OnConfigChange(string fieldName)
     {
-        ApplyTooltipPatch(Config.DisableTooltips);
-    }
-
-    private void ApplyTooltipPatch(bool enable)
-    {
-        if (enable && !_tooltipPatchApplied)
+        if (Config.DisableTooltips)
         {
-            MemoryUtils.ReplaceRaw(TooltipAddress + 8, new byte[] { 0xEB }); // jmp rel8
-            MemoryUtils.ReplaceRaw(PvPTooltipAddress, new byte[] { 0xEB, 0x63 }); // jmp rel8
-
-            _tooltipPatchApplied = true;
+            TooltipPatch?.Enable();
+            PvpTooltipPatch?.Enable();
         }
-        else if (!enable && _tooltipPatchApplied)
+        else
         {
-            MemoryUtils.ReplaceRaw(TooltipAddress + 8, new byte[] { 0x7D }); // jge rel8
-            MemoryUtils.ReplaceRaw(PvPTooltipAddress, new byte[] { 0x48, 0x8D }); // original bytes (see signature)
-
-            _tooltipPatchApplied = false;
+            TooltipPatch?.Disable();
+            PvpTooltipPatch?.Disable();
         }
     }
 
