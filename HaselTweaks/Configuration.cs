@@ -12,16 +12,22 @@ using Newtonsoft.Json.Linq;
 namespace HaselTweaks;
 
 [Serializable]
-public partial class Configuration : IPluginConfiguration, ITranslationConfig
+public partial class Configuration : IPluginConfiguration
 {
     [JsonIgnore]
     public const int CURRENT_CONFIG_VERSION = 4;
 
     public int Version { get; set; } = CURRENT_CONFIG_VERSION;
+}
 
+public partial class Configuration : ITranslationConfig
+{
     public string PluginLanguage { get; set; } = "en";
     public PluginLanguageOverride PluginLanguageOverride { get; set; } = PluginLanguageOverride.Dalamud;
+}
 
+public partial class Configuration
+{
     public HashSet<string> EnabledTweaks { get; private set; } = new();
     public TweakConfigs Tweaks { get; init; } = new();
     public HashSet<string> LockedImGuiWindows { get; private set; } = new();
