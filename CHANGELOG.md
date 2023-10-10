@@ -1,5 +1,11 @@
 # Changelog
 
+## [19.0.4] (2023-10-10)
+
+### HaselTweaks
+
+- **Changed:** Dropped the SVG rendering library and replaced the logo in the settings with a simple PNG image. Making it scaleable with the UI was a nice thought, but in the end it just wasn't worth it.
+
 ## [19.0.3] (2023-10-06)
 
 ### Glamour Dresser Armoire Alert
@@ -1209,6 +1215,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[19.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.0.3...v19.0.4
 [19.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.0.2...v19.0.3
 [19.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.0.1...v19.0.2
 [19.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.0.0...v19.0.1
