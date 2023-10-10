@@ -140,7 +140,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak
 
     public override void DrawCustomConfig()
     {
-        var scale = ImGui.GetIO().FontGlobalScale;
+        var scale = ImGuiHelpers.GlobalScale;
 
         ImGuiUtils.DrawSection(t("EnhancedLoginLogout.Config.LoginOptions.Title"));
         // ShowPets

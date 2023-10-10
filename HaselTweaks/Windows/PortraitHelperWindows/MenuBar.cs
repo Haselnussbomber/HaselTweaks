@@ -1,5 +1,6 @@
 using System.Numerics;
 using Dalamud.Interface;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
@@ -227,7 +228,7 @@ public unsafe class MenuBar : Window
             ImGui.TextUnformatted(_portraitName);
         }
 
-        var scale = ImGui.GetIO().FontGlobalScale;
+        var scale = ImGuiHelpers.GlobalScale;
         var scaledown = 1 / scale;
         var height = (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y * 2 + ImGui.GetStyle().WindowPadding.Y * 2) * scaledown;
 
@@ -265,7 +266,7 @@ public unsafe class MenuBar : Window
             ImGui.SetNextWindowPos(position);
             ImGui.SetNextWindowSize(size);
 
-            if (!(ImGui.GetIO().FontGlobalScale <= 1 && ((Service.WindowManager.GetWindow<AdvancedImportOverlay>() != null) || (Service.WindowManager.GetWindow<PresetBrowserOverlay>() != null))))
+            if (!(ImGuiHelpers.GlobalScale <= 1 && ((Service.WindowManager.GetWindow<AdvancedImportOverlay>() != null) || (Service.WindowManager.GetWindow<PresetBrowserOverlay>() != null))))
             {
                 ImGui.Begin("AlignmentTool", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs);
 

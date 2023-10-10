@@ -1,3 +1,4 @@
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -272,7 +273,7 @@ public unsafe class AdvancedImportOverlay : Overlay
         if (!table.Success)
             return;
 
-        var scale = ImGui.GetIO().FontGlobalScale;
+        var scale = ImGuiHelpers.GlobalScale;
         ImGui.TableSetupColumn("Preview", ImGuiTableColumnFlags.WidthFixed, 26 * scale);
         ImGui.TableSetupColumn("R", ImGuiTableColumnFlags.WidthFixed, 40 * scale);
         ImGui.TableSetupColumn("G", ImGuiTableColumnFlags.WidthFixed, 40 * scale);
@@ -305,7 +306,7 @@ public unsafe class AdvancedImportOverlay : Overlay
         if (!table.Success)
             return;
 
-        var scale = ImGui.GetIO().FontGlobalScale;
+        var scale = ImGuiHelpers.GlobalScale;
         ImGui.TableSetupColumn("X", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
         ImGui.TableSetupColumn("Y", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
 
@@ -333,7 +334,7 @@ public unsafe class AdvancedImportOverlay : Overlay
         if (!table.Success)
             return;
 
-        var scale = ImGui.GetIO().FontGlobalScale;
+        var scale = ImGuiHelpers.GlobalScale;
         ImGui.TableSetupColumn("X", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
         ImGui.TableSetupColumn("Y", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
         ImGui.TableSetupColumn("Z", ImGuiTableColumnFlags.WidthFixed, 50 * scale);

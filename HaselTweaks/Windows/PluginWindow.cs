@@ -94,7 +94,7 @@ public partial class PluginWindow : Window, IDisposable
         if (_isLogoLoading)
             return;
 
-        _renderedLogoSize.X = (int)(_logoSize.X * (_logoSize.X / (SidebarWidth * 2) * 0.75f) * ImGui.GetIO().FontGlobalScale);
+        _renderedLogoSize.X = (int)(_logoSize.X * (_logoSize.X / (SidebarWidth * 2) * 0.75f) * ImGuiHelpers.GlobalScale);
         _renderedLogoSize.Y = (int)(_logoSize.Y * (_renderedLogoSize.X / (float)_logoSize.X));
 
         if (_renderedLogoSize.X <= 0 || _renderedLogoSize.Y <= 0)
@@ -186,7 +186,7 @@ public partial class PluginWindow : Window, IDisposable
 
     private void DrawSidebar()
     {
-        var scale = ImGui.GetIO().FontGlobalScale;
+        var scale = ImGuiHelpers.GlobalScale;
         using var child = ImRaii.Child("##Sidebar", new Vector2(SidebarWidth * scale, -1), true);
         if (!child.Success)
             return;

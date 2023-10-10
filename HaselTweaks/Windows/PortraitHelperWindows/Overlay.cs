@@ -1,4 +1,5 @@
 using System.Numerics;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -75,7 +76,7 @@ public abstract unsafe class Overlay : Window, IDisposable
 
     public override void Update()
     {
-        var isWindow = ImGui.GetIO().FontGlobalScale > 1;
+        var isWindow = ImGuiHelpers.GlobalScale > 1;
         var isCloseDialogOpen = AgentBannerEditor->EditorState->CloseDialogAddonId != 0;
 
         ToggleUiVisibility(isWindow || isCloseDialogOpen);

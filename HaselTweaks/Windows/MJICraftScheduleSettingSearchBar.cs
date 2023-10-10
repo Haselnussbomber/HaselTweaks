@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -87,7 +88,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
             }
         }
 
-        var scale = ImGui.GetIO().FontGlobalScale;
+        var scale = ImGuiHelpers.GlobalScale;
         var scaledown = 1 / scale;
         var height = (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y * 2 + ImGui.GetStyle().WindowPadding.Y * 2) * scaledown;
 
