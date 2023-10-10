@@ -7,7 +7,6 @@ using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using HaselCommon;
 using HaselTweaks.Windows;
-using Svg;
 
 namespace HaselTweaks;
 
@@ -22,9 +21,6 @@ public partial class Plugin : IDalamudPlugin
     {
         Service.Initialize(pluginInterface);
         Task.Run(Setup);
-
-        // speeds up displaying the logo in PluginWindow for the first time after loading the plugin by ~200ms
-        Task.Run(() => SvgDocument.FromSvg<SvgDocument>("<svg style=\"fill:#fff\" />"));
     }
 
     private void Setup()

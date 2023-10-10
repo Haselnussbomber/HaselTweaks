@@ -1,9 +1,9 @@
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Dalamud.Interface;
 using Dalamud.Interface.Internal;
 using Dalamud.Interface.Utility;
@@ -16,9 +16,6 @@ using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using ImGuiNET;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using Svg;
 using ImColor = HaselCommon.Structs.ImColor;
 
 namespace HaselTweaks.Windows;
@@ -26,21 +23,18 @@ namespace HaselTweaks.Windows;
 public partial class PluginWindow : Window, IDisposable
 {
     private const uint SidebarWidth = 250;
-    private const string LogoManifestResource = "HaselTweaks.Assets.Logo.svg";
+    private const string LogoManifestResource = "HaselTweaks.Assets.Logo.png";
 
     private string _selectedTweak = string.Empty;
-    private bool _isLogoLoading;
     private IDalamudTextureWrap? _logoTextureWrap;
-    private readonly Point _logoSize = new(580, 180);
-    private Point _renderedLogoSize = new(0, 0);
+    private readonly Point _logoSize = new(425, 132);
 
     [GeneratedRegex("\\.0$")]
     private static partial Regex VersionPatchZeroRegex();
 
     public PluginWindow() : base("HaselTweaks")
     {
-        var style = ImGui.GetStyle();
-        var width = SidebarWidth * 3 + style.ItemSpacing.X + style.FramePadding.X * 2;
+        var width = SidebarWidth * 3 + ImGui.GetStyle().ItemSpacing.X + ImGui.GetStyle().FramePadding.X * 2;
 
         Namespace = "HaselTweaksConfig";
 
@@ -56,13 +50,25 @@ public partial class PluginWindow : Window, IDisposable
         Flags |= ImGuiWindowFlags.AlwaysAutoResize;
         Flags |= ImGuiWindowFlags.NoSavedSettings;
 
-        UpdateLogo();
+        try
+        {
+            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(LogoManifestResource)
+                ?? throw new Exception($"ManifestResource \"{LogoManifestResource}\" not found");
+
+            using var ms = new MemoryStream();
+            stream.CopyTo(ms);
+
+            _logoTextureWrap = Service.PluginInterface.UiBuilder.LoadImage(ms.ToArray());
+        }
+        catch (Exception ex)
+        {
+            Service.PluginLog.Error(ex, "Error loading logo");
+        }
     }
 
     public void Dispose()
     {
         _logoTextureWrap?.Dispose();
-        _logoTextureWrap = null;
         GC.SuppressFinalize(this);
     }
 
@@ -82,63 +88,6 @@ public partial class PluginWindow : Window, IDisposable
         }
 
         Service.WindowManager.CloseWindow<PluginWindow>();
-    }
-
-    public override void Update()
-    {
-        UpdateLogo();
-    }
-
-    private void UpdateLogo()
-    {
-        if (_isLogoLoading)
-            return;
-
-        _renderedLogoSize.X = (int)(_logoSize.X * (_logoSize.X / (SidebarWidth * 2) * 0.75f) * ImGuiHelpers.GlobalScale);
-        _renderedLogoSize.Y = (int)(_logoSize.Y * (_renderedLogoSize.X / (float)_logoSize.X));
-
-        if (_renderedLogoSize.X <= 0 || _renderedLogoSize.Y <= 0)
-            return;
-
-        if (_logoTextureWrap != null && _logoTextureWrap.Width == _renderedLogoSize.X && _logoTextureWrap.Height == _renderedLogoSize.Y)
-            return;
-
-        _isLogoLoading = true;
-
-        Task.Run(() =>
-        {
-            try
-            {
-                using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(LogoManifestResource);
-                if (stream == null)
-                {
-                    Service.PluginLog.Error("ManifestResource {0} not found", LogoManifestResource);
-                    return;
-                }
-
-                var svgDocument = SvgDocument.Open<SvgDocument>(stream);
-                using var bitmap = svgDocument.Draw(_renderedLogoSize.X, _renderedLogoSize.Y);
-                using var memoryStream = new MemoryStream();
-
-                bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-
-                using var image = Image.Load<Rgba32>(memoryStream);
-                var data = new byte[4 * image.Width * image.Height];
-                image.CopyPixelDataTo(data);
-
-                _logoTextureWrap?.Dispose();
-                _logoTextureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, image.Width, image.Height, 4);
-            }
-            catch (Exception ex)
-            {
-                Service.PluginLog.Error(ex, "Error while loading logo");
-            }
-            finally
-            {
-                _isLogoLoading = false;
-            }
-        });
     }
 
     public override void Draw()
@@ -320,14 +269,18 @@ public partial class PluginWindow : Window, IDisposable
                 Flags ^= ImGuiWindowFlags.MenuBar;
             }
 
-            if (!_isLogoLoading && _logoTextureWrap != null && _logoTextureWrap.ImGuiHandle != 0)
+            if (_logoTextureWrap != null && _logoTextureWrap.ImGuiHandle != 0)
             {
-                ImGui.SetCursorPos(contentAvail / 2 - _renderedLogoSize / 2);
-                ImGui.Image(_logoTextureWrap.ImGuiHandle, _renderedLogoSize);
+                var maxWidth = SidebarWidth * 2 * 0.85f * ImGuiHelpers.GlobalScale;
+                var ratio = maxWidth / _logoSize.X;
+                var scaledLogoSize = new Vector2(_logoSize.X, _logoSize.Y) * ratio;
+
+                ImGui.SetCursorPos(contentAvail / 2 - scaledLogoSize / 2 + new Vector2(ImGui.GetStyle().ItemSpacing.X, 0));
+                ImGui.Image(_logoTextureWrap.ImGuiHandle, scaledLogoSize);
             }
 
             // links, bottom left
-            ImGui.SetCursorPos(cursorPos + new Vector2(0, contentAvail.Y - ImGui.CalcTextSize(" ").Y));
+            ImGui.SetCursorPos(cursorPos + new Vector2(0, contentAvail.Y - ImGui.GetTextLineHeight()));
             ImGuiUtils.DrawLink("GitHub", t("HaselTweaks.Config.GitHubLink.Tooltip"), "https://github.com/Haselnussbomber/HaselTweaks");
             ImGui.SameLine();
             ImGui.TextUnformatted("•");
