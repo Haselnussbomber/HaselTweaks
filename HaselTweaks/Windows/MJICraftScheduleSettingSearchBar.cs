@@ -77,8 +77,8 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
                         var headerItem = Addon->TreeList->Items.Get(i).Value;
                         if (headerItem != null && headerItem->UIntValues.Size() >= 1 && headerItem->UIntValues.Get(0) == (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
                         {
-                            Addon->TreeList->ExpandGroup(headerItem, false);
-                            Addon->TreeList->LayoutRefreshPending = 1;
+                            Addon->TreeList->ExpandGroupExclusively(headerItem, false);
+                            Addon->TreeList->LayoutRefreshPending = true;
                             break;
                         }
                     }
