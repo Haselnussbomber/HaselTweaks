@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Reflection;
 using Dalamud.Interface.Utility;
-using HaselCommon;
 using HaselCommon.Utils;
 using ImGuiNET;
 
@@ -34,7 +33,7 @@ public class FloatConfigAttribute : BaseConfigAttribute
             OnChangeInternal(tweak, fieldInfo);
         }
 
-        if (HaselCommonBase.TranslationManager.TryGetTranslation($"{tweak.InternalName}.Config.{fieldInfo.Name}.Description", out var description))
+        if (Service.TranslationManager.TryGetTranslation($"{tweak.InternalName}.Config.{fieldInfo.Name}.Description", out var description))
         {
             using var descriptionIndent = ImGuiUtils.ConfigIndent();
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);

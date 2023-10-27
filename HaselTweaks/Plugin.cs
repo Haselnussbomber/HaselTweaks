@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Dalamud.Game.Command;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using HaselCommon;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks;
@@ -33,8 +32,8 @@ public partial class Plugin : IDalamudPlugin
 
             Config = Configuration.Load(Tweaks.Select(t => t.InternalName));
 
-            HaselCommonBase.TranslationManager.Initialize(Config);
-            HaselCommonBase.TranslationManager.OnLanguageChange += OnLanguageChange;
+            Service.TranslationManager.Initialize(Config);
+            Service.TranslationManager.OnLanguageChange += OnLanguageChange;
 
             foreach (var tweak in Tweaks)
             {
@@ -55,8 +54,8 @@ public partial class Plugin : IDalamudPlugin
             Service.ClientState.Login += ClientState_Login;
             Service.ClientState.Logout += ClientState_Logout;
             Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
-            HaselCommonBase.AddonObserver.AddonOpen += AddonObserver_AddonOpen;
-            HaselCommonBase.AddonObserver.AddonClose += AddonObserver_AddonClose;
+            Service.AddonObserver.AddonOpen += AddonObserver_AddonOpen;
+            Service.AddonObserver.AddonClose += AddonObserver_AddonClose;
 
             Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
 
@@ -167,9 +166,9 @@ public partial class Plugin : IDalamudPlugin
         if (_disposed)
             return;
 
-        HaselCommonBase.TranslationManager.OnLanguageChange -= OnLanguageChange;
-        HaselCommonBase.AddonObserver.AddonClose -= AddonObserver_AddonClose;
-        HaselCommonBase.AddonObserver.AddonOpen -= AddonObserver_AddonOpen;
+        Service.TranslationManager.OnLanguageChange -= OnLanguageChange;
+        Service.AddonObserver.AddonClose -= AddonObserver_AddonClose;
+        Service.AddonObserver.AddonOpen -= AddonObserver_AddonOpen;
         Service.Framework.Update -= OnFrameworkUpdate;
         Service.ClientState.Login -= ClientState_Login;
         Service.ClientState.Logout -= ClientState_Logout;

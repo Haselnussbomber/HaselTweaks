@@ -9,7 +9,6 @@ using Dalamud.Interface.Internal;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
-using HaselCommon;
 using HaselCommon.Enums;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
@@ -102,12 +101,12 @@ public partial class PluginWindow : Window, IDisposable
                         ? $"Override: {type} ({code})"
                         : $"Override: {type} ({code} is not supported, using fallback {TranslationManager.DefaultLanguage})";
                 }
-                if (ImGui.MenuItem(GetLabel("Dalamud", Service.PluginInterface.UiLanguage), "", HaselCommonBase.TranslationManager.Override == PluginLanguageOverride.Dalamud))
+                if (ImGui.MenuItem(GetLabel("Dalamud", Service.PluginInterface.UiLanguage), "", Service.TranslationManager.Override == PluginLanguageOverride.Dalamud))
                 {
                     Service.TranslationManager.Override = PluginLanguageOverride.Dalamud;
                 }
 
-                if (ImGui.MenuItem(GetLabel("Client", Service.ClientState.ClientLanguage.ToCode()), "", HaselCommonBase.TranslationManager.Override == PluginLanguageOverride.Client))
+                if (ImGui.MenuItem(GetLabel("Client", Service.ClientState.ClientLanguage.ToCode()), "", Service.TranslationManager.Override == PluginLanguageOverride.Client))
                 {
                     Service.TranslationManager.Override = PluginLanguageOverride.Client;
                 }

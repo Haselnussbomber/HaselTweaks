@@ -7,7 +7,6 @@ using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using HaselCommon;
 using HaselCommon.Extensions;
 using HaselCommon.Utils;
 using HaselTweaks.Enums;
@@ -67,7 +66,7 @@ public unsafe class DTR : Tweak
             Config.FormatUnitText = " fps";
             Plugin.Config.Save();
         }
-        if (HaselCommonBase.TranslationManager.TryGetTranslation("DTR.Config.FormatUnitText.Description", out var description))
+        if (Service.TranslationManager.TryGetTranslation("DTR.Config.FormatUnitText.Description", out var description))
         {
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);
         }
