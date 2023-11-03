@@ -136,12 +136,12 @@ public unsafe class AdvancedImportOverlay : Overlay
                 }
                 else
                 {
-                    for (var i = 0; i < state->ExpressionItemsCount; i++)
+                    for (var i = 0; i < state->Expressions.SortedEntriesCount; i++)
                     {
-                        var entry = state->ExpressionItems[i];
-                        if (entry->Id == id && entry->Data != 0)
+                        var entry = state->Expressions.SortedEntries[i];
+                        if (entry->RowId == id && entry->Row != 0)
                         {
-                            expressionName = MemoryHelper.ReadSeStringNullTerminated(entry->Data + 0x28).TextValue;
+                            expressionName = MemoryHelper.ReadSeStringNullTerminated(entry->Row + 0x28).TextValue;
                             break;
                         }
                     }

@@ -346,7 +346,7 @@ public sealed record PortraitPreset
             bannerEntry.BannerBg = BannerBg;
             tempPortraitData->BannerBg = BannerBg;
 
-            addonBannerEditor->BackgroundDropdown->SetValue(GetListIndex(state->BackgroundItems, state->BackgroundItemsCount, BannerBg));
+            addonBannerEditor->BackgroundDropdown->SetValue(GetUnlockedIndex(&state->Backgrounds, BannerBg));
         }
 
         if (hasFrameChanged)
@@ -355,7 +355,7 @@ public sealed record PortraitPreset
 
             state->SetFrame(BannerFrame);
 
-            addonBannerEditor->FrameDropdown->SetValue(GetListIndex(state->FrameItems, state->FrameItemsCount, BannerFrame));
+            addonBannerEditor->FrameDropdown->SetValue(GetUnlockedIndex(&state->Frames, BannerFrame));
         }
 
         if (hasDecorationChanged)
@@ -364,7 +364,7 @@ public sealed record PortraitPreset
 
             state->SetAccent(BannerDecoration);
 
-            addonBannerEditor->AccentDropdown->SetValue(GetListIndex(state->AccentItems, state->AccentItemsCount, BannerDecoration));
+            addonBannerEditor->AccentDropdown->SetValue(GetUnlockedIndex(&state->Accents, BannerDecoration));
         }
 
         if (hasBgChanged || hasFrameChanged || hasDecorationChanged)
@@ -389,7 +389,7 @@ public sealed record PortraitPreset
             bannerEntry.BannerTimeline = BannerTimeline;
             tempPortraitData->BannerTimeline = BannerTimeline;
 
-            addonBannerEditor->PoseDropdown->SetValue(GetListIndex(state->BannerTimelineItems, state->BannerTimelineItemsCount, BannerTimeline));
+            addonBannerEditor->PoseDropdown->SetValue(GetUnlockedIndex(&state->Poses, BannerTimeline));
         }
 
         if (hasExpressionChanged)
@@ -399,7 +399,7 @@ public sealed record PortraitPreset
             bannerEntry.Expression = Expression;
             tempPortraitData->Expression = Expression;
 
-            addonBannerEditor->ExpressionDropdown->SetValue(GetExpressionListIndex(state->ExpressionItems, state->ExpressionItemsCount, Expression));
+            addonBannerEditor->ExpressionDropdown->SetValue(GetSortedIndex(&state->Expressions, Expression));
         }
 
         if (hasAmbientLightingBrightnessChanged)
@@ -548,12 +548,12 @@ public sealed record PortraitPreset
         Service.PluginLog.Debug("Import complete");
     }
 
-    private static unsafe int GetListIndex(AgentBannerEditorState.GenericDropdownItem** items, uint itemCount, ushort id)
+    private static unsafe int GetUnlockedIndex(AgentBannerEditorState.Dataset* dataset, ushort id)
     {
-        for (var i = 0; i < itemCount; i++)
+        for (var i = 0; i < dataset->UnlockedEntriesCount; i++)
         {
-            var entry = items[i];
-            if (entry->Id == id && entry->Data != 0)
+            var entry = dataset->UnlockedEntries[i];
+            if (entry->RowId == id && entry->Row != 0)
             {
                 return i;
             }
@@ -562,12 +562,12 @@ public sealed record PortraitPreset
         return 0;
     }
 
-    private static unsafe int GetExpressionListIndex(AgentBannerEditorState.ExpressionDropdownItem** items, uint itemCount, ushort id)
+    private static unsafe int GetSortedIndex(AgentBannerEditorState.Dataset* dataset, ushort id)
     {
-        for (var i = 0; i < itemCount; i++)
+        for (var i = 0; i < dataset->SortedEntriesCount; i++)
         {
-            var entry = items[i];
-            if (entry->Id == id && entry->Data != 0)
+            var entry = dataset->SortedEntries[i];
+            if (entry->RowId == id && entry->Row != 0)
             {
                 return i;
             }
