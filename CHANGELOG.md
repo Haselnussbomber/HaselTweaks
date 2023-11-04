@@ -1,5 +1,15 @@
 # Changelog
 
+## [19.0.5] (2023-11-04)
+
+### Enhanced Material List
+
+Reworked internals to make the following changes:
+
+- **Changed:** The material list and recipe tree will now refresh after an inventory change, rather than when certain windows are opened/closed.
+- **Fixed:** The plugin will now respect the refresh button state and won't trigger a refresh while a refresh is already running.
+- **Fixed:** The game will no longer crash when the plugin unloads while the material list was open.
+
 ## [19.0.4] (2023-10-10)
 
 ### HaselTweaks
@@ -1215,6 +1225,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[19.0.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.0.4...v19.0.5
 [19.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.0.3...v19.0.4
 [19.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.0.2...v19.0.3
 [19.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.0.1...v19.0.2
