@@ -638,16 +638,16 @@
     "de": "Materialliste automatisch aktualisieren"
   },
   "EnhancedMaterialList.Config.AutoRefreshMaterialList.Description": {
-    "en": "Refreshes the material list after an item has been bought, crafted, fished or gathered.",
-    "de": "Die Materialliste wird automatisch aktualisiert, nachdem ein Gegenstand gekauft, hergestellt, geangelt oder gesammelt wurde."
+    "en": "The material list is automatically refreshed when the inventory has changed.",
+    "de": "Die Materialliste wird automatisch aktualisiert wenn sich das Inventar geändert hat."
   },
   "EnhancedMaterialList.Config.AutoRefreshRecipeTree.Label": {
     "en": "Auto-refresh Recipe Tree",
     "de": "Rezeptbaum automatisch aktualisieren"
   },
   "EnhancedMaterialList.Config.AutoRefreshRecipeTree.Description": {
-    "en": "Refreshes the recipe tree after an item has been bought, crafted, fished or gathered.",
-    "de": "Der Rezeptbaum wird automatisch aktualisiert, nachdem ein Gegenstand gekauft, hergestellt, geangelt oder gesammelt wurde."
+    "en": "The recipe tree is automatically refreshed when the inventory has changed.",
+    "de": "Der Rezeptbaum wird automatisch aktualisiert wenn sich das Inventar geändert hat."
   },
   "EnhancedMaterialList.Config.RestoreMaterialList.Label": {
     "en": "Restore Material List on Login",
