@@ -236,15 +236,15 @@ public unsafe partial class EnhancedMaterialList : Tweak
     private void SaveRestoreMaterialList(AgentRecipeMaterialList* agent)
     {
         var shouldSave = Config.RestoreMaterialList && agent->WindowLocked;
+        var recipeId = shouldSave ? agent->RecipeId : 0u;
+        var amount = shouldSave ? agent->Amount : 0u;
 
-        var lastRecipeId = Config.RestoreMaterialListRecipeId;
-        Config.RestoreMaterialListRecipeId = shouldSave ? agent->RecipeId : 0u;
-
-        var lastAmount = Config.RestoreMaterialListAmount;
-        Config.RestoreMaterialListAmount = shouldSave ? agent->Amount : 0u;
-
-        if (lastRecipeId != Config.RestoreMaterialListRecipeId || lastAmount != Config.RestoreMaterialListAmount)
+        if (Config.RestoreMaterialListRecipeId != recipeId || Config.RestoreMaterialListAmount != amount)
+        {
+            Config.RestoreMaterialListRecipeId = recipeId;
+            Config.RestoreMaterialListAmount = amount;
             Plugin.Config.Save();
+        }
     }
 
     [AddressHook<AddonRecipeMaterialList>(nameof(AddonRecipeMaterialList.Addresses.SetupRow))]
