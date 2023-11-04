@@ -87,8 +87,8 @@ public unsafe partial class EnhancedMaterialList : Tweak
 
     public override void Disable()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList");
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeTree");
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList", RecipeMaterialList_PostReceiveEvent);
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeTree", RecipeTree_PostReceiveEvent);
     }
 
     public override void OnAddonOpen(string addonName)
