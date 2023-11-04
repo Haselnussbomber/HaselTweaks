@@ -251,14 +251,7 @@ public unsafe partial class EnhancedMaterialList : Tweak
     public nint AddonRecipeMaterialList_SetupRow(AddonRecipeMaterialList* addon, nint a2, nint a3)
     {
         var res = AddonRecipeMaterialList_SetupRowHook.OriginalDisposeSafe(addon, a2, a3);
-        try
-        {
-            RecipeMaterialList_HandleSetupRow(a2, a3);
-        }
-        catch (Exception ex)
-        {
-            Error(ex, "Error during RecipeMaterialList_HandleSetupRow");
-        }
+        RecipeMaterialList_HandleSetupRow(a2, a3);
         return res;
     }
 
