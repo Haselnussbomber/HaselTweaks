@@ -1,4 +1,6 @@
 using System.Linq;
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Memory;
@@ -21,14 +23,15 @@ public unsafe partial class EnhancedMaterialList : Tweak
 {
     public static Configuration Config => Plugin.Config.Tweaks.EnhancedMaterialList;
 
-    private DateTime _lastRecipeMaterialListRefresh = DateTime.Now;
-    private bool _recipeMaterialListRefreshPending = false;
-    private bool _recipeMaterialListLockPending = false;
+    private bool _canRefreshMaterialList;
+    private bool _pendingMaterialListRefresh;
+    private DateTime _timeOfMaterialListRefresh;
+    private bool _recipeMaterialListLockPending;
 
-    private DateTime _lastRecipeTreeRefresh = DateTime.Now;
-    private bool _recipeTreeRefreshPending = false;
-
-    private bool _handleRecipeResultItemContextMenu = false;
+    private bool _canRefreshRecipeTree;
+    private bool _pendingRecipeTreeRefresh;
+    private DateTime _timeOfRecipeTreeRefresh;
+    private bool _handleRecipeResultItemContextMenu;
 
     public class Configuration
     {
@@ -66,44 +69,61 @@ public unsafe partial class EnhancedMaterialList : Tweak
                       or nameof(Configuration.DisableZoneNameForCrystals)
                       or nameof(Configuration.DisableClickToOpenMapForCrystals))
         {
-            RequestRecipeMaterialListRefresh();
+            _pendingMaterialListRefresh = true;
+            _timeOfMaterialListRefresh = DateTime.UtcNow;
         }
 
         if (fieldName is nameof(Configuration.RestoreMaterialList))
         {
-            SaveRestoreMaterialList();
+            SaveRestoreMaterialList(GetAgent<AgentRecipeMaterialList>());
         }
     }
 
-    public override void OnFrameworkUpdate()
+    public override void Enable()
     {
-        RefreshRecipeMaterialList();
-        RefreshRecipeTree();
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList", RecipeMaterialList_PostReceiveEvent);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "RecipeTree", RecipeTree_PostReceiveEvent);
+    }
+
+    public override void Disable()
+    {
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList");
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeTree");
     }
 
     public override void OnAddonOpen(string addonName)
     {
-        if (addonName is "Catch")
-            RequestRefresh();
+        if (addonName == "RecipeMaterialList")
+            _canRefreshMaterialList = true;
+
+        if (addonName == "RecipeTree")
+            _canRefreshRecipeTree = true;
     }
 
-    public override void OnAddonClose(string addonName)
+    public override void OnInventoryUpdate()
     {
-        if (addonName is "Synthesis" or "SynthesisSimple" or "Gathering" or "ItemSearchResult" or "InclusionShop" or "Shop" or "ShopExchangeCurrency" or "ShopExchangeItem")
-            RequestRefresh();
+        _pendingMaterialListRefresh = true;
+        _timeOfMaterialListRefresh = DateTime.UtcNow;
+        _pendingRecipeTreeRefresh = true;
+        _timeOfRecipeTreeRefresh = DateTime.UtcNow;
     }
 
-    private void RequestRefresh()
+    public override void OnFrameworkUpdate()
     {
-        if (Config.AutoRefreshMaterialList)
-            _recipeMaterialListRefreshPending = true;
+        // added a 500ms delay because selling items updates the addons before the item is gone...
 
-        if (Config.AutoRefreshRecipeTree)
-            _recipeTreeRefreshPending = true;
+        if (_pendingMaterialListRefresh && DateTime.UtcNow - _timeOfMaterialListRefresh >= TimeSpan.FromMilliseconds(500))
+            RefreshMaterialList();
+
+        if (_pendingRecipeTreeRefresh && DateTime.UtcNow - _timeOfRecipeTreeRefresh >= TimeSpan.FromMilliseconds(500))
+            RefreshRecipeTree();
+
+        if (_recipeMaterialListLockPending && TryGetAddon<AddonRecipeMaterialList>(AgentId.RecipeMaterialList, out var recipeMaterialList))
+        {
+            _recipeMaterialListLockPending = false;
+            recipeMaterialList->SetWindowLock(true);
+        }
     }
-
-    public override void OnTerritoryChanged(ushort e)
-        => RequestRecipeMaterialListRefresh();
 
     public override void OnLogin()
     {
@@ -113,125 +133,137 @@ public unsafe partial class EnhancedMaterialList : Tweak
         var agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>();
         if (agentRecipeMaterialList->RecipeId != Config.RestoreMaterialListRecipeId)
         {
+            _recipeMaterialListLockPending = true;
             Log("Restoring RecipeMaterialList");
             agentRecipeMaterialList->OpenByRecipeId(Config.RestoreMaterialListRecipeId, Math.Max(Config.RestoreMaterialListAmount, 1));
-
-            _recipeMaterialListLockPending = true;
         }
     }
 
-    private void RequestRecipeMaterialListRefresh()
-        => _recipeMaterialListRefreshPending = true;
-
-    private void RefreshRecipeMaterialList()
+    private void RecipeMaterialList_PostReceiveEvent(AddonEvent type, AddonArgs args)
     {
-        if (!_recipeMaterialListRefreshPending && !_recipeMaterialListLockPending)
+        if (args is not AddonReceiveEventArgs receiveEventArgs)
             return;
 
-        if (DateTime.Now.Subtract(_lastRecipeMaterialListRefresh).TotalSeconds < 2)
-            return;
-
-        if (!TryGetAddon<AddonRecipeMaterialList>(AgentId.RecipeMaterialList, out var recipeMaterialList))
+        switch (receiveEventArgs.AtkEventType)
         {
-            _recipeMaterialListRefreshPending = false;
-            return;
+            case (byte)AtkEventType.ButtonClick when receiveEventArgs.EventParam == 1: // refresh button clicked
+                _canRefreshMaterialList = false;
+                return;
+
+            case (byte)AtkEventType.ListItemToggle:
+                if (!Config.ClickToOpenMap)
+                    return;
+
+                var data = receiveEventArgs.Data;
+                if (data == 0 || *(byte*)(data + 0x18) == 1) // ignore right click
+                    return;
+
+                var rowData = **(nint**)(data + 0x08);
+                var itemId = *(uint*)(rowData + 0x04);
+
+                var item = GetRow<ExtendedItem>(itemId);
+                if (item == null)
+                    return;
+
+                if (Config.DisableClickToOpenMapForCrystals && item.ItemUICategory.Row == 59)
+                    return;
+
+                var tuple = GetPointForItem(itemId);
+                if (tuple == null)
+                    return;
+
+                var (totalPoints, point, cost, isSameZone, placeName) = tuple.Value;
+
+                point.OpenMap(item);
+
+                return;
+
+            case 61: // gets fired every second unless it's refreshing the material list
+                _canRefreshMaterialList = true;
+                return;
         }
-
-        if (_recipeMaterialListRefreshPending)
-        {
-            Log("Refreshing RecipeMaterialList");
-            var atkEvent = stackalloc AtkEvent[1];
-            recipeMaterialList->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 1, atkEvent, 0);
-
-            _recipeMaterialListRefreshPending = false;
-        }
-
-        if (_recipeMaterialListLockPending)
-        {
-            recipeMaterialList->SetWindowLock(true);
-            _recipeMaterialListLockPending = false;
-        }
-
-        _lastRecipeMaterialListRefresh = DateTime.Now;
     }
 
-    private void RefreshRecipeTree()
+    private void RecipeTree_PostReceiveEvent(AddonEvent type, AddonArgs args)
     {
-        if (!_recipeTreeRefreshPending)
+        if (args is not AddonReceiveEventArgs receiveEventArgs)
             return;
 
-        if (DateTime.Now.Subtract(_lastRecipeTreeRefresh).TotalSeconds < 2)
-            return;
-
-        if (!TryGetAddon<AtkUnitBase>(AgentId.RecipeTree, out var recipeTree))
+        switch (receiveEventArgs.AtkEventType)
         {
-            _recipeTreeRefreshPending = false;
-            return;
+            case (byte)AtkEventType.ButtonClick when receiveEventArgs.EventParam == 0: // refresh button clicked
+                _canRefreshRecipeTree = false;
+                return;
+
+            case 61: // gets fired every second unless it's refreshing the recipe tree
+                _canRefreshRecipeTree = true;
+                return;
         }
+    }
+
+    public void RefreshMaterialList()
+    {
+        _pendingMaterialListRefresh = false;
+
+        if (!Config.AutoRefreshMaterialList || !_canRefreshMaterialList || !TryGetAddon<AddonRecipeMaterialList>(AgentId.RecipeMaterialList, out var recipeMaterialList))
+            return;
+
+        Log("Refreshing RecipeMaterialList");
+        var atkEvent = stackalloc AtkEvent[1];
+        recipeMaterialList->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 1, atkEvent, 0);
+    }
+
+    public void RefreshRecipeTree()
+    {
+        _pendingRecipeTreeRefresh = false;
+
+        if (!Config.AutoRefreshRecipeTree || !_canRefreshRecipeTree || !TryGetAddon<AtkUnitBase>(AgentId.RecipeTree, out var recipeTree))
+            return;
 
         Log("Refreshing RecipeTree");
         var atkEvent = stackalloc AtkEvent[1];
         recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, atkEvent, 0);
-
-        _lastRecipeTreeRefresh = DateTime.Now;
-        _recipeTreeRefreshPending = false;
-    }
-
-    private void SaveRestoreMaterialList()
-    {
-        var agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>();
-        var shouldSave = Config.RestoreMaterialList && agentRecipeMaterialList->WindowLocked;
-        Config.RestoreMaterialListRecipeId = shouldSave ? agentRecipeMaterialList->RecipeId : 0u;
-        Config.RestoreMaterialListAmount = shouldSave ? agentRecipeMaterialList->Amount : 0u;
-        Plugin.Config.Save();
     }
 
     [VTableHook<AgentRecipeMaterialList>((int)AgentInterfaceVfs.ReceiveEvent)]
-    public nint AgentRecipeMaterialList_ReceiveEvent(AgentRecipeMaterialList* agent, nint a2, nint a3, nint a4, nint a5)
+    public nint AgentRecipeMaterialList_ReceiveEvent(AgentRecipeMaterialList* agent, AtkEvent* result, AtkValue* values, nint a4, nint a5)
     {
-        var ret = AgentRecipeMaterialList_ReceiveEventHook.OriginalDisposeSafe(agent, a2, a3, a4, a5);
-        SaveRestoreMaterialList();
+        var ret = AgentRecipeMaterialList_ReceiveEventHook.OriginalDisposeSafe(agent, result, values, a4, a5);
+        SaveRestoreMaterialList(agent);
         return ret;
     }
 
-    [VTableHook<AddonRecipeMaterialList>((int)AtkUnitBaseVfs.ReceiveEvent)]
-    public void AddonRecipeMaterialList_ReceiveEvent(AddonRecipeMaterialList* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
+    private void SaveRestoreMaterialList(AgentRecipeMaterialList* agent)
     {
-        AddonRecipeMaterialList_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
+        var shouldSave = Config.RestoreMaterialList && agent->WindowLocked;
 
-        if (!Config.ClickToOpenMap)
-            return;
+        var lastRecipeId = Config.RestoreMaterialListRecipeId;
+        Config.RestoreMaterialListRecipeId = shouldSave ? agent->RecipeId : 0u;
 
-        if (eventType != AtkEventType.ListItemToggle)
-            return;
+        var lastAmount = Config.RestoreMaterialListAmount;
+        Config.RestoreMaterialListAmount = shouldSave ? agent->Amount : 0u;
 
-        if (*(byte*)(a5 + 0x18) == 1) // ignore right click
-            return;
-
-        var rowData = **(nint**)(a5 + 0x08);
-        var itemId = *(uint*)(rowData + 0x04);
-
-        var item = GetRow<ExtendedItem>(itemId);
-        if (item == null)
-            return;
-
-        if (Config.DisableClickToOpenMapForCrystals && item.ItemUICategory.Row == 59)
-            return;
-
-        var tuple = GetPointForItem(itemId);
-        if (tuple == null)
-            return;
-
-        var (totalPoints, point, cost, isSameZone, placeName) = tuple.Value;
-
-        point.OpenMap(item);
+        if (lastRecipeId != Config.RestoreMaterialListRecipeId || lastAmount != Config.RestoreMaterialListAmount)
+            Plugin.Config.Save();
     }
 
     [AddressHook<AddonRecipeMaterialList>(nameof(AddonRecipeMaterialList.Addresses.SetupRow))]
-    public void AddonRecipeMaterialList_SetupRow(AddonRecipeMaterialList* addon, nint a2, nint a3)
+    public nint AddonRecipeMaterialList_SetupRow(AddonRecipeMaterialList* addon, nint a2, nint a3)
     {
-        AddonRecipeMaterialList_SetupRowHook.OriginalDisposeSafe(addon, a2, a3);
+        var res = AddonRecipeMaterialList_SetupRowHook.OriginalDisposeSafe(addon, a2, a3);
+        try
+        {
+            RecipeMaterialList_HandleSetupRow(a2, a3);
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Error during RecipeMaterialList_HandleSetupRow");
+        }
+        return res;
+    }
 
+    private void RecipeMaterialList_HandleSetupRow(nint a2, nint a3)
+    {
         if (!Config.EnableZoneNames)
             return;
 
