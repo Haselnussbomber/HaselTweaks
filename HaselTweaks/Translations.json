@@ -1243,6 +1243,14 @@
     "de": "Zeigt die Namen der Inhalte in der Inhaltssuche an, die als \"???\" angezeigt werden. Nützlich zum Freischalten des Mentor-Roulettes."
   },
 
+  "SaferItemSearch.Tweak.Name": {
+    "en": "Safer Market Board Price Check"
+  },
+  "SaferItemSearch.Tweak.Description": {
+    "en": "Prevents you from checking market board prices while a request is running.",
+    "de": "Verhindert die Marktpreisprüfung während eine Anfrage läuft."
+  },
+
   "ScrollableTabs.Tweak.Name": {
     "en": "Scrollable Tabs"
   },
