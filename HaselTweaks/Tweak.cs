@@ -280,6 +280,7 @@ public abstract unsafe class Tweak
     public virtual void Dispose() { }
     public virtual void OnConfigChange(string fieldName) { }
     public virtual void OnLanguageChange() { }
+    public virtual void OnInventoryUpdate() { }
     public virtual void OnFrameworkUpdate() { }
     public virtual void OnLogin() { }
     public virtual void OnLogout() { }

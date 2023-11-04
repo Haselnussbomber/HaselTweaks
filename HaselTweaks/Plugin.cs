@@ -56,6 +56,7 @@ public partial class Plugin : IDalamudPlugin
             Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
             Service.AddonObserver.AddonOpen += AddonObserver_AddonOpen;
             Service.AddonObserver.AddonClose += AddonObserver_AddonClose;
+            Service.AgentUpdateObserver.OnInventoryUpdate += OnInventoryUpdate;
 
             Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
 
@@ -97,6 +98,14 @@ public partial class Plugin : IDalamudPlugin
         foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
         {
             tweak.OnLanguageChange();
+        }
+    }
+
+    private void OnInventoryUpdate()
+    {
+        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
+        {
+            tweak.OnInventoryUpdate();
         }
     }
 
@@ -167,6 +176,7 @@ public partial class Plugin : IDalamudPlugin
             return;
 
         Service.TranslationManager.OnLanguageChange -= OnLanguageChange;
+        Service.AgentUpdateObserver.OnInventoryUpdate -= OnInventoryUpdate;
         Service.AddonObserver.AddonClose -= AddonObserver_AddonClose;
         Service.AddonObserver.AddonOpen -= AddonObserver_AddonOpen;
         Service.Framework.Update -= OnFrameworkUpdate;
