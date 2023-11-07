@@ -346,7 +346,7 @@ public sealed record PortraitPreset
             bannerEntry.BannerBg = BannerBg;
             tempPortraitData->BannerBg = BannerBg;
 
-            addonBannerEditor->BackgroundDropdown->SetValue(GetUnlockedIndex(&state->Backgrounds, BannerBg));
+            addonBannerEditor->BackgroundDropdown->SelectItem(GetUnlockedIndex(&state->Backgrounds, BannerBg));
         }
 
         if (hasFrameChanged)
@@ -355,7 +355,7 @@ public sealed record PortraitPreset
 
             state->SetFrame(BannerFrame);
 
-            addonBannerEditor->FrameDropdown->SetValue(GetUnlockedIndex(&state->Frames, BannerFrame));
+            addonBannerEditor->FrameDropdown->SelectItem(GetUnlockedIndex(&state->Frames, BannerFrame));
         }
 
         if (hasDecorationChanged)
@@ -364,7 +364,7 @@ public sealed record PortraitPreset
 
             state->SetAccent(BannerDecoration);
 
-            addonBannerEditor->AccentDropdown->SetValue(GetUnlockedIndex(&state->Accents, BannerDecoration));
+            addonBannerEditor->AccentDropdown->SelectItem(GetUnlockedIndex(&state->Accents, BannerDecoration));
         }
 
         if (hasBgChanged || hasFrameChanged || hasDecorationChanged)
@@ -379,7 +379,7 @@ public sealed record PortraitPreset
                 addonBannerEditor->PresetDropdown->List->SetListLength(addonBannerEditor->NumPresets); // increase to maximum, so "Custom" is displayed
             }
 
-            addonBannerEditor->PresetDropdown->SetValue(presetIndex);
+            addonBannerEditor->PresetDropdown->SelectItem(presetIndex);
         }
 
         if (hasBannerTimelineChanged)
@@ -389,7 +389,7 @@ public sealed record PortraitPreset
             bannerEntry.BannerTimeline = BannerTimeline;
             tempPortraitData->BannerTimeline = BannerTimeline;
 
-            addonBannerEditor->PoseDropdown->SetValue(GetUnlockedIndex(&state->Poses, BannerTimeline));
+            addonBannerEditor->PoseDropdown->SelectItem(GetUnlockedIndex(&state->Poses, BannerTimeline));
         }
 
         if (hasExpressionChanged)
@@ -399,7 +399,7 @@ public sealed record PortraitPreset
             bannerEntry.Expression = Expression;
             tempPortraitData->Expression = Expression;
 
-            addonBannerEditor->ExpressionDropdown->SetValue(GetSortedIndex(&state->Expressions, Expression));
+            addonBannerEditor->ExpressionDropdown->SelectItem(GetSortedIndex(&state->Expressions, Expression));
         }
 
         if (hasAmbientLightingBrightnessChanged)

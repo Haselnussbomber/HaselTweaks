@@ -8,16 +8,12 @@ public unsafe partial struct AtkComponentList
 {
     [FieldOffset(0)] public AtkComponentBase AtkComponentBase;
 
-    [FieldOffset(0x148)] public AtkCollisionNode* HoveredItemCollisionNode;
+    [VirtualFunction(26)]
+    public partial void SetItemDisabledState(int index, bool disabled);
 
-    [FieldOffset(0x118)] public uint ListLength;
-
-    [VirtualFunction(35)]
-    public readonly partial uint GetListLength();
+    [VirtualFunction(36)]
+    public partial int GetItemCount();
 
     [MemberFunction("E8 ?? ?? ?? ?? 41 FE 85")]
-    public readonly partial nint SetListLength(short value);
-
-    [MemberFunction("E8 ?? ?? ?? ?? 45 38 A4 3E")]
-    public readonly partial void SetEntryText(uint index, byte* text);
+    public partial void SetListLength(short value);
 }

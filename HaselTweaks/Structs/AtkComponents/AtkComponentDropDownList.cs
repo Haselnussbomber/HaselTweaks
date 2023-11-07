@@ -11,5 +11,5 @@ public unsafe partial struct AtkComponentDropDownList
     [FieldOffset(0xC8)] public AtkComponentList* List;
 
     [MemberFunction("E8 ?? ?? ?? ?? 45 89 3E")]
-    public readonly partial nint SetValue(int value);
+    public partial void SelectItem(int index);
 }
