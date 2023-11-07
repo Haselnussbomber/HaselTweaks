@@ -76,7 +76,7 @@ public unsafe class SearchTheMarkets : Tweak
 
     private void ContextMenu_OnOpenGameObjectContextMenu(GameObjectContextMenuOpenArgs args)
     {
-        if (args.ParentAddonName is not ("RecipeNote" or "RecipeMaterialList" or "RecipeTree" or "ChatLog" or "ContentsInfoDetail" or "DailyQuestSupply"))
+        if (args.ParentAddonName is not ("RecipeNote" or "RecipeMaterialList" or "RecipeProductList" or "RecipeTree" or "ChatLog" or "ContentsInfoDetail" or "DailyQuestSupply"))
             return;
 
         _item = null;
@@ -90,6 +90,7 @@ public unsafe class SearchTheMarkets : Tweak
 
             case "RecipeTree":
             case "RecipeMaterialList":
+            case "RecipeProductList":
                 // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
                 itemId = GetAgent<AgentRecipeItemContext>()->ResultItemId;
                 break;
