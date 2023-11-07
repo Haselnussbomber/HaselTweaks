@@ -266,6 +266,7 @@ Supports context menus in the following windows:
 - Inventory
 - Materials List
 - Recipe Tree
+- Recipes List
 
 ### Simple Aethernet List
 

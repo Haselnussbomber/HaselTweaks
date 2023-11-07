@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Search the markets
+
+- **Added:** Support for Recipes List window.
+
 ## [19.0.5] (2023-11-04)
 
 ### Enhanced Material List
