@@ -4,7 +4,6 @@ using System.Numerics;
 using System.Text.RegularExpressions;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -12,15 +11,15 @@ using HaselCommon.Sheets;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
+using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using ImColor = HaselCommon.Structs.ImColor;
 
 namespace HaselTweaks.Windows;
 
-public unsafe partial class AetherCurrentHelperWindow : Window
+public unsafe partial class AetherCurrentHelperWindow : LockableWindow
 {
-    private readonly AgentAetherCurrent* _agentAetherCurrent;
     private readonly Dictionary<uint, string> _questNameCache = new(); // key is Quest.RowId, value is stripped from private use utf8 chars
     private bool _hideUnlocked = true;
 
@@ -35,15 +34,13 @@ public unsafe partial class AetherCurrentHelperWindow : Window
     {
         Namespace = "HaselTweaksAetherCurrentHelperWindow";
 
-        SizeCondition = ImGuiCond.Appearing;
+        SizeCondition = ImGuiCond.FirstUseEver;
         Size = new Vector2(350);
         SizeConstraints = new WindowSizeConstraints
         {
             MinimumSize = new Vector2(300, 200),
             MaximumSize = new Vector2(4096),
         };
-
-        _agentAetherCurrent = GetAgent<AgentAetherCurrent>();
     }
 
     public AetherCurrentCompFlgSet? CompFlgSet { get; set; } = null;
@@ -157,7 +154,7 @@ public unsafe partial class AetherCurrentHelperWindow : Window
 
         if (ImGui.IsItemClicked())
         {
-            _agentAetherCurrent->AgentInterface.Show();
+            GetAgent<AgentAetherCurrent>()->AgentInterface.Show();
         }
 
         ImGui.SetCursorPos(startPos);

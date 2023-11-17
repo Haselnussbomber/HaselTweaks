@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Interface.Windowing;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -10,6 +9,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Sheets;
 using HaselCommon.Utils;
 using HaselTweaks.Tweaks;
+using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using GearsetEntry = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetEntry;
@@ -18,15 +18,13 @@ using GearsetItem = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule
 
 namespace HaselTweaks.Windows;
 
-public unsafe class GearSetGridWindow : Window
+public unsafe class GearSetGridWindow : LockableWindow
 {
-    private static readonly Vector2 DefaultWindowSize = new(505, 550);
     private static readonly Vector2 IconSize = new(34);
     private static readonly Vector2 IconInset = IconSize * 0.08333f;
     private static readonly float ItemCellWidth = IconSize.X;
     public static GearSetGrid.Configuration Config => Plugin.Config.Tweaks.GearSetGrid;
 
-    private bool _resetSize;
     private bool _resetScrollPosition;
 
     public GearSetGridWindow() : base(t("GearSetGridWindow.Title"))
@@ -37,11 +35,13 @@ public unsafe class GearSetGridWindow : Window
 
         Flags |= ImGuiWindowFlags.NoCollapse;
 
-        if (Plugin.Config.LockedImGuiWindows.Contains(nameof(GearSetGridWindow)))
-            Flags |= ImGuiWindowFlags.NoMove;
-
-        Size = DefaultWindowSize;
+        Size = new(505, 550);
         SizeCondition = ImGuiCond.FirstUseEver;
+        SizeConstraints = new WindowSizeConstraints
+        {
+            MinimumSize = new Vector2(505, 200),
+            MaximumSize = new Vector2(4096),
+        };
     }
 
     public override void OnOpen()
@@ -54,59 +54,8 @@ public unsafe class GearSetGridWindow : Window
         Service.WindowManager.CloseWindow<GearSetGridWindow>();
     }
 
-    public override void PreDraw()
-    {
-        if (_resetSize)
-        {
-            Size = DefaultWindowSize;
-            SizeCondition = ImGuiCond.Always;
-            _resetSize = false;
-        }
-        else
-        {
-            SizeCondition = ImGuiCond.FirstUseEver;
-        }
-    }
-
     public override void Draw()
     {
-        var windowName = nameof(GearSetGridWindow);
-        using (var windowContext = ImRaii.ContextPopup(windowName))
-        {
-            if (windowContext.Success)
-            {
-                if (ImGui.MenuItem(t("ImGuiWindow.ContextMenuItem.ResetSize")))
-                {
-                    _resetSize = true;
-                }
-
-                if (ImGui.MenuItem(
-                    t("ImGuiWindow.ContextMenuItem.LockPosition"),
-                    null,
-                    Flags.HasFlag(ImGuiWindowFlags.NoMove)))
-                {
-                    Flags ^= ImGuiWindowFlags.NoMove;
-
-                    if (Flags.HasFlag(ImGuiWindowFlags.NoMove))
-                    {
-                        if (!Plugin.Config.LockedImGuiWindows.Contains(windowName))
-                        {
-                            Plugin.Config.LockedImGuiWindows.Add(windowName);
-                            Plugin.Config.Save();
-                        }
-                    }
-                    else
-                    {
-                        if (Plugin.Config.LockedImGuiWindows.Contains(windowName))
-                        {
-                            Plugin.Config.LockedImGuiWindows.Remove(windowName);
-                            Plugin.Config.Save();
-                        }
-                    }
-                }
-            }
-        }
-
         const int NUM_SLOTS = 13;
 
         using var cellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, Vector2.Zero);
