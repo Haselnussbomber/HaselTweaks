@@ -225,6 +225,10 @@ Configuration options:
 
 Reveals duty names in duty finder, which were shown as "???" to prevent spoilers. Useful for unlocking Mentor roulette.
 
+### Safer Market Board Price Check
+
+Prevents you from checking market board prices while a request is running, minimizing the frequency of encountering the "Please wait and try your search again" screen.
+
 ### Scrollable Tabs
 
 Allows the mouse wheel to switch tabs (like with LB/RB on controllers) in the following windows, each of which can be toggled separately:

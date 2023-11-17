@@ -1,5 +1,21 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Safer Market Board Price Check
+
+Prevents you from checking market board prices while a request is running, minimizing the frequency of encountering the "Please wait and try your search again" screen.
+
+### Aether Current Helper
+
+- **Changed:** The window now has a button in its title bar to lock/unlock its position and size.
+- **Changed:** The window does no longer resets its size upon opening.
+
+### Gear Set List
+
+- **Changed:** The window now has a button in its title bar to lock/unlock its position and size. The window context menu was removed.
+- **Changed:** The window now has a minimum size to make sure it always shows all columns.
+
 ## [19.1.0] (2023-11-07)
 
 ### Search the markets
