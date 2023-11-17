@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [20.0.0] (2023-11-17)
 
 ### New Tweak: Safer Market Board Price Check
 
@@ -1247,6 +1247,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[20.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.1.0...v20.0.0
 [19.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.0.5...v19.1.0
 [19.0.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.0.4...v19.0.5
 [19.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.0.3...v19.0.4
