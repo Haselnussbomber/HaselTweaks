@@ -1243,6 +1243,14 @@
     "de": "Zeigt die Namen der Inhalte in der Inhaltssuche an, die als \"???\" angezeigt werden. Nützlich zum Freischalten des Mentor-Roulettes."
   },
 
+  "SaferItemSearch.Tweak.Name": {
+    "en": "Safer Market Board Price Check"
+  },
+  "SaferItemSearch.Tweak.Description": {
+    "en": "Prevents you from checking market board prices while a request is running.",
+    "de": "Verhindert die Marktpreisprüfung während eine Anfrage läuft."
+  },
+
   "ScrollableTabs.Tweak.Name": {
     "en": "Scrollable Tabs"
   },
@@ -1371,17 +1379,18 @@
     "de": "Vereinfacht das Verhalten der Ätherytennetz-Liste: Maus über den Eintrag fahren wählt den Ätheryten aus und ein Klick teleportiert dich."
   },
 
-  "ImGuiWindow.ContextMenuItem.ResetSize": {
-    "en": "Reset size",
-    "de": "Größe zurücksetzen",
-    "fr": "Réinitialiser la taille",
-    "ja": "サイズをリセットする"
+  "ImGuiWindow.WindowLocked": {
+    "en": "Window locked",
+    "de": "Fenster gesperrt",
+    "fr": "Fenêtre verrouillée",
+    "ja": "ウィンドウがロックされました"
   },
-  "ImGuiWindow.ContextMenuItem.LockPosition": {
-    "en": "Lock Position",
-    "de": "Position sperren",
-    "fr": "Verrouiller la position",
-    "ja": "ポジションをロックする"
+
+  "ImGuiWindow.WindowUnlocked": {
+    "en": "Window unlocked",
+    "de": "Fenster entsperrt",
+    "fr": "Fenêtre déverrouillée",
+    "ja": "ウィンドウがロック解除されました"
   },
 
   "ConfirmationButtonWindow.Save": {
