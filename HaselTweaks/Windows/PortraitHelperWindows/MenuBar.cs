@@ -116,7 +116,7 @@ public unsafe class MenuBar : Window
         {
             ImGuiUtils.IconButton("ViewModeAdvancedImport", FontAwesomeIcon.FileImport, t("PortraitHelperWindows.MenuBar.ToggleAdvancedImportMode.Label"), disabled: true);
         }
-        else if (Service.WindowManager.GetWindow<AdvancedImportOverlay>() != null)
+        else if (Service.WindowManager.IsWindowOpen<AdvancedImportOverlay>())
         {
             using var color1 = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942);
             using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
@@ -134,7 +134,7 @@ public unsafe class MenuBar : Window
         }
 
         ImGui.SameLine();
-        if (Service.WindowManager.GetWindow<AdvancedEditOverlay>() != null)
+        if (Service.WindowManager.IsWindowOpen<AdvancedEditOverlay>())
         {
             using var color1 = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942);
             using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
@@ -164,7 +164,7 @@ public unsafe class MenuBar : Window
         }
 
         ImGui.SameLine();
-        if (Service.WindowManager.GetWindow<PresetBrowserOverlay>() != null)
+        if (Service.WindowManager.IsWindowOpen<PresetBrowserOverlay>())
         {
             using var color1 = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942);
             using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
@@ -188,7 +188,7 @@ public unsafe class MenuBar : Window
         // ----
 
         ImGui.SameLine();
-        if (Service.WindowManager.GetWindow<AlignmentToolSettingsOverlay>() != null)
+        if (Service.WindowManager.IsWindowOpen<AlignmentToolSettingsOverlay>())
         {
             using var color1 = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942);
             using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
@@ -266,7 +266,7 @@ public unsafe class MenuBar : Window
             ImGui.SetNextWindowPos(position);
             ImGui.SetNextWindowSize(size);
 
-            if (!(ImGuiHelpers.GlobalScale <= 1 && ((Service.WindowManager.GetWindow<AdvancedImportOverlay>() != null) || (Service.WindowManager.GetWindow<PresetBrowserOverlay>() != null))))
+            if (!(ImGuiHelpers.GlobalScale <= 1 && (Service.WindowManager.IsWindowOpen<AdvancedImportOverlay>() || Service.WindowManager.IsWindowOpen<PresetBrowserOverlay>())))
             {
                 ImGui.Begin("AlignmentTool", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs);
 
