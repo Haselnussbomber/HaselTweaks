@@ -87,7 +87,6 @@ public unsafe partial class CharacterClassSwitcher : Tweak
     private nint AddonCharacterClass_OnSetup(AddonCharacterClass* addon, uint numAtkValues, AtkValue* atkValues)
     {
         var result = AddonCharacterClass_OnSetupHook!.OriginalDisposeSafe(addon, numAtkValues, atkValues);
-        var eventListener = &addon->AtkUnitBase.AtkEventListener;
 
         for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
         {
@@ -100,8 +99,8 @@ public unsafe partial class CharacterClassSwitcher : Tweak
             var collisionNode = (AtkCollisionNode*)node->AtkComponentBase.UldManager.RootNode;
             if (collisionNode == null) continue;
 
-            collisionNode->AtkResNode.AddEvent(AtkEventType.MouseClick, (uint)i + 2, eventListener, null, false);
-            collisionNode->AtkResNode.AddEvent(AtkEventType.InputReceived, (uint)i + 2, eventListener, null, false);
+            collisionNode->AtkResNode.AddEvent(AtkEventType.MouseClick, (uint)i + 2, (AtkEventListener*)addon, null, false);
+            collisionNode->AtkResNode.AddEvent(AtkEventType.InputReceived, (uint)i + 2, (AtkEventListener*)addon, null, false);
         }
 
         return result;
@@ -196,8 +195,6 @@ public unsafe partial class CharacterClassSwitcher : Tweak
     {
         AddonPvPCharacter_OnSetupHook.OriginalDisposeSafe(addon, numAtkValues, atkValues);
 
-        var eventListener = &addon->AtkUnitBase.AtkEventListener;
-
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
             var entry = addon->ClassEntriesSpan.GetPointer(i);
@@ -206,8 +203,8 @@ public unsafe partial class CharacterClassSwitcher : Tweak
             var collisionNode = (AtkCollisionNode*)entry->Base->UldManager.RootNode;
             if (collisionNode == null) continue;
 
-            collisionNode->AtkResNode.AddEvent(AtkEventType.MouseClick, (uint)i | 0x10000, eventListener, null, false);
-            collisionNode->AtkResNode.AddEvent(AtkEventType.InputReceived, (uint)i | 0x10000, eventListener, null, false);
+            collisionNode->AtkResNode.AddEvent(AtkEventType.MouseClick, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
+            collisionNode->AtkResNode.AddEvent(AtkEventType.InputReceived, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
         }
     }
 
