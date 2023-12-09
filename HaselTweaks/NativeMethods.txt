@@ -8,12 +8,9 @@ EXECUTION_STATE
 WM_MOUSEWHEEL
 WHEEL_DELTA
 
-GetClipboardSequenceNumber
-IsClipboardFormatAvailable
 OpenClipboard
 CloseClipboard
 EmptyClipboard
-GetClipboardData
 SetClipboardData
 RegisterClipboardFormat
 CLIPBOARD_FORMAT

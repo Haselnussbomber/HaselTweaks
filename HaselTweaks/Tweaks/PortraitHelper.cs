@@ -4,7 +4,6 @@ using System.Numerics;
 using System.Threading;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
@@ -22,9 +21,6 @@ using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Windows.Win32;
-using Windows.Win32.Foundation;
-using Windows.Win32.System.Ole;
 
 namespace HaselTweaks.Tweaks;
 
@@ -55,8 +51,6 @@ public partial class PortraitHelper : Tweak
 
     private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
-    private DateTime _lastClipboardCheck = default;
-    private uint _lastClipboardSequenceNumber;
     private CancellationTokenSource? _jobChangedOrGearsetUpdatedCTS;
     private uint _lastJob = 0;
     private DalamudLinkPayload? _openPortraitEditPayload;
@@ -145,54 +139,18 @@ public partial class PortraitHelper : Tweak
                 CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex, true);
             }, CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token);
         }
-
-        if (Service.WindowManager.GetWindow<MenuBar>() is null)
-            return;
-
-        CheckClipboard();
     }
 
-    public void CheckClipboard()
+    [AddressHook<HaselUIClipboard>(nameof(HaselUIClipboard.Addresses.OnClipboardDataChanged))]
+    private unsafe void OnClipboardDataChanged(HaselUIClipboard* handler)
     {
-        if (DateTime.Now - _lastClipboardCheck <= TimeSpan.FromMilliseconds(100))
-            return;
+        OnClipboardDataChangedHook.OriginalDisposeSafe(handler);
 
-        var clipboardSequenceNumber = PInvoke.GetClipboardSequenceNumber();
-
-        if (_lastClipboardSequenceNumber == clipboardSequenceNumber)
-            return;
-
-        if (!PInvoke.IsClipboardFormatAvailable((uint)CLIPBOARD_FORMAT.CF_TEXT))
-            return;
-
-        if (!PInvoke.OpenClipboard(HWND.Null))
-            return;
-
-        try
-        {
-            _lastClipboardSequenceNumber = clipboardSequenceNumber;
-
-            var data = PInvoke.GetClipboardData((uint)CLIPBOARD_FORMAT.CF_TEXT);
-            if (!data.IsNull)
-            {
-                var clipboardText = MemoryHelper.ReadString(data, 1024);
-                ClipboardPreset = PortraitPreset.FromExportedString(clipboardText);
-
-                if (ClipboardPreset != null)
-                    Debug($"Parsed ClipboardPreset: {ClipboardPreset}");
-            }
-        }
-        catch (Exception e)
-        {
-            Error(e, "Error during CheckClipboard");
-        }
-        finally
-        {
-            PInvoke.CloseClipboard();
-
-            _lastClipboardCheck = DateTime.Now;
-        }
+        ClipboardPreset = PortraitPreset.FromExportedString(handler->Data.SystemClipboardText.ToString());
+        if (ClipboardPreset != null)
+            Debug($"Parsed ClipboardPreset: {ClipboardPreset}");
     }
+
     [AddressHook<RaptureGearsetModule>(nameof(RaptureGearsetModule.Addresses.UpdateGearset))]
     public unsafe int RaptureGearsetModule_UpdateGearset(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
