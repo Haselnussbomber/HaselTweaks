@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Interface.Utility.Raii;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Extensions;
 using HaselTweaks.Enums;
-using HaselTweaks.Structs;
 using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
@@ -150,7 +150,7 @@ public unsafe class BackgroundMusicKeybind : Tweak
 
             IsBgmMuted = !IsBgmMuted;
 
-            HaselRaptureLogModule.Instance()->ShowLogMessageUInt(3861, IsBgmMuted ? 1u : 0u);
+            RaptureLogModule.Instance()->ShowLogMessageUInt(3861, IsBgmMuted ? 1u : 0u);
         }
 
         _isPressingKeybind = true;

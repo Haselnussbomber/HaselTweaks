@@ -2,7 +2,6 @@ using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Structs.Agents;
