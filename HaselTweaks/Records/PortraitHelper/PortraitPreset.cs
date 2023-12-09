@@ -376,7 +376,7 @@ public sealed record PortraitPreset
             {
                 presetIndex = addonBannerEditor->NumPresets - 1;
 
-                addonBannerEditor->PresetDropdown->List->SetListLength(addonBannerEditor->NumPresets); // increase to maximum, so "Custom" is displayed
+                ((AtkComponentList*)addonBannerEditor->PresetDropdown->List)->SetListLength(addonBannerEditor->NumPresets); // increase to maximum, so "Custom" is displayed
             }
 
             addonBannerEditor->PresetDropdown->SelectItem(presetIndex);
