@@ -1,10 +1,8 @@
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Structs;
-using Windows.Win32;
 using AddonAOZNotebook = HaselTweaks.Structs.AddonAOZNotebook;
 using AddonGSInfoCardList = HaselTweaks.Structs.AddonGSInfoCardList;
 using HaselAtkComponentRadioButton = HaselTweaks.Structs.AtkComponentRadioButton;
@@ -92,21 +90,7 @@ public unsafe partial class ScrollableTabs : Tweak
         public bool HandleAdventureNoteBook = true;
     }
 
-    private short _wheelState;
-
-    [AddressHook<Statics>(nameof(Statics.Addresses.WindowProcHandler))]
-    private ulong WindowProcHandler(nint hwnd, int uMsg, int wParam)
-    {
-        if (uMsg == PInvoke.WM_MOUSEWHEEL && !Framework.Instance()->WindowInactive)
-        {
-            _wheelState = (short)Math.Clamp((wParam >> 16) / PInvoke.WHEEL_DELTA * (Config.Invert ? -1 : 1), -1, 1);
-
-            if (_wheelState != 0)
-                Update();
-        }
-
-        return WindowProcHandlerHook.OriginalDisposeSafe(hwnd, uMsg, wParam);
-    }
+    private int _wheelState;
 
     private AtkUnitBase* IntersectingAddon
         => RaptureAtkModule.Instance()->AtkModule.IntersectingAddon;
@@ -120,10 +104,14 @@ public unsafe partial class ScrollableTabs : Tweak
     private bool IsPrev
         => _wheelState == (!Config.Invert ? -1 : 1);
 
-    public void Update()
+    public override void OnFrameworkUpdate()
     {
+        _wheelState = Math.Clamp(UIInputData.Instance()->MouseWheel, -1, 1);
         if (_wheelState == 0)
             return;
+
+        if (Config.Invert)
+            _wheelState *= -1;
 
         var hoveredUnitBase = IntersectingAddon;
         if (hoveredUnitBase == null)

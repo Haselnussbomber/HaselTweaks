@@ -5,9 +5,6 @@ EXECUTION_STATE
 
 // winuser.h
 
-WM_MOUSEWHEEL
-WHEEL_DELTA
-
 OpenClipboard
 CloseClipboard
 EmptyClipboard
