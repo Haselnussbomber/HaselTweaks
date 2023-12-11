@@ -11,11 +11,13 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Sheets;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows.PortraitHelperWindows;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
+using Lumina.Excel.GeneratedSheets;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
@@ -272,11 +274,24 @@ public partial class PortraitHelper : Tweak
         var itemIds = stackalloc uint[14];
         var stainIds = stackalloc byte[14];
         var container = InventoryManager.Instance()->GetInventoryContainer(InventoryType.EquippedItems);
+        var currentJobId = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
 
         for (var i = 0; i < 14; i++)
         {
             var item = container->Items[i];
-            itemIds[i] = item.GlamourID != 0 ? item.GlamourID : item.ItemID;
+
+            if (item.GlamourID != 0)
+            {
+                var itemRow = GetRow<Item>(item.GlamourID)!;
+                var classJobCategory = GetRow<ExtendedClassJobCategory>(itemRow.ClassJobCategory.Row)!;
+                var classJobAllowed = classJobCategory.ClassJobs[currentJobId];
+                itemIds[i] = classJobAllowed ? item.GlamourID : item.ItemID;
+            }
+            else
+            {
+                itemIds[i] = item.ItemID;
+            }
+
             stainIds[i] = item.Stain;
         }
 
