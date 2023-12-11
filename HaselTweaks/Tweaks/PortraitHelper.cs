@@ -360,7 +360,7 @@ public partial class PortraitHelper : Tweak
         }
 
         var bannerUpdateData = stackalloc BannerUpdateData[1];
-        bannerUpdateData->Ctor();
+        bannerUpdateData->Initialize();
 
         if (!helper->InitializeBannerUpdateData(bannerUpdateData))
         {
