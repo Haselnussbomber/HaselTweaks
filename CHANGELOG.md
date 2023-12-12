@@ -1,5 +1,11 @@
 # Changelog
 
+## [20.0.2] (2023-12-12)
+
+### Portrait Helper
+
+- **Fixed:** Follow up to 20.0.1 - Dyes are now also ignored when the glamoured item could not be applied due to restrictions.
+
 ## [20.0.1] (2023-12-11)
 
 ### Portrait Helper
@@ -1253,6 +1259,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[20.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.0.1...v20.0.2
 [20.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.0.0...v20.0.1
 [20.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.1.0...v20.0.0
 [19.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.0.5...v19.1.0
