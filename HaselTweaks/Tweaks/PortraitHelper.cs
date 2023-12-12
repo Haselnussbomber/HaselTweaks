@@ -286,13 +286,13 @@ public partial class PortraitHelper : Tweak
                 var classJobCategory = GetRow<ExtendedClassJobCategory>(itemRow.ClassJobCategory.Row)!;
                 var classJobAllowed = classJobCategory.ClassJobs[currentJobId];
                 itemIds[i] = classJobAllowed ? item.GlamourID : item.ItemID;
+                stainIds[i] = classJobAllowed && itemRow.IsDyeable ? item.Stain : (byte)0;
             }
             else
             {
                 itemIds[i] = item.ItemID;
+                stainIds[i] = item.Stain;
             }
-
-            stainIds[i] = item.Stain;
         }
 
         GetAgent<AgentStatus>()->UpdateGearVisibilityInNumberArray();
