@@ -33,7 +33,7 @@ public abstract class Tweak<T> : Tweak
 
             if (enabled)
             {
-                EnableCommand(attr.Command, methodInfo);
+                EnableCommand(attr.Command, attr.HelpMessage, methodInfo);
             }
         }
     }
@@ -76,7 +76,7 @@ public abstract class Tweak<T> : Tweak
 
             if (enabled)
             {
-                EnableCommand(attr.Command, methodInfo);
+                EnableCommand(attr.Command, attr.HelpMessage, methodInfo);
             }
             else
             {
@@ -87,11 +87,11 @@ public abstract class Tweak<T> : Tweak
         base.OnConfigChange(fieldName);
     }
 
-    private void EnableCommand(string command, MethodInfo methodInfo)
+    private void EnableCommand(string command, string helpMessage, MethodInfo methodInfo)
     {
         var handler = methodInfo.CreateDelegate<HandlerDelegate>(this);
 
-        if (Service.CommandManager.AddHandler(command, new CommandInfo(handler)))
+        if (Service.CommandManager.AddHandler(command, new CommandInfo(handler) { HelpMessage = helpMessage }))
         {
             Log($"CommandHandler {command} added");
         }

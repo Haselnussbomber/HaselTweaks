@@ -46,7 +46,7 @@ public class GearSetGrid : Tweak<GearSetGridConfiguration>
             Service.WindowManager.CloseWindow<GearSetGridWindow>();
     }
 
-    [CommandHandler("/gsg", nameof(Config.RegisterCommand))]
+    [CommandHandler("/gsg", "GearSetGrid.CommandHandlerHelpMessage", nameof(Config.RegisterCommand))]
     private void OnGsgCommand(string command, string arguments)
     {
         Service.WindowManager.ToggleWindow<GearSetGridWindow>();

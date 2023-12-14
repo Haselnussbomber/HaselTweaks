@@ -27,7 +27,7 @@ public class CommandsConfiguration
 [Tweak]
 public unsafe class Commands : Tweak<CommandsConfiguration>
 {
-    [CommandHandler("/itemlink", nameof(Config.EnableItemLinkCommand))]
+    [CommandHandler("/itemlink", "Commands.Config.EnableItemLinkCommand.Description", nameof(Config.EnableItemLinkCommand))]
     private void OnItemLinkCommand(string command, string arguments)
     {
         uint id;
@@ -63,7 +63,7 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
         });
     }
 
-    [CommandHandler("/whatmount", nameof(Config.EnableWhatMountCommand))]
+    [CommandHandler("/whatmount", "Commands.Config.EnableWhatMountCommand.Description", nameof(Config.EnableWhatMountCommand))]
     private void OnWhatMountCommand(string command, string arguments)
     {
         var target = Service.TargetManager.Target;
@@ -144,7 +144,7 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
         });
     }
 
-    [CommandHandler("/whatbarding", nameof(Config.EnableWhatBardingCommand))]
+    [CommandHandler("/whatbarding", "Commands.Config.EnableWhatMountCommand.Description", nameof(Config.EnableWhatBardingCommand))]
     private void OnWhatBardingCommand(string command, string arguments)
     {
         var target = Service.TargetManager.Target;

@@ -62,7 +62,7 @@ public partial class Plugin : IDalamudPlugin
 
             Service.CommandManager.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
             {
-                HelpMessage = "Show Window"
+                HelpMessage = t("HaselTweaks.CommandHandlerHelpMessage")
             });
         });
     }

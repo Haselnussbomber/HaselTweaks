@@ -1,4 +1,8 @@
 {
+  "HaselTweaks.CommandHandlerHelpMessage": {
+    "en": "Opens the HaselTweaks configuration window",
+    "de": "Öffnet das HaselTweaks-Konfigurationsfenster"
+  },
   "HaselTweaks.Config.DevGitHubLink.Tooltip": {
     "en": "Compare changes",
     "de": "Änderungen vergleichen"
@@ -700,6 +704,10 @@
   "GearSetGrid.Config.RegisterCommand.Label": {
     "en": "Register /gsg command to toggle window",
     "de": "Befehl /gsg zum Umschalten des Fensters registrieren"
+  },
+  "GearSetGrid.CommandHandlerHelpMessage": {
+    "en": "Opens the Gear Set Grid window",
+    "de": "Öffnet das Gear Set Grid-Fenster"
   },
   "GearSetGrid.Config.ConvertSeparators.Label": {
     "en": "Convert separator gear set with spacing",
