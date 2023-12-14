@@ -23,7 +23,7 @@ public class RevealDutyRequirements : Tweak
 
     public override void Enable()
     {
-        Patch = new(Address + 14, new byte[] { 0x90, 0x90 });
+        Patch = new(Address + 14, [0x90, 0x90]);
         Patch.Enable();
     }
 

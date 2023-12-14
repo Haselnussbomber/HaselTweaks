@@ -28,7 +28,7 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
     [GeneratedRegex("^[\\ue000-\\uf8ff]+ ")]
     private static partial Regex Utf8PrivateUseAreaRegex();
 
-    public static AetherCurrentHelper.Configuration Config => Plugin.Config.Tweaks.AetherCurrentHelper;
+    public static AetherCurrentHelperConfiguration Config => Plugin.Config.Tweaks.AetherCurrentHelper;
 
     public AetherCurrentHelperWindow() : base("[HaselTweaks] Aether Current Helper")
     {
@@ -324,7 +324,7 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
         return t("AetherCurrentHelperWindow.Coords", x, y);
     }
 
-    private static readonly string[] CompassHeadings = new string[] { "E", "NE", "N", "NW", "W", "SW", "S", "SE" };
+    private static readonly string[] CompassHeadings = ["E", "NE", "N", "NW", "W", "SW", "S", "SE"];
 
     //! https://gamedev.stackexchange.com/a/49300
     public static string GetCompassDirection(Vector2 a, Vector2 b)

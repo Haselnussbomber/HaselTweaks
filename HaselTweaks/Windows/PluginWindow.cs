@@ -386,11 +386,11 @@ public partial class PluginWindow : Window, IDisposable
         }
 
 #if DEBUG
-        if (tweak.LastException != null)
+        if (tweak.LastInternalException != null)
         {
             ImGuiUtils.DrawSection("[DEBUG] Exception");
-            ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, tweak.LastException.Message.Replace("HaselTweaks.Tweaks.", ""));
-            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, tweak.LastException.StackTrace ?? "");
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, tweak.LastInternalException.Message.Replace("HaselTweaks.Tweaks.", ""));
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, tweak.LastInternalException.StackTrace ?? "");
         }
 #endif
 

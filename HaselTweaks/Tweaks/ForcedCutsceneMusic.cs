@@ -2,17 +2,15 @@ using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe partial class ForcedCutsceneMusic : Tweak
+public class ForcedCutsceneMusicConfiguration
 {
-    public static Configuration Config => Plugin.Config.Tweaks.ForcedCutsceneMusic;
+    [BoolConfig]
+    public bool Restore = true;
+}
 
-    public class Configuration
-    {
-        [BoolConfig]
-        public bool Restore = true;
-    }
-
+[Tweak]
+public unsafe partial class ForcedCutsceneMusic : Tweak<ForcedCutsceneMusicConfiguration>
+{
     private bool _wasBgmMuted;
 
     private static bool IsBgmMuted

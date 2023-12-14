@@ -11,17 +11,15 @@ using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(TweakFlags.HasCustomConfig)]
-public unsafe partial class CustomChatTimestamp : Tweak
+public class CustomChatTimestampConfiguration
 {
-    public static Configuration Config => Plugin.Config.Tweaks.CustomChatTimestamp;
+    public string Format = "[HH:mm] ";
+}
 
-    public class Configuration
-    {
-        public string Format = "[HH:mm] ";
-    }
-
-    public override void DrawCustomConfig()
+[Tweak(TweakFlags.HasCustomConfig)]
+public unsafe partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguration>
+{
+    internal override void DrawCustomConfig()
     {
         ImGui.TextUnformatted(t("CustomChatTimestamp.Config.Format.Label"));
         using (ImGuiUtils.ConfigIndent())

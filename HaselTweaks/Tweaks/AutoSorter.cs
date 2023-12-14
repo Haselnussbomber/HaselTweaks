@@ -15,11 +15,15 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(TweakFlags.HasCustomConfig)]
-public unsafe class AutoSorter : Tweak
+public class AutoSorterConfiguration
 {
-    public static Configuration Config => Plugin.Config.Tweaks.AutoSorter;
+    public List<AutoSorter.SortingRule> Settings = new();
+    public bool SortArmouryOnJobChange = true;
+}
 
+[Tweak(TweakFlags.HasCustomConfig)]
+public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
+{
     public static readonly Dictionary<string, uint> CategorySet = new()
     {
         ["inventory"] = 257,
@@ -165,13 +169,7 @@ public unsafe class AutoSorter : Tweak
         }
     }
 
-    public class Configuration
-    {
-        public List<SortingRule> Settings = new();
-        public bool SortArmouryOnJobChange = true;
-    }
-
-    public override void DrawCustomConfig()
+    internal override void DrawCustomConfig()
     {
         ImGui.Checkbox(t("AutoSorter.Config.SortArmouryOnJobChange.Label"), ref Config.SortArmouryOnJobChange);
 

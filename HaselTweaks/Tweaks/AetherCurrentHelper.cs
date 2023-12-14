@@ -8,18 +8,18 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe partial class AetherCurrentHelper : Tweak
+public class AetherCurrentHelperConfiguration
 {
-    public class Configuration
-    {
-        [BoolConfig]
-        public bool AlwaysShowDistance = false;
+    [BoolConfig]
+    public bool AlwaysShowDistance = false;
 
-        [BoolConfig]
-        public bool CenterDistance = true;
-    }
+    [BoolConfig]
+    public bool CenterDistance = true;
+}
 
+[Tweak]
+public unsafe partial class AetherCurrentHelper : Tweak<AetherCurrentHelperConfiguration>
+{
     public override void Disable()
     {
         Service.WindowManager.CloseWindow<AetherCurrentHelperWindow>();

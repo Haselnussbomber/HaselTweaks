@@ -17,17 +17,15 @@ using ImColor = HaselCommon.Structs.ImColor;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(TweakFlags.HasCustomConfig)]
-public unsafe class DTR : Tweak
+public class DTRConfiguration
 {
-    public static Configuration Config => Plugin.Config.Tweaks.DTR;
+    public string FormatUnitText = " fps";
+}
 
-    public class Configuration
-    {
-        public string FormatUnitText = " fps";
-    }
-
-    public override void DrawCustomConfig()
+[Tweak(TweakFlags.HasCustomConfig)]
+public unsafe class DTR : Tweak<DTRConfiguration>
+{
+    internal override void DrawCustomConfig()
     {
         ImGui.TextUnformatted(t("DTR.Config.Explanation.Pre"));
         ImGuiUtils.TextUnformattedColored((ImColor)ImGuiColors.DalamudRed, t("DTR.Config.Explanation.DalamudSettings"));

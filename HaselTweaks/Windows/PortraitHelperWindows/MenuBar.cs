@@ -20,7 +20,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows;
 
 public unsafe class MenuBar : Window
 {
-    private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
+    private static PortraitHelperConfiguration Config => Plugin.Config.Tweaks.PortraitHelper;
 
     private static AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
     private static AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);

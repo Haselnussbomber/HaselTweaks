@@ -18,11 +18,39 @@ using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe partial class EnhancedMaterialList : Tweak
+public class EnhancedMaterialListConfiguration
 {
-    public static Configuration Config => Plugin.Config.Tweaks.EnhancedMaterialList;
+    [BoolConfig]
+    public bool EnableZoneNames = true;
 
+    [BoolConfig(DependsOn = nameof(EnableZoneNames))]
+    public bool DisableZoneNameForCrystals = true;
+
+    [BoolConfig]
+    public bool ClickToOpenMap = true;
+
+    [BoolConfig(DependsOn = nameof(ClickToOpenMap))]
+    public bool DisableClickToOpenMapForCrystals = true;
+
+    [BoolConfig]
+    public bool AutoRefreshMaterialList = true;
+
+    [BoolConfig]
+    public bool AutoRefreshRecipeTree = true;
+
+    [BoolConfig]
+    public bool RestoreMaterialList = true;
+
+    public uint RestoreMaterialListRecipeId = 0;
+    public uint RestoreMaterialListAmount = 0;
+
+    [BoolConfig]
+    public bool AddSearchForItemByCraftingMethodContextMenuEntry = true; // yep, i spelled it out
+}
+
+[Tweak]
+public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListConfiguration>
+{
     private bool _canRefreshMaterialList;
     private bool _pendingMaterialListRefresh;
     private DateTime _timeOfMaterialListRefresh;
@@ -33,47 +61,17 @@ public unsafe partial class EnhancedMaterialList : Tweak
     private DateTime _timeOfRecipeTreeRefresh;
     private bool _handleRecipeResultItemContextMenu;
 
-    public class Configuration
-    {
-        [BoolConfig]
-        public bool EnableZoneNames = true;
-
-        [BoolConfig(DependsOn = nameof(EnableZoneNames))]
-        public bool DisableZoneNameForCrystals = true;
-
-        [BoolConfig]
-        public bool ClickToOpenMap = true;
-
-        [BoolConfig(DependsOn = nameof(ClickToOpenMap))]
-        public bool DisableClickToOpenMapForCrystals = true;
-
-        [BoolConfig]
-        public bool AutoRefreshMaterialList = true;
-
-        [BoolConfig]
-        public bool AutoRefreshRecipeTree = true;
-
-        [BoolConfig]
-        public bool RestoreMaterialList = true;
-
-        public uint RestoreMaterialListRecipeId = 0;
-        public uint RestoreMaterialListAmount = 0;
-
-        [BoolConfig]
-        public bool AddSearchForItemByCraftingMethodContextMenuEntry = true; // yep, i spelled it out
-    }
-
     public override void OnConfigChange(string fieldName)
     {
-        if (fieldName is nameof(Configuration.EnableZoneNames)
-                      or nameof(Configuration.DisableZoneNameForCrystals)
-                      or nameof(Configuration.DisableClickToOpenMapForCrystals))
+        if (fieldName is nameof(Config.EnableZoneNames)
+                      or nameof(Config.DisableZoneNameForCrystals)
+                      or nameof(Config.DisableClickToOpenMapForCrystals))
         {
             _pendingMaterialListRefresh = true;
             _timeOfMaterialListRefresh = DateTime.UtcNow;
         }
 
-        if (fieldName is nameof(Configuration.RestoreMaterialList))
+        if (fieldName is nameof(Config.RestoreMaterialList))
         {
             SaveRestoreMaterialList(GetAgent<AgentRecipeMaterialList>());
         }

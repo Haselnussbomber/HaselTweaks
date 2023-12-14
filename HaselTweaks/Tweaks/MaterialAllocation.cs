@@ -9,22 +9,20 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe partial class MaterialAllocation : Tweak
+public class MaterialAllocationConfiguration
 {
-    public static Configuration Config => Plugin.Config.Tweaks.MaterialAllocation;
+    [BoolConfig]
+    public bool SaveLastSelectedTab = true;
+    public byte LastSelectedTab = 2;
 
+    [BoolConfig]
+    public bool OpenGatheringLogOnItemClick = true;
+}
+
+[Tweak]
+public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfiguration>
+{
     private uint _nextMJIGatheringNoteBookItemId;
-
-    public class Configuration
-    {
-        [BoolConfig]
-        public bool SaveLastSelectedTab = true;
-        public byte LastSelectedTab = 2;
-
-        [BoolConfig]
-        public bool OpenGatheringLogOnItemClick = true;
-    }
 
     public override void Enable()
     {

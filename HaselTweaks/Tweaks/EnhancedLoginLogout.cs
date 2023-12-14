@@ -21,8 +21,27 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
+public class EnhancedLoginLogoutConfiguration
+{
+    public bool ShowPets = false;
+    public bool EnableCharaSelectEmote = false;
+    public bool PreloadTerritory = true;
+    public bool ClearTellHistory = false;
+
+    public Vector3 PetPosition = new(-0.6f, 0f, 0f);
+
+    public Dictionary<ulong, PetMirageSetting> PetMirageSettings = new();
+    public Dictionary<ulong, uint> SelectedEmotes = new();
+
+    public class PetMirageSetting
+    {
+        public uint CarbuncleType;
+        public uint FairyType;
+    }
+}
+
 [Tweak(TweakFlags.HasCustomConfig | TweakFlags.NoCustomConfigHeader)]
-public unsafe partial class EnhancedLoginLogout : Tweak
+public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfiguration>
 {
     private CharaSelectCharacter? _currentEntry = null;
 
@@ -114,31 +133,10 @@ public unsafe partial class EnhancedLoginLogout : Tweak
     #region Config
 
     private bool _isRecordingEmote;
-    private readonly uint[] _changePoseEmoteIds = new uint[] { 91, 92, 93, 107, 108, 218, 219, };
+    private readonly uint[] _changePoseEmoteIds = [91, 92, 93, 107, 108, 218, 219,];
     private List<uint>? _excludedEmotes;
 
-    public static Configuration Config => Plugin.Config.Tweaks.EnhancedLoginLogout;
-
-    public class Configuration
-    {
-        public bool ShowPets = false;
-        public bool EnableCharaSelectEmote = false;
-        public bool PreloadTerritory = true;
-        public bool ClearTellHistory = false;
-
-        public Vector3 PetPosition = new(-0.6f, 0f, 0f);
-
-        public Dictionary<ulong, PetMirageSetting> PetMirageSettings = new();
-        public Dictionary<ulong, uint> SelectedEmotes = new();
-
-        public class PetMirageSetting
-        {
-            public uint CarbuncleType;
-            public uint FairyType;
-        }
-    }
-
-    public override void DrawCustomConfig()
+    internal override void DrawCustomConfig()
     {
         var scale = ImGuiHelpers.GlobalScale;
 

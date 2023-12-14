@@ -35,24 +35,24 @@ public partial class Configuration
 
 public class TweakConfigs
 {
-    public AetherCurrentHelper.Configuration AetherCurrentHelper { get; init; } = new();
-    public AutoSorter.Configuration AutoSorter { get; init; } = new();
-    public BackgroundMusicKeybind.Configuration BackgroundMusicKeybind { get; init; } = new();
-    public CharacterClassSwitcher.Configuration CharacterClassSwitcher { get; init; } = new();
-    public Commands.Configuration Commands { get; init; } = new();
-    public CustomChatTimestamp.Configuration CustomChatTimestamp { get; init; } = new();
-    public DTR.Configuration DTR { get; init; } = new();
-    public EnhancedExpBar.Configuration EnhancedExpBar { get; init; } = new();
-    public EnhancedIsleworksAgenda.Configuration EnhancedIsleworksAgenda { get; init; } = new();
-    public EnhancedLoginLogout.Configuration EnhancedLoginLogout { get; init; } = new();
-    public EnhancedMaterialList.Configuration EnhancedMaterialList { get; init; } = new();
-    public ForcedCutsceneMusic.Configuration ForcedCutsceneMusic { get; init; } = new();
-    public GearSetGrid.Configuration GearSetGrid { get; init; } = new();
-    public LockWindowPosition.Configuration LockWindowPosition { get; init; } = new();
-    public MaterialAllocation.Configuration MaterialAllocation { get; init; } = new();
-    public MinimapAdjustments.Configuration MinimapAdjustments { get; init; } = new();
-    public PortraitHelper.Configuration PortraitHelper { get; init; } = new();
-    public ScrollableTabs.Configuration ScrollableTabs { get; init; } = new();
+    public AetherCurrentHelperConfiguration AetherCurrentHelper { get; init; } = new();
+    public AutoSorterConfiguration AutoSorter { get; init; } = new();
+    public BackgroundMusicKeybindConfiguration BackgroundMusicKeybind { get; init; } = new();
+    public CharacterClassSwitcherConfiguration CharacterClassSwitcher { get; init; } = new();
+    public CommandsConfiguration Commands { get; init; } = new();
+    public CustomChatTimestampConfiguration CustomChatTimestamp { get; init; } = new();
+    public DTRConfiguration DTR { get; init; } = new();
+    public EnhancedExpBarConfiguration EnhancedExpBar { get; init; } = new();
+    public EnhancedIsleworksAgendaConfiguration EnhancedIsleworksAgenda { get; init; } = new();
+    public EnhancedLoginLogoutConfiguration EnhancedLoginLogout { get; init; } = new();
+    public EnhancedMaterialListConfiguration EnhancedMaterialList { get; init; } = new();
+    public ForcedCutsceneMusicConfiguration ForcedCutsceneMusic { get; init; } = new();
+    public GearSetGridConfiguration GearSetGrid { get; init; } = new();
+    public LockWindowPositionConfiguration LockWindowPosition { get; init; } = new();
+    public MaterialAllocationConfiguration MaterialAllocation { get; init; } = new();
+    public MinimapAdjustmentsConfiguration MinimapAdjustments { get; init; } = new();
+    public PortraitHelperConfiguration PortraitHelper { get; init; } = new();
+    public ScrollableTabsConfiguration ScrollableTabs { get; init; } = new();
 }
 
 public partial class Configuration

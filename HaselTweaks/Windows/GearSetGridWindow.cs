@@ -23,7 +23,7 @@ public unsafe class GearSetGridWindow : LockableWindow
     private static readonly Vector2 IconSize = new(34);
     private static readonly Vector2 IconInset = IconSize * 0.08333f;
     private static readonly float ItemCellWidth = IconSize.X;
-    public static GearSetGrid.Configuration Config => Plugin.Config.Tweaks.GearSetGrid;
+    public static GearSetGridConfiguration Config => Plugin.Config.Tweaks.GearSetGrid;
 
     private bool _resetScrollPosition;
 

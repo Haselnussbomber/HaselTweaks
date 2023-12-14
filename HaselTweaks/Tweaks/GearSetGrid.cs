@@ -1,54 +1,37 @@
-using Dalamud.Game.Command;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe partial class GearSetGrid : Tweak
+public class GearSetGridConfiguration
 {
-    private const string GSGCommand = "/gsg";
+    [BoolConfig]
+    public bool AutoOpenWithGearSetList = false;
 
-    public static Configuration Config => Plugin.Config.Tweaks.GearSetGrid;
+    [BoolConfig]
+    public bool RegisterCommand = true;
 
-    public class Configuration
-    {
-        [BoolConfig]
-        public bool AutoOpenWithGearSetList = false;
+    [BoolConfig]
+    public bool ConvertSeparators = true;
 
-        [BoolConfig]
-        public bool RegisterCommand = true;
+    [StringConfig(DependsOn = nameof(ConvertSeparators), DefaultValue = "===========")]
+    public string SeparatorFilter = "===========";
 
-        [BoolConfig]
-        public bool ConvertSeparators = true;
+    [BoolConfig(DependsOn = nameof(ConvertSeparators))]
+    public bool DisableSeparatorSpacing = false;
+}
 
-        [StringConfig(DependsOn = nameof(ConvertSeparators), DefaultValue = "===========")]
-        public string SeparatorFilter = "===========";
-
-        [BoolConfig(DependsOn = nameof(ConvertSeparators))]
-        public bool DisableSeparatorSpacing = false;
-    }
-
+[Tweak]
+public class GearSetGrid : Tweak<GearSetGridConfiguration>
+{
     public override void Enable()
     {
-        RegisterCommands();
-
         if (Config.AutoOpenWithGearSetList && IsAddonOpen("GearSetList"))
             Service.WindowManager.OpenWindow<GearSetGridWindow>();
     }
 
     public override void Disable()
     {
-        UnregisterCommand(true);
         Service.WindowManager.CloseWindow<GearSetGridWindow>();
-    }
-
-    public override void OnConfigChange(string fieldName)
-    {
-        if (fieldName is nameof(Configuration.RegisterCommand))
-        {
-            UnregisterCommand();
-            RegisterCommands();
-        }
     }
 
     public override void OnAddonOpen(string addonName)
@@ -63,26 +46,7 @@ public unsafe partial class GearSetGrid : Tweak
             Service.WindowManager.CloseWindow<GearSetGridWindow>();
     }
 
-    private void RegisterCommands()
-    {
-        if (Config.RegisterCommand)
-        {
-            Service.CommandManager.AddHandler(GSGCommand, new CommandInfo(OnGsgCommand)
-            {
-                HelpMessage = $"Usage: {GSGCommand} <id>",
-                ShowInHelp = true
-            });
-        }
-    }
-
-    private static void UnregisterCommand(bool forceRemoval = false)
-    {
-        if (!Config.RegisterCommand || forceRemoval)
-        {
-            Service.CommandManager.RemoveHandler(GSGCommand);
-        }
-    }
-
+    [CommandHandler("/gsg", nameof(Config.RegisterCommand))]
     private void OnGsgCommand(string command, string arguments)
     {
         Service.WindowManager.ToggleWindow<GearSetGridWindow>();

@@ -5,20 +5,18 @@ using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe partial class EnhancedIsleworksAgenda : Tweak
+public class EnhancedIsleworksAgendaConfiguration
 {
-    public static Configuration Config => Plugin.Config.Tweaks.EnhancedIsleworksAgenda;
+    [BoolConfig]
+    public bool EnableSearchBar = true;
 
-    public class Configuration
-    {
-        [BoolConfig]
-        public bool EnableSearchBar = true;
+    [BoolConfig]
+    public bool DisableTreeListTooltips = true;
+}
 
-        [BoolConfig]
-        public bool DisableTreeListTooltips = true;
-    }
-
+[Tweak]
+public unsafe partial class EnhancedIsleworksAgenda : Tweak<EnhancedIsleworksAgendaConfiguration>
+{
     public override void Enable()
     {
         if (Config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"))

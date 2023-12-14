@@ -10,7 +10,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class EditPresetDialog : ConfirmationDialog
 {
-    private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
+    private static PortraitHelperConfiguration Config => Plugin.Config.Tweaks.PortraitHelper;
 
     private readonly ConfirmationButton _saveButton;
 

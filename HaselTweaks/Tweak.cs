@@ -4,45 +4,19 @@ using System.Reflection;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 
 namespace HaselTweaks;
 
-public abstract unsafe class Tweak
+public abstract partial class Tweak : ITweak
 {
-    private Type? _type;
-    private string? _internalName;
-    private TweakFlags? _flags;
-    private IncompatibilityWarningAttribute[]? _incompatibilityWarnings;
-    private bool _disposed;
-
-    public Type CachedType
-        => _type ??= GetType();
-
-    public string InternalName
-        => _internalName ??= CachedType.Name;
-
-    public string Name
-        => Service.TranslationManager.TryGetTranslation($"{InternalName}.Tweak.Name", out var text) ? text : InternalName;
-
-    public string Description
-        => Service.TranslationManager.TryGetTranslation($"{InternalName}.Tweak.Description", out var text) ? text : string.Empty;
-
-    public TweakFlags Flags
-        => _flags ??= CachedType.GetCustomAttribute<TweakAttribute>()?.Flags ?? TweakFlags.None;
-
-    public IncompatibilityWarningAttribute[] IncompatibilityWarnings
-        => _incompatibilityWarnings ??= CachedType.GetCustomAttributes<IncompatibilityWarningAttribute>().ToArray();
-
-    public virtual void DrawCustomConfig() { }
-    public virtual void OnConfigWindowClose() { }
-
-    public virtual bool Outdated { get; protected set; }
-    public virtual bool Ready { get; protected set; }
-    public virtual bool Enabled { get; protected set; }
-    public virtual Exception? LastException { get; protected set; }
-
     public Tweak()
     {
+        CachedType = GetType();
+        InternalName = CachedType.Name;
+        Flags = CachedType.GetCustomAttribute<TweakAttribute>()?.Flags ?? TweakFlags.None;
+        IncompatibilityWarnings = CachedType.GetCustomAttributes<IncompatibilityWarningAttribute>().ToArray();
+
         try
         {
             Service.GameInteropProvider.InitializeFromAttributes(this);
@@ -51,7 +25,7 @@ public abstract unsafe class Tweak
         {
             Error(ex, "SignatureException, flagging as outdated");
             Outdated = true;
-            LastException = ex;
+            LastInternalException = ex;
             return;
         }
 
@@ -62,7 +36,7 @@ public abstract unsafe class Tweak
         catch (Exception ex)
         {
             Error(ex, "Unexpected error during SetupVTableHooks");
-            LastException = ex;
+            LastInternalException = ex;
             return;
         }
 
@@ -73,12 +47,50 @@ public abstract unsafe class Tweak
         catch (Exception ex)
         {
             Error(ex, "Unexpected error during SetupAddressHooks");
-            LastException = ex;
+            LastInternalException = ex;
             return;
         }
 
         Ready = true;
     }
+
+    public Type CachedType { get; init; }
+    public string InternalName { get; init; }
+    public TweakFlags Flags { get; init; }
+    public IncompatibilityWarningAttribute[] IncompatibilityWarnings { get; init; }
+
+    public string Name
+        => Service.TranslationManager.TryGetTranslation($"{InternalName}.Tweak.Name", out var text) ? text : InternalName;
+
+    public string Description
+        => Service.TranslationManager.TryGetTranslation($"{InternalName}.Tweak.Description", out var text) ? text : string.Empty;
+
+    public bool Outdated { get; protected set; }
+    public bool Ready { get; protected set; }
+    public bool Enabled { get; protected set; }
+
+    public virtual void SetupAddressHooks() { }
+    public virtual void SetupVTableHooks() { }
+
+    public virtual void Enable() { }
+    public virtual void Disable() { }
+    public virtual void Dispose() { }
+    public virtual void OnConfigChange(string fieldName) { }
+    public virtual void OnConfigWindowClose() { }
+    public virtual void OnLanguageChange() { }
+    public virtual void OnInventoryUpdate() { }
+    public virtual void OnFrameworkUpdate() { }
+    public virtual void OnLogin() { }
+    public virtual void OnLogout() { }
+    public virtual void OnTerritoryChanged(ushort id) { }
+    public virtual void OnAddonOpen(string addonName) { }
+    public virtual void OnAddonClose(string addonName) { }
+}
+
+public abstract partial class Tweak // Internal
+{
+    private bool Disposed { get; set; }
+    internal Exception? LastInternalException { get; set; }
 
     protected IEnumerable<PropertyInfo> Hooks => CachedType
         .GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)
@@ -101,9 +113,21 @@ public abstract unsafe class Tweak
         }
     }
 
+    internal virtual void DrawCustomConfig() { }
+
     internal void EnableInternal()
     {
         if (!Ready || Outdated) return;
+
+        try
+        {
+            EnableCommands();
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during Disable (Commands)");
+            LastInternalException = ex;
+        }
 
         try
         {
@@ -112,7 +136,7 @@ public abstract unsafe class Tweak
         catch (Exception ex)
         {
             Error(ex, "Unexpected error during Enable (Hooks)");
-            LastException = ex;
+            LastInternalException = ex;
             return;
         }
 
@@ -123,11 +147,11 @@ public abstract unsafe class Tweak
         catch (Exception ex)
         {
             Error(ex, "Unexpected error during Enable");
-            LastException = ex;
+            LastInternalException = ex;
             return;
         }
 
-        LastException = null;
+        LastInternalException = null;
         Enabled = true;
     }
 
@@ -137,12 +161,22 @@ public abstract unsafe class Tweak
 
         try
         {
+            DisableCommands();
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during Disable (Commands)");
+            LastInternalException = ex;
+        }
+
+        try
+        {
             CallHooks("Disable");
         }
         catch (Exception ex)
         {
             Error(ex, "Unexpected error during Disable (Hooks)");
-            LastException = ex;
+            LastInternalException = ex;
         }
 
         try
@@ -152,7 +186,7 @@ public abstract unsafe class Tweak
         catch (Exception ex)
         {
             Error(ex, "Unexpected error during Disable");
-            LastException = ex;
+            LastInternalException = ex;
         }
 
         Enabled = false;
@@ -160,7 +194,7 @@ public abstract unsafe class Tweak
 
     internal void DisposeInternal()
     {
-        if (_disposed)
+        if (Disposed)
             return;
 
         DisableInternal();
@@ -172,7 +206,7 @@ public abstract unsafe class Tweak
         catch (Exception ex)
         {
             Error(ex, "Unexpected error during Dispose (Hooks)");
-            LastException = ex;
+            LastInternalException = ex;
         }
 
         try
@@ -182,11 +216,11 @@ public abstract unsafe class Tweak
         catch (Exception ex)
         {
             Error(ex, "Unexpected error during Dispose");
-            LastException = ex;
+            LastInternalException = ex;
         }
 
         Ready = false;
-        _disposed = true;
+        Disposed = true;
     }
 
     internal void OnFrameworkUpdateInternal()
@@ -198,7 +232,7 @@ public abstract unsafe class Tweak
         catch (Exception ex)
         {
             Error(ex, "Unexpected error during OnFrameworkUpdate");
-            LastException = ex;
+            LastInternalException = ex;
             return;
         }
     }
@@ -212,7 +246,7 @@ public abstract unsafe class Tweak
         catch (Exception ex)
         {
             Error(ex, "Unexpected error during OnLogin");
-            LastException = ex;
+            LastInternalException = ex;
             return;
         }
     }
@@ -226,7 +260,7 @@ public abstract unsafe class Tweak
         catch (Exception ex)
         {
             Error(ex, "Unexpected error during OnLogout");
-            LastException = ex;
+            LastInternalException = ex;
             return;
         }
     }
@@ -240,7 +274,7 @@ public abstract unsafe class Tweak
         catch (Exception ex)
         {
             Error(ex, "Unexpected error during OnTerritoryChanged");
-            LastException = ex;
+            LastInternalException = ex;
             return;
         }
     }
@@ -254,7 +288,7 @@ public abstract unsafe class Tweak
         catch (Exception ex)
         {
             Error(ex, "Unexpected error during OnAddonOpen");
-            LastException = ex;
+            LastInternalException = ex;
             return;
         }
     }
@@ -268,28 +302,22 @@ public abstract unsafe class Tweak
         catch (Exception ex)
         {
             Error(ex, "Unexpected error during OnAddonOpen");
-            LastException = ex;
+            LastInternalException = ex;
             return;
         }
     }
 
-    public virtual void SetupAddressHooks() { }
-    public virtual void SetupVTableHooks() { }
-    public virtual void Enable() { }
-    public virtual void Disable() { }
-    public virtual void Dispose() { }
-    public virtual void OnConfigChange(string fieldName) { }
-    public virtual void OnLanguageChange() { }
-    public virtual void OnInventoryUpdate() { }
-    public virtual void OnFrameworkUpdate() { }
-    public virtual void OnLogin() { }
-    public virtual void OnLogout() { }
-    public virtual void OnTerritoryChanged(ushort id) { }
-    public virtual void OnAddonOpen(string addonName) { }
-    public virtual void OnAddonClose(string addonName) { }
+    internal virtual void OnConfigChangeInternal(string fieldName)
+    {
+        OnConfigChange(fieldName);
+    }
 
-    #region Logging methods
+    protected virtual void EnableCommands() { }
+    protected virtual void DisableCommands() { }
+}
 
+public abstract partial class Tweak // Logging
+{
     protected void Log(string messageTemplate, params object[] values)
         => Information(messageTemplate, values);
 
@@ -331,6 +359,4 @@ public abstract unsafe class Tweak
 
     protected void Fatal(Exception exception, string messageTemplate, params object[] values)
         => Service.PluginLog.Fatal(exception, $"[{InternalName}] {messageTemplate}", values);
-
-    #endregion
 }

@@ -16,7 +16,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
 {
     // for older quests that don't return the item id in GetTodoArgs
     private readonly record struct QuestTodo(ushort QuestId, byte TodoIndex, string ScriptArgName = "RITEM1");
-    private static readonly QuestTodo[] QuestTodos = new QuestTodo[] {
+    private static readonly QuestTodo[] QuestTodos = [
         // Ixal
         new(1494, 3),
         new(1495, 3),
@@ -86,7 +86,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
         new(2316, 2),
         new(2317, 1),
         new(2318, 5),
-    };
+    ];
 
     [AddressHook<Statics>(nameof(Statics.Addresses.UpdateQuestWork))]
     public nint UpdateQuestWork(ushort index, nint questData, bool a3, bool a4, bool a5)

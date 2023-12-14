@@ -27,7 +27,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows;
 
 public class PresetCard : IDisposable
 {
-    private static PortraitHelper.Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
+    private static PortraitHelperConfiguration Config => Plugin.Config.Tweaks.PortraitHelper;
     public static readonly Vector2 PortraitSize = new(576, 960); // native texture size
 
     private CancellationTokenSource? _closeTokenSource;

@@ -15,29 +15,27 @@ using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(TweakFlags.HasCustomConfig)]
-public unsafe partial class LockWindowPosition : Tweak
+public class LockWindowPositionConfiguration
 {
-    public static Configuration Config => Plugin.Config.Tweaks.LockWindowPosition;
+    public bool Inverted = false;
+    public bool AddLockUnlockContextMenuEntries = true;
+    public List<LockWindowPosition.LockedWindowSetting> LockedWindows = new();
+}
 
+[Tweak(TweakFlags.HasCustomConfig)]
+public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfiguration>
+{
     public record LockedWindowSetting
     {
         public bool Enabled = true;
         public string Name = "";
     }
 
-    public class Configuration
-    {
-        public bool Inverted = false;
-        public bool AddLockUnlockContextMenuEntries = true;
-        public List<LockedWindowSetting> LockedWindows = new();
-    }
-
     private const int EventParamLock = 9901;
     private const int EventParamUnlock = 9902;
-    private static readonly string[] IgnoredAddons = new[] {
+    private static readonly string[] IgnoredAddons = [
         "CharaCardEditMenu", // always opens docked to CharaCard (OnSetup)
-    };
+    ];
 
     private bool _showPicker = false;
     private string _hoveredWindowName = "";
@@ -45,7 +43,7 @@ public unsafe partial class LockWindowPosition : Tweak
     private Vector2 _hoveredWindowSize;
     private int _eventIndexToDisable = 0;
 
-    public override void DrawCustomConfig()
+    internal override void DrawCustomConfig()
     {
         ImGui.Checkbox(t("LockWindowPosition.Config.Inverted.Label"), ref Config.Inverted);
         if (ImGui.IsItemClicked())

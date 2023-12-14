@@ -26,31 +26,29 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public partial class PortraitHelper : Tweak
+public class PortraitHelperConfiguration
 {
-    public static Configuration Config => Plugin.Config.Tweaks.PortraitHelper;
+    public List<SavedPreset> Presets = new();
+    public List<SavedPresetTag> PresetTags = new();
+    public bool ShowAlignmentTool = false;
+    public int AlignmentToolVerticalLines = 2;
+    public Vector4 AlignmentToolVerticalColor = new(0, 0, 0, 1f);
+    public int AlignmentToolHorizontalLines = 2;
+    public Vector4 AlignmentToolHorizontalColor = new(0, 0, 0, 1f);
 
-    public class Configuration
-    {
-        public List<SavedPreset> Presets = new();
-        public List<SavedPresetTag> PresetTags = new();
-        public bool ShowAlignmentTool = false;
-        public int AlignmentToolVerticalLines = 2;
-        public Vector4 AlignmentToolVerticalColor = new(0, 0, 0, 1f);
-        public int AlignmentToolHorizontalLines = 2;
-        public Vector4 AlignmentToolHorizontalColor = new(0, 0, 0, 1f);
+    [BoolConfig]
+    public bool NotifyGearChecksumMismatch = true;
 
-        [BoolConfig]
-        public bool NotifyGearChecksumMismatch = true;
+    [BoolConfig, NetworkWarning]
+    public bool ReequipGearsetOnUpdate = false;
 
-        [BoolConfig, NetworkWarning]
-        public bool ReequipGearsetOnUpdate = false;
+    [BoolConfig, NetworkWarning]
+    public bool AutoUpdatePotraitOnGearUpdate = false;
+}
 
-        [BoolConfig, NetworkWarning]
-        public bool AutoUpdatePotraitOnGearUpdate = false;
-    }
-
+[Tweak]
+public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
+{
     private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
     private CancellationTokenSource? _jobChangedOrGearsetUpdatedCTS;

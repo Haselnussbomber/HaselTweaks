@@ -12,39 +12,37 @@ using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
 
 namespace HaselTweaks.Tweaks;
 
+public class EnhancedExpBarConfiguration
+{
+    [BoolConfig]
+    public bool ForcePvPSeriesBar = true;
+
+    [BoolConfig]
+    public bool ForceSanctuaryBar = true;
+
+    [BoolConfig]
+    public bool ForceCompanionBar = true;
+
+    [BoolConfig]
+    public bool SanctuaryBarHideJob = false;
+
+    [EnumConfig]
+    public EnhancedExpBar.MaxLevelOverrideType MaxLevelOverride = EnhancedExpBar.MaxLevelOverrideType.Default;
+
+    [BoolConfig]
+    public bool DisableColorChanges = false;
+}
+
 [Tweak]
 [IncompatibilityWarning("SimpleTweaksPlugin", "ShowExperiencePercentage")]
-public unsafe partial class EnhancedExpBar : Tweak
+public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
 {
-    public static Configuration Config => Plugin.Config.Tweaks.EnhancedExpBar;
-
     public enum MaxLevelOverrideType
     {
         Default,
         PvPSeriesBar,
         CompanionBar,
         // No SanctuaryBar, because data is only available on the island
-    }
-
-    public class Configuration
-    {
-        [BoolConfig]
-        public bool ForcePvPSeriesBar = true;
-
-        [BoolConfig]
-        public bool ForceSanctuaryBar = true;
-
-        [BoolConfig]
-        public bool ForceCompanionBar = true;
-
-        [BoolConfig]
-        public bool SanctuaryBarHideJob = false;
-
-        [EnumConfig]
-        public MaxLevelOverrideType MaxLevelOverride = MaxLevelOverrideType.Default;
-
-        [BoolConfig]
-        public bool DisableColorChanges = false;
     }
 
     public override void Enable()

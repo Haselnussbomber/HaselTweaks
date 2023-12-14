@@ -9,17 +9,15 @@ using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak(TweakFlags.HasCustomConfig)]
-public unsafe class BackgroundMusicKeybind : Tweak
+public class BackgroundMusicKeybindConfiguration
 {
-    public static Configuration Config => Plugin.Config.Tweaks.BackgroundMusicKeybind;
+    public VirtualKey[] Keybind = [VirtualKey.CONTROL, VirtualKey.M];
+}
 
-    public class Configuration
-    {
-        public VirtualKey[] Keybind = new[] { VirtualKey.CONTROL, VirtualKey.M };
-    }
-
-    public override void DrawCustomConfig()
+[Tweak(TweakFlags.HasCustomConfig)]
+public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfiguration>
+{
+    internal override void DrawCustomConfig()
     {
         var shift = Config.Keybind.Contains(VirtualKey.SHIFT);
         if (ImGui.Checkbox(t("BackgroundMusicKeybind.Config.ShiftKeyCheckbox.Label"), ref shift))

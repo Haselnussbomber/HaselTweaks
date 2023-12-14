@@ -9,18 +9,16 @@ using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
+public class CharacterClassSwitcherConfiguration
+{
+    [BoolConfig]
+    public bool DisableTooltips = false;
+}
+
 [Tweak]
 [IncompatibilityWarning("SimpleTweaksPlugin", "CharacterWindowJobSwitcher")]
-public unsafe partial class CharacterClassSwitcher : Tweak
+public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitcherConfiguration>
 {
-    public static Configuration Config => Plugin.Config.Tweaks.CharacterClassSwitcher;
-
-    public class Configuration
-    {
-        [BoolConfig]
-        public bool DisableTooltips = false;
-    }
-
     private MemoryReplacement? TooltipPatch;
     private MemoryReplacement? PvpTooltipPatch;
 
@@ -48,8 +46,8 @@ public unsafe partial class CharacterClassSwitcher : Tweak
 
     public override void Enable()
     {
-        TooltipPatch = new(TooltipAddress + 8, new byte[] { 0xEB });
-        PvpTooltipPatch = new(PvPTooltipAddress, new byte[] { 0xEB, 0x63 });
+        TooltipPatch = new(TooltipAddress + 8, [0xEB]);
+        PvpTooltipPatch = new(PvPTooltipAddress, [0xEB, 0x63]);
 
         if (Config.DisableTooltips)
         {

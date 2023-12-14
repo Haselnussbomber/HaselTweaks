@@ -1,5 +1,4 @@
 using Dalamud.Game.ClientState.Objects.Enums;
-using Dalamud.Game.Command;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
@@ -13,92 +12,23 @@ using ObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe class Commands : Tweak
+public class CommandsConfiguration
 {
-    public static Configuration Config => Plugin.Config.Tweaks.Commands;
+    [BoolConfig]
+    public bool EnableItemLinkCommand = true;
 
-    private const string ItemLinkCommand = "/itemlink";
-    private const string WhatMountCommand = "/whatmount";
-    private const string WhatBardingCommand = "/whatbarding";
+    [BoolConfig]
+    public bool EnableWhatMountCommand = true;
 
-    public class Configuration
-    {
-        [BoolConfig]
-        public bool EnableItemLinkCommand = true;
+    [BoolConfig]
+    public bool EnableWhatBardingCommand = true;
+}
 
-        [BoolConfig]
-        public bool EnableWhatMountCommand = true;
-
-        [BoolConfig]
-        public bool EnableWhatBardingCommand = true;
-    }
-
-    public override void Enable()
-    {
-        RegisterCommands();
-    }
-
-    public override void Disable()
-    {
-        UnregisterCommands(true);
-    }
-
-    public override void OnConfigChange(string fieldName)
-    {
-        UnregisterCommands();
-        RegisterCommands();
-    }
-
-    private static void RegisterCommands()
-    {
-        if (Config.EnableItemLinkCommand)
-        {
-            Service.CommandManager.AddHandler(ItemLinkCommand, new CommandInfo(OnItemLinkCommand)
-            {
-                HelpMessage = $"Usage: {ItemLinkCommand} <id>",
-                ShowInHelp = true
-            });
-        }
-
-        if (Config.EnableWhatMountCommand)
-        {
-            Service.CommandManager.AddHandler(WhatMountCommand, new CommandInfo(OnWhatMountCommand)
-            {
-                HelpMessage = $"Usage: {WhatMountCommand}",
-                ShowInHelp = true
-            });
-        }
-
-        if (Config.EnableWhatBardingCommand)
-        {
-            Service.CommandManager.AddHandler(WhatBardingCommand, new CommandInfo(OnWhatBardingCommand)
-            {
-                HelpMessage = $"Usage: {WhatBardingCommand}",
-                ShowInHelp = true
-            });
-        }
-    }
-
-    private static void UnregisterCommands(bool removeAll = false)
-    {
-        if (!Config.EnableItemLinkCommand || removeAll)
-        {
-            Service.CommandManager.RemoveHandler(ItemLinkCommand);
-        }
-
-        if (!Config.EnableWhatMountCommand || removeAll)
-        {
-            Service.CommandManager.RemoveHandler(WhatMountCommand);
-        }
-
-        if (!Config.EnableWhatBardingCommand || removeAll)
-        {
-            Service.CommandManager.RemoveHandler(WhatBardingCommand);
-        }
-    }
-
-    public static void OnItemLinkCommand(string command, string arguments)
+[Tweak]
+public unsafe class Commands : Tweak<CommandsConfiguration>
+{
+    [CommandHandler("/itemlink", nameof(Config.EnableItemLinkCommand))]
+    private void OnItemLinkCommand(string command, string arguments)
     {
         uint id;
         try
@@ -133,7 +63,8 @@ public unsafe class Commands : Tweak
         });
     }
 
-    private static void OnWhatMountCommand(string command, string arguments)
+    [CommandHandler("/whatmount", nameof(Config.EnableWhatMountCommand))]
+    private void OnWhatMountCommand(string command, string arguments)
     {
         var target = Service.TargetManager.Target;
         if (target == null)
@@ -213,7 +144,8 @@ public unsafe class Commands : Tweak
         });
     }
 
-    private static void OnWhatBardingCommand(string command, string arguments)
+    [CommandHandler("/whatbarding", nameof(Config.EnableWhatBardingCommand))]
+    private void OnWhatBardingCommand(string command, string arguments)
     {
         var target = Service.TargetManager.Target;
         if (target == null)

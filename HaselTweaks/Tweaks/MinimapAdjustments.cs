@@ -3,29 +3,27 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe class MinimapAdjustments : Tweak
+public class MinimapAdjustmentsConfiguration
 {
-    public static Configuration Config => Plugin.Config.Tweaks.MinimapAdjustments;
+    [BoolConfig]
+    public bool Square = false;
 
-    public class Configuration
-    {
-        [BoolConfig]
-        public bool Square = false;
+    [FloatConfig(Max = 1, DefaultValue = 0.8f)]
+    public float DefaultOpacity = 0.8f;
 
-        [FloatConfig(Max = 1, DefaultValue = 0.8f)]
-        public float DefaultOpacity = 0.8f;
+    [FloatConfig(Max = 1, DefaultValue = 1)]
+    public float HoverOpacity = 1f;
 
-        [FloatConfig(Max = 1, DefaultValue = 1)]
-        public float HoverOpacity = 1f;
+    [BoolConfig]
+    public bool HideCoords = true;
 
-        [BoolConfig]
-        public bool HideCoords = true;
+    [BoolConfig]
+    public bool HideWeather = true;
+}
 
-        [BoolConfig]
-        public bool HideWeather = true;
-    }
-
+[Tweak]
+public unsafe class MinimapAdjustments : Tweak<MinimapAdjustmentsConfiguration>
+{
     public override void Disable()
     {
         if (!TryGetAddon<AtkUnitBase>("_NaviMap", out var naviMap))
@@ -40,8 +38,8 @@ public unsafe class MinimapAdjustments : Tweak
 
     public override void OnConfigChange(string fieldName)
     {
-        if (fieldName is nameof(Configuration.HideCoords)
-                      or nameof(Configuration.HideWeather))
+        if (fieldName is nameof(Config.HideCoords)
+                      or nameof(Config.HideWeather))
         {
             if (!TryGetAddon<AtkUnitBase>("_NaviMap", out var naviMap))
                 return;
