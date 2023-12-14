@@ -79,15 +79,13 @@ public unsafe class DTR : Tweak<DTRConfiguration>
     {
         DtrInstance = Service.DtrBar.Get("[HaselTweaks] Instance");
         DtrFPS = Service.DtrBar.Get("[HaselTweaks] FPS");
-        DtrBusy = Service.DtrBar.Get("[HaselTweaks] Busy");
-
-        DtrBusy.Text = new SeString(
-            new UIForegroundPayload(1),
-            new UIGlowPayload(16),
-            new TextPayload(GetRow<OnlineStatus>(12)?.Name.ToDalamudString().ToString()),
-            UIGlowPayload.UIGlowOff,
-            UIForegroundPayload.UIForegroundOff
-        );
+        DtrBusy = Service.DtrBar.Get("[HaselTweaks] Busy",
+            new SeString(
+                new UIForegroundPayload(1),
+                new UIGlowPayload(16),
+                new TextPayload(GetRow<OnlineStatus>(12)?.Name.ToDalamudString().ToString()),
+                UIGlowPayload.UIGlowOff,
+                UIForegroundPayload.UIForegroundOff));
     }
 
     public override void Disable()
