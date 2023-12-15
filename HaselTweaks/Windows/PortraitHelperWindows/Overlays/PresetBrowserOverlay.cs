@@ -31,8 +31,6 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         DeleteTagDialog = new(this);
         DeletePresetDialog = new(this);
 
-        Flags |= ImGuiWindowFlags.NoInputs; // HACK: fixes scrolling for like 1px
-
         SizeConstraints = new WindowSizeConstraints
         {
             MinimumSize = new Vector2(600, 500),
@@ -282,7 +280,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             RespectUiTheme: !IsWindow);
 
         using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
-        using var child = ImRaii.Child("##PresetBrowser_Content", ImGui.GetContentRegionAvail());
+        using var child = ImRaii.Child("##PresetBrowser_Content", ImGui.GetContentRegionAvail() - new Vector2(0, 2)); // HACK: fixes scrolling where it shouldn't scroll
         if (!child.Success)
             return;
         framePadding?.Dispose();

@@ -76,12 +76,14 @@ public abstract unsafe class Overlay : Window, IDisposable
 
     public override void Update()
     {
-        var isWindow = ImGuiHelpers.GlobalScale > 1;
-        var isCloseDialogOpen = AgentBannerEditor->EditorState->CloseDialogAddonId != 0;
+        IsWindow = ImGuiHelpers.GlobalScale > 1;
 
-        ToggleUiVisibility(isWindow || isCloseDialogOpen);
+        var isCloseDialogOpen =
+            AgentBannerEditor != null
+            && AgentBannerEditor->EditorState != null
+            && AgentBannerEditor->EditorState->CloseDialogAddonId != 0;
 
-        IsWindow = isWindow;
+        ToggleUiVisibility(IsWindow || isCloseDialogOpen);
     }
 
     public override void PreDraw()
@@ -127,6 +129,7 @@ public abstract unsafe class Overlay : Window, IDisposable
             Flags |= ImGuiWindowFlags.NoSavedSettings;
             Flags |= ImGuiWindowFlags.NoDecoration;
             Flags |= ImGuiWindowFlags.NoMove;
+            SizeCondition = ImGuiCond.Always;
 
             if (Type == OverlayType.Window)
             {
@@ -160,7 +163,6 @@ public abstract unsafe class Overlay : Window, IDisposable
                     leftPane->GetHeight() * scale.Y
                 );
 
-                SizeCondition = ImGuiCond.Always;
                 SizeConstraints = null;
             }
         }
