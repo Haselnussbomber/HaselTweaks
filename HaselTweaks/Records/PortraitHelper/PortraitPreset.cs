@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text.Json.Serialization;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Common.Math;
@@ -7,7 +8,6 @@ using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.JsonConverters;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
-using Newtonsoft.Json;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Ole;

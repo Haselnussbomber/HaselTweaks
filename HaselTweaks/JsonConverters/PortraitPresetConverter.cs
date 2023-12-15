@@ -1,15 +1,14 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using HaselTweaks.Records.PortraitHelper;
-using Newtonsoft.Json;
 
 namespace HaselTweaks.JsonConverters;
 
 public class PortraitPresetConverter : JsonConverter<PortraitPreset>
 {
-    public override void WriteJson(JsonWriter writer, PortraitPreset? value, JsonSerializer serializer)
-    {
-        writer.WriteValue(value?.ToExportedString());
-    }
+    public override void Write(Utf8JsonWriter writer, PortraitPreset value, JsonSerializerOptions options)
+        => writer.WriteStringValue(value?.ToExportedString());
 
-    public override PortraitPreset? ReadJson(JsonReader reader, Type objectType, PortraitPreset? existingValue, bool hasExistingValue, JsonSerializer serializer)
-        => PortraitPreset.FromExportedString((string?)reader.Value);
+    public override PortraitPreset? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        => PortraitPreset.FromExportedString(reader.GetString());
 }

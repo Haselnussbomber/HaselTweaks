@@ -24,7 +24,7 @@ public partial class PluginWindow : Window, IDisposable
     private const string LogoManifestResource = "HaselTweaks.Assets.Logo.png";
 
     private string _selectedTweak = string.Empty;
-    private IDalamudTextureWrap? _logoTextureWrap;
+    private readonly IDalamudTextureWrap? _logoTextureWrap;
     private readonly Point _logoSize = new(425, 132);
 
     [GeneratedRegex("\\.0$")]
