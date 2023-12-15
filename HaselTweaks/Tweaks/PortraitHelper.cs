@@ -28,8 +28,8 @@ namespace HaselTweaks.Tweaks;
 
 public class PortraitHelperConfiguration
 {
-    public List<SavedPreset> Presets = new();
-    public List<SavedPresetTag> PresetTags = new();
+    public List<SavedPreset> Presets = [];
+    public List<SavedPresetTag> PresetTags = [];
     public bool ShowAlignmentTool = false;
     public int AlignmentToolVerticalLines = 2;
     public Vector4 AlignmentToolVerticalColor = new(0, 0, 0, 1f);

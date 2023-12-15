@@ -13,7 +13,6 @@ using HaselCommon.Enums;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Utils;
-using HaselTweaks.Enums;
 using ImGuiNET;
 using ImColor = HaselCommon.Structs.ImColor;
 
@@ -78,12 +77,9 @@ public partial class PluginWindow : Window, IDisposable
         _selectedTweak = string.Empty;
         Flags &= ~ImGuiWindowFlags.MenuBar;
 
-        foreach (var tweak in Plugin.Tweaks)
+        foreach (var tweak in Plugin.Tweaks.Where(tweak => tweak.Enabled))
         {
-            if (tweak.Enabled && tweak.Flags.HasFlag(TweakFlags.HasCustomConfig))
-            {
-                tweak.OnConfigWindowClose();
-            }
+            tweak.OnConfigWindowClose();
         }
 
         Service.WindowManager.CloseWindow<PluginWindow>();
@@ -394,44 +390,7 @@ public partial class PluginWindow : Window, IDisposable
         }
 #endif
 
-        if (tweak.Flags.HasFlag(TweakFlags.HasCustomConfig))
-        {
-            if (!tweak.Flags.HasFlag(TweakFlags.NoCustomConfigHeader))
-                ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
-
-            tweak.DrawCustomConfig();
-            return;
-        }
-
-        var config = Plugin.Config.Tweaks.GetType().GetProperty(tweak.InternalName)?.GetValue(Plugin.Config.Tweaks);
-        if (config == null)
-            return;
-
-        var configType = config.GetType();
-        var configFields = configType.GetFields();
-        if (!configFields.Any())
-            return;
-
-        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
-
-        foreach (var field in configFields)
-        {
-            var attr = field.GetCustomAttribute<BaseConfigAttribute>();
-            if (attr == null)
-                continue;
-
-            using var fieldid = ImRaii.PushId(field.Name);
-
-            var hasDependency = !string.IsNullOrEmpty(attr.DependsOn);
-            var isDisabled = hasDependency && (bool?)configType.GetField(attr.DependsOn)?.GetValue(config) == false;
-            var indent = hasDependency ? ImGuiUtils.ConfigIndent() : null;
-            var disabled = isDisabled ? ImRaii.Disabled() : null;
-
-            attr.Draw(tweak, config, field);
-
-            disabled?.Dispose();
-            indent?.Dispose();
-        }
+        tweak.DrawConfig();
     }
 
     private static (string, ImColor) GetTweakStatus(Tweak tweak)

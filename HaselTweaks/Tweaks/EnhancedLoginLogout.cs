@@ -13,7 +13,6 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Utils;
-using HaselTweaks.Enums;
 using HaselTweaks.Records;
 using HaselTweaks.Structs;
 using ImGuiNET;
@@ -30,8 +29,8 @@ public class EnhancedLoginLogoutConfiguration
 
     public Vector3 PetPosition = new(-0.6f, 0f, 0f);
 
-    public Dictionary<ulong, PetMirageSetting> PetMirageSettings = new();
-    public Dictionary<ulong, uint> SelectedEmotes = new();
+    public Dictionary<ulong, PetMirageSetting> PetMirageSettings = [];
+    public Dictionary<ulong, uint> SelectedEmotes = [];
 
     public class PetMirageSetting
     {
@@ -40,7 +39,7 @@ public class EnhancedLoginLogoutConfiguration
     }
 }
 
-[Tweak(TweakFlags.HasCustomConfig | TweakFlags.NoCustomConfigHeader)]
+[Tweak]
 public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfiguration>
 {
     private CharaSelectCharacter? _currentEntry = null;
@@ -136,7 +135,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
     private readonly uint[] _changePoseEmoteIds = [91, 92, 93, 107, 108, 218, 219,];
     private List<uint>? _excludedEmotes;
 
-    internal override void DrawCustomConfig()
+    public override void DrawConfig()
     {
         var scale = ImGuiHelpers.GlobalScale;
 
@@ -524,7 +523,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
 
         if (_excludedEmotes == null)
         {
-            _excludedEmotes = new() { /* Sit */ 50, };
+            _excludedEmotes = [/* Sit */ 50];
 
             foreach (var emote in GetSheet<Emote>())
             {

@@ -33,8 +33,7 @@ public class EnhancedExpBarConfiguration
     public bool DisableColorChanges = false;
 }
 
-[Tweak]
-[IncompatibilityWarning("SimpleTweaksPlugin", "ShowExperiencePercentage")]
+[Tweak, IncompatibilityWarning("SimpleTweaksPlugin", "ShowExperiencePercentage")]
 public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
 {
     public enum MaxLevelOverrideType

@@ -15,8 +15,7 @@ public class CharacterClassSwitcherConfiguration
     public bool DisableTooltips = false;
 }
 
-[Tweak]
-[IncompatibilityWarning("SimpleTweaksPlugin", "CharacterWindowJobSwitcher")]
+[Tweak, IncompatibilityWarning("SimpleTweaksPlugin", "CharacterWindowJobSwitcher")]
 public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitcherConfiguration>
 {
     private MemoryReplacement? TooltipPatch;

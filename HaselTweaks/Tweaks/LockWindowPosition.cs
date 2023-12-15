@@ -19,18 +19,18 @@ public class LockWindowPositionConfiguration
 {
     public bool Inverted = false;
     public bool AddLockUnlockContextMenuEntries = true;
-    public List<LockWindowPosition.LockedWindowSetting> LockedWindows = new();
-}
+    public List<LockedWindowSetting> LockedWindows = [];
 
-[Tweak(TweakFlags.HasCustomConfig)]
-public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfiguration>
-{
     public record LockedWindowSetting
     {
         public bool Enabled = true;
         public string Name = "";
     }
+}
 
+[Tweak]
+public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfiguration>
+{
     private const int EventParamLock = 9901;
     private const int EventParamUnlock = 9902;
     private static readonly string[] IgnoredAddons = [
@@ -43,8 +43,10 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
     private Vector2 _hoveredWindowSize;
     private int _eventIndexToDisable = 0;
 
-    internal override void DrawCustomConfig()
+    public override void DrawConfig()
     {
+        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+
         ImGui.Checkbox(t("LockWindowPosition.Config.Inverted.Label"), ref Config.Inverted);
         if (ImGui.IsItemClicked())
         {

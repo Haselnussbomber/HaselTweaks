@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dalamud.Game.Command;
+using Dalamud.Interface.Utility.Raii;
+using HaselCommon.Utils;
 using static Dalamud.Game.Command.CommandInfo;
 
 namespace HaselTweaks;
@@ -14,9 +16,39 @@ public abstract class Tweak<T> : Tweak
         => cachedConfig ??= (T?)typeof(TweakConfigs).GetProperties().FirstOrDefault(pi => pi!.PropertyType == typeof(T), null)?.GetValue(Plugin.Config.Tweaks)
                         ?? throw new InvalidOperationException($"Configuration for {typeof(T).Name} not found.");
 
-    protected IEnumerable<MethodInfo> CommandHandlers => CachedType
-        .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-        .Where(mi => mi.GetCustomAttribute<CommandHandlerAttribute>() != null);
+    protected IEnumerable<MethodInfo> CommandHandlers
+        => CachedType
+            .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            .Where(mi => mi.GetCustomAttribute<CommandHandlerAttribute>() != null);
+
+    public override void DrawConfig()
+    {
+        var configType = typeof(T);
+        var configFields = configType.GetFields()
+            .Select(fieldInfo => (FieldInfo: fieldInfo, Attribute: fieldInfo.GetCustomAttribute<BaseConfigAttribute>()))
+            .Where((tuple) => tuple.Attribute != null)
+            .Cast<(FieldInfo, BaseConfigAttribute)>();
+
+        if (!configFields.Any())
+            return;
+
+        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+
+        foreach (var (field, attr) in configFields)
+        {
+            using var fieldid = ImRaii.PushId(field.Name);
+
+            var hasDependency = !string.IsNullOrEmpty(attr.DependsOn);
+            var isDisabled = hasDependency && (bool?)configType.GetField(attr.DependsOn)?.GetValue(Config) == false;
+            var indent = hasDependency ? ImGuiUtils.ConfigIndent() : null;
+            var disabled = isDisabled ? ImRaii.Disabled() : null;
+
+            attr.Draw(this, Config!, field);
+
+            disabled?.Dispose();
+            indent?.Dispose();
+        }
+    }
 
     protected override void EnableCommands()
     {

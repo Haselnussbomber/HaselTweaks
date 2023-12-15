@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
-using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 
 namespace HaselTweaks;
@@ -14,7 +13,6 @@ public abstract partial class Tweak : ITweak
     {
         CachedType = GetType();
         InternalName = CachedType.Name;
-        Flags = CachedType.GetCustomAttribute<TweakAttribute>()?.Flags ?? TweakFlags.None;
         IncompatibilityWarnings = CachedType.GetCustomAttributes<IncompatibilityWarningAttribute>().ToArray();
 
         try
@@ -56,7 +54,6 @@ public abstract partial class Tweak : ITweak
 
     public Type CachedType { get; init; }
     public string InternalName { get; init; }
-    public TweakFlags Flags { get; init; }
     public IncompatibilityWarningAttribute[] IncompatibilityWarnings { get; init; }
 
     public string Name
@@ -75,6 +72,7 @@ public abstract partial class Tweak : ITweak
     public virtual void Enable() { }
     public virtual void Disable() { }
     public virtual void Dispose() { }
+    public virtual void DrawConfig() { }
     public virtual void OnConfigChange(string fieldName) { }
     public virtual void OnConfigWindowClose() { }
     public virtual void OnLanguageChange() { }
@@ -112,8 +110,6 @@ public abstract partial class Tweak // Internal
                 .Invoke(hook, null);
         }
     }
-
-    internal virtual void DrawCustomConfig() { }
 
     internal void EnableInternal()
     {
@@ -318,45 +314,45 @@ public abstract partial class Tweak // Internal
 
 public abstract partial class Tweak // Logging
 {
-    protected void Log(string messageTemplate, params object[] values)
+    public void Log(string messageTemplate, params object[] values)
         => Information(messageTemplate, values);
 
-    protected void Log(Exception exception, string messageTemplate, params object[] values)
+    public void Log(Exception exception, string messageTemplate, params object[] values)
         => Information(exception, messageTemplate, values);
 
-    protected void Verbose(string messageTemplate, params object[] values)
+    public void Verbose(string messageTemplate, params object[] values)
         => Service.PluginLog.Verbose($"[{InternalName}] {messageTemplate}", values);
 
-    protected void Verbose(Exception exception, string messageTemplate, params object[] values)
+    public void Verbose(Exception exception, string messageTemplate, params object[] values)
         => Service.PluginLog.Verbose(exception, $"[{InternalName}] {messageTemplate}", values);
 
-    protected void Debug(string messageTemplate, params object[] values)
+    public void Debug(string messageTemplate, params object[] values)
         => Service.PluginLog.Debug($"[{InternalName}] {messageTemplate}", values);
 
-    protected void Debug(Exception exception, string messageTemplate, params object[] values)
+    public void Debug(Exception exception, string messageTemplate, params object[] values)
         => Service.PluginLog.Debug(exception, $"[{InternalName}] {messageTemplate}", values);
 
-    protected void Information(string messageTemplate, params object[] values)
+    public void Information(string messageTemplate, params object[] values)
         => Service.PluginLog.Information($"[{InternalName}] {messageTemplate}", values);
 
-    protected void Information(Exception exception, string messageTemplate, params object[] values)
+    public void Information(Exception exception, string messageTemplate, params object[] values)
         => Service.PluginLog.Information(exception, $"[{InternalName}] {messageTemplate}", values);
 
-    protected void Warning(string messageTemplate, params object[] values)
+    public void Warning(string messageTemplate, params object[] values)
         => Service.PluginLog.Warning($"[{InternalName}] {messageTemplate}", values);
 
-    protected void Warning(Exception exception, string messageTemplate, params object[] values)
+    public void Warning(Exception exception, string messageTemplate, params object[] values)
         => Service.PluginLog.Warning(exception, $"[{InternalName}] {messageTemplate}", values);
 
-    protected void Error(string messageTemplate, params object[] values)
+    public void Error(string messageTemplate, params object[] values)
         => Service.PluginLog.Error($"[{InternalName}] {messageTemplate}", values);
 
-    protected void Error(Exception exception, string messageTemplate, params object[] values)
+    public void Error(Exception exception, string messageTemplate, params object[] values)
         => Service.PluginLog.Error(exception, $"[{InternalName}] {messageTemplate}", values);
 
-    protected void Fatal(string messageTemplate, params object[] values)
+    public void Fatal(string messageTemplate, params object[] values)
         => Service.PluginLog.Fatal($"[{InternalName}] {messageTemplate}", values);
 
-    protected void Fatal(Exception exception, string messageTemplate, params object[] values)
+    public void Fatal(Exception exception, string messageTemplate, params object[] values)
         => Service.PluginLog.Fatal(exception, $"[{InternalName}] {messageTemplate}", values);
 }

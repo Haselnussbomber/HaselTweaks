@@ -20,7 +20,7 @@ namespace HaselTweaks.Windows;
 
 public unsafe partial class AetherCurrentHelperWindow : LockableWindow
 {
-    private readonly Dictionary<uint, string> _questNameCache = new(); // key is Quest.RowId, value is stripped from private use utf8 chars
+    private readonly Dictionary<uint, string> _questNameCache = []; // key is Quest.RowId, value is stripped from private use utf8 chars
     private bool _hideUnlocked = true;
 
     private static readonly ImColor TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);

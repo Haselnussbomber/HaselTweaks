@@ -9,7 +9,6 @@ using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselCommon.Extensions;
 using HaselCommon.Utils;
-using HaselTweaks.Enums;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
@@ -22,11 +21,13 @@ public class DTRConfiguration
     public string FormatUnitText = " fps";
 }
 
-[Tweak(TweakFlags.HasCustomConfig)]
+[Tweak]
 public unsafe class DTR : Tweak<DTRConfiguration>
 {
-    internal override void DrawCustomConfig()
+    public override void DrawConfig()
     {
+        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+
         ImGui.TextUnformatted(t("DTR.Config.Explanation.Pre"));
         ImGuiUtils.TextUnformattedColored((ImColor)ImGuiColors.DalamudRed, t("DTR.Config.Explanation.DalamudSettings"));
         if (ImGui.IsItemHovered())

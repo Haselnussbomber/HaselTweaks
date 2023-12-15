@@ -8,7 +8,6 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
-using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
@@ -17,11 +16,63 @@ namespace HaselTweaks.Tweaks;
 
 public class AutoSorterConfiguration
 {
-    public List<AutoSorter.SortingRule> Settings = new();
+    public List<SortingRule> Settings = [];
     public bool SortArmouryOnJobChange = true;
+
+    public record SortingRule
+    {
+        public bool Enabled = true;
+        public string? Category = null;
+        public string? Condition = null;
+        public string? Order = null;
+
+        public string? LocalizedCategory => AutoSorter.GetLocalizedParam(AutoSorter.CategorySet, Category);
+        public string? LocalizedCondition => AutoSorter.GetLocalizedParam(AutoSorter.ConditionSet, Condition);
+        public string? LocalizedOrder => AutoSorter.GetLocalizedParam(AutoSorter.OrderSet, Order);
+
+        public List<string>? GetErrors(HashSet<string>? usedCategories)
+        {
+            List<string>? errors = null;
+
+            if (string.IsNullOrEmpty(Category))
+            {
+                errors ??= [];
+                errors.Add(t("AutoSorter.SortingRule.Error.CategoryNotSet"));
+            }
+
+            if (string.IsNullOrEmpty(Condition))
+            {
+                errors ??= [];
+                errors.Add(t("AutoSorter.SortingRule.Error.ConditionNotSet"));
+            }
+
+            if (string.IsNullOrEmpty(Order))
+            {
+                errors ??= [];
+                errors.Add(t("AutoSorter.SortingRule.Error.OrderNotSet"));
+            }
+
+            if (Category == "armoury" && usedCategories != null && AutoSorter.ArmourySubcategories.Any(usedCategories.Contains))
+            {
+                errors ??= [];
+                errors.Add(t("AutoSorter.SortingRule.Error.OverridesArmouryRule"));
+            }
+
+            unsafe
+            {
+                if (Category is "rightsaddlebag" && !PlayerState.Instance()->HasPremiumSaddlebag)
+                {
+                    errors ??= [];
+                    errors.Add(t("AutoSorter.SortingRule.Error.PremiumSaddlebagNotSubscribed"));
+                }
+            }
+
+            return errors;
+        }
+    }
 }
 
-[Tweak(TweakFlags.HasCustomConfig)]
+[Tweak]
 public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
 {
     public static readonly Dictionary<string, uint> CategorySet = new()
@@ -120,57 +171,10 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
         return str;
     }
 
-    public record SortingRule
+    public override void DrawConfig()
     {
-        public bool Enabled = true;
-        public string? Category = null;
-        public string? Condition = null;
-        public string? Order = null;
+        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
 
-        public string? LocalizedCategory => GetLocalizedParam(CategorySet, Category);
-        public string? LocalizedCondition => GetLocalizedParam(ConditionSet, Condition);
-        public string? LocalizedOrder => GetLocalizedParam(OrderSet, Order);
-
-        public List<string>? GetErrors(AutoSorter tweak, HashSet<string>? usedCategories)
-        {
-            List<string>? errors = null;
-
-            if (string.IsNullOrEmpty(Category))
-            {
-                errors ??= new();
-                errors.Add(t("AutoSorter.SortingRule.Error.CategoryNotSet"));
-            }
-
-            if (string.IsNullOrEmpty(Condition))
-            {
-                errors ??= new();
-                errors.Add(t("AutoSorter.SortingRule.Error.ConditionNotSet"));
-            }
-
-            if (string.IsNullOrEmpty(Order))
-            {
-                errors ??= new();
-                errors.Add(t("AutoSorter.SortingRule.Error.OrderNotSet"));
-            }
-
-            if (Category == "armoury" && usedCategories != null && ArmourySubcategories.Any(usedCategories.Contains))
-            {
-                errors ??= new();
-                errors.Add(t("AutoSorter.SortingRule.Error.OverridesArmouryRule"));
-            }
-
-            if (Category is "rightsaddlebag" && !PlayerState.Instance()->HasPremiumSaddlebag)
-            {
-                errors ??= new();
-                errors.Add(t("AutoSorter.SortingRule.Error.PremiumSaddlebagNotSubscribed"));
-            }
-
-            return errors;
-        }
-    }
-
-    internal override void DrawCustomConfig()
-    {
         ImGui.Checkbox(t("AutoSorter.Config.SortArmouryOnJobChange.Label"), ref Config.SortArmouryOnJobChange);
 
         ImGuiUtils.DrawPaddedSeparator();
@@ -377,7 +381,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
                     }
                     else
                     {
-                        var errors = entry.GetErrors(this, usedCategories);
+                        var errors = entry.GetErrors(usedCategories);
                         if (errors != null)
                         {
                             using (ImRaii.PushColor(ImGuiCol.Text, 0xff02d2ee)) // safety yellow
@@ -469,7 +473,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
         }
     }
 
-    private readonly Queue<IGrouping<string, SortingRule>> _queue = new();
+    private readonly Queue<IGrouping<string, AutoSorterConfiguration.SortingRule>> _queue = new();
     private bool _isBusy = false;
     private uint _lastClassJobId = 0;
 

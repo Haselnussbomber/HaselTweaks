@@ -1,12 +1,9 @@
-using HaselTweaks.Enums;
-
 namespace HaselTweaks.Interfaces;
 
 public interface ITweak : IDisposable
 {
     Type CachedType { get; }
     string InternalName { get; }
-    TweakFlags Flags { get; }
     IncompatibilityWarningAttribute[] IncompatibilityWarnings { get; }
 
     string Name { get; }
@@ -21,6 +18,7 @@ public interface ITweak : IDisposable
 
     void Enable();
     void Disable();
+    void DrawConfig();
     void OnConfigChange(string fieldName);
     void OnConfigWindowClose();
     void OnLanguageChange();

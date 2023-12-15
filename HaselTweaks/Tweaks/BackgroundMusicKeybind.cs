@@ -4,7 +4,7 @@ using Dalamud.Game.ClientState.Keys;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Extensions;
-using HaselTweaks.Enums;
+using HaselCommon.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
@@ -14,11 +14,13 @@ public class BackgroundMusicKeybindConfiguration
     public VirtualKey[] Keybind = [VirtualKey.CONTROL, VirtualKey.M];
 }
 
-[Tweak(TweakFlags.HasCustomConfig)]
+[Tweak]
 public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfiguration>
 {
-    internal override void DrawCustomConfig()
+    public override void DrawConfig()
     {
+        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+
         var shift = Config.Keybind.Contains(VirtualKey.SHIFT);
         if (ImGui.Checkbox(t("BackgroundMusicKeybind.Config.ShiftKeyCheckbox.Label"), ref shift))
         {
@@ -33,7 +35,7 @@ public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfigu
                 set.Remove(VirtualKey.SHIFT);
             }
 
-            Config.Keybind = set.Order().ToArray();
+            Config.Keybind = [.. set.Order()];
             Plugin.Config.Save();
         }
 
@@ -53,7 +55,7 @@ public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfigu
                 set.Remove(VirtualKey.CONTROL);
             }
 
-            Config.Keybind = set.Order().ToArray();
+            Config.Keybind = [.. set.Order()];
             Plugin.Config.Save();
         }
 
@@ -73,7 +75,7 @@ public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfigu
                 set.Remove(VirtualKey.MENU);
             }
 
-            Config.Keybind = set.Order().ToArray();
+            Config.Keybind = [.. set.Order()];
             Plugin.Config.Save();
         }
 
@@ -110,7 +112,7 @@ public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfigu
                     set.Add(_key);
                 }
 
-                Config.Keybind = set.Order().ToArray();
+                Config.Keybind = [.. set.Order()];
                 Plugin.Config.Save();
             }
         }

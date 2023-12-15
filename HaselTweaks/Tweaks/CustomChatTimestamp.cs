@@ -5,7 +5,6 @@ using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Utils;
-using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using ImGuiNET;
 
@@ -16,11 +15,13 @@ public class CustomChatTimestampConfiguration
     public string Format = "[HH:mm] ";
 }
 
-[Tweak(TweakFlags.HasCustomConfig)]
+[Tweak]
 public unsafe partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguration>
 {
-    internal override void DrawCustomConfig()
+    public override void DrawConfig()
     {
+        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+
         ImGui.TextUnformatted(t("CustomChatTimestamp.Config.Format.Label"));
         using (ImGuiUtils.ConfigIndent())
         {
@@ -66,6 +67,7 @@ public unsafe partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfi
             }
             else
             {
+                // TODO: check this: colorParty = ImColor.FromABGR(colorParty); 
                 var alpha = (colorParty & 0xFF000000) >> 24;
                 var red = (colorParty & 0x00FF0000) >> 16;
                 var green = (colorParty & 0x0000FF00) >> 8;
@@ -132,7 +134,7 @@ public unsafe partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfi
         return FormatAddonHook.OriginalDisposeSafe(a1, addonRowId, value);
     }
 
-    public void ReloadChat()
+    public static void ReloadChat()
     {
         var raptureLogModule = RaptureLogModule.Instance();
         for (var i = 0; i < 4; i++)
