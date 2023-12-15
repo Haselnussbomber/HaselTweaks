@@ -48,6 +48,18 @@ internal sealed class TweakInitializerGenerator : IIncrementalGenerator
         builder.AppendLine("public partial class Plugin");
         builder.AppendLine("{");
         builder.Indent();
+        builder.AppendLine("private string[] TweakNames = [");
+        builder.Indent();
+
+        for (var i = 0; i < tweakNames.Length; i++)
+        {
+            builder.AppendLine($"\"{tweakNames[i]}\"" + (i < tweakNames.Length - 1 ? "," : ""));
+        }
+
+        builder.DecrementIndent();
+        builder.AppendLine("];"); // TweakNames
+        builder.AppendLine("");
+
         builder.AppendLine("private void InitializeTweaks()");
         builder.AppendLine("{");
         builder.Indent();
@@ -73,9 +85,9 @@ internal sealed class TweakInitializerGenerator : IIncrementalGenerator
         }
 
         builder.DecrementIndent();
-        builder.AppendLine("}");
+        builder.AppendLine("}"); // InitializeTweaks
         builder.DecrementIndent();
-        builder.AppendLine("}");
+        builder.AppendLine("}"); // Plugin
 
         return builder.ToString();
     }

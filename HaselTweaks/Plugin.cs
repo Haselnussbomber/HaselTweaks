@@ -28,9 +28,9 @@ public partial class Plugin : IDalamudPlugin
 
         Service.Framework.RunOnFrameworkThread(() =>
         {
-            InitializeTweaks();
+            Config = Configuration.Load(TweakNames);
 
-            Config = Configuration.Load(Tweaks.Select(t => t.InternalName));
+            InitializeTweaks();
 
             Service.TranslationManager.Initialize(Config);
             Service.TranslationManager.OnLanguageChange += OnLanguageChange;

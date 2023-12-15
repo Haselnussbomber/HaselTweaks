@@ -10,11 +10,16 @@ namespace HaselTweaks;
 
 public abstract class Tweak<T> : Tweak
 {
-    private static T? cachedConfig;
+    public Tweak() : base()
+    {
+        Config = (T?)(typeof(TweakConfigs)
+            .GetProperties()?
+            .FirstOrDefault(pi => pi!.PropertyType == typeof(T), null)?
+            .GetValue(Plugin.Config.Tweaks))
+            ?? throw new InvalidOperationException($"Configuration for {typeof(T).Name} not found.");
+    }
 
-    public static T Config
-        => cachedConfig ??= (T?)typeof(TweakConfigs).GetProperties().FirstOrDefault(pi => pi!.PropertyType == typeof(T), null)?.GetValue(Plugin.Config.Tweaks)
-                        ?? throw new InvalidOperationException($"Configuration for {typeof(T).Name} not found.");
+    public T Config { get; init; }
 
     protected IEnumerable<MethodInfo> CommandHandlers
         => CachedType

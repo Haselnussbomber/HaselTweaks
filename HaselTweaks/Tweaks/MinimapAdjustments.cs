@@ -58,7 +58,7 @@ public unsafe class MinimapAdjustments : Tweak<MinimapAdjustmentsConfiguration>
         UpdateCollision(naviMap, Config.Square);
     }
 
-    private static void UpdateVisibility(AtkUnitBase* naviMap, bool hovered)
+    private void UpdateVisibility(AtkUnitBase* naviMap, bool hovered)
     {
         if (Config.HideCoords) GetNode<AtkResNode>(naviMap, 5)->ToggleVisibility(hovered);
         if (Config.HideWeather) GetNode<AtkResNode>(naviMap, 14)->ToggleVisibility(hovered);
