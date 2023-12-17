@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Dalamud.Game.Command;
+using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using HaselTweaks.Windows;
@@ -56,7 +57,7 @@ public partial class Plugin : IDalamudPlugin
             Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
             Service.AddonObserver.AddonOpen += AddonObserver_AddonOpen;
             Service.AddonObserver.AddonClose += AddonObserver_AddonClose;
-            Service.AgentUpdateObserver.OnInventoryUpdate += OnInventoryUpdate;
+            Service.GameInventory.InventoryChangedRaw += GameInventory_InventoryChangedRaw;
 
             Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
 
@@ -101,7 +102,7 @@ public partial class Plugin : IDalamudPlugin
         }
     }
 
-    private void OnInventoryUpdate()
+    private void GameInventory_InventoryChangedRaw(IReadOnlyCollection<InventoryEventArgs> events)
     {
         foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
         {
@@ -176,7 +177,7 @@ public partial class Plugin : IDalamudPlugin
             return;
 
         Service.TranslationManager.OnLanguageChange -= OnLanguageChange;
-        Service.AgentUpdateObserver.OnInventoryUpdate -= OnInventoryUpdate;
+        Service.GameInventory.InventoryChangedRaw -= GameInventory_InventoryChangedRaw;
         Service.AddonObserver.AddonClose -= AddonObserver_AddonClose;
         Service.AddonObserver.AddonOpen -= AddonObserver_AddonOpen;
         Service.Framework.Update -= OnFrameworkUpdate;
