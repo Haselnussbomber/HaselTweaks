@@ -141,12 +141,12 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         }
     }
 
-    [AddressHook<HaselUIClipboard>(nameof(HaselUIClipboard.Addresses.OnClipboardDataChanged))]
-    private unsafe void OnClipboardDataChanged(HaselUIClipboard* handler)
+    [AddressHook<UIClipboard>(nameof(UIClipboard.Addresses.OnClipboardDataChanged))]
+    private unsafe void OnClipboardDataChanged(UIClipboard* uiClipboard)
     {
-        OnClipboardDataChangedHook.OriginalDisposeSafe(handler);
+        OnClipboardDataChangedHook.OriginalDisposeSafe(uiClipboard);
 
-        ClipboardPreset = PortraitPreset.FromExportedString(handler->Data.SystemClipboardText.ToString());
+        ClipboardPreset = PortraitPreset.FromExportedString(uiClipboard->Data.SystemClipboardText.ToString());
         if (ClipboardPreset != null)
             Debug($"Parsed ClipboardPreset: {ClipboardPreset}");
     }
