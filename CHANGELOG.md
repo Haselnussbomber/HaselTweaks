@@ -1,5 +1,20 @@
 # Changelog
 
+## [20.0.3] (2023-12-20)
+
+### HaselTweaks
+
+- **Changed:** The configuration has been rewritten.
+  - It now uses .NETs `System.Text.Json` instead of `Newtonsoft.Json`.
+  - It'll create a backup of the current config to `%APPDATA%\XIVLauncher\pluginConfigs\HaselTweaks.json.bak` before migrating.
+  - If the migration failed or the new config can't be loaded, please [make an issue on GitHub](https://github.com/Haselnussbomber/HaselTweaks/issues/new) and upload the dalamud.log (or just the error), the current config, and if available the backup. In my testing everything worked, but you never know... Good luck! :)
+- **Changed:** Detection of inventory changes (currently only used for the Enhanced Material List tweak) now uses Dalamuds new `GameInventory` service.
+
+### Portrait Helper
+
+- **Fixed:** The Preset Browser as a window (when using a larger font scaling) was not movable.
+- **Fixed:** An error would occur when closing the portrait editor window.
+
 ## [20.0.2] (2023-12-12)
 
 ### Portrait Helper
@@ -1259,6 +1274,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[20.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.0.2...v20.0.3
 [20.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.0.1...v20.0.2
 [20.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.0.0...v20.0.1
 [20.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v19.1.0...v20.0.0
