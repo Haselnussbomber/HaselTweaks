@@ -12,6 +12,7 @@ public abstract class Tweak<T> : Tweak
 {
     public Tweak() : base()
     {
+        CachedConfigType = typeof(T);
         Config = (T?)(typeof(TweakConfigs)
             .GetProperties()?
             .FirstOrDefault(pi => pi!.PropertyType == typeof(T), null)?
@@ -19,6 +20,7 @@ public abstract class Tweak<T> : Tweak
             ?? throw new InvalidOperationException($"Configuration for {typeof(T).Name} not found.");
     }
 
+    public Type CachedConfigType { get; init; }
     public T Config { get; init; }
 
     protected IEnumerable<MethodInfo> CommandHandlers
@@ -28,8 +30,7 @@ public abstract class Tweak<T> : Tweak
 
     public override void DrawConfig()
     {
-        var configType = typeof(T);
-        var configFields = configType.GetFields()
+        var configFields = CachedConfigType.GetFields()
             .Select(fieldInfo => (FieldInfo: fieldInfo, Attribute: fieldInfo.GetCustomAttribute<BaseConfigAttribute>()))
             .Where((tuple) => tuple.Attribute != null)
             .Cast<(FieldInfo, BaseConfigAttribute)>();
@@ -44,7 +45,7 @@ public abstract class Tweak<T> : Tweak
             using var fieldid = ImRaii.PushId(field.Name);
 
             var hasDependency = !string.IsNullOrEmpty(attr.DependsOn);
-            var isDisabled = hasDependency && (bool?)configType.GetField(attr.DependsOn)?.GetValue(Config) == false;
+            var isDisabled = hasDependency && (bool?)CachedConfigType.GetField(attr.DependsOn)?.GetValue(Config) == false;
             var indent = hasDependency ? ImGuiUtils.ConfigIndent() : null;
             var disabled = isDisabled ? ImRaii.Disabled() : null;
 
