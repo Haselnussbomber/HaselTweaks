@@ -42,17 +42,14 @@ public abstract class Tweak<T> : Tweak
 
         foreach (var (field, attr) in configFields)
         {
-            using var fieldid = ImRaii.PushId(field.Name);
-
             var hasDependency = !string.IsNullOrEmpty(attr.DependsOn);
             var isDisabled = hasDependency && (bool?)CachedConfigType.GetField(attr.DependsOn)?.GetValue(Config) == false;
-            var indent = hasDependency ? ImGuiUtils.ConfigIndent() : null;
-            var disabled = isDisabled ? ImRaii.Disabled() : null;
+
+            using var id = ImRaii.PushId(field.Name);
+            using var indent = ImGuiUtils.ConfigIndent(hasDependency);
+            using var disabled = ImRaii.Disabled(isDisabled);
 
             attr.Draw(this, Config!, field);
-
-            disabled?.Dispose();
-            indent?.Dispose();
         }
     }
 
