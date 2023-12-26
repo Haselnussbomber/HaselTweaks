@@ -51,7 +51,7 @@ public unsafe partial class EnhancedIsleworksAgenda : Tweak<EnhancedIsleworksAge
         }
     }
 
-    [VTableHook<AddonMJICraftScheduleSetting>((int)AtkUnitBaseVfs.ReceiveEvent)]
+    [AddressHook<AddonMJICraftScheduleSetting>(nameof(AddonMJICraftScheduleSetting.Addresses.ReceiveEvent))]
     private void AddonMJICraftScheduleSetting_ReceiveEvent(AddonMJICraftScheduleSetting* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
         if (eventType == AtkEventType.ListItemRollOver && eventParam == 2 && Config.DisableTreeListTooltips)
