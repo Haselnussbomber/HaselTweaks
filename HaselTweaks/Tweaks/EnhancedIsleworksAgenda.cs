@@ -1,5 +1,5 @@
+using Dalamud;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows;
 
@@ -12,6 +12,9 @@ public class EnhancedIsleworksAgendaConfiguration
 
     [BoolConfig]
     public bool DisableTreeListTooltips = true;
+
+    [EnumConfig]
+    public ClientLanguage SearchLanguage = ClientLanguage.English;
 }
 
 [Tweak]
