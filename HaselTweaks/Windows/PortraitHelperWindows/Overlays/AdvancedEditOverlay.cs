@@ -4,6 +4,7 @@ using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Scene;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using FFXIVClientStructs.Havok;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using ImGuiNET;
@@ -21,6 +22,11 @@ public unsafe class AdvancedEditOverlay : Overlay
     private readonly AgentBannerEditor* Agent = GetAgent<AgentBannerEditor>();
     private AddonBannerEditor* Addon;
 
+    private float _timestamp;
+    private float _duration;
+    private float _frameCount;
+    private bool _isDragging;
+
     public AdvancedEditOverlay() : base(t("PortraitHelperWindows.AdvancedEditOverlay.Title"))
     {
     }
@@ -29,6 +35,43 @@ public unsafe class AdvancedEditOverlay : Overlay
     private CharaViewPortrait* CharaView => EditorState != null ? EditorState->CharaView : null;
     private Character* Character => CharaView != null ? CharaView->Base.GetCharacter() : null;
     private HaselCharacter* HaselCharacter => (HaselCharacter*)Character;
+
+    private hkaAnimation* GetBaseAnimation()
+    {
+        if (Character == null)
+            return null;
+
+        var characterBase = (CharacterBase*)Character->GameObject.DrawObject;
+        if (characterBase == null || characterBase->Skeleton == null || characterBase->Skeleton->PartialSkeletonCount == 0 || characterBase->Skeleton->PartialSkeletons == null)
+            return null;
+
+        var partialSkeleton = characterBase->Skeleton->PartialSkeletons[0].GetHavokAnimatedSkeleton(0);
+        if (partialSkeleton == null || partialSkeleton->AnimationControls.Length == 0 || partialSkeleton->AnimationControls[0].Value == null)
+            return null;
+
+        var animationControl = partialSkeleton->AnimationControls[0].Value;
+        if (animationControl == null || animationControl->hkaAnimationControl.Binding.ptr == null || animationControl->hkaAnimationControl.Binding.ptr->Animation.ptr == null)
+            return null;
+
+        return animationControl->hkaAnimationControl.Binding.ptr->Animation.ptr;
+    }
+
+    public override void Update()
+    {
+        base.Update();
+
+        if (!_isDragging && CharaView != null)
+        {
+            _timestamp = CharaView->GetAnimationTime();
+        }
+
+        var animation = GetBaseAnimation();
+        if (animation != null)
+        {
+            _duration = animation->Duration - 0.5f;
+            _frameCount = THIRTY_FPS * _duration;
+        }
+    }
 
     public override void Draw()
     {
@@ -272,27 +315,6 @@ public unsafe class AdvancedEditOverlay : Overlay
 
     private void DrawAnimationControl()
     {
-        var characterBase = (CharacterBase*)Character->GameObject.DrawObject;
-        if (characterBase == null || characterBase->Skeleton == null || characterBase->Skeleton->PartialSkeletonCount == 0 || characterBase->Skeleton->PartialSkeletons == null)
-            return;
-
-        var partialSkeleton = characterBase->Skeleton->PartialSkeletons[0].GetHavokAnimatedSkeleton(0);
-        if (partialSkeleton == null || partialSkeleton->AnimationControls.Length == 0 || partialSkeleton->AnimationControls[0].Value == null)
-            return;
-
-        var animationControl = partialSkeleton->AnimationControls[0].Value;
-        if (animationControl == null || animationControl->hkaAnimationControl.Binding.ptr == null || animationControl->hkaAnimationControl.Binding.ptr->Animation.ptr == null)
-            return;
-
-        var actionTimelineDriver = (HaselActionTimelineDriver*)(nint)(&Character->ActionTimelineManager.Driver);
-        var baseTimelineSlot = (HaselSchedulerTimelineSlot*)actionTimelineDriver->SchedulerTimelineSlotsSpan[(int)ActionTimelineSlots.Base];
-        if (baseTimelineSlot == null || baseTimelineSlot->Ptr == null)
-            return;
-        var baseTimeline = baseTimelineSlot->Ptr;
-
-        var duration = animationControl->hkaAnimationControl.Binding.ptr->Animation.ptr->Duration - 0.5f;
-        var frameCount = THIRTY_FPS * duration;
-
         using (ImRaii.PushId("AnimationTimestamp"))
         {
             ImGui.TableNextRow();
@@ -303,15 +325,20 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
-            var timestamp = baseTimeline->CurrentTimestamp;
-            if (ImGui.DragFloat("##DragFloat", ref timestamp, 0.01f, 0, frameCount, $"%.2f / {frameCount}"))
+            if (ImGui.DragFloat($"##DragFloat", ref _timestamp, 0.01f, 0f, _frameCount, $"%.2f / {_frameCount}"))
             {
-                var delta = timestamp - baseTimeline->CurrentTimestamp;
+                var actionTimelineDriver = (HaselActionTimelineDriver*)(nint)(&Character->ActionTimelineManager.Driver);
+                var baseTimelineSlot = actionTimelineDriver->SchedulerTimelineSlotsSpan[(int)ActionTimelineSlots.Base].Value;
+                if (baseTimelineSlot == null)
+                    return;
+                var baseTimeline = baseTimelineSlot->Ptr;
+                if (baseTimeline == null)
+                    return;
+
+                var delta = _timestamp - baseTimeline->CurrentTimestamp;
                 if (delta < 0)
                 {
-                    var actionTimelineManager = (HaselActionTimelineManager*)(nint)(&Character->ActionTimelineManager);
-                    actionTimelineManager->BannerRequestedTimestamp = timestamp;
-                    actionTimelineManager->BannerFlags2 |= 2;
+                    CharaView->SetPoseTimed(Character->ActionTimelineManager.BannerTimelineRowId, _timestamp);
                 }
                 else
                 {
@@ -324,6 +351,7 @@ public unsafe class AdvancedEditOverlay : Overlay
                 if (!EditorState->HasDataChanged)
                     EditorState->SetHasChanged(true);
             }
+            _isDragging = ImGui.IsItemActive();
         }
     }
 }
