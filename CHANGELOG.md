@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Isleworks Agenda
+
+- **Added:** A drop-down menu has been added to the right of the search bar that allows you to change the language in which the search is performed.
+
+### Portrait Helper
+
+- **Changed:** Dragging the animation timestamp forward now advances the animation smoothly. 🎉  
+  Unfortunately, moving backwards still uses the old method of reloading the animation at a specific timestamp, which causes flickering.
+
 ## [20.0.3] (2023-12-20)
 
 ### HaselTweaks
