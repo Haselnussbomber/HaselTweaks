@@ -487,9 +487,11 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
             ResetEmoteMode();
         }
 
+        // TODO: figure out how to prevent T-Pose
+
         if (intro != 0 && loop != 0)
         {
-            ((ActionTimelineManager*)(nint)(&_currentEntry.Character->ActionTimelineManager))->PlayActionTimeline(intro, loop);
+            ((HaselActionTimelineManager*)(nint)(&_currentEntry.Character->ActionTimelineManager))->PlayActionTimeline(intro, loop);
         }
         else if (loop != 0)
         {
