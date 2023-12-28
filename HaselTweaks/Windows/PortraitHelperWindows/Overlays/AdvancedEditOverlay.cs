@@ -24,7 +24,7 @@ public unsafe class AdvancedEditOverlay : Overlay
 
     private float _timestamp;
     private float _duration;
-    private float _frameCount;
+    private int _frameCount;
     private bool _isDragging;
 
     public AdvancedEditOverlay() : base(t("PortraitHelperWindows.AdvancedEditOverlay.Title"))
@@ -50,7 +50,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             return null;
 
         var animationControl = partialSkeleton->AnimationControls[0].Value;
-        if (animationControl == null || animationControl->hkaAnimationControl.Binding.ptr == null || animationControl->hkaAnimationControl.Binding.ptr->Animation.ptr == null)
+        if (animationControl == null || animationControl->hkaAnimationControl.Binding.ptr == null)
             return null;
 
         return animationControl->hkaAnimationControl.Binding.ptr->Animation.ptr;
@@ -69,7 +69,7 @@ public unsafe class AdvancedEditOverlay : Overlay
         if (animation != null)
         {
             _duration = animation->Duration - 0.5f;
-            _frameCount = THIRTY_FPS * _duration;
+            _frameCount = (int)Math.Round(THIRTY_FPS * _duration);
         }
     }
 
