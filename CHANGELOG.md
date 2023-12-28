@@ -1,5 +1,13 @@
 # Changelog
 
+## [20.1.1] (2023-12-28)
+
+Small UI hotfix for [v20.1.0](https://github.com/Haselnussbomber/HaselTweaks/releases/tag/v20.1.0).
+
+### Portrait Helper
+
+- **Fixed:** For some emotes, the frame count in the animation timestamp input would display decimals.
+
 ## [20.1.0] (2023-12-28)
 
 ### Enhanced Isleworks Agenda
@@ -1285,6 +1293,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[20.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.1.0...v20.1.1
 [20.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.0.3...v20.1.0
 [20.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.0.2...v20.0.3
 [20.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.0.1...v20.0.2
