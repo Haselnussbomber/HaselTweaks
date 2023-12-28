@@ -3,7 +3,7 @@ namespace HaselTweaks.Structs;
 [StructLayout(LayoutKind.Explicit)]
 public unsafe partial struct HaselActionTimelineManager
 {
-    [FieldOffset(0x70)] public HaselActionTimelineDriver Driver;
+    [FieldOffset(0x10)] public HaselActionTimelineDriver Driver;
 
     [FieldOffset(0x318 + 0x00)] public float BannerRequestedTimestamp;
     [FieldOffset(0x33F)] public byte BannerFlags2;

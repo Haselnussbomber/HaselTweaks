@@ -6,6 +6,7 @@ namespace HaselTweaks.Structs;
 public struct HaselCharacter
 {
     [FieldOffset(0xCB0)] public GazeContainer Gaze;
+    [FieldOffset(0x970)] public HaselActionTimelineManager ActionTimelineManager;
 
     [StructLayout(LayoutKind.Explicit, Size = 0x620)]
     public struct GazeContainer

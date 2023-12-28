@@ -60,17 +60,25 @@ public unsafe class AdvancedEditOverlay : Overlay
     {
         base.Update();
 
-        if (!_isDragging && CharaView != null)
-        {
-            _timestamp = CharaView->GetAnimationTime();
-        }
+        if (_isDragging || HaselCharacter == null)
+            return;
 
+        _timestamp = CharaView->GetAnimationTime();
+        UpdateDuration();
+    }
+
+    private void UpdateDuration()
+    {
         var animation = GetBaseAnimation();
-        if (animation != null)
-        {
-            _duration = animation->Duration - 0.5f;
-            _frameCount = (int)Math.Round(THIRTY_FPS * _duration);
-        }
+        if (animation == null)
+            return;
+
+        var baseTimeline = HaselCharacter->ActionTimelineManager.Driver.GetSchedulerTimeline(ActionTimelineSlots.Base);
+        if (baseTimeline == null || baseTimeline->IsIdleAnimation)
+            return;
+
+        _duration = animation->Duration - 0.5f;
+        _frameCount = (int)Math.Round(THIRTY_FPS * _duration);
     }
 
     public override void Draw()
@@ -327,11 +335,7 @@ public unsafe class AdvancedEditOverlay : Overlay
 
             if (ImGui.DragFloat($"##DragFloat", ref _timestamp, 0.01f, 0f, _frameCount, $"%.2f / {_frameCount}"))
             {
-                var actionTimelineDriver = (HaselActionTimelineDriver*)(nint)(&Character->ActionTimelineManager.Driver);
-                var baseTimelineSlot = actionTimelineDriver->SchedulerTimelineSlotsSpan[(int)ActionTimelineSlots.Base].Value;
-                if (baseTimelineSlot == null)
-                    return;
-                var baseTimeline = baseTimelineSlot->Ptr;
+                var baseTimeline = HaselCharacter->ActionTimelineManager.Driver.GetSchedulerTimeline(ActionTimelineSlots.Base);
                 if (baseTimeline == null)
                     return;
 
@@ -342,7 +346,7 @@ public unsafe class AdvancedEditOverlay : Overlay
                 }
                 else
                 {
-                    baseTimeline->Update(delta, 0);
+                    baseTimeline->UpdateBanner(delta, 0);
                 }
 
                 CharaView->Base.ToggleAnimationPlayback(true);
