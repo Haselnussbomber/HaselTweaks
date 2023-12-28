@@ -1057,10 +1057,6 @@
     "en": "Animation Timestamp",
     "de": "Animationszeitstempel"
   },
-  "PortraitHelperWindows.Setting.AnimationTimestamp.Info": {
-    "en": "Setting the Animation Timestamp will reload the animation at the specified timestamp. This will cause some flickering. Also, due to technical limitations, it is not possible to determine the exact end timestamp of the animation at this time.",
-    "de": "Die Animation startet beim Setzen des Animationszeitstempels neu, da sie neu geladen wird. Dies verursacht ein gewisses Flackern. Außerdem ist es aus technischen Gründen derzeit nicht möglich den exakten Endzeitpunkt der Animation zu ermitteln."
-  },
   "PortraitHelperWindows.Setting.AnimationTimestamp.ValueFormat": {
     "en": "{0:0.000}"
   },
