@@ -6,6 +6,7 @@ using Dalamud.Game.Command;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using HaselCommon.Extensions;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks;
@@ -20,52 +21,8 @@ public partial class Plugin : IDalamudPlugin
     public Plugin(DalamudPluginInterface pluginInterface)
     {
         Service.Initialize(pluginInterface);
-        Task.Run(Setup);
-    }
-
-    private void Setup()
-    {
-        InitializeResolver();
-
-        Service.Framework.RunOnFrameworkThread(() =>
-        {
-            Config = Configuration.Load(TweakNames);
-
-            InitializeTweaks();
-
-            Service.TranslationManager.Initialize(Config);
-            Service.TranslationManager.OnLanguageChange += OnLanguageChange;
-
-            foreach (var tweak in Tweaks)
-            {
-                if (!Config.EnabledTweaks.Contains(tweak.InternalName))
-                    continue;
-
-                try
-                {
-                    tweak.EnableInternal();
-                }
-                catch (Exception ex)
-                {
-                    Service.PluginLog.Error(ex, $"Failed enabling tweak '{tweak.InternalName}'.");
-                }
-            }
-
-            Service.Framework.Update += OnFrameworkUpdate;
-            Service.ClientState.Login += ClientState_Login;
-            Service.ClientState.Logout += ClientState_Logout;
-            Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
-            Service.AddonObserver.AddonOpen += AddonObserver_AddonOpen;
-            Service.AddonObserver.AddonClose += AddonObserver_AddonClose;
-            Service.GameInventory.InventoryChangedRaw += GameInventory_InventoryChangedRaw;
-
-            Service.PluginInterface.UiBuilder.OpenConfigUi += OnOpenConfigUi;
-
-            Service.CommandManager.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
-            {
-                HelpMessage = t("HaselTweaks.CommandHandlerHelpMessage")
-            });
-        });
+        Task.Run(InitializeResolver)
+            .ContinueOnFrameworkThreadWith(Setup);
     }
 
     private static void InitializeResolver()
@@ -92,32 +49,58 @@ public partial class Plugin : IDalamudPlugin
         Interop.Resolver.GetInstance.Resolve();
     }
 
-    private void OnLanguageChange()
+    private void Setup()
     {
-        Config.Save();
+        Config = Configuration.Load(TweakNames);
 
-        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
-        {
-            tweak.OnLanguageChange();
-        }
-    }
+        InitializeTweaks();
 
-    private void GameInventory_InventoryChangedRaw(IReadOnlyCollection<InventoryEventArgs> events)
-    {
-        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
-        {
-            tweak.OnInventoryUpdate();
-        }
-    }
+        Service.TranslationManager.Initialize(Config);
 
-    private void OnFrameworkUpdate(IFramework framework)
-    {
         foreach (var tweak in Tweaks)
         {
-            if (!tweak.Enabled)
+            if (!Config.EnabledTweaks.Contains(tweak.InternalName))
                 continue;
 
-            tweak.OnFrameworkUpdateInternal();
+            try
+            {
+                tweak.EnableInternal();
+            }
+            catch (Exception ex)
+            {
+                Service.PluginLog.Error(ex, $"Failed enabling tweak '{tweak.InternalName}'.");
+            }
+        }
+
+        Service.AddonObserver.AddonClose += AddonObserver_AddonClose;
+        Service.AddonObserver.AddonOpen += AddonObserver_AddonOpen;
+        Service.ClientState.Login += ClientState_Login;
+        Service.ClientState.Logout += ClientState_Logout;
+        Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
+        Service.Framework.Update += Framework_Update;
+        Service.GameInventory.InventoryChangedRaw += GameInventory_InventoryChangedRaw;
+        Service.PluginInterface.UiBuilder.OpenConfigUi += UiBuilder_OnOpenConfigUi;
+        Service.TranslationManager.OnLanguageChange += TranslationManager_OnLanguageChange;
+
+        Service.CommandManager.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
+        {
+            HelpMessage = t("HaselTweaks.CommandHandlerHelpMessage")
+        });
+    }
+
+    private void AddonObserver_AddonOpen(string addonName)
+    {
+        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
+        {
+            tweak.OnAddonOpenInternal(addonName);
+        }
+    }
+
+    private void AddonObserver_AddonClose(string addonName)
+    {
+        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
+        {
+            tweak.OnAddonCloseInternal(addonName);
         }
     }
 
@@ -145,25 +128,38 @@ public partial class Plugin : IDalamudPlugin
         }
     }
 
-    private void AddonObserver_AddonOpen(string addonName)
+    private void Framework_Update(IFramework framework)
     {
-        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
+        foreach (var tweak in Tweaks)
         {
-            tweak.OnAddonOpenInternal(addonName);
+            if (!tweak.Enabled)
+                continue;
+
+            tweak.OnFrameworkUpdateInternal();
         }
     }
 
-    private void AddonObserver_AddonClose(string addonName)
+    private void GameInventory_InventoryChangedRaw(IReadOnlyCollection<InventoryEventArgs> events)
     {
         foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
         {
-            tweak.OnAddonCloseInternal(addonName);
+            tweak.OnInventoryUpdate();
         }
     }
 
-    private void OnOpenConfigUi()
+    private void UiBuilder_OnOpenConfigUi()
     {
         Service.WindowManager.OpenWindow<PluginWindow>();
+    }
+
+    private void TranslationManager_OnLanguageChange()
+    {
+        Config.Save();
+
+        foreach (var tweak in Tweaks.Where(tweak => tweak.Enabled))
+        {
+            tweak.OnLanguageChange();
+        }
     }
 
     private void OnCommand(string command, string args)
@@ -176,15 +172,15 @@ public partial class Plugin : IDalamudPlugin
         if (_disposed)
             return;
 
-        Service.TranslationManager.OnLanguageChange -= OnLanguageChange;
-        Service.GameInventory.InventoryChangedRaw -= GameInventory_InventoryChangedRaw;
         Service.AddonObserver.AddonClose -= AddonObserver_AddonClose;
         Service.AddonObserver.AddonOpen -= AddonObserver_AddonOpen;
-        Service.Framework.Update -= OnFrameworkUpdate;
         Service.ClientState.Login -= ClientState_Login;
         Service.ClientState.Logout -= ClientState_Logout;
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
-        Service.PluginInterface.UiBuilder.OpenConfigUi -= OnOpenConfigUi;
+        Service.Framework.Update -= Framework_Update;
+        Service.GameInventory.InventoryChangedRaw -= GameInventory_InventoryChangedRaw;
+        Service.PluginInterface.UiBuilder.OpenConfigUi -= UiBuilder_OnOpenConfigUi;
+        Service.TranslationManager.OnLanguageChange -= TranslationManager_OnLanguageChange;
 
         Service.CommandManager.RemoveHandler("/haseltweaks");
 

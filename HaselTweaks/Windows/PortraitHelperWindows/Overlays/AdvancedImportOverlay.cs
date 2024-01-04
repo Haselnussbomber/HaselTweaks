@@ -3,12 +3,12 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Common.Math;
+using HaselCommon.Structs;
 using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
-using ImColor = HaselCommon.Structs.ImColor;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
@@ -243,9 +243,7 @@ public unsafe class AdvancedImportOverlay : Overlay
         ImGui.Columns(2, "##Columns", false);
 
         var isEnabled = PortraitHelper.CurrentImportFlags.HasFlag(flag);
-        var disabledColor = (ImColor)ImGui.GetColorU32(ImGuiCol.Text);
-        disabledColor.A = 0.5f;
-        using var textColor = !isEnabled ? ImRaii.PushColor(ImGuiCol.Text, (uint)disabledColor) : null;
+        using var textColor = !isEnabled ? ImRaii.PushColor(ImGuiCol.Text, (uint)HaselColor.From(ImGuiCol.Text).WithAlpha(0.5f)) : null;
 
         if (ImGui.Checkbox(label + "##Checkbox", ref isEnabled))
         {

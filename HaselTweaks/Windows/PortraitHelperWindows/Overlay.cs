@@ -4,6 +4,7 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Structs;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
@@ -99,7 +100,7 @@ public abstract unsafe class Overlay : Window, IDisposable
 
             if (Colors.IsLightTheme)
             {
-                _windowText = ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.GetUIColor(2));
+                _windowText = ImRaii.PushColor(ImGuiCol.Text, (uint)HaselColor.FromUiForeground(2));
             }
 
             _windowBg = ImRaii.PushColor(ImGuiCol.WindowBg, 0);

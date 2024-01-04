@@ -8,11 +8,11 @@ using Dalamud.Interface.Utility;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselCommon.Extensions;
+using HaselCommon.Structs;
 using HaselCommon.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
-using ImColor = HaselCommon.Structs.ImColor;
 
 namespace HaselTweaks.Tweaks;
 
@@ -29,7 +29,7 @@ public unsafe class DTR : Tweak<DTRConfiguration>
         ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
 
         ImGui.TextUnformatted(t("DTR.Config.Explanation.Pre"));
-        ImGuiUtils.TextUnformattedColored((ImColor)ImGuiColors.DalamudRed, t("DTR.Config.Explanation.DalamudSettings"));
+        ImGuiUtils.TextUnformattedColored(HaselColor.From(ImGuiColors.DalamudRed), t("DTR.Config.Explanation.DalamudSettings"));
         if (ImGui.IsItemHovered())
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);

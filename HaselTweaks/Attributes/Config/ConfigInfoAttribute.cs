@@ -16,5 +16,5 @@ public class ConfigInfoAttribute : Attribute
 
     public string Translationkey { get; init; }
     public FontAwesomeIcon Icon { get; init; }
-    public ImColor Color { get; init; }
+    public HaselColor Color { get; init; }
 }

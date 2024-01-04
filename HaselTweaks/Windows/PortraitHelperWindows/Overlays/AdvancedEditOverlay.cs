@@ -5,6 +5,7 @@ using FFXIVClientStructs.FFXIV.Client.Graphics.Scene;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.Havok;
+using HaselCommon.Structs;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using ImGuiNET;
@@ -115,7 +116,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             }
         }
 
-        using (ImRaii.PushColor(ImGuiCol.Text, (uint)(Colors.IsLightTheme && !IsWindow ? Colors.GetUIColor(3) : Colors.Grey)))
+        using (ImRaii.PushColor(ImGuiCol.Text, (uint)(Colors.IsLightTheme && !IsWindow ? HaselColor.FromUiForeground(3) : Colors.Grey)))
         {
             ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedEditOverlay.Note.Label"));
             ImGuiHelpers.SafeTextWrapped(t("PortraitHelperWindows.AdvancedEditOverlay.Note.Text"));

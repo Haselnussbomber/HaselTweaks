@@ -9,6 +9,7 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
 using Dalamud.Utility;
 using HaselCommon.Extensions;
+using HaselCommon.Structs;
 using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
@@ -21,7 +22,6 @@ using Lumina.Excel.GeneratedSheets;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using Color = HaselCommon.Structs.ImColor;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
@@ -29,6 +29,9 @@ public class PresetCard : IDisposable
 {
     private static PortraitHelperConfiguration Config => Plugin.Config.Tweaks.PortraitHelper;
     public static readonly Vector2 PortraitSize = new(576, 960); // native texture size
+
+    private readonly uint ButtonActiveColor = (uint)new HaselColor(1, 1, 1, 0.3f);
+    private readonly uint ButtonHoveredColor = (uint)new HaselColor(1, 1, 1, 0.2f);
 
     private CancellationTokenSource? _closeTokenSource;
 
@@ -51,7 +54,6 @@ public class PresetCard : IDisposable
 
     private ushort _bannerDecoration;
     private int? _bannerDecorationImage;
-
     public PresetCard(PresetBrowserOverlay overlay, SavedPreset preset)
     {
         _overlay = overlay;
@@ -117,9 +119,9 @@ public class PresetCard : IDisposable
         ImGui.SetCursorPos(cursorPos);
 
         {
-            using var a = ImRaii.PushColor(ImGuiCol.Button, (uint)Colors.Transparent);
-            using var b = ImRaii.PushColor(ImGuiCol.ButtonActive, (uint)new Color(1, 1, 1, 0.3f));
-            using var c = ImRaii.PushColor(ImGuiCol.ButtonHovered, (uint)new Color(1, 1, 1, 0.2f));
+            using var a = ImRaii.PushColor(ImGuiCol.Button, 0);
+            using var b = ImRaii.PushColor(ImGuiCol.ButtonActive, ButtonActiveColor);
+            using var c = ImRaii.PushColor(ImGuiCol.ButtonHovered, ButtonHoveredColor);
             using var d = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0);
             ImGui.Button($"##{_preset.Id}_Button", PortraitSize * scale);
         }

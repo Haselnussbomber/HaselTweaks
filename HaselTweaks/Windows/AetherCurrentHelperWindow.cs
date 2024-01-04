@@ -8,13 +8,13 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Sheets;
+using HaselCommon.Structs;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
-using ImColor = HaselCommon.Structs.ImColor;
 
 namespace HaselTweaks.Windows;
 
@@ -23,7 +23,7 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
     private readonly Dictionary<uint, string> _questNameCache = []; // key is Quest.RowId, value is stripped from private use utf8 chars
     private bool _hideUnlocked = true;
 
-    private static readonly ImColor TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
+    private static readonly HaselColor TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
 
     [GeneratedRegex("^[\\ue000-\\uf8ff]+ ")]
     private static partial Regex Utf8PrivateUseAreaRegex();

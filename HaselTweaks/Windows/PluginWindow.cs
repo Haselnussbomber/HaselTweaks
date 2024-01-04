@@ -12,9 +12,9 @@ using Dalamud.Interface.Windowing;
 using HaselCommon.Enums;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
+using HaselCommon.Structs;
 using HaselCommon.Utils;
 using ImGuiNET;
-using ImColor = HaselCommon.Structs.ImColor;
 
 namespace HaselTweaks.Windows;
 
@@ -393,7 +393,7 @@ public partial class PluginWindow : Window, IDisposable
         tweak.DrawConfig();
     }
 
-    private static (string, ImColor) GetTweakStatus(Tweak tweak)
+    private static (string, HaselColor) GetTweakStatus(Tweak tweak)
     {
         var status = t("HaselTweaks.Config.TweakStatus.Unknown");
         var color = Colors.Grey3;
