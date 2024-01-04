@@ -9,7 +9,6 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
 using Dalamud.Utility;
 using HaselCommon.Extensions;
-using HaselCommon.Structs;
 using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
@@ -30,8 +29,8 @@ public class PresetCard : IDisposable
     private static PortraitHelperConfiguration Config => Plugin.Config.Tweaks.PortraitHelper;
     public static readonly Vector2 PortraitSize = new(576, 960); // native texture size
 
-    private readonly uint ButtonActiveColor = (uint)new HaselColor(1, 1, 1, 0.3f);
-    private readonly uint ButtonHoveredColor = (uint)new HaselColor(1, 1, 1, 0.2f);
+    private readonly uint ButtonActiveColor = Colors.White.WithAlpha(0.3f);
+    private readonly uint ButtonHoveredColor = Colors.White.WithAlpha(0.2f);
 
     private CancellationTokenSource? _closeTokenSource;
 
