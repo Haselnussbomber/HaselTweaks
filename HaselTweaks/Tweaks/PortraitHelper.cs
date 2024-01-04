@@ -10,7 +10,6 @@ using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Sheets;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
@@ -269,10 +268,14 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
     private unsafe uint GetEquippedGearChecksum()
     {
+        var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? 0);
+        if (localPlayer == null)
+            return 0;
+
         var itemIds = stackalloc uint[14];
         var stainIds = stackalloc byte[14];
         var container = InventoryManager.Instance()->GetInventoryContainer(InventoryType.EquippedItems);
-        var currentJobId = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
+        var currentJobId = localPlayer->CharacterData.ClassJob;
 
         for (var i = 0; i < 14; i++)
         {
@@ -293,19 +296,15 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
             }
         }
 
-        GetAgent<AgentStatus>()->UpdateGearVisibilityInNumberArray();
-
-        var numberArray = AtkStage.GetSingleton()->GetNumberArrayData()[63];
-
         var gearVisibilityFlag = BannerGearVisibilityFlag.None;
 
-        if (numberArray->IntArray[268] == 0)
+        if (localPlayer->DrawData.IsHatHidden)
             gearVisibilityFlag |= BannerGearVisibilityFlag.HeadgearHidden;
 
-        if (numberArray->IntArray[269] == 0)
+        if (localPlayer->DrawData.IsWeaponHidden)
             gearVisibilityFlag |= BannerGearVisibilityFlag.WeaponHidden;
 
-        if (numberArray->IntArray[270] == 1)
+        if (localPlayer->DrawData.IsVisorToggled)
             gearVisibilityFlag |= BannerGearVisibilityFlag.VisorClosed;
 
         return BannerModuleEntry.GenerateChecksum(itemIds, stainIds, gearVisibilityFlag);
