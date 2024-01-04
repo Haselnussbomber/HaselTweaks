@@ -66,7 +66,7 @@ public partial class Configuration
 
     public static string LastSavedConfigHash { get; private set; } = string.Empty;
 
-    internal static Configuration Load(IEnumerable<string> tweakNames)
+    internal static Configuration Load()
     {
         var configPath = Service.PluginInterface.ConfigFile.FullName;
         var configBackupPath = configPath + ".bak";

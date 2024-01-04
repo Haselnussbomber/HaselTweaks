@@ -51,7 +51,7 @@ public partial class Plugin : IDalamudPlugin
 
     private void Setup()
     {
-        Config = Configuration.Load(TweakNames);
+        Config = Configuration.Load();
 
         InitializeTweaks();
 
