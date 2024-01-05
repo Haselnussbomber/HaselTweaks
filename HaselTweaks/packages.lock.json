@@ -32,22 +32,22 @@
       },
       "Microsoft.Windows.CsWin32": {
         "type": "Direct",
-        "requested": "[0.3.46-beta, )",
-        "resolved": "0.3.46-beta",
-        "contentHash": "+TElBsl2jAnmLwC0IxDz3f6ggbi4r+mpoVv8NyXxWuPKOoNQXnEKmxSCEyIrLzDvnIc1vetxfPZ/XladzyvSXA==",
+        "requested": "[0.3.49-beta, )",
+        "resolved": "0.3.49-beta",
+        "contentHash": "/iAXplVDKESFyLz/MShuVYVx62YFvFePpq3qrzREl8KScQqG6Z2kV7r9UJTjQS1g+hfy3V+e4m1x9lsu24YNSg==",
         "dependencies": {
           "Microsoft.Windows.SDK.Win32Docs": "0.1.42-alpha",
-          "Microsoft.Windows.SDK.Win32Metadata": "54.0.44-preview",
-          "Microsoft.Windows.WDK.Win32Metadata": "0.7.3-experimental",
+          "Microsoft.Windows.SDK.Win32Metadata": "55.0.45-preview",
+          "Microsoft.Windows.WDK.Win32Metadata": "0.9.9-experimental",
           "System.Memory": "4.5.5",
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         }
       },
       "SixLabors.ImageSharp": {
         "type": "Direct",
-        "requested": "[3.0.2, )",
-        "resolved": "3.0.2",
-        "contentHash": "PlwUHnLZ67G1i0xXDYQJYbFiJsvXiEFWtKdV0QvY9j+dFasYbl+vWXXY42/asTsNjchsH5BLuoRzlf8Fa8lzpg=="
+        "requested": "[3.1.2, )",
+        "resolved": "3.1.2",
+        "contentHash": "PYdR6GUI+gW6LBaAQKTik0Ai8oLpFAz3a/KrVusxoTg3kf7F3cuIqKMhJGsuQcmDHCF+iD81Pyn4cexyHrb1ZA=="
       },
       "System.IO.Hashing": {
         "type": "Direct",
@@ -72,15 +72,15 @@
       },
       "Microsoft.Windows.SDK.Win32Metadata": {
         "type": "Transitive",
-        "resolved": "54.0.44-preview",
-        "contentHash": "pDfltYDFeJXSqnoyYIlDpoHL83M+Ia5PiVCjMtVoadC9HOCeBbonoJNBOXtLg67pGOwELX2Nzw97f2hHaCDdCw=="
+        "resolved": "55.0.45-preview",
+        "contentHash": "2i1kVIk8rMuMCYtoeYeWbmCRLqNgb63Berac3Gv+J/pjp0oucopasKgLQNslryhsgBl4xex9ENhJX2MXEW5vdA=="
       },
       "Microsoft.Windows.WDK.Win32Metadata": {
         "type": "Transitive",
-        "resolved": "0.7.3-experimental",
-        "contentHash": "69eabYuDI6y5SdMfVH+b/+mblw/eMk+j07dzNnZljFjr0UloFaxoXm1kG3B/GelFol9qT8pNTePpejQc14su6A==",
+        "resolved": "0.9.9-experimental",
+        "contentHash": "cncPlxLqR25mFOuvpxZPgXgJqRmXyV5eTULj/9w8AQvO/c1xJDEapohRsWkYaia7hCR/EwEzBHr7RU9u93T03w==",
         "dependencies": {
-          "Microsoft.Windows.SDK.Win32Metadata": "52.0.65-preview"
+          "Microsoft.Windows.SDK.Win32Metadata": "55.0.45-preview"
         }
       },
       "System.Memory": {
