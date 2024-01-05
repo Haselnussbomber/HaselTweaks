@@ -17,4 +17,7 @@ public unsafe partial struct Statics
 
     [MemberFunction("E8 ?? ?? ?? ?? 4C 8B 05 ?? ?? ?? ?? 48 8D 8C 24 ?? ?? ?? ?? 48 8B D0 E8 ?? ?? ?? ?? 8B 4E 08")]
     public static partial byte* GetGatheringPointName(RaptureTextModule** module, byte gatheringTypeId, byte gatheringPointType);
+
+    [MemberFunction("E8 ?? ?? ?? ?? 4C 8B C6 48 89 45 A7")]
+    public static partial byte* GetActionTimelineKey(uint id);
 }

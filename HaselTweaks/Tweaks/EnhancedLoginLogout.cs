@@ -5,6 +5,7 @@ using Dalamud.Game.Config;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
+using Dalamud.Memory;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
@@ -50,6 +51,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
     {
         Service.GameConfig.Changed += GameConfig_Changed;
         UpdateCharacterSettings();
+        PreloadEmotes();
     }
 
     public override void Disable()
@@ -440,6 +442,33 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
     #endregion
 
     #region Login: Play emote in character selection
+
+    private void PreloadEmotes()
+    {
+        var processedActionTimelineIds = new HashSet<uint>();
+
+        foreach (var emoteId in Config.SelectedEmotes.Values.ToHashSet())
+        {
+            var emote = GetRow<Emote>(emoteId);
+            if (emote == null)
+                continue;
+
+            void PreloadActionTimeline(uint actionTimelineId)
+            {
+                if (actionTimelineId == 0 || processedActionTimelineIds.Contains(actionTimelineId))
+                    return;
+
+                var key = Statics.GetActionTimelineKey(actionTimelineId);
+                Log("Preloading tmb {0} (Emote: {1}, ActionTimeline: {2})", MemoryHelper.ReadStringNullTerminated((nint)key), emoteId, actionTimelineId);
+                HaselSchedulerActionTimelineManager.Instance()->PreloadActionTmbByKey(&key);
+
+                processedActionTimelineIds.Add(actionTimelineId);
+            }
+
+            PreloadActionTimeline(emote.ActionTimeline[0].Row); // EmoteTimelineType.Loop
+            PreloadActionTimeline(emote.ActionTimeline[1].Row); // EmoteTimelineType.Intro
+        }
+    }
 
     private void SaveEmote(uint emoteId)
     {
