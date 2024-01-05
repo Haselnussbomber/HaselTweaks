@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Dalamud.Game.Command;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
@@ -13,7 +13,7 @@ namespace HaselTweaks;
 
 public partial class Plugin : IDalamudPlugin
 {
-    internal static HashSet<Tweak> Tweaks = null!;
+    internal static HashSet<Tweak> Tweaks = [];
     internal static Configuration Config = null!;
 
     private bool _disposed;
@@ -21,39 +21,27 @@ public partial class Plugin : IDalamudPlugin
     public Plugin(DalamudPluginInterface pluginInterface)
     {
         Service.Initialize(pluginInterface);
-        Task.Run(InitializeResolver)
+        Task.Run(HaselCommon.Interop.Resolver.GetInstance.Resolve)
             .ContinueOnFrameworkThreadWith(Setup);
-    }
-
-    private static void InitializeResolver()
-    {
-        string gameVersion;
-        unsafe { gameVersion = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->GameVersion.Base; }
-        if (string.IsNullOrEmpty(gameVersion))
-            throw new Exception("Unable to read game version.");
-
-        var currentSigCacheName = $"SigCache_{gameVersion}.json";
-
-        // delete old sig caches
-        foreach (var file in Service.PluginInterface.ConfigDirectory.EnumerateFiles()
-            .Where(fi => fi.Name.StartsWith("SigCache_") && fi.Name != currentSigCacheName))
-        {
-            try { file.Delete(); }
-            catch { }
-        }
-
-        Interop.Resolver.GetInstance.SetupSearchSpace(
-            Service.SigScanner.SearchBase,
-            new FileInfo(Path.Join(Service.PluginInterface.ConfigDirectory.FullName, currentSigCacheName)));
-
-        Interop.Resolver.GetInstance.Resolve();
     }
 
     private void Setup()
     {
         Config = Configuration.Load();
 
-        InitializeTweaks();
+        foreach (var tweakType in typeof(Plugin).Assembly.GetTypes()
+            .Where(type => type.Namespace == "HaselTweaks.Tweaks" && type.GetCustomAttribute<TweakAttribute>() != null))
+        {
+            try
+            {
+                Service.PluginLog.Verbose($"Initializing {tweakType.Name}");
+                Tweaks.Add((Tweak)Activator.CreateInstance(tweakType)!);
+            }
+            catch (Exception ex)
+            {
+                Service.PluginLog.Error(ex, $"[{tweakType.Name}] Error during initialization");
+            }
+        }
 
         Service.TranslationManager.Initialize(Config);
 

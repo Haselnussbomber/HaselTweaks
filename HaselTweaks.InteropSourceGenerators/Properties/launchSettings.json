@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Debug Generator": {
-      "commandName": "DebugRoslynComponent",
-      "targetProject": "..\\HaselTweaks.csproj"
-    }
-  }
-}

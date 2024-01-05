@@ -128,11 +128,11 @@ public abstract class Tweak<T> : Tweak
 
         if (Service.CommandManager.AddHandler(command, new CommandInfo(handler) { HelpMessage = helpMessage }))
         {
-            Log($"CommandHandler {command} added");
+            Log($"Added CommandHandler for {command}");
         }
         else
         {
-            Warning($"CommandHandler {command} not added");
+            Warning($"Could not add CommandHandler for {command}");
         }
     }
 
@@ -140,11 +140,11 @@ public abstract class Tweak<T> : Tweak
     {
         if (Service.CommandManager.RemoveHandler(command))
         {
-            Log($"CommandHandler {command} removed");
+            Log($"Removed CommandHandler for {command}");
         }
         else
         {
-            Warning($"CommandHandler {command} not removed");
+            Warning($"Could not remove CommandHandler for {command}");
         }
     }
 }
