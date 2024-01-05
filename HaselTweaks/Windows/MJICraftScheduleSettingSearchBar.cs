@@ -60,7 +60,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
                 var values = Enum.GetValues<ClientLanguage>().OrderBy((ClientLanguage lang) => lang.ToString());
                 foreach (var value in values)
                 {
-                    if (ImGui.Selectable(Enum.GetName(value)))
+                    if (ImGui.Selectable(Enum.GetName(value), value == Config.SearchLanguage))
                     {
                         Config.SearchLanguage = value;
                         Plugin.Config.Save();
