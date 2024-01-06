@@ -119,7 +119,7 @@ public abstract class Tweak<T> : Tweak
             }
         }
 
-        base.OnConfigChange(fieldName);
+        OnConfigChange(fieldName);
     }
 
     private void EnableCommand(string command, string helpMessage, MethodInfo methodInfo)
