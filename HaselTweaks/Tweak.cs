@@ -151,7 +151,7 @@ public abstract partial class Tweak // Internal
         Enabled = true;
     }
 
-    internal void DisableInternal()
+    internal void DisableInternal(bool isDisposing = false)
     {
         if (!Enabled) return;
 
@@ -165,14 +165,17 @@ public abstract partial class Tweak // Internal
             LastInternalException = ex;
         }
 
-        try
+        if (!isDisposing)
         {
-            CallHooks("Disable");
-        }
-        catch (Exception ex)
-        {
-            Error(ex, "Unexpected error during Disable (Hooks)");
-            LastInternalException = ex;
+            try
+            {
+                CallHooks("Disable");
+            }
+            catch (Exception ex)
+            {
+                Error(ex, "Unexpected error during Disable (Hooks)");
+                LastInternalException = ex;
+            }
         }
 
         try
@@ -193,7 +196,7 @@ public abstract partial class Tweak // Internal
         if (Disposed)
             return;
 
-        DisableInternal();
+        DisableInternal(true);
 
         try
         {
