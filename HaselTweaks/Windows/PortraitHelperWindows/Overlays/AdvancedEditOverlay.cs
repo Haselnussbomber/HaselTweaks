@@ -35,7 +35,6 @@ public unsafe class AdvancedEditOverlay : Overlay
     private AgentBannerEditorState* EditorState => Agent->EditorState;
     private CharaViewPortrait* CharaView => EditorState != null ? EditorState->CharaView : null;
     private Character* Character => CharaView != null ? CharaView->Base.GetCharacter() : null;
-    private HaselCharacter* HaselCharacter => (HaselCharacter*)Character;
 
     private hkaAnimation* GetBaseAnimation()
     {
@@ -61,7 +60,7 @@ public unsafe class AdvancedEditOverlay : Overlay
     {
         base.Update();
 
-        if (_isDragging || HaselCharacter == null)
+        if (_isDragging || Character == null)
             return;
 
         _timestamp = CharaView->GetAnimationTime();
@@ -74,8 +73,8 @@ public unsafe class AdvancedEditOverlay : Overlay
         if (animation == null)
             return;
 
-        var baseTimeline = HaselCharacter->ActionTimelineManager.Driver.GetSchedulerTimeline(ActionTimelineSlots.Base);
-        if (baseTimeline == null || baseTimeline->IsIdleAnimation)
+        var baseTimeline = Character->ActionTimelineManager.Driver.GetSchedulerTimeline((uint)ActionTimelineSlots.Base);
+        if (baseTimeline == null || baseTimeline->ActionTimelineKey != null && Marshal.PtrToStringUTF8((nint)baseTimeline->ActionTimelineKey) == "normal/idle")
             return;
 
         _duration = animation->Duration - 0.5f;
@@ -281,8 +280,8 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.SetNextItemWidth(-1);
 
             var eyeDirection = new Vector2(
-                HaselCharacter->Gaze.BannerEyesDirection.X,
-                HaselCharacter->Gaze.BannerEyesDirection.Y
+                Character->Gaze.BannerEyeDirection.X,
+                Character->Gaze.BannerEyeDirection.Y
             );
 
             if (ImGui.DragFloat2($"##DragFloat2", ref eyeDirection, 0.001f))
@@ -308,8 +307,8 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.SetNextItemWidth(-1);
 
             var headDirection = new Vector2(
-                HaselCharacter->Gaze.BannerHeadDirection.X,
-                HaselCharacter->Gaze.BannerHeadDirection.Y
+                Character->Gaze.BannerHeadDirection.X,
+                Character->Gaze.BannerHeadDirection.Y
             );
 
             if (ImGui.DragFloat2($"##DragFloat2", ref headDirection, 0.001f))
@@ -336,11 +335,11 @@ public unsafe class AdvancedEditOverlay : Overlay
 
             if (ImGui.DragFloat($"##DragFloat", ref _timestamp, 0.01f, 0f, _frameCount, $"%.2f / {_frameCount}"))
             {
-                var baseTimeline = HaselCharacter->ActionTimelineManager.Driver.GetSchedulerTimeline(ActionTimelineSlots.Base);
+                var baseTimeline = Character->ActionTimelineManager.Driver.GetSchedulerTimeline((uint)ActionTimelineSlots.Base);
                 if (baseTimeline == null)
                     return;
 
-                var delta = _timestamp - baseTimeline->CurrentTimestamp;
+                var delta = _timestamp - baseTimeline->TimelineController.CurrentTimestamp;
                 if (delta < 0)
                 {
                     CharaView->SetPoseTimed(Character->ActionTimelineManager.BannerTimelineRowId, _timestamp);

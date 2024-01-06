@@ -8,7 +8,6 @@ using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Structs.Agents;
 using Lumina.Excel.GeneratedSheets;
-using AgentMJICraftSchedule = HaselTweaks.Structs.AgentMJICraftSchedule;
 
 namespace HaselTweaks.Tweaks;
 
@@ -49,7 +48,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
         if (Config.LastSelectedTab > 2)
             Config.LastSelectedTab = 2;
 
-        GetAgent<AgentMJICraftSchedule>()->TabIndex = Config.LastSelectedTab;
+        GetAgent<AgentMJICraftSchedule>()->CurReviewMaterialsTab = Config.LastSelectedTab;
 
         var addon = (AddonMJICraftMaterialConfirmation*)args.Addon;
         for (var i = 0; i < 3; i++)
