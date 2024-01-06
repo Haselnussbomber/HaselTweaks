@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### HaselTweaks
+
+- **Fixed:** Tweaks were not notified when the config was updated.
+
 ### Enhanced Login/Logout
 
 - **Fixed:** The emote animations used in the character selection are now pre-loaded, which should fix the T-posing issue.
@@ -10,6 +14,7 @@
 
 - **Fixed:** Config is now saved directly upon changing tabs.
 - **Fixed:** The currently selected language in the dropdown was not highlighted.
+- **Fixed:** Removed the language selection from the tweak config that was added there by mistake.
 
 ### Portrait Helper
 
