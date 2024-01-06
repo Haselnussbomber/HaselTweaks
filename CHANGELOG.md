@@ -1,5 +1,20 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Login/Logout
+
+- **Fixed:** The emote animations used in the character selection are now pre-loaded, which should fix the T-posing issue.
+
+### Material Allocation
+
+- **Fixed:** Config is now saved directly upon changing tabs.
+- **Fixed:** The currently selected language in the dropdown was not highlighted.
+
+### Portrait Helper
+
+- **Fixed:** Stopped the maximum timestamp value from updating while the animation is loading.
+
 ## [20.1.1] (2023-12-28)
 
 Small UI hotfix for [v20.1.0](https://github.com/Haselnussbomber/HaselTweaks/releases/tag/v20.1.0).
