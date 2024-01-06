@@ -1,5 +1,6 @@
 using Dalamud.Game.ClientState.Keys;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Services;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows;
@@ -22,7 +23,8 @@ public unsafe partial class AetherCurrentHelper : Tweak<AetherCurrentHelperConfi
 {
     public override void Disable()
     {
-        Service.WindowManager.CloseWindow<AetherCurrentHelperWindow>();
+        if (Service.HasService<WindowManager>())
+            Service.WindowManager.CloseWindow<AetherCurrentHelperWindow>();
     }
 
     [VTableHook<AgentAetherCurrent>((int)AgentInterfaceVfs.ReceiveEvent)]

@@ -10,6 +10,7 @@ using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselCommon.Services;
 using HaselCommon.Sheets;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
@@ -71,8 +72,11 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
     {
         Service.PluginInterface.RemoveChatLinkHandler(1000);
 
-        Service.WindowManager.CloseWindow<MenuBar>();
-        CloseOverlays();
+        if (Service.HasService<WindowManager>())
+        {
+            Service.WindowManager.CloseWindow<MenuBar>();
+            CloseOverlays();
+        }
     }
 
     public override void OnLogin()

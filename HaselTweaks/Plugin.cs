@@ -7,6 +7,7 @@ using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using HaselCommon.Extensions;
+using HaselCommon.Services;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks;
@@ -172,7 +173,8 @@ public partial class Plugin : IDalamudPlugin
 
         Service.CommandManager.RemoveHandler("/haseltweaks");
 
-        Service.WindowManager.Dispose();
+        if (Service.HasService<WindowManager>())
+            Service.WindowManager.Dispose();
 
         foreach (var tweak in Tweaks)
         {

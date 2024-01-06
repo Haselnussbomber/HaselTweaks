@@ -1,3 +1,4 @@
+using HaselCommon.Services;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
@@ -13,7 +14,8 @@ public unsafe partial class GlamourDresserArmoireAlert : Tweak
 
     public override void Disable()
     {
-        Service.WindowManager.CloseWindow<GlamourDresserArmoireAlertWindow>();
+        if (Service.HasService<WindowManager>())
+            Service.WindowManager.CloseWindow<GlamourDresserArmoireAlertWindow>();
     }
 
     public override void OnAddonOpen(string addonName)

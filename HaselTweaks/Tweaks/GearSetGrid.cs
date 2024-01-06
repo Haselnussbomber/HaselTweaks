@@ -1,3 +1,4 @@
+using HaselCommon.Services;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
@@ -31,7 +32,8 @@ public class GearSetGrid : Tweak<GearSetGridConfiguration>
 
     public override void Disable()
     {
-        Service.WindowManager.CloseWindow<GearSetGridWindow>();
+        if (Service.HasService<WindowManager>())
+            Service.WindowManager.CloseWindow<GearSetGridWindow>();
     }
 
     public override void OnAddonOpen(string addonName)

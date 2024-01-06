@@ -1,5 +1,6 @@
 using Dalamud;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Services;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows;
 
@@ -27,7 +28,8 @@ public unsafe partial class EnhancedIsleworksAgenda : Tweak<EnhancedIsleworksAge
 
     public override void Disable()
     {
-        Service.WindowManager.CloseWindow<MJICraftScheduleSettingSearchBar>();
+        if (Service.HasService<WindowManager>())
+            Service.WindowManager.CloseWindow<MJICraftScheduleSettingSearchBar>();
     }
 
     public override void OnAddonOpen(string addonName)
