@@ -48,6 +48,9 @@ public partial class PluginWindow : Window, IDisposable
         Flags |= ImGuiWindowFlags.AlwaysAutoResize;
         Flags |= ImGuiWindowFlags.NoSavedSettings;
 
+        AllowClickthrough = false;
+        AllowPinning = false;
+
         try
         {
             using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(LogoManifestResource)
