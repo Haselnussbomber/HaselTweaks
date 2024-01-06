@@ -1,11 +1,12 @@
 using System.Linq;
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Enums;
 using Lumina.Excel.GeneratedSheets;
 using AddonExp = HaselTweaks.Structs.AddonExp;
 using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
@@ -50,6 +51,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
         _isEnabled = true;
         RunUpdate();
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
     }
 
     public override void Disable()
@@ -58,10 +60,20 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
         _isEnabled = false;
         RunUpdate();
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
     }
 
     public override void OnConfigChange(string fieldName)
     {
+        if (TryGetAddon<AddonExp>("_Exp", out var addon))
+        {
+            addon->ClassJob--;
+            addon->RequiredExp--;
+            addon->AtkUnitBase.OnUpdate(
+                AtkStage.GetSingleton()->GetNumberArrayData(),
+                AtkStage.GetSingleton()->GetStringArrayData());
+        }
+
         RunUpdate();
     }
 
@@ -125,50 +137,51 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         if (!TryGetAddon<AddonExp>("_Exp", out var addon))
             return;
 
-        AddonExp_OnRequestedUpdate(
-            addon,
-            AtkStage.GetSingleton()->GetNumberArrayData(),
-            AtkStage.GetSingleton()->GetStringArrayData()
-        );
+        HandleAddonExpPostRequestedUpdate(addon);
     }
 
-    [VTableHook<AddonExp>((int)AtkUnitBaseVfs.OnRequestedUpdate)]
-    private nint AddonExp_OnRequestedUpdate(AddonExp* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
+    private void AddonExp_PostRequestedUpdate(AddonEvent type, AddonArgs args)
     {
-        var ret = AddonExp_OnRequestedUpdateHook!.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
+        if (!_isEnabled || type != AddonEvent.PostRequestedUpdate)
+            return;
 
-        if (!_isEnabled)
-            return ret;
+        HandleAddonExpPostRequestedUpdate((AddonExp*)args.Addon);
+    }
+
+    private void HandleAddonExpPostRequestedUpdate(AddonExp* addon)
+    {
+        if (addon == null)
+            return;
 
         var gaugeBarNode = GetNode<AtkComponentNode>(&addon->AtkUnitBase, 6);
         if (gaugeBarNode == null)
-            return ret;
+            return;
 
         var gaugeBar = (Structs.AtkComponentGaugeBar*)gaugeBarNode->Component;
         if (gaugeBar == null)
-            return ret;
+            return;
 
         var nineGridNode = GetNode<AtkNineGridNode>(gaugeBarNode->Component, 4);
         if (nineGridNode == null)
-            return ret;
+            return;
 
         if (Service.ClientState.LocalPlayer == null)
         {
             ResetColor(nineGridNode);
-            return ret;
+            return;
         }
 
         if (Service.ClientState.LocalPlayer.ClassJob.GameData == null)
         {
             ResetColor(nineGridNode);
-            return ret;
+            return;
         }
 
         var leftText = GetNode<AtkTextNode>(&addon->AtkUnitBase, 4);
         if (leftText == null)
         {
             ResetColor(nineGridNode);
-            return ret;
+            return;
         }
 
         // --- forced bars in certain locations
@@ -176,19 +189,19 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         if (Config.ForceCompanionBar && UIState.Instance()->Buddy.Companion.ObjectID != 0xE0000000)
         {
             HandleCompanionBar(nineGridNode, gaugeBar, leftText);
-            return ret;
+            return;
         }
 
         if (Config.ForcePvPSeriesBar && GameMain.IsInPvPArea())
         {
             HandlePvPBar(nineGridNode, gaugeBar, leftText);
-            return ret;
+            return;
         }
 
         if (Config.ForceSanctuaryBar && GameMain.Instance()->CurrentTerritoryIntendedUseId == 49)
         {
             HandleSanctuaryBar(nineGridNode, gaugeBar, leftText);
-            return ret;
+            return;
         }
 
         // --- max level overrides
@@ -198,13 +211,13 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
             if (Config.MaxLevelOverride == MaxLevelOverrideType.PvPSeriesBar)
             {
                 HandlePvPBar(nineGridNode, gaugeBar, leftText);
-                return ret;
+                return;
             }
 
             if (Config.MaxLevelOverride == MaxLevelOverrideType.CompanionBar)
             {
                 HandleCompanionBar(nineGridNode, gaugeBar, leftText);
-                return ret;
+                return;
             }
         }
 
@@ -214,7 +227,6 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         ResetColor(nineGridNode);
 
         _isUpdatePending = false;
-        return ret;
     }
 
     private void HandleCompanionBar(AtkNineGridNode* nineGridNode, Structs.AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)

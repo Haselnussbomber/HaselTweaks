@@ -1,3 +1,5 @@
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -27,29 +29,36 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
     public override void Enable()
     {
         _nextMJIGatheringNoteBookItemId = 0;
+
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PostReceiveEvent);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PreSetup);
     }
 
-    [VTableHook<AddonMJICraftMaterialConfirmation>(48)]
-    public nint AddonMJICraftMaterialConfirmation_vf48(AddonMJICraftMaterialConfirmation* addon, int numAtkValues, nint atkValues)
+    public override void Disable()
     {
-        if (Config.SaveLastSelectedTab)
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PostReceiveEvent);
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PreSetup);
+    }
+
+    private void AddonMJICraftMaterialConfirmation_PreSetup(AddonEvent type, AddonArgs args)
+    {
+        if (!Config.SaveLastSelectedTab)
+            return;
+
+        if (Config.LastSelectedTab > 2)
+            Config.LastSelectedTab = 2;
+
+        GetAgent<AgentMJICraftSchedule>()->TabIndex = Config.LastSelectedTab;
+
+        var addon = (AddonMJICraftMaterialConfirmation*)args.Addon;
+        for (var i = 0; i < 3; i++)
         {
-            if (Config.LastSelectedTab > 2)
-                Config.LastSelectedTab = 2;
-
-            GetAgent<AgentMJICraftSchedule>()->TabIndex = Config.LastSelectedTab;
-
-            for (var i = 0; i < 3; i++)
+            var button = addon->RadioButtonsSpan.GetPointer(i);
+            if (button->Value != null)
             {
-                var button = addon->RadioButtonsSpan.GetPointer(i);
-                if (button->Value != null)
-                {
-                    button->Value->SetSelected(i == Config.LastSelectedTab);
-                }
+                button->Value->SetSelected(i == Config.LastSelectedTab);
             }
         }
-
-        return AddonMJICraftMaterialConfirmation_vf48Hook.OriginalDisposeSafe(addon, numAtkValues, atkValues);
     }
 
     public override void OnAddonOpen(string addonName)
@@ -86,40 +95,32 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
         }
     }
 
-    [VTableHook<AddonMJICraftMaterialConfirmation>((int)AtkUnitBaseVfs.ReceiveEvent)]
-    public void AddonMJICraftMaterialConfirmation_ReceiveEvent(AddonMJICraftMaterialConfirmation* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
+    private void AddonMJICraftMaterialConfirmation_PostReceiveEvent(AddonEvent type, AddonArgs args)
     {
-        if (HandleEvent(addon, eventParam, a5))
+        if (type != AddonEvent.PostReceiveEvent || args is not AddonReceiveEventArgs receiveEventArgs)
+            return;
+
+        if (receiveEventArgs.EventParam is > 0 and < 4 && Config.SaveLastSelectedTab)
         {
-            atkEvent->SetEventIsHandled();
+            Config.LastSelectedTab = (byte)(receiveEventArgs.EventParam - 1);
+            Plugin.Config.Save();
             return;
         }
 
-        AddonMJICraftMaterialConfirmation_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
-    }
-
-    private bool HandleEvent(AddonMJICraftMaterialConfirmation* addon, int eventParam, nint a5)
-    {
-        if (eventParam is > 0 and < 4 && Config.SaveLastSelectedTab)
-        {
-            Config.LastSelectedTab = (byte)(eventParam - 1);
-            Plugin.Config.Save();
-            return false;
-        }
-
-        if (eventParam == 9902)
+        if (receiveEventArgs.EventParam == 9902)
         {
             if (!Config.OpenGatheringLogOnItemClick)
-                return true;
+                return;
 
+            var addon = (AddonMJICraftMaterialConfirmation*)receiveEventArgs.Addon;
             //var itemRenderer = *(AtkComponentListItemRenderer**)a5;
-            var index = *(int*)(a5 + 0x10);
+            var index = *(int*)(receiveEventArgs.Data + 0x10);
             //var list = *(HaselTweaks.Structs.AtkComponentList**)(a5 + 0x150);
             var id = addon->AtkUnitBase.AtkValues[index + 4].UInt; // MJIItemPouch RowId
 
             var pouchRow = GetRow<MJIItemPouch>(id);
             if (pouchRow == null || pouchRow.Item.Row == 0)
-                return true;
+                return;
 
             var itemId = pouchRow.Item.Row;
 
@@ -135,7 +136,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
                         Type = XivChatType.Echo
                     });
                 }
-                return true;
+                return;
             }
 
             var agentMJIGatheringNoteBook = GetAgent<AgentMJIGatheringNoteBook>();
@@ -151,11 +152,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
                 _nextMJIGatheringNoteBookItemId = itemId;
                 agentMJIGatheringNoteBook->AgentInterface.Show();
             }
-
-            return true;
         }
-
-        return false;
     }
 
     private void UpdateGatheringNoteBookItem(AgentMJIGatheringNoteBook* agent, uint itemId)

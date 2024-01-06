@@ -1,7 +1,7 @@
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Enums;
-using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
@@ -10,22 +10,19 @@ public unsafe partial class HideMSQComplete : Tweak
 {
     public override void Enable()
     {
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRefresh, "ScenarioTree", ScenarioTree_PostRefresh);
         Update();
     }
 
     public override void Disable()
     {
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostRefresh, "ScenarioTree", ScenarioTree_PostRefresh);
         UpdateVisibility(true);
     }
 
-    [VTableHook<AddonScenarioTree>((int)AtkUnitBaseVfs.OnRefresh)]
-    public bool AddonScenarioTree_OnRefresh(AddonScenarioTree* addon, uint numValues, AtkValue* values)
+    private void ScenarioTree_PostRefresh(AddonEvent type, AddonArgs args)
     {
-        var ret = AddonScenarioTree_OnRefreshHook.OriginalDisposeSafe(addon, numValues, values);
-
         Update();
-
-        return ret;
     }
 
     private static void Update()

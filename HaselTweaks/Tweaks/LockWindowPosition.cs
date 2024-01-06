@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
@@ -8,7 +10,6 @@ using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
-using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Structs.Addons;
 using ImGuiNET;
@@ -42,6 +43,16 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
     private Vector2 _hoveredWindowPos;
     private Vector2 _hoveredWindowSize;
     private int _eventIndexToDisable = 0;
+
+    public override void Enable()
+    {
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "GearSetList", GearSetList_PostSetup);
+    }
+
+    public override void Disable()
+    {
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "GearSetList", GearSetList_PostSetup);
+    }
 
     public override void DrawConfig()
     {
@@ -218,10 +229,9 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
     }
 
     // block GearSetList from moving when opened by Character
-    [VTableHook<AddonGearSetList>((int)AtkUnitBaseVfs.OnSetup)]
-    public nint AddonGearSetList_OnSetup(AddonGearSetList* addon, uint numAtkValues, AtkValue* atkValues)
+    private void GearSetList_PostSetup(AddonEvent type, AddonArgs args)
     {
-        var result = AddonGearSetList_OnSetupHook.OriginalDisposeSafe(addon, numAtkValues, atkValues);
+        var addon = (AddonGearSetList*)args.Addon;
 
         var isLocked = Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == "GearSetList");
 
@@ -230,8 +240,6 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
 
         if (isLocked)
             addon->ResetPosition = false;
-
-        return result;
     }
 
     [AddressHook<HaselAtkUnitBase>(nameof(HaselAtkUnitBase.Addresses.Move))]
