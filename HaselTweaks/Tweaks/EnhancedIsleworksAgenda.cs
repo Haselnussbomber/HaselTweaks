@@ -13,7 +13,6 @@ public class EnhancedIsleworksAgendaConfiguration
     [BoolConfig]
     public bool DisableTreeListTooltips = true;
 
-    [EnumConfig]
     public ClientLanguage SearchLanguage = ClientLanguage.English;
 }
 
