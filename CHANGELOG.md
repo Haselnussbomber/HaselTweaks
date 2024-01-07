@@ -6,10 +6,6 @@
 
 - **Fixed:** Tweaks were not notified when the config was updated.
 
-### Enhanced Login/Logout
-
-- **Fixed:** The emote animations used in the character selection are now pre-loaded, which should fix the T-posing issue.
-
 ### Material Allocation
 
 - **Fixed:** Config is now saved directly upon changing tabs.
