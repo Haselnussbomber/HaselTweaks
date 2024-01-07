@@ -1,5 +1,9 @@
 # Changelog
 
+## [20.1.3] (2023-01-07)
+
+Small address resolver hotfix for [v20.1.2](https://github.com/Haselnussbomber/HaselTweaks/releases/tag/v20.1.2).
+
 ## [20.1.2] (2023-01-07)
 
 ### HaselTweaks
@@ -1309,6 +1313,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[20.1.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.1.1...v20.1.3
 [20.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.1.1...v20.1.2
 [20.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.1.0...v20.1.1
 [20.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.0.3...v20.1.0
