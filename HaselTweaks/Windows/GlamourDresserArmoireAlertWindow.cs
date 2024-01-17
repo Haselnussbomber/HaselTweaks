@@ -73,7 +73,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
             if (item == null)
                 continue;
 
-            var cabinet = FindRow<Cabinet>(row => row.Item.Row == itemId);
+            var cabinet = FindRow<Cabinet>(row => row?.Item.Row == itemId);
             if (cabinet == null)
                 continue;
 

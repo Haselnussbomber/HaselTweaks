@@ -83,7 +83,8 @@ public unsafe class GearSetGridWindow : LockableWindow
         }
 
         var raptureGearsetModule = RaptureGearsetModule.Instance();
-        for (var gearsetIndex = 0; gearsetIndex < InventoryManager.Instance()->GetPermittedGearsetCount(); gearsetIndex++)
+        var gearsetCount = InventoryManager.Instance()->GetPermittedGearsetCount();
+        for (var gearsetIndex = 0; gearsetIndex < gearsetCount; gearsetIndex++)
         {
             var gearset = raptureGearsetModule->GetGearset(gearsetIndex);
             if (!gearset->Flags.HasFlag(GearsetFlag.Exists))
