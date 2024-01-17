@@ -8,6 +8,7 @@ using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Structs.Agents;
 using Lumina.Excel.GeneratedSheets;
+using AgentMJICraftSchedule = HaselTweaks.Structs.AgentMJICraftSchedule;
 
 namespace HaselTweaks.Tweaks;
 
