@@ -55,6 +55,9 @@ public unsafe class GearSetGridWindow : LockableWindow
         Service.WindowManager.CloseWindow<GearSetGridWindow>();
     }
 
+    public override bool DrawConditions()
+        => Service.ClientState.IsLoggedIn;
+
     public override void Draw()
     {
         const int NUM_SLOTS = 13;
@@ -62,7 +65,7 @@ public unsafe class GearSetGridWindow : LockableWindow
         using var cellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, Vector2.Zero);
         using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var table = ImRaii.Table("##Table", 1 + NUM_SLOTS, ImGuiTableFlags.ScrollY | ImGuiTableFlags.NoSavedSettings);
-        if (!table.Success)
+        if (!table)
             return;
 
         if (_resetScrollPosition)
