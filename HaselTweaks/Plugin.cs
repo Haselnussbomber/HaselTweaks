@@ -192,9 +192,6 @@ public partial class Plugin : IDalamudPlugin
 
         Service.Dispose();
 
-        Tweaks = null!;
-        Config = null!;
-
         _disposed = true;
     }
 }

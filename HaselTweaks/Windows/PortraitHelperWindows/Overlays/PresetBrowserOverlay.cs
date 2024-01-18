@@ -44,8 +44,6 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
         foreach (var card in PresetCards.Values)
             card.Dispose();
-
-        GC.SuppressFinalize(this);
     }
 
     public override void Draw()

@@ -63,12 +63,8 @@ public class PresetCard : IDisposable
     {
         _closeTokenSource?.Cancel();
         _closeTokenSource?.Dispose();
-        _closeTokenSource = null;
         _image?.Dispose();
-        _image = null;
         _textureWrap?.Dispose();
-        _textureWrap = null;
-        GC.SuppressFinalize(this);
     }
 
     public void Draw(float scale, uint defaultImGuiTextColor)

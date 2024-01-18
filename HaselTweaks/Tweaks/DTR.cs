@@ -92,13 +92,8 @@ public unsafe class DTR : Tweak<DTRConfiguration>
     public override void Disable()
     {
         DtrInstance?.Dispose();
-        DtrInstance = null;
-
         DtrFPS?.Dispose();
-        DtrFPS = null;
-
         DtrBusy?.Dispose();
-        DtrBusy = null;
     }
 
     public override void OnFrameworkUpdate()

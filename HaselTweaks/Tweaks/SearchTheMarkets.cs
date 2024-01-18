@@ -11,9 +11,9 @@ namespace HaselTweaks.Tweaks;
 [Tweak]
 public unsafe class SearchTheMarkets : Tweak
 {
-    private DalamudContextMenu _contextMenu = null!;
-    private GameObjectContextMenuItem _contextMenuItemGame = null!;
-    private InventoryContextMenuItem _contextMenuItemInventory = null!;
+    private readonly DalamudContextMenu _contextMenu;
+    private GameObjectContextMenuItem? _contextMenuItemGame;
+    private InventoryContextMenuItem? _contextMenuItemInventory;
 
     private ExtendedItem? _item = null;
 
@@ -43,9 +43,6 @@ public unsafe class SearchTheMarkets : Tweak
     public override void Dispose()
     {
         _contextMenu?.Dispose();
-        _contextMenu = null!;
-        _contextMenuItemGame = null!;
-        _contextMenuItemInventory = null!;
     }
 
     private void SetupContextMenus()
