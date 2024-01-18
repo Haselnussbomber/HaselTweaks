@@ -765,9 +765,9 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         if (addon->SelectedExpansion == tabIndex)
             return;
 
-        addon->SelectedExpansion = tabIndex;
-
-        var atkStage = AtkStage.GetSingleton();
-        addon->UpdateDisplay(atkStage->GetNumberArrayData()[63], atkStage->GetStringArrayData()[58]);
+        var atkEvent = stackalloc AtkEvent[1];
+        var data = stackalloc int[5];
+        data[4] = tabIndex; // technically the index of an id array, but it's literally the same value
+        addon->AtkUnitBase.ReceiveEvent((AtkEventType)37, 0, atkEvent, (nint)data);
     }
 }
