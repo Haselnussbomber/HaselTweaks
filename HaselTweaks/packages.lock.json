@@ -83,6 +83,14 @@
           "Microsoft.Windows.SDK.Win32Metadata": "55.0.45-preview"
         }
       },
+      "NoAlloq": {
+        "type": "Transitive",
+        "resolved": "0.2.0",
+        "contentHash": "CDGlcqAIXu/+P5pBAPLcCMnCV1iy4WF2RZEdfkj71heWPuetrL28lqnNx9cspzBY8RdKDvv7PTg8cooFI5dOgA==",
+        "dependencies": {
+          "System.Memory": "4.5.3"
+        }
+      },
       "System.Memory": {
         "type": "Transitive",
         "resolved": "4.5.5",
@@ -94,7 +102,10 @@
         "contentHash": "/iUeP3tq1S0XdNNoMz5C9twLSrM/TH+qElHkXWaPvuNOt+99G75NrV0OS2EqHx5wMN7popYjpc8oTjC1y16DLg=="
       },
       "haselcommon": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "NoAlloq": "[0.2.0, )"
+        }
       }
     }
   }
