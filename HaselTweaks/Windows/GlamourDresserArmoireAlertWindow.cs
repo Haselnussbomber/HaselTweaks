@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Dalamud.Interface.Utility;
@@ -19,14 +18,16 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
 {
     private const int NumPrismBoxSlots = 800;
     private static readonly Vector2 IconSize = new(34);
+
+    private readonly GlamourDresserArmoireAlert _tweak;
+
     private static AddonMiragePrismPrismBox* Addon => GetAddon<AddonMiragePrismPrismBox>("MiragePrismPrismBox");
 
-    private readonly Dictionary<uint, HashSet<(uint, ExtendedItem, bool)>> Categories = new();
-    private uint[]? LastItemIds = null;
-    private bool UpdatePending = false;
-
-    public GlamourDresserArmoireAlertWindow() : base(t("GlamourDresserArmoireAlertWindow.Title"))
+    public GlamourDresserArmoireAlertWindow(GlamourDresserArmoireAlert tweak) : base(t("GlamourDresserArmoireAlertWindow.Title"))
     {
+        _tweak = tweak;
+
+        IsOpen = true;
         DisableWindowSounds = true;
 
         Flags |= ImGuiWindowFlags.NoSavedSettings;
@@ -43,60 +44,13 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
     }
 
     public override bool DrawConditions()
-        => Addon != null && Addon->AtkUnitBase.IsVisible && Categories.Any();
-
-    public override void Update()
-    {
-        var mirageManager = MirageManager.Instance();
-
-        var itemIds = new Span<uint>(mirageManager->PrismBoxItemIds, NumPrismBoxSlots);
-
-        if (LastItemIds != null && itemIds.SequenceEqual(LastItemIds))
-            return;
-
-        LastItemIds = itemIds.ToArray();
-
-        Categories.Clear();
-
-        Service.PluginLog.Info($"[{nameof(GlamourDresserArmoireAlert)}] Updating...");
-
-        for (var i = 0u; i < NumPrismBoxSlots; i++)
-        {
-            var itemId = mirageManager->PrismBoxItemIds[i];
-            if (itemId == 0)
-                continue;
-
-            var isHq = itemId is > 1000000 and < 1500000;
-            itemId %= 1000000;
-
-            var item = GetRow<ExtendedItem>(itemId);
-            if (item == null)
-                continue;
-
-            var cabinet = FindRow<Cabinet>(row => row?.Item.Row == itemId);
-            if (cabinet == null)
-                continue;
-
-            if (!Categories.TryGetValue(item.ItemUICategory.Row, out var categorySet))
-            {
-                Categories.TryAdd(item.ItemUICategory.Row, categorySet = new());
-            }
-
-            var key = (i, item, isHq);
-            if (!categorySet.Contains(key))
-            {
-                categorySet.Add(key);
-            }
-        }
-
-        UpdatePending = false;
-    }
+        => Addon != null && Addon->AtkUnitBase.IsVisible && _tweak.Categories.Any();
 
     public override void Draw()
     {
         ImGui.TextWrapped(t("GlamourDresserArmoireAlertWindow.Info"));
 
-        foreach (var (categoryId, categoryDict) in Categories.OrderBy(kv => kv.Key))
+        foreach (var (categoryId, categoryItems) in _tweak.Categories.OrderBy(kv => kv.Key))
         {
             var category = GetRow<ItemUICategory>(categoryId)!;
 
@@ -105,7 +59,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
 
             using var indent = ImRaii.PushIndent();
 
-            foreach (var (itemIndex, item, isHq) in categoryDict)
+            foreach (var (itemIndex, (item, isHq)) in categoryItems)
             {
                 DrawItem(itemIndex, item, isHq);
             }
@@ -133,7 +87,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
             if (ImGui.Selectable(
                 "##Selectable",
                 false,
-                UpdatePending
+                _tweak.UpdatePending
                     ? ImGuiSelectableFlags.Disabled
                     : ImGuiSelectableFlags.None,
                 ImGuiHelpers.ScaledVector2(ImGui.GetContentRegionAvail().X, IconSize.Y)))
@@ -161,6 +115,6 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
 
     private void RestoreItem(uint itemIndex)
     {
-        UpdatePending = MirageManager.Instance()->RestorePrismBoxItem(itemIndex);
+        _tweak.UpdatePending = MirageManager.Instance()->RestorePrismBoxItem(itemIndex);
     }
 }
