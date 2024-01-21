@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### HaselTweaks
+
+- **Removed:** In order to make it easier to share common code between my plugins, the plugin's language override has been removed. The plugin will now always use Dalamud's language setting and will fall back to English if there's no translation available. If you haven't changed the language in HaselTweaks, nothing will change for you. Otherwise, sorry for the inconvenience.
+
+### Gear Set Grid
+
+- **Fixed:** The window is no longer visible when logged out.
+
 ## [20.1.3] (2023-01-07)
 
 Small address resolver hotfix for [v20.1.2](https://github.com/Haselnussbomber/HaselTweaks/releases/tag/v20.1.2).
@@ -77,7 +87,7 @@ Prevents you from checking market board prices while a request is running, minim
 - **Changed:** The window now has a button in its title bar to lock/unlock its position and size.
 - **Changed:** The window does no longer resets its size upon opening.
 
-### Gear Set List
+### Gear Set Grid
 
 - **Changed:** The window now has a button in its title bar to lock/unlock its position and size. The window context menu was removed.
 - **Changed:** The window now has a minimum size to make sure it always shows all columns.
