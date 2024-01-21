@@ -4,14 +4,10 @@ using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Dalamud.Interface;
 using Dalamud.Interface.Internal;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
-using HaselCommon.Enums;
-using HaselCommon.Extensions;
-using HaselCommon.Services;
 using HaselCommon.Structs;
 using HaselCommon.Utils;
 using ImGuiNET;
@@ -89,42 +85,6 @@ public partial class PluginWindow : Window, IDisposable
 
     public override void Draw()
     {
-        if (ImGui.BeginMenuBar())
-        {
-            if (ImGui.BeginMenu("Language"))
-            {
-                static string GetLabel(string type, string code)
-                {
-                    return TranslationManager.AllowedLanguages.ContainsKey(code)
-                        ? $"Override: {type} ({code})"
-                        : $"Override: {type} ({code} is not supported, using fallback {TranslationManager.DefaultLanguage})";
-                }
-                if (ImGui.MenuItem(GetLabel("Dalamud", Service.PluginInterface.UiLanguage), "", Service.TranslationManager.Override == PluginLanguageOverride.Dalamud))
-                {
-                    Service.TranslationManager.Override = PluginLanguageOverride.Dalamud;
-                }
-
-                if (ImGui.MenuItem(GetLabel("Client", Service.ClientState.ClientLanguage.ToCode()), "", Service.TranslationManager.Override == PluginLanguageOverride.Client))
-                {
-                    Service.TranslationManager.Override = PluginLanguageOverride.Client;
-                }
-
-                ImGui.Separator();
-
-                foreach (var (code, name) in TranslationManager.AllowedLanguages)
-                {
-                    if (ImGui.MenuItem(name, "", Service.TranslationManager.Override == PluginLanguageOverride.None && Service.TranslationManager.Language == code))
-                    {
-                        Service.TranslationManager.SetLanguage(PluginLanguageOverride.None, code);
-                    }
-                }
-
-                ImGui.EndMenu();
-            }
-
-            ImGui.EndMenuBar();
-        }
-
         DrawSidebar();
         ImGui.SameLine();
         DrawConfig();
@@ -259,12 +219,6 @@ public partial class PluginWindow : Window, IDisposable
         {
             var cursorPos = ImGui.GetCursorPos();
             var contentAvail = ImGui.GetContentRegionAvail();
-
-            ImGuiUtils.PushCursorX(contentAvail.X - ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Cog).X);
-            if (ImGuiUtils.IconButton("##PluginConfigButton", FontAwesomeIcon.Cog, "Toggle Plugin Configuration", active: Flags.HasFlag(ImGuiWindowFlags.MenuBar)))
-            {
-                Flags ^= ImGuiWindowFlags.MenuBar;
-            }
 
             if (_logoTextureWrap != null && _logoTextureWrap.ImGuiHandle != 0)
             {

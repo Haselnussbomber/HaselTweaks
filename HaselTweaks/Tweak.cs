@@ -111,7 +111,7 @@ public abstract partial class Tweak // Internal
         }
     }
 
-    internal void EnableInternal()
+    internal virtual void EnableInternal()
     {
         if (!Ready || Outdated) return;
 
@@ -121,7 +121,7 @@ public abstract partial class Tweak // Internal
         }
         catch (Exception ex)
         {
-            Error(ex, "Unexpected error during Disable (Commands)");
+            Error(ex, "Unexpected error during Enable (Commands)");
             LastInternalException = ex;
         }
 
@@ -151,7 +151,7 @@ public abstract partial class Tweak // Internal
         Enabled = true;
     }
 
-    internal void DisableInternal(bool isDisposing = false)
+    internal virtual void DisableInternal(bool isDisposing = false)
     {
         if (!Enabled) return;
 
@@ -191,7 +191,7 @@ public abstract partial class Tweak // Internal
         Enabled = false;
     }
 
-    internal void DisposeInternal()
+    internal virtual void DisposeInternal()
     {
         if (Disposed)
             return;
@@ -222,7 +222,7 @@ public abstract partial class Tweak // Internal
         Disposed = true;
     }
 
-    internal void OnFrameworkUpdateInternal()
+    internal virtual void OnFrameworkUpdateInternal()
     {
         try
         {
@@ -236,7 +236,7 @@ public abstract partial class Tweak // Internal
         }
     }
 
-    internal void OnLoginInternal()
+    internal virtual void OnLoginInternal()
     {
         try
         {
@@ -250,7 +250,7 @@ public abstract partial class Tweak // Internal
         }
     }
 
-    internal void OnLogoutInternal()
+    internal virtual void OnLogoutInternal()
     {
         try
         {
@@ -264,7 +264,7 @@ public abstract partial class Tweak // Internal
         }
     }
 
-    internal void OnTerritoryChangedInternal(ushort id)
+    internal virtual void OnTerritoryChangedInternal(ushort id)
     {
         try
         {
@@ -278,7 +278,7 @@ public abstract partial class Tweak // Internal
         }
     }
 
-    internal void OnAddonOpenInternal(string addonName)
+    internal virtual void OnAddonOpenInternal(string addonName)
     {
         try
         {
@@ -292,7 +292,7 @@ public abstract partial class Tweak // Internal
         }
     }
 
-    internal void OnAddonCloseInternal(string addonName)
+    internal virtual void OnAddonCloseInternal(string addonName)
     {
         try
         {
@@ -306,9 +306,46 @@ public abstract partial class Tweak // Internal
         }
     }
 
+    internal virtual void OnInventoryUpdateInternal()
+    {
+        try
+        {
+            OnInventoryUpdate();
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during OnInventoryUpdate");
+            LastInternalException = ex;
+            return;
+        }
+    }
+
+    internal virtual void OnLanguageChangeInternal()
+    {
+        try
+        {
+            OnLanguageChange();
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during OnLanguageChange");
+            LastInternalException = ex;
+            return;
+        }
+    }
+
     internal virtual void OnConfigChangeInternal(string fieldName)
     {
-        OnConfigChange(fieldName);
+        try
+        {
+            OnConfigChange(fieldName);
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during OnConfigChange");
+            LastInternalException = ex;
+            return;
+        }
     }
 
     protected virtual void EnableCommands() { }

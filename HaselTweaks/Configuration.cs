@@ -7,8 +7,6 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Dalamud.Configuration;
 using Dalamud.Interface.Internal.Notifications;
-using HaselCommon.Enums;
-using HaselCommon.Interfaces;
 using HaselTweaks.Tweaks;
 
 namespace HaselTweaks;
@@ -19,12 +17,6 @@ public partial class Configuration : IPluginConfiguration
     public const int CURRENT_CONFIG_VERSION = 5;
 
     public int Version { get; set; } = CURRENT_CONFIG_VERSION;
-}
-
-public partial class Configuration : ITranslationConfig
-{
-    public string PluginLanguage { get; set; } = "en";
-    public PluginLanguageOverride PluginLanguageOverride { get; set; } = PluginLanguageOverride.Dalamud;
 }
 
 public partial class Configuration
