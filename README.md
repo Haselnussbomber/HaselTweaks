@@ -202,8 +202,8 @@ A helper for editing portraits, featuring:
 
 - A reset button that allows you to easily undo any changes made to the portrait, just as it was when the window was opened.
 - Presets can be exported and imported with a short base64-encoded string via clipboard. This allows you to share the preset with others.
-- If you wish to only import parts of a preset stored in your clipboard, you can use the Advanced Import Mode to select each setting you want to import separately.
-- The Preset Browser allows you to save your portraits into presets and organize them using tags. Simply double click a preset to load it or drag and drop it to change the order or add it to tags.
+  - If you want to import only parts of a preset, the Advanced Import Mode lets you choose which settings you want to import.
+- The Preset Browser allows you to save your portraits into presets and organize them using tags. Simply double-click a preset to load it or drag and drop it to change the order or add it to tags.
   - *Note*: The preset list is shared across all tags, but filtered by the selected tag. That means, reordering a preset will change the order across all tags.
   - *Note*: The preview image of a preset is saved as a .png file in the plugins configuration folder.
 - The Advanced Edit Mode lets you to precisely control the camera yaw, pitch, distance, x and y position, as well as zoom and rotation, eye and head direction and the animation timestamp.
