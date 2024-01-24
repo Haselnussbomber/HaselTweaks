@@ -1,6 +1,5 @@
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Common.Math;
 using HaselCommon.Structs;
@@ -141,7 +140,10 @@ public unsafe class AdvancedImportOverlay : Overlay
                         var entry = state->Expressions.SortedEntries[i];
                         if (entry->RowId == id && entry->SupplementalRow != 0)
                         {
-                            expressionName = MemoryHelper.ReadSeStringNullTerminated(entry->SupplementalRow + 0x28).TextValue;
+                            var bannerFacialRow = GetRow<BannerFacial>(entry->RowId);
+                            var emoteRow = GetRow<Emote>(bannerFacialRow?.Emote.Row ?? 0);
+                            if (emoteRow != null && emoteRow.RowId != 0)
+                                expressionName = emoteRow.Name;
                             break;
                         }
                     }

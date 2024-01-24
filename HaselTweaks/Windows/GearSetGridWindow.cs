@@ -6,6 +6,7 @@ using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselCommon.Extensions;
 using HaselCommon.Sheets;
 using HaselCommon.Structs;
 using HaselCommon.Utils;
@@ -312,7 +313,7 @@ public unsafe class GearSetGridWindow : LockableWindow
                     using (ImRaii.PushColor(ImGuiCol.Text, (uint)HaselColor.FromStain(slot->Stain)))
                         ImGui.Bullet();
                     ImGui.SameLine(0, 0);
-                    ImGui.TextUnformatted(GetSheetText<Stain>(slot->Stain, "Name"));
+                    ImGui.TextUnformatted(GetSheetText<Stain>(slot->Stain, "Name").FirstCharToUpper());
 
                     if (holdingShift)
                     {

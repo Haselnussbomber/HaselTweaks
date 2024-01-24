@@ -4,7 +4,8 @@
 
 ### HaselTweaks
 
-- **Removed:** In order to make it easier to share common code between my plugins, the plugin's language override has been removed. The plugin will now always use Dalamud's language setting and will fall back to English if there's no translation available. If you haven't changed the language in HaselTweaks, nothing will change for you. Otherwise, sorry for the inconvenience.
+- **Changed:** The plugin now uses Dalamud's language setting and will fall back to English if there's no translation available. If you haven't changed the language in HaselTweaks itself, nothing will change for you.
+- **Fixed:** Several names (for example item names, chocobo color, portrait expression) are now respecting the language selected in Dalamud instead of using the client's language.
 
 ### Gear Set Grid
 

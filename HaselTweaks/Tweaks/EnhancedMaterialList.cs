@@ -172,7 +172,7 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
 
                 var (totalPoints, point, cost, isSameZone, placeName) = tuple.Value;
 
-                point.OpenMap(item);
+                point.OpenMap(item, "HaselTweaks");
 
                 return;
 

@@ -5,7 +5,7 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Memory;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
-using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselCommon.Extensions;
 using Lumina.Excel.GeneratedSheets;
 using GameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 using ObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
@@ -135,7 +135,7 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
             return;
         }
 
-        sb.Append(tSe("Commands.WhatMount.WithItem", name, SeString.CreateItemLink(item.RowId)));
+        sb.Append(tSe("Commands.WhatMount.WithItem", name, SeString.CreateItemLink(item.RowId, false, GetItemName(item.RowId))));
 
         Service.ChatGui.Print(new XivChatEntry
         {
@@ -176,7 +176,7 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
             .Append(tSe("Commands.WhatBarding.AppearanceOf", name))
             .Add(NewLinePayload.Payload)
             .AddText($"  {GetAddonText(4987)}: ")
-            .Append(MemoryHelper.ReadSeStringNullTerminated((nint)RaptureTextModule.Instance()->FormatAddonText2(4986, (int)stain.RowId, 0))) // stain name
+            .Append(stain.Name.ToString().FirstCharToUpper())
             .Add(NewLinePayload.Payload)
             .AddText($"  {GetAddonText(4991)}: {topRow?.Name.ToDalamudString().ToString() ?? GetAddonText(4994)}")
             .Add(NewLinePayload.Payload)

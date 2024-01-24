@@ -132,7 +132,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
                 {
                     Service.ChatGui.Print(new XivChatEntry
                     {
-                        Message = tSe("MaterialAllocation.ItemIsNotGatherable", SeString.CreateItemLink(item.RowId)),
+                        Message = tSe("MaterialAllocation.ItemIsNotGatherable", SeString.CreateItemLink(item.RowId, false, GetItemName(item.RowId))),
                         Type = XivChatType.Echo
                     });
                 }
