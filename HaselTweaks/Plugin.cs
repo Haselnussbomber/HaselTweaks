@@ -1,12 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Dalamud.Game.Command;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselTweaks.Windows;
 
@@ -17,20 +15,17 @@ public partial class Plugin : IDalamudPlugin
     internal static HashSet<Tweak> Tweaks = [];
     internal static Configuration Config = null!;
 
-    private bool _disposed;
-
     public Plugin(DalamudPluginInterface pluginInterface)
     {
         Service.Initialize(pluginInterface);
-        Task.Run(HaselCommon.Interop.Resolver.GetInstance.Resolve)
-            .ContinueOnFrameworkThreadWith(Setup);
+        Service.TranslationManager.Initialize();
+        Config = Configuration.Load();
+        Service.Framework.RunOnFrameworkThread(Setup);
     }
 
     private void Setup()
     {
-        Service.TranslationManager.Initialize();
-
-        Config = Configuration.Load();
+        HaselCommon.Interop.Resolver.GetInstance.Resolve();
 
         foreach (var tweakType in GetType().Assembly.GetTypes()
             .Where(type => type.Namespace == "HaselTweaks.Tweaks" && type.GetCustomAttribute<TweakAttribute>() != null))
@@ -161,9 +156,6 @@ public partial class Plugin : IDalamudPlugin
 
     void IDisposable.Dispose()
     {
-        if (_disposed)
-            return;
-
         Service.AddonObserver.AddonClose -= AddonObserver_AddonClose;
         Service.AddonObserver.AddonOpen -= AddonObserver_AddonOpen;
         Service.ClientState.Login -= ClientState_Login;
@@ -183,6 +175,7 @@ public partial class Plugin : IDalamudPlugin
         {
             try
             {
+                Service.PluginLog.Debug($"Disposing {tweak.InternalName}");
                 tweak.DisposeInternal();
             }
             catch (Exception ex)
@@ -191,10 +184,10 @@ public partial class Plugin : IDalamudPlugin
             }
         }
 
+        Service.PluginLog.Debug("Saving config");
         Config?.Save();
 
+        Service.PluginLog.Debug("Disposing Service");
         Service.Dispose();
-
-        _disposed = true;
     }
 }

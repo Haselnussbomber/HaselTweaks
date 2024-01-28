@@ -3,3 +3,4 @@ author: Haselnussbomber
 punchline: A collection of quality of life tweaks.
 repo_url: https://github.com/Haselnussbomber/HaselTweaks
 description: Keep on tweaking.
+load_required_state: 1
