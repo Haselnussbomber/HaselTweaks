@@ -5,11 +5,11 @@
 ### HaselTweaks
 
 - **Changed:** The plugin now uses Dalamud's language setting and will fall back to English if there's no translation available. If you haven't changed the language in HaselTweaks itself, nothing will change for you.
-- **Fixed:** Several names (for example item names, chocobo color, portrait expression) are now respecting the language selected in Dalamud instead of using the client's language.
+- **Fixed:** Item names, chocobo colors or portrait expressions, are now respecting the language selected in Dalamud instead of using the client's language.
 
 ### Gear Set Grid
 
-- **Fixed:** The window is no longer visible when logged out.
+- **Fixed:** When opened in game and returned to the main menu, the window was still visible. It is now automatically hidden when you're not logged in.
 
 ## [20.1.3] (2023-01-07)
 
