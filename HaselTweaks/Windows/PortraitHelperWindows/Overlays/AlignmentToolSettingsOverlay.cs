@@ -48,7 +48,7 @@ public unsafe class AlignmentToolSettingsOverlay : Overlay
 
         if (changed)
         {
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
         }
     }
 }

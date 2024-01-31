@@ -226,7 +226,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
             }
             if (ImGui.IsItemClicked())
             {
-                Plugin.Config.Save();
+                Service.GetService<Configuration>().Save();
             }
 
             ImGui.TableNextColumn();
@@ -241,7 +241,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
                     if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Category == kv.Key))
                     {
                         entry.Category = kv.Key;
-                        Plugin.Config.Save();
+                        Service.GetService<Configuration>().Save();
                     }
 
                     if (entry.Category == kv.Key)
@@ -263,7 +263,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
                     if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Condition == kv.Key))
                     {
                         entry.Condition = kv.Key;
-                        Plugin.Config.Save();
+                        Service.GetService<Configuration>().Save();
                     }
 
                     if (entry.Condition == kv.Key)
@@ -285,7 +285,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
                     if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Order == kv.Key))
                     {
                         entry.Order = kv.Key;
-                        Plugin.Config.Save();
+                        Service.GetService<Configuration>().Save();
                     }
 
                     if (entry.Order == kv.Key)
@@ -413,7 +413,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
         if (ImGui.Button(t("AutoSorter.Config.AddButton.Label")))
         {
             Config.Settings.Add(new());
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
         }
 
         if (Enabled)
@@ -449,7 +449,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
             var removedItem = Config.Settings[entryToMoveUp];
             Config.Settings.RemoveAt(entryToMoveUp);
             Config.Settings.Insert(entryToMoveUp - 1, removedItem);
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
         }
 
         if (entryToMoveDown != -1)
@@ -457,13 +457,13 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
             var removedItem = Config.Settings[entryToMoveDown];
             Config.Settings.RemoveAt(entryToMoveDown);
             Config.Settings.Insert(entryToMoveDown + 1, removedItem);
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
         }
 
         if (entryToRemove != -1)
         {
             Config.Settings.RemoveAt(entryToRemove);
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
         }
 
         if (entryToExecute != -1)

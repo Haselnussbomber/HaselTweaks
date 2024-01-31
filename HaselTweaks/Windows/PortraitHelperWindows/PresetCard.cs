@@ -26,7 +26,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows;
 
 public class PresetCard : IDisposable
 {
-    private static PortraitHelperConfiguration Config => Plugin.Config.Tweaks.PortraitHelper;
+    private static PortraitHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.PortraitHelper;
     public static readonly Vector2 PortraitSize = new(576, 960); // native texture size
 
     private readonly uint ButtonActiveColor = Colors.White.WithAlpha(0.3f);
@@ -154,7 +154,7 @@ public class PresetCard : IDisposable
                         var item = Config.Presets[oldIndex];
                         Config.Presets.RemoveAt(oldIndex);
                         Config.Presets.Insert(newIndex, item);
-                        Plugin.Config.Save();
+                        Service.GetService<Configuration>().Save();
                     }
                 }
             }

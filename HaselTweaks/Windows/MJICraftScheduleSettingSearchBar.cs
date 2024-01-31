@@ -20,7 +20,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
     private string Query = string.Empty;
     private const int LanguageSelectorWidth = 90;
 
-    private static EnhancedIsleworksAgendaConfiguration Config => Plugin.Config.Tweaks.EnhancedIsleworksAgenda;
+    private static EnhancedIsleworksAgendaConfiguration Config => Service.GetService<Configuration>().Tweaks.EnhancedIsleworksAgenda;
 
     public MJICraftScheduleSettingSearchBar() : base("MJICraftScheduleSetting Search Bar")
     {
@@ -63,7 +63,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
                     if (ImGui.Selectable(Enum.GetName(value), value == Config.SearchLanguage))
                     {
                         Config.SearchLanguage = value;
-                        Plugin.Config.Save();
+                        Service.GetService<Configuration>().Save();
                     }
                 }
             }

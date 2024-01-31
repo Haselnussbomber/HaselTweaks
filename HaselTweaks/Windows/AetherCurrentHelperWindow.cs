@@ -28,7 +28,7 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
     [GeneratedRegex("^[\\ue000-\\uf8ff]+ ")]
     private static partial Regex Utf8PrivateUseAreaRegex();
 
-    public static AetherCurrentHelperConfiguration Config => Plugin.Config.Tweaks.AetherCurrentHelper;
+    public static AetherCurrentHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.AetherCurrentHelper;
 
     public AetherCurrentHelperWindow() : base("[HaselTweaks] Aether Current Helper")
     {

@@ -27,14 +27,14 @@ public unsafe partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfi
         {
             if (ImGui.InputText("##Format", ref Config.Format, 50))
             {
-                Plugin.Config.Save();
+                Service.GetService<Configuration>().Save();
                 ReloadChat();
             }
             ImGui.SameLine();
             if (ImGuiUtils.IconButton("##FormatReset", FontAwesomeIcon.Undo, t("HaselTweaks.Config.ResetToDefault", "\"[HH:mm] \"")))
             {
                 Config.Format = "[HH:mm] ";
-                Plugin.Config.Save();
+                Service.GetService<Configuration>().Save();
                 ReloadChat();
             }
 

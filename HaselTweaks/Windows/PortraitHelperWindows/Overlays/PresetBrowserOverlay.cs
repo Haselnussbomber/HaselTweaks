@@ -127,7 +127,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
                     if (preset != null)
                     {
                         preset.Tags.Add(tag.Id);
-                        Plugin.Config.Save();
+                        Service.GetService<Configuration>().Save();
                     }
                 }
             }
@@ -198,7 +198,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             var item = Config.PresetTags[_reorderTagOldIndex];
             Config.PresetTags.RemoveAt(_reorderTagOldIndex);
             Config.PresetTags.Insert(_reorderTagNewIndex, item);
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
             _reorderTagOldIndex = -1;
             _reorderTagNewIndex = -1;
         }
@@ -264,7 +264,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
                 Config.PresetTags.Remove(tag);
         }
 
-        Plugin.Config.Save();
+        Service.GetService<Configuration>().Save();
     }
 
     private void DrawPresetBrowserContent()

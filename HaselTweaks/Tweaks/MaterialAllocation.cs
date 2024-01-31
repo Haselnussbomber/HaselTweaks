@@ -103,7 +103,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
         if (receiveEventArgs.EventParam is > 0 and < 4 && Config.SaveLastSelectedTab)
         {
             Config.LastSelectedTab = (byte)(receiveEventArgs.EventParam - 1);
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
             return;
         }
 

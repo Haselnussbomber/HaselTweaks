@@ -16,7 +16,7 @@ public abstract class Tweak<T> : Tweak
         Config = (T?)(typeof(TweakConfigs)
             .GetProperties()?
             .FirstOrDefault(pi => pi!.PropertyType == typeof(T), null)?
-            .GetValue(Plugin.Config.Tweaks))
+            .GetValue(Service.GetService<Configuration>().Tweaks))
             ?? throw new InvalidOperationException($"Configuration for {typeof(T).Name} not found.");
     }
 

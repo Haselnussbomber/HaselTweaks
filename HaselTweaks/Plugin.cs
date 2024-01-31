@@ -13,13 +13,12 @@ namespace HaselTweaks;
 public partial class Plugin : IDalamudPlugin
 {
     internal static HashSet<Tweak> Tweaks = [];
-    internal static Configuration Config = null!;
     private readonly CommandInfo CommandInfo;
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
         Service.Initialize(pluginInterface);
-        Config = Configuration.Load();
+        Service.AddService(Configuration.Load());
 
         Service.AddonObserver.AddonClose += AddonObserver_AddonClose;
         Service.AddonObserver.AddonOpen += AddonObserver_AddonOpen;
@@ -40,6 +39,8 @@ public partial class Plugin : IDalamudPlugin
 
     private void Setup()
     {
+        var config = Service.GetService<Configuration>();
+
         foreach (var tweakType in GetType().Assembly.GetTypes()
             .Where(type => type.Namespace == "HaselTweaks.Tweaks" && type.GetCustomAttribute<TweakAttribute>() != null))
         {
@@ -56,7 +57,7 @@ public partial class Plugin : IDalamudPlugin
 
         foreach (var tweak in Tweaks)
         {
-            if (!Config.EnabledTweaks.Contains(tweak.InternalName))
+            if (!config.EnabledTweaks.Contains(tweak.InternalName))
                 continue;
 
             try

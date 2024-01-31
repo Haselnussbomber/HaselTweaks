@@ -36,7 +36,7 @@ public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfigu
             }
 
             Config.Keybind = [.. set.Order()];
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
         }
 
         ImGui.SameLine();
@@ -56,7 +56,7 @@ public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfigu
             }
 
             Config.Keybind = [.. set.Order()];
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
         }
 
         ImGui.SameLine();
@@ -76,7 +76,7 @@ public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfigu
             }
 
             Config.Keybind = [.. set.Order()];
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
         }
 
         ImGui.SameLine();
@@ -113,7 +113,7 @@ public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfigu
                 }
 
                 Config.Keybind = [.. set.Order()];
-                Plugin.Config.Save();
+                Service.GetService<Configuration>().Save();
             }
         }
     }

@@ -12,7 +12,7 @@ public abstract class LockableWindow : Window
     public LockableWindow(string name, ImGuiWindowFlags flags = ImGuiWindowFlags.None, bool forceMainWindow = false)
         : base(name, flags, forceMainWindow)
     {
-        if (Plugin.Config.LockedImGuiWindows.Contains(WindowName))
+        if (Service.GetService<Configuration>().LockedImGuiWindows.Contains(WindowName))
             Flags |= LockedWindowFlags;
 
         LockButton = new TitleBarButton()
@@ -45,17 +45,18 @@ public abstract class LockableWindow : Window
         get => Flags.HasFlag(LockedWindowFlags);
         set
         {
+            var config = Service.GetService<Configuration>();
             if (WindowLocked && !value)
             {
                 Flags &= ~LockedWindowFlags;
-                Plugin.Config.LockedImGuiWindows.Remove(WindowName);
-                Plugin.Config.Save();
+                config.LockedImGuiWindows.Remove(WindowName);
+                config.Save();
             }
             else if (!WindowLocked && value)
             {
                 Flags |= LockedWindowFlags;
-                Plugin.Config.LockedImGuiWindows.Add(WindowName);
-                Plugin.Config.Save();
+                config.LockedImGuiWindows.Add(WindowName);
+                config.Save();
             }
         }
     }

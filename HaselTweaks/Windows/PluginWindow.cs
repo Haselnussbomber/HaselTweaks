@@ -153,24 +153,25 @@ public partial class PluginWindow : Window, IDisposable
             {
                 if (ImGui.Checkbox($"##Enabled_{tweak.InternalName}", ref enabled))
                 {
+                    var config = Service.GetService<Configuration>();
                     if (!enabled)
                     {
                         tweak.DisableInternal();
 
-                        if (Plugin.Config.EnabledTweaks.Contains(tweak.InternalName))
+                        if (config.EnabledTweaks.Contains(tweak.InternalName))
                         {
-                            Plugin.Config.EnabledTweaks.Remove(tweak.InternalName);
-                            Plugin.Config.Save();
+                            config.EnabledTweaks.Remove(tweak.InternalName);
+                            config.Save();
                         }
                     }
                     else
                     {
                         tweak.EnableInternal();
 
-                        if (!Plugin.Config.EnabledTweaks.Contains(tweak.InternalName))
+                        if (!config.EnabledTweaks.Contains(tweak.InternalName))
                         {
-                            Plugin.Config.EnabledTweaks.Add(tweak.InternalName);
-                            Plugin.Config.Save();
+                            config.EnabledTweaks.Add(tweak.InternalName);
+                            config.Save();
                         }
                     }
                 }

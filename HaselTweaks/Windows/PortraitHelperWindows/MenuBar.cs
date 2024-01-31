@@ -20,7 +20,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows;
 
 public unsafe class MenuBar : Window
 {
-    private static PortraitHelperConfiguration Config => Plugin.Config.Tweaks.PortraitHelper;
+    private static PortraitHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.PortraitHelper;
 
     private static AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
     private static AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
@@ -203,7 +203,7 @@ public unsafe class MenuBar : Window
                 else
                 {
                     Config.ShowAlignmentTool = !Config.ShowAlignmentTool;
-                    Plugin.Config.Save();
+                    Service.GetService<Configuration>().Save();
                 }
             }
         }
@@ -217,7 +217,7 @@ public unsafe class MenuBar : Window
             else
             {
                 Config.ShowAlignmentTool = !Config.ShowAlignmentTool;
-                Plugin.Config.Save();
+                Service.GetService<Configuration>().Save();
             }
         }
 

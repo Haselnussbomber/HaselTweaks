@@ -25,7 +25,7 @@ public abstract unsafe class Overlay : Window, IDisposable
     private static AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
     private static AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
 
-    protected static PortraitHelperConfiguration Config => Plugin.Config.Tweaks.PortraitHelper;
+    protected static PortraitHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.PortraitHelper;
 
     protected enum OverlayType
     {

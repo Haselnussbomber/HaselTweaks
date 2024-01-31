@@ -56,14 +56,14 @@ public unsafe class DTR : Tweak<DTRConfiguration>
         ImGui.TextUnformatted(t("DTR.Config.FormatUnitText.Label"));
         if (ImGui.InputText("##FormatUnitTextInput", ref Config.FormatUnitText, 20))
         {
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
             _lastFrameRate = 0; // trigger update
         }
         ImGui.SameLine();
         if (ImGuiUtils.IconButton("##Reset", FontAwesomeIcon.Undo, t("HaselTweaks.Config.ResetToDefault", " fps")))
         {
             Config.FormatUnitText = " fps";
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
         }
         if (Service.TranslationManager.TryGetTranslation("DTR.Config.FormatUnitText.Description", out var description))
         {

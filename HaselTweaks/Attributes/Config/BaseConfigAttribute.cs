@@ -14,7 +14,7 @@ public abstract class BaseConfigAttribute : Attribute
 
     protected void OnChangeInternal(Tweak tweak, FieldInfo fieldInfo)
     {
-        Plugin.Config.Save();
+        Service.GetService<Configuration>().Save();
         tweak.CachedType.GetMethod(nameof(Tweak.OnConfigChangeInternal), BindingFlags.Instance | BindingFlags.NonPublic)?.Invoke(tweak, new[] { fieldInfo.Name });
     }
 

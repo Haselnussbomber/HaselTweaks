@@ -241,7 +241,7 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         {
             Config.RestoreMaterialListRecipeId = recipeId;
             Config.RestoreMaterialListAmount = amount;
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
         }
     }
 

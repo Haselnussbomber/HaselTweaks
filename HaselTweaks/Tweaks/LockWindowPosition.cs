@@ -61,13 +61,13 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
         ImGui.Checkbox(t("LockWindowPosition.Config.Inverted.Label"), ref Config.Inverted);
         if (ImGui.IsItemClicked())
         {
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
         }
 
         ImGui.Checkbox(t("LockWindowPosition.Config.AddLockUnlockContextMenuEntries.Label"), ref Config.AddLockUnlockContextMenuEntries);
         if (ImGui.IsItemClicked())
         {
-            Plugin.Config.Save();
+            Service.GetService<Configuration>().Save();
         }
 
         var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
@@ -109,7 +109,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
                 }
                 if (ImGui.IsItemClicked())
                 {
-                    Plugin.Config.Save();
+                    Service.GetService<Configuration>().Save();
                 }
 
                 ImGui.TableNextColumn();
@@ -142,7 +142,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             if (entryToRemove != -1)
             {
                 Config.LockedWindows.RemoveAt(entryToRemove);
-                Plugin.Config.Save();
+                Service.GetService<Configuration>().Save();
             }
         }
         else
@@ -179,7 +179,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
                 {
                     entry.Enabled = !entry.Enabled;
                 }
-                Plugin.Config.Save();
+                Service.GetService<Configuration>().Save();
             }
         }
 
@@ -211,7 +211,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
                         {
                             Name = _hoveredWindowName
                         });
-                        Plugin.Config.Save();
+                        Service.GetService<Configuration>().Save();
                     }
                 }
 
@@ -390,7 +390,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
                     });
                 }
 
-                Plugin.Config.Save();
+                Service.GetService<Configuration>().Save();
             }
 
             _eventIndexToDisable = 0;
