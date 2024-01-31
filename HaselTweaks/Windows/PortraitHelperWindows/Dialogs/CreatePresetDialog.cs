@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using System.IO.Hashing;
 using System.Linq;
 using System.Threading.Tasks;
 using Dalamud.Interface.Utility.Raii;
+using HaselCommon.Extensions;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -116,7 +116,7 @@ public class CreatePresetDialog : ConfirmationDialog
             var pixelData = new byte[_image.Width * _image.Height * 4];
             _image.CopyPixelDataTo(pixelData);
 
-            var hash = BitConverter.ToInt64(XxHash64.Hash(pixelData)).ToString("x");
+            var hash = pixelData.GetHash();
             var thumbPath = PortraitHelper.GetPortraitThumbnailPath(hash);
 
             _image.SaveAsPng(thumbPath, new PngEncoder
