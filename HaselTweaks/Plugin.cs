@@ -14,19 +14,32 @@ public partial class Plugin : IDalamudPlugin
 {
     internal static HashSet<Tweak> Tweaks = [];
     internal static Configuration Config = null!;
+    private readonly CommandInfo CommandInfo;
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
         Service.Initialize(pluginInterface);
-        Service.TranslationManager.Initialize();
         Config = Configuration.Load();
+
+        Service.AddonObserver.AddonClose += AddonObserver_AddonClose;
+        Service.AddonObserver.AddonOpen += AddonObserver_AddonOpen;
+        Service.ClientState.Login += ClientState_Login;
+        Service.ClientState.Logout += ClientState_Logout;
+        Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
+        Service.Framework.Update += Framework_Update;
+        Service.GameInventory.InventoryChangedRaw += GameInventory_InventoryChangedRaw;
+        Service.PluginInterface.LanguageChanged += PluginInterface_LanguageChanged;
+        Service.PluginInterface.UiBuilder.OpenConfigUi += UiBuilder_OnOpenConfigUi;
+
+        CommandInfo = new CommandInfo(OnCommand) { HelpMessage = t("HaselTweaks.CommandHandlerHelpMessage") };
+
+        Service.CommandManager.AddHandler("/haseltweaks", CommandInfo);
+
         Service.Framework.RunOnFrameworkThread(Setup);
     }
 
     private void Setup()
     {
-        HaselCommon.Interop.Resolver.GetInstance.Resolve();
-
         foreach (var tweakType in GetType().Assembly.GetTypes()
             .Where(type => type.Namespace == "HaselTweaks.Tweaks" && type.GetCustomAttribute<TweakAttribute>() != null))
         {
@@ -55,21 +68,6 @@ public partial class Plugin : IDalamudPlugin
                 Service.PluginLog.Error(ex, $"Failed enabling tweak '{tweak.InternalName}'.");
             }
         }
-
-        Service.AddonObserver.AddonClose += AddonObserver_AddonClose;
-        Service.AddonObserver.AddonOpen += AddonObserver_AddonOpen;
-        Service.ClientState.Login += ClientState_Login;
-        Service.ClientState.Logout += ClientState_Logout;
-        Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
-        Service.Framework.Update += Framework_Update;
-        Service.GameInventory.InventoryChangedRaw += GameInventory_InventoryChangedRaw;
-        Service.PluginInterface.LanguageChanged += PluginInterface_LanguageChanged;
-        Service.PluginInterface.UiBuilder.OpenConfigUi += UiBuilder_OnOpenConfigUi;
-
-        Service.CommandManager.AddHandler("/haseltweaks", new CommandInfo(OnCommand)
-        {
-            HelpMessage = t("HaselTweaks.CommandHandlerHelpMessage")
-        });
     }
 
     private void AddonObserver_AddonOpen(string addonName)
@@ -142,6 +140,8 @@ public partial class Plugin : IDalamudPlugin
 
     private void PluginInterface_LanguageChanged(string langCode)
     {
+        CommandInfo.HelpMessage = t("HaselTweaks.CommandHandlerHelpMessage");
+
         foreach (var tweak in Tweaks)
         {
             if (tweak.Enabled)
@@ -183,9 +183,6 @@ public partial class Plugin : IDalamudPlugin
                 Service.PluginLog.Error(ex, $"Failed disposing tweak '{tweak.InternalName}'.");
             }
         }
-
-        Service.PluginLog.Debug("Saving config");
-        Config?.Save();
 
         Service.PluginLog.Debug("Disposing Service");
         Service.Dispose();

@@ -19,10 +19,6 @@
     "en": "Support me on Ko-fi",
     "de": "Unterstütze mich auf Ko-fi"
   },
-  "HaselTweaks.Config.CouldNotLoadConfigNotification.Text": {
-    "en": "Could not load the configuration file. Creating a new one.",
-    "de": "Die Konfigurationsdatei konnte nicht geladen werden. Es wird eine neue erstellt."
-  },
   "HaselTweaks.Config.SectionTitle.IncompatibilityWarning": {
     "en": "Incompatibility Warning",
     "de": "Inkompatibilitätswarnung"
