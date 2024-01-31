@@ -10,9 +10,9 @@ using HaselTweaks.Windows;
 
 namespace HaselTweaks;
 
-public partial class Plugin : IDalamudPlugin
+public sealed class Plugin : IDalamudPlugin
 {
-    internal static HashSet<Tweak> Tweaks = [];
+    public readonly HashSet<Tweak> Tweaks = [];
     private readonly CommandInfo CommandInfo;
 
     public Plugin(DalamudPluginInterface pluginInterface)
@@ -34,10 +34,10 @@ public partial class Plugin : IDalamudPlugin
 
         Service.CommandManager.AddHandler("/haseltweaks", CommandInfo);
 
-        Service.Framework.RunOnFrameworkThread(Setup);
+        Service.Framework.RunOnFrameworkThread(InitializeTweaks);
     }
 
-    private void Setup()
+    private void InitializeTweaks()
     {
         var config = Service.GetService<Configuration>();
 
@@ -136,7 +136,7 @@ public partial class Plugin : IDalamudPlugin
 
     private void UiBuilder_OnOpenConfigUi()
     {
-        Service.WindowManager.OpenWindow<PluginWindow>();
+        Service.WindowManager.OpenWindow<PluginWindow>().Plugin = this;
     }
 
     private void PluginInterface_LanguageChanged(string langCode)
@@ -150,9 +150,9 @@ public partial class Plugin : IDalamudPlugin
         }
     }
 
-    private void OnCommand(string command, string args)
+    private void OnCommand(string command, string arguments)
     {
-        Service.WindowManager.ToggleWindow<PluginWindow>();
+        Service.WindowManager.OpenWindow<PluginWindow>().Plugin = this;
     }
 
     void IDisposable.Dispose()

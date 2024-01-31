@@ -26,6 +26,10 @@ public partial class PluginWindow : Window, IDisposable
     [GeneratedRegex("\\.0$")]
     private static partial Regex VersionPatchZeroRegex();
 
+    public Plugin Plugin { get; internal set; } = null!;
+
+    private Tweak? SelectedTweak => Plugin.Tweaks.FirstOrDefault(t => t.InternalName == _selectedTweak);
+
     public PluginWindow() : base("HaselTweaks")
     {
         var width = SidebarWidth * 3 + ImGui.GetStyle().ItemSpacing.X + ImGui.GetStyle().FramePadding.X * 2;
@@ -67,8 +71,6 @@ public partial class PluginWindow : Window, IDisposable
     {
         _logoTextureWrap?.Dispose();
     }
-
-    private Tweak? SelectedTweak => Plugin.Tweaks.FirstOrDefault(t => t.InternalName == _selectedTweak);
 
     public override void OnClose()
     {
