@@ -97,12 +97,12 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
             _isUpdatePending = true;
         }
 
-        var buddy = UIState.Instance()->Buddy;
-        if (_lastBuddyXp != buddy.CurrentXP || _lastBuddyRank != buddy.Rank || _lastBuddyObjectID != buddy.Companion.ObjectID)
+        var buddy = UIState.Instance()->Buddy.CompanionInfo;
+        if (_lastBuddyXp != buddy.CurrentXP || _lastBuddyRank != buddy.Rank || _lastBuddyObjectID != buddy.Companion->ObjectID)
         {
             _lastBuddyXp = buddy.CurrentXP;
             _lastBuddyRank = buddy.Rank;
-            _lastBuddyObjectID = buddy.Companion.ObjectID;
+            _lastBuddyObjectID = buddy.Companion->ObjectID;
             _isUpdatePending = true;
         }
 
@@ -231,7 +231,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
 
     private void HandleCompanionBar(AtkNineGridNode* nineGridNode, Structs.AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
     {
-        var buddy = UIState.Instance()->Buddy;
+        var buddy = UIState.Instance()->Buddy.CompanionInfo;
         if (buddy.Rank > GetRowCount<BuddyRank>() - 1)
         {
             ResetColor(nineGridNode);
