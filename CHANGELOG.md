@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Minimap Adjustments
+
+- **Added:** New options to hide the time indicator and to show it when hovering.
+- **Added:** New options to hide the cardinal directions and to show them when hovering.
+- **Changed:** The transparency now has a smooth transition when it changes.
+
 ## [20.1.4] (2023-01-28)
 
 ### HaselTweaks
