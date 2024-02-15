@@ -889,17 +889,33 @@
     "en": "Hide Coordinates",
     "de": "Koordinaten ausblenden"
   },
-  "MinimapAdjustments.Config.HideCoords.Description": {
-    "en": "Visible on hover.",
-    "de": "Sichtbar beim Mausüberfahren."
+  "MinimapAdjustments.Config.CoordsVisibleOnHover.Label": {
+    "en": "Visible on hover",
+    "de": "Sichtbar beim Mausüberfahren"
   },
   "MinimapAdjustments.Config.HideWeather.Label": {
     "en": "Hide Weather",
     "de": "Wetter ausblenden"
   },
-  "MinimapAdjustments.Config.HideWeather.Description": {
-    "en": "Visible on hover.",
-    "de": "Sichtbar beim Mausüberfahren."
+  "MinimapAdjustments.Config.WeatherVisibleOnHover.Label": {
+    "en": "Visible on hover",
+    "de": "Sichtbar beim Mausüberfahren"
+  },
+  "MinimapAdjustments.Config.HideSun.Label": {
+    "en": "Hide Time Indicator",
+    "de": "Zeitindikator ausblenden"
+  },
+  "MinimapAdjustments.Config.SunVisibleOnHover.Label": {
+    "en": "Visible on hover",
+    "de": "Sichtbar beim Mausüberfahren"
+  },
+  "MinimapAdjustments.Config.HideCardinalDirections.Label": {
+    "en": "Hide Cardinal Directions",
+    "de": "Himmelsrichtungen ausblenden"
+  },
+  "MinimapAdjustments.Config.CardinalDirectionsVisibleOnHover.Label": {
+    "en": "Visible on hover",
+    "de": "Sichtbar beim Mausüberfahren"
   },
 
   "PortraitHelper.Tweak.Name": {
