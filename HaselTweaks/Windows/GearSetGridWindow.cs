@@ -265,7 +265,7 @@ public unsafe class GearSetGridWindow : LockableWindow
             ImGuiContextMenu.CreateTryOn(item, slot->GlamourId, slot->Stain),
             ImGuiContextMenu.CreateItemFinder(item.RowId),
             ImGuiContextMenu.CreateCopyItemName(item.RowId),
-            ImGuiContextMenu.CreateOpenOnGarlandTools(item.RowId),
+            ImGuiContextMenu.CreateOpenOnGarlandTools("item", item.RowId),
             ImGuiContextMenu.CreateItemSearch(item),
         }
         .Draw();

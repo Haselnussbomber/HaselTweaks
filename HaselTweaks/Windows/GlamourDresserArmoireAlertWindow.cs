@@ -107,7 +107,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
             ImGuiContextMenu.CreateTryOn(item),
             ImGuiContextMenu.CreateItemFinder(item.RowId),
             ImGuiContextMenu.CreateCopyItemName(item.RowId),
-            ImGuiContextMenu.CreateOpenOnGarlandTools(item.RowId),
+            ImGuiContextMenu.CreateOpenOnGarlandTools("item", item.RowId),
             ImGuiContextMenu.CreateItemSearch(item),
         }
         .Draw();
