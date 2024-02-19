@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Character Class Switcher
+
+- **Added:** An option to always open the Character window on the Classes/Jobs tab.
+
 ### Minimap Adjustments
 
 - **Added:** New options to hide the time indicator and to show it when hovering.

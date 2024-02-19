@@ -301,6 +301,30 @@
     "en": "Disable Tooltips",
     "de": "Tooltips deaktivieren"
   },
+  "CharacterClassSwitcher.Config.AlwaysOpenOnClassesJobsTab.Label": {
+    "en": "Always open on the Classes/Jobs tab",
+    "de": "Immer auf dem Tab Klassen/Jobs öffnen"
+  },
+  "CharacterClassSwitcher.Config.ForceClassesJobsSubTab.Label": {
+    "en": "Override tab inside Classes/Jobs:",
+    "de": "Überschreibung des Tabs innerhalb Klassen/Jobs:"
+  },
+  "CharacterClassSwitcher.Config.ForceClassesJobsSubTab.Options.None.Label": {
+    "en": "No override (game default)",
+    "de": "Keine Überschreibung (Spielstandard)"
+  },
+  "CharacterClassSwitcher.Config.ForceClassesJobsSubTab.Options.DoWDoM.Label": {
+    "en": "DoW/DoM",
+    "de": "Krieger/Magier",
+    "fr": "Combattant/Mage",
+    "ja": "バトルクラス・ジョブ"
+  },
+  "CharacterClassSwitcher.Config.ForceClassesJobsSubTab.Options.DoHDoL.Label": {
+    "en": "DoH/DoL",
+    "de": "Handwerker/Sammler",
+    "fr": "Artisan/Récolteur",
+    "ja": "クラフター・ギャザラー"
+  },
   "CharacterClassSwitcher.NoSuitableGearsetFound": {
     "en": "Couldn't find a suitable gearset.",
     "de": "Konnte kein passendes Ausrüstungsset finden.",

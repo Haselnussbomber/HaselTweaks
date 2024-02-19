@@ -6,6 +6,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
+using HaselTweaks.Structs.Agents;
 
 namespace HaselTweaks.Tweaks;
 
@@ -13,11 +14,24 @@ public class CharacterClassSwitcherConfiguration
 {
     [BoolConfig]
     public bool DisableTooltips = false;
+
+    [BoolConfig]
+    public bool AlwaysOpenOnClassesJobsTab = false;
+
+    [EnumConfig(DependsOn = nameof(AlwaysOpenOnClassesJobsTab))]
+    public CharacterClassSwitcher.ClassesJobsSubTabs ForceClassesJobsSubTab = CharacterClassSwitcher.ClassesJobsSubTabs.None;
 }
 
 [Tweak, IncompatibilityWarning("SimpleTweaksPlugin", "CharacterWindowJobSwitcher")]
 public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitcherConfiguration>
 {
+    public enum ClassesJobsSubTabs
+    {
+        None,
+        DoWDoM,
+        DoHDoL,
+    }
+
     private MemoryReplacement? TooltipPatch;
     private MemoryReplacement? PvpTooltipPatch;
 
@@ -98,6 +112,16 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
 
             collisionNode->AtkResNode.AddEvent(AtkEventType.MouseClick, (uint)i + 2, (AtkEventListener*)addon, null, false);
             collisionNode->AtkResNode.AddEvent(AtkEventType.InputReceived, (uint)i + 2, (AtkEventListener*)addon, null, false);
+        }
+
+        if (Config.AlwaysOpenOnClassesJobsTab && Config.ForceClassesJobsSubTab != ClassesJobsSubTabs.None)
+        {
+            addon->SetTab(Config.ForceClassesJobsSubTab switch
+            {
+                ClassesJobsSubTabs.DoWDoM => 0,
+                ClassesJobsSubTabs.DoHDoL => 1,
+                _ => 0
+            });
         }
 
         return result;
@@ -339,5 +363,16 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
 
         Log($"Equipping gearset #{selectedGearset.Id}");
         gearsetModule->EquipGearset(selectedGearset.Id - 1);
+    }
+
+    [VTableHook<AgentStatus>((int)AgentInterfaceVfs.Show)]
+    private void AgentStatus_Show(AgentStatus* agent)
+    {
+        if (Config.AlwaysOpenOnClassesJobsTab)
+        {
+            agent->TabIndex = 2;
+        }
+
+        AgentStatus_ShowHook.OriginalDisposeSafe(agent);
     }
 }

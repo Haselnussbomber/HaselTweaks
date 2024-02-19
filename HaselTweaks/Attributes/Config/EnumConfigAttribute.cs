@@ -9,6 +9,8 @@ namespace HaselTweaks;
 [AttributeUsage(AttributeTargets.Field)]
 public class EnumConfigAttribute : BaseConfigAttribute
 {
+    public bool NoLabel = false;
+
     public override void Draw(Tweak tweak, object config, FieldInfo fieldInfo)
     {
         var enumType = fieldInfo.FieldType;
@@ -16,9 +18,12 @@ public class EnumConfigAttribute : BaseConfigAttribute
         string GetOptionLabel(int value)
             => t($"{tweak.InternalName}.Config.{fieldInfo.Name}.Options.{Enum.GetName(enumType, value)}.Label");
 
-        ImGui.TextUnformatted(t($"{tweak.InternalName}.Config.{fieldInfo.Name}.Label"));
+        if (!NoLabel)
+        {
+            ImGui.TextUnformatted(t($"{tweak.InternalName}.Config.{fieldInfo.Name}.Label"));
+        }
 
-        using var indent = ImGuiUtils.ConfigIndent();
+        using var indent = ImGuiUtils.ConfigIndent(!NoLabel);
 
         var selectedValue = (int)(fieldInfo.GetValue(config) ?? 0);
         using var combo = ImRaii.Combo("##Input", GetOptionLabel(selectedValue));
