@@ -2,7 +2,7 @@
   <img src="https://user-images.githubusercontent.com/96642047/220611506-da811a05-6c84-41da-89b3-498f5450db84.svg" width="580px" alt="HaselTweaks">
 </p>
 
-**HaselTweaks** is an all-in-one plugin for all my tweaks and helpers (well, with the exception of [LeveHelper](https://github.com/Haselnussbomber/LeveHelper) 😜).
+**HaselTweaks** is an all-in-one plugin for all my tweaks and helpers (well, with the exception of [LeveHelper](https://github.com/Haselnussbomber/LeveHelper) and [MogMogCheck](https://github.com/Haselnussbomber/MogMogCheck) 😜).
 
 You will not find this plugin in the official plugin repository.  
 However, you're free to add my custom repository to get updates whenever I release a new version:  
@@ -47,6 +47,7 @@ Features:
   - Checks the controller button with "Select Target/Confirm" binding
   - Technical limitation: desynthesis window still only opens when holding shift on a keyboard
 - Supports PvP Character window
+- An option to make the Character window always open on the Classes/Jobs tab
 - Adds hover effect for non-crafters
 - Option to disable Tooltips
 
@@ -193,8 +194,14 @@ Configuration options:
 - Square Collision (for custom minimap mask textures)
 - Default Opacity
 - Hover Opacity
-- Hide Coordinates (only visible on hover)
-- Hide Weather (only visible on hover)
+- Hide Coordinates
+  - Visible on hover
+- Hide Weather
+  - Visible on hover
+- Hide Time Indicator
+  - Visible on hover
+- Hide Cardinal Directions
+  - Visible on hover
 
 ### Portrait Helper
 
