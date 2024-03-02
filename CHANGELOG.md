@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Portrait Helper
+
+- **Changed:** The thumbnail files now use the preset id as name and have been automatically renamed.  
+  If errors occur, please check the console (`/xllog` - the lines are prefixed with `[MigrationV6]`) and either rename the files yourself or export/import the presets with missing thumbnails.
+
 ## [20.2.0] (2023-02-28)
 
 ### Character Class Switcher
