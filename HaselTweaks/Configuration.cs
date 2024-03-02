@@ -215,7 +215,15 @@ public partial class Configuration : IDisposable
                         var newPath = PortraitHelper.GetPortraitThumbnailPath(guid);
 
                         Service.PluginLog.Info($"[MigrationV6]   {oldPath} => {newPath}");
-                        File.Move(oldPath, newPath);
+
+                        try
+                        {
+                            File.Move(oldPath, newPath);
+                        }
+                        catch (Exception e)
+                        {
+                            Service.PluginLog.Error(e, "[MigrationV6] Could not move file {0} to {1}", oldPath, newPath);
+                        }
 
                         presetCopy.Remove("TextureHash");
 
