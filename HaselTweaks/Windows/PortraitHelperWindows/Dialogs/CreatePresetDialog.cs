@@ -116,8 +116,9 @@ public class CreatePresetDialog : ConfirmationDialog
             var pixelData = new byte[_image.Width * _image.Height * 4];
             _image.CopyPixelDataTo(pixelData);
 
-            var hash = pixelData.GetHash();
-            var thumbPath = PortraitHelper.GetPortraitThumbnailPath(hash);
+            var guid = Guid.NewGuid();
+            var textureName = guid.ToString("N").ToLowerInvariant();
+            var thumbPath = PortraitHelper.GetPortraitThumbnailPath(textureName);
 
             _image.SaveAsPng(thumbPath, new PngEncoder
             {
@@ -125,7 +126,7 @@ public class CreatePresetDialog : ConfirmationDialog
                 ColorType = PngColorType.Rgb // no need for alpha channel
             });
 
-            Config.Presets.Insert(0, new(_name.Trim(), _preset, _tags!, hash));
+            Config.Presets.Insert(0, new(guid, _name.Trim(), _preset, _tags!, textureName));
             Service.GetService<Configuration>().Save();
 
             Close();

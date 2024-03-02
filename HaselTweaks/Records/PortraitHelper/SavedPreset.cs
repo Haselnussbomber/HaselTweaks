@@ -22,14 +22,6 @@ public record SavedPreset
         this.TextureHash = TextureHash;
     }
 
-    public SavedPreset(string Name, PortraitPreset? Preset) : this(Guid.NewGuid(), Name, Preset, new(), string.Empty)
-    {
-    }
-
-    public SavedPreset(string Name, PortraitPreset? Preset, HashSet<Guid> Tags, string TextureHash) : this(Guid.NewGuid(), Name, Preset, Tags, TextureHash)
-    {
-    }
-
     public void Delete()
     {
         var config = Service.GetService<Configuration>().Tweaks.PortraitHelper;
