@@ -453,13 +453,13 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         return Image.LoadPixelData<Bgra32>(pixelDataStream.ToArray(), desc.Width, desc.Height);
     }
 
-    public static string GetPortraitThumbnailPath(string hash)
+    public static string GetPortraitThumbnailPath(Guid id)
     {
         var portraitsPath = Path.Join(Service.PluginInterface.ConfigDirectory.FullName, "Portraits");
 
         if (!Directory.Exists(portraitsPath))
             Directory.CreateDirectory(portraitsPath);
 
-        return Path.Join(portraitsPath, $"{hash}.png");
+        return Path.Join(portraitsPath, $"{id.ToString("D").ToLowerInvariant()}.png");
     }
 }

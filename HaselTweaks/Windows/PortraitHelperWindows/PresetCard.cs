@@ -41,7 +41,7 @@ public class PresetCard : IDisposable
     private bool _doesImageFileExist;
     private bool _isImageUpdatePending;
 
-    private string? _textureHash;
+    private Guid? _textureGuid;
     private Image<Rgba32>? _image;
     private IDalamudTextureWrap? _textureWrap;
     private DateTime _lastTextureCheck = DateTime.MinValue;
@@ -310,7 +310,7 @@ public class PresetCard : IDisposable
             _bannerDecorationImage = GetRow<BannerDecoration>(_bannerDecoration)?.Image;
         }
 
-        if (!_isImageLoading && _preset.TextureHash != _textureHash)
+        if (!_isImageLoading && _preset.Id != _textureGuid)
         {
             _image?.Dispose();
             _image = null;
@@ -318,9 +318,9 @@ public class PresetCard : IDisposable
             _textureWrap?.Dispose();
             _textureWrap = null;
 
-            if (!string.IsNullOrEmpty(_preset.TextureHash) && DateTime.Now - _lastTextureCheck > TimeSpan.FromSeconds(1))
+            if (DateTime.Now - _lastTextureCheck > TimeSpan.FromSeconds(1))
             {
-                var thumbPath = PortraitHelper.GetPortraitThumbnailPath(_preset.TextureHash);
+                var thumbPath = PortraitHelper.GetPortraitThumbnailPath(_preset.Id);
 
                 if (File.Exists(thumbPath))
                 {
@@ -342,7 +342,7 @@ public class PresetCard : IDisposable
                         }
                         finally
                         {
-                            _textureHash = _preset.TextureHash;
+                            _textureGuid = _preset.Id;
                         }
                     }, _closeTokenSource.Token);
                 }

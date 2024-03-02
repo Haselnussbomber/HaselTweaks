@@ -117,8 +117,7 @@ public class CreatePresetDialog : ConfirmationDialog
             _image.CopyPixelDataTo(pixelData);
 
             var guid = Guid.NewGuid();
-            var textureName = guid.ToString("N").ToLowerInvariant();
-            var thumbPath = PortraitHelper.GetPortraitThumbnailPath(textureName);
+            var thumbPath = PortraitHelper.GetPortraitThumbnailPath(guid);
 
             _image.SaveAsPng(thumbPath, new PngEncoder
             {
@@ -126,7 +125,7 @@ public class CreatePresetDialog : ConfirmationDialog
                 ColorType = PngColorType.Rgb // no need for alpha channel
             });
 
-            Config.Presets.Insert(0, new(guid, _name.Trim(), _preset, _tags!, textureName));
+            Config.Presets.Insert(0, new(guid, _name.Trim(), _preset, _tags!));
             Service.GetService<Configuration>().Save();
 
             Close();

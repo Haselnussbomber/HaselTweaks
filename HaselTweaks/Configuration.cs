@@ -13,7 +13,7 @@ namespace HaselTweaks;
 public partial class Configuration : IPluginConfiguration
 {
     [JsonIgnore]
-    public const int CURRENT_CONFIG_VERSION = 5;
+    public const int CURRENT_CONFIG_VERSION = 6;
 
     public int Version { get; set; } = CURRENT_CONFIG_VERSION;
 }
@@ -174,6 +174,64 @@ public partial class Configuration : IDisposable
 
             // fix for "The JSON value could not be converted to System.UInt64. Path: $.Tweaks.EnhancedLoginLogout.SelectedEmotes.$type"
             ((JsonObject?)tweakConfigs?["EnhancedLoginLogout"]?["SelectedEmotes"])?.Remove("$type");
+        }
+
+        // Version 6: removed TextureHash in favor of Id
+        if (version < 6)
+        {
+            var presets = (JsonArray?)tweakConfigs?["PortraitHelper"]?["Presets"];
+            if (presets != null && presets.Count > 0)
+            {
+                Service.PluginLog.Info("[MigrationV6] Portrait thumbnails now use the preset guid as the name. Renaming files...");
+
+                var newPresets = new JsonArray();
+                var portraitsPath = Path.Join(Service.PluginInterface.ConfigDirectory.FullName, "Portraits");
+
+                if (!Directory.Exists(portraitsPath))
+                    Directory.CreateDirectory(portraitsPath);
+
+                for (var i = 0; i < presets.Count; i++)
+                {
+                    var preset = (JsonObject?)presets[i];
+                    if (preset == null)
+                        continue;
+
+                    var presetCopy = preset.Deserialize<JsonObject>(); // net8: switch to .Clone()
+                    if (presetCopy == null)
+                        continue;
+
+                    var id = (string?)preset["Id"];
+                    var textureHash = (string?)preset["TextureHash"];
+
+                    if (id == null || textureHash == null)
+                        continue;
+
+                    var guid = Guid.Parse(id);
+
+                    var oldPath = Path.Join(portraitsPath, $"{textureHash}.png");
+
+                    if (File.Exists(oldPath))
+                    {
+                        var newPath = PortraitHelper.GetPortraitThumbnailPath(guid);
+
+                        Service.PluginLog.Info($"[MigrationV6]   {oldPath} => {newPath}");
+                        File.Move(oldPath, newPath);
+
+                        presetCopy.Remove("TextureHash");
+
+                        newPresets.Add(presetCopy);
+                    }
+                    else
+                    {
+                        var presetCode = (string?)preset["Preset"];
+                        Service.PluginLog.Error("[MigrationV6] Could not find thumbnail {0} for {1}. Please re-import.", oldPath, presetCode ?? string.Empty);
+                    }
+                }
+
+                tweakConfigs!["PortraitHelper"]!["Presets"] = newPresets;
+
+                Service.PluginLog.Info("[MigrationV6] Done!");
+            }
         }
     }
 

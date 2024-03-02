@@ -10,23 +10,21 @@ public record SavedPreset
     public string Name;
     public PortraitPreset? Preset;
     public HashSet<Guid> Tags;
-    public string TextureHash;
 
     [JsonConstructor]
-    public SavedPreset(Guid Id, string Name, PortraitPreset? Preset, HashSet<Guid> Tags, string TextureHash)
+    public SavedPreset(Guid Id, string Name, PortraitPreset? Preset, HashSet<Guid> Tags)
     {
         this.Id = Id;
         this.Name = Name;
         this.Preset = Preset;
         this.Tags = Tags;
-        this.TextureHash = TextureHash;
     }
 
     public void Delete()
     {
         var config = Service.GetService<Configuration>().Tweaks.PortraitHelper;
 
-        var thumbPath = Tweaks.PortraitHelper.GetPortraitThumbnailPath(TextureHash);
+        var thumbPath = Tweaks.PortraitHelper.GetPortraitThumbnailPath(Id);
         if (File.Exists(thumbPath))
         {
             try
