@@ -2,10 +2,15 @@
 
 ## [Unreleased]
 
+### HaselTweaks
+
+- Updated dependency SixLabors.ImageSharp to 3.1.3 (security fix for [CVE-2024-27929](https://github.com/advisories/GHSA-65x7-c272-7g7r)).
+- Removed dependency System.IO.Hashing, which is no longer needed in HaselTweaks.
+
 ### Portrait Helper
 
-- **Changed:** The thumbnail files now use the preset id as name and have been automatically renamed.  
-  If errors occur, please check the console (`/xllog` - the lines are prefixed with `[MigrationV6]`) and either rename the files yourself or export/import the presets with missing thumbnails.
+- **Changed:** Thumbnails now use the preset ID instead of a hash for filenames. Existing thumbnails have been automatically renamed.  
+  If errors occur, please check the console (`/xllog` - the lines are prefixed with `[MigrationV6]`) to see which files could not be renamed.
 
 ## [20.2.0] (2023-02-28)
 
