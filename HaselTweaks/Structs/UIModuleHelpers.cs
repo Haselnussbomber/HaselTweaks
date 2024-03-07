@@ -1,11 +1,14 @@
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 
 namespace HaselTweaks.Structs;
 
 [StructLayout(LayoutKind.Explicit)]
-public unsafe struct UIModuleVf35Struct
+public unsafe struct UIModuleHelpers
 {
+    public static UIModuleHelpers* Instance() => (UIModuleHelpers*)UIModule.Instance()->GetUIModuleHelpers();
+
     [FieldOffset(8)] public BannerModuleHelper* BannerModuleHelper; // no clue, but hosts helper functions
 }
 
