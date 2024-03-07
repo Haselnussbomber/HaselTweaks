@@ -359,7 +359,7 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
             return false;
         }
 
-        var helper = HaselUIModule.Instance()->GetVf35Struct()->BannerModuleHelper;
+        var helper = Structs.UIModuleHelpers.Instance()->BannerModuleHelper;
 
         // TODO: check E8 ?? ?? ?? ?? 84 C0 74 4A 48 8D 4C 24
 
