@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### HaselTweaks
+
+- Target framework updated to .NET 8
+- Removed dependency Dalamud.ContextMenu, because it is now included in Dalamud.
+- Removed dependency FuzzySharp, because I copied the FuzzyMatcher from Dalamud and use that instead.
+- Removed dependency NoAlloq, because I further optimized the game window detection and don't need it anymore.
+
 ## [20.2.1] (2023-03-05)
 
 ### HaselTweaks

@@ -6,6 +6,7 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Extensions;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
@@ -90,8 +91,8 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
                 }
             }
 
-            var result = FuzzySharp.Process.ExtractTop((Index: 0u, ItemName: Query.ToLower()), entries, (entry) => entry.ItemName, limit: 1).FirstOrDefault();
-            if (result != null && result.Value != default)
+            var result = entries.FuzzyMatch(Query.ToLower(), value => value.ItemName).FirstOrDefault();
+            if (result != default)
             {
                 var index = result.Value.Index;
                 var item = Addon->TreeList->GetItem(index);
