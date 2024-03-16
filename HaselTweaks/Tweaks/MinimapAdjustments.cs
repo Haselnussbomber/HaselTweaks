@@ -110,6 +110,9 @@ public unsafe class MinimapAdjustments : Tweak<MinimapAdjustmentsConfiguration>
 
     public override void OnFrameworkUpdate()
     {
+        if (!Service.ClientState.IsLoggedIn)
+            return;
+
         if (!TryGetAddon<NaviMap>("_NaviMap", out var naviMap))
             return;
 

@@ -108,6 +108,9 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
 
     public override void OnFrameworkUpdate()
     {
+        if (!Service.ClientState.IsLoggedIn)
+            return;
+
         // added a 500ms delay because selling items updates the addons before the item is gone...
 
         if (_pendingMaterialListRefresh && DateTime.UtcNow - _timeOfMaterialListRefresh >= TimeSpan.FromMilliseconds(500))

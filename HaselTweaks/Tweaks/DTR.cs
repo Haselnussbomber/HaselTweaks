@@ -98,6 +98,9 @@ public unsafe class DTR : Tweak<DTRConfiguration>
 
     public override void OnFrameworkUpdate()
     {
+        if (!Service.ClientState.IsLoggedIn)
+            return;
+
         UpdateInstance();
         UpdateFPS();
         UpdateBusy();

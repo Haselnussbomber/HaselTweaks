@@ -132,6 +132,9 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
     public override unsafe void OnFrameworkUpdate()
     {
+        if (!Service.ClientState.IsLoggedIn)
+            return;
+
         var currentJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
         if (currentJob != 0 && currentJob != _lastJob)
         {

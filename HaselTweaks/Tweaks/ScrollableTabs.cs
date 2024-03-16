@@ -104,6 +104,9 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     public override void OnFrameworkUpdate()
     {
+        if (!Service.ClientState.IsLoggedIn)
+            return;
+
         _wheelState = Math.Clamp(UIInputData.Instance()->MouseWheel, -1, 1);
         if (_wheelState == 0)
             return;

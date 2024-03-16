@@ -89,6 +89,9 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
 
     public override void OnFrameworkUpdate()
     {
+        if (!Service.ClientState.IsLoggedIn)
+            return;
+
         var pvpProfile = PvPProfile.Instance();
         if (pvpProfile != null && pvpProfile->IsLoaded == 0x01 && (_lastSeriesXp != pvpProfile->SeriesExperience || _lastSeriesClaimedRank != pvpProfile->SeriesClaimedRank))
         {
