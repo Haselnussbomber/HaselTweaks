@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dalamud.Interface.Utility.Raii;
-using HaselCommon.Extensions;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
@@ -118,6 +118,12 @@ public class CreatePresetDialog : ConfirmationDialog
 
             var guid = Guid.NewGuid();
             var thumbPath = PortraitHelper.GetPortraitThumbnailPath(guid);
+
+            if (Config.EmbedPresetStringInThumbnails)
+            {
+                _image.Metadata.ExifProfile ??= new();
+                _image.Metadata.ExifProfile.SetValue(ExifTag.UserComment, _preset.ToExportedString());
+            }
 
             _image.SaveAsPng(thumbPath, new PngEncoder
             {

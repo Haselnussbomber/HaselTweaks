@@ -37,6 +37,9 @@ public class PortraitHelperConfiguration
     public Vector4 AlignmentToolHorizontalColor = new(0, 0, 0, 1f);
 
     [BoolConfig]
+    public bool EmbedPresetStringInThumbnails = true;
+
+    [BoolConfig]
     public bool NotifyGearChecksumMismatch = true;
 
     [BoolConfig, NetworkWarning]

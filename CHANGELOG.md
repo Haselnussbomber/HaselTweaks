@@ -9,6 +9,10 @@
 - Removed dependency FuzzySharp, because I copied the FuzzyMatcher from Dalamud and use that instead.
 - Removed dependency NoAlloq, because I further optimized the game window detection and don't need it anymore.
 
+### Portrait Helper
+
+- **Added:** Preset codes are now written to the thumbnail Exif metadata as UserComment. This can be disabled in the tweak settings.
+
 ## [20.2.1] (2023-03-05)
 
 ### HaselTweaks
