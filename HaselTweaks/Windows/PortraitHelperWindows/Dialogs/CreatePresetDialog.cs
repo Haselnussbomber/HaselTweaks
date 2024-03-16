@@ -34,7 +34,7 @@ public class CreatePresetDialog : ConfirmationDialog
         _name = name;
         _preset = preset;
         _image = image;
-        _tags = new();
+        _tags = [];
         Show();
     }
 

@@ -132,8 +132,8 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
         ["des"] = 283
     };
 
-    public static readonly List<string> ArmourySubcategories = new()
-    {
+    public static readonly List<string> ArmourySubcategories =
+    [
         "mh",
         "oh",
         "head",
@@ -146,7 +146,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
         "wrists",
         "rings",
         "soul"
-    };
+    ];
 
     public static string GetLocalizedParam(uint rowId, string? fallback = null)
     {
@@ -357,13 +357,13 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
 
                     if (entry.Category is "saddlebag" or "rightsaddlebag" && !IsInventoryBuddyOpen)
                     {
-                        disabledReasons ??= new();
+                        disabledReasons ??= [];
                         disabledReasons.Add(t("AutoSorter.Config.ExecuteButton.Tooltip.SaddlebagNotOpen"));
                     }
 
                     if (entry.Category is "retainer" && !IsRetainerInventoryOpen)
                     {
-                        disabledReasons ??= new();
+                        disabledReasons ??= [];
                         disabledReasons.Add(t("AutoSorter.Config.ExecuteButton.Tooltip.RetainerNotOpen"));
                     }
 

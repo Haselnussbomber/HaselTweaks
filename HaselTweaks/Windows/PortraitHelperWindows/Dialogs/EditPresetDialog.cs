@@ -16,7 +16,7 @@ public class EditPresetDialog : ConfirmationDialog
 
     private string? _name;
     private SavedPreset? _preset;
-    public readonly List<Guid> tags = new();
+    public readonly List<Guid> tags = [];
 
     public EditPresetDialog() : base(t("PortraitHelperWindows.EditPresetDialog.Title"))
     {

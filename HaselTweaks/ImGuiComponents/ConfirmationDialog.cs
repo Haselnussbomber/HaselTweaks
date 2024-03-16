@@ -12,7 +12,7 @@ public abstract class ConfirmationDialog
 
     public string WindowName { get; init; }
 
-    private readonly List<ConfirmationButton> _buttons = new();
+    private readonly List<ConfirmationButton> _buttons = [];
     private bool _shouldDraw;
     private bool _openCalled = true;
     private Vector2? _position;

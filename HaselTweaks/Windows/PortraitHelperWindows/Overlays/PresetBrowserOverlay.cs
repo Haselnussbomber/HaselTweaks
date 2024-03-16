@@ -15,7 +15,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 {
     public Guid? SelectedTagId { get; set; }
-    public Dictionary<Guid, PresetCard> PresetCards { get; init; } = new();
+    public Dictionary<Guid, PresetCard> PresetCards { get; init; } = [];
 
     public CreateTagDialog CreateTagDialog { get; init; } = new();
     public RenameTagDialog RenameTagDialog { get; init; } = new();
