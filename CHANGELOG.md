@@ -4,14 +4,20 @@
 
 ### HaselTweaks
 
-- Target framework updated to .NET 8
-- Removed dependency Dalamud.ContextMenu, because it is now included in Dalamud.
-- Removed dependency FuzzySharp, because I copied the FuzzyMatcher from Dalamud and use that instead.
-- Removed dependency NoAlloq, because I further optimized the game window detection and don't need it anymore.
+- The target framework has been updated to .NET 8 and some code has been adjusted to take advantage of the additions it brings.
+- Dependencies that are no longer needed have been removed:
+  - Dalamud.ContextMenu: This is now included in Dalamud.
+  - FuzzySharp: The FuzzyMatcher from Dalamud is now used instead.
+  - NoAlloq: The game window detection has been further optimised.
+- Performance optimizations:
+  - More efficient loops in code that runs every frame.
+  - AutoSorter is now notified when inventory windows are opened, instead of manually checking each inventory window every frame.
+  - Code that doesn't need to be executed every frame while logged out is now skipped.
 
 ### Portrait Helper
 
-- **Added:** Preset codes are now written to the thumbnail Exif metadata as UserComment. This can be disabled in the tweak settings.
+- **Added:** Preset codes are now written to the thumbnail Exif metadata as UserComment.  
+  This can be disabled in the tweak settings. Existing thumbnails are **not** updated retroactively.
 
 ## [20.2.1] (2023-03-05)
 
