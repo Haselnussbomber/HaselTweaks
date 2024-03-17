@@ -1,4 +1,7 @@
 {
+  "Plugin.DisplayName": {
+    "en": "HaselTweaks"
+  },
   "HaselTweaks.CommandHandlerHelpMessage": {
     "en": "Opens the HaselTweaks configuration window",
     "de": "Öffnet das HaselTweaks-Konfigurationsfenster"
