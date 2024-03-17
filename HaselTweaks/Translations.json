@@ -963,8 +963,8 @@
     "de": "Vorlagen-Code in Vorschaubilder einbetten"
   },
   "PortraitHelper.Config.EmbedPresetStringInThumbnails.Description": {
-    "en": "The preset code, which is also used for clipboard export/import, is written to the Exif metadata as a UserComment.",
-    "de": "Der Vorlagen-Code, der auch für den Export/Import der Zwischenablage verwendet wird, wird als UserComment in die Exif-Metadaten geschrieben."
+    "en": "The preset code, which is also used for clipboard import/export, is written to the Exif metadata as a UserComment.",
+    "de": "Der Vorlagen-Code, der auch für den Import/Export der Zwischenablage verwendet wird, wird als UserComment in die Exif-Metadaten geschrieben."
   },
   "PortraitHelper.Config.NotifyGearChecksumMismatch.Label": {
     "en": "Notify if appearance and/or gear doesn't match Portait",
