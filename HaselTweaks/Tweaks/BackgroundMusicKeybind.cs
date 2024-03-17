@@ -128,7 +128,12 @@ public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfigu
 
     public override void OnFrameworkUpdate()
     {
-        if (!Config.Keybind.All(key => Service.KeyState[key]))
+        var allKeybindsPressed = true;
+
+        foreach (var key in Config.Keybind)
+            allKeybindsPressed &= Service.KeyState[key];
+
+        if (!allKeybindsPressed)
         {
             if (_isPressingKeybind)
                 _isPressingKeybind = false;

@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
-using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using ImGuiNET;
@@ -346,7 +345,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
 
             if (Enabled)
             {
-                if (_isBusy || _queue.Any())
+                if (_isBusy || _queue.Count != 0)
                 {
                     ImGui.SameLine();
                     ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, t("AutoSorter.SortingInProgress"), disabled: true);
@@ -420,7 +419,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
         {
             ImGui.SameLine();
 
-            if (!_isBusy && !_queue.Any())
+            if (!_isBusy && _queue.Count == 0)
             {
                 if (ImGui.Button(t("AutoSorter.Config.RunAllButton.Label")))
                 {
@@ -475,21 +474,14 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
 
     private readonly Queue<IGrouping<string, AutoSorterConfiguration.SortingRule>> _queue = new();
     private bool _isBusy = false;
-    private uint _lastClassJobId = 0;
+    private byte _lastClassJobId = 0;
 
     public static bool IsRetainerInventoryOpen => IsAddonOpen("InventoryRetainer") || IsAddonOpen("InventoryRetainerLarge");
     public static bool IsInventoryBuddyOpen => IsAddonOpen("InventoryBuddy");
 
-    private readonly Dictionary<string, bool> _inventoryAddons = new()
-    {
-        ["Inventory"] = false,
-        ["InventoryLarge"] = false,
-        ["InventoryExpansion"] = false
-    };
-
     public override void OnLogin()
     {
-        _lastClassJobId = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
+        _lastClassJobId = (byte)(Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0);
         _queue.Clear();
     }
 
@@ -509,36 +501,17 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
         if (!Service.ClientState.IsLoggedIn)
             return;
 
-        if (!(Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInCutSceneEvent]))
+        if (Config.SortArmouryOnJobChange)
         {
-            foreach (var (name, wasVisible) in _inventoryAddons)
+            var classJobId = PlayerState.Instance()->CurrentClassJobId;
+            if (_lastClassJobId != classJobId)
             {
-                if (TryGetAddon<AtkUnitBase>(name, out var unitBase))
+                _lastClassJobId = classJobId;
+
+                if (IsAddonOpen("ArmouryBoard"))
                 {
-                    var isVisible = unitBase->IsVisible;
-
-                    if (wasVisible != isVisible)
-                    {
-                        _inventoryAddons[name] = isVisible;
-
-                        if (isVisible)
-                        {
-                            OnOpenInventory();
-                        }
-                    }
+                    OnOpenArmoury();
                 }
-            }
-        }
-
-        if (Config.SortArmouryOnJobChange &&
-            Service.ClientState.LocalPlayer != null &&
-            _lastClassJobId != Service.ClientState.LocalPlayer.ClassJob.Id)
-        {
-            _lastClassJobId = Service.ClientState.LocalPlayer.ClassJob.Id;
-
-            if (IsAddonOpen("ArmouryBoard"))
-            {
-                OnOpenArmoury();
             }
         }
 
@@ -559,6 +532,11 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
             case "InventoryRetainerLarge":
                 OnOpenRetainer();
                 break;
+            case "Inventory":
+            case "InventoryLarge":
+            case "InventoryExpansion":
+                OnOpenInventory();
+                break;
         }
     }
 
@@ -576,6 +554,9 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
 
     private void OnOpenInventory()
     {
+        if (Conditions.IsInBetweenAreas || Conditions.IsOccupiedInQuestEvent || Conditions.IsOccupiedInCutSceneEvent)
+            return;
+
         var groups = Config.Settings
             .FindAll(entry => entry.Enabled && entry.Category is "inventory")
             .GroupBy(entry => entry.Category!);
@@ -612,7 +593,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
 
     private void ProcessQueue()
     {
-        if (_isBusy || !_queue.Any())
+        if (_isBusy || _queue.Count == 0)
             return;
 
         var nextGroup = _queue.Peek();
