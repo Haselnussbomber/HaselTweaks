@@ -510,22 +510,16 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         if (string.IsNullOrEmpty(poseName))
         {
             var bannerTimeline = GetRow<BannerTimeline>(id);
-            if (bannerTimeline != null)
+            if (bannerTimeline != null && bannerTimeline.Type != 0)
             {
-                switch (bannerTimeline.Type)
+                // ref: "48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 41 8B C9 49 8B F8"
+                if (bannerTimeline.Type <= 2)
                 {
-                    case 2:
-                        poseName = GetSheetText<Lumina.Excel.GeneratedSheets.Action>(bannerTimeline.AdditionalData, "Name");
-                        break;
-
-                    case 10:
-                    case 11:
-                        poseName = GetSheetText<Emote>(bannerTimeline.AdditionalData, "Name");
-                        break;
-
-                    case 20:
-                        // TODO: no idea, but luckily all of them have a name
-                        break;
+                    poseName = GetSheetText<Lumina.Excel.GeneratedSheets.Action>(bannerTimeline.AdditionalData, "Name");
+                }
+                else if (bannerTimeline.Type - 10 <= 1)
+                {
+                    poseName = GetSheetText<Emote>(bannerTimeline.AdditionalData, "Name");
                 }
             }
         }
