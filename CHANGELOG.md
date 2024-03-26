@@ -1,5 +1,16 @@
 # Changelog
 
+## [20.3.2] (2023-03-26)
+
+### Custom Chat Timestamp
+
+- **Fixed:** The preview text was sometimes invisible.
+
+### Portrait Helper
+
+- **Changed:** Equipment data for the checksum is now loaded directly from a game function instead of manually gathering all item and dye ids. This potentially fixes issues with HQ items, but simultaneously breaks respecting class/job restrictions on glamoured items introduced in [20.0.1] as this is not something the game does.
+- **Fixed:** The sidebar title ("Tags") in the Preset Browser is now sticky at the top, too.
+
 ## [20.3.1] (2023-03-26)
 
 ### Portrait Helper
@@ -1375,6 +1386,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[20.3.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.3.1...v20.3.2
 [20.3.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.3.0...v20.3.1
 [20.3.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.2.1...v20.3.0
 [20.2.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.2.0...v20.2.1
