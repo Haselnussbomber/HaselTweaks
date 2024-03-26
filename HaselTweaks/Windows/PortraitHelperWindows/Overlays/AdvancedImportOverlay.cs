@@ -23,7 +23,7 @@ public unsafe class AdvancedImportOverlay : Overlay
 
         if (PortraitHelper.ClipboardPreset == null)
         {
-            IsOpen = false;
+            Service.WindowManager.CloseWindow<AdvancedImportOverlay>();
             return;
         }
 
@@ -51,22 +51,55 @@ public unsafe class AdvancedImportOverlay : Overlay
 
         ImGuiUtils.DrawSection(GetAddonText(14684) ?? "Design", RespectUiTheme: !IsWindow);
 
+        var isBannerBgUnlocked = PortraitHelper.IsBannerBgUnlocked(PortraitHelper.ClipboardPreset.BannerBg);
         DrawImportSetting(
             GetAddonText(14687) ?? "Background",
             ImportFlags.BannerBg,
-            () => ImGui.TextUnformatted(GetSheetText<BannerBg>(PortraitHelper.ClipboardPreset.BannerBg, "Name") ?? unknown)
+            () =>
+            {
+                ImGui.TextUnformatted(GetSheetText<BannerBg>(PortraitHelper.ClipboardPreset.BannerBg, "Name") ?? unknown);
+
+                if (!isBannerBgUnlocked)
+                {
+                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red))
+                        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked"));
+                }
+            },
+            isBannerBgUnlocked
         );
 
+        var isBannerFrameUnlocked = PortraitHelper.IsBannerFrameUnlocked(PortraitHelper.ClipboardPreset.BannerFrame);
         DrawImportSetting(
             GetAddonText(14688) ?? "Frame",
             ImportFlags.BannerFrame,
-            () => ImGui.TextUnformatted(GetSheetText<BannerFrame>(PortraitHelper.ClipboardPreset.BannerFrame, "Name") ?? unknown)
+            () =>
+            {
+                ImGui.TextUnformatted(GetSheetText<BannerFrame>(PortraitHelper.ClipboardPreset.BannerFrame, "Name") ?? unknown);
+
+                if (!isBannerFrameUnlocked)
+                {
+                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red))
+                        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked"));
+                }
+            },
+            isBannerFrameUnlocked
         );
 
+        var isBannerDecorationUnlocked = PortraitHelper.IsBannerDecorationUnlocked(PortraitHelper.ClipboardPreset.BannerDecoration);
         DrawImportSetting(
             GetAddonText(14689) ?? "Accent",
             ImportFlags.BannerDecoration,
-            () => ImGui.TextUnformatted(GetSheetText<BannerDecoration>(PortraitHelper.ClipboardPreset.BannerDecoration, "Name") ?? unknown)
+            () =>
+            {
+                ImGui.TextUnformatted(GetSheetText<BannerDecoration>(PortraitHelper.ClipboardPreset.BannerDecoration, "Name") ?? unknown);
+
+                if (!isBannerDecorationUnlocked)
+                {
+                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red))
+                        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked"));
+                }
+            },
+            isBannerDecorationUnlocked
         );
 
         DrawImportSetting(
@@ -83,42 +116,21 @@ public unsafe class AdvancedImportOverlay : Overlay
 
         ImGuiUtils.DrawSection(GetAddonText(14685) ?? "Character", RespectUiTheme: !IsWindow);
 
+        var isBannerTimelineUnlocked = PortraitHelper.IsBannerTimelineUnlocked(PortraitHelper.ClipboardPreset.BannerTimeline);
         DrawImportSetting(
             GetAddonText(14690) ?? "Pose",
             ImportFlags.BannerTimeline,
             () =>
             {
-                var id = PortraitHelper.ClipboardPreset.BannerTimeline;
-                var poseName = GetSheetText<BannerTimeline>(id, "Name");
+                ImGui.TextUnformatted(PortraitHelper.GetBannerTimelineName(PortraitHelper.ClipboardPreset.BannerTimeline));
 
-                if (string.IsNullOrEmpty(poseName))
+                if (!isBannerTimelineUnlocked)
                 {
-                    var poseRow = GetRow<BannerTimeline>(id);
-                    if (poseRow != null)
-                    {
-                        switch (poseRow.Type)
-                        {
-                            case 2:
-                                poseName = GetSheetText<Lumina.Excel.GeneratedSheets.Action>(poseRow.AdditionalData, "Name");
-                                break;
-
-                            case 10:
-                            case 11:
-                                poseName = GetSheetText<Emote>(poseRow.AdditionalData, "Name");
-                                break;
-
-                            case 20:
-                                // TODO
-                                break;
-                        }
-                    }
+                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red))
+                        ImGui.TextUnformatted(t("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked"));
                 }
-
-                if (string.IsNullOrEmpty(poseName))
-                    poseName = unknown;
-
-                ImGui.TextUnformatted(poseName);
-            }
+            },
+            isBannerTimelineUnlocked
         );
 
         DrawImportSetting(
@@ -238,14 +250,15 @@ public unsafe class AdvancedImportOverlay : Overlay
             ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);
     }
 
-    private static void DrawImportSetting(string label, ImportFlags flag, System.Action drawFn)
+    private static void DrawImportSetting(string label, ImportFlags flag, System.Action drawFn, bool isUnlocked = true)
     {
         using var id = ImRaii.PushId(flag.ToString());
 
         ImGui.Columns(2, "##Columns", false);
 
-        var isEnabled = PortraitHelper.CurrentImportFlags.HasFlag(flag);
-        using var textColor = !isEnabled ? ImRaii.PushColor(ImGuiCol.Text, (uint)HaselColor.From(ImGuiCol.Text).WithAlpha(0.5f)) : null;
+        var isEnabled = isUnlocked && PortraitHelper.CurrentImportFlags.HasFlag(flag);
+        using var _textColor = !isEnabled ? ImRaii.PushColor(ImGuiCol.Text, (uint)HaselColor.From(ImGuiCol.Text).WithAlpha(0.5f)) : null;
+        using var _disabled = ImRaii.Disabled(!isUnlocked);
 
         if (ImGui.Checkbox(label + "##Checkbox", ref isEnabled))
         {
@@ -255,7 +268,8 @@ public unsafe class AdvancedImportOverlay : Overlay
                 PortraitHelper.CurrentImportFlags &= ~flag;
         }
 
-        textColor?.Dispose();
+        _disabled?.Dispose();
+        _textColor?.Dispose();
 
         using (ImRaii.Disabled(!isEnabled))
         {

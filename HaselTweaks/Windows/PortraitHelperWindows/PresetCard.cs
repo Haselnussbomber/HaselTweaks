@@ -36,6 +36,12 @@ public class PresetCard : IDisposable
 
     private readonly PresetBrowserOverlay _overlay;
     private readonly SavedPreset _preset;
+    private readonly uint _bannerFrameImage;
+    private readonly uint _bannerDecorationImage;
+    private readonly bool _isBannerTimelineUnlocked;
+    private readonly bool _isBannerBgUnlocked;
+    private readonly bool _isBannerFrameUnlocked;
+    private readonly bool _isBannerDecorationUnlocked;
 
     private bool _isImageLoading;
     private bool _doesImageFileExist;
@@ -48,15 +54,18 @@ public class PresetCard : IDisposable
 
     private float _lastScale;
 
-    private ushort _bannerFrame;
-    private int? _bannerFrameImage;
-
-    private ushort _bannerDecoration;
-    private int? _bannerDecorationImage;
     public PresetCard(PresetBrowserOverlay overlay, SavedPreset preset)
     {
         _overlay = overlay;
         _preset = preset;
+
+        _bannerFrameImage = (uint)(GetRow<BannerFrame>(_preset.Preset!.BannerFrame)?.Image ?? 0);
+        _bannerDecorationImage = (uint)(GetRow<BannerDecoration>(_preset.Preset.BannerDecoration)?.Image ?? 0);
+
+        _isBannerTimelineUnlocked = PortraitHelper.IsBannerTimelineUnlocked(_preset.Preset.BannerTimeline);
+        _isBannerBgUnlocked = PortraitHelper.IsBannerBgUnlocked(_preset.Preset.BannerBg);
+        _isBannerFrameUnlocked = PortraitHelper.IsBannerFrameUnlocked(_preset.Preset.BannerFrame);
+        _isBannerDecorationUnlocked = PortraitHelper.IsBannerDecorationUnlocked(_preset.Preset.BannerDecoration);
     }
 
     public void Dispose()
@@ -71,27 +80,27 @@ public class PresetCard : IDisposable
     {
         Update(scale);
 
+        var hasErrors = !_isBannerTimelineUnlocked || !_isBannerBgUnlocked || !_isBannerFrameUnlocked || !_isBannerDecorationUnlocked;
         var style = ImGui.GetStyle();
 
         using var _id = ImRaii.PushId(_preset.Id.ToString());
 
-        var windowPos = ImGui.GetWindowPos();
         var cursorPos = ImGui.GetCursorPos();
-        var center = windowPos + cursorPos + PortraitSize * scale / 2f - new Vector2(0, ImGui.GetScrollY());
+        var center = cursorPos + PortraitSize * scale / 2f;
 
         Service.TextureManager.GetIcon(190009).Draw(PortraitSize * scale);
         ImGui.SetCursorPos(cursorPos);
 
         if (_isImageLoading)
         {
-            DrawLoadingSpinner(center);
+            DrawLoadingSpinner(ImGui.GetWindowPos() - new Vector2(ImGui.GetScrollX(), ImGui.GetScrollY()) + center);
         }
         else if (!_doesImageFileExist)
         {
             using var a = ImRaii.PushFont(UiBuilder.IconFont);
             using var b = ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red);
-            ImGui.SetCursorPos(center - windowPos - ImGui.CalcTextSize(FontAwesomeIcon.FileImage.ToIconString()) / 2f);
-            ImGuiUtils.TextUnformattedDisabled(FontAwesomeIcon.FileImage.ToIconString());
+            ImGui.SetCursorPos(center - ImGui.CalcTextSize(FontAwesomeIcon.FileImage.ToIconString()) / 2f);
+            ImGui.TextUnformatted(FontAwesomeIcon.FileImage.ToIconString());
         }
         else if (_textureWrap != null)
         {
@@ -99,16 +108,22 @@ public class PresetCard : IDisposable
             ImGui.Image(_textureWrap.ImGuiHandle, PortraitSize * scale);
         }
 
-        if (_bannerFrameImage != null)
+        if (_bannerFrameImage != 0)
         {
             ImGui.SetCursorPos(cursorPos);
-            Service.TextureManager.GetIcon(_bannerFrameImage.Value).Draw(PortraitSize * scale);
+            Service.TextureManager.GetIcon(_bannerFrameImage).Draw(PortraitSize * scale);
         }
 
-        if (_bannerDecorationImage != null)
+        if (_bannerDecorationImage != 0)
         {
             ImGui.SetCursorPos(cursorPos);
-            Service.TextureManager.GetIcon(_bannerDecorationImage.Value).Draw(PortraitSize * scale);
+            Service.TextureManager.GetIcon(_bannerDecorationImage).Draw(PortraitSize * scale);
+        }
+
+        if (hasErrors)
+        {
+            ImGui.SetCursorPos(cursorPos + new Vector2(PortraitSize.X - 190, 10) * scale);
+            Service.TextureManager.Get("ui/uld/Warning.tex", 2).Draw(160 * scale);
         }
 
         ImGui.SetCursorPos(cursorPos);
@@ -166,6 +181,48 @@ public class PresetCard : IDisposable
             {
                 using (ImRaii.PushColor(ImGuiCol.Text, defaultImGuiTextColor))
                     ImGui.TextUnformatted(_preset.Name);
+
+                if (hasErrors)
+                {
+                    ImGui.Separator();
+
+                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red))
+                    {
+                        ImGui.TextUnformatted(t("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.Title"));
+
+                        using (ImRaii.PushStyle(ImGuiStyleVar.IndentSpacing, 2))
+                        using (ImRaii.PushIndent(1))
+                        {
+                            if (!_isBannerTimelineUnlocked)
+                            {
+                                ImGui.TextUnformatted("•");
+                                ImGui.SameLine(0, 5);
+                                ImGui.TextUnformatted(t("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.PoseNotUnlocked", PortraitHelper.GetBannerTimelineName(_preset.Preset!.BannerTimeline)));
+                            }
+
+                            if (!_isBannerBgUnlocked)
+                            {
+                                ImGui.TextUnformatted("•");
+                                ImGui.SameLine(0, 5);
+                                ImGui.TextUnformatted(t("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.BackgroundNotUnlocked", GetSheetText<BannerBg>(_preset.Preset!.BannerBg, "Name")));
+                            }
+
+                            if (!_isBannerFrameUnlocked)
+                            {
+                                ImGui.TextUnformatted("•");
+                                ImGui.SameLine(0, 5);
+                                ImGui.TextUnformatted(t("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.FrameNotUnlocked", GetSheetText<BannerFrame>(_preset.Preset!.BannerFrame, "Name")));
+                            }
+
+                            if (!_isBannerDecorationUnlocked)
+                            {
+                                ImGui.TextUnformatted("•");
+                                ImGui.SameLine(0, 5);
+                                ImGui.TextUnformatted(t("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.DecorationNotUnlocked", GetSheetText<BannerDecoration>(_preset.Preset!.BannerDecoration, "Name")));
+                            }
+                        }
+                    }
+                }
             }
 
             if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
@@ -261,10 +318,9 @@ public class PresetCard : IDisposable
 
         using var tempImage = _image.Clone();
 
-        if (!flags.HasFlag(CopyImageFlags.NoFrame) && _bannerFrameImage != null)
+        if (!flags.HasFlag(CopyImageFlags.NoFrame) && _bannerFrameImage != 0)
         {
-            var iconId = _bannerFrameImage.Value;
-            var iconPath = Service.TextureProvider.GetIconPath((uint)iconId);
+            var iconPath = Service.TextureProvider.GetIconPath(_bannerFrameImage);
             if (iconPath != null)
             {
                 var texture = Service.DataManager.GetFile<TexFile>(iconPath);
@@ -277,10 +333,9 @@ public class PresetCard : IDisposable
             }
         }
 
-        if (!flags.HasFlag(CopyImageFlags.NoDecoration) && _bannerDecorationImage != null)
+        if (!flags.HasFlag(CopyImageFlags.NoDecoration) && _bannerDecorationImage != 0)
         {
-            var iconId = _bannerDecorationImage.Value;
-            var iconPath = Service.TextureProvider.GetIconPath((uint)iconId);
+            var iconPath = Service.TextureProvider.GetIconPath(_bannerDecorationImage);
             if (iconPath != null)
             {
                 var texture = Service.DataManager.GetFile<TexFile>(iconPath);
@@ -298,18 +353,6 @@ public class PresetCard : IDisposable
 
     private void Update(float scale)
     {
-        if (_preset.Preset!.BannerFrame != _bannerFrame)
-        {
-            _bannerFrame = _preset.Preset.BannerFrame;
-            _bannerFrameImage = GetRow<BannerFrame>(_bannerFrame)?.Image;
-        }
-
-        if (_preset.Preset.BannerDecoration != _bannerDecoration)
-        {
-            _bannerDecoration = _preset.Preset.BannerDecoration;
-            _bannerDecorationImage = GetRow<BannerDecoration>(_bannerDecoration)?.Image;
-        }
-
         if (!_isImageLoading && _preset.Id != _textureGuid)
         {
             _image?.Dispose();

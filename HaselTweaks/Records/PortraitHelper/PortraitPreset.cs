@@ -263,18 +263,22 @@ public sealed record PortraitPreset
 
         var hasBgChanged =
             importFlags.HasFlag(ImportFlags.BannerBg) &&
+            Tweaks.PortraitHelper.IsBannerBgUnlocked(BannerBg) &&
             tempPortraitData->BannerBg != BannerBg;
 
         var hasFrameChanged =
             importFlags.HasFlag(ImportFlags.BannerFrame) &&
+            Tweaks.PortraitHelper.IsBannerFrameUnlocked(BannerFrame) &&
             bannerEntry.BannerFrame != BannerFrame;
 
         var hasDecorationChanged =
             importFlags.HasFlag(ImportFlags.BannerDecoration) &&
+            Tweaks.PortraitHelper.IsBannerDecorationUnlocked(BannerDecoration) &&
             bannerEntry.BannerDecoration != BannerDecoration;
 
         var hasBannerTimelineChanged =
             importFlags.HasFlag(ImportFlags.BannerTimeline) &&
+            Tweaks.PortraitHelper.IsBannerTimelineUnlocked(BannerTimeline) &&
             tempPortraitData->BannerTimeline != BannerTimeline;
 
         var hasExpressionChanged =

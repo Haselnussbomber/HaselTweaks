@@ -1123,6 +1123,10 @@
     "en": "Import Selected Settings",
     "de": "Ausgewählte Einstellungen importieren"
   },
+  "PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked": {
+    "en": "Not unlocked",
+    "de": "Nicht freigeschaltet"
+  },
   "PortraitHelperWindows.AdvancedImportOverlay.ColorInput.R": {
     "en": "R:"
   },
@@ -1172,7 +1176,7 @@
   },
   "PortraitHelperWindows.PresetBrowserOverlay.Title": {
     "en": "[HaselTweaks] Portrait Helper: Preset Browser",
-    "de": "[HaselTweaks] Portrait Helper: Vorlangen-Browser"
+    "de": "[HaselTweaks] Portrait Helper: Vorlagen-Browser"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip": {
     "en": "Moving \"{0}\"",
@@ -1203,7 +1207,7 @@
   },
   "PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Presets.Title": {
     "en": "Presets",
-    "de": "Vorlangen"
+    "de": "Vorlagen"
   },
   "PortraitHelperWindows.MenuBar.Initializing": {
     "en": "Initializing...",
@@ -1284,6 +1288,26 @@
   "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrameAndDecoration.Label": {
     "en": "Without Frame and Decoration",
     "de": "Ohne Rahmen und Verzierung"
+  },
+  "PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.Title": {
+    "en": "The following elements will not be applied:",
+    "de": "Folgende Elemente werden nicht übernommen:"
+  },
+  "PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.PoseNotUnlocked": {
+    "en": "Pose \"{0}\" not unlocked",
+    "de": "Pose \"{0}\" nicht freigeschaltet"
+  },
+  "PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.BackgroundNotUnlocked": {
+    "en": "Background \"{0}\" not unlocked",
+    "de": "Hintergrund \"{0}\" nicht freigeschaltet"
+  },
+  "PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.FrameNotUnlocked": {
+    "en": "Frame \"{0}\" not unlocked",
+    "de": "Rahmen \"{0}\" nicht freigeschaltet"
+  },
+  "PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.DecorationNotUnlocked": {
+    "en": "Accent \"{0}\" not unlocked",
+    "de": "Verzierung \"{0}\" nicht freigeschaltet"
   },
 
   "RevealDutyRequirements.Tweak.Name": {

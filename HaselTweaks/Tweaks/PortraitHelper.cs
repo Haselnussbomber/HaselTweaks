@@ -468,4 +468,84 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
         return Path.Join(portraitsPath, $"{id.ToString("D").ToLowerInvariant()}.png");
     }
+
+    public static bool IsBannerBgUnlocked(uint id)
+    {
+        var bannerBg = GetRow<BannerBg>(id);
+        if (bannerBg == null)
+            return false;
+
+        return IsBannerConditionUnlocked(bannerBg.UnlockCondition.Row);
+    }
+
+    public static bool IsBannerFrameUnlocked(uint id)
+    {
+        var bannerFrame = GetRow<BannerFrame>(id);
+        if (bannerFrame == null)
+            return false;
+
+        return IsBannerConditionUnlocked(bannerFrame.UnlockCondition.Row);
+    }
+
+    public static bool IsBannerDecorationUnlocked(uint id)
+    {
+        var bannerDecoration = GetRow<BannerDecoration>(id);
+        if (bannerDecoration == null)
+            return false;
+
+        return IsBannerConditionUnlocked(bannerDecoration.UnlockCondition.Row);
+    }
+
+    public static bool IsBannerTimelineUnlocked(uint id)
+    {
+        var bannerTimeline = GetRow<BannerTimeline>(id);
+        if (bannerTimeline == null)
+            return false;
+
+        return IsBannerConditionUnlocked(bannerTimeline.UnlockCondition.Row);
+    }
+
+    public static unsafe bool IsBannerConditionUnlocked(uint id)
+    {
+        if (id == 0)
+            return true;
+
+        var bannerCondition = HaselExdModule.GetBannerCondition(id);
+        if (bannerCondition == null)
+            return false;
+
+        return bannerCondition->GetBannerConditionUnlockState() == 0;
+    }
+
+    public static string GetBannerTimelineName(uint id)
+    {
+        var poseName = GetSheetText<BannerTimeline>(id, "Name");
+
+        if (string.IsNullOrEmpty(poseName))
+        {
+            var bannerTimeline = GetRow<BannerTimeline>(id);
+            if (bannerTimeline != null)
+            {
+                switch (bannerTimeline.Type)
+                {
+                    case 2:
+                        poseName = GetSheetText<Lumina.Excel.GeneratedSheets.Action>(bannerTimeline.AdditionalData, "Name");
+                        break;
+
+                    case 10:
+                    case 11:
+                        poseName = GetSheetText<Emote>(bannerTimeline.AdditionalData, "Name");
+                        break;
+
+                    case 20:
+                        // TODO: no idea, but luckily all of them have a name
+                        break;
+                }
+            }
+        }
+
+        return !string.IsNullOrEmpty(poseName) ?
+            poseName :
+            GetAddonText(624); // Unknown
+    }
 }

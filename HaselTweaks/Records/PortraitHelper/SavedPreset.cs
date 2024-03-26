@@ -22,8 +22,6 @@ public record SavedPreset
 
     public void Delete()
     {
-        var config = Service.GetService<Configuration>().Tweaks.PortraitHelper;
-
         var thumbPath = Tweaks.PortraitHelper.GetPortraitThumbnailPath(Id);
         if (File.Exists(thumbPath))
         {
@@ -37,7 +35,7 @@ public record SavedPreset
             }
         }
 
-        config.Presets.Remove(this);
+        Service.GetService<Configuration>().Tweaks.PortraitHelper.Presets.Remove(this);
         Service.GetService<Configuration>().Save();
     }
 }
