@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Portrait Helper
+
+- **Changed:** Backgrounds, frames, accents and poses that are not unlocked on the character will no longer be applied when importing or loading a preset.
+
 ## [20.3.0] (2023-03-20)
 
 ### HaselTweaks
