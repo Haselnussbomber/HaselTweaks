@@ -183,6 +183,11 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             PushDown: false,
             RespectUiTheme: !IsWindow);
 
+        using var framePaddingChild = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
+        using var tagsChild = ImRaii.Child("PresetBrowser_Content_Tags");
+        if (!tagsChild.Success) return;
+        framePaddingChild?.Dispose();
+
         DrawAllTag(ref removeUnusedTags);
 
         foreach (var tag in Config.PresetTags)
