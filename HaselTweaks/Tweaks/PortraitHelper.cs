@@ -11,7 +11,6 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Services;
-using HaselCommon.Sheets;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
@@ -282,42 +281,29 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         if (localPlayer == null)
             return 0;
 
+        var data = stackalloc FakeAgentBannerListData[1]; // not the real struct... just enough to be able to call LoadEquipmentData
+        data->UIModule = UIModule.Instance();
+
         var itemIds = stackalloc uint[14];
         var stainIds = stackalloc byte[14];
-        var container = InventoryManager.Instance()->GetInventoryContainer(InventoryType.EquippedItems);
-        var currentJobId = localPlayer->CharacterData.ClassJob;
 
-        for (var i = 0; i < 14; i++)
+        if (data->LoadEquipmentData(itemIds, stainIds))
         {
-            var item = container->Items[i];
+            var gearVisibilityFlag = BannerGearVisibilityFlag.None;
 
-            if (item.GlamourID != 0)
-            {
-                var itemRow = GetRow<Item>(item.GlamourID)!;
-                var classJobCategory = GetRow<ExtendedClassJobCategory>(itemRow.ClassJobCategory.Row)!;
-                var classJobAllowed = classJobCategory.ClassJobs[currentJobId];
-                itemIds[i] = classJobAllowed ? item.GlamourID : item.ItemID;
-                stainIds[i] = classJobAllowed && itemRow.IsDyeable ? item.Stain : (byte)0;
-            }
-            else
-            {
-                itemIds[i] = item.ItemID;
-                stainIds[i] = item.Stain;
-            }
+            if (localPlayer->DrawData.IsHatHidden)
+                gearVisibilityFlag |= BannerGearVisibilityFlag.HeadgearHidden;
+
+            if (localPlayer->DrawData.IsWeaponHidden)
+                gearVisibilityFlag |= BannerGearVisibilityFlag.WeaponHidden;
+
+            if (localPlayer->DrawData.IsVisorToggled)
+                gearVisibilityFlag |= BannerGearVisibilityFlag.VisorClosed;
+
+            return BannerModuleEntry.GenerateChecksum(itemIds, stainIds, gearVisibilityFlag);
         }
 
-        var gearVisibilityFlag = BannerGearVisibilityFlag.None;
-
-        if (localPlayer->DrawData.IsHatHidden)
-            gearVisibilityFlag |= BannerGearVisibilityFlag.HeadgearHidden;
-
-        if (localPlayer->DrawData.IsWeaponHidden)
-            gearVisibilityFlag |= BannerGearVisibilityFlag.WeaponHidden;
-
-        if (localPlayer->DrawData.IsVisorToggled)
-            gearVisibilityFlag |= BannerGearVisibilityFlag.VisorClosed;
-
-        return BannerModuleEntry.GenerateChecksum(itemIds, stainIds, gearVisibilityFlag);
+        return 0;
     }
 
     private unsafe bool SendPortraitUpdate(BannerModuleEntry* banner)
