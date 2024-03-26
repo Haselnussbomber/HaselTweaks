@@ -2,7 +2,6 @@ using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
@@ -16,7 +15,7 @@ public class CustomChatTimestampConfiguration
 }
 
 [Tweak]
-public unsafe partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguration>
+public partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguration>
 {
     public override void DrawConfig()
     {
@@ -67,13 +66,12 @@ public unsafe partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfi
             }
             else
             {
-                // TODO: check this: colorParty = ImColor.FromABGR(colorParty); 
-                var alpha = (colorParty & 0xFF000000) >> 24;
+                //var alpha = (colorParty & 0xFF000000) >> 24;
                 var red = (colorParty & 0x00FF0000) >> 16;
                 var green = (colorParty & 0x0000FF00) >> 8;
                 var blue = colorParty & 0x000000FF;
 
-                colorParty = (alpha << 24) | (blue << 16) | (green << 8) | red;
+                colorParty = 0xFF000000u | (blue << 16) | (green << 8) | red;
             }
 
             var size = new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetStyle().WindowPadding.Y * 2 + ImGui.GetTextLineHeight() + 2);
@@ -111,19 +109,15 @@ public unsafe partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfi
         ReloadChat();
     }
 
-    [AddressHook<HaselRaptureTextModule>(nameof(HaselRaptureTextModule.Addresses.FormatAddonInt))]
-    private byte* FormatAddon(nint a1, ulong addonRowId, ulong value)
+    [AddressHook<HaselRaptureTextModule>(nameof(HaselRaptureTextModule.Addresses.FormatAddonText2Int))]
+    private unsafe byte* FormatAddon(RaptureTextModule* raptureTextModule, uint addonRowId, int value)
     {
         if (addonRowId is 7840 or 7841 && !string.IsNullOrWhiteSpace(Config.Format))
         {
             try
             {
-                var time = DateTime.UnixEpoch.AddSeconds(value).ToLocalTime();
-                var formatted = time.ToString(Config.Format);
-
-                var str = (Utf8String*)(a1 + 0x9C0);
-                str->SetString(formatted);
-                return str->StringPtr;
+                raptureTextModule->Unk9C0.SetString(DateTimeOffset.FromUnixTimeSeconds(value).ToLocalTime().ToString(Config.Format));
+                return raptureTextModule->Unk9C0.StringPtr;
             }
             catch (Exception e)
             {
@@ -131,10 +125,10 @@ public unsafe partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfi
             }
         }
 
-        return FormatAddonHook.OriginalDisposeSafe(a1, addonRowId, value);
+        return FormatAddonHook.OriginalDisposeSafe(raptureTextModule, addonRowId, value);
     }
 
-    public static void ReloadChat()
+    public static unsafe void ReloadChat()
     {
         var raptureLogModule = RaptureLogModule.Instance();
         for (var i = 0; i < 4; i++)
