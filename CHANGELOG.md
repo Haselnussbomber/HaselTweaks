@@ -4,7 +4,9 @@
 
 ### Portrait Helper
 
-- **Changed:** Backgrounds, frames, accents and poses that are not unlocked on the character will no longer be applied when importing or loading a preset.
+- **Fixed:** Backgrounds, frames, accents and poses that are not unlocked on the character will no longer be applied when importing or loading a preset.
+- **Fixed:** The Advanced Import overlay now closes properly when the clipboard changed to something different than a preset string.
+- **Fixed:** The weird 1px scroll flicker bug in the Preset Browser should be gone now.
 
 ## [20.3.0] (2023-03-20)
 

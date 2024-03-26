@@ -14,6 +14,8 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
 public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 {
+    private const int SidebarWidth = 170;
+
     public Guid? SelectedTagId { get; set; }
     public Dictionary<Guid, PresetCard> PresetCards { get; init; } = [];
 
@@ -50,20 +52,18 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
     {
         base.Draw();
 
-        using (var table = ImRaii.Table("##PresetBrowser_Table", 2, ImGuiTableFlags.BordersInnerV | ImGuiTableFlags.NoPadOuterX | ImGuiTableFlags.NoPadInnerX))
-        {
-            if (table.Success)
-            {
-                ImGui.TableSetupColumn("Tags", ImGuiTableColumnFlags.WidthFixed, 180);
-                ImGui.TableSetupColumn("Presets", ImGuiTableColumnFlags.WidthStretch);
+        DrawPresetBrowserSidebar();
 
-                ImGui.TableNextColumn();
-                DrawPresetBrowserSidebar();
+        var paddingX = ImGui.GetStyle().ItemSpacing.X;
+        ImGui.SameLine(0, paddingX * 2);
 
-                ImGui.TableNextColumn();
-                DrawPresetBrowserContent();
-            }
-        }
+        var separatorStartPos = ImGui.GetWindowPos() + new Vector2(SidebarWidth + paddingX, 0);
+        ImGui.GetWindowDrawList().AddLine(
+            separatorStartPos,
+            separatorStartPos + new Vector2(0, ImGui.GetWindowSize().Y),
+            ImGui.GetColorU32(ImGuiCol.Separator));
+
+        DrawPresetBrowserContent();
 
         CreateTagDialog.Draw();
         RenameTagDialog.Draw();
@@ -171,7 +171,10 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
     private void DrawPresetBrowserSidebar()
     {
-        var style = ImGui.GetStyle();
+        using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
+        using var child = ImRaii.Child("PresetBrowser_SideBar", new Vector2(SidebarWidth - ImGui.GetStyle().ItemSpacing.X, -1));
+        if (!child.Success) return;
+        framePadding?.Dispose();
 
         var removeUnusedTags = false;
 
@@ -180,18 +183,10 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             PushDown: false,
             RespectUiTheme: !IsWindow);
 
-        using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
-        using var child = ImRaii.Child("##PresetBrowser_SideBar", ImGui.GetContentRegionAvail() - style.ItemInnerSpacing);
-        if (!child.Success)
-            return;
-        framePadding?.Dispose();
-
         DrawAllTag(ref removeUnusedTags);
 
         foreach (var tag in Config.PresetTags)
-        {
             DrawSidebarTag(tag, ref removeUnusedTags);
-        }
 
         if (_reorderTagOldIndex > -1 && _reorderTagOldIndex < Config.PresetTags.Count && _reorderTagNewIndex > -1 && _reorderTagNewIndex < Config.PresetTags.Count)
         {
@@ -240,9 +235,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         ImGui.SetCursorPosX(4);
 
         using (ImRaii.PushFont(UiBuilder.IconFont))
-        {
             ImGuiUtils.TextUnformattedDisabled(FontAwesomeIcon.Tags.ToIconString());
-        }
     }
 
     private static void RemoveUnusedTags()
@@ -269,22 +262,26 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
 
     private void DrawPresetBrowserContent()
     {
-        var style = ImGui.GetStyle();
+        using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
+        using var child = ImRaii.Child("PresetBrowser_Content");
+        if (!child.Success) return;
+        framePadding?.Dispose();
 
-        ImGuiUtils.PushCursorX(style.ItemSpacing.X);
         ImGuiUtils.DrawSection(
             t("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Presets.Title"),
             PushDown: false,
             RespectUiTheme: !IsWindow);
 
-        using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
-        using var child = ImRaii.Child("##PresetBrowser_Content", ImGui.GetContentRegionAvail() - new Vector2(0, 2)); // HACK: fixes scrolling where it shouldn't scroll
-        if (!child.Success)
-            return;
-        framePadding?.Dispose();
-
+        var style = ImGui.GetStyle();
         ImGuiUtils.PushCursorY(style.ItemSpacing.Y);
-        ImGui.Indent(style.ItemSpacing.X);
+
+        using var framePaddingChild = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
+        using var presetCardsChild = ImRaii.Child("PresetBrowser_Content_PresetCards");
+        if (!presetCardsChild.Success) return;
+        framePaddingChild?.Dispose();
+
+        using var indentSpacing = ImRaii.PushStyle(ImGuiStyleVar.IndentSpacing, style.ItemSpacing.X);
+        using var indent = ImRaii.PushIndent();
 
         var presetCards = Config.Presets
             .Where((preset) => (SelectedTagId == null || preset.Tags.Contains(SelectedTagId.Value)) && preset.Preset != null)
@@ -329,7 +326,5 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             }
         }
         clipper.Destroy();
-
-        ImGui.Unindent();
     }
 }
