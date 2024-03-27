@@ -49,7 +49,7 @@ public class PortraitHelperConfiguration
 }
 
 [Tweak]
-public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
+public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 {
     private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
@@ -60,7 +60,7 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
     public static ImportFlags CurrentImportFlags { get; set; } = ImportFlags.All;
     public static PortraitPreset? ClipboardPreset { get; set; }
 
-    public override unsafe void Enable()
+    public override void Enable()
     {
         _lastJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
 
@@ -91,7 +91,7 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         _lastJob = 0;
     }
 
-    private unsafe void OpenPortraitEditChatHandler(uint commandId, SeString message)
+    private void OpenPortraitEditChatHandler(uint commandId, SeString message)
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
         var gearsetId = raptureGearsetModule->CurrentGearsetIndex;
@@ -101,7 +101,7 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         GetAgent<AgentBannerEditor>()->OpenForGearset(gearsetId);
     }
 
-    public override unsafe void OnAddonOpen(string addonName)
+    public override void OnAddonOpen(string addonName)
     {
         if (addonName != "BannerEditor")
             return;
@@ -112,7 +112,7 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         Service.WindowManager.OpenWindow<MenuBar>();
     }
 
-    public override unsafe void OnAddonClose(string addonName)
+    public override void OnAddonClose(string addonName)
     {
         if (addonName != "BannerEditor")
             return;
@@ -129,7 +129,7 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         Service.WindowManager.CloseWindow<AlignmentToolSettingsOverlay>();
     }
 
-    public override unsafe void OnFrameworkUpdate()
+    public override void OnFrameworkUpdate()
     {
         if (!Service.ClientState.IsLoggedIn)
             return;
@@ -150,7 +150,7 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
     }
 
     [AddressHook<UIClipboard>(nameof(UIClipboard.Addresses.OnClipboardDataChanged))]
-    private unsafe void OnClipboardDataChanged(UIClipboard* uiClipboard)
+    private void OnClipboardDataChanged(UIClipboard* uiClipboard)
     {
         OnClipboardDataChangedHook.OriginalDisposeSafe(uiClipboard);
 
@@ -160,7 +160,7 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
     }
 
     [AddressHook<RaptureGearsetModule>(nameof(RaptureGearsetModule.Addresses.UpdateGearset))]
-    public unsafe int RaptureGearsetModule_UpdateGearset(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
+    public int RaptureGearsetModule_UpdateGearset(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
         var ret = RaptureGearsetModule_UpdateGearsetHook.OriginalDisposeSafe(raptureGearsetModule, gearsetId);
 
@@ -175,7 +175,7 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         return ret;
     }
 
-    private unsafe void CheckForGearChecksumMismatch(int gearsetId, bool isJobChange = false)
+    private void CheckForGearChecksumMismatch(int gearsetId, bool isJobChange = false)
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
 
@@ -225,7 +225,7 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         }
     }
 
-    private unsafe void RecheckGearChecksum(BannerModuleEntry* banner)
+    private void RecheckGearChecksum(BannerModuleEntry* banner)
     {
         _jobChangedOrGearsetUpdatedCTS?.Cancel();
         _jobChangedOrGearsetUpdatedCTS = new();
@@ -244,7 +244,7 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         }, delay: CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token); // TODO: find out when it's safe to check again instead of randomly picking a delay. ping may vary
     }
 
-    private unsafe void NotifyMismatch()
+    private void NotifyMismatch()
     {
         var text = t("PortraitHelper.GearChecksumMismatch"); // based on LogMessage#5876
 
@@ -275,7 +275,7 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         Service.ChatGui.PrintError(sb.Build());
     }
 
-    private unsafe uint GetEquippedGearChecksum()
+    private uint GetEquippedGearChecksum()
     {
         var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? 0);
         if (localPlayer == null)
@@ -287,26 +287,24 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         var itemIds = stackalloc uint[14];
         var stainIds = stackalloc byte[14];
 
-        if (data->LoadEquipmentData(itemIds, stainIds))
-        {
-            var gearVisibilityFlag = BannerGearVisibilityFlag.None;
+        if (!data->LoadEquipmentData(itemIds, stainIds))
+            return 0;
 
-            if (localPlayer->DrawData.IsHatHidden)
-                gearVisibilityFlag |= BannerGearVisibilityFlag.HeadgearHidden;
+        var gearVisibilityFlag = BannerGearVisibilityFlag.None;
 
-            if (localPlayer->DrawData.IsWeaponHidden)
-                gearVisibilityFlag |= BannerGearVisibilityFlag.WeaponHidden;
+        if (localPlayer->DrawData.IsHatHidden)
+            gearVisibilityFlag |= BannerGearVisibilityFlag.HeadgearHidden;
 
-            if (localPlayer->DrawData.IsVisorToggled)
-                gearVisibilityFlag |= BannerGearVisibilityFlag.VisorClosed;
+        if (localPlayer->DrawData.IsWeaponHidden)
+            gearVisibilityFlag |= BannerGearVisibilityFlag.WeaponHidden;
 
-            return BannerModuleEntry.GenerateChecksum(itemIds, stainIds, gearVisibilityFlag);
-        }
+        if (localPlayer->DrawData.IsVisorToggled)
+            gearVisibilityFlag |= BannerGearVisibilityFlag.VisorClosed;
 
-        return 0;
+        return BannerModuleEntry.GenerateChecksum(itemIds, stainIds, gearVisibilityFlag);
     }
 
-    private unsafe bool SendPortraitUpdate(BannerModuleEntry* banner)
+    private bool SendPortraitUpdate(BannerModuleEntry* banner)
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
 
@@ -402,7 +400,7 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         return result;
     }
 
-    public static unsafe Image<Bgra32>? GetCurrentCharaViewImage()
+    public static Image<Bgra32>? GetCurrentCharaViewImage()
     {
         var charaViewTexture = RenderTargetManager.Instance()->GetCharaViewTexture(GetAgent<AgentBannerEditor>()->EditorState->CharaView->Base.ClientObjectIndex);
         if (charaViewTexture == null || charaViewTexture->D3D11Texture2D == null)
@@ -491,7 +489,7 @@ public partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         return IsBannerConditionUnlocked(bannerTimeline.UnlockCondition.Row);
     }
 
-    public static unsafe bool IsBannerConditionUnlocked(uint id)
+    public static bool IsBannerConditionUnlocked(uint id)
     {
         if (id == 0)
             return true;
