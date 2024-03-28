@@ -333,7 +333,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
-            if (ImGui.DragFloat($"##DragFloat", ref _timestamp, 0.01f, 0f, _frameCount, $"%.2f / {_frameCount}"))
+            if (ImGui.DragFloat($"##DragFloat", ref _timestamp, _frameCount < 100 ? 0.001f : 0.01f, 0f, _frameCount, _frameCount < 100 ? $"%.3f / {_frameCount}" : $"%.2f / {_frameCount}"))
             {
                 var baseTimeline = Character->ActionTimelineManager.Driver.GetSchedulerTimeline((uint)ActionTimelineSlots.Base);
                 if (baseTimeline == null)

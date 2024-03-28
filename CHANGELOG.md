@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Portrait Helper
+
+- **Changed:** The animation timestamp slider now has 3-digit precision when the animation is less than 100 frames long.
+
 ## [20.3.2] (2023-03-26)
 
 ### Custom Chat Timestamp
