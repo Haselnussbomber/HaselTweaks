@@ -4,279 +4,347 @@
   },
   "HaselTweaks.CommandHandlerHelpMessage": {
     "en": "Opens the HaselTweaks configuration window",
-    "de": "Öffnet das HaselTweaks-Konfigurationsfenster"
+    "de": "Öffnet das HaselTweaks-Konfigurationsfenster",
+    "zh": "打开HaselTweaks设置窗口"
   },
   "HaselTweaks.Config.DevGitHubLink.Tooltip": {
     "en": "Compare changes",
-    "de": "Änderungen vergleichen"
+    "de": "Änderungen vergleichen",
+    "zh": "比较变化"
   },
   "HaselTweaks.Config.ReleaseNotesLink.Tooltip": {
     "en": "Visit Release Notes",
-    "de": "Zu den Release Notes"
+    "de": "Zu den Release Notes",
+    "zh": "访问发布笔记"
   },
   "HaselTweaks.Config.GitHubLink.Tooltip": {
     "en": "Visit the HaselTweaks GitHub Repository",
-    "de": "Zum HaselTweaks GitHub Repository"
+    "de": "Zum HaselTweaks GitHub Repository",
+    "zh": "访问HaselTweaks的Github仓库"
   },
   "HaselTweaks.Config.KoFiLink.Tooltip": {
     "en": "Support me on Ko-fi",
-    "de": "Unterstütze mich auf Ko-fi"
+    "de": "Unterstütze mich auf Ko-fi",
+    "zh": "在Ko-fi支持我"
   },
   "HaselTweaks.Config.SectionTitle.IncompatibilityWarning": {
     "en": "Incompatibility Warning",
-    "de": "Inkompatibilitätswarnung"
+    "de": "Inkompatibilitätswarnung",
+    "zh": "不兼容警告"
   },
   "HaselTweaks.Config.NetworkRequestWarning": {
     "en": "This option automatically sends additional network requests,\nwhich would normally require user interaction.\nAlthough carefully programmed, its use is at your own risk.",
-    "de": "Diese Option sendet automatisch zusätzliche Netzwerkanfragen,\ndie normalerweise eine Benutzerinteraktion erfordern würden.\nTrotz sorgfältiger Programmierung erfolgt die Nutzung auf eigene Gefahr."
+    "de": "Diese Option sendet automatisch zusätzliche Netzwerkanfragen,\ndie normalerweise eine Benutzerinteraktion erfordern würden.\nTrotz sorgfältiger Programmierung erfolgt die Nutzung auf eigene Gefahr.",
+    "zh": "此选项会自动发送通常需要用户交互的额外网络请求，\n即使经过精心编程，但使用风险仍由你自行承担。"
   },
   "HaselTweaks.Config.SectionTitle.Configuration": {
     "en": "Configuration",
-    "de": "Konfiguration"
+    "de": "Konfiguration",
+    "zh": "设置"
   },
   "HaselTweaks.Config.IncompatibilityWarning.Single.Plugin": {
     "en": "In order for this tweak to work properly, please make sure {0} is disabled.",
-    "de": "Damit dieser Tweak richtig funktioniert, stell bitte sicher, dass {0} deaktiviert ist."
+    "de": "Damit dieser Tweak richtig funktioniert, stell bitte sicher, dass {0} deaktiviert ist.",
+    "zh": "为了使此调整正常工作，请确保禁用{0}。"
   },
   "HaselTweaks.Config.IncompatibilityWarning.Single.PluginSetting": {
     "en": "In order for this tweak to work properly, please make sure {0} is disabled in {1}.",
-    "de": "Damit dieser Tweak richtig funktioniert, stell bitte sicher, dass {0} in {1} deaktiviert ist."
+    "de": "Damit dieser Tweak richtig funktioniert, stell bitte sicher, dass {0} in {1} deaktiviert ist.",
+    "zh": "为了使此调整正常工作，请确保在{1}中禁用{0}。"
   },
   "HaselTweaks.Config.IncompatibilityWarning.Single.PluginSettings": {
     "en": "In order for this tweak to work properly, please make sure the following settings are disabled in {0}:",
-    "de": "Damit dieser Tweak richtig funktioniert, stell bitte sicher, dass die folgenden Einstellungen in {0} deaktiviert sind:"
+    "de": "Damit dieser Tweak richtig funktioniert, stell bitte sicher, dass die folgenden Einstellungen in {0} deaktiviert sind:",
+    "zh": "为了使此调整正常工作，请确保在{0}中禁用以下设置："
   },
   "HaselTweaks.Config.IncompatibilityWarning.Multi.Preface": {
     "en": "In order for this tweak to work properly, please make sure",
-    "de": "Damit dieser Tweak richtig funktioniert, stell bitte sicher, dass"
+    "de": "Damit dieser Tweak richtig funktioniert, stell bitte sicher, dass",
+    "zh": "为了使此调整正常工作，请确保"
   },
   "HaselTweaks.Config.IncompatibilityWarning.Multi.Plugin": {
     "en": "- {0} is disabled",
-    "de": "- {0} deaktiviert ist"
+    "de": "- {0} deaktiviert ist",
+    "zh": "- {0}已禁用"
   },
   "HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSetting": {
     "en": "- {0} is disabled in {1}",
-    "de": "- {0} in {1} deaktiviert ist"
+    "de": "- {0} in {1} deaktiviert ist",
+    "zh": "- {0}在{1}中已禁用"
   },
   "HaselTweaks.Config.IncompatibilityWarning.MultiPluginSettings": {
     "en": "- the following settings are disabled in {0}:",
-    "de": "- die folgenden Einstellungen in {0} deaktiviert sind:"
+    "de": "- die folgenden Einstellungen in {0} deaktiviert sind:",
+    "zh": "- 以下设置已在{0}中禁用："
   },
   "HaselTweaks.Config.IncompatibilityWarning.Plugin.SimpleTweaksPlugin.Name": {
     "en": "Simple Tweaks"
   },
   "HaselTweaks.Config.IncompatibilityWarning.Plugin.SimpleTweaksPlugin.Config.CharacterWindowJobSwitcher": {
-    "en": "Character Window Job Switcher"
+    "en": "Character Window Job Switcher",
+    "zh": "角色窗口切换职业"
   },
   "HaselTweaks.Config.IncompatibilityWarning.Plugin.SimpleTweaksPlugin.Config.ShowExperiencePercentage": {
-    "en": "Show Experience Percentage"
+    "en": "Show Experience Percentage",
+    "zh": "显示经验值百分比"
   },
   "HaselTweaks.Config.TweakStatus.Unknown": {
-    "en": "???"
+    "en": "???",
+    "zh": "未知"
   },
   "HaselTweaks.Config.TweakStatus.Outdated": {
     "en": "Outdated",
-    "de": "Veraltet"
+    "de": "Veraltet",
+    "zh": "过时的"
   },
   "HaselTweaks.Config.TweakStatus.InitializationFailed": {
     "en": "Initialization failed",
-    "de": "Initialisierung fehlgeschlagen"
+    "de": "Initialisierung fehlgeschlagen",
+    "zh": "初始化失败"
   },
   "HaselTweaks.Config.TweakStatus.Enabled": {
     "en": "Enabled",
-    "de": "Aktiviert"
+    "de": "Aktiviert",
+    "zh": "已启用"
   },
   "HaselTweaks.Config.TweakStatus.Disabled": {
     "en": "Disabled",
-    "de": "Deaktiviert"
+    "de": "Deaktiviert",
+    "zh": "已禁用"
   },
   "HaselTweaks.Config.ResetToDefault": {
     "en": "Reset to Default: {0}",
-    "de": "Auf Standard zurücksetzen: {0}"
+    "de": "Auf Standard zurücksetzen: {0}",
+    "zh": "重置为默认值：{0}"
   },
 
   "AetherCurrentHelper.Tweak.Name": {
-    "en": "Aether Current Helper"
+    "en": "Aether Current Helper",
+    "zh": "风脉泉助手"
   },
   "AetherCurrentHelper.Tweak.Description": {
     "en": "Clicking on a zone in the Aether Currents window opens a helper window that shows where to find the aether currents or which quests unlocks them. Clicking on an entry marks the location of the aether current or the quest giver on the map.",
-    "de": "Ein Klick auf eine Zone im Windätherquellen-Fenster öffnet ein Hilfsfenster, das zeigt, wo die Windätherquellen zu finden sind oder welche Quests sie freischalten. Ein Klick auf einen Eintrag markiert die Position der Windätherquelle oder des Questgebers auf der Karte."
+    "de": "Ein Klick auf eine Zone im Windätherquellen-Fenster öffnet ein Hilfsfenster, das zeigt, wo die Windätherquellen zu finden sind oder welche Quests sie freischalten. Ein Klick auf einen Eintrag markiert die Position der Windätherquelle oder des Questgebers auf der Karte.",
+    "zh": "在风脉泉窗口点击地图将打开一个显示哪里能找到风脉泉或哪个任务能解锁它们的辅助窗口。点击任意一项将在地图上标注出风脉泉或任务接取NPC的位置。"
   },
   "AetherCurrentHelper.Config.AlwaysShowDistance.Label": {
     "en": "Show distance instead of checkmark when unlocked",
-    "de": "Entfernung anstelle des Häkchens anzeigen"
+    "de": "Entfernung anstelle des Häkchens anzeigen",
+    "zh": "解锁后显示距离而非完成标记"
   },
   "AetherCurrentHelper.Config.AlwaysShowDistance.Description": {
-    "de": "Betrifft bereits freigeschaltete Windätherquellen."
+    "de": "Betrifft bereits freigeschaltete Windätherquellen.",
+    "zh": "已解锁的风脉泉"
   },
   "AetherCurrentHelper.Config.CenterDistance.Label": {
     "en": "Center distance column",
-    "de": "Distanz-Spalte zentrieren"
+    "de": "Distanz-Spalte zentrieren",
+    "zh": "中心距离列（？）"
   },
   "AetherCurrentHelper.Config.CenterDistance.Description": {
     "en": "Disable this if you have problems with the window endlessly expanding to the right.",
-    "de": "Deaktiviere diese Option, wenn das Problem auftritt, dass sich das Fenster endlos nach rechts ausdehnt."
+    "de": "Deaktiviere diese Option, wenn das Problem auftritt, dass sich das Fenster endlos nach rechts ausdehnt.",
+    "zh": "如果你的窗口无限制地向右拓展，禁用此项"
   },
   "AetherCurrentHelperWindow.AllAetherCurrentsAttuned": {
     "en": "All aether currents attuned!",
     "de": "Alle Windätherquellen gebündelt!",
     "fr": "Toutes les sources d'éther sont réunies !",
-    "ja": "すべてのエーテル風車を結集！"
+    "ja": "すべてのエーテル風車を結集！",
+    "zh": "所有风脉泉已共鸣"
   },
   "AetherCurrentHelperWindow.HideUnlockedTooltip": {
     "en": "Check to hide unlocked Aether Currents",
-    "de": "Anklicken, um bereits freigeschaltete Windätherquellen zu verstecken"
+    "de": "Anklicken, um bereits freigeschaltete Windätherquellen zu verstecken",
+    "zh": "勾选以隐藏已解锁风脉泉"
   },
   "AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip": {
     "en": "Open Aether Currents Window",
-    "de": "Windätherquellen-Fenster öffnen"
+    "de": "Windätherquellen-Fenster öffnen",
+    "zh": "打开风脉泉窗口"
   },
   "AetherCurrentHelperWindow.Coords": {
     "en": "X: {0}, Y: {1}"
   },
   "AetherCurrentHelperWindow.Compass.E": {
     "en": "E",
-    "de": "O"
+    "de": "O",
+    "zh": "东"
   },
   "AetherCurrentHelperWindow.Compass.NE": {
     "en": "NE",
-    "de": "NO"
+    "de": "NO",
+    "zh": "东北"
   },
   "AetherCurrentHelperWindow.Compass.N": {
     "en": "N",
-    "de": "N"
+    "de": "N",
+    "zh": "北"
   },
   "AetherCurrentHelperWindow.Compass.NW": {
     "en": "NW",
-    "de": "NW"
+    "de": "NW",
+    "zh": "西北"
   },
   "AetherCurrentHelperWindow.Compass.W": {
     "en": "W",
-    "de": "W"
+    "de": "W",
+    "zh": "西"
   },
   "AetherCurrentHelperWindow.Compass.SW": {
     "en": "SW",
-    "de": "SW"
+    "de": "SW",
+    "zh": "西南"
   },
   "AetherCurrentHelperWindow.Compass.S": {
     "en": "S",
-    "de": "S"
+    "de": "S",
+    "zh": "南"
   },
   "AetherCurrentHelperWindow.Compass.SE": {
     "en": "SE",
-    "de": "SO"
+    "de": "SO",
+    "zh": "东南"
   },
 
   "AutoOpenRecipe.Tweak.Name": {
-    "en": "Auto-open Recipe"
+    "en": "Auto-open Recipe",
+    "zh": "自动打开制作笔记"
   },
   "AutoOpenRecipe.Tweak.Description": {
     "en": "When a new daily/tribal quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe.",
-    "de": "Wenn ein neues tägliches/stammesbezogenes Questziel verlangt, dass ein Gegenstand hergestellt werden soll und alle Materialien dafür in jenem Moment im Inventar verfügbar sind, wird automatisch das Rezept geöffnet."
+    "de": "Wenn ein neues tägliches/stammesbezogenes Questziel verlangt, dass ein Gegenstand hergestellt werden soll und alle Materialien dafür in jenem Moment im Inventar verfügbar sind, wird automatisch das Rezept geöffnet.",
+    "zh": "当一个新的日常/友好部族任务目标需要你制作一个物品，且你的物品栏中有所有的材料时，这个调整将自动打开制作笔记。"
   },
 
   "AutoSorter.Tweak.Name": {
-    "en": "Auto Sorter"
+    "en": "Auto Sorter",
+    "zh": "自动整理"
   },
   "AutoSorter.Tweak.Description": {
     "en": "Sorts items inside various containers when they are opened.",
-    "de": "Sortiert Gegenstände in verschiedenen Behältern, wenn diese geöffnet werden."
+    "de": "Sortiert Gegenstände in verschiedenen Behältern, wenn diese geöffnet werden.",
+    "zh": "自动整理你所打开的各种物品栏"
   },
   "AutoSorter.Config.SortArmouryOnJobChange.Label": {
     "en": "Sort armoury on job change",
-    "de": "Arsenal bei Jobwechsel sortieren"
+    "de": "Arsenal bei Jobwechsel sortieren",
+    "zh": "在更换职业时整理兵装库"
   },
   "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsEnabled": {
     "en": "Rule is enabled",
-    "de": "Regel ist aktiv"
+    "de": "Regel ist aktiv",
+    "zh": "规则已启用"
   },
   "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsDisabled": {
     "en": "Rule is disabled",
-    "de": "Regel ist inaktiv"
+    "de": "Regel ist inaktiv",
+    "zh": "规则已禁用"
   },
   "AutoSorter.Config.CategoryCombo.Placeholder": {
     "en": "Category...",
-    "de": "Kategorie..."
+    "de": "Kategorie...",
+    "zh": "选择物品栏"
   },
   "AutoSorter.Config.ConditionCombo.Placeholder": {
     "en": "Condition...",
-    "de": "Bedingung..."
+    "de": "Bedingung...",
+    "zh": "选择规则"
   },
   "AutoSorter.Config.OrderCombo.Placeholder": {
     "en": "Order...",
-    "de": "Sortierung..."
+    "de": "Sortierung...",
+    "zh": "选择升降序"
   },
   "AutoSorter.Config.MoveRuleUpButton.Tooltip": {
     "en": "Move up",
-    "de": "Nach oben"
+    "de": "Nach oben",
+    "zh": "向上移动"
   },
   "AutoSorter.Config.MoveRuleDownButton.Tooltip": {
     "en": "Move down",
-    "de": "Nach unten"
+    "de": "Nach unten",
+    "zh": "向下移动"
   },
   "AutoSorter.Config.DeleteRuleButton.Tooltip.HoldingShift": {
     "en": "Delete rule",
-    "de": "Regel löschen"
+    "de": "Regel löschen",
+    "zh": "删除规则"
   },
   "AutoSorter.Config.DeleteRuleButton.Tooltip.NotHoldingShift": {
     "en": "Hold shift to delete rule",
-    "de": "Shift gedrückt halten, um die Regel zu löschen"
+    "de": "Shift gedrückt halten, um die Regel zu löschen",
+    "zh": "按住Shift以删除规则"
   },
   "AutoSorter.Config.DeleteRuleButton.Tooltip.WindowNotFocused": {
     "en": "Focus window and hold shift to delete rule",
-    "de": "Fokussiere das Fenster und halte Shift gedrückt, um die Regel zu löschen"
+    "de": "Fokussiere das Fenster und halte Shift gedrückt, um die Regel zu löschen",
+    "zh": "聚焦窗口并按住Shift以删除规则"
   },
   "AutoSorter.Config.ExecuteButton.Tooltip.Ready": {
     "en": "Execute rule",
-    "de": "Regel ausführen"
+    "de": "Regel ausführen",
+    "zh": "执行规则"
   },
   "AutoSorter.Config.ExecuteButton.Tooltip.SaddlebagNotOpen": {
     "en": "Sorting of Chocobo Saddlebag only works when the window is open.",
-    "de": "Die Sortierung der Chocobo-Satteltasche funktioniert nur, wenn das Fenster geöffnet ist."
+    "de": "Die Sortierung der Chocobo-Satteltasche funktioniert nur, wenn das Fenster geöffnet ist.",
+    "zh": "陆行鸟鞍囊整理仅在窗口打开时有效。"
   },
   "AutoSorter.Config.ExecuteButton.Tooltip.RetainerNotOpen": {
     "en": "Sorting of Retainer Inventory only works when the window is open.",
-    "de": "Die Sortierung des Gehilfeninventars funktioniert nur, wenn das Fenster geöffnet ist."
+    "de": "Die Sortierung des Gehilfeninventars funktioniert nur, wenn das Fenster geöffnet ist.",
+    "zh": "雇员物品栏整理仅在窗口打开时有效。"
   },
   "AutoSorter.Config.AddButton.Label": {
     "en": "Add rule",
-    "de": "Neue Regel"
+    "de": "Neue Regel",
+    "zh": "添加规则"
   },
   "AutoSorter.Config.RunAllButton.Label": {
     "en": "Run All",
-    "de": "Alle ausführen"
+    "de": "Alle ausführen",
+    "zh": "运行全部"
   },
   "AutoSorter.SortingInProgress": {
     "en": "Sorting in progress. Please wait.",
-    "de": "Sortierung im Gange. Bitte warten."
+    "de": "Sortierung im Gange. Bitte warten.",
+    "zh": "整理中。请等待。"
   },
   "AutoSorter.SortingRule.Error.CategoryNotSet": {
     "en": "Category is not set.",
-    "de": "Kategorie nicht ausgewählt."
+    "de": "Kategorie nicht ausgewählt.",
+    "zh": "未设置物品栏。"
   },
   "AutoSorter.SortingRule.Error.ConditionNotSet": {
     "en": "Condition is not set.",
-    "de": "Bedingung nicht ausgewählt."
+    "de": "Bedingung nicht ausgewählt.",
+    "zh": "未设置规则。"
   },
   "AutoSorter.SortingRule.Error.OrderNotSet": {
     "en": "Order is not set.",
-    "de": "Sortierung nicht ausgewählt."
+    "de": "Sortierung nicht ausgewählt.",
+    "zh": "未设置升降序。"
   },
   "AutoSorter.SortingRule.Error.OverridesArmouryRule": {
     "en": "This rule overrides a slot-based armoury rule. Move it up!",
-    "de": "Diese Regel überschreibt eine Slot-basierte Arsenal-Regel. Verschiebe sie nach oben!"
+    "de": "Diese Regel überschreibt eine Slot-basierte Arsenal-Regel. Verschiebe sie nach oben!",
+    "zh": "该规则覆写了基于栏位的兵装库规则。向上移动它！"
   },
   "AutoSorter.SortingRule.Error.PremiumSaddlebagNotSubscribed": {
     "en": "Not subscribed to the Companion Premium Service.",
-    "de": "Premium-Nutzungsplan der Companion-App nicht aboniert."
+    "de": "Premium-Nutzungsplan der Companion-App nicht aboniert.",
+    "zh": "未开通陆行鸟鞍囊2服务。"
   },
 
   "BackgroundMusicKeybind.Tweak.Name": {
-    "en": "Background Music Keybind"
+    "en": "Background Music Keybind",
+    "zh": "背景音乐按键绑定"
   },
   "BackgroundMusicKeybind.Tweak.Description": {
     "en": "A configurable keybind to toggle the background music.",
-    "de": "Eine konfigurierbare Tastenkombination zum Umschalten der Hintergrundmusik."
+    "de": "Eine konfigurierbare Tastenkombination zum Umschalten der Hintergrundmusik.",
+    "zh": "添加一个开关背景音乐的按键。"
   },
   "BackgroundMusicKeybind.Config.ShiftKeyCheckbox.Label": {
     "en": "Shift"
@@ -290,157 +358,191 @@
   },
   "BackgroundMusicKeybind.Config.KeyCombo.Preview.None": {
     "en": "None",
-    "de": "Keine Taste"
+    "de": "Keine Taste",
+    "zh": "无"
   },
 
   "CharacterClassSwitcher.Tweak.Name": {
-    "en": "Character Class Switcher"
+    "en": "Character Class Switcher",
+    "zh": "角色职业切换器"
   },
   "CharacterClassSwitcher.Tweak.Description": {
     "en": "Clicking on a class/job in the character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window.",
-    "de": "Ein Klick auf eine Klasse/Job im Charakterfenster findet die passende Ausrüstung und rüstet sie aus. Halte die Umschalttaste bei Handwerkern gedrückt, um das ursprüngliche Desynthesefenster zu öffnen."
+    "de": "Ein Klick auf eine Klasse/Job im Charakterfenster findet die passende Ausrüstung und rüstet sie aus. Halte die Umschalttaste bei Handwerkern gedrückt, um das ursprüngliche Desynthesefenster zu öffnen.",
+    "zh": "在角色窗口点击一个职业或特职会寻找合适的套装并装备。在制作职业上按住Shift以打开原来的分解窗口。"
   },
   "CharacterClassSwitcher.Config.DisableTooltips.Label": {
     "en": "Disable Tooltips",
-    "de": "Tooltips deaktivieren"
+    "de": "Tooltips deaktivieren",
+    "zh": "禁用鼠标悬停文字提示"
   },
   "CharacterClassSwitcher.Config.AlwaysOpenOnClassesJobsTab.Label": {
     "en": "Always open on the Classes/Jobs tab",
-    "de": "Immer auf dem Tab Klassen/Jobs öffnen"
+    "de": "Immer auf dem Tab Klassen/Jobs öffnen",
+    "zh": "打开角色窗口时自动切换到职业&特职标签页"
   },
   "CharacterClassSwitcher.Config.ForceClassesJobsSubTab.Label": {
     "en": "Override tab inside Classes/Jobs:",
-    "de": "Überschreibung des Tabs innerhalb Klassen/Jobs:"
+    "de": "Überschreibung des Tabs innerhalb Klassen/Jobs:",
+    "zh": "职业&特职标签页选项："
   },
   "CharacterClassSwitcher.Config.ForceClassesJobsSubTab.Options.None.Label": {
     "en": "No override (game default)",
-    "de": "Keine Überschreibung (Spielstandard)"
+    "de": "Keine Überschreibung (Spielstandard)",
+    "zh": "无（游戏默认）"
   },
   "CharacterClassSwitcher.Config.ForceClassesJobsSubTab.Options.DoWDoM.Label": {
     "en": "DoW/DoM",
     "de": "Krieger/Magier",
     "fr": "Combattant/Mage",
-    "ja": "バトルクラス・ジョブ"
+    "ja": "バトルクラス・ジョブ",
+    "zh": "自动打开战斗职业&特职标签页"
   },
   "CharacterClassSwitcher.Config.ForceClassesJobsSubTab.Options.DoHDoL.Label": {
     "en": "DoH/DoL",
     "de": "Handwerker/Sammler",
     "fr": "Artisan/Récolteur",
-    "ja": "クラフター・ギャザラー"
+    "ja": "クラフター・ギャザラー",
+    "zh": "自动打开制作&采集职业标签页"
   },
   "CharacterClassSwitcher.NoSuitableGearsetFound": {
     "en": "Couldn't find a suitable gearset.",
     "de": "Konnte kein passendes Ausrüstungsset finden.",
     "fr": "Impossible de trouver un ensemble d'équipement adapté.",
-    "ja": "適切なギアセットが見つかりませんでした。"
+    "ja": "適切なギアセットが見つかりませんでした。",
+    "zh": "无法找到合适的套装"
   },
 
   "Commands.Tweak.Name": {
-    "en": "Commands"
+    "en": "Commands",
+    "zh": "命令"
   },
   "Commands.Tweak.Description": {
     "en": "A variety of useful chat commands.",
-    "de": "Eine Vielzahl von nützlichen Chat-Befehlen."
+    "de": "Eine Vielzahl von nützlichen Chat-Befehlen.",
+    "zh": "各种有用的聊天命令。"
   },
   "Commands.Config.EnableItemLinkCommand.Label": {
     "en": "/itemlink"
   },
   "Commands.Config.EnableItemLinkCommand.Description": {
     "en": "Prints an item link for the given id in chat.\nUsage: /itemlink <id>",
-    "de": "Gibt einen Gegenstands-Link für die angegebene ID im Chat aus.\nVerwendung: /itemlink <id>"
+    "de": "Gibt einen Gegenstands-Link für die angegebene ID im Chat aus.\nVerwendung: /itemlink <id>",
+    "zh": "将给出的id的物品展示到聊天栏中\n用法：/itemlink <id>"
   },
   "Commands.Config.EnableWhatMountCommand.Label": {
     "en": "/whatmount"
   },
   "Commands.Config.EnableWhatMountCommand.Description": {
     "en": "Target a player and execute the command to see what mount your target is riding and which item teaches this mount.",
-    "de": "Visiere einen Spieler an und führe den Befehl aus, um zu sehen, welches Reittier dein Ziel reitet und welcher Gegenstand dieses Reittier lehrt."
+    "de": "Visiere einen Spieler an und führe den Befehl aus, um zu sehen, welches Reittier dein Ziel reitet und welcher Gegenstand dieses Reittier lehrt.",
+    "zh": "选择一个玩家并执行此命令来查看你的目标骑着什么坐骑以及什么道具解锁此坐骑。"
   },
   "Commands.Config.EnableWhatBardingCommand.Label": {
     "en": "/whatbarding"
   },
   "Commands.Config.EnableWhatBardingCommand.Description": {
     "en": "Target a players chocobo companion and execute the command to see what barding it is wearing.",
-    "de": "Visiere den Chocobo-Begleiter eines Spielers an und führe den Befehl aus, um zu sehen, welche Ausrüstung es trägt."
+    "de": "Visiere den Chocobo-Begleiter eines Spielers an und führe den Befehl aus, um zu sehen, welche Ausrüstung es trägt.",
+    "zh": "选择一个玩家的陆行鸟搭档并执行此命令来查看它穿着什么鸟甲。"
   },
   "Commands.ItemLink.ItemNotFound": {
     "en": "Item {0} not found.",
-    "de": "Gegenstand {id} nicht gefunden."
+    "de": "Gegenstand {id} nicht gefunden.",
+    "zh": "物品{0}未找到。"
   },
   "Commands.ItemLink.Item": {
     "en": "Item #{0}: {1}",
-    "de": "Gegenstand #{0}: {1}"
+    "de": "Gegenstand #{0}: {1}",
+    "zh": "物品#{0}：{1}。"
   },
   "Commands.NoTarget": {
     "en": "No target.",
-    "de": "Kein Ziel."
+    "de": "Kein Ziel.",
+    "zh": "没有选中的目标。"
   },
   "Commands.TargetIsNotAPlayer": {
     "en": "Target is not a player.",
-    "de": "Ziel ist kein Spieler."
+    "de": "Ziel ist kein Spieler.",
+    "zh": "目标不是玩家。"
   },
   "Commands.TargetIsNotAChocobo": {
     "en": "Target is not a chocobo.",
-    "de": "Ziel ist kein Chocobo."
+    "de": "Ziel ist kein Chocobo.",
+    "zh": "目标不是陆行鸟。"
   },
   "Commands.WhatBarding.AppearanceOf": {
     "en": "Appearance of {0}:",
     "de": "Aussehen von {0}:",
     "fr": "Apparence de {0}:",
-    "ja": "{0} の外見："
+    "ja": "{0} の外見：",
+    "zh": "{0}的外观："
   },
   "Commands.WhatMount.TargetNotMounted": {
     "en": "Target is not mounted.",
-    "de": "Ziel reitet nicht."
+    "de": "Ziel reitet nicht.",
+    "zh": "目标不是骑乘状态。"
   },
   "Commands.WhatMount.MountNotFound": {
     "en": "Mount not found.",
-    "de": "Reittier nicht gefunden."
+    "de": "Reittier nicht gefunden.",
+    "zh": "坐骑未找到。"
   },
   "Commands.WhatMount.WithoutItem": {
     "en": "Mount: ",
-    "de": "Reittier: "
+    "de": "Reittier: ",
+    "zh": "坐骑：。"
   },
   "Commands.WhatMount.WithItem": {
     "en": "Mount {0} is taught by {1}.",
     "de": "Reittier {0} wird gelehrt von {1}.",
     "fr": "Monture {0} apprise auprès de {1}.",
-    "ja": "{0} のマウントは {1} によって教えられています。"
+    "ja": "{0} のマウントは {1} によって教えられています。",
+    "zh": "坐骑{0}由{1}解锁。"
   },
 
   "CustomChatTimestamp.Tweak.Name": {
-    "en": "Custom Chat Timestamp"
+    "en": "Custom Chat Timestamp",
+    "zh": "自定义聊天栏时间戳"
   },
   "CustomChatTimestamp.Tweak.Description": {
     "en": "As it says, configurable chat timestamp format.",
-    "de": "Wie der Name schon sagt: konfigurierbares Chat-Zeitstempel-Format."
+    "de": "Wie der Name schon sagt: konfigurierbares Chat-Zeitstempel-Format.",
+    "zh": "正如其名，可配置的聊天栏时间戳格式"
   },
   "CustomChatTimestamp.Config.Format.Label": {
-    "en": "Format:"
+    "en": "Format:",
+    "zh": "格式："
   },
   "CustomChatTimestamp.Config.Format.DateTimeLink.Pre": {
     "en": "This gets passed to C#'s",
-    "de": "Dies wird an die C#-Funktion"
+    "de": "Dies wird an die C#-Funktion",
+    "zh": "这被传递给C#"
   },
   "CustomChatTimestamp.Config.Format.DateTimeLink.Tooltip": {
     "en": "Custom date and time format strings documentation",
-    "de": "Dokumentation für benutzerdefinierte Formatzeichenfolgen für Datum und Uhrzeit"
+    "de": "Dokumentation für benutzerdefinierte Formatzeichenfolgen für Datum und Uhrzeit",
+    "zh": "自定义日期和时间格式字符串文档"
   },
   "CustomChatTimestamp.Config.Format.DateTimeLink.Post": {
     "en": "function.",
-    "de": "übergeben."
+    "de": "übergeben.",
+    "zh": "功能。"
   },
   "CustomChatTimestamp.Config.Format.Example.Label": {
     "en": "Example with the current format:",
-    "de": "Beispiel mit dem aktuellen Format:"
+    "de": "Beispiel mit dem aktuellen Format:",
+    "zh": "当前格式样例："
   },
   "CustomChatTimestamp.Config.Format.Example.Message": {
     "en": "(\uE090Player Name) This is a test message.",
-    "de": "(\uE090Spieler Name) Dies ist eine Testnachricht."
+    "de": "(\uE090Spieler Name) Dies ist eine Testnachricht.",
+    "zh": "(\uE090Player Name) 这是一条测试消息。"
   },
   "CustomChatTimestamp.Config.Format.Invalid": {
     "en": "The current format is not valid.",
-    "de": "Das aktuelle Format ist ungültig."
+    "de": "Das aktuelle Format ist ungültig.",
+    "zh": "当前格式无效。"
   },
 
   "DTR.Tweak.Name": {
@@ -448,684 +550,852 @@
   },
   "DTR.Tweak.Description": {
     "en": "Shows Instance number (only if the current zone is instanced), FPS and Busy status in the Server Info Bar (internally called DTR).",
-    "de": "Zeigt die Instanznummer (nur wenn die aktuelle Zone instanziert ist), FPS und den Beschäftigt-Status in der Server-Infoleiste (intern DTR genannt) an."
+    "de": "Zeigt die Instanznummer (nur wenn die aktuelle Zone instanziert ist), FPS und den Beschäftigt-Status in der Server-Infoleiste (intern DTR genannt) an.",
+    "zh": "在服务器信息栏（也称为DTR）中显示副本号（仅在当前区域为副本时）、FPS和忙碌状态。"
   },
   "DTR.Config.Explanation.Pre": {
     "en": "To enable/disable elements or to change the order go into",
-    "de": "Um Elemente zu aktivieren/deaktivieren oder die Reihenfolge zu ändern, gehe in den"
+    "de": "Um Elemente zu aktivieren/deaktivieren oder die Reihenfolge zu ändern, gehe in den",
+    "zh": "启用/禁用元素或更改次序"
   },
   "DTR.Config.Explanation.DalamudSettings": {
     "en": "Dalamud Settings",
-    "de": "Dalamud Einstellungen"
+    "de": "Dalamud Einstellungen",
+    "zh": "Dalamud设置"
   },
   "DTR.Config.Explanation.Post": {
     "en": "> Server Info Bar.",
-    "de": "auf den Tab Server-Infoleiste."
+    "de": "auf den Tab Server-Infoleiste.",
+    "zh": "> 服务器信息栏。"
   },
   "DTR.Config.FormatUnitText.Label": {
     "en": "Text of the FPS unit",
-    "de": "Text der FPS-Einheit"
+    "de": "Text der FPS-Einheit",
+    "zh": "FPS单元的文本"
   },
   "DTR.Config.FormatUnitText.Description": {
     "en": "Some people like it all uppercase, some lowercase... Here you can define it yourself.",
-    "de": "Manche mögen es in Großbuchstaben, manche nicht... Hier kannst du es selbst definieren."
+    "de": "Manche mögen es in Großbuchstaben, manche nicht... Hier kannst du es selbst definieren.",
+    "zh": "有些人喜欢全大写，有些人喜欢小写...在这里你可以自己定义。"
   },
   "DTR.FPS.Format": {
     "en": "{0:0}{1}"
   },
 
   "EnhancedExpBar.Tweak.Name": {
-    "en": "Enhanced Experience Bar"
+    "en": "Enhanced Experience Bar",
+    "zh": "经验栏增强"
   },
   "EnhancedExpBar.Tweak.Description": {
     "en": "Enhances the Experience Bar with the following modes:\n\n- The PvP Series Bar shows series rank and experience. A little * after the rank indicates a claimable rank-up reward.\n\n- The Sanctuary Bar shows sanctuary level and island experience.",
-    "de": "Erweitert die Erfahrungsleiste um die folgenden Modi:\n\n- Die PvP-Serienleiste zeigt den Serienstufe und -erfahrung an. Ein kleines * hinter dem Rang zeigt an, dass eine Belohnung zum Einlösen bereit steht.\n\n- Der Inselparadies-Balken zeigt Inselstufe und Inselroutine an."
+    "de": "Erweitert die Erfahrungsleiste um die folgenden Modi:\n\n- Die PvP-Serienleiste zeigt den Serienstufe und -erfahrung an. Ein kleines * hinter dem Rang zeigt an, dass eine Belohnung zum Einlösen bereit steht.\n\n- Der Inselparadies-Balken zeigt Inselstufe und Inselroutine an.",
+    "zh": "通过以下模式增强经验栏：\n\n- PvP系列赛栏显示系列赛等级与经验。排名后的小*表示可领取的等级奖励。\n\n- 无人岛栏展示无人岛等级与经验。"
   },
   "EnhancedExpBar.Config.ForcePvPSeriesBar.Label": {
     "en": "Always show PvP Series Bar in PvP Areas",
-    "de": "Immer die PvP-Serienleiste in PvP-Gebieten anzeigen"
+    "de": "Immer die PvP-Serienleiste in PvP-Gebieten anzeigen",
+    "zh": "在PvP区域始终显示PvP系列赛栏"
   },
   "EnhancedExpBar.Config.ForceSanctuaryBar.Label": {
     "en": "Always show Sanctuary Bar on the Island",
-    "de": "Immer den Inselparadies-Balken auf der Insel anzeigen"
+    "de": "Immer den Inselparadies-Balken auf der Insel anzeigen",
+    "zh": "在无人岛始终显示无人岛栏"
   },
   "EnhancedExpBar.Config.ForceCompanionBar.Label": {
     "en": "Always show Companion Bar when chocobo companion summoned",
-    "de": "Immer die Begleiterleiste anzeigen, wenn der Chocobo-Begleiter gerufen ist"
+    "de": "Immer die Begleiterleiste anzeigen, wenn der Chocobo-Begleiter gerufen ist",
+    "zh": "当陆行鸟搭档存在时始终显示搭档栏"
   },
   "EnhancedExpBar.Config.SanctuaryBarHideJob.Label": {
     "en": "Hide Job on Sanctuary Bar",
-    "de": "Job auf dem Inselparadies-Balken verstecken"
+    "de": "Job auf dem Inselparadies-Balken verstecken",
+    "zh": "在无人岛栏隐藏职业"
   },
   "EnhancedExpBar.Config.MaxLevelOverride.Label": {
     "en": "Max Level Override",
-    "de": "Überschreibung auf Maximalstufe"
+    "de": "Überschreibung auf Maximalstufe",
+    "zh": "最大经验覆盖"
   },
   "EnhancedExpBar.Config.MaxLevelOverride.Description": {
     "en": "Will switch to the selected bar if your current job is on max level and none of the settings above apply.",
-    "de": "Wechselt zur ausgewählten Leiste, wenn der aktuelle Job auf maximaler Stufe ist und keine der oben genannten Einstellungen zutrifft."
+    "de": "Wechselt zur ausgewählten Leiste, wenn der aktuelle Job auf maximaler Stufe ist und keine der oben genannten Einstellungen zutrifft.",
+    "zh": "如果你的当前职业达到最大等级且没有应用其他设置，将会切换到所选的栏。"
   },
   "EnhancedExpBar.Config.MaxLevelOverride.Options.Default.Label": {
     "en": "Default",
-    "de": "Standard"
+    "de": "Standard",
+    "zh": "默认"
   },
   "EnhancedExpBar.Config.MaxLevelOverride.Options.PvPSeriesBar.Label": {
     "en": "PvP Series Bar",
-    "de": "PvP-Serienleiste"
+    "de": "PvP-Serienleiste",
+    "zh": "PvP系列赛栏"
   },
   "EnhancedExpBar.Config.MaxLevelOverride.Options.CompanionBar.Label": {
     "en": "Companion Bar",
-    "de": "Begleiterleiste"
+    "de": "Begleiterleiste",
+    "zh": "搭档栏"
   },
   "EnhancedExpBar.Config.DisableColorChanges.Label": {
     "en": "Disable color change",
-    "de": "Farbanpassung deaktivieren"
+    "de": "Farbanpassung deaktivieren",
+    "zh": "禁用颜色改变"
   },
 
   "EnhancedIsleworksAgenda.Tweak.Name": {
-    "en": "Enhanced Isleworks Agenda"
+    "en": "Enhanced Isleworks Agenda",
+    "zh": "工房生产计划增强"
   },
   "EnhancedIsleworksAgenda.Tweak.Description": {
     "en": "Slightly improves the Isleworks \"Set Agenda\" window.",
-    "de": "Verbessert etwas das \"Plan aufstellen\"-Fenster des Atelierplans."
+    "de": "Verbessert etwas das \"Plan aufstellen\"-Fenster des Atelierplans.",
+    "zh": "略微改良海岛工坊的“设置生产计划”窗口。"
   },
   "EnhancedIsleworksAgenda.Config.EnableSearchBar.Label": {
     "en": "Enable Search Bar",
-    "de": "Suchleiste aktivieren"
+    "de": "Suchleiste aktivieren",
+    "zh": "启用搜索栏"
   },
   "EnhancedIsleworksAgenda.Config.EnableSearchBar.Description": {
     "en": "The search bar is automatically shown and focused when the \"Set Agenda\" window opens. Based on the entered item name, the fuzzy search (case-insensitive) automatically selects the item. Pressing the Enter key confirms the selected item, just like by pressing the \"Schedule\" button.",
-    "de": "Die Suchleiste wird automatisch angezeigt und fokussiert, wenn das \"Plan aufstellen\"-Fenster geöffnet wird. Basierend auf dem eingegebenen Gegenstandsnamen wird mittels unscharfe Suche (Groß- und Kleinschreibung wird nicht berücksichtigt) der Gegenstand automatisch ausgewählt. Durch Drücken der Eingabetaste wird der Gegenstand - wie beim Drücken der Schaltfläche \"Plan erstellen\" - eingeplant."
+    "de": "Die Suchleiste wird automatisch angezeigt und fokussiert, wenn das \"Plan aufstellen\"-Fenster geöffnet wird. Basierend auf dem eingegebenen Gegenstandsnamen wird mittels unscharfe Suche (Groß- und Kleinschreibung wird nicht berücksichtigt) der Gegenstand automatisch ausgewählt. Durch Drücken der Eingabetaste wird der Gegenstand - wie beim Drücken der Schaltfläche \"Plan erstellen\" - eingeplant.",
+    "zh": "在“设置生产计划”窗口打开时自动显示并聚焦搜索栏。模糊搜索（不区分大小写）会根据输入的项目名称自动选择项目。像按下“计划”按钮一样按下回车键确认所选项目。"
   },
   "EnhancedIsleworksAgenda.MJICraftScheduleSettingSearchBar.QueryHint": {
     "en": "Search...",
-    "de": "Suche..."
+    "de": "Suche...",
+    "zh": "搜索..."
   },
   "EnhancedIsleworksAgenda.Config.DisableTreeListTooltips.Label": {
     "en": "Disable item tooltips in the list",
-    "de": "Deaktiviere Gegenstands-Tooltips in der Liste"
+    "de": "Deaktiviere Gegenstands-Tooltips in der Liste",
+    "zh": "禁用列表中的物品的提示栏"
   },
 
   "EnhancedLoginLogout.Tweak.Name": {
-    "en": "Enhanced Login/Logout"
+    "en": "Enhanced Login/Logout",
+    "zh": "登入/登出增强"
   },
   "EnhancedLoginLogout.Tweak.Description": {
     "en": "Enhances login and logout.",
-    "de": "Verbessert Login und Logout."
+    "de": "Verbessert Login und Logout.",
+    "zh": "增强登入与登出"
   },
   "EnhancedLoginLogout.Config.LoginOptions.Title": {
     "en": "Login Options",
-    "de": "Login-Optionen"
+    "de": "Login-Optionen",
+    "zh": "登入选项"
   },
   "EnhancedLoginLogout.Config.LogoutOptions.Title": {
     "en": "Logout Options",
-    "de": "Logout-Optionen"
+    "de": "Logout-Optionen",
+    "zh": "登出选项"
   },
   "EnhancedLoginLogout.Config.ShowPets.Label": {
     "en": "Show pets in character selection",
-    "de": "Familiar in der Charakterauswahl anzeigen"
+    "de": "Familiar in der Charakterauswahl anzeigen",
+    "zh": "在角色选择界面显示召唤物"
   },
   "EnhancedLoginLogout.Config.ShowPets.Description": {
     "en": "Displays a carbuncle (Arcanist/Summoner) or a fairy (Scholar) next to your character.",
-    "de": "Zeigt einen Karfunkel (Arkanist/Beschwörer) oder eine Fee (Gelehrter) neben deinem Charakter an."
+    "de": "Zeigt einen Karfunkel (Arkanist/Beschwörer) oder eine Fee (Gelehrter) neben deinem Charakter an.",
+    "zh": "在你的角色旁显示宝石兽（秘术师/召唤师）或者小仙女（学者）。"
   },
   "EnhancedLoginLogout.Config.ShowPets.Error.MissingPetMirageSettings": {
     "en": "Pet glamour settings for this character not cached! Please log in.",
-    "de": "Familiarprojektionseinstellungen für diesen Charakter nicht im Cache! Bitte log dich einmal ein."
+    "de": "Familiarprojektionseinstellungen für diesen Charakter nicht im Cache! Bitte log dich einmal ein.",
+    "zh": "这个角色的召唤物投影设置没有被缓存！请先登入。"
   },
   "EnhancedLoginLogout.Config.PetPosition.Label": {
-    "en": "Position"
+    "en": "Position",
+    "zh": "位置"
   },
   "EnhancedLoginLogout.Config.PlayEmote.Label": {
     "en": "Play emote in character selection",
-    "de": "Emote in der Charakterauswahl abspielen"
+    "de": "Emote in der Charakterauswahl abspielen",
+    "zh": "在角色选择界面展示情感动作"
   },
   "EnhancedLoginLogout.Config.PlayEmote.Description": {
     "en": "Have your character greet you with an emote!",
-    "de": "Lass deinen Charakter dich mit einem Emote begrüßen!"
+    "de": "Lass deinen Charakter dich mit einem Emote begrüßen!",
+    "zh": "让你的角色用情感动作向你打招呼！"
   },
   "EnhancedLoginLogout.Config.PlayEmote.Note": {
     "en": "Note: Emote settings are per character and not all emotes are supported (e.g. sitting or underwater emotes). What is supported, however, are alternative standing idle poses.",
-    "de": "Hinweis: Die Emote-Einstellungen gelten pro Charakter und nicht alle Emotes werden unterstützt (z.B. sitzende oder Unterwasser-Emotes). Was jedoch unterstützt wird, sind alternative stehende Leerlaufposen."
+    "de": "Hinweis: Die Emote-Einstellungen gelten pro Charakter und nicht alle Emotes werden unterstützt (z.B. sitzende oder Unterwasser-Emotes). Was jedoch unterstützt wird, sind alternative stehende Leerlaufposen.",
+    "zh": "注意：情感动作设置会适用于每个角色，但并非所有的情感动作都能支持（例如坐下或水下情感动作）。然而，支持的是另一种站立姿势。（？）"
   },
   "EnhancedLoginLogout.Config.PlayEmote.CurrentEmote": {
     "en": "Current Emote:",
-    "de": "Aktuelles Emote:"
+    "de": "Aktuelles Emote:",
+    "zh": "当前情感动作："
   },
   "EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.None": {
     "en": "None",
-    "de": "Keins"
+    "de": "Keins",
+    "zh": "无"
   },
   "EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.Unknown": {
     "en": "Unknown",
-    "de": "Unbekannt"
+    "de": "Unbekannt",
+    "zh": "未知"
   },
   "EnhancedLoginLogout.Config.PlayEmote.StopRecordingButton.Label": {
     "en": "Stop Recording",
-    "de": "Aufnahme stoppen"
+    "de": "Aufnahme stoppen",
+    "zh": "停止记录"
   },
   "EnhancedLoginLogout.Config.PlayEmote.ChangeButton.Label": {
     "en": "Change",
-    "de": "Ändern"
+    "de": "Ändern",
+    "zh": "改变"
   },
   "EnhancedLoginLogout.Config.PlayEmote.UnsetButton.Label": {
     "en": "Unset",
-    "de": "Zurücksetzen"
+    "de": "Zurücksetzen",
+    "zh": "复原"
   },
   "EnhancedLoginLogout.Config.PlayEmote.RecordingInfo": {
     "en": "Perform an emote now to set it for this character!",
-    "de": "Führe jetzt ein Emote aus, um es für diesen Charakter zu setzen!"
+    "de": "Führe jetzt ein Emote aus, um es für diesen Charakter zu setzen!",
+    "zh": "现在使用一个情感动作来为这个角色设置！"
   },
   "EnhancedLoginLogout.Config.PlayEmote.NotLoggedIn": {
     "en": "Please log in to set an emote.",
-    "de": "Bitte log dich ein, um ein Emote zu setzen."
+    "de": "Bitte log dich ein, um ein Emote zu setzen.",
+    "zh": "请登入以设置一个情感动作。"
   },
   "EnhancedLoginLogout.Config.PreloadTerritory.Label": {
     "en": "Preload territory when queued",
-    "de": "Zone in der Warteschlange vorladen"
+    "de": "Zone in der Warteschlange vorladen",
+    "zh": "排队时预加载地图"
   },
   "EnhancedLoginLogout.Config.PreloadTerritory.Description": {
     "en": "When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.",
-    "de": "Wenn in die Warteschlange gesetzt wird, werden die Texturen des Gebiets im Hintergrund vorgeladen, so wie es auch beim Teleportieren geschieht."
+    "de": "Wenn in die Warteschlange gesetzt wird, werden die Texturen des Gebiets im Hintergrund vorgeladen, so wie es auch beim Teleportieren geschieht.",
+    "zh": "当你进入登入队列时，它会在背景中预加载地图材质，就像你开始传送时它做的一样。"
   },
   "EnhancedLoginLogout.Config.ClearTellHistory.Label": {
     "en": "Clear tell history on logout",
-    "de": "Flüsterverlauf beim Ausloggen leeren"
+    "de": "Flüsterverlauf beim Ausloggen leeren",
+    "zh": "登出时清除私聊历史记录"
   },
 
   "EnhancedMaterialList.Tweak.Name": {
-    "en": "Enhanced Material List"
+    "en": "Enhanced Material List",
+    "zh": "增强材料列表"
   },
   "EnhancedMaterialList.Tweak.Description": {
     "en": "Enhances the Material List (and Recipe Tree).",
-    "de": "Verbessert Materialliste (und Rezeptbaum)."
+    "de": "Verbessert Materialliste (und Rezeptbaum).",
+    "zh": "增强材料列表（与配方树状图）"
   },
   "EnhancedMaterialList.Config.EnableZoneNames.Label": {
     "en": "Enable Zone Names",
-    "de": "Zonennamen aktivieren"
+    "de": "Zonennamen aktivieren",
+    "zh": "启用区域名称"
   },
   "EnhancedMaterialList.Config.EnableZoneNames.Description": {
     "en": "The zone with the lowest teleportation cost is displayed.\nA green zone name means it's the current zone.\nSince space is limited it has to shorten the item and zone name.",
-    "de": "Die Zone mit den niedrigsten Teleportationskosten wird angezeigt.\nDer Zonenname ist grün, wenn du dich in der Zone befindest.\nDa der Platz begrenzt ist, wird der Gegenstandsname und Zonenname gekürzt."
+    "de": "Die Zone mit den niedrigsten Teleportationskosten wird angezeigt.\nDer Zonenname ist grün, wenn du dich in der Zone befindest.\nDa der Platz begrenzt ist, wird der Gegenstandsname und Zonenname gekürzt.",
+    "zh": "显示传送费用最低的区域。\n绿色的区域名称表示它是当前区域。\n由于空间有限，它必须简写物品和区域名称。"
   },
   "EnhancedMaterialList.Config.DisableZoneNameForCrystals.Label": {
     "en": "Disable for Crystals",
-    "de": "Für Kristalle deaktivieren"
+    "de": "Für Kristalle deaktivieren",
+    "zh": "对水晶禁用"
   },
   "EnhancedMaterialList.Config.ClickToOpenMap.Label": {
     "en": "Enable click to open Map",
-    "de": "Bei Klick Karte öffnen"
+    "de": "Bei Klick Karte öffnen",
+    "zh": "启用点击打开地图"
   },
   "EnhancedMaterialList.Config.DisableClickToOpenMapForCrystals.Label": {
     "en": "Disable for Crystals",
-    "de": "Für Kristalle deaktivieren"
+    "de": "Für Kristalle deaktivieren",
+    "zh": "对水晶禁用"
   },
   "EnhancedMaterialList.Config.AutoRefreshMaterialList.Label": {
     "en": "Auto-refresh Material List",
-    "de": "Materialliste automatisch aktualisieren"
+    "de": "Materialliste automatisch aktualisieren",
+    "zh": "自动刷新材料列表"
   },
   "EnhancedMaterialList.Config.AutoRefreshMaterialList.Description": {
     "en": "The material list is automatically refreshed when the inventory has changed.",
-    "de": "Die Materialliste wird automatisch aktualisiert wenn sich das Inventar geändert hat."
+    "de": "Die Materialliste wird automatisch aktualisiert wenn sich das Inventar geändert hat.",
+    "zh": "当物品栏改变时自动刷新材料列表。"
   },
   "EnhancedMaterialList.Config.AutoRefreshRecipeTree.Label": {
     "en": "Auto-refresh Recipe Tree",
-    "de": "Rezeptbaum automatisch aktualisieren"
+    "de": "Rezeptbaum automatisch aktualisieren",
+    "zh": "自动刷新配方树状图"
   },
   "EnhancedMaterialList.Config.AutoRefreshRecipeTree.Description": {
     "en": "The recipe tree is automatically refreshed when the inventory has changed.",
-    "de": "Der Rezeptbaum wird automatisch aktualisiert wenn sich das Inventar geändert hat."
+    "de": "Der Rezeptbaum wird automatisch aktualisiert wenn sich das Inventar geändert hat.",
+    "zh": "当物品栏改变时自动刷新配方树状图。"
   },
   "EnhancedMaterialList.Config.RestoreMaterialList.Label": {
     "en": "Restore Material List on Login",
-    "de": "Materialliste beim Login wiederherstellen"
+    "de": "Materialliste beim Login wiederherstellen",
+    "zh": "在登入时恢复材料列表"
   },
   "EnhancedMaterialList.Config.RestoreMaterialList.Description": {
     "en": "The material list will reopen with the same recipe and quantity each time you log in as long as the window is locked.",
-    "de": "Solange das Fenster gesperrt ist, wird die Materialliste bei jedem Login mit dem gleichen Rezept und der gleichen Menge neu geöffnet."
+    "de": "Solange das Fenster gesperrt ist, wird die Materialliste bei jedem Login mit dem gleichen Rezept und der gleichen Menge neu geöffnet.",
+    "zh": "只要锁定窗口，每次登入时材料列表都会以相同的配方和数量重新打开。"
   },
   "EnhancedMaterialList.Config.AddSearchForItemByCraftingMethodContextMenuEntry.Label": {
     "en": "Add \"Search for Item by Crafting Method\" context menu entry",
-    "de": "Kontextmenüeintrag \"Syntheserezept anzeigen\" hinzufügen"
+    "de": "Kontextmenüeintrag \"Syntheserezept anzeigen\" hinzufügen",
+    "zh": "添加“通过制作方法搜索物品”条目到次级菜单（？）"
   },
   "EnhancedMaterialList.Config.AddSearchForItemByCraftingMethodContextMenuEntry.Description": {
     "en": "For the result item. No more need to open the recipe tree first.",
-    "de": "Für den Resultatgegenstand. Es ist nicht mehr notwendig, zuerst den Rezeptbaum zu öffnen."
+    "de": "Für den Resultatgegenstand. Es ist nicht mehr notwendig, zuerst den Rezeptbaum zu öffnen.",
+    "zh": "用于结果项。不再需要首先打开配方树。"
   },
 
   "ExpertDeliveries.Tweak.Name": {
-    "en": "Expert Deliveries"
+    "en": "Expert Deliveries",
+    "zh": "筹备稀有品"
   },
   "ExpertDeliveries.Tweak.Description": {
     "en": "Always opens the \"Grand Company Delivery Missions\" window on the \"Expert Delivery\" tab.",
-    "de": "Öffnet immer das Fenster \"LIEFEREINSÄTZE\" mit dem Tab \"Experteneinsätze\"."
+    "de": "Öffnet immer das Fenster \"LIEFEREINSÄTZE\" mit dem Tab \"Experteneinsätze\".",
+    "zh": "始终打开“筹备任务”窗口的“筹备稀有品”标签页。"
   },
 
   "ForcedCutsceneMusic.Tweak.Name": {
-    "en": "Forced Cutscene Music"
+    "en": "Forced Cutscene Music",
+    "zh": "在过场动画中强制播放音乐"
   },
   "ForcedCutsceneMusic.Tweak.Description": {
     "en": "Auto-unmutes background music for most cutscenes.",
-    "de": "Schaltet die Hintergrundmusik für die meisten Zwischensequenzen automatisch an."
+    "de": "Schaltet die Hintergrundmusik für die meisten Zwischensequenzen automatisch an.",
+    "zh": "在大多数过场动画中自动解除背景音乐静音。"
   },
   "ForcedCutsceneMusic.Config.Restore.Label": {
     "en": "Restore mute state after cutscene",
-    "de": "Stummschaltung nach Cutscene wiederherstellen"
+    "de": "Stummschaltung nach Cutscene wiederherstellen",
+    "zh": "在过场动画后恢复静音状态。"
   },
 
   "GearSetGrid.Tweak.Name": {
-    "en": "Gear Set Grid"
+    "en": "Gear Set Grid",
+    "zh": "套装网格"
   },
   "GearSetGrid.Tweak.Description": {
     "en": "A window that displays a grid view of all the items of each gear set.",
-    "de": "Ein Fenster, das eine Übersicht aller Gegenstände jeder Ausrüstungssets anzeigt."
+    "de": "Ein Fenster, das eine Übersicht aller Gegenstände jeder Ausrüstungssets anzeigt.",
+    "zh": "一个以网格视图显示每个套装的所有物品的窗口。"
   },
   "GearSetGrid.Config.AutoOpenWithGearSetList.Label": {
     "en": "Auto-open/close with Gear Set List",
-    "de": "Automatisches Öffnen/Schließen mit Liste der Ausrüstungssets"
+    "de": "Automatisches Öffnen/Schließen mit Liste der Ausrüstungssets",
+    "zh": "随着套装列表自动打开/关闭"
   },
   "GearSetGrid.Config.RegisterCommand.Label": {
     "en": "Register /gsg command to toggle window",
-    "de": "Befehl /gsg zum Umschalten des Fensters registrieren"
+    "de": "Befehl /gsg zum Umschalten des Fensters registrieren",
+    "zh": "注册 /gsg 命令来开关窗口"
   },
   "GearSetGrid.CommandHandlerHelpMessage": {
     "en": "Opens the Gear Set Grid window",
-    "de": "Öffnet das Gear Set Grid-Fenster"
+    "de": "Öffnet das Gear Set Grid-Fenster",
+    "zh": "打开套装网格窗口"
   },
   "GearSetGrid.Config.ConvertSeparators.Label": {
     "en": "Convert separator gear set with spacing",
-    "de": "Umwandeln von Trenner-Ausrüstungssets"
+    "de": "Umwandeln von Trenner-Ausrüstungssets",
+    "zh": "用空行替换分隔符套装"
   },
   "GearSetGrid.Config.ConvertSeparators.Description": {
     "en": "When using separator gear sets (e.g. a gearset with name ===========) this option automatically converts it into spacing between rows (in the Gear Set Grid).",
-    "de": "Bei der Verwendung von Trenner-Ausrüstungssets (z.B. ein Ausrüstungsset mit dem Namen ===========) wird dieser mit dieser Option automatisch in Zeilenabstände (im Gear Set Grid) umgewandelt."
+    "de": "Bei der Verwendung von Trenner-Ausrüstungssets (z.B. ein Ausrüstungsset mit dem Namen ===========) wird dieser mit dieser Option automatisch in Zeilenabstände (im Gear Set Grid) umgewandelt.",
+    "zh": "当使用分隔符套装（例如，一个叫 =========== 的套装），这个选项会自动将其转化为空行（在套装网格中）。"
   },
   "GearSetGrid.Config.SeparatorFilter.Label": {
     "en": "Gear set name of the separator",
-    "de": "Name der Trenner-Ausrüstungssets"
+    "de": "Name der Trenner-Ausrüstungssets",
+    "zh": "分隔符套装名称"
   },
   "GearSetGrid.Config.DisableSeparatorSpacing.Label": {
     "en": "Completely disable spacing",
-    "de": "Abstand komplett deaktivieren"
+    "de": "Abstand komplett deaktivieren",
+    "zh": "彻底禁用空行"
   },
   "GearSetGridWindow.Title": {
-    "en": "[HaselTweaks] Gear Set Grid"
+    "en": "[HaselTweaks] Gear Set Grid",
+    "zh": "[HaselTweaks] 套装网格"
   },
   "GearSetGridWindow.ItemTooltip.LabelGlamour": {
     "en": "Glamour:",
-    "de": "Projektion:"
+    "de": "Projektion:",
+    "zh": "投影："
   },
   "GearSetGridWindow.ItemTooltip.LabelDye": {
     "en": "Dye:",
-    "de": "Färbung:"
+    "de": "Färbung:",
+    "zh": "染色："
   },
   "GearSetGridWindow.ItemTooltip.AlsoUsedInTheseGearsets": {
     "en": "Also used in these Gearsets:",
     "de": "Wird auch in diesen Ausrüstungssets benutzt:",
     "fr": "Aussi utilisé dans ces ensembles d'équipement :",
-    "ja": "これらのギアセットでも使用されます："
+    "ja": "これらのギアセットでも使用されます：",
+    "zh": "也在这些套装中使用："
   },
 
   "GlamourDresserArmoireAlert.Tweak.Name": {
-    "en": "Glamour Dresser Armoire Alert"
+    "en": "Glamour Dresser Armoire Alert",
+    "zh": "投影台物品可放入收藏柜警报"
   },
   "GlamourDresserArmoireAlert.Tweak.Description": {
     "en": "Opens a small window next to the Glamour Dresser with a list of items that can be stored in the Armoire (only visible if qualified items were found).",
-    "de": "Öffnet ein kleines Fenster neben der Projektionskommode mit einer Liste von Gegenständen, die im Kostbarkeitenkabinett aufbewahrt werden können (nur sichtbar, wenn qualifizierte Gegenstände gefunden wurden)."
+    "de": "Öffnet ein kleines Fenster neben der Projektionskommode mit einer Liste von Gegenständen, die im Kostbarkeitenkabinett aufbewahrt werden können (nur sichtbar, wenn qualifizierte Gegenstände gefunden wurden).",
+    "zh": "在投影台界面旁打开一个列出能被存储到收藏柜里的物品（仅显示存在的符合条件的物品）的小窗口。"
   },
   "GlamourDresserArmoireAlertWindow.Title": {
-    "en": "[HaselTweaks] Glamour Dresser Armoire Alert"
+    "en": "[HaselTweaks] Glamour Dresser Armoire Alert",
+    "zh": "[HaselTweaks] 投影台物品可放入收藏柜警报"
   },
   "GlamourDresserArmoireAlertWindow.Info": {
     "en": "These items can be stored in the Armoire!\nClick to restore item.",
-    "de": "Diese Gegenstände können im Kostbarkeitenkabinett aufbewahrt werden!\nAnklicken, um in Ausrüstung zurückzuverwandeln."
+    "de": "Diese Gegenstände können im Kostbarkeitenkabinett aufbewahrt werden!\nAnklicken, um in Ausrüstung zurückzuverwandeln.",
+    "zh": "这些物品可以被存储到收藏柜中！\n点击以重新存储物品。"
   },
 
   "HideMSQComplete.Tweak.Name": {
-    "en": "Hide MSQ Complete"
+    "en": "Hide MSQ Complete",
+    "zh": "隐藏主线向导"
   },
   "HideMSQComplete.Tweak.Description": {
     "en": "Hides the Main Scenario Guide when the MSQ is completed, but still displays Job quests.",
-    "de": "Blendet den Scenarioführer aus, wenn die MSQ abgeschlossen ist, zeigt aber weiterhin die Job-Quests an."
+    "de": "Blendet den Scenarioführer aus, wenn die MSQ abgeschlossen ist, zeigt aber weiterhin die Job-Quests an.",
+    "zh": "当主线任务全清后隐藏主线向导，但仍然显示职业任务。"
   },
 
   "KeepScreenAwake.Tweak.Name": {
-    "en": "Keep Screen Awake"
+    "en": "Keep Screen Awake",
+    "zh": "保持屏幕唤醒"
   },
   "KeepScreenAwake.Tweak.Description": {
     "en": "Prevents the screen from going into standby.",
-    "de": "Verhindert, dass der Bildschirm in den Standby-Modus wechselt."
+    "de": "Verhindert, dass der Bildschirm in den Standby-Modus wechselt.",
+    "zh": "阻止屏幕进入待机状态。"
   },
 
   "LockWindowPosition.Tweak.Name": {
-    "en": "Lock Window Position"
+    "en": "Lock Window Position",
+    "zh": "锁定窗口位置"
   },
   "LockWindowPosition.Tweak.Description": {
     "en": "Lock window positions so you can't move them accidentally anymore.",
-    "de": "Fensterpositionen sperren, damit du sie nicht mehr versehentlich verschiebst."
+    "de": "Fensterpositionen sperren, damit du sie nicht mehr versehentlich verschiebst.",
+    "zh": "锁定窗口位置以使你不再因为意外移动它们。"
   },
   "LockWindowPosition.LockPosition": {
     "en": "Lock Position",
     "de": "Position sperren",
     "fr": "Verrouiller la position",
-    "ja": "ポジションをロックする"
+    "ja": "ポジションをロックする",
+    "zh": "锁定位置"
   },
   "LockWindowPosition.UnlockPosition": {
     "en": "Unlock Position",
     "de": "Position entsperren",
     "fr": "Déverrouiller la position",
-    "ja": "ポジションのロック解除"
+    "ja": "ポジションのロック解除",
+    "zh": "解锁位置"
   },
   "LockWindowPosition.Config.Inverted.Label": {
     "en": "Invert logic (locks all windows)",
-    "de": "Logik invertieren (sperrt alle Fenster)"
+    "de": "Logik invertieren (sperrt alle Fenster)",
+    "zh": "反转逻辑（锁定所有窗口）"
   },
   "LockWindowPosition.Config.AddLockUnlockContextMenuEntries.Label": {
     "en": "Add Lock/Unlock Position to windows context menu",
-    "de": "Position sperren/entsperren zum Fenster-Kontextmenü hinzufügen"
+    "de": "Position sperren/entsperren zum Fenster-Kontextmenü hinzufügen",
+    "zh": "将锁定/解锁位置添加到窗口次级菜单"
   },
   "LockWindowPosition.Config.Windows.Title": {
     "en": "Windows:",
-    "de": "Fenster:"
+    "de": "Fenster:",
+    "zh": "窗口："
   },
   "LockWindowPosition.Config.EnableCheckmark.Tooltip.Locked": {
     "en": "Window is locked",
-    "de": "Fenster ist gesperrt"
+    "de": "Fenster ist gesperrt",
+    "zh": "窗口已锁定"
   },
   "LockWindowPosition.Config.EnableCheckmark.Tooltip.Unlocked": {
     "en": "Window is unlocked",
-    "de": "Fenster ist entsperrt"
+    "de": "Fenster ist entsperrt",
+    "zh": "窗口已解锁"
   },
   "LockWindowPosition.Config.DeleteButton.Tooltip": {
     "en": "Delete",
-    "de": "Löschen"
+    "de": "Löschen",
+    "zh": "删除"
   },
   "LockWindowPosition.Config.DeleteButton.Tooltip.HoldingShift": {
     "en": "Delete rule",
-    "de": "Regel löschen"
+    "de": "Regel löschen",
+    "zh": "删除规则"
   },
   "LockWindowPosition.Config.DeleteButton.Tooltip.NotHoldingShift": {
     "en": "Hold shift to delete rule",
-    "de": "Shift gedrückt halten, um die Regel zu löschen"
+    "de": "Shift gedrückt halten, um die Regel zu löschen",
+    "zh": "按住Shift以删除规则"
   },
   "LockWindowPosition.Config.DeleteButton.Tooltip.WindowNotFocused": {
     "en": "Focus window and hold shift to delete rule",
-    "de": "Fokussiere das Fenster und halte Shift gedrückt, um die Regel zu löschen"
+    "de": "Fokussiere das Fenster und halte Shift gedrückt, um die Regel zu löschen",
+    "zh": "聚焦窗口且按住Shift以删除规则"
   },
   "LockWindowPosition.Config.NoWindowsAddedYet": {
     "en": "No windows added yet.",
-    "de": "Bislang keine Fenster hinzugefügt."
+    "de": "Bislang keine Fenster hinzugefügt.",
+    "zh": "还未添加窗口。"
   },
   "LockWindowPosition.Config.Picker.CancelButton.Label": {
     "en": "Cancel",
-    "de": "Abbrechen"
+    "de": "Abbrechen",
+    "zh": "取消"
   },
   "LockWindowPosition.Config.Picker.PickWindowButton.Label": {
     "en": "Pick Window",
-    "de": "Fenster auswählen"
+    "de": "Fenster auswählen",
+    "zh": "选择窗口"
   },
   "LockWindowPosition.Config.Picker.ToggleAllButton.Label": {
     "en": "Toggle All",
-    "de": "Alle umschalten"
+    "de": "Alle umschalten",
+    "zh": "开关所有"
   },
 
   "MaterialAllocation.Tweak.Name": {
-    "en": "Material Allocation"
+    "en": "Material Allocation",
+    "zh": "预定消耗的材料"
   },
   "MaterialAllocation.Tweak.Description": {
     "en": "Enhances the Islekeep's Index \"Material Allocation\" window.",
-    "de": "Verbessert das INVENTUR-Fenster des Inselführers."
+    "de": "Verbessert das INVENTUR-Fenster des Inselführers.",
+    "zh": "增强监工小员选项中“指定开拓工坊的生产计划”窗口"
   },
   "MaterialAllocation.Config.SaveLastSelectedTab.Label": {
     "en": "Save last selected tab between game sessions",
-    "de": "Zuletzt ausgewählten Tab zwischen Spielsitzungen speichern"
+    "de": "Zuletzt ausgewählten Tab zwischen Spielsitzungen speichern",
+    "zh": "在游戏会话之间保存上次选择的标签页（？）"
   },
   "MaterialAllocation.Config.OpenGatheringLogOnItemClick.Label": {
     "en": "Open Sanctuary Gathering Log for gatherable items",
-    "de": "Öffne den Insel-Almanach für sammelbare Gegenstände"
+    "de": "Öffne den Insel-Almanach für sammelbare Gegenstände",
+    "zh": "为可采集物品打开开拓采集笔记"
   },
   "MaterialAllocation.ItemIsNotGatherable": {
     "en": "Item {0} is not gatherable.",
-    "de": "Der Gegenstand {0} ist nicht sammelbar."
+    "de": "Der Gegenstand {0} ist nicht sammelbar.",
+    "zh": "物品{0}无法采集"
   },
 
   "MinimapAdjustments.Tweak.Name": {
-    "en": "Minimap Adjustments"
+    "en": "Minimap Adjustments",
+    "zh": "小地图调整"
   },
   "MinimapAdjustments.Tweak.Description": {
     "en": "Mini changes for the Minimap. :)",
-    "de": "Kleine Änderungen für die Minimap :)"
+    "de": "Kleine Änderungen für die Minimap :)",
+    "zh": "对小地图的小调整。:)"
   },
   "MinimapAdjustments.Config.Square.Label": {
     "en": "Square Collision",
-    "de": "Quadratische Kollision"
+    "de": "Quadratische Kollision",
+    "zh": "方形小地图"
   },
   "MinimapAdjustments.Config.Square.Description": {
     "en": "Changes collision box to from round to square.",
-    "de": "Ändert die Kollisionsbox von rund auf quadratisch."
+    "de": "Ändert die Kollisionsbox von rund auf quadratisch.",
+    "zh": "将小地图从圆形改为方形"
   },
   "MinimapAdjustments.Config.DefaultOpacity.Label": {
     "en": "Default Opacity",
-    "de": "Standard-Deckkraft"
+    "de": "Standard-Deckkraft",
+    "zh": "默认的不透明度"
   },
   "MinimapAdjustments.Config.HoverOpacity.Label": {
     "en": "Hover Opacity",
-    "de": "Deckkraft beim Mausüberfahren"
+    "de": "Deckkraft beim Mausüberfahren",
+    "zh": "鼠标悬停时的不透明度"
   },
   "MinimapAdjustments.Config.HideCoords.Label": {
     "en": "Hide Coordinates",
-    "de": "Koordinaten ausblenden"
+    "de": "Koordinaten ausblenden",
+    "zh": "隐藏坐标"
   },
   "MinimapAdjustments.Config.CoordsVisibleOnHover.Label": {
     "en": "Visible on hover",
-    "de": "Sichtbar beim Mausüberfahren"
+    "de": "Sichtbar beim Mausüberfahren",
+    "zh": "鼠标悬停时可见"
   },
   "MinimapAdjustments.Config.HideWeather.Label": {
     "en": "Hide Weather",
-    "de": "Wetter ausblenden"
+    "de": "Wetter ausblenden",
+    "zh": "隐藏天气"
   },
   "MinimapAdjustments.Config.WeatherVisibleOnHover.Label": {
     "en": "Visible on hover",
-    "de": "Sichtbar beim Mausüberfahren"
+    "de": "Sichtbar beim Mausüberfahren",
+    "zh": "鼠标悬停时可见"
   },
   "MinimapAdjustments.Config.HideSun.Label": {
     "en": "Hide Time Indicator",
-    "de": "Zeitindikator ausblenden"
+    "de": "Zeitindikator ausblenden",
+    "zh": "隐藏时间指示器"
   },
   "MinimapAdjustments.Config.SunVisibleOnHover.Label": {
     "en": "Visible on hover",
-    "de": "Sichtbar beim Mausüberfahren"
+    "de": "Sichtbar beim Mausüberfahren",
+    "zh": "鼠标悬停时可见"
   },
   "MinimapAdjustments.Config.HideCardinalDirections.Label": {
     "en": "Hide Cardinal Directions",
-    "de": "Himmelsrichtungen ausblenden"
+    "de": "Himmelsrichtungen ausblenden",
+    "zh": "隐藏东南西北"
   },
   "MinimapAdjustments.Config.CardinalDirectionsVisibleOnHover.Label": {
     "en": "Visible on hover",
-    "de": "Sichtbar beim Mausüberfahren"
+    "de": "Sichtbar beim Mausüberfahren",
+    "zh": "鼠标悬停时可见"
   },
 
   "PortraitHelper.Tweak.Name": {
-    "en": "Portrait Helper"
+    "en": "Portrait Helper",
+    "zh": "肖像助手"
   },
   "PortraitHelper.Tweak.Description": {
     "en": "A helper for editing portraits.",
-    "de": "Ein Assistent für die Bearbeitung von Porträts."
+    "de": "Ein Assistent für die Bearbeitung von Porträts.",
+    "zh": "一个编辑肖像的助手"
   },
   "PortraitHelper.GearChecksumMismatch": {
     "en": "Current appearance and/or gear does not match that shown in portrait.",
     "de": "Momentan angelegte Ausrüstung und Aussehen weichen vom Portrait ab.",
     "fr": "La tenue que vous portez ou votre apparence ne correspondent pas à celles de votre portrait instantané.",
-    "ja": "現在の外見や装備がポートレートと一致していません。"
+    "ja": "現在の外見や装備がポートレートと一致していません。",
+    "zh": "当前外观或装备与肖像中显示的不匹配。"
   },
   "PortraitHelper.Config.EmbedPresetStringInThumbnails.Label": {
     "en": "Embed preset codes in thumbnails",
-    "de": "Vorlagen-Code in Vorschaubilder einbetten"
+    "de": "Vorlagen-Code in Vorschaubilder einbetten",
+    "zh": "在缩略图中内置预设代码"
   },
   "PortraitHelper.Config.EmbedPresetStringInThumbnails.Description": {
     "en": "The preset code, which is also used for clipboard import/export, is written to the Exif metadata as a UserComment.",
-    "de": "Der Vorlagen-Code, der auch für den Import/Export der Zwischenablage verwendet wird, wird als UserComment in die Exif-Metadaten geschrieben."
+    "de": "Der Vorlagen-Code, der auch für den Import/Export der Zwischenablage verwendet wird, wird als UserComment in die Exif-Metadaten geschrieben.",
+    "zh": "预设代码（用于剪贴板导入/导出）也作为用户注解写入Exif元数据。"
   },
   "PortraitHelper.Config.NotifyGearChecksumMismatch.Label": {
     "en": "Notify if appearance and/or gear doesn't match Portait",
-    "de": "Bei Abweichungen von Aussehen oder Ausrüstung benachrichtigen"
+    "de": "Bei Abweichungen von Aussehen oder Ausrüstung benachrichtigen",
+    "zh": "当外观或装备与肖像不匹配时发送通知"
   },
   "PortraitHelper.Config.NotifyGearChecksumMismatch.Description": {
     "en": "Prints a notification in chat which can be clicked to open the Portrait Editor.",
-    "de": "Zeigt eine Benachrichtigung im Chat an, die angeklickt werden kann, um den Portrait-Editor zu öffnen."
+    "de": "Zeigt eine Benachrichtigung im Chat an, die angeklickt werden kann, um den Portrait-Editor zu öffnen.",
+    "zh": "在聊天栏中发从一条可以点击以打开肖像编辑器的通知。"
   },
   "PortraitHelper.Config.ReequipGearsetOnUpdate.Label": {
     "en": "Automatically re-equip gear set to re-apply glamour plate",
-    "de": "Automatisch das Set neu ausrüsten, um die Projektionsplatte anzuwenden"
+    "de": "Automatisch das Set neu ausrüsten, um die Projektionsplatte anzuwenden",
+    "zh": "自动重新装备套装以重新应用投影模板"
   },
   "PortraitHelper.Config.ReequipGearsetOnUpdate.Description": {
     "en": "Works only if the following criteria are met:\n- The gear set has a glamour plate linked.\n- You are in a place where glamour plates are allowed to be applied.\n- The glamour plate covers the slot(s) that caused the mismatch.\n- The mismatch was not caused by mainhand/headgear visibility or visor state.",
-    "de": "Funktioniert nur, wenn folgende Kriterien erfüllt sind:\n- Das Ausrüstungsset ist mit einer Projektionsplatte verknüpft.\n- Du befindest dich in einer Zone, in der es erlaubt ist Projektionsplatten anzuwenden.\n- Die Projektionsplatte deckt die Slots ab, die die fehlerhafte Prüfsumme verursachten.\n- Die fehlerhafte Prüfsumme wurde nicht durch die Sichtbarkeit der Haupthand/Kopfbedeckung oder den Zustand des Visiers verursacht."
+    "de": "Funktioniert nur, wenn folgende Kriterien erfüllt sind:\n- Das Ausrüstungsset ist mit einer Projektionsplatte verknüpft.\n- Du befindest dich in einer Zone, in der es erlaubt ist Projektionsplatten anzuwenden.\n- Die Projektionsplatte deckt die Slots ab, die die fehlerhafte Prüfsumme verursachten.\n- Die fehlerhafte Prüfsumme wurde nicht durch die Sichtbarkeit der Haupthand/Kopfbedeckung oder den Zustand des Visiers verursacht.",
+    "zh": "仅在满足以下条件时才有效:\n- 套装有关联的投影模板。\n- 你在一个能够使用投影模板的地方。\n- 不匹配是由投影模板覆盖导致的。\n- 不匹配不是由主手/头部可见或头部装备状态引起的。"
   },
   "PortraitHelper.Config.AutoUpdatePotraitOnGearUpdate.Label": {
     "en": "Automatically update portrait",
-    "de": "Automatisch das Portrait aktualisieren"
+    "de": "Automatisch das Portrait aktualisieren",
+    "zh": "自动更新肖像"
   },
   "PortraitHelper.Config.AutoUpdatePotraitOnGearUpdate.Description": {
     "en": "Only works for gear sets that are not linked with a glamour plate.",
-    "de": "Funktioniert nur mit Ausrüstungssets, die nicht mit einer Projektionsplatte verknüpft sind."
+    "de": "Funktioniert nur mit Ausrüstungssets, die nicht mit einer Projektionsplatte verknüpft sind.",
+    "zh": "仅在套装没有关联投影模板时有效。"
   },
   "PortraitHelperWindows.CreatePresetDialog.Title": {
     "en": "Save as Preset",
-    "de": "Als Vorlage speichern"
+    "de": "Als Vorlage speichern",
+    "zh": "作为预设保存"
   },
   "PortraitHelperWindows.CreatePresetDialog.Name.Label": {
     "en": "Name for the new preset:",
-    "de": "Name für die neue Vorlage:"
+    "de": "Name für die neue Vorlage:",
+    "zh": "新预设的名称："
   },
   "PortraitHelperWindows.CreatePresetDialog.Tags.Label": {
     "en": "Select Tags (optional):",
-    "de": "Tags auswählen (optional):"
+    "de": "Tags auswählen (optional):",
+    "zh": "选择标签（可选）："
   },
   "PortraitHelperWindows.CreatePresetDialog.Tags.None": {
     "en": "None",
-    "de": "Kein Tag"
+    "de": "Kein Tag",
+    "zh": "无"
   },
   "PortraitHelperWindows.CreateTagDialog.Title": {
     "en": "Create Tag",
-    "de": "Tag erstellen"
+    "de": "Tag erstellen",
+    "zh": "创建标签"
   },
   "PortraitHelperWindows.CreateTagDialog.Name.Label": {
     "en": "Name for the new tag:",
-    "de": "Name für den neuen Tag:"
+    "de": "Name für den neuen Tag:",
+    "zh": "新标签的名称："
   },
   "PortraitHelperWindows.DeletePresetDialog.Title": {
     "en": "Delete Preset",
-    "de": "Vorlage löschen"
+    "de": "Vorlage löschen",
+    "zh": "删除预设"
   },
   "PortraitHelperWindows.DeletePresetDialog.Prompt": {
     "en": "Do you really want to delete the preset \"{0}\"?",
-    "de": "Möchtest du wirklich die Vorlage \"{0}\" löschen?"
+    "de": "Möchtest du wirklich die Vorlage \"{0}\" löschen?",
+    "zh": "你真的要删除预设“{0}”吗？"
   },
   "PortraitHelperWindows.DeleteTagDialog.Title": {
     "en": "Delete Tag",
-    "de": "Tag löschen"
+    "de": "Tag löschen",
+    "zh": "删除标签"
   },
   "PortraitHelperWindows.DeleteTagDialog.Prompt": {
     "en": "Do you really want to delete the tag \"{0}\"?",
-    "de": "Möchtest du wirklich den Tag \"{0}\" löschen?"
+    "de": "Möchtest du wirklich den Tag \"{0}\" löschen?",
+    "zh": "你真的要删除标签“{0}”吗？"
   },
   "PortraitHelperWindows.DeleteTagDialog.DeletePortraitsToo.Label": {
     "en": "Delete portraits too",
-    "de": "Portraits auch löschen"
+    "de": "Portraits auch löschen",
+    "zh": "同时删除肖像"
   },
   "PortraitHelperWindows.EditPresetDialog.Title": {
     "en": "Edit Preset",
-    "de": "Vorlage bearbeiten"
+    "de": "Vorlage bearbeiten",
+    "zh": "编辑预设"
   },
   "PortraitHelperWindows.EditPresetDialog.Name.Label": {
-    "en": "Name:"
+    "en": "Name:",
+    "zh": "名称："
   },
   "PortraitHelperWindows.EditPresetDialog.Tags.Label": {
-    "en": "Tags:"
+    "en": "Tags:",
+    "zh": "标签："
   },
   "PortraitHelperWindows.EditPresetDialog.Tags.None": {
     "en": "None",
-    "de": "Kein Tag"
+    "de": "Kein Tag",
+    "zh": "无"
   },
   "PortraitHelperWindows.RenameTagDialog.Title": {
     "en": "Rename Tag",
-    "de": "Tag umbenennen"
+    "de": "Tag umbenennen",
+    "zh": "重命名标签"
   },
   "PortraitHelperWindows.RenameTagDialog.Name.Label": {
     "en": "Enter a new name for tag \"{0}\":",
-    "de": "Neuer Name für den Tag \"{0}\":"
+    "de": "Neuer Name für den Tag \"{0}\":",
+    "zh": "为标签“{0}”输入一个新名称："
   },
   "PortraitHelperWindows.AdvancedEditOverlay.Title": {
     "en": "[HaselTweaks] Portrait Helper: Advanced Edit",
-    "de": "[HaselTweaks] Portrait Helper: Erweiterte Bearbeitung"
+    "de": "[HaselTweaks] Portrait Helper: Erweiterte Bearbeitung",
+    "zh": "[HaselTweaks] 肖像助手：高级编辑"
   },
   "PortraitHelperWindows.AdvancedEditOverlay.Title.Inner": {
     "en": "Advanced Edit Mode",
-    "de": "Erweiterter Bearbeitungsmodus"
+    "de": "Erweiterter Bearbeitungsmodus",
+    "zh": "高级编辑模式"
   },
   "PortraitHelperWindows.Setting.CameraYaw.Label": {
     "en": "Camera Yaw",
-    "de": "Kamera-Gierachse"
+    "de": "Kamera-Gierachse",
+    "zh": "相机水平角度"
   },
   "PortraitHelperWindows.Setting.CameraYaw.Tooltip": {
     "en": "Rotation around the z-axis",
-    "de": "Rotation um die Z-Achse"
+    "de": "Rotation um die Z-Achse",
+    "zh": "绕Z轴旋转"
   },
   "PortraitHelperWindows.Setting.CameraPitch.Label": {
     "en": "Camera Pitch",
-    "de": "Kamera-Querachse"
+    "de": "Kamera-Querachse",
+    "zh": "相机垂直角度"
   },
   "PortraitHelperWindows.Setting.CameraPitch.Tooltip": {
     "en": "Rotation around the y-axis",
-    "de": "Rotation um die Y-Achse"
+    "de": "Rotation um die Y-Achse",
+    "zh": "绕Y轴旋转"
   },
   "PortraitHelperWindows.Setting.CameraDistance.Label": {
     "en": "Camera Distance",
-    "de": "Kameradistanz"
+    "de": "Kameradistanz",
+    "zh": "相机距离"
   },
   "PortraitHelperWindows.Setting.CameraTarget.Label": {
     "en": "Camera Target",
-    "de": "Kamera-Zielpunkt"
+    "de": "Kamera-Zielpunkt",
+    "zh": "目标位置"
   },
   "PortraitHelperWindows.Setting.ZoomRotation.Label": {
     "en": "Zoom and Rotation",
-    "de": "Zoom & Rotation"
+    "de": "Zoom & Rotation",
+    "zh": "缩放和旋转"
   },
   "PortraitHelperWindows.Setting.EyeDirection.Label": {
     "en": "Eye Direction",
-    "de": "Blickrichtung"
+    "de": "Blickrichtung",
+    "zh": "眼睛方向"
   },
   "PortraitHelperWindows.Setting.HeadDirection.Label": {
     "en": "Head Direction",
-    "de": "Kopfdrehung"
+    "de": "Kopfdrehung",
+    "zh": "头部方向"
   },
   "PortraitHelperWindows.Setting.AnimationTimestamp.Label": {
     "en": "Animation Timestamp",
-    "de": "Animationszeitstempel"
+    "de": "Animationszeitstempel",
+    "zh": "动画时间戳"
   },
   "PortraitHelperWindows.Setting.AnimationTimestamp.ValueFormat": {
     "en": "{0:0.000}"
   },
   "PortraitHelperWindows.AdvancedEditOverlay.Note.Label": {
     "en": "Please note:",
-    "de": "Bitte beachte:"
+    "de": "Bitte beachte:",
+    "zh": "请注意："
   },
   "PortraitHelperWindows.AdvancedEditOverlay.Note.Text": {
     "en": "The game may verify the values on setting them and/or saving the portrait. If possible, it will automatically adjust them so that they are within a valid range. If not, it will throw an error and you have to fix the values yourself. In any case, if the game adjusts the values, the adjusted values will not be reflected here unless you reopen the window.",
-    "de": "Das Spiel kann die Werte beim Einstellen und/oder Speichern des Porträts überprüfen. Wenn möglich, wird es sie automatisch anpassen, so dass sie in einem gültigen Bereich liegen. Wenn nicht, gibt es eine Fehlermeldung aus und du musst die Werte selbst korrigieren. Wie auch immer, wenn das Spiel die Werte anpasst, werden die angepassten Werte hier nicht angezeigt bis das Fenster neu geöffnet wird."
+    "de": "Das Spiel kann die Werte beim Einstellen und/oder Speichern des Porträts überprüfen. Wenn möglich, wird es sie automatisch anpassen, so dass sie in einem gültigen Bereich liegen. Wenn nicht, gibt es eine Fehlermeldung aus und du musst die Werte selbst korrigieren. Wie auch immer, wenn das Spiel die Werte anpasst, werden die angepassten Werte hier nicht angezeigt bis das Fenster neu geöffnet wird.",
+    "zh": "游戏可能会在保存肖像或设置这些值时验证它们。如果可能，将自动调整它们，使它们处于有效范围内。如果不能，它将抛出一个错误，你必须自己调整这些值。不论何时，如果游戏调整了值，调整后的值不会在这里显示，除非你重新打开窗口。"
   },
   "PortraitHelperWindows.AdvancedImportOverlay.Title": {
     "en": "[HaselTweaks] Portrait Helper: Advanced Import",
-    "de": "[HaselTweaks] Portrait Helper: Erweiterter Import"
+    "de": "[HaselTweaks] Portrait Helper: Erweiterter Import",
+    "zh": "[HaselTweaks] 肖像助手：高级导入"
   },
   "PortraitHelperWindows.AdvancedImportOverlay.ImportSelectedSettingsButton.Label": {
     "en": "Import Selected Settings",
-    "de": "Ausgewählte Einstellungen importieren"
+    "de": "Ausgewählte Einstellungen importieren",
+    "zh": "导入选中的设置"
   },
   "PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked": {
     "en": "Not unlocked",
-    "de": "Nicht freigeschaltet"
+    "de": "Nicht freigeschaltet",
+    "zh": "未解锁"
   },
   "PortraitHelperWindows.AdvancedImportOverlay.ColorInput.R": {
     "en": "R:"
@@ -1156,329 +1426,409 @@
   },
   "PortraitHelperWindows.AlignmentToolSettingsOverlay.Title": {
     "en": "[HaselTweaks] Portrait Helper: Alignment Tool Settings",
-    "de": "[HaselTweaks] Portrait Helper: Einstellungen des Ausrichtungswerkzeugs"
+    "de": "[HaselTweaks] Portrait Helper: Einstellungen des Ausrichtungswerkzeugs",
+    "zh": "[HaselTweaks] 肖像助手：辅助线设置"
   },
   "PortraitHelperWindows.AlignmentToolSettingsOverlay.Title.Inner": {
     "en": "Alignment Tool Settings",
-    "de": "Einstellungen des Ausrichtungswerkzeugs"
+    "de": "Einstellungen des Ausrichtungswerkzeugs",
+    "zh": "辅助线设置"
   },
   "PortraitHelperWindows.AlignmentToolSettingsOverlay.ShowAlignmentTool.Label": {
     "en": "Enable",
-    "de": "Aktivieren"
+    "de": "Aktivieren",
+    "zh": "启用"
   },
   "PortraitHelperWindows.AlignmentToolSettingsOverlay.VerticalLines.Label": {
     "en": "Vertical Lines",
-    "de": "Senkrechte Linien"
+    "de": "Senkrechte Linien",
+    "zh": "垂线"
   },
   "PortraitHelperWindows.AlignmentToolSettingsOverlay.HorizontalLines.Label": {
     "en": "Horizontal Lines",
-    "de": "Waagerechte Linien"
+    "de": "Waagerechte Linien",
+    "zh": "水平线"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.Title": {
     "en": "[HaselTweaks] Portrait Helper: Preset Browser",
-    "de": "[HaselTweaks] Portrait Helper: Vorlagen-Browser"
+    "de": "[HaselTweaks] Portrait Helper: Vorlagen-Browser",
+    "zh": "[HaselTweaks] 肖像助手：预设浏览器"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip": {
     "en": "Moving \"{0}\"",
-    "de": "Verschiebe \"{0}\""
+    "de": "Verschiebe \"{0}\"",
+    "zh": "移动“{0}”"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label": {
     "en": "Create Tag",
-    "de": "Tag erstellen"
+    "de": "Tag erstellen",
+    "zh": "创建标签"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RenameTag.Label": {
     "en": "Rename Tag",
-    "de": "Tag umbenennen"
+    "de": "Tag umbenennen",
+    "zh": "重命名标签"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveTag.Label": {
     "en": "Remove Tag",
-    "de": "Tag löschen"
+    "de": "Tag löschen",
+    "zh": "移除标签"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label": {
     "en": "Remove unused Tags",
-    "de": "Ungenutzte Tags löschen"
+    "de": "Ungenutzte Tags löschen",
+    "zh": "移除未使用的标签"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Tags.Title": {
-    "en": "Tags"
+    "en": "Tags",
+    "zh": "标签"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.Sidebar.AllTags.Title": {
     "en": "All ({0})",
-    "de": "Alle ({0})"
+    "de": "Alle ({0})",
+    "zh": "所有（{0}）"
   },
   "PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Presets.Title": {
     "en": "Presets",
-    "de": "Vorlagen"
+    "de": "Vorlagen",
+    "zh": "预设"
   },
   "PortraitHelperWindows.MenuBar.Initializing": {
     "en": "Initializing...",
-    "de": "Initialisieren..."
+    "de": "Initialisieren...",
+    "zh": "正在初始化..."
   },
   "PortraitHelperWindows.MenuBar.ExportToClipboard.Label": {
     "en": "Export to Clipboard",
-    "de": "In Zwischenablage exportieren"
+    "de": "In Zwischenablage exportieren",
+    "zh": "导出到剪贴板"
   },
   "PortraitHelperWindows.MenuBar.ImportFromClipboard.Label": {
     "en": "Import from Clipboard",
-    "de": "Aus der Zwischenablage importieren"
+    "de": "Aus der Zwischenablage importieren",
+    "zh": "从剪贴板导入"
   },
   "PortraitHelperWindows.MenuBar.ImportFromClipboardAllSettings.Label": {
     "en": "Import from Clipboard (All Settings)",
-    "de": "Importieren aus der Zwischenablage (Alle Einstellungen)"
+    "de": "Importieren aus der Zwischenablage (Alle Einstellungen)",
+    "zh": "从剪贴板导入（所有设置）"
   },
   "PortraitHelperWindows.MenuBar.ToggleAdvancedImportMode.Label": {
     "en": "Toggle Advanced Import Mode",
-    "de": "Erweiterten Importmodus umschalten"
+    "de": "Erweiterten Importmodus umschalten",
+    "zh": "开关高级导入模式"
   },
   "PortraitHelperWindows.MenuBar.ToggleAdvancedEditMode.Label": {
     "en": "Toggle Advanced Edit Mode",
-    "de": "Erweiterten Bearbeitungsmodus umschalten"
+    "de": "Erweiterten Bearbeitungsmodus umschalten",
+    "zh": "开关高级编辑模式"
   },
   "PortraitHelperWindows.MenuBar.SaveAsPreset.Label": {
     "en": "Save as Preset",
-    "de": "Als Vorlage speichern"
+    "de": "Als Vorlage speichern",
+    "zh": "作为预设保存"
   },
   "PortraitHelperWindows.MenuBar.TogglePresetBrowser.Label": {
     "en": "Toggle Preset Browser",
-    "de": "Vorlagen-Browser umschalten"
+    "de": "Vorlagen-Browser umschalten",
+    "zh": "开关预设浏览器"
   },
   "PortraitHelperWindows.MenuBar.ToggleAlignmentTool.Label.CloseSettings": {
     "en": "Toggle Alignment Tool\nShift: Close Settings",
-    "de": "Ausrichtungswerkzeug umschalten\nShift: Einstellungen schließen"
+    "de": "Ausrichtungswerkzeug umschalten\nShift: Einstellungen schließen",
+    "zh": "开关辅助线\nShift：关闭设置"
   },
   "PortraitHelperWindows.MenuBar.ToggleAlignmentTool.Label.OpenSettings": {
     "en": "Toggle Alignment Tool\nShift: Open Settings",
-    "de": "Ausrichtungswerkzeug umschalten\nShift: Einstellungen öffnen"
+    "de": "Ausrichtungswerkzeug umschalten\nShift: Einstellungen öffnen",
+    "zh": "开关辅助线\nShift：打开设置"
   },
   "PortraitHelperWindows.PresetCard.MovingPresetCard.Tooltip": {
     "en": "Moving \"{0}\"",
-    "de": "Verschiebe \"{0}\""
+    "de": "Verschiebe \"{0}\"",
+    "zh": "移动“{0}”"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.LoadPreset.Label": {
     "en": "Load Preset",
-    "de": "Vorlage laden"
+    "de": "Vorlage laden",
+    "zh": "载入预设"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.EditPreset.Label": {
     "en": "Edit Preset",
-    "de": "Vorlage bearbeiten"
+    "de": "Vorlage bearbeiten",
+    "zh": "编辑预设"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.DeletePreset.Label": {
     "en": "Delete Preset",
-    "de": "Vorlage löschen"
+    "de": "Vorlage löschen",
+    "zh": "删除预设"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.ExportToClipboard.Label": {
     "en": "Export to Clipboard",
-    "de": "In Zwischenablage exportieren"
+    "de": "In Zwischenablage exportieren",
+    "zh": "导出到剪贴板"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Label": {
     "en": "Copy Image",
-    "de": "Bild kopieren"
+    "de": "Bild kopieren",
+    "zh": "复制图片"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Everything.Label": {
     "en": "Everything",
-    "de": "Alles"
+    "de": "Alles",
+    "zh": "所有"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrame.Label": {
     "en": "Without Frame",
-    "de": "Ohne Rahmen"
+    "de": "Ohne Rahmen",
+    "zh": "不包括边框"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutDecoration.Label": {
     "en": "Without Decoration",
-    "de": "Ohne Verzierung"
+    "de": "Ohne Verzierung",
+    "zh": "不包括装饰物"
   },
   "PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrameAndDecoration.Label": {
     "en": "Without Frame and Decoration",
-    "de": "Ohne Rahmen und Verzierung"
+    "de": "Ohne Rahmen und Verzierung",
+    "zh": "不包括边框和装饰物"
   },
   "PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.Title": {
     "en": "The following elements will not be applied:",
-    "de": "Folgende Elemente werden nicht übernommen:"
+    "de": "Folgende Elemente werden nicht übernommen:",
+    "zh": "以下元素将不会被应用："
   },
   "PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.PoseNotUnlocked": {
     "en": "Pose \"{0}\" not unlocked",
-    "de": "Pose \"{0}\" nicht freigeschaltet"
+    "de": "Pose \"{0}\" nicht freigeschaltet",
+    "zh": "动作“{0}”未解锁"
   },
   "PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.BackgroundNotUnlocked": {
     "en": "Background \"{0}\" not unlocked",
-    "de": "Hintergrund \"{0}\" nicht freigeschaltet"
+    "de": "Hintergrund \"{0}\" nicht freigeschaltet",
+    "zh": "背景“{0}”未解锁"
   },
   "PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.FrameNotUnlocked": {
     "en": "Frame \"{0}\" not unlocked",
-    "de": "Rahmen \"{0}\" nicht freigeschaltet"
+    "de": "Rahmen \"{0}\" nicht freigeschaltet",
+    "zh": "边框“{0}”未解锁"
   },
   "PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.DecorationNotUnlocked": {
     "en": "Accent \"{0}\" not unlocked",
-    "de": "Verzierung \"{0}\" nicht freigeschaltet"
+    "de": "Verzierung \"{0}\" nicht freigeschaltet",
+    "zh": "不包括边框和装饰物"
   },
 
   "RevealDutyRequirements.Tweak.Name": {
-    "en": "Reveal Duty Requirements"
+    "en": "Reveal Duty Requirements",
+    "zh": "揭示任务需求"
   },
   "RevealDutyRequirements.Tweak.Description": {
     "en": "Reveals duty names in duty finder, which were shown as \"???\". Useful for unlocking Mentor roulette.",
-    "de": "Zeigt die Namen der Inhalte in der Inhaltssuche an, die als \"???\" angezeigt werden. Nützlich zum Freischalten des Mentor-Roulettes."
+    "de": "Zeigt die Namen der Inhalte in der Inhaltssuche an, die als \"???\" angezeigt werden. Nützlich zum Freischalten des Mentor-Roulettes.",
+    "zh": "揭示任务搜索器中显示为“？？？”的任务的名称。解锁导随用的。"
   },
 
   "SaferItemSearch.Tweak.Name": {
-    "en": "Safer Market Board Price Check"
+    "en": "Safer Market Board Price Check",
+    "zh": "更安全的市场布告板价格检查"
   },
   "SaferItemSearch.Tweak.Description": {
     "en": "Prevents you from checking market board prices while a request is running.",
-    "de": "Verhindert die Marktpreisprüfung während eine Anfrage läuft."
+    "de": "Verhindert die Marktpreisprüfung während eine Anfrage läuft.",
+    "zh": "防止你在一个请求运行时再次在市场布告板上查看价格。"
   },
 
   "ScrollableTabs.Tweak.Name": {
-    "en": "Scrollable Tabs"
+    "en": "Scrollable Tabs",
+    "zh": "可滚动选项卡"
   },
   "ScrollableTabs.Tweak.Description": {
     "en": "Enables mouse wheel to switch tabs (like with LB/RB on controllers).",
-    "de": "Ermöglicht das Umschalten von Tabs mit dem Mausrad (wie mit LB/RB auf Controllern)."
+    "de": "Ermöglicht das Umschalten von Tabs mit dem Mausrad (wie mit LB/RB auf Controllern).",
+    "zh": "启用鼠标滚轮来切换标签页（就像使用手柄的LB/RB一样）。"
   },
   "ScrollableTabs.Config.Invert.Label": {
     "en": "Invert scroll behaviour",
-    "de": "Invertiertes Scrollverhalten"
+    "de": "Invertiertes Scrollverhalten",
+    "zh": "反转滚轮行为"
   },
   "ScrollableTabs.Config.HandleAetherCurrent.Label": {
     "en": "Enable in Aether Currents",
-    "de": "Aktiviere für Windätherquellen"
+    "de": "Aktiviere für Windätherquellen",
+    "zh": "在风脉泉窗口启用"
   },
   "ScrollableTabs.Config.HandleArmouryBoard.Label": {
     "en": "Enable in Armoury Chest",
-    "de": "Aktiviere für Arsenal"
+    "de": "Aktiviere für Arsenal",
+    "zh": "在兵装库窗口启用"
   },
   "ScrollableTabs.Config.HandleAOZNotebook.Label": {
     "en": "Enable in Blue Magic Spellbook",
-    "de": "Aktiviere für Zauberbuch der Blaumagie"
+    "de": "Aktiviere für Zauberbuch der Blaumagie",
+    "zh": "在青魔法书窗口启用"
   },
   "ScrollableTabs.Config.HandleCharacter.Label": {
     "en": "Enable in Character",
-    "de": "Aktiviere für Charakter"
+    "de": "Aktiviere für Charakter",
+    "zh": "在角色窗口启用"
   },
   "ScrollableTabs.Config.HandleCharacterClass.Label": {
     "en": "Enable in Character -> Classes/Jobs",
-    "de": "Aktiviere für Charakter -> Klassen/Jobs"
+    "de": "Aktiviere für Charakter -> Klassen/Jobs",
+    "zh": "在角色->职业&特职窗口启用"
   },
   "ScrollableTabs.Config.HandleCharacterRepute.Label": {
     "en": "Enable in Character -> Reputation",
-    "de": "Aktiviere für Charakter -> Ansehen"
+    "de": "Aktiviere für Charakter -> Ansehen",
+    "zh": "在 角色->评价窗口启用"
   },
   "ScrollableTabs.Config.HandleInventoryBuddy.Label": {
     "en": "Enable in Chocobo Saddlebag",
-    "de": "Aktiviere für Chocobo-Satteltasche"
+    "de": "Aktiviere für Chocobo-Satteltasche",
+    "zh": "在陆行鸟鞍囊窗口启用"
   },
   "ScrollableTabs.Config.HandleInventoryBuddy.Description": {
     "en": "The second tab requires a subscription to the Companion Premium Service",
-    "de": "Der zweite Tab benötigt ein Abonnement des Premium-Nutzungsplans in der Companion-App."
+    "de": "Der zweite Tab benötigt ein Abonnement des Premium-Nutzungsplans in der Companion-App.",
+    "zh": "第二页标签页需要开通陆行鸟鞍囊2服务"
   },
   "ScrollableTabs.Config.HandleBuddy.Label": {
     "en": "Enable in Companion",
-    "de": "Aktiviere für Mitstreiter"
+    "de": "Aktiviere für Mitstreiter",
+    "zh": "在搭档窗口启用"
   },
   "ScrollableTabs.Config.HandleCurrency.Label": {
     "en": "Enable in Currency",
-    "de": "Aktiviere für Vermögen"
+    "de": "Aktiviere für Vermögen",
+    "zh": "在货币一览窗口启用"
   },
   "ScrollableTabs.Config.HandleOrnamentNoteBook.Label": {
     "en": "Enable in Fashion Accessories",
-    "de": "Aktiviere für Modeaccessoires"
+    "de": "Aktiviere für Modeaccessoires",
+    "zh": "在时尚配饰窗口启用"
   },
   "ScrollableTabs.Config.HandleFieldRecord.Label": {
     "en": "Enable in Field Records",
-    "de": "Aktiviere für Frontbericht"
+    "de": "Aktiviere für Frontbericht",
+    "zh": "在战果记录窗口启用"
   },
   "ScrollableTabs.Config.HandleFishGuide.Label": {
     "en": "Enable in Fish Guide",
-    "de": "Aktiviere für Fischverzeichnis"
+    "de": "Aktiviere für Fischverzeichnis",
+    "zh": "在鱼类图鉴窗口启用"
   },
   "ScrollableTabs.Config.HandleMiragePrismPrismBox.Label": {
     "en": "Enable in Glamour Dresser",
-    "de": "Aktiviere für Projektionskommode"
+    "de": "Aktiviere für Projektionskommode",
+    "zh": "在投影台窗口启用"
   },
   "ScrollableTabs.Config.HandleMiragePrismPrismBox.Description": {
     "en": "Scrolls pages, not tabs.",
-    "de": "Blättert durch Seiten, nicht durch Tabs."
+    "de": "Blättert durch Seiten, nicht durch Tabs.",
+    "zh": "滚动页面，而非标签页。"
   },
   "ScrollableTabs.Config.HandleGoldSaucerCardList.Label": {
     "en": "Enable in Gold Saucer -> Card List",
-    "de": "Aktiviere für Gold Saucer -> Karten"
+    "de": "Aktiviere für Gold Saucer -> Karten",
+    "zh": "在金碟游乐场->幻卡列表窗口启用"
   },
   "ScrollableTabs.Config.HandleGoldSaucerCardDeckEdit.Label": {
     "en": "Enable in Gold Saucer -> Decks -> Edit Deck",
-    "de": "Aktiviere für Gold Saucer -> Decks -> Deck ändern"
+    "de": "Aktiviere für Gold Saucer -> Decks -> Deck ändern",
+    "zh": "在金碟游乐场->卡组->编辑卡组窗口启用"
   },
   "ScrollableTabs.Config.HandleLovmPaletteEdit.Label": {
     "en": "Enable in Gold Saucer -> Lord of Verminion -> Minion Hotbar",
-    "de": "Aktiviere für Gold Saucer -> Trabanten -> Kommandomenü bearbeiten"
+    "de": "Aktiviere für Gold Saucer -> Trabanten -> Kommandomenü bearbeiten",
+    "zh": "在金碟游乐场->萌宠之王->宠物热键栏窗口启用"
   },
   "ScrollableTabs.Config.HandleInventory.Label": {
     "en": "Enable in Inventory",
-    "de": "Aktiviere für Inventar"
+    "de": "Aktiviere für Inventar",
+    "zh": "在物品栏窗口启用"
   },
   "ScrollableTabs.Config.HandleMJIMinionNoteBook.Label": {
     "en": "Enable in Island Minion Guide",
-    "de": "Aktiviere für Domizil verwalten"
+    "de": "Aktiviere für Domizil verwalten",
+    "zh": "在岛内宠物列表窗口启用"
   },
   "ScrollableTabs.Config.HandleMinionNoteBook.Label": {
     "en": "Enable in Minions",
-    "de": "Aktiviere für Begleiter-Verzeichnis"
+    "de": "Aktiviere für Begleiter-Verzeichnis",
+    "zh": "在宠物窗口启用"
   },
   "ScrollableTabs.Config.HandleMountNoteBook.Label": {
     "en": "Enable in Mounts",
-    "de": "Aktiviere für Reittier-Verzeichnis"
+    "de": "Aktiviere für Reittier-Verzeichnis",
+    "zh": "在坐骑窗口启用"
   },
   "ScrollableTabs.Config.HandleRetainer.Label": {
     "en": "Enable in Retainer Inventory",
-    "de": "Aktiviere für Gehilfeninventar"
+    "de": "Aktiviere für Gehilfeninventar",
+    "zh": "在雇员物品栏窗口启用"
   },
   "ScrollableTabs.Config.HandleFateProgress.Label": {
     "en": "Enable in Shared FATE",
-    "de": "Aktiviere für FATE-Fortschritt"
+    "de": "Aktiviere für FATE-Fortschritt",
+    "zh": "在危命任务完成度窗口启用"
   },
   "ScrollableTabs.Config.HandleAdventureNoteBook.Label": {
     "en": "Enable in Sightseeing Log",
-    "de": "Aktiviere für Eorzea Incognita"
+    "de": "Aktiviere für Eorzea Incognita",
+    "zh": "在探索笔记窗口启用"
   },
 
   "SearchTheMarkets.Tweak.Name": {
-    "en": "Search the markets"
+    "en": "Search the markets",
+    "zh": "搜索市场"
   },
   "SearchTheMarkets.Tweak.Description": {
     "en": "Adds an entry to item context menus that allows you to quickly search for the item on the market board. Only visible when market board is open!\n\nSupports context menus in the following windows:\n- Chat\n- Crafting Log\n- Ehcatl Nine Delivery Quests (via /timers)\n- Grand Company Delivery Missions (via /timers)\n- Inventory\n- Materials List\n- Recipe Tree\n",
-    "de": "Fügt dem Gegenstand-Kontextmenü einen Eintrag hinzu, mit dem man schnell nach dem Gegenstand auf dem Marktbrett suchen kann. Nur sichtbar, wenn die Gegenstandssuche (Marktbrett) geöffnet ist!\n\nUnterstützt Kontextmenüs in den folgenden Fenstern:\n- Chat\n- Handwerker-Notizbuch\n- Ixal-Lieferaufträge (über /timers)\n- Liefereinsätze (über /timers)\n- Inventar\n- Materialliste\n- Rezeptbaum\n"
+    "de": "Fügt dem Gegenstand-Kontextmenü einen Eintrag hinzu, mit dem man schnell nach dem Gegenstand auf dem Marktbrett suchen kann. Nur sichtbar, wenn die Gegenstandssuche (Marktbrett) geöffnet ist!\n\nUnterstützt Kontextmenüs in den folgenden Fenstern:\n- Chat\n- Handwerker-Notizbuch\n- Ixal-Lieferaufträge (über /timers)\n- Liefereinsätze (über /timers)\n- Inventar\n- Materialliste\n- Rezeptbaum\n",
+    "zh": "添加一个能让你在市场布告板上快速搜索物品的条目到物品的次级菜单。仅在市场布告板打开时可见！\n\n添加次级菜单的窗口有：\n- 聊天栏\n- 制作笔记\n- 鸟人族供应任务（通过任务情报窗口打开）\n- 筹备任务（通过任务情报窗口打开）\n- 物品栏\n- 所需材料列表\n- 配方树状图\n"
   },
 
   "SimpleAethernetList.Tweak.Name": {
-    "en": "Simple Aethernet List"
+    "en": "Simple Aethernet List",
+    "zh": "简化都市传送网列表"
   },
   "SimpleAethernetList.Tweak.Description": {
     "en": "Simplifies the behavior of the Aethernet list: mouseover selects the aetheryte and a click teleports you.",
-    "de": "Vereinfacht das Verhalten der Ätherytennetz-Liste: Maus über den Eintrag fahren wählt den Ätheryten aus und ein Klick teleportiert dich."
+    "de": "Vereinfacht das Verhalten der Ätherytennetz-Liste: Maus über den Eintrag fahren wählt den Ätheryten aus und ein Klick teleportiert dich.",
+    "zh": "简化都市传送网列表的行为：鼠标悬停选择以太之光与点击传送。"
   },
 
   "ImGuiWindow.WindowLocked": {
     "en": "Window locked",
     "de": "Fenster gesperrt",
     "fr": "Fenêtre verrouillée",
-    "ja": "ウィンドウがロックされました"
+    "ja": "ウィンドウがロックされました",
+    "zh": "锁定窗口"
   },
 
   "ImGuiWindow.WindowUnlocked": {
     "en": "Window unlocked",
     "de": "Fenster entsperrt",
     "fr": "Fenêtre déverrouillée",
-    "ja": "ウィンドウがロック解除されました"
+    "ja": "ウィンドウがロック解除されました",
+    "zh": "解锁窗口"
   },
 
   "ConfirmationButtonWindow.Save": {
     "en": "Save",
-    "de": "Speichern"
+    "de": "Speichern",
+    "zh": "保存"
   },
   "ConfirmationButtonWindow.Cancel": {
     "en": "Cancel",
-    "de": "Abbrechen"
+    "de": "Abbrechen",
+    "zh": "取消"
   },
   "ConfirmationButtonWindow.Delete": {
     "en": "Delete",
-    "de": "Löschen"
+    "de": "Löschen",
+    "zh": "删除"
   },
 
   "template": {
