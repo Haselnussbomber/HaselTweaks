@@ -42,10 +42,6 @@ public unsafe class AutoOpenRecipe : Tweak
         if (Conditions.IsCrafting || Conditions.IsCrafting40 || GetAgent<AgentRecipeNote>()->ActiveCraftRecipeId != 0) // skip if crafting
             return;
 
-        var craftType = GetCurrentCraftType();
-        if (craftType == -1) // only handle if player is on a crafter job
-            return;
-
         if (DateTime.UtcNow - LastTimeRecipeOpened < TimeSpan.FromSeconds(3))
             return;
 
@@ -57,7 +53,7 @@ public unsafe class AutoOpenRecipe : Tweak
 
         void action()
         {
-            if (TryOpenRecipeForItem(craftType, data.Item.ItemId))
+            if (TryOpenRecipeForItem(data.Item.ItemId))
                 LastTimeRecipeOpened = DateTime.UtcNow;
         }
 
@@ -67,7 +63,7 @@ public unsafe class AutoOpenRecipe : Tweak
             cancellationToken: CheckCTS.Token);
     }
 
-    private bool TryOpenRecipeForItem(int craftType, uint itemId)
+    private bool TryOpenRecipeForItem(uint itemId)
     {
         var localPlayer = Control.Instance()->LocalPlayer;
         if (localPlayer == null)
@@ -225,7 +221,7 @@ public unsafe class AutoOpenRecipe : Tweak
                 if (resultItemId == 0)
                     continue;
 
-                if (TryOpenRecipe(craftType, itemId, resultItemId, numNeeded))
+                if (TryOpenRecipe(itemId, resultItemId, numNeeded))
                     return true;
             }
         }
@@ -233,8 +229,9 @@ public unsafe class AutoOpenRecipe : Tweak
         return false;
     }
 
-    private bool TryOpenRecipe(int craftType, uint materialItemId, uint resultItemId, uint amount)
+    private bool TryOpenRecipe(uint materialItemId, uint resultItemId, uint amount)
     {
+        var craftType = GetCurrentCraftType();
         var recipe = FindRow<Recipe>(row => row?.ItemResult.Row == resultItemId && row.CraftType.Row == craftType)
                   ?? FindRow<Recipe>(row => row?.ItemResult.Row == resultItemId);
         if (recipe == null)
