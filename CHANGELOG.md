@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Auto-open Recipe
+
+The tweak has been reworked and as a result it now also works for Namazu quests!
+
+Please report any issues you may encounter. Thanks! 🙂
+
 ### Portrait Helper
 
 - **Changed:** The animation timestamp slider now has 3-digit precision when the animation is less than 100 frames long.
