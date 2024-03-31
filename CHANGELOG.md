@@ -4,13 +4,16 @@
 
 ### HaselTweaks
 
-- **Added:** The plugin has been translated into Simplified Chinese. (#94, thanks to @cyf5119)
+- **Added:** The plugin has been translated to Simplified Chinese thanks to @cyf5119.  
+  - *Note:* I don't understand any of this, so please submit fixes if anything is wrong or missing (this also applies to other languages). Thank you! 😊
 
 ### Auto-open Recipe
 
-The tweak has been reworked and as a result it now also works for Namazu quests!
+The tweak has been slightly reworked and now listens for "inventory item added" events, instead of quest objective changes. As a result of this...
 
-Please report any issues you may encounter. Thanks! 🙂
+- **Added:** Support for Namazu quests!
+
+Please report any issues you may encounter due to the rework. Thanks! 🙂
 
 ### Portrait Helper
 
