@@ -491,7 +491,7 @@
   "Commands.WhatMount.WithoutItem": {
     "en": "Mount: ",
     "de": "Reittier: ",
-    "zh": "坐骑：。"
+    "zh": "坐骑："
   },
   "Commands.WhatMount.WithItem": {
     "en": "Mount {0} is taught by {1}.",
