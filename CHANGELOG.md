@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### HaselTweaks
+
+- **Added:** The plugin has been translated into Simplified Chinese. (#94, thanks to @cyf5119)
+
 ### Auto-open Recipe
 
 The tweak has been reworked and as a result it now also works for Namazu quests!
