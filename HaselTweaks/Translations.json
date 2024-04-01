@@ -1804,7 +1804,7 @@
     "de": "Fenster gesperrt",
     "fr": "Fenêtre verrouillée",
     "ja": "ウィンドウがロックされました",
-    "zh": "锁定窗口"
+    "zh": "窗口已锁定"
   },
 
   "ImGuiWindow.WindowUnlocked": {
@@ -1812,7 +1812,7 @@
     "de": "Fenster entsperrt",
     "fr": "Fenêtre déverrouillée",
     "ja": "ウィンドウがロック解除されました",
-    "zh": "解锁窗口"
+    "zh": "窗口已解锁"
   },
 
   "ConfirmationButtonWindow.Save": {
