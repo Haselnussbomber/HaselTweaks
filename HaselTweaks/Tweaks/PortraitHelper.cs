@@ -6,6 +6,7 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -199,13 +200,15 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         if (banner == null) // banner not found
             return;
 
-        if (banner->Checksum == GetEquippedGearChecksum())
+        var checksum = GetEquippedGearChecksum();
+
+        if (banner->Checksum == checksum)
         {
-            Log($"Gear checksum matches! (Portrait: {banner->Checksum:X}, Equipped: {GetEquippedGearChecksum():X})");
+            Log($"Gear checksum matches! (Portrait: {banner->Checksum:X}, Equipped: {checksum:X})");
             return;
         }
 
-        Log($"Gear checksum mismatch detected! (Portrait: {banner->Checksum:X}, Equipped: {GetEquippedGearChecksum():X})");
+        Log($"Gear checksum mismatch detected! (Portrait: {banner->Checksum:X}, Equipped: {checksum:X})");
 
         if (!isJobChange && Config.ReequipGearsetOnUpdate && gearset->GlamourSetLink > 0 && GameMain.IsInSanctuary())
         {
@@ -234,7 +237,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         {
             if (banner->Checksum != GetEquippedGearChecksum())
             {
-                Log($"Gear checksum still mismatching (Portrait: {banner->Checksum:X}, Equipped: {GetEquippedGearChecksum():X}), opening Banner Editor");
+                Log($"Gear checksum still mismatching (Portrait: {banner->Checksum:X}, Equipped: {GetEquippedGearChecksum():X})");
                 NotifyMismatch();
             }
             else
@@ -277,7 +280,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
     private uint GetEquippedGearChecksum()
     {
-        var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? 0);
+        var localPlayer = (Character*)Control.GetLocalPlayer();
         if (localPlayer == null)
             return 0;
 
@@ -342,7 +345,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
             return false;
         }
 
-        var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? 0);
+        var localPlayer = (Character*)Control.GetLocalPlayer();
         if (localPlayer == null)
         {
             Warning("No Portrait Update: LocalPlayer is null");
