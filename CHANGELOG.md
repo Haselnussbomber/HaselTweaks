@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Custom Chat Message Formats
+
+Lets you customize message formats for various chat channels.
+
 ## [20.4.0] (2023-03-31)
 
 ### HaselTweaks

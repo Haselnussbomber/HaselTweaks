@@ -5,6 +5,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using HaselCommon;
 using HaselCommon.Interfaces;
+using HaselTweaks.JsonConverters;
 using HaselTweaks.Tweaks;
 
 namespace HaselTweaks;
@@ -31,6 +32,7 @@ public class TweakConfigs
     public BackgroundMusicKeybindConfiguration BackgroundMusicKeybind { get; init; } = new();
     public CharacterClassSwitcherConfiguration CharacterClassSwitcher { get; init; } = new();
     public CommandsConfiguration Commands { get; init; } = new();
+    public CustomChatMessageFormatsConfiguration CustomChatMessageFormats { get; init; } = new();
     public CustomChatTimestampConfiguration CustomChatTimestamp { get; init; } = new();
     public DTRConfiguration DTR { get; init; } = new();
     public EnhancedExpBarConfiguration EnhancedExpBar { get; init; } = new();
@@ -48,6 +50,26 @@ public class TweakConfigs
 
 public partial class Configuration
 {
+    private static JsonSerializerOptions? _serializerOptions = null;
+    public static JsonSerializerOptions SerializerOptions
+    {
+        get
+        {
+            if (_serializerOptions == null)
+            {
+                _serializerOptions = new JsonSerializerOptions()
+                {
+                    IncludeFields = true,
+                    WriteIndented = true,
+                };
+
+                _serializerOptions.Converters.Add(new HaselCommonTextSeStringConverter());
+            }
+
+            return _serializerOptions;
+        }
+    }
+
     [JsonIgnore]
     public int LastSavedConfigHash { get; set; }
 
@@ -55,13 +77,15 @@ public partial class Configuration
         => ConfigurationManager.Save(this);
 
     public string Serialize()
-        => JsonSerializer.Serialize(this, ConfigurationManager.DefaultSerializerOptions);
+        => JsonSerializer.Serialize(this, SerializerOptions);
 
     public static Configuration Load()
-        => ConfigurationManager.Load(CURRENT_CONFIG_VERSION, Deserialize, Migrate);
+    {
+        return ConfigurationManager.Load(CURRENT_CONFIG_VERSION, Deserialize, Migrate);
+    }
 
     public static Configuration? Deserialize(ref JsonObject config)
-        => config.Deserialize<Configuration>(ConfigurationManager.DefaultSerializerOptions);
+        => config.Deserialize<Configuration>(SerializerOptions);
 
     public static bool Migrate(int version, ref JsonObject config)
     {

@@ -117,6 +117,19 @@
     "de": "Auf Standard zurücksetzen: {0}",
     "zh": "重置为默认值：{0}"
   },
+  "HaselTweaks.Config.Generic.DeleteButton.Tooltip.HoldingShift": {
+    "en": "Delete",
+    "de": "Löschen",
+    "zh": "删除"
+  },
+  "HaselTweaks.Config.Generic.DeleteButton.Tooltip.NotHoldingShift": {
+    "en": "Hold shift to delete",
+    "de": "Shift gedrückt halten, um den Eintrag zu löschen"
+  },
+  "HaselTweaks.Config.Generic.DeleteButton.Tooltip.WindowNotFocused": {
+    "en": "Focus window and hold shift to delete",
+    "de": "Fokussiere das Fenster und halte Shift gedrückt, um den Eintrag zu löschen"
+  },
 
   "AetherCurrentHelper.Tweak.Name": {
     "en": "Aether Current Helper",
@@ -499,6 +512,100 @@
     "fr": "Monture {0} apprise auprès de {1}.",
     "ja": "{0} のマウントは {1} によって教えられています。",
     "zh": "坐骑{0}由{1}解锁。"
+  },
+
+  "CustomChatMessageFormats.Tweak.Name": {
+    "en": "Custom Chat Message Formats"
+  },
+  "CustomChatMessageFormats.Tweak.Description": {
+    "en": "Lets you customize message formats for various chat channels.",
+    "de": "Ermöglicht die Anpassung von Nachrichtenformaten für verschiedene Chat-Kanäle."
+  },
+  "CustomChatMessageFormats.Config.Entry.Name.TellIncoming": {
+    "en": "Tell (Incoming)",
+    "de": "Flüstern (Eingehend)"
+  },
+  "CustomChatMessageFormats.Config.Entry.Name.TellOutgoing": {
+    "en": "Tell (Outgoing)",
+    "de": "Flüstern (Ausgehend)"
+  },
+  "CustomChatMessageFormats.Config.Entry.EnableCheckbox.Tooltip.IsEnabled": {
+    "en": "Enabled",
+    "de": "Aktiviert",
+    "zh": "已启用"
+  },
+  "CustomChatMessageFormats.Config.Entry.EnableCheckbox.Tooltip.IsDisabled": {
+    "en": "Disabled",
+    "de": "Deaktiviert",
+    "zh": "已禁用"
+  },
+  "CustomChatMessageFormats.Config.Entry.InvalidPayloads.Tooltip": {
+    "en": "This entry is inactive.\nMake sure that each color payload ends with a stackcolor payload.",
+    "de": "Dieser Eintrag ist inaktiv.\nBitte stelle sicher, dass jedes Color Payload mit einem stackcolor Payload endet."
+  },
+  "CustomChatMessageFormats.Config.Entry.OpenEditorButton.Tooltip": {
+    "en": "Open editor",
+    "de": "Editor öffnen"
+  },
+  "CustomChatMessageFormats.Config.Entry.CloseEditorButton.Tooltip": {
+    "en": "Close editor",
+    "de": "Editor schließen"
+  },
+  "CustomChatMessageFormats.Config.Entry.PayloadTableHeader.Payload.Label": {
+    "en": "Payload",
+    "de": "Payload"
+  },
+  "CustomChatMessageFormats.Config.Entry.PayloadTableHeader.Value.Label": {
+    "en": "Value",
+    "de": "Wert"
+  },
+  "CustomChatMessageFormats.Config.Entry.PayloadTableHeader.Actions.Label": {
+    "en": "Actions",
+    "de": "Aktionen"
+  },
+  "CustomChatMessageFormats.Config.Entry.Payload.StringPlaceholder.Tooltip": {
+    "en": "This placeholder is replaced when the message is formatted and cannot be deleted.",
+    "de": "Dieser Platzhalter wird bei der Formatierung der Nachricht ersetzt und kann nicht gelöscht werden."
+  },
+  "CustomChatMessageFormats.Config.Entry.Payload.StackColor.Tooltip": {
+    "en": "This entry is an end marker for the the previous Color payload.",
+    "de": "Dieser Eintrag ist eine Endmarkierung für das vorherige Color Payload."
+  },
+  "CustomChatMessageFormats.Config.Entry.Payload.MoveUpButton.Tooltip": {
+    "en": "Move up",
+    "de": "Nach oben",
+    "zh": "向上移动"
+  },
+  "CustomChatMessageFormats.Config.Entry.Payload.MoveDownButton.Tooltip": {
+    "en": "Move down",
+    "de": "Nach unten",
+    "zh": "向下移动"
+  },
+  "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Label": {
+    "en": "Add Payload",
+    "de": "Payload hinzufügen"
+  },
+  "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.TextPayload": {
+    "en": "Text"
+  },
+  "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.CustomColor": {
+    "en": "Custom Color",
+    "de": "Benutzerdefinierte Farbe"
+  },
+  "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.LogTextColors": {
+    "en": "Log Text Colors",
+    "de": "Textfarben"
+  },
+  "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.StackColor": {
+    "en": "stackcolor"
+  },
+  "CustomChatMessageFormats.LogKindSelect.PreviewValue": {
+    "en": "Add message format...",
+    "de": "Nachrichtenformat hinzufügen..."
+  },
+  "CustomChatMessageFormats.Config.OpenConfigLogColorButton.Tooltip": {
+    "en": "Edit Log Text Colors",
+    "de": "Textfarben bearbeiten"
   },
 
   "CustomChatTimestamp.Tweak.Name": {
