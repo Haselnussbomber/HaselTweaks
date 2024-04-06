@@ -2,7 +2,9 @@ using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using Dalamud.Game.Config;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
@@ -17,6 +19,7 @@ using HaselCommon.Text.Payloads;
 using HaselCommon.Text.Payloads.Macro;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
+using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using static HaselTweaks.Tweaks.CustomChatMessageFormatsConfiguration;
@@ -68,6 +71,22 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
 {
     private List<(LogKind LogKind, LogFilter LogFilter, SeString Format)>? CachedLogKindRows = null;
     private FrozenDictionary<uint, string>? CachedTextColors = null;
+    private static readonly string[] GfdTextures = [
+        "common/font/fonticon_xinput.tex",
+        "common/font/fonticon_ps3.tex",
+        "common/font/fonticon_ps4.tex",
+        "common/font/fonticon_ps5.tex",
+        "common/font/fonticon_lys.tex",
+    ];
+    private byte[]? GfdFile = null;
+    private unsafe GfdFileView GfdFileView
+    {
+        get
+        {
+            GfdFile ??= Service.DataManager.GetFile("common/font/gfdata.gfd")!.Data;
+            return new(new(Unsafe.AsPointer(ref GfdFile[0]), GfdFile.Length));
+        }
+    }
 
     public override void DrawConfig()
     {
@@ -254,6 +273,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
     {
         CachedLogKindRows = null;
         CachedTextColors = null;
+        GfdFile = null;
     }
 
     public override void OnLanguageChange()
@@ -384,6 +404,55 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
                             textPayload.Text = text;
                             SaveAndReloadChat();
                         }
+                        break;
+
+                    case IconPayload iconPayload:
+                        var iconId = (uint)(iconPayload.IconId?.ResolveNumber() ?? 0);
+
+                        if (GfdFileView.TryGetEntry(iconId, out var gfdEntry))
+                            DrawGfdEntry(gfdEntry);
+
+                        ImGui.SameLine();
+
+                        if (ImGui.Button(t("CustomChatMessageFormats.Config.Entry.OpenIconSelectorButton.Label")))
+                        {
+                            ImGui.OpenPopup("##IconSelector");
+                        }
+
+                        using (var iconSelectMenu = ImRaii.Popup("##IconSelector", ImGuiWindowFlags.NoMove))
+                        {
+                            if (iconSelectMenu)
+                            {
+                                var maxLineWidth = 20 * 20;
+                                var posStart = ImGui.GetCursorPosX();
+
+                                foreach (var selectorGfdEntry in GfdFileView.Entries)
+                                {
+                                    if (selectorGfdEntry.IsEmpty || selectorGfdEntry.Id is 69 or 123)
+                                        continue;
+
+                                    var startPos = ImGui.GetCursorPos();
+                                    using var buttonColor = ImRaii.PushColor(ImGuiCol.Button, 0);
+                                    using var buttonActiveColor = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xAAFFFFFF);
+                                    using var buttonHoveredColor = ImRaii.PushColor(ImGuiCol.ButtonHovered, 0x77FFFFFF);
+                                    using var buttonRounding = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0);
+                                    if (ImGui.Button($"##Icon{selectorGfdEntry.Id}", ImGuiHelpers.ScaledVector2(selectorGfdEntry.Width, selectorGfdEntry.Height)))
+                                    {
+                                        iconPayload.IconId = new IntegerExpression(selectorGfdEntry.Id);
+                                        SaveAndReloadChat();
+                                    }
+
+                                    ImGui.SetCursorPos(startPos);
+                                    DrawGfdEntry(selectorGfdEntry);
+
+                                    ImGui.SameLine();
+
+                                    if (ImGui.GetCursorPosX() - posStart > maxLineWidth)
+                                        ImGui.NewLine();
+                                }
+                            }
+                        }
+
                         break;
 
                     case StringPayload stringPayload:
@@ -538,6 +607,12 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
                     SaveAndReloadChat();
                 }
 
+                if (ImGui.MenuItem(t("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.IconPayload")))
+                {
+                    entry.Format.Payloads.Add(new IconPayload() { IconId = 1 });
+                    SaveAndReloadChat();
+                }
+
                 if (ImGui.MenuItem(t("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.CustomColor")))
                 {
                     entry.Format.Payloads.AddRange([
@@ -582,7 +657,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         }
     }
 
-    public static void DrawExample(SeString format)
+    public void DrawExample(SeString format)
     {
         var colorQueue = new Queue<ImRaii.Color>();
 
@@ -597,6 +672,16 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
             {
                 case TextPayload textPayload:
                     ImGui.TextUnformatted(textPayload.Text);
+                    break;
+
+                case IconPayload iconPayload:
+                    var iconId = (uint)(iconPayload.IconId?.ResolveNumber() ?? 0);
+
+                    if (GfdFileView.TryGetEntry(iconId, out var gfdEntry))
+                        DrawGfdEntry(gfdEntry);
+                    else
+                        ImGui.Dummy(new(20));
+
                     break;
 
                 case ColorPayload colorPayload:
@@ -623,6 +708,18 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
             if (colorQueue.TryDequeue(out var color))
                 color?.Dispose();
         }
+    }
+
+    public void DrawGfdEntry(GfdFileView.GfdEntry entry)
+    {
+        var startPos = new Vector2(entry.Left, entry.Top);
+        var size = new Vector2(entry.Width, entry.Height);
+
+        var gfdTextureIndex = 0u;
+        if (Service.GameConfig.TryGet(SystemConfigOption.PadSelectButtonIcon, out uint padSelectButtonIcon))
+            gfdTextureIndex = padSelectButtonIcon;
+
+        Service.TextureManager.Get(GfdTextures[gfdTextureIndex], 2, startPos, startPos + size).Draw(ImGuiHelpers.ScaledVector2(size.X, size.Y));
     }
 
     private List<(LogKind LogKind, LogFilter LogFilter, SeString Format)> GenerateLogKindCache()

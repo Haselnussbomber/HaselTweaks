@@ -563,6 +563,11 @@
     "en": "Actions",
     "de": "Aktionen"
   },
+  "CustomChatMessageFormats.Config.Entry.OpenIconSelectorButton.Label": {
+    "en": "Change",
+    "de": "Ändern",
+    "zh": "改变"
+  },
   "CustomChatMessageFormats.Config.Entry.Payload.StringPlaceholder.Tooltip": {
     "en": "This placeholder is replaced when the message is formatted and cannot be deleted.",
     "de": "Dieser Platzhalter wird bei der Formatierung der Nachricht ersetzt und kann nicht gelöscht werden."
@@ -587,6 +592,9 @@
   },
   "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.TextPayload": {
     "en": "Text"
+  },
+  "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.IconPayload": {
+    "en": "Icon"
   },
   "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.CustomColor": {
     "en": "Custom Color",
