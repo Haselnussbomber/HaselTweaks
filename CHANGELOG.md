@@ -6,6 +6,11 @@
 
 - The resolver now scans signatures in parallel. This speeds up the scanning of addresses after a patch.
 
+### Commands
+
+- **Added:** New Command `/glamourplate <id>`  
+  This shortcut command executes the "/gearset change" command with the current gear set id and the given glamour plate id (1-20).
+
 ## [21.0.0] (2023-04-06)
 
 ### New Tweak: Custom Chat Message Formats
