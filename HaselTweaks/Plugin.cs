@@ -27,8 +27,8 @@ public sealed class Plugin : IDalamudPlugin
         Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
         Service.Framework.Update += Framework_Update;
         Service.GameInventory.InventoryChangedRaw += GameInventory_InventoryChangedRaw;
-        Service.PluginInterface.LanguageChanged += PluginInterface_LanguageChanged;
         Service.PluginInterface.UiBuilder.OpenConfigUi += UiBuilder_OnOpenConfigUi;
+        Service.TranslationManager.LanguageChanged += TranslationManager_LanguageChanged;
 
         CommandInfo = new CommandInfo(OnCommand) { HelpMessage = t("HaselTweaks.CommandHandlerHelpMessage") };
 
@@ -139,7 +139,7 @@ public sealed class Plugin : IDalamudPlugin
         Service.WindowManager.OpenWindow<PluginWindow>().Plugin = this;
     }
 
-    private void PluginInterface_LanguageChanged(string langCode)
+    private void TranslationManager_LanguageChanged(string langCode)
     {
         CommandInfo.HelpMessage = t("HaselTweaks.CommandHandlerHelpMessage");
 
@@ -164,8 +164,8 @@ public sealed class Plugin : IDalamudPlugin
         Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
         Service.Framework.Update -= Framework_Update;
         Service.GameInventory.InventoryChangedRaw -= GameInventory_InventoryChangedRaw;
-        Service.PluginInterface.LanguageChanged -= PluginInterface_LanguageChanged;
         Service.PluginInterface.UiBuilder.OpenConfigUi -= UiBuilder_OnOpenConfigUi;
+        Service.TranslationManager.LanguageChanged -= TranslationManager_LanguageChanged;
 
         Service.CommandManager.RemoveHandler("/haseltweaks");
 

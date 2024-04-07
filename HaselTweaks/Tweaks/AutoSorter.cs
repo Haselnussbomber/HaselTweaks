@@ -182,7 +182,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
         if (!table.Success)
             return;
 
-        var ItemSpacing = ImGui.GetStyle().ItemSpacing;
+        var ItemInnerSpacing = ImGui.GetStyle().ItemInnerSpacing;
         var ArrowUpButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.ArrowUp);
         var ArrowDownButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.ArrowDown);
         var TrashButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Trash);
@@ -194,11 +194,11 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
         ImGui.TableSetupColumn("Order", ImGuiTableColumnFlags.WidthStretch);
         ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed,
             ArrowUpButtonSize.X +
-            ItemSpacing.X +
+            ItemInnerSpacing.X +
             ArrowDownButtonSize.X +
-            ItemSpacing.X +
+            ItemInnerSpacing.X +
             TrashButtonSize.X +
-            (Enabled ? ItemSpacing.X + TerminalButtonSize.X : 0));
+            (Enabled ? ItemInnerSpacing.X + TerminalButtonSize.X : 0));
 
         var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
         var preview = "";
@@ -307,7 +307,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
                 ImGui.Dummy(ArrowUpButtonSize);
             }
 
-            ImGui.SameLine();
+            ImGui.SameLine(0, ItemInnerSpacing.X);
 
             if (i < Config.Settings.Count - 1)
             {
@@ -321,7 +321,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
                 ImGui.Dummy(ArrowDownButtonSize);
             }
 
-            ImGui.SameLine();
+            ImGui.SameLine(0, ItemInnerSpacing.X);
 
             if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
             {
@@ -341,7 +341,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
                     disabled: true);
             }
 
-            ImGui.SameLine();
+            ImGui.SameLine(0, ItemInnerSpacing.X);
 
             if (Enabled)
             {
@@ -366,7 +366,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
                         disabledReasons.Add(t("AutoSorter.Config.ExecuteButton.Tooltip.RetainerNotOpen"));
                     }
 
-                    ImGui.SameLine();
+                    ImGui.SameLine(0, ItemInnerSpacing.X);
 
                     if (disabledReasons != null)
                     {

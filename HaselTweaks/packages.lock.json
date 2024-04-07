@@ -77,6 +77,12 @@
       },
       "haselcommon": {
         "type": "Project"
+      },
+      "haselcommon.text": {
+        "type": "Project",
+        "dependencies": {
+          "HaselCommon": "[1.0.0, )"
+        }
       }
     }
   }

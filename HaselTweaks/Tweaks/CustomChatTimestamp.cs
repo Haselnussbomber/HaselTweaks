@@ -110,7 +110,7 @@ public partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguratio
     }
 
     [AddressHook<HaselRaptureTextModule>(nameof(HaselRaptureTextModule.Addresses.FormatAddonText2Int))]
-    private unsafe byte* FormatAddon(RaptureTextModule* raptureTextModule, uint addonRowId, int value)
+    public unsafe byte* FormatAddonText2Int(RaptureTextModule* raptureTextModule, uint addonRowId, int value)
     {
         if (addonRowId is 7840 or 7841 && !string.IsNullOrWhiteSpace(Config.Format))
         {
@@ -125,13 +125,13 @@ public partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguratio
             }
         }
 
-        return FormatAddonHook.OriginalDisposeSafe(raptureTextModule, addonRowId, value);
+        return FormatAddonText2IntHook.OriginalDisposeSafe(raptureTextModule, addonRowId, value);
     }
 
     public static unsafe void ReloadChat()
     {
         var raptureLogModule = RaptureLogModule.Instance();
         for (var i = 0; i < 4; i++)
-            raptureLogModule->ChatTabsPendingReload[i] = 1;
+            raptureLogModule->ChatTabIsPendingReload[i] = true;
     }
 }

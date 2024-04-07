@@ -67,9 +67,13 @@ Available Commands:
 - `/whatbarding`  
   Target a players chocobo companion and execute the command to see what barding it is wearing.
 
+### Custom Chat Message Formats
+
+Lets you customize message formats for various chat channels.
+
 ### Custom Chat Timestamp
 
-Let's you customize the chat timestamp format using C#'s [`DateTime.ToString()`](https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings).
+Lets you customize the chat timestamp format using C#'s [`DateTime.ToString()`](https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings).
 
 ### DTR
 
