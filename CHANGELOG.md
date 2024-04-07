@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### HaselTweaks
+
+- The resolver now scans signatures in parallel. This speeds up the scanning of addresses after a patch.
+
 ## [21.0.0] (2023-04-06)
 
 ### New Tweak: Custom Chat Message Formats
