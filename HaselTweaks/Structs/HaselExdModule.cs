@@ -6,8 +6,8 @@ public unsafe partial struct HaselExdModule
     public static partial BannerConditionRow* GetBannerCondition(uint index);
 }
 
-public unsafe partial struct BannerConditionRow
+public partial struct BannerConditionRow
 {
     [MemberFunction("40 53 48 83 EC 20 0F B6 41 29")]
-    public partial uint GetBannerConditionUnlockState();
+    public readonly partial uint GetBannerConditionUnlockState();
 }

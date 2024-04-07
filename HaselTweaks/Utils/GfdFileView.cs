@@ -131,6 +131,6 @@ public readonly unsafe ref struct GfdFileView
         public ushort Unk0E;
 
         /// <summary>Gets a value indicating whether this entry is effectively empty.</summary>
-        public bool IsEmpty => Width == 0 || Height == 0;
+        public readonly bool IsEmpty => Width == 0 || Height == 0;
     }
 }
