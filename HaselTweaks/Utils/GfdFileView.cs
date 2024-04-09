@@ -73,7 +73,7 @@ public readonly unsafe struct GfdFileView
                     hi = entries.Length;
                     continue;
                 }
-                
+
                 entry = entries[i];
                 return !entry.IsEmpty;
             }
