@@ -6,19 +6,19 @@ namespace HaselTweaks.Utils;
 // https://github.com/goatcorp/Dalamud/blob/48ea0ed9/Dalamud/Interface/SeStringRenderer/GfdFileView.cs
 
 /// <summary>Reference member view of a .gfd file data.</summary>
-public readonly unsafe ref struct GfdFileView
+public readonly unsafe struct GfdFileView
 {
-    private readonly ReadOnlySpan<byte> span;
+    private readonly ReadOnlyMemory<byte> memory;
     private readonly bool directLookup;
 
     /// <summary>Initializes a new instance of the <see cref="GfdFileView"/> struct.</summary>
-    /// <param name="span">The data.</param>
-    public GfdFileView(ReadOnlySpan<byte> span)
+    /// <param name="memory">The data.</param>
+    public GfdFileView(ReadOnlyMemory<byte> memory)
     {
-        this.span = span;
-        if (span.Length < sizeof(GfdHeader))
+        this.memory = memory;
+        if (memory.Length < sizeof(GfdHeader))
             throw new InvalidDataException($"Not enough space for a {nameof(GfdHeader)}");
-        if (span.Length < sizeof(GfdHeader) + Header.Count * sizeof(GfdEntry))
+        if (memory.Length < sizeof(GfdHeader) + Header.Count * sizeof(GfdEntry))
             throw new InvalidDataException($"Not enough space for all the {nameof(GfdEntry)}");
 
         var entries = Entries;
@@ -28,10 +28,10 @@ public readonly unsafe ref struct GfdFileView
     }
 
     /// <summary>Gets the header.</summary>
-    public ref readonly GfdHeader Header => ref MemoryMarshal.AsRef<GfdHeader>(span);
+    public ref readonly GfdHeader Header => ref MemoryMarshal.AsRef<GfdHeader>(memory.Span);
 
     /// <summary>Gets the entries.</summary>
-    public ReadOnlySpan<GfdEntry> Entries => MemoryMarshal.Cast<byte, GfdEntry>(span[sizeof(GfdHeader)..]);
+    public ReadOnlySpan<GfdEntry> Entries => MemoryMarshal.Cast<byte, GfdEntry>(memory.Span[sizeof(GfdHeader)..]);
 
     /// <summary>Attempts to get an entry.</summary>
     /// <param name="iconId">The icon ID.</param>

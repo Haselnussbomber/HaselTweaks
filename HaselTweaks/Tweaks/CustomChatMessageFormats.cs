@@ -78,15 +78,8 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         "common/font/fonticon_ps5.tex",
         "common/font/fonticon_lys.tex",
     ];
-    private byte[]? GfdFile = null;
-    private unsafe GfdFileView GfdFileView
-    {
-        get
-        {
-            GfdFile ??= Service.DataManager.GetFile("common/font/gfdata.gfd")!.Data;
-            return new(new(Unsafe.AsPointer(ref GfdFile[0]), GfdFile.Length));
-        }
-    }
+    private GfdFileView? gfdFileView = null;
+    private GfdFileView GfdFileView => gfdFileView ??= new(Service.DataManager.GetFile("common/font/gfdata.gfd")!.Data);
 
     public override void DrawConfig()
     {
@@ -273,7 +266,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
     {
         CachedLogKindRows = null;
         CachedTextColors = null;
-        GfdFile = null;
+        gfdFileView = null;
     }
 
     public override void OnLanguageChange()
