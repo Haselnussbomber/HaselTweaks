@@ -124,11 +124,13 @@
   },
   "HaselTweaks.Config.Generic.DeleteButton.Tooltip.NotHoldingShift": {
     "en": "Hold shift to delete",
-    "de": "Shift gedrückt halten, um den Eintrag zu löschen"
+    "de": "Shift gedrückt halten, um den Eintrag zu löschen",
+    "zh": "按住shift以删除"
   },
   "HaselTweaks.Config.Generic.DeleteButton.Tooltip.WindowNotFocused": {
     "en": "Focus window and hold shift to delete",
-    "de": "Fokussiere das Fenster und halte Shift gedrückt, um den Eintrag zu löschen"
+    "de": "Fokussiere das Fenster und halte Shift gedrückt, um den Eintrag zu löschen",
+    "zh": "聚焦窗口并按住Shift以删除"
   },
 
   "AetherCurrentHelper.Tweak.Name": {
@@ -530,19 +532,23 @@
   },
 
   "CustomChatMessageFormats.Tweak.Name": {
-    "en": "Custom Chat Message Formats"
+    "en": "Custom Chat Message Formats",
+    "zh": "自定义聊天栏消息格式"
   },
   "CustomChatMessageFormats.Tweak.Description": {
     "en": "Lets you customize message formats for various chat channels.",
-    "de": "Ermöglicht die Anpassung von Nachrichtenformaten für verschiedene Chat-Kanäle."
+    "de": "Ermöglicht die Anpassung von Nachrichtenformaten für verschiedene Chat-Kanäle.",
+    "zh": "使你能自定义各种聊天频道的消息格式。"
   },
   "CustomChatMessageFormats.Config.Entry.Name.TellIncoming": {
     "en": "Tell (Incoming)",
-    "de": "Flüstern (Eingehend)"
+    "de": "Flüstern (Eingehend)",
+    "zh": "悄悄话（传入）"
   },
   "CustomChatMessageFormats.Config.Entry.Name.TellOutgoing": {
     "en": "Tell (Outgoing)",
-    "de": "Flüstern (Ausgehend)"
+    "de": "Flüstern (Ausgehend)",
+    "zh": "悄悄话（传出）"
   },
   "CustomChatMessageFormats.Config.Entry.EnableCheckbox.Tooltip.IsEnabled": {
     "en": "Enabled",
@@ -556,15 +562,18 @@
   },
   "CustomChatMessageFormats.Config.Entry.InvalidPayloads.Tooltip": {
     "en": "This entry is inactive.\nMake sure that each color payload ends with a stackcolor payload.",
-    "de": "Dieser Eintrag ist inaktiv.\nBitte stelle sicher, dass jedes Color Payload mit einem stackcolor Payload endet."
+    "de": "Dieser Eintrag ist inaktiv.\nBitte stelle sicher, dass jedes Color Payload mit einem stackcolor Payload endet.",
+    "zh": "此项功能未激活。请确保每个 Color Payload 以 Stackcolor Payload 结尾。"
   },
   "CustomChatMessageFormats.Config.Entry.OpenEditorButton.Tooltip": {
     "en": "Open editor",
-    "de": "Editor öffnen"
+    "de": "Editor öffnen",
+    "zh": "打开编辑器"
   },
   "CustomChatMessageFormats.Config.Entry.CloseEditorButton.Tooltip": {
     "en": "Close editor",
-    "de": "Editor schließen"
+    "de": "Editor schließen",
+    "zh": "关闭编辑器"
   },
   "CustomChatMessageFormats.Config.Entry.PayloadTableHeader.Payload.Label": {
     "en": "Payload",
@@ -572,11 +581,13 @@
   },
   "CustomChatMessageFormats.Config.Entry.PayloadTableHeader.Value.Label": {
     "en": "Value",
-    "de": "Wert"
+    "de": "Wert",
+    "zh": "值"
   },
   "CustomChatMessageFormats.Config.Entry.PayloadTableHeader.Actions.Label": {
     "en": "Actions",
-    "de": "Aktionen"
+    "de": "Aktionen",
+    "zh": "动作"
   },
   "CustomChatMessageFormats.Config.Entry.OpenIconSelectorButton.Label": {
     "en": "Change",
@@ -585,11 +596,13 @@
   },
   "CustomChatMessageFormats.Config.Entry.Payload.StringPlaceholder.Tooltip": {
     "en": "This placeholder is replaced when the message is formatted and cannot be deleted.",
-    "de": "Dieser Platzhalter wird bei der Formatierung der Nachricht ersetzt und kann nicht gelöscht werden."
+    "de": "Dieser Platzhalter wird bei der Formatierung der Nachricht ersetzt und kann nicht gelöscht werden.",
+    "zh": "此占位符将在对消息进行格式化时被替换，且无法删除。"
   },
   "CustomChatMessageFormats.Config.Entry.Payload.StackColor.Tooltip": {
     "en": "This entry is an end marker for the the previous Color payload.",
-    "de": "Dieser Eintrag ist eine Endmarkierung für das vorherige Color Payload."
+    "de": "Dieser Eintrag ist eine Endmarkierung für das vorherige Color Payload.",
+    "zh": "此项是前一个 Color Payload 的结束标记。"
   },
   "CustomChatMessageFormats.Config.Entry.Payload.MoveUpButton.Tooltip": {
     "en": "Move up",
@@ -603,7 +616,8 @@
   },
   "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Label": {
     "en": "Add Payload",
-    "de": "Payload hinzufügen"
+    "de": "Payload hinzufügen",
+    "zh": "添加 Payload"
   },
   "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.TextPayload": {
     "en": "Text"
@@ -613,22 +627,26 @@
   },
   "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.CustomColor": {
     "en": "Custom Color",
-    "de": "Benutzerdefinierte Farbe"
+    "de": "Benutzerdefinierte Farbe",
+    "zh": "自定义颜色"
   },
   "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.LogTextColors": {
     "en": "Log Text Colors",
-    "de": "Textfarben"
+    "de": "Textfarben",
+    "zh": "消息颜色"
   },
   "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.StackColor": {
     "en": "stackcolor"
   },
   "CustomChatMessageFormats.LogKindSelect.PreviewValue": {
     "en": "Add message format...",
-    "de": "Nachrichtenformat hinzufügen..."
+    "de": "Nachrichtenformat hinzufügen...",
+    "zh": "添加消息格式..."
   },
   "CustomChatMessageFormats.Config.OpenConfigLogColorButton.Tooltip": {
     "en": "Edit Log Text Colors",
-    "de": "Textfarben bearbeiten"
+    "de": "Textfarben bearbeiten",
+    "zh": "编辑消息颜色"
   },
 
   "CustomChatTimestamp.Tweak.Name": {
@@ -1934,7 +1952,7 @@
     "de": "Fenster gesperrt",
     "fr": "Fenêtre verrouillée",
     "ja": "ウィンドウがロックされました",
-    "zh": "锁定窗口"
+    "zh": "窗口已锁定"
   },
 
   "ImGuiWindow.WindowUnlocked": {
@@ -1942,7 +1960,7 @@
     "de": "Fenster entsperrt",
     "fr": "Fenêtre déverrouillée",
     "ja": "ウィンドウがロック解除されました",
-    "zh": "解锁窗口"
+    "zh": "窗口已解锁"
   },
 
   "ConfirmationButtonWindow.Save": {
