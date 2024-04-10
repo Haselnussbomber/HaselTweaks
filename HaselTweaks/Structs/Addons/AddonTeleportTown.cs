@@ -8,5 +8,6 @@ namespace HaselTweaks.Structs;
 public unsafe partial struct AddonTeleportTown
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
+
     [FieldOffset(0x220)] public AtkComponentTreeList* List;
 }

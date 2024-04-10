@@ -7,6 +7,7 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
@@ -260,8 +261,8 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
         return MoveHook.OriginalDisposeSafe(atkUnitBase, xDelta, yDelta);
     }
 
-    [VTableHook<HaselRaptureAtkUnitManager>(6)]
-    public bool RaptureAtkUnitManager_Vf6(HaselRaptureAtkUnitManager* self, nint a2)
+    [VTableHook<RaptureAtkUnitManager>(6)]
+    public bool RaptureAtkUnitManager_Vf6(RaptureAtkUnitManager* self, nint a2)
     {
         if (_showPicker)
         {

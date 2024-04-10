@@ -6,6 +6,7 @@ namespace HaselTweaks.Structs.Addons;
 [StructLayout(LayoutKind.Explicit, Size = 0x278)]
 public unsafe struct AddonRetainerSell
 {
-    [FieldOffset(0)] public AtkUnitBase* AtkUnitBase;
+    [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
+
     [FieldOffset(0x230)] public AtkComponentButton* CheckMarketPriceButton;
 }

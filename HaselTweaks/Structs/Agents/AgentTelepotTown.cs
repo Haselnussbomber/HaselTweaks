@@ -12,12 +12,12 @@ public unsafe partial struct AgentTelepotTown
     [FieldOffset(0x28)] public AgentTelepotTown_Data* Data;
 
     [MemberFunction("48 89 5C 24 ?? 57 48 83 EC 50 0F B6 FA")]
-    public partial void TeleportToAetheryte(byte index);
+    public readonly partial void TeleportToAetheryte(byte index);
 }
 
 // ctor "E8 ?? ?? ?? ?? EB 03 48 8B C5 48 89 47 28"
 [StructLayout(LayoutKind.Explicit, Size = 0xD168)]
-public unsafe partial struct AgentTelepotTown_Data
+public struct AgentTelepotTown_Data
 {
     [FieldOffset(0x4)] public byte CurrentAetheryte; // the one you're standing at
 

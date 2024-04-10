@@ -5,6 +5,7 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Memory;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Extensions;
 using Lumina.Excel.GeneratedSheets;
 using GameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
@@ -22,6 +23,9 @@ public class CommandsConfiguration
 
     [BoolConfig]
     public bool EnableWhatBardingCommand = true;
+
+    [BoolConfig]
+    public bool EnableGlamourPlateCommand = true;
 }
 
 [Tweak]
@@ -189,5 +193,24 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
             Message = sb.Build(),
             Type = XivChatType.Echo
         });
+    }
+
+    [CommandHandler("/glamourplate", "Commands.Config.EnableGlamourPlateCommand.Description", nameof(Config.EnableGlamourPlateCommand))]
+    private void OnGlamourPlateCommand(string command, string arguments)
+    {
+        if (!byte.TryParse(arguments, out var glamourPlateId) || glamourPlateId == 0 || glamourPlateId > 20)
+        {
+            Service.ChatGui.PrintError(t("Commands.InvalidArguments"));
+            return;
+        }
+
+        var raptureGearsetModule = RaptureGearsetModule.Instance();
+        if (!raptureGearsetModule->IsValidGearset(raptureGearsetModule->CurrentGearsetIndex))
+        {
+            Service.ChatGui.PrintError(t("Commands.GlamourPlate.InvalidGearset"));
+            return;
+        }
+
+        raptureGearsetModule->EquipGearset(raptureGearsetModule->CurrentGearsetIndex, glamourPlateId);
     }
 }

@@ -438,12 +438,12 @@
     "zh": "各种有用的聊天命令。"
   },
   "Commands.Config.EnableItemLinkCommand.Label": {
-    "en": "/itemlink"
+    "en": "/itemlink <id>"
   },
   "Commands.Config.EnableItemLinkCommand.Description": {
-    "en": "Prints an item link for the given id in chat.\nUsage: /itemlink <id>",
-    "de": "Gibt einen Gegenstands-Link für die angegebene ID im Chat aus.\nVerwendung: /itemlink <id>",
-    "zh": "将给出的id的物品展示到聊天栏中\n用法：/itemlink <id>"
+    "en": "Prints an item link for the given id in chat.",
+    "de": "Gibt einen Gegenstands-Link für die angegebene ID im Chat aus.",
+    "zh": "将给出的id的物品展示到聊天栏中"
   },
   "Commands.Config.EnableWhatMountCommand.Label": {
     "en": "/whatmount"
@@ -461,15 +461,26 @@
     "de": "Visiere den Chocobo-Begleiter eines Spielers an und führe den Befehl aus, um zu sehen, welche Ausrüstung es trägt.",
     "zh": "选择一个玩家的陆行鸟搭档并执行此命令来查看它穿着什么鸟甲。"
   },
+  "Commands.Config.EnableGlamourPlateCommand.Label": {
+    "en": "/glamourplate <id>"
+  },
+  "Commands.Config.EnableGlamourPlateCommand.Description": {
+    "en": "This shortcut command executes the \"/gearset change\" command with the current gear set id and the given glamour plate id (1-20).",
+    "de": "Dieser Abkürzungsbefehl führt den Befehl \"/gearset change\" mit der Nummer des aktuellen Ausrüstungssets und der angegebenen Projektionsplatten-Nummer (1-20) aus."
+  },
   "Commands.ItemLink.ItemNotFound": {
     "en": "Item {0} not found.",
-    "de": "Gegenstand {id} nicht gefunden.",
+    "de": "Gegenstand {0} nicht gefunden.",
     "zh": "物品{0}未找到。"
   },
   "Commands.ItemLink.Item": {
     "en": "Item #{0}: {1}",
     "de": "Gegenstand #{0}: {1}",
     "zh": "物品#{0}：{1}。"
+  },
+  "Commands.InvalidArguments": {
+    "en": "Invalid arguments.",
+    "de": "Ungültige Argumente."
   },
   "Commands.NoTarget": {
     "en": "No target.",
@@ -514,6 +525,10 @@
     "fr": "Monture {0} apprise auprès de {1}.",
     "ja": "{0} のマウントは {1} によって教えられています。",
     "zh": "坐骑{0}由{1}解锁。"
+  },
+  "Commands.GlamourPlate.InvalidGearset": {
+    "en": "Invalid gear set.",
+    "de": "Ungültiges Ausrüstungsset."
   },
 
   "CustomChatMessageFormats.Tweak.Name": {

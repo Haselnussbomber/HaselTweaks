@@ -19,6 +19,12 @@ public unsafe partial struct AgentRecipeMaterialList
     [FieldOffset(0x34)] public bool WindowLocked;
     [FieldOffset(0x38)] public RecipeData* Recipe;
 
+    [MemberFunction("E8 ?? ?? ?? ?? EB B1 48 8B 4B 28")]
+    public readonly partial void OpenByRecipeId(uint recipeId, uint amount = 1);
+
+    [MemberFunction("48 89 5C 24 ?? 57 48 83 EC 20 BA ?? ?? ?? ?? 48 8B D9 E8 ?? ?? ?? ?? 48 8B F8 48 85 C0 74 5A")]
+    public readonly partial nint OpenRecipeResultItemContextMenu();
+
     [StructLayout(LayoutKind.Explicit)]
     public struct RecipeData
     {
@@ -28,10 +34,4 @@ public unsafe partial struct AgentRecipeMaterialList
         [FieldOffset(0xC4)] public uint ResultItemIconId;
         [FieldOffset(0xC8)] public Utf8String ItemName;
     }
-
-    [MemberFunction("E8 ?? ?? ?? ?? EB B1 48 8B 4B 28")]
-    public readonly partial void OpenByRecipeId(uint recipeId, uint amount = 1);
-
-    [MemberFunction("48 89 5C 24 ?? 57 48 83 EC 20 BA ?? ?? ?? ?? 48 8B D9 E8 ?? ?? ?? ?? 48 8B F8 48 85 C0 74 5A")]
-    public readonly partial nint OpenRecipeResultItemContextMenu();
 }

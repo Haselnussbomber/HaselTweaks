@@ -16,11 +16,11 @@ public unsafe partial struct AgentMJIGatheringNoteBook
     [FieldOffset(0x28)] public AgentMJIGatheringNoteBook_Data* Data;
 
     [MemberFunction("40 53 48 83 EC 20 48 8B 41 28 48 8B D9 89 90")]
-    public partial void SelectItem(uint itemIndex);
+    public readonly partial void SelectItem(uint itemIndex);
 }
 
 [StructLayout(LayoutKind.Explicit, Size = 0x1A0)]
-public unsafe struct AgentMJIGatheringNoteBook_Data
+public struct AgentMJIGatheringNoteBook_Data
 {
     [FieldOffset(0)] public uint Status;
 
@@ -33,7 +33,7 @@ public unsafe struct AgentMJIGatheringNoteBook_Data
 }
 
 [StructLayout(LayoutKind.Explicit, Size = 0x80)]
-public unsafe struct AgentMJIGatheringNoteBook_Data_GatherItem
+public struct AgentMJIGatheringNoteBook_Data_GatherItem
 {
     [FieldOffset(0x00)] public ushort Radius;
     [FieldOffset(0x02)] public short X;

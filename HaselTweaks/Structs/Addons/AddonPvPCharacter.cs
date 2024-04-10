@@ -10,6 +10,7 @@ public unsafe partial struct AddonPvPCharacter
     public const int NUM_CLASSES = 19;
 
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
+
     [FixedSizeArray<ClassEntry>(19)]
     [FieldOffset(0x240)] public fixed byte ClassEntries[0x28 * 19];
 

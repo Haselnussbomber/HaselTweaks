@@ -66,6 +66,8 @@ Available Commands:
   Target a player and execute the command to see what mount your target is riding and which item teaches this mount.
 - `/whatbarding`  
   Target a players chocobo companion and execute the command to see what barding it is wearing.
+- `/glamourplate <id>`  
+  This shortcut command executes the "/gearset change" command with the current gear set id and the given glamour plate id (1-20).
 
 ### Custom Chat Message Formats
 

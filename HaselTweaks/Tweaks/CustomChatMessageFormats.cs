@@ -2,7 +2,6 @@ using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using Dalamud.Game.Config;
 using Dalamud.Interface;
@@ -78,15 +77,8 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         "common/font/fonticon_ps5.tex",
         "common/font/fonticon_lys.tex",
     ];
-    private byte[]? GfdFile = null;
-    private unsafe GfdFileView GfdFileView
-    {
-        get
-        {
-            GfdFile ??= Service.DataManager.GetFile("common/font/gfdata.gfd")!.Data;
-            return new(new(Unsafe.AsPointer(ref GfdFile[0]), GfdFile.Length));
-        }
-    }
+    private GfdFileView? gfdFileView = null;
+    private GfdFileView GfdFileView => gfdFileView ??= new(Service.DataManager.GetFile("common/font/gfdata.gfd")!.Data);
 
     public override void DrawConfig()
     {
@@ -273,7 +265,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
     {
         CachedLogKindRows = null;
         CachedTextColors = null;
-        GfdFile = null;
+        gfdFileView = null;
     }
 
     public override void OnLanguageChange()
@@ -712,14 +704,16 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
 
     public void DrawGfdEntry(GfdFileView.GfdEntry entry)
     {
-        var startPos = new Vector2(entry.Left, entry.Top);
-        var size = new Vector2(entry.Width, entry.Height);
+        var startPos = new Vector2(entry.Left, entry.Top) * 2 + new Vector2(0, 340);
+        var size = new Vector2(entry.Width, entry.Height) * 2;
 
         var gfdTextureIndex = 0u;
         if (Service.GameConfig.TryGet(SystemConfigOption.PadSelectButtonIcon, out uint padSelectButtonIcon))
             gfdTextureIndex = padSelectButtonIcon;
 
-        Service.TextureManager.Get(GfdTextures[gfdTextureIndex], 2, startPos, startPos + size).Draw(ImGuiHelpers.ScaledVector2(size.X, size.Y));
+        Service.TextureManager
+            .Get(GfdTextures[gfdTextureIndex], 1, startPos, startPos + size)
+            .Draw(ImGuiHelpers.ScaledVector2(size.X, size.Y) / 2);
     }
 
     private List<(LogKind LogKind, LogFilter LogFilter, SeString Format)> GenerateLogKindCache()
