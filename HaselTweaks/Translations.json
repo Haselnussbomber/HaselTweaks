@@ -466,7 +466,8 @@
   },
   "Commands.Config.EnableGlamourPlateCommand.Description": {
     "en": "This shortcut command executes the \"/gearset change\" command with the current gear set id and the given glamour plate id (1-20).",
-    "de": "Dieser Abkürzungsbefehl führt den Befehl \"/gearset change\" mit der Nummer des aktuellen Ausrüstungssets und der angegebenen Projektionsplatten-Nummer (1-20) aus."
+    "de": "Dieser Abkürzungsbefehl führt den Befehl \"/gearset change\" mit der Nummer des aktuellen Ausrüstungssets und der angegebenen Projektionsplatten-Nummer (1-20) aus.",
+    "zh": "这个快捷命令使用当前的套装编号和给定的投影模板编号(1-20)执行“/套装 更换”命令。"
   },
   "Commands.ItemLink.ItemNotFound": {
     "en": "Item {0} not found.",
@@ -480,7 +481,8 @@
   },
   "Commands.InvalidArguments": {
     "en": "Invalid arguments.",
-    "de": "Ungültige Argumente."
+    "de": "Ungültige Argumente.",
+    "zh": "无效的参数。"
   },
   "Commands.NoTarget": {
     "en": "No target.",
@@ -528,7 +530,8 @@
   },
   "Commands.GlamourPlate.InvalidGearset": {
     "en": "Invalid gear set.",
-    "de": "Ungültiges Ausrüstungsset."
+    "de": "Ungültiges Ausrüstungsset.",
+    "zh": "无效的套装。"
   },
 
   "CustomChatMessageFormats.Tweak.Name": {
