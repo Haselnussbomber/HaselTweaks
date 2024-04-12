@@ -320,14 +320,13 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
             Service.GetService<Configuration>().Save();
         }
     }
-    }
 
     #endregion
 
     #region Login: Show pets in character selection
 
     private BattleChara* _pet = null;
-    private short _petIndex = -1;
+    private ushort _petIndex = 0xFFFF;
 
     private void UpdatePetMirageSettings()
     {
@@ -410,18 +409,18 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
 
         if (_pet == null)
         {
-            _petIndex = (short)clientObjectManager->CreateBattleCharacter();
-            if (_petIndex == -1)
+            _petIndex = (ushort)clientObjectManager->CreateBattleCharacter();
+            if (_petIndex == 0xFFFF)
                 return;
 
-            _pet = (BattleChara*)clientObjectManager->GetObjectByIndex((ushort)_petIndex);
+            _pet = (BattleChara*)clientObjectManager->GetObjectByIndex(_petIndex);
 
             Debug($"Pet with index {_petIndex} spanwed ({(nint)_pet:X})");
         }
 
         if (_pet == null)
         {
-            _petIndex = -1;
+            _petIndex = 0xFFFF;
             return;
         }
 
@@ -434,12 +433,15 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
 
     public void DespawnPet()
     {
-        if (_petIndex < 0)
+        if (_petIndex == 0xFFFF)
             return;
 
-        ClientObjectManager.Instance()->DeleteObjectByIndex((ushort)_petIndex, 0);
+        var clientObjectManager = ClientObjectManager.Instance();
+        if (clientObjectManager != null && clientObjectManager->GetObjectByIndex(_petIndex) != null)
+            clientObjectManager->DeleteObjectByIndex(_petIndex, 0);
+
         Debug($"Pet with index {_petIndex} despawned");
-        _petIndex = -1;
+        _petIndex = 0xFFFF;
         _pet = null;
     }
 
