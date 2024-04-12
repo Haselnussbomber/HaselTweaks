@@ -1,8 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Game.ClientState.Keys;
 using Dalamud.Game.Config;
 using Dalamud.Interface;
+using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
@@ -13,16 +17,19 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
 using HaselTweaks.Records;
 using HaselTweaks.Structs;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
+using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
 public class EnhancedLoginLogoutConfiguration
 {
+    public bool SkipLogo = true;
     public bool ShowPets = false;
     public bool EnableCharaSelectEmote = false;
     public bool PreloadTerritory = true;
@@ -52,11 +59,13 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
         Service.GameConfig.Changed += GameConfig_Changed;
         UpdateCharacterSettings();
         PreloadEmotes();
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "Logo", OnLogoPostSetup);
     }
 
     public override void Disable()
     {
         Service.GameConfig.Changed -= GameConfig_Changed;
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Logo", OnLogoPostSetup);
         CleanupCharaSelect();
     }
 
@@ -142,6 +151,18 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
         var scale = ImGuiHelpers.GlobalScale;
 
         ImGuiUtils.DrawSection(t("EnhancedLoginLogout.Config.LoginOptions.Title"));
+        // SkipLogo
+        if (ImGui.Checkbox(t("EnhancedLoginLogout.Config.SkipLogo.Label"), ref Config.SkipLogo))
+        {
+            Service.GetService<Configuration>().Save();
+        }
+        using (ImGuiUtils.ConfigIndent())
+        {
+            ImGuiUtils.PushCursorY(-3);
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, t("EnhancedLoginLogout.Config.SkipLogo.Description"));
+            ImGuiUtils.PushCursorY(3);
+        }
+
         // ShowPets
         if (ImGui.Checkbox(t("EnhancedLoginLogout.Config.ShowPets.Label"), ref Config.ShowPets))
         {
@@ -318,6 +339,24 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
         if (ImGui.Checkbox(t("EnhancedLoginLogout.Config.ClearTellHistory.Label"), ref Config.ClearTellHistory))
         {
             Service.GetService<Configuration>().Save();
+        }
+    }
+
+    #endregion
+
+    #region Login: Skip Logo
+
+    private void OnLogoPostSetup(AddonEvent type, AddonArgs args)
+    {
+        if (Config.SkipLogo)
+        {
+            var addon = (AtkUnitBase*)args.Addon;
+            var value = stackalloc AtkValue[1];
+            value->Type = ValueType.Int;
+            value->Int = 0;
+            Log("Sending change stage to title screen event...");
+            addon->FireCallback(1, value, (void*)1);
+            addon->Hide(false, false, 1);
         }
     }
 

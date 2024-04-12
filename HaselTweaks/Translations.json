@@ -839,6 +839,14 @@
     "de": "Logout-Optionen",
     "zh": "登出选项"
   },
+  "EnhancedLoginLogout.Config.SkipLogo.Label": {
+    "en": "Skip Logo",
+    "de": "Logo überspringen"
+  },
+  "EnhancedLoginLogout.Config.SkipLogo.Description": {
+    "en": "Instantly shows the title screen.",
+    "de": "Zeigt direkt den Titelbildschirm an."
+  },
   "EnhancedLoginLogout.Config.ShowPets.Label": {
     "en": "Show pets in character selection",
     "de": "Familiar in der Charakterauswahl anzeigen",
@@ -865,7 +873,7 @@
   },
   "EnhancedLoginLogout.Config.PlayEmote.Description": {
     "en": "Have your character greet you with an emote!",
-    "de": "Lass deinen Charakter dich mit einem Emote begrüßen!",
+    "de": "Lass dich von deinem Charakter mit einem Emote willkommen heißen!",
     "zh": "让你的角色用情感动作向你打招呼！"
   },
   "EnhancedLoginLogout.Config.PlayEmote.Note": {
@@ -927,6 +935,10 @@
     "en": "Clear tell history on logout",
     "de": "Flüsterverlauf beim Ausloggen leeren",
     "zh": "登出时清除私聊历史记录"
+  },
+  "EnhancedLoginLogout.AutoConnect.SkippedNotification.Content": {
+    "en": "Auto connect cancelled",
+    "de": "Automatisch verbinden abgebrochen"
   },
 
   "EnhancedMaterialList.Tweak.Name": {

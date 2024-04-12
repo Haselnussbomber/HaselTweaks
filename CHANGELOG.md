@@ -6,6 +6,10 @@
 
 - The resolver now scans signatures in parallel. This speeds up the scanning of addresses after a patch.
 
+### Enhanced Login/Logout
+
+- **Added:** An option to skip the startup logo (default on). Instantly shows the title screen.
+
 ### Commands
 
 - **Added:** New Command `/glamourplate <id>`  
