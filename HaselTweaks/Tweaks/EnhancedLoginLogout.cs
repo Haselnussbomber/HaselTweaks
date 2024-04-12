@@ -149,6 +149,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
                 DespawnPet();
             else
                 SpawnPet();
+
+            Service.GetService<Configuration>().Save();
         }
         using (ImGuiUtils.ConfigIndent())
         {
@@ -173,12 +175,14 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
             if (ImGui.DragFloat3(t("EnhancedLoginLogout.Config.PetPosition.Label"), ref Config.PetPosition, 0.01f, -10f, 10f))
             {
                 ApplyPetPosition();
+                Service.GetService<Configuration>().Save();
             }
             ImGui.SameLine();
             if (ImGuiUtils.IconButton("##PetPositionReset", FontAwesomeIcon.Undo, t("HaselTweaks.Config.ResetToDefault", "-0.6, 0, 0")))
             {
                 Config.PetPosition = new(-0.6f, 0f, 0f);
                 ApplyPetPosition();
+                Service.GetService<Configuration>().Save();
             }
         }
 
@@ -192,6 +196,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
                 ResetEmoteMode();
                 _currentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(3);
             }
+            Service.GetService<Configuration>().Save();
         }
 
         var playEmoteDisabled = Config.EnableCharaSelectEmote ? null : ImRaii.Disabled();
@@ -297,7 +302,10 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
         playEmoteDisabled?.Dispose();
 
         // PreloadTerritory
-        ImGui.Checkbox(t("EnhancedLoginLogout.Config.PreloadTerritory.Label"), ref Config.PreloadTerritory);
+        if (ImGui.Checkbox(t("EnhancedLoginLogout.Config.PreloadTerritory.Label"), ref Config.PreloadTerritory))
+        {
+            Service.GetService<Configuration>().Save();
+        }
         using (ImGuiUtils.ConfigIndent())
         {
             ImGuiUtils.PushCursorY(-3);
@@ -307,7 +315,11 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
 
         ImGuiUtils.DrawSection(t("EnhancedLoginLogout.Config.LogoutOptions.Title"));
         // ClearTellHistory
-        ImGui.Checkbox(t("EnhancedLoginLogout.Config.ClearTellHistory.Label"), ref Config.ClearTellHistory);
+        if (ImGui.Checkbox(t("EnhancedLoginLogout.Config.ClearTellHistory.Label"), ref Config.ClearTellHistory))
+        {
+            Service.GetService<Configuration>().Save();
+        }
+    }
     }
 
     #endregion
@@ -478,6 +490,8 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
             Config.SelectedEmotes.Add(ActiveContentId, emoteId);
         else
             Config.SelectedEmotes[ActiveContentId] = emoteId;
+
+        Service.GetService<Configuration>().Save();
     }
 
     private void PlayEmote(uint emoteId)
