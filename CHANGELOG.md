@@ -1,14 +1,10 @@
 # Changelog
 
-## [Unreleased]
-
-### HaselTweaks
-
-- The resolver now scans signatures in parallel. This speeds up the scanning of addresses after a patch.
+## [22.0.0] (2023-04-15)
 
 ### New Tweak: Inventory Highlight
 
-Hold down the shift key and move the mouse over the inventory to highlight identical items.  
+Hold down the shift key when the inventory is open to highlight identical items.  
 An option is available to ignore the item quality (default on).
 
 ### Enhanced Login/Logout
@@ -1431,6 +1427,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[22.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v21.0.0...v22.0.0
 [21.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.4.0...v21.0.0
 [20.4.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.3.2...v20.4.0
 [20.3.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.3.1...v20.3.2
