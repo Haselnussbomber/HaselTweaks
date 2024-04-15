@@ -941,11 +941,6 @@
     "de": "Flüsterverlauf beim Ausloggen leeren",
     "zh": "登出时清除悄悄话历史记录"
   },
-  "EnhancedLoginLogout.AutoConnect.SkippedNotification.Content": {
-    "en": "Auto connect cancelled",
-    "de": "Automatisch verbinden abgebrochen",
-    "zh": "自动连接已取消"
-  },
 
   "EnhancedMaterialList.Tweak.Name": {
     "en": "Enhanced Material List",
