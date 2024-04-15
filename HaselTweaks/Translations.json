@@ -844,11 +844,13 @@
   },
   "EnhancedLoginLogout.Config.SkipLogo.Label": {
     "en": "Skip Logo",
-    "de": "Logo überspringen"
+    "de": "Logo überspringen",
+    "zh": "跳过 Logo"
   },
   "EnhancedLoginLogout.Config.SkipLogo.Description": {
     "en": "Instantly shows the title screen.",
-    "de": "Zeigt direkt den Titelbildschirm an."
+    "de": "Zeigt direkt den Titelbildschirm an.",
+    "zh": "立即显示标题界面"
   },
   "EnhancedLoginLogout.Config.ShowPets.Label": {
     "en": "Show pets in character selection",
@@ -932,16 +934,17 @@
   "EnhancedLoginLogout.Config.PreloadTerritory.Description": {
     "en": "When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.",
     "de": "Wenn in die Warteschlange gesetzt wird, werden die Texturen des Gebiets im Hintergrund vorgeladen, so wie es auch beim Teleportieren geschieht.",
-    "zh": "当你进入登入队列时，它会在背景中预加载地图材质，就像你开始传送时它做的一样。"
+    "zh": "当你进入登入队列时，它会预加载地图材质，与你开始传送时一样。"
   },
   "EnhancedLoginLogout.Config.ClearTellHistory.Label": {
     "en": "Clear tell history on logout",
     "de": "Flüsterverlauf beim Ausloggen leeren",
-    "zh": "登出时清除私聊历史记录"
+    "zh": "登出时清除悄悄话历史记录"
   },
   "EnhancedLoginLogout.AutoConnect.SkippedNotification.Content": {
     "en": "Auto connect cancelled",
-    "de": "Automatisch verbinden abgebrochen"
+    "de": "Automatisch verbinden abgebrochen",
+    "zh": "自动连接已取消"
   },
 
   "EnhancedMaterialList.Tweak.Name": {
@@ -1046,37 +1049,37 @@
 
   "GearSetGrid.Tweak.Name": {
     "en": "Gear Set Grid",
-    "zh": "套装网格"
+    "zh": "套装表格"
   },
   "GearSetGrid.Tweak.Description": {
     "en": "A window that displays a grid view of all the items of each gear set.",
     "de": "Ein Fenster, das eine Übersicht aller Gegenstände jeder Ausrüstungssets anzeigt.",
-    "zh": "一个以网格视图显示每个套装的所有物品的窗口。"
+    "zh": "一个以表格显示每个套装的所有部位的窗口。"
   },
   "GearSetGrid.Config.AutoOpenWithGearSetList.Label": {
     "en": "Auto-open/close with Gear Set List",
     "de": "Automatisches Öffnen/Schließen mit Liste der Ausrüstungssets",
-    "zh": "随着套装列表自动打开/关闭"
+    "zh": "随着游戏的套装列表自动开启/关闭"
   },
   "GearSetGrid.Config.RegisterCommand.Label": {
     "en": "Register /gsg command to toggle window",
     "de": "Befehl /gsg zum Umschalten des Fensters registrieren",
-    "zh": "注册 /gsg 命令来开关窗口"
+    "zh": "注册 /gsg 命令以用来开关窗口"
   },
   "GearSetGrid.CommandHandlerHelpMessage": {
     "en": "Opens the Gear Set Grid window",
     "de": "Öffnet das Gear Set Grid-Fenster",
-    "zh": "打开套装网格窗口"
+    "zh": "打开套装表格窗口"
   },
   "GearSetGrid.Config.ConvertSeparators.Label": {
     "en": "Convert separator gear set with spacing",
     "de": "Umwandeln von Trenner-Ausrüstungssets",
-    "zh": "用空行替换分隔符套装"
+    "zh": "用空行替换作为分隔符的套装"
   },
   "GearSetGrid.Config.ConvertSeparators.Description": {
     "en": "When using separator gear sets (e.g. a gearset with name ===========) this option automatically converts it into spacing between rows (in the Gear Set Grid).",
     "de": "Bei der Verwendung von Trenner-Ausrüstungssets (z.B. ein Ausrüstungsset mit dem Namen ===========) wird dieser mit dieser Option automatisch in Zeilenabstände (im Gear Set Grid) umgewandelt.",
-    "zh": "当使用分隔符套装（例如，一个叫 =========== 的套装），这个选项会自动将其转化为空行（在套装网格中）。"
+    "zh": "当存在分隔符套装（例如，一个叫 =========== 的套装）时，这个设置会自动将其转化为空行（在套装表格中）。"
   },
   "GearSetGrid.Config.SeparatorFilter.Label": {
     "en": "Gear set name of the separator",
@@ -1090,7 +1093,7 @@
   },
   "GearSetGridWindow.Title": {
     "en": "[HaselTweaks] Gear Set Grid",
-    "zh": "[HaselTweaks] 套装网格"
+    "zh": "[HaselTweaks] 套装表格"
   },
   "GearSetGridWindow.ItemTooltip.LabelGlamour": {
     "en": "Glamour:",
@@ -1140,19 +1143,23 @@
   },
 
   "InventoryHighlight.Tweak.Name": {
-    "en": "Inventory Highlight"
+    "en": "Inventory Highlight",
+    "zh": "物品栏高亮"
   },
   "InventoryHighlight.Tweak.Description": {
     "en": "Hold down the shift key while the inventory is open to highlight identical items.",
-    "de": "Halte Umschalttaste gedrückt während das Inventar offen ist, um identische Gegenstände hervorzuheben."
+    "de": "Halte Umschalttaste gedrückt während das Inventar offen ist, um identische Gegenstände hervorzuheben.",
+    "zh": "在打开物品栏时，按住Shift键以高亮显示相同的物品。"
   },
   "InventoryHighlight.Config.IgnoreQuality.Label": {
     "en": "Ignore item quality",
-    "de": "Ignoriere Gegenstandsqualität"
+    "de": "Ignoriere Gegenstandsqualität",
+    "zh": "忽略物品品质"
   },
   "InventoryHighlight.Config.IgnoreQuality.Description": {
     "en": "Highlights the same items regardless of whether they are high quality or not.",
-    "de": "Hebt gleiche Gegenstände hervor, unabhängig davon, ob sie von hoher Qualität sind oder nicht."
+    "de": "Hebt gleiche Gegenstände hervor, unabhängig davon, ob sie von hoher Qualität sind oder nicht.",
+    "zh": "高亮显示相同的物品，不论它们的品质是否一致。"
   },
 
   "KeepScreenAwake.Tweak.Name": {
