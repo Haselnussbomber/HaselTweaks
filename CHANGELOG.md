@@ -6,6 +6,15 @@
 
 - The resolver now scans signatures in parallel. This speeds up the scanning of addresses after a patch.
 
+### New Tweak: Inventory Highlight
+
+Hold down the shift key and move the mouse over the inventory to highlight identical items.  
+An option is available to ignore the item quality (default on).
+
+### Enhanced Login/Logout
+
+- **Added:** An option to skip the startup logo (default on). Instantly shows the title screen.
+
 ### Commands
 
 - **Added:** New Command `/glamourplate <id>`  

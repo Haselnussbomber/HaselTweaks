@@ -842,6 +842,14 @@
     "de": "Logout-Optionen",
     "zh": "登出选项"
   },
+  "EnhancedLoginLogout.Config.SkipLogo.Label": {
+    "en": "Skip Logo",
+    "de": "Logo überspringen"
+  },
+  "EnhancedLoginLogout.Config.SkipLogo.Description": {
+    "en": "Instantly shows the title screen.",
+    "de": "Zeigt direkt den Titelbildschirm an."
+  },
   "EnhancedLoginLogout.Config.ShowPets.Label": {
     "en": "Show pets in character selection",
     "de": "Familiar in der Charakterauswahl anzeigen",
@@ -868,7 +876,7 @@
   },
   "EnhancedLoginLogout.Config.PlayEmote.Description": {
     "en": "Have your character greet you with an emote!",
-    "de": "Lass deinen Charakter dich mit einem Emote begrüßen!",
+    "de": "Lass dich von deinem Charakter mit einem Emote willkommen heißen!",
     "zh": "让你的角色用情感动作向你打招呼！"
   },
   "EnhancedLoginLogout.Config.PlayEmote.Note": {
@@ -930,6 +938,10 @@
     "en": "Clear tell history on logout",
     "de": "Flüsterverlauf beim Ausloggen leeren",
     "zh": "登出时清除私聊历史记录"
+  },
+  "EnhancedLoginLogout.AutoConnect.SkippedNotification.Content": {
+    "en": "Auto connect cancelled",
+    "de": "Automatisch verbinden abgebrochen"
   },
 
   "EnhancedMaterialList.Tweak.Name": {
@@ -1125,6 +1137,22 @@
     "en": "Hides the Main Scenario Guide when the MSQ is completed, but still displays Job quests.",
     "de": "Blendet den Scenarioführer aus, wenn die MSQ abgeschlossen ist, zeigt aber weiterhin die Job-Quests an.",
     "zh": "当主线任务全清后隐藏主线向导，但仍然显示职业任务。"
+  },
+
+  "InventoryHighlight.Tweak.Name": {
+    "en": "Inventory Highlight"
+  },
+  "InventoryHighlight.Tweak.Description": {
+    "en": "Hold down the shift key while the inventory is open to highlight identical items.",
+    "de": "Halte Umschalttaste gedrückt während das Inventar offen ist, um identische Gegenstände hervorzuheben."
+  },
+  "InventoryHighlight.Config.IgnoreQuality.Label": {
+    "en": "Ignore item quality",
+    "de": "Ignoriere Gegenstandsqualität"
+  },
+  "InventoryHighlight.Config.IgnoreQuality.Description": {
+    "en": "Highlights the same items regardless of whether they are high quality or not.",
+    "de": "Hebt gleiche Gegenstände hervor, unabhängig davon, ob sie von hoher Qualität sind oder nicht."
   },
 
   "KeepScreenAwake.Tweak.Name": {

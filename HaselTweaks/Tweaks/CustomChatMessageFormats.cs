@@ -707,12 +707,10 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         var startPos = new Vector2(entry.Left, entry.Top) * 2 + new Vector2(0, 340);
         var size = new Vector2(entry.Width, entry.Height) * 2;
 
-        var gfdTextureIndex = 0u;
-        if (Service.GameConfig.TryGet(SystemConfigOption.PadSelectButtonIcon, out uint padSelectButtonIcon))
-            gfdTextureIndex = padSelectButtonIcon;
+        Service.GameConfig.TryGet(SystemConfigOption.PadSelectButtonIcon, out uint padSelectButtonIcon);
 
         Service.TextureManager
-            .Get(GfdTextures[gfdTextureIndex], 1, startPos, startPos + size)
+            .Get(GfdTextures[padSelectButtonIcon], 1, startPos, startPos + size)
             .Draw(ImGuiHelpers.ScaledVector2(size.X, size.Y) / 2);
     }
 
