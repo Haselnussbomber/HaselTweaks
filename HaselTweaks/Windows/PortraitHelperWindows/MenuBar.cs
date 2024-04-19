@@ -118,9 +118,9 @@ public unsafe class MenuBar : Window
         }
         else if (Service.WindowManager.IsWindowOpen<AdvancedImportOverlay>())
         {
-            using var color1 = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942);
-            using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
-            using var color3 = ImRaii.PushColor(ImGuiCol.ButtonHovered, 0xFFCE8231);
+            using var colors = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
+                                     .Push(ImGuiCol.ButtonActive, 0xFFB06C2B)
+                                     .Push(ImGuiCol.ButtonHovered, 0xFFCE8231);
 
             if (ImGuiUtils.IconButton("ViewModeNormal", FontAwesomeIcon.FileImport, t("PortraitHelperWindows.MenuBar.ToggleAdvancedImportMode.Label")))
             {
@@ -136,9 +136,9 @@ public unsafe class MenuBar : Window
         ImGui.SameLine();
         if (Service.WindowManager.IsWindowOpen<AdvancedEditOverlay>())
         {
-            using var color1 = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942);
-            using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
-            using var color3 = ImRaii.PushColor(ImGuiCol.ButtonHovered, 0xFFCE8231);
+            using var colors = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
+                                     .Push(ImGuiCol.ButtonActive, 0xFFB06C2B)
+                                     .Push(ImGuiCol.ButtonHovered, 0xFFCE8231);
 
             if (ImGuiUtils.IconButton("ViewModeNormal", FontAwesomeIcon.FilePen, t("PortraitHelperWindows.MenuBar.ToggleAdvancedEditMode.Label")))
             {
@@ -166,9 +166,9 @@ public unsafe class MenuBar : Window
         ImGui.SameLine();
         if (Service.WindowManager.IsWindowOpen<PresetBrowserOverlay>())
         {
-            using var color1 = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942);
-            using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
-            using var color3 = ImRaii.PushColor(ImGuiCol.ButtonHovered, 0xFFCE8231);
+            using var colors = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
+                                     .Push(ImGuiCol.ButtonActive, 0xFFB06C2B)
+                                     .Push(ImGuiCol.ButtonHovered, 0xFFCE8231);
 
             if (ImGuiUtils.IconButton("ViewModeNormal2", FontAwesomeIcon.List, t("PortraitHelperWindows.MenuBar.TogglePresetBrowser.Label")))
             {
@@ -190,9 +190,9 @@ public unsafe class MenuBar : Window
         ImGui.SameLine();
         if (Service.WindowManager.IsWindowOpen<AlignmentToolSettingsOverlay>())
         {
-            using var color1 = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942);
-            using var color2 = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xFFB06C2B);
-            using var color3 = ImRaii.PushColor(ImGuiCol.ButtonHovered, 0xFFCE8231);
+            using var colors = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
+                                     .Push(ImGuiCol.ButtonActive, 0xFFB06C2B)
+                                     .Push(ImGuiCol.ButtonHovered, 0xFFCE8231);
 
             if (ImGuiUtils.IconButton("ToggleAlignmentToolOff", FontAwesomeIcon.Hashtag, t("PortraitHelperWindows.MenuBar.ToggleAlignmentTool.Label.CloseSettings")))
             {

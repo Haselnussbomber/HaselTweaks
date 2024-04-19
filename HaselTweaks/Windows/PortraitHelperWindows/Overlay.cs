@@ -14,9 +14,9 @@ namespace HaselTweaks.Windows.PortraitHelperWindows;
 
 public abstract unsafe class Overlay : Window, IDisposable
 {
-    private ImRaii.Color? _windowBg;
-    private ImRaii.Style? _windowPadding;
-    private ImRaii.Color? _windowText;
+    private readonly ImRaii.Style WindowPadding = new();
+    private readonly ImRaii.Color WindowBg = new();
+    private readonly ImRaii.Color WindowText = new();
 
     protected bool IsWindow { get; set; }
 
@@ -52,12 +52,9 @@ public abstract unsafe class Overlay : Window, IDisposable
 
     public override void OnClose()
     {
-        _windowPadding?.Dispose();
-        _windowPadding = null;
-        _windowText?.Dispose();
-        _windowText = null;
-        _windowBg?.Dispose();
-        _windowBg = null;
+        WindowPadding.Dispose();
+        WindowBg.Dispose();
+        WindowText.Dispose();
 
         ToggleUiVisibility(true);
 
@@ -95,30 +92,27 @@ public abstract unsafe class Overlay : Window, IDisposable
         {
             if (Type == OverlayType.LeftPane)
             {
-                _windowPadding = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+                WindowPadding.Push(ImGuiStyleVar.WindowPadding, Vector2.Zero);
             }
 
             if (Colors.IsLightTheme)
             {
-                _windowText = ImRaii.PushColor(ImGuiCol.Text, (uint)HaselColor.FromUiForeground(2));
+                WindowText.Push(ImGuiCol.Text, (uint)HaselColor.FromUiForeground(2));
             }
 
-            _windowBg = ImRaii.PushColor(ImGuiCol.WindowBg, 0);
+            WindowBg.Push(ImGuiCol.WindowBg, 0);
         }
     }
 
     public override void Draw()
     {
-        _windowPadding?.Dispose();
-        _windowPadding = null;
-        _windowBg?.Dispose();
-        _windowBg = null;
+        WindowPadding.Dispose();
+        WindowBg.Dispose();
     }
 
     public override void PostDraw()
     {
-        _windowText?.Dispose();
-        _windowText = null;
+        WindowText.Dispose();
 
         UpdateWindow();
     }

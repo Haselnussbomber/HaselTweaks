@@ -63,8 +63,9 @@ public unsafe class GearSetGridWindow : LockableWindow
     {
         const int NUM_SLOTS = 13;
 
-        using var cellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, Vector2.Zero);
-        using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
+        using var padding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, Vector2.Zero)
+                                  .Push(ImGuiStyleVar.FramePadding, Vector2.Zero);
+
         using var table = ImRaii.Table("##Table", 1 + NUM_SLOTS, ImGuiTableFlags.ScrollY | ImGuiTableFlags.NoSavedSettings);
         if (!table)
             return;

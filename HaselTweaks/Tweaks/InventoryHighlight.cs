@@ -199,7 +199,7 @@ public unsafe class InventoryHighlight : Tweak<InventoryHighlightConfiguration>
             if (inventorySlot == null)
                 continue;
 
-            var itemId  = NormalizeItemId(inventorySlot->GetItemId());
+            var itemId = NormalizeItemId(inventorySlot->GetItemId());
 
             if (itemId == 0 || itemId == HoveredItemId)
             {

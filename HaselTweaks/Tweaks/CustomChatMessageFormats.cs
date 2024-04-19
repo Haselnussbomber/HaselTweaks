@@ -651,7 +651,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
 
     public void DrawExample(SeString format)
     {
-        var colorQueue = new Queue<ImRaii.Color>();
+        using var textColors = new ImRaii.Color();
 
         // TODO: compose player name with party index, job icon (depending on setting) and world
         var resolved = format.Resolve(["Player Name", "Message"]);
@@ -678,9 +678,9 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
 
                 case ColorPayload colorPayload:
                     if (colorPayload.Color is IntegerExpression integerExpression)
-                        colorQueue.Enqueue(ImRaii.PushColor(ImGuiCol.Text, SwapRedBlue((uint)integerExpression.ResolveNumber())));
-                    else if (colorPayload.Color?.ExpressionType == ExpressionType.StackColor && colorQueue.TryDequeue(out var color))
-                        color?.Dispose();
+                        textColors.Push(ImGuiCol.Text, SwapRedBlue((uint)integerExpression.ResolveNumber()));
+                    else if (colorPayload.Color?.ExpressionType == ExpressionType.StackColor)
+                        textColors.Pop(1);
 
                     ImGui.Dummy(Vector2.Zero);
                     break;
@@ -694,12 +694,6 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         }
 
         ImGui.NewLine();
-
-        while (colorQueue.Count > 0)
-        {
-            if (colorQueue.TryDequeue(out var color))
-                color?.Dispose();
-        }
     }
 
     public void DrawGfdEntry(GfdFileView.GfdEntry entry)

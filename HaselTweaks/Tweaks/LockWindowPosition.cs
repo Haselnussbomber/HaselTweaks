@@ -189,9 +189,9 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             ImGui.SetNextWindowPos(_hoveredWindowPos);
             ImGui.SetNextWindowSize(_hoveredWindowSize);
 
-            using var windowBorderSize = ImRaii.PushStyle(ImGuiStyleVar.WindowBorderSize, 1.0f);
-            using var borderColor = ImRaii.PushColor(ImGuiCol.Border, (uint)Colors.Gold);
-            using var windowBgColor = ImRaii.PushColor(ImGuiCol.WindowBg, new Vector4(0.847f, 0.733f, 0.49f, 0.33f));
+            using var windowStyles = ImRaii.PushStyle(ImGuiStyleVar.WindowBorderSize, 1.0f);
+            using var windowColors = Colors.Gold.Push(ImGuiCol.Border)
+                                                .Push(ImGuiCol.WindowBg, new Vector4(0.847f, 0.733f, 0.49f, 0.33f));
 
             if (ImGui.Begin("Lock Windows Picker", ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize))
             {

@@ -97,8 +97,8 @@ public class PresetCard : IDisposable
         }
         else if (!_doesImageFileExist)
         {
-            using var a = ImRaii.PushFont(UiBuilder.IconFont);
-            using var b = ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red);
+            using var font = ImRaii.PushFont(UiBuilder.IconFont);
+            using var color = Colors.Red.Push(ImGuiCol.Text);
             ImGui.SetCursorPos(center - ImGui.CalcTextSize(FontAwesomeIcon.FileImage.ToIconString()) / 2f);
             ImGui.TextUnformatted(FontAwesomeIcon.FileImage.ToIconString());
         }
@@ -129,10 +129,10 @@ public class PresetCard : IDisposable
         ImGui.SetCursorPos(cursorPos);
 
         {
-            using var a = ImRaii.PushColor(ImGuiCol.Button, 0);
-            using var b = ImRaii.PushColor(ImGuiCol.ButtonActive, ButtonActiveColor);
-            using var c = ImRaii.PushColor(ImGuiCol.ButtonHovered, ButtonHoveredColor);
-            using var d = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0);
+            using var colors = ImRaii.PushColor(ImGuiCol.Button, 0)
+                .Push(ImGuiCol.ButtonActive, ButtonActiveColor)
+                .Push(ImGuiCol.ButtonHovered, ButtonHoveredColor);
+            using var rounding = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0);
             ImGui.Button($"##{_preset.Id}_Button", PortraitSize * scale);
         }
 
