@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Inventory Highlight
+
+- **Fixed:** Hovering HQ items would not highlight similar items.
+
 ## [22.0.0] (2023-04-15)
 
 ### New Tweak: Inventory Highlight

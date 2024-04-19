@@ -71,7 +71,7 @@ public unsafe class InventoryHighlight : Tweak<InventoryHighlightConfiguration>
 
     public override void OnFrameworkUpdate()
     {
-        HoveredItemId = (uint)Service.GameGui.HoveredItem;
+        HoveredItemId = NormalizeItemId((uint)Service.GameGui.HoveredItem);
 
         if (IsHighlightActive())
         {
