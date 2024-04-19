@@ -1,10 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## [22.0.1] (2023-04-16)
 
 ### Inventory Highlight
 
-- **Fixed:** Hovering HQ items would not highlight similar items.
+- **Fixed:** Hovering HQ items would not highlight similar items when "Ignore item quality" was enabled.
 
 ## [22.0.0] (2023-04-15)
 
@@ -1433,6 +1433,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[22.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v22.0.0...v22.0.1
 [22.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v21.0.0...v22.0.0
 [21.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.4.0...v21.0.0
 [20.4.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.3.2...v20.4.0
