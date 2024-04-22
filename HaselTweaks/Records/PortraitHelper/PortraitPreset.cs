@@ -380,7 +380,7 @@ public sealed record PortraitPreset
             {
                 presetIndex = addonBannerEditor->NumPresets - 1;
 
-                ((AtkComponentList*)addonBannerEditor->PresetDropdown->List)->SetListLength(addonBannerEditor->NumPresets); // increase to maximum, so "Custom" is displayed
+                ((AtkComponentList*)addonBannerEditor->PresetDropdown->List)->SetItemCount(addonBannerEditor->NumPresets); // increase to maximum, so "Custom" is displayed
             }
 
             addonBannerEditor->PresetDropdown->SelectItem(presetIndex);
@@ -523,9 +523,9 @@ public sealed record PortraitPreset
 
         state->CharaView->ImportPortraitData(tempPortraitData);
 
-        addonBannerEditor->PlayAnimationCheckbox->SetValue(false);
-        addonBannerEditor->HeadFacingCameraCheckbox->SetValue(false);
-        addonBannerEditor->EyesFacingCameraCheckbox->SetValue(false);
+        addonBannerEditor->PlayAnimationCheckbox->IsChecked = false;
+        addonBannerEditor->HeadFacingCameraCheckbox->IsChecked = false;
+        addonBannerEditor->EyesFacingCameraCheckbox->IsChecked = false;
 
         state->SetHasChanged(
             state->HasDataChanged ||

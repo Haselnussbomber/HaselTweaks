@@ -350,7 +350,7 @@ public unsafe class AdvancedEditOverlay : Overlay
                 }
 
                 CharaView->Base.ToggleAnimationPlayback(true);
-                Addon->PlayAnimationCheckbox->SetValue(false);
+                Addon->PlayAnimationCheckbox->IsChecked = false;
 
                 if (!EditorState->HasDataChanged)
                     EditorState->SetHasChanged(true);

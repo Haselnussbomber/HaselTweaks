@@ -16,7 +16,7 @@ public partial struct MountMinionNoteBookBase
 
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x2A0)] public TabSwitcher TabSwitcher;
+    [FieldOffset(0x2A0)] public TabController TabController;
 
     [FieldOffset(0x8C0)] public ViewType CurrentView;
 

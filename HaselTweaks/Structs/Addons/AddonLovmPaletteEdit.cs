@@ -8,5 +8,5 @@ public struct AddonLovmPaletteEdit
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x840)] public TabSwitcher TabSwitcher;
+    [FieldOffset(0x840)] public TabController TabController;
 }

@@ -283,27 +283,27 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         }
         else if (Config.HandleFishGuide && name == "FishGuide2")
         {
-            UpdateTabSwitcher((nint)unitBase, &((AddonFishGuide2*)unitBase)->TabSwitcher);
+            UpdateTabController(unitBase, &((AddonFishGuide2*)unitBase)->TabController);
         }
         else if (Config.HandleAdventureNoteBook && name == "AdventureNoteBook")
         {
-            UpdateTabSwitcher((nint)unitBase, &((AddonAdventureNoteBook*)unitBase)->TabSwitcher);
+            UpdateTabController(unitBase, &((AddonAdventureNoteBook*)unitBase)->TabController);
         }
         else if (Config.HandleOrnamentNoteBook && name == "OrnamentNoteBook")
         {
-            UpdateTabSwitcher((nint)unitBase, &((AddonOrnamentNoteBook*)unitBase)->TabSwitcher);
+            UpdateTabController(unitBase, &((AddonOrnamentNoteBook*)unitBase)->TabController);
         }
         else if (Config.HandleGoldSaucerCardList && name == "GSInfoCardList")
         {
-            UpdateTabSwitcher((nint)unitBase, &((AddonGSInfoCardList*)unitBase)->TabSwitcher);
+            UpdateTabController(unitBase, &((AddonGSInfoCardList*)unitBase)->TabController);
         }
         else if (Config.HandleGoldSaucerCardDeckEdit && name == "GSInfoEditDeck")
         {
-            UpdateTabSwitcher((nint)unitBase, &((AddonGSInfoEditDeck*)unitBase)->TabSwitcher);
+            UpdateTabController(unitBase, &((AddonGSInfoEditDeck*)unitBase)->TabController);
         }
         else if (Config.HandleLovmPaletteEdit && name == "LovmPaletteEdit")
         {
-            UpdateTabSwitcher((nint)unitBase, &((AddonLovmPaletteEdit*)unitBase)->TabSwitcher);
+            UpdateTabController(unitBase, &((AddonLovmPaletteEdit*)unitBase)->TabController);
         }
         else if (Config.HandleAOZNotebook && name == "AOZNotebook")
         {
@@ -492,15 +492,15 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         addon->SetTab(tabIndex);
     }
 
-    private void UpdateTabSwitcher(nint addon, TabSwitcher* tabSwitcher)
+    private void UpdateTabController(AtkUnitBase* addon, TabController* TabController)
     {
-        var tabIndex = GetTabIndex(tabSwitcher->TabIndex, tabSwitcher->TabCount);
+        var tabIndex = GetTabIndex(TabController->TabIndex, TabController->TabCount);
 
-        if (tabSwitcher->TabIndex == tabIndex)
+        if (TabController->TabIndex == tabIndex)
             return;
 
-        tabSwitcher->TabIndex = tabIndex;
-        tabSwitcher->InvokeCallback(tabIndex, addon);
+        TabController->TabIndex = tabIndex;
+        TabController->CallbackFunction(tabIndex, addon);
     }
 
     private void UpdateAOZNotebook(AddonAOZNotebook* addon)
@@ -526,7 +526,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             // WAYTOODANK, this is basically like writing addon->Tabs[i]
             // but because this is dynamic (depending on NumTabs), we can't do that... thanks, C#!
             var button = *(HaselAtkComponentRadioButton**)(tabs + i * 8);
-            button->SetSelected(i == tabIndex);
+            button->IsSelected = i == tabIndex;
         }
     }
 
@@ -576,18 +576,18 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
     {
         if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Normal)
         {
-            if (addon->TabSwitcher.TabIndex == 0 && _wheelState < 0)
+            if (addon->TabController.TabIndex == 0 && _wheelState < 0)
             {
                 addon->SwitchToFavorites();
             }
             else
             {
-                UpdateTabSwitcher((nint)addon, &addon->TabSwitcher);
+                UpdateTabController((AtkUnitBase*)addon, &addon->TabController);
             }
         }
         else if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Favorites && _wheelState > 0)
         {
-            addon->TabSwitcher.InvokeCallback(0, (nint)addon);
+            addon->TabController.CallbackFunction(0, (AtkUnitBase*)addon);
         }
     }
 
@@ -597,7 +597,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
         if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Normal)
         {
-            if (addon->Unk220.TabSwitcher.TabIndex == 0 && _wheelState < 0)
+            if (addon->TabController.TabIndex == 0 && _wheelState < 0)
             {
                 agent->CurrentView = AgentMJIMinionNoteBook.ViewType.Favorites;
                 agent->SelectedFavoriteMinion.TabIndex = 0;
@@ -608,7 +608,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             }
             else
             {
-                UpdateTabSwitcher((nint)addon, &addon->Unk220.TabSwitcher);
+                UpdateTabController((AtkUnitBase*)addon, &addon->TabController);
                 agent->UpdateTabFlags(0x40B);
             }
         }
@@ -620,8 +620,8 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             agent->SelectedNormalMinion.MinionId = agent->GetSelectedMinionId();
             agent->SelectedMinion = &agent->SelectedNormalMinion;
 
-            addon->Unk220.TabSwitcher.TabIndex = 0;
-            addon->Unk220.TabSwitcher.InvokeCallback(0, (nint)addon);
+            addon->TabController.TabIndex = 0;
+            addon->TabController.CallbackFunction(0, (AtkUnitBase*)addon);
 
             agent->UpdateTabFlags(0x40B);
         }
@@ -669,7 +669,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             var button = addon->RadioButtonsSpan.GetPointer(i);
             if (button->Value != null)
             {
-                button->Value->SetSelected(i == addon->TabIndex);
+                button->Value->IsSelected = i == addon->TabIndex;
             }
         }
     }
@@ -723,7 +723,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             var button = addon->RadioButtonsSpan.GetPointer(i);
             if (button->Value != null)
             {
-                button->Value->SetSelected(i == addon->TabIndex);
+                button->Value->IsSelected = i == addon->TabIndex;
             }
         }
     }

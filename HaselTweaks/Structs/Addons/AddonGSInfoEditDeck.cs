@@ -8,5 +8,5 @@ public struct AddonGSInfoEditDeck
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x220)] public TabSwitcher TabSwitcher;
+    [FieldOffset(0x220)] public TabController TabController;
 }

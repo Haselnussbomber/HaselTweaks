@@ -8,5 +8,5 @@ public struct AddonGSInfoCardList
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x298)] public TabSwitcher TabSwitcher;
+    [FieldOffset(0x298)] public TabController TabController;
 }

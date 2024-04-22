@@ -10,7 +10,7 @@ public partial struct AddonInventory
 
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x228)] public int Unk228;
+    [FieldOffset(0x228)] public int Unk228; // unknown value passed as AtkValue in OpenKeyItems
 
     [FieldOffset(0x31C)] public int TabIndex;
 

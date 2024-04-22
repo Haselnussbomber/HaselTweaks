@@ -1,10 +1,13 @@
 namespace HaselTweaks.Structs;
 
-[StructLayout(LayoutKind.Explicit)]
-public partial struct AtkComponentCheckBox
+[StructLayout(LayoutKind.Explicit, Size = 0x110)]
+public struct AtkComponentCheckBox
 {
-    [FieldOffset(0)] public FFXIVClientStructs.FFXIV.Component.GUI.AtkComponentCheckBox Base;
+    [FieldOffset(0x0)] public AtkComponentButton AtkComponentButton;
 
-    [MemberFunction("E8 ?? ?? ?? ?? 0F B7 DD")]
-    public readonly partial void SetValue(bool isChecked);
+    public bool IsChecked
+    {
+        get => AtkComponentButton.IsChecked;
+        set => AtkComponentButton.IsChecked = value;
+    }
 }

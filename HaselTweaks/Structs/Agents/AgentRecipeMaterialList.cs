@@ -23,7 +23,7 @@ public unsafe partial struct AgentRecipeMaterialList
     public readonly partial void OpenByRecipeId(uint recipeId, uint amount = 1);
 
     [MemberFunction("48 89 5C 24 ?? 57 48 83 EC 20 BA ?? ?? ?? ?? 48 8B D9 E8 ?? ?? ?? ?? 48 8B F8 48 85 C0 74 5A")]
-    public readonly partial nint OpenRecipeResultItemContextMenu();
+    public readonly partial void OpenRecipeResultItemContextMenu();
 
     [StructLayout(LayoutKind.Explicit)]
     public struct RecipeData

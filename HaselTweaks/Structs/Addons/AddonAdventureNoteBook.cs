@@ -8,5 +8,5 @@ public struct AddonAdventureNoteBook
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x570)] public TabSwitcher TabSwitcher;
+    [FieldOffset(0x570)] public TabController TabController;
 }

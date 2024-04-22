@@ -15,5 +15,5 @@ public partial struct AtkComponentList
     public readonly partial int GetItemCount();
 
     [MemberFunction("E8 ?? ?? ?? ?? 41 FE 85")]
-    public readonly partial void SetListLength(short value);
+    public partial void SetItemCount(int value);
 }

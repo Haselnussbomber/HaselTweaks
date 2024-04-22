@@ -8,11 +8,5 @@ public struct AddonMJIMinionNoteBook
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x220)] public MJIMinionNoteBook220 Unk220;
-
-    [StructLayout(LayoutKind.Explicit, Size = 0x2C8)]
-    public struct MJIMinionNoteBook220
-    {
-        [FieldOffset(0x80)] public TabSwitcher TabSwitcher;
-    }
+    [FieldOffset(0x2A0)] public TabController TabController;
 }
