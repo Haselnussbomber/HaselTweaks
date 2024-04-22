@@ -8,7 +8,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Extensions;
 using Lumina.Excel.GeneratedSheets;
-using GameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 using ObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 
 namespace HaselTweaks.Tweaks;
@@ -70,36 +69,26 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
     [CommandHandler("/whatmount", "Commands.Config.EnableWhatMountCommand.Description", nameof(Config.EnableWhatMountCommand))]
     private void OnWhatMountCommand(string command, string arguments)
     {
-        var target = Service.TargetManager.Target;
+        var target = (Character*)(Service.TargetManager.Target?.Address ?? 0);
         if (target == null)
         {
             Service.ChatGui.PrintError(t("Commands.NoTarget"));
             return;
         }
 
-        if (target.ObjectKind != ObjectKind.Player)
+        if (target->GameObject.GetObjectKind() != (byte)ObjectKind.Player)
         {
             Service.ChatGui.PrintError(t("Commands.TargetIsNotAPlayer"));
             return;
         }
 
-        var targetGameObject = (GameObject*)target.Address;
-        if (targetGameObject->ObjectIndex + 1 > Service.ObjectTable.Length)
-        {
-            Service.ChatGui.PrintError("Error: mount game object index out of bounds.");
-            return;
-        }
-
-        var mountObject = Service.ObjectTable[targetGameObject->ObjectIndex + 1];
-        if (mountObject == null || mountObject.ObjectKind != ObjectKind.MountType)
+        if (target->Mount.MountId == 0)
         {
             Service.ChatGui.PrintError(t("Commands.WhatMount.TargetNotMounted"));
             return;
         }
 
-        var modelChara = ((Character*)mountObject.Address)->CharacterData.ModelCharaId;
-
-        var mount = FindRow<Mount>(row => row?.ModelChara.Row == modelChara);
+        var mount = GetRow<Mount>(target->Mount.MountId);
         if (mount == null)
         {
             Service.ChatGui.PrintError(t("Commands.WhatMount.MountNotFound"));
