@@ -102,15 +102,13 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
             ImGui.Text(GetItemName(item.RowId));
         }
 
-        new ImGuiContextMenu(popupKey)
-        {
+        ImGuiContextMenu.Draw(popupKey, [
             ImGuiContextMenu.CreateTryOn(item),
             ImGuiContextMenu.CreateItemFinder(item.RowId),
             ImGuiContextMenu.CreateCopyItemName(item.RowId),
             ImGuiContextMenu.CreateOpenOnGarlandTools("item", item.RowId),
-            ImGuiContextMenu.CreateItemSearch(item),
-        }
-        .Draw();
+            ImGuiContextMenu.CreateItemSearch(item)
+        ]);
     }
 
     private void RestoreItem(uint itemIndex)

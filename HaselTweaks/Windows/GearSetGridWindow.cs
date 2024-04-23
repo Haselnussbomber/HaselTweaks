@@ -133,14 +133,12 @@ public unsafe class GearSetGridWindow : LockableWindow
                     }
                 }
 
-                new ImGuiContextMenu("##GearsetContext")
-                {
+                ImGuiContextMenu.Draw("##GearsetContext", [
                     ImGuiContextMenu.CreateGearsetLinkGlamour(gearset),
                     ImGuiContextMenu.CreateGearsetChangeGlamour(gearset),
                     ImGuiContextMenu.CreateGearsetUnlinkGlamour(gearset),
                     ImGuiContextMenu.CreateGearsetChangePortrait(gearset)
-                }
-                .Draw();
+                ]);
 
                 var iconSize = 28 * ImGuiHelpers.GlobalScale;
                 var itemStartPos = startPos + new Vector2(region.X / 2f - iconSize / 2f, ImGui.GetStyle().ItemInnerSpacing.Y); // start from the right
@@ -261,15 +259,13 @@ public unsafe class GearSetGridWindow : LockableWindow
 
         ImGui.SetCursorPos(startPos + new Vector2(0, (IconSize.Y - 3) * ImGuiHelpers.GlobalScale));
 
-        new ImGuiContextMenu(popupKey)
-        {
+        ImGuiContextMenu.Draw(popupKey, [
             ImGuiContextMenu.CreateTryOn(item, slot->GlamourId, slot->Stain),
             ImGuiContextMenu.CreateItemFinder(item.RowId),
             ImGuiContextMenu.CreateCopyItemName(item.RowId),
             ImGuiContextMenu.CreateOpenOnGarlandTools("item", item.RowId),
-            ImGuiContextMenu.CreateItemSearch(item),
-        }
-        .Draw();
+            ImGuiContextMenu.CreateItemSearch(item)
+        ]);
 
         if (ImGui.IsItemHovered())
         {
