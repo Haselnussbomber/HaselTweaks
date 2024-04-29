@@ -133,6 +133,38 @@
     "zh": "聚焦窗口并按住Shift以删除"
   },
 
+  "AchievementLinkTooltip.Tweak.Name": {
+    "en": "Achievement Link Tooltip"
+  },
+  "AchievementLinkTooltip.Tweak.Description": {
+    "en": "Hovering the mouse over an achievement link in the chat will display a small tooltip with the name and description of the achievement so that you don't have to click on the link.",
+    "de": "Wenn man mit der Maus über einen Erfolgslink im Chat fährt, erscheint ein kleiner Tooltip mit dem Namen und der Beschreibung des Erfolgs, so dass man nicht auf den Link klicken muss."
+  },
+  "AchievementLinkTooltip.Config.ShowCompletionStatus.Label": {
+    "en": "Show completion status",
+    "de": "Zeige Abschlussstatus"
+  },
+  "AchievementLinkTooltip.Config.PreventSpoiler.Label": {
+    "en": "Prevent spoilers",
+    "de": "Spoiler verhindern"
+  },
+  "AchievementLinkTooltip.Config.PreventSpoiler.Description": {
+    "en": "Replaces the name and/or description with ??? if the achievement has not been unlocked and it would not be displayed in the game.",
+    "de": "Ersetzt den Namen und/oder die Beschreibung durch ???, wenn die Errungenschaft noch nicht abgeschlossen wurde und im Spiel nicht angezeigt werden würde."
+  },
+  "AchievementLinkTooltip.AchievementsNotLoaded": {
+    "en": "Open the Achievements window to load the completion status.",
+    "de": "Öffne das Errungenschaften-Fenster, um den Abschlussstatus zu laden."
+  },
+  "AchievementLinkTooltip.AchievementComplete": {
+    "en": "\u2713 Completed",
+    "de": "\u2713 Abgeschlossen"
+  },
+  "AchievementLinkTooltip.AchievementUnfinished": {
+    "en": "\u2573 Unfinished",
+    "de": "\u2573 Nicht abgeschlossen"
+  },
+
   "AetherCurrentHelper.Tweak.Name": {
     "en": "Aether Current Helper",
     "zh": "风脉泉助手"

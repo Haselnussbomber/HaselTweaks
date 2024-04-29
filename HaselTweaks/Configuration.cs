@@ -27,6 +27,7 @@ public partial class Configuration
 
 public class TweakConfigs
 {
+    public AchievementLinkTooltipConfiguration AchievementLinkTooltip { get; init; } = new();
     public AetherCurrentHelperConfiguration AetherCurrentHelper { get; init; } = new();
     public AutoSorterConfiguration AutoSorter { get; init; } = new();
     public BackgroundMusicKeybindConfiguration BackgroundMusicKeybind { get; init; } = new();

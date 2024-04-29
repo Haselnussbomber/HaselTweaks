@@ -348,7 +348,7 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
             return;
 
         var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? 0);
-        if (localPlayer == null || localPlayer->EventState == 5)
+        if (localPlayer == null || localPlayer->Mode == Character.CharacterModes.Crafting)
             return;
 
         flags |= 2;
