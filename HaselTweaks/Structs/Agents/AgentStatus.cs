@@ -8,7 +8,7 @@ namespace HaselTweaks.Structs.Agents;
 [Agent(AgentId.Status)]
 [VTableAddress("48 8D 05 ?? ?? ?? ?? 89 77 28", 3)]
 [StructLayout(LayoutKind.Explicit, Size = 0x358)]
-public unsafe partial struct AgentStatus
+public partial struct AgentStatus
 {
     [FieldOffset(0)] public AgentInterface AgentInterface;
 

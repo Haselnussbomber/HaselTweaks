@@ -500,11 +500,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             return;
 
         tabSwitcher->TabIndex = tabIndex;
-
-        if (tabSwitcher->CallbackPtr == 0)
-            return;
-
-        Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(tabSwitcher->CallbackPtr)(tabIndex, addon);
+        tabSwitcher->InvokeCallback(tabIndex, addon);
     }
 
     private void UpdateAOZNotebook(AddonAOZNotebook* addon)
@@ -591,9 +587,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         }
         else if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Favorites && _wheelState > 0)
         {
-            var callbackAddress = addon->TabSwitcher.CallbackPtr;
-            if (callbackAddress != 0)
-                Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(0, (nint)addon);
+            addon->TabSwitcher.InvokeCallback(0, (nint)addon);
         }
     }
 
@@ -627,10 +621,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             agent->SelectedMinion = &agent->SelectedNormalMinion;
 
             addon->Unk220.TabSwitcher.TabIndex = 0;
-
-            var callbackAddress = addon->Unk220.TabSwitcher.CallbackPtr;
-            if (callbackAddress != 0)
-                Marshal.GetDelegateForFunctionPointer<TabSwitcher.CallbackDelegate>(callbackAddress)(0, (nint)addon);
+            addon->Unk220.TabSwitcher.InvokeCallback(0, (nint)addon);
 
             agent->UpdateTabFlags(0x40B);
         }

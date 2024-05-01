@@ -6,6 +6,7 @@ namespace HaselTweaks.Structs.Addons;
 [StructLayout(LayoutKind.Explicit, Size = 0x3EE0)]
 public unsafe struct AddonItemSearch
 {
-    [FieldOffset(0)] public AtkUnitBase* AtkUnitBase;
+    [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
+
     [FieldOffset(0x2DE0)] public AtkComponentList* SearchResultsList;
 }

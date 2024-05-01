@@ -1,6 +1,5 @@
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI;
-using HaselCommon.Utils;
 
 namespace HaselTweaks.Structs;
 
@@ -13,7 +12,10 @@ public unsafe partial struct HaselShellCommandModule
 
     public static void ExecuteCommand(string command)
     {
-        using var cmd = new DisposableUtf8String(command);
+        var cmd = stackalloc Utf8String[1];
+        cmd->Ctor();
+        cmd->SetString(command);
         Instance()->ExecuteCommandInner(cmd, UIModule.Instance());
+        cmd->Dtor();
     }
 }

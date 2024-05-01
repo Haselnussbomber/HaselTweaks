@@ -41,6 +41,7 @@ public class TweakConfigs
     public EnhancedMaterialListConfiguration EnhancedMaterialList { get; init; } = new();
     public ForcedCutsceneMusicConfiguration ForcedCutsceneMusic { get; init; } = new();
     public GearSetGridConfiguration GearSetGrid { get; init; } = new();
+    public InventoryHighlightConfiguration InventoryHighlight { get; init; } = new();
     public LockWindowPositionConfiguration LockWindowPosition { get; init; } = new();
     public MaterialAllocationConfiguration MaterialAllocation { get; init; } = new();
     public MinimapAdjustmentsConfiguration MinimapAdjustments { get; init; } = new();

@@ -438,12 +438,12 @@
     "zh": "各种有用的聊天命令。"
   },
   "Commands.Config.EnableItemLinkCommand.Label": {
-    "en": "/itemlink"
+    "en": "/itemlink <id>"
   },
   "Commands.Config.EnableItemLinkCommand.Description": {
-    "en": "Prints an item link for the given id in chat.\nUsage: /itemlink <id>",
-    "de": "Gibt einen Gegenstands-Link für die angegebene ID im Chat aus.\nVerwendung: /itemlink <id>",
-    "zh": "将给出的id的物品展示到聊天栏中\n用法：/itemlink <id>"
+    "en": "Prints an item link for the given id in chat.",
+    "de": "Gibt einen Gegenstands-Link für die angegebene ID im Chat aus.",
+    "zh": "将给出的id的物品展示到聊天栏中"
   },
   "Commands.Config.EnableWhatMountCommand.Label": {
     "en": "/whatmount"
@@ -461,15 +461,28 @@
     "de": "Visiere den Chocobo-Begleiter eines Spielers an und führe den Befehl aus, um zu sehen, welche Ausrüstung es trägt.",
     "zh": "选择一个玩家的陆行鸟搭档并执行此命令来查看它穿着什么鸟甲。"
   },
+  "Commands.Config.EnableGlamourPlateCommand.Label": {
+    "en": "/glamourplate <id>"
+  },
+  "Commands.Config.EnableGlamourPlateCommand.Description": {
+    "en": "This shortcut command executes the \"/gearset change\" command with the current gear set id and the given glamour plate id (1-20).",
+    "de": "Dieser Abkürzungsbefehl führt den Befehl \"/gearset change\" mit der Nummer des aktuellen Ausrüstungssets und der angegebenen Projektionsplatten-Nummer (1-20) aus.",
+    "zh": "这个快捷命令使用当前的套装编号和给定的投影模板编号(1-20)执行“/套装 更换”命令。"
+  },
   "Commands.ItemLink.ItemNotFound": {
     "en": "Item {0} not found.",
-    "de": "Gegenstand {id} nicht gefunden.",
+    "de": "Gegenstand {0} nicht gefunden.",
     "zh": "物品{0}未找到。"
   },
   "Commands.ItemLink.Item": {
     "en": "Item #{0}: {1}",
     "de": "Gegenstand #{0}: {1}",
     "zh": "物品#{0}：{1}。"
+  },
+  "Commands.InvalidArguments": {
+    "en": "Invalid arguments.",
+    "de": "Ungültige Argumente.",
+    "zh": "无效的参数。"
   },
   "Commands.NoTarget": {
     "en": "No target.",
@@ -514,6 +527,11 @@
     "fr": "Monture {0} apprise auprès de {1}.",
     "ja": "{0} のマウントは {1} によって教えられています。",
     "zh": "坐骑{0}由{1}解锁。"
+  },
+  "Commands.GlamourPlate.InvalidGearset": {
+    "en": "Invalid gear set.",
+    "de": "Ungültiges Ausrüstungsset.",
+    "zh": "无效的套装。"
   },
 
   "CustomChatMessageFormats.Tweak.Name": {
@@ -824,6 +842,16 @@
     "de": "Logout-Optionen",
     "zh": "登出选项"
   },
+  "EnhancedLoginLogout.Config.SkipLogo.Label": {
+    "en": "Skip Logo",
+    "de": "Logo überspringen",
+    "zh": "跳过 Logo"
+  },
+  "EnhancedLoginLogout.Config.SkipLogo.Description": {
+    "en": "Instantly shows the title screen.",
+    "de": "Zeigt direkt den Titelbildschirm an.",
+    "zh": "立即显示标题界面"
+  },
   "EnhancedLoginLogout.Config.ShowPets.Label": {
     "en": "Show pets in character selection",
     "de": "Familiar in der Charakterauswahl anzeigen",
@@ -850,7 +878,7 @@
   },
   "EnhancedLoginLogout.Config.PlayEmote.Description": {
     "en": "Have your character greet you with an emote!",
-    "de": "Lass deinen Charakter dich mit einem Emote begrüßen!",
+    "de": "Lass dich von deinem Charakter mit einem Emote willkommen heißen!",
     "zh": "让你的角色用情感动作向你打招呼！"
   },
   "EnhancedLoginLogout.Config.PlayEmote.Note": {
@@ -906,12 +934,12 @@
   "EnhancedLoginLogout.Config.PreloadTerritory.Description": {
     "en": "When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.",
     "de": "Wenn in die Warteschlange gesetzt wird, werden die Texturen des Gebiets im Hintergrund vorgeladen, so wie es auch beim Teleportieren geschieht.",
-    "zh": "当你进入登入队列时，它会在背景中预加载地图材质，就像你开始传送时它做的一样。"
+    "zh": "当你进入登入队列时，它会预加载地图材质，与你开始传送时一样。"
   },
   "EnhancedLoginLogout.Config.ClearTellHistory.Label": {
     "en": "Clear tell history on logout",
     "de": "Flüsterverlauf beim Ausloggen leeren",
-    "zh": "登出时清除私聊历史记录"
+    "zh": "登出时清除悄悄话历史记录"
   },
 
   "EnhancedMaterialList.Tweak.Name": {
@@ -1016,37 +1044,37 @@
 
   "GearSetGrid.Tweak.Name": {
     "en": "Gear Set Grid",
-    "zh": "套装网格"
+    "zh": "套装表格"
   },
   "GearSetGrid.Tweak.Description": {
     "en": "A window that displays a grid view of all the items of each gear set.",
     "de": "Ein Fenster, das eine Übersicht aller Gegenstände jeder Ausrüstungssets anzeigt.",
-    "zh": "一个以网格视图显示每个套装的所有物品的窗口。"
+    "zh": "一个以表格显示每个套装的所有部位的窗口。"
   },
   "GearSetGrid.Config.AutoOpenWithGearSetList.Label": {
     "en": "Auto-open/close with Gear Set List",
     "de": "Automatisches Öffnen/Schließen mit Liste der Ausrüstungssets",
-    "zh": "随着套装列表自动打开/关闭"
+    "zh": "随着游戏的套装列表自动开启/关闭"
   },
   "GearSetGrid.Config.RegisterCommand.Label": {
     "en": "Register /gsg command to toggle window",
     "de": "Befehl /gsg zum Umschalten des Fensters registrieren",
-    "zh": "注册 /gsg 命令来开关窗口"
+    "zh": "注册 /gsg 命令以用来开关窗口"
   },
   "GearSetGrid.CommandHandlerHelpMessage": {
     "en": "Opens the Gear Set Grid window",
     "de": "Öffnet das Gear Set Grid-Fenster",
-    "zh": "打开套装网格窗口"
+    "zh": "打开套装表格窗口"
   },
   "GearSetGrid.Config.ConvertSeparators.Label": {
     "en": "Convert separator gear set with spacing",
     "de": "Umwandeln von Trenner-Ausrüstungssets",
-    "zh": "用空行替换分隔符套装"
+    "zh": "用空行替换作为分隔符的套装"
   },
   "GearSetGrid.Config.ConvertSeparators.Description": {
     "en": "When using separator gear sets (e.g. a gearset with name ===========) this option automatically converts it into spacing between rows (in the Gear Set Grid).",
     "de": "Bei der Verwendung von Trenner-Ausrüstungssets (z.B. ein Ausrüstungsset mit dem Namen ===========) wird dieser mit dieser Option automatisch in Zeilenabstände (im Gear Set Grid) umgewandelt.",
-    "zh": "当使用分隔符套装（例如，一个叫 =========== 的套装），这个选项会自动将其转化为空行（在套装网格中）。"
+    "zh": "当存在分隔符套装（例如，一个叫 =========== 的套装）时，这个设置会自动将其转化为空行（在套装表格中）。"
   },
   "GearSetGrid.Config.SeparatorFilter.Label": {
     "en": "Gear set name of the separator",
@@ -1060,7 +1088,7 @@
   },
   "GearSetGridWindow.Title": {
     "en": "[HaselTweaks] Gear Set Grid",
-    "zh": "[HaselTweaks] 套装网格"
+    "zh": "[HaselTweaks] 套装表格"
   },
   "GearSetGridWindow.ItemTooltip.LabelGlamour": {
     "en": "Glamour:",
@@ -1107,6 +1135,26 @@
     "en": "Hides the Main Scenario Guide when the MSQ is completed, but still displays Job quests.",
     "de": "Blendet den Scenarioführer aus, wenn die MSQ abgeschlossen ist, zeigt aber weiterhin die Job-Quests an.",
     "zh": "当主线任务全清后隐藏主线向导，但仍然显示职业任务。"
+  },
+
+  "InventoryHighlight.Tweak.Name": {
+    "en": "Inventory Highlight",
+    "zh": "物品栏高亮"
+  },
+  "InventoryHighlight.Tweak.Description": {
+    "en": "Hold down the shift key while the inventory is open to highlight identical items.",
+    "de": "Halte Umschalttaste gedrückt während das Inventar offen ist, um identische Gegenstände hervorzuheben.",
+    "zh": "在打开物品栏时，按住Shift键以高亮显示相同的物品。"
+  },
+  "InventoryHighlight.Config.IgnoreQuality.Label": {
+    "en": "Ignore item quality",
+    "de": "Ignoriere Gegenstandsqualität",
+    "zh": "忽略物品品质"
+  },
+  "InventoryHighlight.Config.IgnoreQuality.Description": {
+    "en": "Highlights the same items regardless of whether they are high quality or not.",
+    "de": "Hebt gleiche Gegenstände hervor, unabhängig davon, ob sie von hoher Qualität sind oder nicht.",
+    "zh": "高亮显示相同的物品，不论它们的品质是否一致。"
   },
 
   "KeepScreenAwake.Tweak.Name": {

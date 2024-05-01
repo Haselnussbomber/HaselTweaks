@@ -74,7 +74,7 @@ public unsafe class AdvancedEditOverlay : Overlay
             return;
 
         var baseTimeline = Character->ActionTimelineManager.Driver.GetSchedulerTimeline((uint)ActionTimelineSlots.Base);
-        if (baseTimeline == null || baseTimeline->ActionTimelineKey != null && Marshal.PtrToStringUTF8((nint)baseTimeline->ActionTimelineKey) == "normal/idle")
+        if (baseTimeline == null || (baseTimeline->ActionTimelineKey != null && Marshal.PtrToStringUTF8((nint)baseTimeline->ActionTimelineKey) == "normal/idle"))
             return;
 
         _duration = animation->Duration - 0.5f;

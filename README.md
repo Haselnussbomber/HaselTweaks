@@ -66,6 +66,8 @@ Available Commands:
   Target a player and execute the command to see what mount your target is riding and which item teaches this mount.
 - `/whatbarding`  
   Target a players chocobo companion and execute the command to see what barding it is wearing.
+- `/glamourplate <id>`  
+  This shortcut command executes the "/gearset change" command with the current gear set id and the given glamour plate id (1-20).
 
 ### Custom Chat Message Formats
 
@@ -118,6 +120,7 @@ Options:
 
 Login options:
 
+- Skip Logo (default on): Instantly shows the title screen.
 - Show pets in character selection: Displays a carbuncle for Arcanist/Summoner and a fairy for Scholar next to your character. Position is adjustable.
   > **Note**
   > In order to apply the pet glamor settings, you must have logged in at least once.
@@ -172,6 +175,14 @@ Opens a small window next to the Glamour Dresser with a list of items that can b
 ### Hide MSQ Complete
 
 Hides the Main Scenario Guide when the MSQ is completed, but still displays Job quests.
+
+### Inventory Highlight
+
+Hold down the shift key while the inventory is open to highlight identical items.
+
+Configuration options:
+
+- "Ignore item quality" (default on): Highlights the same items regardless of whether they are high quality or not.
 
 ### Keep Screen Awake
 
