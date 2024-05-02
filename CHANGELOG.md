@@ -6,6 +6,8 @@
 
 Hovering the mouse over an achievement link in the chat will display a small tooltip with the name and description of the achievement so that you don't have to click on the link.
 
+![Screenshot](https://github.com/Haselnussbomber/HaselTweaks/assets/96642047/579e6085-c537-46b3-bdcd-1d84618ba15e)
+
 Options include:
 
 - Show completion status (default on): Will show whether the achievement has been completed or not. This requires the achievement data to be loaded, so you have to open the window once.
@@ -14,6 +16,8 @@ Options include:
 ### New Tweak: Cast Bar Aetheryte Names
 
 Replaces the name of the action \"Teleport\" with the Aetheryte name of your destination.
+
+![Screenshot](https://github.com/Haselnussbomber/HaselTweaks/assets/96642047/07af2799-c989-4be2-8832-2b77aa2974dd)
 
 ## [22.0.1] (2023-04-16)
 
