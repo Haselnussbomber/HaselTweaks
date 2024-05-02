@@ -409,6 +409,15 @@
     "zh": "无"
   },
 
+  "CastBarAetheryteNames.Tweak.Name": {
+    "en": "Cast Bar Aetheryte Names"
+  },
+  "CastBarAetheryteNames.Tweak.Description": {
+    "__": "Teleport is the name of Action#5",
+    "en": "Replaces the name of the action (\"Teleport\") with the Aetheryte name of your destination.",
+    "de": "Ersetzt den Namen des Kommandos (\"Teleport\") durch den Namen des Ätheryten, zu dem transportiert wird."
+  },
+
   "CharacterClassSwitcher.Tweak.Name": {
     "en": "Character Class Switcher",
     "zh": "角色职业切换器"

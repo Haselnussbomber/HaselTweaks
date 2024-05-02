@@ -129,6 +129,7 @@ public unsafe class AchievementLinkTooltip : Tweak<AchievementLinkTooltipConfigu
         [FieldOffset(0x1B)] public byte Type;
         [FieldOffset(0x24)] public uint Id;
     }
+
     private static uint SwapRedBlue(uint value)
         => 0xFF000000 | ((value & 0x000000FF) << 16) | (value & 0x0000FF00) | ((value & 0x00FF0000) >> 16);
 }
