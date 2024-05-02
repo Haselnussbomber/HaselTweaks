@@ -107,7 +107,9 @@ public unsafe class AchievementLinkTooltip : Tweak<AchievementLinkTooltipConfigu
             }
             else
             {
+                sb.PushColorType(3);
                 sb.Append(t("AchievementLinkTooltip.AchievementsNotLoaded"));
+                sb.PopColorType();
             }
         }
 
