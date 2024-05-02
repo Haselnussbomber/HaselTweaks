@@ -144,13 +144,17 @@
     "en": "Show completion status",
     "de": "Zeige Abschlussstatus"
   },
+  "AchievementLinkTooltip.Config.ShowCompletionStatus.Description": {
+    "en": "Will show whether the achievement has been completed or not. This requires the achievement data to be loaded, so you have to open the window once.",
+    "de": "Zeigt an, ob der Erfolg abgeschlossen wurde oder nicht. Dazu müssen die Erfolgsdaten geladen sein, so dass das Fenster einmal geöffnet werden muss. "
+  },
   "AchievementLinkTooltip.Config.PreventSpoiler.Label": {
     "en": "Prevent spoilers",
     "de": "Spoiler verhindern"
   },
   "AchievementLinkTooltip.Config.PreventSpoiler.Description": {
-    "en": "Replaces the name and/or description with ??? if the achievement has not been unlocked and it would not be displayed in the game.",
-    "de": "Ersetzt den Namen und/oder die Beschreibung durch ???, wenn die Errungenschaft noch nicht abgeschlossen wurde und im Spiel nicht angezeigt werden würde."
+    "en": "If the Achievement is not unlocked and would not be displayed in the game, the name and/or description will also be displayed as ???.",
+    "de": "Wenn der Erfolg nicht abgeschlossen ist und im Spiel nicht angezeigt werden würde, wird der Name und/oder die Beschreibung ebenfalls als ??? angezeigt."
   },
   "AchievementLinkTooltip.AchievementsNotLoaded": {
     "en": "Open the Achievements window to load the completion status.",
@@ -414,8 +418,8 @@
   },
   "CastBarAetheryteNames.Tweak.Description": {
     "__": "Teleport is the name of Action#5",
-    "en": "Replaces the name of the action (\"Teleport\") with the Aetheryte name of your destination.",
-    "de": "Ersetzt den Namen des Kommandos (\"Teleport\") durch den Namen des Ätheryten, zu dem transportiert wird."
+    "en": "Replaces the name of the action \"Teleport\" with the Aetheryte name of your destination.",
+    "de": "Ersetzt den Namen des Kommandos \"Teleport\" durch den Namen des Ätheryten, zu dem transportiert wird."
   },
 
   "CharacterClassSwitcher.Tweak.Name": {

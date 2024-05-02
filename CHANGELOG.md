@@ -1,5 +1,20 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Achievement Link Tooltip
+
+Hovering the mouse over an achievement link in the chat will display a small tooltip with the name and description of the achievement so that you don't have to click on the link.
+
+Options include:
+
+- Show completion status (default on): Will show whether the achievement has been completed or not. This requires the achievement data to be loaded, so you have to open the window once.
+- Prevent spoilers (default on): If the Achievement is not unlocked and would not be displayed in the game, the name and/or description will also be displayed as ???.
+
+### New Tweak: Cast Bar Aetheryte Names
+
+Replaces the name of the action \"Teleport\" with the Aetheryte name of your destination.
+
 ## [22.0.1] (2023-04-16)
 
 ### Inventory Highlight
