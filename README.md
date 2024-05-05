@@ -2,7 +2,7 @@
   <img src="https://user-images.githubusercontent.com/96642047/220611506-da811a05-6c84-41da-89b3-498f5450db84.svg" width="580px" alt="HaselTweaks">
 </p>
 
-**HaselTweaks** is an all-in-one plugin for all my tweaks and helpers (well, with the exception of [LeveHelper](https://github.com/Haselnussbomber/LeveHelper) and [MogMogCheck](https://github.com/Haselnussbomber/MogMogCheck) 😜).
+**HaselTweaks** is an all-in-one plugin for all my tweaks and helpers (well, with the exception of [LeveHelper](https://github.com/Haselnussbomber/LeveHelper), [MogMogCheck](https://github.com/Haselnussbomber/MogMogCheck) and [YokaiCheck](https://github.com/Haselnussbomber/YokaiCheck) 😜).
 
 You will not find this plugin in the official plugin repository.  
 However, you're free to add my custom repository to get updates whenever I release a new version:  
@@ -11,6 +11,15 @@ https://raw.githubusercontent.com/Haselnussbomber/MyDalamudPlugins/main/repo.jso
 To get started, open the configuration with `/haseltweaks` and enable the tweaks you like.
 
 ## Tweaks
+
+### Achievement Link Tooltip
+
+Hovering the mouse over an achievement link in the chat will display a small tooltip with the name and description of the achievement so that you don't have to click on the link.
+
+Options:
+
+- Show completion status: Will show whether the achievement has been completed or not. This requires the achievement data to be loaded, so you have to open the window once.
+- Prevent spoiler: If the Achievement is not unlocked and would not be displayed in the game, the name and/or description will also be displayed as ???.
 
 ### Aether Current Helper
 
@@ -33,6 +42,10 @@ If a new daily/tribal quest objective requires you to craft an item, and you hav
 ### Background Music Keybind
 
 Adds a configurable keybind to toggle the background music, in addition to the game's existing keybind option to toggle the sound. No more `/bgm` macro. Works in cutscenes.
+
+### Cast Bar Aetheryte Names
+
+Replaces the name of the action "Teleport" with the Aetheryte name of your destination.
 
 ### Character Class Switcher
 
@@ -182,7 +195,7 @@ Hold down the shift key while the inventory is open to highlight identical items
 
 Configuration options:
 
-- "Ignore item quality" (default on): Highlights the same items regardless of whether they are high quality or not.
+- "Ignore item quality": Highlights the same items regardless of whether they are high quality or not.
 
 ### Keep Screen Awake
 
@@ -233,17 +246,17 @@ A helper for editing portraits, featuring:
 
 Configuration options:
 
-- Embed preset codes in thumbnails (default on)  
+- Embed preset codes in thumbnails  
   The preset code, which is also used for clipboard import/export, is written to the Exif metadata as a UserComment.
-- "Notify if appearance and/or gear doesn't match Portait" (default on)  
+- "Notify if appearance and/or gear doesn't match Portait"  
   Prints a notification in chat which can be clicked to open the Portrait Editor.
-- "Automatically re-equip gear set to re-apply glamour plate" (default off)  
+- "Automatically re-equip gear set to re-apply glamour plate"  
   Works only if the following criteria are met:
   - The gear set has a glamour plate linked.
   - You are in a place where glamour plates are allowed to be applied.
   - The glamour plate covers the slot(s) that caused the mismatch.
   - The mismatch was not caused by mainhand/headgear visibility or visor state.
-- "Automatically update portrait" (default off)  
+- "Automatically update portrait"  
   Only works for gear sets that are not linked with a glamour plate.
 
 ### Reveal Duty Requirements
