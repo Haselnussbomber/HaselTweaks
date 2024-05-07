@@ -6,10 +6,9 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets;
-using AddonExp = HaselTweaks.Structs.AddonExp;
-using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
 
 namespace HaselTweaks.Tweaks;
 
@@ -160,7 +159,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         if (gaugeBarNode == null)
             return;
 
-        var gaugeBar = (Structs.AtkComponentGaugeBar*)gaugeBarNode->Component;
+        var gaugeBar = (AtkComponentGaugeBar*)gaugeBarNode->Component;
         if (gaugeBar == null)
             return;
 
@@ -232,7 +231,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         _isUpdatePending = false;
     }
 
-    private void HandleCompanionBar(AtkNineGridNode* nineGridNode, Structs.AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
+    private void HandleCompanionBar(AtkNineGridNode* nineGridNode, AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
     {
         var buddy = UIState.Instance()->Buddy.CompanionInfo;
         if (buddy.Rank > GetRowCount<BuddyRank>() - 1)
@@ -252,17 +251,17 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         var xpText = requiredExperience == 0 ? "" : $"   {buddy.CurrentXP}/{requiredExperience}";
         leftText->SetText($"{job}  {levelLabel} {level}{xpText}");
 
-        gaugeBar->SetSecondaryValue(0); // rested experience bar
+        gaugeBar->SetGaugeRange(0); // rested experience bar
 
         // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-        gaugeBar->SetValue((uint)(buddy.CurrentXP / (float)requiredExperience * 10000), 0, false);
+        gaugeBar->SetGaugeValue((int)(buddy.CurrentXP / (float)requiredExperience * 10000), 0, false);
 
         ResetColor(nineGridNode);
 
         _isUpdatePending = false;
     }
 
-    private void HandlePvPBar(AtkNineGridNode* nineGridNode, Structs.AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
+    private void HandlePvPBar(AtkNineGridNode* nineGridNode, AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
     {
         var pvpProfile = PvPProfile.Instance();
         if (pvpProfile == null || pvpProfile->IsLoaded != 0x01)
@@ -289,10 +288,10 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
 
         leftText->SetText($"{job}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
 
-        gaugeBar->SetSecondaryValue(0); // rested experience bar
+        gaugeBar->SetGaugeRange(0); // rested experience bar
 
         // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-        gaugeBar->SetValue((uint)(pvpProfile->SeriesExperience / (float)requiredExperience * 10000), 0, false);
+        gaugeBar->SetGaugeValue((int)(pvpProfile->SeriesExperience / (float)requiredExperience * 10000), 0, false);
 
         if (!Config.DisableColorChanges)
         {
@@ -308,7 +307,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         _isUpdatePending = false;
     }
 
-    private void HandleSanctuaryBar(AtkNineGridNode* nineGridNode, Structs.AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
+    private void HandleSanctuaryBar(AtkNineGridNode* nineGridNode, AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
     {
         var mjiManager = MJIManager.Instance();
         if (mjiManager == null)
@@ -337,10 +336,10 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
 
         leftText->SetText($"{job}{levelLabel} {level}   {expStr}/{reqExpStr}");
 
-        gaugeBar->SetSecondaryValue(0); // rested experience bar
+        gaugeBar->SetGaugeRange(0); // rested experience bar
 
         // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-        gaugeBar->SetValue((uint)(mjiManager->IslandState.CurrentXP / (float)requiredExperience * 10000), 0, false);
+        gaugeBar->SetGaugeValue((int)(mjiManager->IslandState.CurrentXP / (float)requiredExperience * 10000), 0, false);
 
         if (!Config.DisableColorChanges)
         {

@@ -4,6 +4,7 @@ using System.Numerics;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Hooking;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
@@ -11,8 +12,6 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
-using HaselTweaks.Structs;
-using HaselTweaks.Structs.Addons;
 using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
@@ -45,14 +44,27 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
     private Vector2 _hoveredWindowSize;
     private int _eventIndexToDisable = 0;
 
+    private Hook<WindowContextMenuHandler_ReceiveEventDelegate>? WindowContextMenuHandler_ReceiveEventHook = null;
+    private delegate AtkValue* WindowContextMenuHandler_ReceiveEventDelegate(nint self, AtkValue* result, nint a3, long a4, long eventParam);
+
     public override void Enable()
     {
+        WindowContextMenuHandler_ReceiveEventHook ??= Service.GameInteropProvider.HookFromAddress<WindowContextMenuHandler_ReceiveEventDelegate>((nint)RaptureAtkUnitManager.Instance()->WindowContextMenuHandler.vtbl[0], WindowContextMenuHandler_ReceiveEventDetour);
+        WindowContextMenuHandler_ReceiveEventHook?.Enable();
+
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "GearSetList", GearSetList_PostSetup);
     }
 
     public override void Disable()
     {
+        WindowContextMenuHandler_ReceiveEventHook?.Disable();
+
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "GearSetList", GearSetList_PostSetup);
+    }
+
+    public override void Dispose()
+    {
+        WindowContextMenuHandler_ReceiveEventHook?.Dispose();
     }
 
     public override void DrawConfig()
@@ -243,8 +255,8 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             addon->ResetPosition = false;
     }
 
-    [AddressHook<HaselAtkUnitBase>(nameof(HaselAtkUnitBase.Addresses.Move))]
-    public bool Move(AtkUnitBase* atkUnitBase, nint xDelta, nint yDelta)
+    [AddressHook<AtkUnitBase>(nameof(AtkUnitBase.Addresses.MoveDelta))]
+    public bool MoveDelta(AtkUnitBase* atkUnitBase, nint xDelta, nint yDelta)
     {
         if (atkUnitBase != null)
         {
@@ -258,7 +270,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
                 return false;
         }
 
-        return MoveHook.OriginalDisposeSafe(atkUnitBase, xDelta, yDelta);
+        return MoveDeltaHook.OriginalDisposeSafe(atkUnitBase, xDelta, yDelta);
     }
 
     [VTableHook<RaptureAtkUnitManager>(6)]
@@ -363,8 +375,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
         return AgentContext_OpenContextMenuForAddonHook.OriginalDisposeSafe(agent, addonId, bindToOwner);
     }
 
-    [AddressHook<WindowContextMenuHandler>(nameof(WindowContextMenuHandler.Addresses.Callback))]
-    public AtkValue* WindowContextMenuEventHandler_Callback(nint self, AtkValue* result, nint a3, long a4, long eventParam)
+    public AtkValue* WindowContextMenuHandler_ReceiveEventDetour(nint self, AtkValue* result, nint a3, long a4, long eventParam)
     {
         if (_eventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock)
         {
@@ -404,7 +415,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
         if (_eventIndexToDisable != 0)
             _eventIndexToDisable = 0;
 
-        return WindowContextMenuEventHandler_CallbackHook.OriginalDisposeSafe(self, result, a3, a4, eventParam);
+        return WindowContextMenuHandler_ReceiveEventHook!.OriginalDisposeSafe(self, result, a3, a4, eventParam);
     }
 
     private void AddMenuEntry(string text, int eventParam)

@@ -9,8 +9,6 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
-using HaselTweaks.Structs;
-using HaselTweaks.Structs.Addons;
 
 namespace HaselTweaks.Tweaks;
 

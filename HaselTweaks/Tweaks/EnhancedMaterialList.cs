@@ -136,7 +136,7 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         {
             _recipeMaterialListLockPending = true;
             Log("Restoring RecipeMaterialList");
-            agentRecipeMaterialList->OpenByRecipeId(Config.RestoreMaterialListRecipeId, Math.Max(Config.RestoreMaterialListAmount, 1));
+            agentRecipeMaterialList->OpenByRecipeId((ushort)Config.RestoreMaterialListRecipeId, Math.Max(Config.RestoreMaterialListAmount, 1));
         }
     }
 

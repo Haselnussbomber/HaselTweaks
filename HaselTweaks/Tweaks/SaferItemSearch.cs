@@ -1,7 +1,7 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Info;
-using HaselTweaks.Structs.Addons;
 
 namespace HaselTweaks.Tweaks;
 
@@ -28,9 +28,9 @@ public unsafe partial class SaferItemSearch : Tweak
         if (addon == null)
             return;
 
-        for (var i = 0; i < addon->SearchResultsList->GetItemCount(); i++)
+        for (var i = 0; i < addon->ResultsList->GetItemCount(); i++)
         {
-            addon->SearchResultsList->SetItemDisabledState(i, _isSearching);
+            addon->ResultsList->SetItemDisabledState(i, _isSearching);
         }
     }
 
@@ -47,7 +47,7 @@ public unsafe partial class SaferItemSearch : Tweak
         if (addon == null)
             return;
 
-        addon->CheckMarketPriceButton->AtkComponentBase.SetEnabledState(!_isSearching);
+        addon->ComparePrices->AtkComponentBase.SetEnabledState(!_isSearching);
     }
 
     [AddressHook<InfoProxyItemSearch>(nameof(InfoProxyItemSearch.Addresses.ProcessRequestResult))]

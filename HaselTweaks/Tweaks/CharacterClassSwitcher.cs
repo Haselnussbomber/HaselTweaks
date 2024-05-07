@@ -1,12 +1,13 @@
 using Dalamud.Game.ClientState.Keys;
+using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
-using HaselTweaks.Structs.Agents;
 
 namespace HaselTweaks.Tweaks;
 
@@ -25,6 +26,8 @@ public class CharacterClassSwitcherConfiguration
 [Tweak, IncompatibilityWarning("SimpleTweaksPlugin", "CharacterWindowJobSwitcher")]
 public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitcherConfiguration>
 {
+    private const int NumClasses = 31;
+
     public enum ClassesJobsSubTabs
     {
         None,
@@ -57,6 +60,9 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
     [Signature("48 8D 4C 24 ?? E8 ?? ?? ?? ?? 48 8B 83 ?? ?? ?? ?? 48 8B CF 0F B7 9F")]
     private nint PvPTooltipAddress { get; init; }
 
+    private Hook<AgentStatus_ShowDelegate>? AgentStatus_ShowHook = null;
+    private delegate void AgentStatus_ShowDelegate(AgentStatus* agent);
+
     public override void Enable()
     {
         TooltipPatch = new(TooltipAddress + 8, [0xEB]);
@@ -67,12 +73,21 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
             TooltipPatch.Enable();
             PvpTooltipPatch.Enable();
         }
+
+        AgentStatus_ShowHook ??= Service.GameInteropProvider.HookFromAddress<AgentStatus_ShowDelegate>(*(nint*)(*(nint*)GetAgent<AgentStatus>() + 8 * (int)AgentInterfaceVfs.Show), AgentStatus_ShowDetour);
+        AgentStatus_ShowHook?.Enable();
     }
 
     public override void Disable()
     {
+        AgentStatus_ShowHook?.Disable();
         TooltipPatch?.Disable();
         PvpTooltipPatch?.Disable();
+    }
+
+    public override void Dispose()
+    {
+        AgentStatus_ShowHook?.Dispose();
     }
 
     public override void OnConfigChange(string fieldName)
@@ -99,7 +114,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
     {
         var result = AddonCharacterClass_OnSetupHook!.OriginalDisposeSafe(addon, numAtkValues, atkValues);
 
-        for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
+        for (var i = 0; i < NumClasses; i++)
         {
             // skip crafters as they already have ButtonClick events
             if (IsCrafter(i)) continue;
@@ -132,7 +147,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
     {
         AddonCharacterClass_OnUpdateHook.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
 
-        for (var i = 0; i < AddonCharacterClass.NUM_CLASSES; i++)
+        for (var i = 0; i < NumClasses; i++)
         {
             var node = addon->ButtonNodesSpan.GetPointer(i)->Value;
             if (node == null)
@@ -365,14 +380,13 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
         gearsetModule->EquipGearset(selectedGearset.Id - 1);
     }
 
-    [VTableHook<AgentStatus>((int)AgentInterfaceVfs.Show)]
-    private void AgentStatus_Show(AgentStatus* agent)
+    private void AgentStatus_ShowDetour(AgentStatus* agent)
     {
         if (Config.AlwaysOpenOnClassesJobsTab)
         {
             agent->TabIndex = 2;
         }
 
-        AgentStatus_ShowHook.OriginalDisposeSafe(agent);
+        AgentStatus_ShowHook!.OriginalDisposeSafe(agent);
     }
 }

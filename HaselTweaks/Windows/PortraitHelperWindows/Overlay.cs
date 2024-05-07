@@ -2,11 +2,11 @@ using System.Numerics;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Structs;
 using HaselCommon.Utils;
-using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
 

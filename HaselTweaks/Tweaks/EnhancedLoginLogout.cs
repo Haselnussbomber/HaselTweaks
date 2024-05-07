@@ -3,10 +3,8 @@ using System.Linq;
 using System.Numerics;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Game.ClientState.Keys;
 using Dalamud.Game.Config;
 using Dalamud.Interface;
-using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
@@ -14,6 +12,7 @@ using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.System.Scheduler;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -511,9 +510,9 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
                 if (actionTimelineId == 0 || processedActionTimelineIds.Contains(actionTimelineId))
                     return;
 
-                var key = Statics.GetActionTimelineKey(actionTimelineId);
+                var key = ActionTimelineManager.GetActionTimelineKey(actionTimelineId);
                 Log("Preloading tmb {0} (Emote: {1}, ActionTimeline: {2})", MemoryHelper.ReadStringNullTerminated((nint)key), emoteId, actionTimelineId);
-                HaselSchedulerActionTimelineManager.Instance()->PreloadActionTmbByKey(&key);
+                ActionTimelineManager.Instance()->PreloadActionTmbByKey(&key);
 
                 processedActionTimelineIds.Add(actionTimelineId);
             }

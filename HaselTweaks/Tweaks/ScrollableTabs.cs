@@ -1,11 +1,8 @@
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Structs;
-using AddonAOZNotebook = HaselTweaks.Structs.AddonAOZNotebook;
-using AddonGSInfoCardList = HaselTweaks.Structs.AddonGSInfoCardList;
-using HaselAtkComponentRadioButton = HaselTweaks.Structs.AtkComponentRadioButton;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
@@ -88,6 +85,14 @@ public class ScrollableTabsConfiguration
 [Tweak]
 public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 {
+    private const int NumArmouryBoardTabs = 12;
+    private const int NumInventoryTabs = 5;
+    private const int NumInventoryLargeTabs = 4;
+    private const int NumInventoryExpansionTabs = 2;
+    private const int NumInventoryRetainerTabs = 6;
+    private const int NumInventoryRetainerLargeTabs = 6;
+    private const int NumBuddyTabs = 6;
+
     private int _wheelState;
 
     private AtkUnitBase* IntersectingAddon
@@ -279,7 +284,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         }
         else if ((Config.HandleMinionNoteBook && name == "MinionNoteBook") || (Config.HandleMountNoteBook && name == "MountNoteBook"))
         {
-            UpdateMountMinion((MountMinionNoteBookBase*)unitBase);
+            UpdateMountMinion((AddonMinionMountBase*)unitBase);
         }
         else if (Config.HandleFishGuide && name == "FishGuide2")
         {
@@ -379,7 +384,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateArmouryBoard(AddonArmouryBoard* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, AddonArmouryBoard.NUM_TABS);
+        var tabIndex = GetTabIndex(addon->TabIndex, NumArmouryBoardTabs);
 
         if (addon->TabIndex < tabIndex)
             addon->NextTab(0);
@@ -389,7 +394,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateInventory(AddonInventory* addon)
     {
-        if (addon->TabIndex == AddonInventory.NUM_TABS - 1 && _wheelState > 0)
+        if (addon->TabIndex == NumInventoryTabs - 1 && _wheelState > 0)
         {
             // inside "48 89 6C 24 ?? 56 48 83 EC 20 0F B7 C2", a3 != 17
             var values = stackalloc AtkValue[3];
@@ -398,7 +403,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             values[0].Int = 22;
 
             values[1].Type = ValueType.Int;
-            values[1].Int = addon->Unk228;
+            values[1].Int = *(int*)((nint)addon + 0x228);
 
             values[2].Type = ValueType.UInt;
             values[2].UInt = 0;
@@ -407,7 +412,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         }
         else
         {
-            var tabIndex = GetTabIndex(addon->TabIndex, AddonInventory.NUM_TABS);
+            var tabIndex = GetTabIndex(addon->TabIndex, NumInventoryTabs);
 
             if (addon->TabIndex == tabIndex)
                 return;
@@ -427,7 +432,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             values[0].Int = 22;
 
             values[1].Type = ValueType.Int;
-            values[1].Int = addon->Unk280;
+            values[1].Int = *(int*)((nint)addon + 0x280);
 
             values[2].Type = ValueType.UInt;
             values[2].UInt = 2;
@@ -454,7 +459,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateInventoryLarge(AddonInventoryLarge* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryLarge.NUM_TABS);
+        var tabIndex = GetTabIndex(addon->TabIndex, NumInventoryLargeTabs);
 
         if (addon->TabIndex == tabIndex)
             return;
@@ -464,7 +469,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateInventoryExpansion(AddonInventoryExpansion* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryExpansion.NUM_TABS);
+        var tabIndex = GetTabIndex(addon->TabIndex, NumInventoryExpansionTabs);
 
         if (addon->TabIndex == tabIndex)
             return;
@@ -474,7 +479,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateInventoryRetainer(AddonInventoryRetainer* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryRetainer.NUM_TABS);
+        var tabIndex = GetTabIndex(addon->TabIndex, NumInventoryRetainerTabs);
 
         if (addon->TabIndex == tabIndex)
             return;
@@ -484,7 +489,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateInventoryRetainerLarge(AddonInventoryRetainerLarge* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryRetainerLarge.NUM_TABS);
+        var tabIndex = GetTabIndex(addon->TabIndex, NumInventoryRetainerLargeTabs);
 
         if (addon->TabIndex == tabIndex)
             return;
@@ -525,7 +530,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         {
             // WAYTOODANK, this is basically like writing addon->Tabs[i]
             // but because this is dynamic (depending on NumTabs), we can't do that... thanks, C#!
-            var button = *(HaselAtkComponentRadioButton**)(tabs + i * 8);
+            var button = *(AtkComponentRadioButton**)(tabs + i * 8);
             button->IsSelected = i == tabIndex;
         }
     }
@@ -572,9 +577,9 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         }
     }
 
-    private void UpdateMountMinion(MountMinionNoteBookBase* addon)
+    private void UpdateMountMinion(AddonMinionMountBase* addon)
     {
-        if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Normal)
+        if (addon->CurrentView == AddonMinionMountBase.ViewType.Normal)
         {
             if (addon->TabController.TabIndex == 0 && _wheelState < 0)
             {
@@ -585,7 +590,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
                 UpdateTabController((AtkUnitBase*)addon, &addon->TabController);
             }
         }
-        else if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Favorites && _wheelState > 0)
+        else if (addon->CurrentView == AddonMinionMountBase.ViewType.Favorites && _wheelState > 0)
         {
             addon->TabController.CallbackFunction(0, (AtkUnitBase*)addon);
         }
@@ -604,12 +609,12 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
                 agent->SelectedFavoriteMinion.SlotIndex = agent->SelectedNormalMinion.SlotIndex;
                 agent->SelectedFavoriteMinion.MinionId = agent->GetSelectedMinionId();
                 agent->SelectedMinion = &agent->SelectedFavoriteMinion;
-                agent->UpdateTabFlags(0x407);
+                agent->HandleCommand(0x407);
             }
             else
             {
                 UpdateTabController((AtkUnitBase*)addon, &addon->TabController);
-                agent->UpdateTabFlags(0x40B);
+                agent->HandleCommand(0x40B);
             }
         }
         else if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Favorites && _wheelState > 0)
@@ -623,7 +628,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             addon->TabController.TabIndex = 0;
             addon->TabController.CallbackFunction(0, (AtkUnitBase*)addon);
 
-            agent->UpdateTabFlags(0x40B);
+            agent->HandleCommand(0x40B);
         }
     }
 
@@ -657,14 +662,14 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateBuddy(AddonBuddy* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, AddonBuddy.NUM_TABS);
+        var tabIndex = GetTabIndex(addon->TabIndex, NumBuddyTabs);
 
         if (addon->TabIndex == tabIndex)
             return;
 
         addon->SetTab(tabIndex);
 
-        for (var i = 0; i < AddonBuddy.NUM_TABS; i++)
+        for (var i = 0; i < NumBuddyTabs; i++)
         {
             var button = addon->RadioButtonsSpan.GetPointer(i);
             if (button->Value != null)

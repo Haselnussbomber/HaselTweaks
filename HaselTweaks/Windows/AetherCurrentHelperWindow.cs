@@ -10,7 +10,6 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Sheets;
 using HaselCommon.Structs;
 using HaselCommon.Utils;
-using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;

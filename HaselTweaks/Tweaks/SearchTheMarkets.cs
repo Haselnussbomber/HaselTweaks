@@ -1,8 +1,8 @@
 using Dalamud.Game.Gui.ContextMenu;
 using Dalamud.Game.Text;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Sheets;
 using HaselCommon.Utils;
-using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 

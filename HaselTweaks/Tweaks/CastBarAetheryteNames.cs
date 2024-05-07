@@ -40,7 +40,7 @@ public unsafe partial class CastBarAetheryteNames : Tweak
 
         var placeName = true switch
         {
-            _ when info.IsAppartment => GetAddonText(8518),
+            _ when info.IsApartment => GetAddonText(8518),
             _ when info.IsSharedHouse => SeString.FromAddon(8519).Resolve([new IntegerExpression(info.Ward), new IntegerExpression(info.Plot)]).ToString(),
             _ => GetSheetText<PlaceName>(row.PlaceName.Row, "Name"),
         };

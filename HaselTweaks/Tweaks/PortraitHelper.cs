@@ -11,6 +11,7 @@ using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using FFXIVClientStructs.FFXIV.Component.Exd;
 using HaselCommon.Services;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
@@ -497,11 +498,11 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         if (id == 0)
             return true;
 
-        var bannerCondition = HaselExdModule.GetBannerCondition(id);
+        var bannerCondition = ExdModule.GetBannerCondition(id);
         if (bannerCondition == null)
             return false;
 
-        return bannerCondition->GetBannerConditionUnlockState() == 0;
+        return bannerCondition->GetUnlockState() == 0;
     }
 
     public static string GetBannerTimelineName(uint id)

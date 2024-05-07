@@ -1,12 +1,12 @@
 using System.IO;
 using System.Text.Json.Serialization;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Common.Math;
 using HaselCommon.Extensions;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.JsonConverters;
-using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -380,7 +380,7 @@ public sealed record PortraitPreset
             {
                 presetIndex = addonBannerEditor->NumPresets - 1;
 
-                ((AtkComponentList*)addonBannerEditor->PresetDropdown->List)->SetItemCount(addonBannerEditor->NumPresets); // increase to maximum, so "Custom" is displayed
+                addonBannerEditor->PresetDropdown->List->SetItemCount(addonBannerEditor->NumPresets); // increase to maximum, so "Custom" is displayed
             }
 
             addonBannerEditor->PresetDropdown->SelectItem(presetIndex);
