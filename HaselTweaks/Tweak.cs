@@ -40,6 +40,17 @@ public abstract partial class Tweak : ITweak
 
         try
         {
+            SetupGenericAddressHooks();
+        }
+        catch (Exception ex)
+        {
+            Error(ex, "Unexpected error during SetupGenericAddressHooks");
+            LastInternalException = ex;
+            return;
+        }
+
+        try
+        {
             SetupAddressHooks();
         }
         catch (Exception ex)
@@ -66,6 +77,7 @@ public abstract partial class Tweak : ITweak
     public bool Ready { get; protected set; }
     public bool Enabled { get; protected set; }
 
+    public virtual void SetupGenericAddressHooks() { }
     public virtual void SetupAddressHooks() { }
     public virtual void SetupVTableHooks() { }
 

@@ -1,10 +1,10 @@
 using Dalamud.Game.ClientState.Keys;
-using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Enums;
 using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
@@ -60,8 +60,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
     [Signature("48 8D 4C 24 ?? E8 ?? ?? ?? ?? 48 8B 83 ?? ?? ?? ?? 48 8B CF 0F B7 9F")]
     private nint PvPTooltipAddress { get; init; }
 
-    private Hook<AgentStatus_ShowDelegate>? AgentStatus_ShowHook = null;
-    private delegate void AgentStatus_ShowDelegate(AgentStatus* agent);
+    private static nint AgentStatus_ShowAddress => GetAgentVFuncAddress<AgentStatus>(AgentInterfaceVfs.Show);
 
     public override void Enable()
     {
@@ -73,21 +72,12 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
             TooltipPatch.Enable();
             PvpTooltipPatch.Enable();
         }
-
-        AgentStatus_ShowHook ??= Service.GameInteropProvider.HookFromAddress<AgentStatus_ShowDelegate>(*(nint*)(*(nint*)GetAgent<AgentStatus>() + 8 * (int)AgentInterfaceVfs.Show), AgentStatus_ShowDetour);
-        AgentStatus_ShowHook?.Enable();
     }
 
     public override void Disable()
     {
-        AgentStatus_ShowHook?.Disable();
         TooltipPatch?.Disable();
         PvpTooltipPatch?.Disable();
-    }
-
-    public override void Dispose()
-    {
-        AgentStatus_ShowHook?.Dispose();
     }
 
     public override void OnConfigChange(string fieldName)
@@ -380,7 +370,8 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
         gearsetModule->EquipGearset(selectedGearset.Id - 1);
     }
 
-    private void AgentStatus_ShowDetour(AgentStatus* agent)
+    [AddressHook(nameof(AgentStatus_ShowAddress))]
+    private void AgentStatus_Show(AgentStatus* agent)
     {
         if (Config.AlwaysOpenOnClassesJobsTab)
         {

@@ -4,7 +4,6 @@ using System.Numerics;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text.SeStringHandling;
-using Dalamud.Hooking;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
@@ -44,27 +43,16 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
     private Vector2 _hoveredWindowSize;
     private int _eventIndexToDisable = 0;
 
-    private Hook<WindowContextMenuHandler_ReceiveEventDelegate>? WindowContextMenuHandler_ReceiveEventHook = null;
-    private delegate AtkValue* WindowContextMenuHandler_ReceiveEventDelegate(nint self, AtkValue* result, nint a3, long a4, long eventParam);
+    private nint WindowContextMenuHandler_ReceiveEventAddress => (nint)RaptureAtkUnitManager.Instance()->WindowContextMenuHandler.vtbl[0];
 
     public override void Enable()
     {
-        WindowContextMenuHandler_ReceiveEventHook ??= Service.GameInteropProvider.HookFromAddress<WindowContextMenuHandler_ReceiveEventDelegate>((nint)RaptureAtkUnitManager.Instance()->WindowContextMenuHandler.vtbl[0], WindowContextMenuHandler_ReceiveEventDetour);
-        WindowContextMenuHandler_ReceiveEventHook?.Enable();
-
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "GearSetList", GearSetList_PostSetup);
     }
 
     public override void Disable()
     {
-        WindowContextMenuHandler_ReceiveEventHook?.Disable();
-
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "GearSetList", GearSetList_PostSetup);
-    }
-
-    public override void Dispose()
-    {
-        WindowContextMenuHandler_ReceiveEventHook?.Dispose();
     }
 
     public override void DrawConfig()
@@ -375,7 +363,8 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
         return AgentContext_OpenContextMenuForAddonHook.OriginalDisposeSafe(agent, addonId, bindToOwner);
     }
 
-    public AtkValue* WindowContextMenuHandler_ReceiveEventDetour(nint self, AtkValue* result, nint a3, long a4, long eventParam)
+    [AddressHook(nameof(WindowContextMenuHandler_ReceiveEventAddress))]
+    public AtkValue* WindowContextMenuHandler_ReceiveEvent(nint self, AtkValue* result, nint a3, long a4, long eventParam)
     {
         if (_eventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock)
         {

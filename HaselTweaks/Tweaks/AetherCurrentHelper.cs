@@ -1,8 +1,8 @@
 using Dalamud.Game.ClientState.Keys;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Enums;
 using HaselCommon.Services;
-using HaselTweaks.Enums;
 using HaselTweaks.Windows;
 using Lumina.Excel.GeneratedSheets;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;

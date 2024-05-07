@@ -2,10 +2,9 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
-using Dalamud.Hooking;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Enums;
+using HaselCommon.Enums;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 
@@ -25,16 +24,11 @@ public class MaterialAllocationConfiguration
 public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfiguration>
 {
     private uint NextMJIGatheringNoteBookItemId;
-
-    private Hook<AgentMJIGatheringNoteBook_UpdateDelegate>? AgentMJIGatheringNoteBook_UpdateHook = null;
-    private delegate void AgentMJIGatheringNoteBook_UpdateDelegate(AgentMJIGatheringNoteBook* agent);
+    private static nint AgentMJIGatheringNoteBook_UpdateAddress => GetAgentVFuncAddress<AgentMJIGatheringNoteBook>(AgentInterfaceVfs.Update);
 
     public override void Enable()
     {
         NextMJIGatheringNoteBookItemId = 0;
-
-        AgentMJIGatheringNoteBook_UpdateHook ??= Service.GameInteropProvider.HookFromAddress<AgentMJIGatheringNoteBook_UpdateDelegate>(*(nint*)(*(nint*)GetAgent<AgentMJIGatheringNoteBook>() + 8 * (int)AgentInterfaceVfs.Update), AgentMJIGatheringNoteBook_UpdateDetour);
-        AgentMJIGatheringNoteBook_UpdateHook?.Enable();
 
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PostReceiveEvent);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PreSetup);
@@ -42,15 +36,8 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
 
     public override void Disable()
     {
-        AgentMJIGatheringNoteBook_UpdateHook?.Disable();
-
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PostReceiveEvent);
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PreSetup);
-    }
-
-    public override void Dispose()
-    {
-        AgentMJIGatheringNoteBook_UpdateHook?.Dispose();
     }
 
     private void AddonMJICraftMaterialConfirmation_PreSetup(AddonEvent type, AddonArgs args)
@@ -89,7 +76,8 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
         }
     }
 
-    public void AgentMJIGatheringNoteBook_UpdateDetour(AgentMJIGatheringNoteBook* agent)
+    [AddressHook(nameof(AgentMJIGatheringNoteBook_UpdateAddress))]
+    public void AgentMJIGatheringNoteBook_Update(AgentMJIGatheringNoteBook* agent)
     {
         var handleUpdate = Config.OpenGatheringLogOnItemClick
             && NextMJIGatheringNoteBookItemId != 0
