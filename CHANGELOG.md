@@ -1,5 +1,11 @@
 # Changelog
 
+## [23.0.1] (2024-05-14)
+
+### Cast Bar Aetheryte Names
+
+- **Fixed:** The cast bar should no longer display the aetheryte name on subsequent casts.
+
 ## [23.0.0] (2024-05-02)
 
 ### New Tweak: Achievement Link Tooltip
@@ -1452,6 +1458,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[23.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v23.0.0...v23.0.1
 [23.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v22.0.1...v23.0.0
 [22.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v22.0.0...v22.0.1
 [22.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v21.0.0...v22.0.0
