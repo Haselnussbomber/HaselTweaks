@@ -27,16 +27,33 @@ public unsafe partial class CastBarAetheryteNames : Tweak
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "_CastBar", OnCastBarPreRefresh);
     }
 
+    public override void OnTerritoryChanged(ushort id)
+    {
+        Clear();
+    }
+
+    public void Clear()
+    {
+        IsCastingTeleport = false;
+        TeleportInfo = null;
+    }
+
     public void OnCastBarPreRefresh(AddonEvent type, AddonArgs args)
     {
         if (!IsCastingTeleport || TeleportInfo == null)
+        {
+            Clear();
             return;
+        }
 
         var info = TeleportInfo.Value;
 
         var row = GetRow<Aetheryte>(info.AetheryteId);
         if (row == null)
+        {
+            Clear();
             return;
+        }
 
         var placeName = true switch
         {
@@ -46,6 +63,8 @@ public unsafe partial class CastBarAetheryteNames : Tweak
         };
 
         AtkStage.GetSingleton()->GetStringArrayData()[20]->SetValue(0, placeName, false, true, false);
+
+        Clear();
     }
 
     [AddressHook<HaselActionManager>(nameof(HaselActionManager.OpenCastBar))]
