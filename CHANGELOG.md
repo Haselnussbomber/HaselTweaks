@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Scrollable Tabs
+
+- **Fixed:** The game would crashe when scrolling too far in the Expanded Retainer Inventory or Companion window.
+
 ## [23.0.1] (2024-05-14)
 
 ### Cast Bar Aetheryte Names

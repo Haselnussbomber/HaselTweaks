@@ -90,8 +90,8 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
     private const int NumInventoryLargeTabs = 4;
     private const int NumInventoryExpansionTabs = 2;
     private const int NumInventoryRetainerTabs = 6;
-    private const int NumInventoryRetainerLargeTabs = 6;
-    private const int NumBuddyTabs = 6;
+    private const int NumInventoryRetainerLargeTabs = 3;
+    private const int NumBuddyTabs = 3;
 
     private int _wheelState;
 
