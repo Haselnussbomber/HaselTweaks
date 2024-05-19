@@ -19,10 +19,10 @@ public unsafe partial class ForcedCutsceneMusic : Tweak<ForcedCutsceneMusicConfi
         set => Service.GameConfig.System.Set("IsSndBgm", value);
     }
 
-    [AddressHook<LuaCutsceneState>(nameof(LuaCutsceneState.Addresses.Ctor))]
-    public LuaCutsceneState* CutsceneStateCtor(LuaCutsceneState* self, uint cutsceneId, byte a3, int a4, int a5, int a6, int a7)
+    [AddressHook<PlayCutSceneTask>(nameof(PlayCutSceneTask.Addresses.Ctor))]
+    public PlayCutSceneTask* PlayCutSceneTaskCtor(PlayCutSceneTask* self, uint cutsceneId, byte a3, int a4, int a5, int a6, int a7)
     {
-        var ret = CutsceneStateCtorHook.OriginalDisposeSafe(self, cutsceneId, a3, a4, a5, a6, a7);
+        var ret = PlayCutSceneTaskCtorHook.OriginalDisposeSafe(self, cutsceneId, a3, a4, a5, a6, a7);
 
         Log($"Cutscene {cutsceneId} started");
 
@@ -36,12 +36,12 @@ public unsafe partial class ForcedCutsceneMusic : Tweak<ForcedCutsceneMusicConfi
         return ret;
     }
 
-    [VTableHook<LuaCutsceneState>(0)]
-    public LuaCutsceneState* CutsceneStateDtor(LuaCutsceneState* self, bool a2)
+    [VTableHook<PlayCutSceneTask>(0)]
+    public PlayCutSceneTask* PlayCutSceneTaskDtor(PlayCutSceneTask* self, bool a2)
     {
         Log($"Cutscene {self->Id} ended");
 
-        var ret = CutsceneStateDtorHook.OriginalDisposeSafe(self, a2);
+        var ret = PlayCutSceneTaskDtorHook.OriginalDisposeSafe(self, a2);
 
         if (_wasBgmMuted && Config.Restore)
             IsBgmMuted = true;
