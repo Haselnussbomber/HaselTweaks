@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Dalamud.Game.Command;
@@ -18,6 +19,15 @@ public sealed class Plugin : IDalamudPlugin
     public Plugin(DalamudPluginInterface pluginInterface)
     {
         Service.Initialize(pluginInterface);
+
+        FFXIVClientStructs.Interop.Generated.Addresses.Register();
+        Addresses.Register();
+        Resolver.GetInstance.Setup(
+            Service.SigScanner.SearchBase,
+            Service.DataManager.GameData.Repositories["ffxiv"].Version,
+            new FileInfo(Path.Join(pluginInterface.ConfigDirectory.FullName, "SigCache.json")));
+        Resolver.GetInstance.Resolve();
+
         Service.AddService(Configuration.Load());
 
         Service.AddonObserver.AddonClose += AddonObserver_AddonClose;
@@ -187,5 +197,6 @@ public sealed class Plugin : IDalamudPlugin
 
         Service.PluginLog.Debug("Disposing Service");
         Service.Dispose();
+        Addresses.Unregister();
     }
 }

@@ -44,7 +44,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
     }
 
     public override bool DrawConditions()
-        => Addon != null && Addon->AtkUnitBase.IsVisible && _tweak.Categories.Any();
+        => Addon != null && Addon->AtkUnitBase.IsVisible && _tweak.Categories.Count != 0;
 
     public override void Draw()
     {

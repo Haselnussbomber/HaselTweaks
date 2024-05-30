@@ -58,7 +58,7 @@ public class EditPresetDialog : ConfirmationDialog
             OnSave();
         }
 
-        if (Config.PresetTags.Any())
+        if (Config.PresetTags.Count != 0)
         {
             ImGui.Spacing();
             ImGui.TextUnformatted(t("PortraitHelperWindows.EditPresetDialog.Tags.Label"));

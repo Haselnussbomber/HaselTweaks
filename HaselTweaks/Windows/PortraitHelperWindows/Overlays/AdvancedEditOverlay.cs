@@ -5,11 +5,10 @@ using FFXIVClientStructs.FFXIV.Client.Graphics.Scene;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using FFXIVClientStructs.Havok;
+using FFXIVClientStructs.Havok.Animation.Animation;
 using HaselCommon.Structs;
 using HaselCommon.Utils;
 using ImGuiNET;
-using ActionTimelineSlots = FFXIVClientStructs.FFXIV.Client.Game.ActionTimelineSlots;
 using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
@@ -34,7 +33,7 @@ public unsafe class AdvancedEditOverlay : Overlay
 
     private AgentBannerEditorState* EditorState => Agent->EditorState;
     private CharaViewPortrait* CharaView => EditorState != null ? EditorState->CharaView : null;
-    private Character* Character => CharaView != null ? CharaView->Base.GetCharacter() : null;
+    private Character* Character => CharaView != null ? CharaView->GetCharacter() : null;
 
     private hkaAnimation* GetBaseAnimation()
     {
@@ -73,7 +72,7 @@ public unsafe class AdvancedEditOverlay : Overlay
         if (animation == null)
             return;
 
-        var baseTimeline = Character->ActionTimelineManager.Driver.GetSchedulerTimeline((uint)ActionTimelineSlots.Base);
+        var baseTimeline = Character->Timeline.TimelineSequencer.GetSchedulerTimeline(0);
         if (baseTimeline == null || (baseTimeline->ActionTimelineKey != null && Marshal.PtrToStringUTF8((nint)baseTimeline->ActionTimelineKey) == "normal/idle"))
             return;
 
@@ -280,8 +279,8 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.SetNextItemWidth(-1);
 
             var eyeDirection = new Vector2(
-                Character->Gaze.BannerEyeDirection.X,
-                Character->Gaze.BannerEyeDirection.Y
+                Character->LookAt.BannerEyeDirection.X,
+                Character->LookAt.BannerEyeDirection.Y
             );
 
             if (ImGui.DragFloat2($"##DragFloat2", ref eyeDirection, 0.001f))
@@ -307,8 +306,8 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.SetNextItemWidth(-1);
 
             var headDirection = new Vector2(
-                Character->Gaze.BannerHeadDirection.X,
-                Character->Gaze.BannerHeadDirection.Y
+                Character->LookAt.BannerHeadDirection.X,
+                Character->LookAt.BannerHeadDirection.Y
             );
 
             if (ImGui.DragFloat2($"##DragFloat2", ref headDirection, 0.001f))
@@ -335,21 +334,21 @@ public unsafe class AdvancedEditOverlay : Overlay
 
             if (ImGui.DragFloat($"##DragFloat", ref _timestamp, _frameCount < 100 ? 0.001f : 0.01f, 0f, _frameCount, _frameCount < 100 ? $"%.3f / {_frameCount}" : $"%.2f / {_frameCount}"))
             {
-                var baseTimeline = Character->ActionTimelineManager.Driver.GetSchedulerTimeline((uint)ActionTimelineSlots.Base);
+                var baseTimeline = Character->Timeline.TimelineSequencer.GetSchedulerTimeline(0);
                 if (baseTimeline == null)
                     return;
 
                 var delta = _timestamp - baseTimeline->TimelineController.CurrentTimestamp;
                 if (delta < 0)
                 {
-                    CharaView->SetPoseTimed(Character->ActionTimelineManager.BannerTimelineRowId, _timestamp);
+                    CharaView->SetPoseTimed(Character->Timeline.BannerTimelineRowId, _timestamp);
                 }
                 else
                 {
                     baseTimeline->UpdateBanner(delta, 0);
                 }
 
-                CharaView->Base.ToggleAnimationPlayback(true);
+                CharaView->ToggleAnimationPlayback(true);
                 Addon->PlayAnimationCheckbox->IsChecked = false;
 
                 if (!EditorState->HasDataChanged)

@@ -24,7 +24,6 @@ public class MaterialAllocationConfiguration
 public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfiguration>
 {
     private uint NextMJIGatheringNoteBookItemId;
-    private static nint AgentMJIGatheringNoteBook_UpdateAddress => GetAgentVFuncAddress<AgentMJIGatheringNoteBook>(AgentInterfaceVfs.Update);
 
     public override void Enable()
     {
@@ -53,7 +52,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
         var addon = (AddonMJICraftMaterialConfirmation*)args.Addon;
         for (var i = 0; i < 3; i++)
         {
-            var button = addon->RadioButtonsSpan.GetPointer(i);
+            var button = addon->RadioButtons.GetPointer(i);
             if (button->Value != null)
             {
                 button->Value->IsSelected = i == Config.LastSelectedTab;
@@ -76,7 +75,9 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
         }
     }
 
-    [AddressHook(nameof(AgentMJIGatheringNoteBook_UpdateAddress))]
+    private static nint AgentMJIGatheringNoteBook_UpdateAddress => GetAgentVFuncAddress<AgentMJIGatheringNoteBook>(AgentInterfaceVfs.Update);
+
+    [Hook]
     public void AgentMJIGatheringNoteBook_Update(AgentMJIGatheringNoteBook* agent)
     {
         var handleUpdate = Config.OpenGatheringLogOnItemClick
@@ -84,7 +85,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
             && agent->Data != null
             && agent->Data->Status == 3
             && (agent->Data->Flags & 2) != 2 // refresh pending
-            && agent->Data->SortedGatherItems.Size() != 0;
+            && agent->Data->SortedGatherItems.LongCount != 0;
 
         AgentMJIGatheringNoteBook_UpdateHook!.OriginalDisposeSafe(agent);
 
@@ -157,9 +158,9 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
 
     private void UpdateGatheringNoteBookItem(AgentMJIGatheringNoteBook* agent, uint itemId)
     {
-        for (var index = 0u; index < agent->Data->SortedGatherItems.Size(); index++)
+        for (var index = 0u; index < agent->Data->SortedGatherItems.LongCount; index++)
         {
-            var gatherItemPtr = agent->Data->SortedGatherItems.Get(index);
+            var gatherItemPtr = agent->Data->SortedGatherItems[index];
             if (gatherItemPtr.Value == null || gatherItemPtr.Value->ItemId != itemId)
                 continue;
 

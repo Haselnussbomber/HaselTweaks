@@ -6,11 +6,11 @@ using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
+using HaselTweaks.Structs;
 using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
@@ -43,8 +43,6 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
     private Vector2 _hoveredWindowSize;
     private int _eventIndexToDisable = 0;
 
-    private nint WindowContextMenuHandler_ReceiveEventAddress => (nint)RaptureAtkUnitManager.Instance()->WindowContextMenuHandler.vtbl[0];
-
     public override void Enable()
     {
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "GearSetList", GearSetList_PostSetup);
@@ -74,7 +72,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
         var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
 
         ImGuiUtils.DrawPaddedSeparator();
-        if (Config.LockedWindows.Any())
+        if (Config.LockedWindows.Count != 0)
         {
             ImGui.TextUnformatted(t("LockWindowPosition.Config.Windows.Title"));
 
@@ -170,7 +168,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             }
         }
 
-        if (Config.LockedWindows.Any())
+        if (Config.LockedWindows.Count != 0)
         {
             ImGui.SameLine();
 
@@ -243,12 +241,12 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             addon->ResetPosition = false;
     }
 
-    [AddressHook<AtkUnitBase>(nameof(AtkUnitBase.Addresses.MoveDelta))]
+    [AddressHook<AtkUnitBase>(nameof(AtkUnitBase.MoveDelta))]
     public bool MoveDelta(AtkUnitBase* atkUnitBase, nint xDelta, nint yDelta)
     {
         if (atkUnitBase != null)
         {
-            var name = MemoryHelper.ReadString((nint)atkUnitBase->Name, 0x20);
+            var name = atkUnitBase->NameString;
             var isLocked = Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == name);
 
             if (Config.Inverted)
@@ -271,7 +269,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
                 var atkUnitBase = *(AtkUnitBase**)(a2 + 8);
                 if (atkUnitBase != null && atkUnitBase->WindowNode != null && atkUnitBase->WindowCollisionNode != null)
                 {
-                    var name = MemoryHelper.ReadString((nint)atkUnitBase->Name, 0x20);
+                    var name = atkUnitBase->NameString;
                     if (!IgnoredAddons.Contains(name))
                     {
                         _hoveredWindowName = name;
@@ -303,7 +301,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
         return RaptureAtkUnitManager_Vf6Hook.OriginalDisposeSafe(self, a2);
     }
 
-    [AddressHook<AgentContext>(nameof(AgentContext.Addresses.ClearMenu))]
+    [AddressHook<AgentContext>(nameof(AgentContext.ClearMenu))]
     public nint AgentContext_ClearMenu(AgentContext* agent)
     {
         if (_eventIndexToDisable != 0)
@@ -312,7 +310,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
         return AgentContext_ClearMenuHook.OriginalDisposeSafe(agent);
     }
 
-    [AddressHook<AgentContext>(nameof(AgentContext.Addresses.AddMenuItem2))]
+    [AddressHook<AgentContext>(nameof(AgentContext.AddMenuItem2))]
     public nint AgentContext_AddMenuItem2(AgentContext* agent, uint addonRowId, nint handlerPtr, long handlerParam, int disabled, int submenu)
     {
         if (addonRowId == 8660 && agent->ContextMenuIndex == 0) // "Return to Default Position"
@@ -323,7 +321,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
         return AgentContext_AddMenuItem2Hook.OriginalDisposeSafe(agent, addonRowId, handlerPtr, handlerParam, disabled, submenu);
     }
 
-    [AddressHook<AgentContext>(nameof(AgentContext.Addresses.OpenContextMenuForAddon))]
+    [AddressHook<AgentContext>(nameof(AgentContext.OpenContextMenuForAddon))]
     public nint AgentContext_OpenContextMenuForAddon(AgentContext* agent, uint addonId, bool bindToOwner)
     {
         if (_eventIndexToDisable == 7 && agent->ContextMenuIndex == 0)
@@ -331,7 +329,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             var addon = GetAddon<AtkUnitBase>((ushort)addonId);
             if (addon != null)
             {
-                var name = MemoryHelper.ReadString((nint)addon->Name, 0x20);
+                var name = addon->NameString;
 
                 if (!IgnoredAddons.Contains(name))
                 {
@@ -363,15 +361,16 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
         return AgentContext_OpenContextMenuForAddonHook.OriginalDisposeSafe(agent, addonId, bindToOwner);
     }
 
-    [AddressHook(nameof(WindowContextMenuHandler_ReceiveEventAddress))]
+    private static nint WindowContextMenuHandler_ReceiveEventAddress => (nint)RaptureAtkUnitManager.Instance()->WindowContextMenuHandler.VirtualTable->ReceiveEvent;
+
+    [Hook]
     public AtkValue* WindowContextMenuHandler_ReceiveEvent(nint self, AtkValue* result, nint a3, long a4, long eventParam)
     {
         if (_eventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock)
         {
             if (TryGetAddon<AtkUnitBase>((ushort)GetAgent<AgentContext>()->OwnerAddon, out var addon))
             {
-                var name = MemoryHelper.ReadString((nint)addon->Name, 0x20);
-
+                var name = addon->NameString;
                 var entry = Config.LockedWindows.FirstOrDefault(entry => entry?.Name == name, null);
                 var isLocked = eventParam == EventParamLock;
 
@@ -414,10 +413,6 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             .AddText(text)
             .Encode();
 
-        var handler = (nint)AtkStage.GetSingleton()->RaptureAtkUnitManager + 0x9C90; // see vtbl ptr in ctor
-        fixed (byte* ptr = &bytes[0])
-        {
-            GetAgent<AgentContext>()->AddMenuItem(ptr, (void*)handler, eventParam);
-        }
+        GetAgent<AgentContext>()->AddMenuItem(bytes, &AtkStage.GetSingleton()->RaptureAtkUnitManager->WindowContextMenuHandler, eventParam);
     }
 }

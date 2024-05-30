@@ -4,8 +4,9 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 
 namespace HaselTweaks.Structs;
 
-[StructLayout(LayoutKind.Explicit)]
-public unsafe struct UIModuleHelpers
+[GenerateInterop]
+[StructLayout(LayoutKind.Explicit, Size = 0x10)]
+public unsafe partial struct UIModuleHelpers
 {
     public static UIModuleHelpers* Instance() => (UIModuleHelpers*)UIModule.Instance()->GetUIModuleHelpers();
 
@@ -15,28 +16,30 @@ public unsafe struct UIModuleHelpers
 // inlined ctor "48 89 08 33 C9 48 89 48 10 48 89 48 18"
 // TODO: "E8 ?? ?? ?? ?? 84 C0 75 03 40 32 F6" - it copies the current portrait to the BannerModuleHelper?
 // TODO: "83 BE ?? ?? ?? ?? ?? 0F 84 ?? ?? ?? ?? 48 8B 8E ?? ?? ?? ?? 48 89 BC 24 ?? ?? ?? ??" - code for sending Adventurer Plate data
+[GenerateInterop]
 [StructLayout(LayoutKind.Explicit, Size = 0x50)]
 public unsafe partial struct BannerModuleHelper
 {
     [MemberFunction("E8 ?? ?? ?? ?? 84 C0 74 45 41 B0 01")]
-    public readonly partial bool InitializeBannerUpdateData(BannerUpdateData* bannerUpdateData);
+    public partial bool InitializeBannerUpdateData(BannerUpdateData* bannerUpdateData);
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 8D 55 B0 48 8B CF E8 ?? ?? ?? ?? 48 8B BC 24")]
-    public readonly partial bool CopyBannerEntryToBannerUpdateData(BannerUpdateData* bannerUpdateData, BannerModuleEntry* bannerModuleEntry);
+    public partial bool CopyBannerEntryToBannerUpdateData(BannerUpdateData* bannerUpdateData, BannerModuleEntry* bannerModuleEntry);
 
     [MemberFunction("E8 ?? ?? ?? ?? 48 8B AC 24 ?? ?? ?? ?? 48 8B 4C 24 ?? 48 33 CC E8 ?? ?? ?? ?? 48 83 C4 60")]
-    public readonly partial bool SendBannerUpdateData(BannerUpdateData* bannerUpdateData);
+    public partial bool SendBannerUpdateData(BannerUpdateData* bannerUpdateData);
 
     [MemberFunction("E8 ?? ?? ?? ?? 88 44 24 23")]
-    public readonly partial bool IsBannerNotExpired(BannerModuleEntry* bannerModuleEntry, int type);
+    public partial bool IsBannerNotExpired(BannerModuleEntry* bannerModuleEntry, int type);
 
     [MemberFunction("40 53 48 83 EC 20 4C 8B 1D")]
-    public readonly partial bool IsBannerCharacterDataNotExpired(BannerModuleEntry* bannerModuleEntry, int type);
+    public partial bool IsBannerCharacterDataNotExpired(BannerModuleEntry* bannerModuleEntry, int type);
 
     [MemberFunction("41 0F B6 80 ?? ?? ?? ?? 88 42 60")]
-    public readonly partial void CopyRaceGenderHeightTribe(BannerModuleEntry* bannerModuleEntry, Character* localPlayer); // from localPlayer to bannerModuleEntry
+    public partial void CopyRaceGenderHeightTribe(BannerModuleEntry* bannerModuleEntry, Character* localPlayer); // from localPlayer to bannerModuleEntry
 }
 
+[GenerateInterop]
 [StructLayout(LayoutKind.Explicit, Size = 0x40)]
 public unsafe partial struct BannerUpdateData
 {
@@ -72,5 +75,5 @@ public unsafe partial struct BannerUpdateData
     [FieldOffset(0x2F)] public uint Checksum;
 
     [MemberFunction("E8 ?? ?? ?? ?? 89 6B 5C")]
-    public readonly partial void Initialize();
+    public partial void Initialize();
 }

@@ -7,7 +7,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselCommon.Extensions;
-using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 using AgentRecipeNote = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentRecipeNote;
 
@@ -70,7 +69,7 @@ public unsafe class AutoOpenRecipe : Tweak
             return false;
 
         var questManager = QuestManager.Instance();
-        foreach (ref var questWork in questManager->NormalQuestsSpan)
+        foreach (ref var questWork in questManager->NormalQuests)
         {
             if (questWork.QuestId == 0)
                 continue;
@@ -81,14 +80,14 @@ public unsafe class AutoOpenRecipe : Tweak
 
             Debug($"Checking Quest #{questWork.QuestId} ({GetSheetText<Quest>((uint)questWork.QuestId | 0x10000, "Name")}) (Sequence {questWork.Sequence})");
 
-            var todoOffset = quest!.ToDoCompleteSeq.IndexOf(questWork.Sequence);
+            var todoOffset = (byte)quest!.ToDoCompleteSeq.IndexOf(questWork.Sequence);
             if (todoOffset < 0 || todoOffset >= quest.ToDoQty.Length)
             {
                 Debug($"Skipping: todoOffset = {todoOffset}, quest.ToDoQty.Length = {quest.ToDoQty.Length}");
                 continue;
             }
 
-            var questEventHandler = EventFramework.Instance()->GetEventHandlerById(quest.RowId);
+            var questEventHandler = (QuestEventHandler*)EventFramework.Instance()->GetEventHandlerById(quest.RowId);
             if (questEventHandler == null)
             {
                 Debug($"Skipping: No QuestEventHandler");
@@ -107,7 +106,7 @@ public unsafe class AutoOpenRecipe : Tweak
             for (var todoIndex = todoOffset; todoIndex < todoOffset + todoCount; todoIndex++)
             {
                 uint numHave, numNeeded, resultItemId;
-                Statics.GetTodoArgs(questEventHandler, localPlayer, todoIndex, &numHave, &numNeeded, &resultItemId);
+                questEventHandler->GetTodoArgs(localPlayer, todoIndex, &numHave, &numNeeded, &resultItemId);
 
                 // for older quests that don't return the item id in GetTodoArgs
                 switch ((questWork.QuestId, todoIndex))

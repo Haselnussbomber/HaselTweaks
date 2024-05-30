@@ -7,7 +7,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
 using HaselCommon.Utils;
-using HaselTweaks.Structs;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 
@@ -613,9 +612,9 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
                 return;
             }
 
-            for (var i = 0; i < itemOrderModule->ArmourySorterSpan.Length; i++)
+            for (var i = 0; i < itemOrderModule->ArmourySorter.Length; i++)
             {
-                var sorter = itemOrderModule->ArmourySorterSpan.GetPointer(i)->Value;
+                var sorter = itemOrderModule->ArmourySorter.GetPointer(i)->Value;
                 if (sorter != null && sorter->SortFunctionIndex != -1)
                 {
                     Debug($"ItemOrderModule: Sorter #{i} ({sorter->InventoryType}) is busy, waiting.");
@@ -687,7 +686,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
 
             var cmd = $"/itemsort clear {category}";
             Log($"Executing {cmd}");
-            HaselShellCommandModule.ExecuteCommand(cmd);
+            ExecuteCommand(cmd);
 
             foreach (var rule in group)
             {
@@ -707,12 +706,12 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
 
                 cmd = $"/itemsort condition {category} {condition} {order}";
                 Log($"Executing {cmd}");
-                HaselShellCommandModule.ExecuteCommand(cmd);
+                ExecuteCommand(cmd);
             }
 
             cmd = $"/itemsort execute {category}";
             Log($"Executing {cmd}");
-            HaselShellCommandModule.ExecuteCommand(cmd);
+            ExecuteCommand(cmd);
         }
         catch (Exception ex)
         {

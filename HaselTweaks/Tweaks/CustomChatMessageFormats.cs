@@ -10,7 +10,6 @@ using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Text;
 using HaselCommon.Text.Enums;
 using HaselCommon.Text.Expressions;
@@ -283,7 +282,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         if (!Config.FormatOverrides.TryGetValue(logKindId, out var logKindOverride) || !logKindOverride.Enabled || !logKindOverride.IsValid())
             return RaptureLogModule_FormatLogMessageHook.OriginalDisposeSafe(haselRaptureLogModule, logKindId, sender, message, timestamp, a6, a7, chatTabIndex);
 
-        var tempParseMessage1 = haselRaptureLogModule->TempParseMessageSpan.GetPointer(1);
+        var tempParseMessage1 = haselRaptureLogModule->TempParseMessage.GetPointer(1);
         tempParseMessage1->Clear();
 
         if (!haselRaptureLogModule->RaptureTextModule->TextModule.FormatString(message->StringPtr, null, tempParseMessage1))
@@ -292,7 +291,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         var senderStr = new SeString([new RawPayload(sender->AsSpan().ToArray())]);
         var messageStr = new SeString([new RawPayload(tempParseMessage1->AsSpan().ToArray())]);
 
-        var tempParseMessage0 = haselRaptureLogModule->TempParseMessageSpan.GetPointer(0);
+        var tempParseMessage0 = haselRaptureLogModule->TempParseMessage.GetPointer(0);
         tempParseMessage0->Clear();
         tempParseMessage0->SetString(logKindOverride.Format.Resolve([senderStr, messageStr]).Encode());
 
@@ -302,7 +301,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
             if (raptureLogModule->UseServerTime)
                 *timestamp = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            var tempParseMessage3 = haselRaptureLogModule->TempParseMessageSpan.GetPointer(3);
+            var tempParseMessage3 = haselRaptureLogModule->TempParseMessage.GetPointer(3);
             tempParseMessage3->SetString(haselRaptureLogModule->RaptureTextModule->FormatAddonText2Int(raptureLogModule->Use12HourClock ? 7841u : 7840u, *timestamp));
             var buffer = stackalloc Utf8String[1];
             buffer->Ctor();

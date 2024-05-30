@@ -1077,8 +1077,8 @@
     "zh": "在过场动画中强制播放音乐"
   },
   "ForcedCutsceneMusic.Tweak.Description": {
-    "en": "Auto-unmutes background music for most cutscenes.",
-    "de": "Schaltet die Hintergrundmusik für die meisten Zwischensequenzen automatisch an.",
+    "en": "Automatically unmutes background music in cutscenes.",
+    "de": "Schaltet die Hintergrundmusik in Zwischensequenzen automatisch an.",
     "zh": "在大多数过场动画中自动解除背景音乐静音。"
   },
   "ForcedCutsceneMusic.Config.Restore.Label": {

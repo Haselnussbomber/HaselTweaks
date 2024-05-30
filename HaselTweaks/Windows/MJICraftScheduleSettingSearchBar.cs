@@ -73,12 +73,12 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
         if (lastQuery != Query)
         {
             var entries = new List<(uint Index, string ItemName)>();
-            for (var i = 0u; i < Addon->TreeList->Items.Size(); i++)
+            for (var i = 0u; i < Addon->TreeList->Items.LongCount; i++)
             {
-                var item = Addon->TreeList->Items.Get(i).Value;
-                if (item != null && item->UIntValues.Size() >= 3 && item->UIntValues.Get(0) != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
+                var item = Addon->TreeList->Items[i].Value;
+                if (item != null && item->UIntValues.LongCount >= 3 && item->UIntValues[0] != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
                 {
-                    var rowId = item->UIntValues.Get(2);
+                    var rowId = item->UIntValues[2];
                     var itemId = GetRow<MJICraftworksObject>(rowId)?.Item.Row ?? 0;
                     if (itemId == 0)
                         continue;
@@ -101,8 +101,8 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
                     // find parent group and expand it
                     for (var i = index; i >= 0; i--)
                     {
-                        var headerItem = Addon->TreeList->Items.Get(i).Value;
-                        if (headerItem != null && headerItem->UIntValues.Size() >= 1 && headerItem->UIntValues.Get(0) == (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
+                        var headerItem = Addon->TreeList->Items[i].Value;
+                        if (headerItem != null && headerItem->UIntValues.LongCount >= 1 && headerItem->UIntValues[0] == (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
                         {
                             Addon->TreeList->ExpandGroupExclusively(headerItem, false);
                             Addon->TreeList->LayoutRefreshPending = true;
@@ -110,7 +110,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
                         }
                     }
 
-                    Addon->TreeList->SelectItem(index, true); // if it would only scroll the selected item into view... oh well
+                    Addon->TreeList->SelectItem((int)index, true); // if it would only scroll the selected item into view... oh well
                 }
             }
         }

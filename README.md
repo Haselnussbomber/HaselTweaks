@@ -166,7 +166,7 @@ Always opens the "Grand Company Delivery Missions" window on the "Expert Deliver
 
 ### Forced Cutscene Music
 
-Auto-unmutes background music for most cutscenes.
+Automatically unmutes background music in cutscenes.
 
 ### Gear Set Grid
 

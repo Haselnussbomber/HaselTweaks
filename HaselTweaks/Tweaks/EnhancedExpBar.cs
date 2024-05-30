@@ -100,11 +100,11 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         }
 
         var buddy = UIState.Instance()->Buddy.CompanionInfo;
-        if (_lastBuddyXp != buddy.CurrentXP || _lastBuddyRank != buddy.Rank || _lastBuddyObjectID != buddy.Companion->ObjectID)
+        if (_lastBuddyXp != buddy.CurrentXP || _lastBuddyRank != buddy.Rank || _lastBuddyObjectID != buddy.Companion->ObjectId)
         {
             _lastBuddyXp = buddy.CurrentXP;
             _lastBuddyRank = buddy.Rank;
-            _lastBuddyObjectID = buddy.Companion->ObjectID;
+            _lastBuddyObjectID = buddy.Companion->ObjectId;
             _isUpdatePending = true;
         }
 
@@ -188,7 +188,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
 
         // --- forced bars in certain locations
 
-        if (Config.ForceCompanionBar && UIState.Instance()->Buddy.Companion.ObjectID != 0xE0000000)
+        if (Config.ForceCompanionBar && UIState.Instance()->Buddy.CompanionInfo.Companion != null && UIState.Instance()->Buddy.CompanionInfo.Companion->ObjectId != 0xE0000000)
         {
             HandleCompanionBar(nineGridNode, gaugeBar, leftText);
             return;

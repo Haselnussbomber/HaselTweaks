@@ -60,8 +60,6 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
     [Signature("48 8D 4C 24 ?? E8 ?? ?? ?? ?? 48 8B 83 ?? ?? ?? ?? 48 8B CF 0F B7 9F")]
     private nint PvPTooltipAddress { get; init; }
 
-    private static nint AgentStatus_ShowAddress => GetAgentVFuncAddress<AgentStatus>(AgentInterfaceVfs.Show);
-
     public override void Enable()
     {
         TooltipPatch = new(TooltipAddress + 8, [0xEB]);
@@ -109,7 +107,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
             // skip crafters as they already have ButtonClick events
             if (IsCrafter(i)) continue;
 
-            var node = addon->ButtonNodesSpan.GetPointer(i)->Value;
+            var node = addon->ButtonNodes.GetPointer(i)->Value;
             if (node == null) continue;
 
             var collisionNode = (AtkCollisionNode*)node->AtkComponentBase.UldManager.RootNode;
@@ -139,7 +137,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
 
         for (var i = 0; i < NumClasses; i++)
         {
-            var node = addon->ButtonNodesSpan.GetPointer(i)->Value;
+            var node = addon->ButtonNodes.GetPointer(i)->Value;
             if (node == null)
                 continue;
 
@@ -179,14 +177,13 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
 
         return AddonCharacterClass_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
     }
-
     private bool HandleAddonCharacterClassEvent(AddonCharacterClass* addon, AtkEventType eventType, int eventParam)
     {
         // skip events for tabs
         if (eventParam < 2)
             return false;
 
-        var node = addon->ButtonNodesSpan.GetPointer(eventParam - 2)->Value;
+        var node = addon->ButtonNodes.GetPointer(eventParam - 2)->Value;
         if (node == null || node->AtkComponentBase.OwnerNode == null)
             return false;
 
@@ -223,7 +220,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
-            var entry = addon->ClassEntriesSpan.GetPointer(i);
+            var entry = addon->ClassEntries.GetPointer(i);
             if (entry->Base == null) continue;
 
             var collisionNode = (AtkCollisionNode*)entry->Base->UldManager.RootNode;
@@ -241,7 +238,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
-            var entry = addon->ClassEntriesSpan.GetPointer(i);
+            var entry = addon->ClassEntries.GetPointer(i);
             if (entry->Base == null || entry->Icon == null) continue;
 
             var collisionNode = (AtkCollisionNode*)entry->Base->UldManager.RootNode;
@@ -278,7 +275,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
         if (entryId is < 0 or > AddonPvPCharacter.NUM_CLASSES)
             return false;
 
-        var entry = addon->ClassEntriesSpan.GetPointer(entryId);
+        var entry = addon->ClassEntries.GetPointer(entryId);
         if (entry->Base == null || entry->Base->OwnerNode == null || entry->Icon == null)
             return false;
 
@@ -303,7 +300,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
             if (textureInfo == null || textureInfo->AtkTexture.Resource == null)
                 return false;
 
-            var iconId = textureInfo->AtkTexture.Resource->IconID;
+            var iconId = textureInfo->AtkTexture.Resource->IconId;
             if (iconId <= 62100)
                 return false;
 
@@ -370,7 +367,9 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
         gearsetModule->EquipGearset(selectedGearset.Id - 1);
     }
 
-    [AddressHook(nameof(AgentStatus_ShowAddress))]
+    private static nint AgentStatus_ShowAddress => GetAgentVFuncAddress<AgentStatus>(AgentInterfaceVfs.Show);
+
+    [Hook]
     private void AgentStatus_Show(AgentStatus* agent)
     {
         if (Config.AlwaysOpenOnClassesJobsTab)

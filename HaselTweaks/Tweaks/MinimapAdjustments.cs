@@ -118,7 +118,7 @@ public unsafe class MinimapAdjustments : Tweak<MinimapAdjustmentsConfiguration>
 
         UpdateAlpha(naviMap);
 
-        var isHovered = RaptureAtkModule.Instance()->AtkModule.IntersectingAddon == naviMap;
+        var isHovered = RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingAddon == naviMap;
         if (HoverState == isHovered)
             return;
 

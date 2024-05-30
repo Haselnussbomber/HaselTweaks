@@ -1,14 +1,14 @@
-using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Memory;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Extensions;
 using Lumina.Excel.GeneratedSheets;
-using ObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
+using BattleNpcSubKind = Dalamud.Game.ClientState.Objects.Enums.BattleNpcSubKind;
+using DalamudObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 
 namespace HaselTweaks.Tweaks;
 
@@ -76,7 +76,7 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
             return;
         }
 
-        if (target->GameObject.GetObjectKind() != (byte)ObjectKind.Player)
+        if (target->GameObject.GetObjectKind() != ObjectKind.Pc)
         {
             Service.ChatGui.PrintError(t("Commands.TargetIsNotAPlayer"));
             return;
@@ -147,7 +147,7 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
             return;
         }
 
-        if (target.ObjectKind != ObjectKind.BattleNpc || target.SubKind != (byte)BattleNpcSubKind.Chocobo)
+        if (target.ObjectKind != DalamudObjectKind.BattleNpc || target.SubKind != (byte)BattleNpcSubKind.Chocobo)
         {
             Service.ChatGui.PrintError(t("Commands.TargetIsNotAChocobo"));
             return;
@@ -161,7 +161,7 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
 
         var stain = GetRow<Stain>(targetCharacter->DrawData.Legs.Stain)!;
         var name = new SeStringBuilder()
-            .AddUiForeground(MemoryHelper.ReadString((nint)targetCharacter->GameObject.Name, 0x40), 1)
+            .AddUiForeground(targetCharacter->GameObject.NameString, 1)
             .Build();
 
         var sb = new SeStringBuilder()

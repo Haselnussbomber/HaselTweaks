@@ -1,6 +1,7 @@
 using Dalamud;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
+using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows;
 
@@ -55,16 +56,16 @@ public unsafe partial class EnhancedIsleworksAgenda : Tweak<EnhancedIsleworksAge
         }
     }
 
-    [AddressHook<AddonMJICraftScheduleSetting>(nameof(AddonMJICraftScheduleSetting.Addresses.ReceiveEvent))]
+    [VTableHook<AddonMJICraftScheduleSetting>((int)AtkUnitBaseVfs.ReceiveEvent)]
     private void AddonMJICraftScheduleSetting_ReceiveEvent(AddonMJICraftScheduleSetting* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
     {
         if (eventType == AtkEventType.ListItemRollOver && eventParam == 2 && Config.DisableTreeListTooltips)
         {
             var index = *(uint*)(a5 + 0x10);
             var itemPtr = addon->TreeList->GetItem(index);
-            if (itemPtr != null && itemPtr->UIntValues.Size() >= 1)
+            if (itemPtr != null && itemPtr->UIntValues.LongCount >= 1)
             {
-                if (itemPtr->UIntValues.Get(0) != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
+                if (itemPtr->UIntValues[0] != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
                 {
                     atkEvent->SetEventIsHandled();
                     return;

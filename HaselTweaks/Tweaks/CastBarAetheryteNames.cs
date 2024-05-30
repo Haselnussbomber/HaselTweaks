@@ -80,7 +80,7 @@ public unsafe partial class CastBarAetheryteNames : Tweak
     {
         TeleportInfo = null;
 
-        foreach (var teleportInfo in telepo->TeleportList.Span)
+        foreach (var teleportInfo in telepo->TeleportList)
         {
             if (teleportInfo.AetheryteId == aetheryteID && teleportInfo.SubIndex == subIndex)
             {

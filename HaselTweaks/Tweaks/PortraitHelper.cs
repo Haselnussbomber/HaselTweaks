@@ -151,7 +151,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         }
     }
 
-    [AddressHook<UIClipboard>(nameof(UIClipboard.Addresses.OnClipboardDataChanged))]
+    [AddressHook<UIClipboard>(nameof(UIClipboard.OnClipboardDataChanged))]
     private void OnClipboardDataChanged(UIClipboard* uiClipboard)
     {
         OnClipboardDataChangedHook.OriginalDisposeSafe(uiClipboard);
@@ -161,7 +161,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
             Debug($"Parsed ClipboardPreset: {ClipboardPreset}");
     }
 
-    [AddressHook<RaptureGearsetModule>(nameof(RaptureGearsetModule.Addresses.UpdateGearset))]
+    [AddressHook<RaptureGearsetModule>(nameof(RaptureGearsetModule.UpdateGearset))]
     public int RaptureGearsetModule_UpdateGearset(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
         var ret = RaptureGearsetModule_UpdateGearsetHook.OriginalDisposeSafe(raptureGearsetModule, gearsetId);
@@ -213,8 +213,8 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
         if (!isJobChange && Config.ReequipGearsetOnUpdate && gearset->GlamourSetLink > 0 && GameMain.IsInSanctuary())
         {
-            Log($"Re-equipping Gearset #{gearset->ID + 1} to reapply glamour plate");
-            raptureGearsetModule->EquipGearset(gearset->ID, gearset->GlamourSetLink);
+            Log($"Re-equipping Gearset #{gearset->Id + 1} to reapply glamour plate");
+            raptureGearsetModule->EquipGearset(gearset->Id, gearset->GlamourSetLink);
             RecheckGearChecksum(banner);
         }
         else if (!isJobChange && Config.AutoUpdatePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
@@ -406,7 +406,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
     public static Image<Bgra32>? GetCurrentCharaViewImage()
     {
-        var charaViewTexture = RenderTargetManager.Instance()->GetCharaViewTexture(GetAgent<AgentBannerEditor>()->EditorState->CharaView->Base.ClientObjectIndex);
+        var charaViewTexture = RenderTargetManager.Instance()->GetCharaViewTexture(GetAgent<AgentBannerEditor>()->EditorState->CharaView->ClientObjectIndex);
         if (charaViewTexture == null || charaViewTexture->D3D11Texture2D == null)
             return null;
 

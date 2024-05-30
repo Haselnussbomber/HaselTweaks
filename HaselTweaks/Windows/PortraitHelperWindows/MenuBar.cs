@@ -65,7 +65,7 @@ public unsafe class MenuBar : Window
             var gearset = RaptureGearsetModule.Instance()->GetGearset(AgentBannerEditor->EditorState->GearsetId);
             if (gearset != null)
             {
-                _portraitName = $"{GetAddonText(756) ?? "Gear Set"} #{gearset->ID + 1}: {MemoryHelper.ReadString((nint)gearset->Name, 0x2F)}";
+                _portraitName = $"{GetAddonText(756) ?? "Gear Set"} #{gearset->Id + 1}: {gearset->NameString}";
             }
         }
     }

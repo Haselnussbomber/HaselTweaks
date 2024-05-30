@@ -1,4 +1,3 @@
-using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -96,10 +95,10 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
     private int _wheelState;
 
     private AtkUnitBase* IntersectingAddon
-        => RaptureAtkModule.Instance()->AtkModule.IntersectingAddon;
+        => RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingAddon;
 
     private AtkCollisionNode* IntersectingCollisionNode
-        => RaptureAtkModule.Instance()->AtkModule.IntersectingCollisionNode;
+        => RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingCollisionNode;
 
     private bool IsNext
         => _wheelState == (!Config.Invert ? 1 : -1);
@@ -126,7 +125,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             return;
         }
 
-        var name = MemoryHelper.ReadString((nint)hoveredUnitBase->Name, 0x20);
+        var name = hoveredUnitBase->NameString;
         if (string.IsNullOrEmpty(name))
         {
             _wheelState = 0;
@@ -350,7 +349,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         {
             var addonCharacter = name == "Character" ? (AddonCharacter*)unitBase : GetAddon<AddonCharacter>("Character");
 
-            if (addonCharacter == null || !addonCharacter->EmbeddedAddonLoaded || IntersectingCollisionNode == addonCharacter->CharacterPreviewCollisionNode)
+            if (addonCharacter == null || !addonCharacter->AddonControl.IsChildSetupComplete || IntersectingCollisionNode == addonCharacter->CharacterPreviewCollisionNode)
             {
                 _wheelState = 0;
                 return;
@@ -442,7 +441,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         else
         {
             var numEnabledButtons = 0;
-            foreach (ref var button in addon->ButtonsSpan)
+            foreach (ref var button in addon->Buttons)
             {
                 if ((button.Value->AtkComponentButton.Flags & 0x40000) != 0)
                     numEnabledButtons++;
@@ -671,7 +670,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
         for (var i = 0; i < NumBuddyTabs; i++)
         {
-            var button = addon->RadioButtonsSpan.GetPointer(i);
+            var button = addon->RadioButtons.GetPointer(i);
             if (button->Value != null)
             {
                 button->Value->IsSelected = i == addon->TabIndex;
@@ -725,7 +724,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
         for (var i = 0; i < addon->TabCount; i++)
         {
-            var button = addon->RadioButtonsSpan.GetPointer(i);
+            var button = addon->RadioButtons.GetPointer(i);
             if (button->Value != null)
             {
                 button->Value->IsSelected = i == addon->TabIndex;

@@ -8,6 +8,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using FFXIVClientStructs.Interop;
 using HaselCommon.Utils;
 
 namespace HaselTweaks.Tweaks;
@@ -187,9 +188,9 @@ public unsafe class InventoryHighlight : Tweak<InventoryHighlightConfiguration>
         if (sorter == null || sorter->SortFunctionIndex != -1)
             return;
 
-        for (var i = 0u; i < sorter->Items.Size(); i++)
+        for (var i = 0u; i < sorter->Items.LongCount; i++)
         {
-            var item = sorter->Items.Get(i).Value;
+            var item = sorter->Items[i].Value;
             if (item == null)
                 continue;
 
@@ -219,10 +220,10 @@ public unsafe class InventoryHighlight : Tweak<InventoryHighlightConfiguration>
         if (!TryGetAddon<AddonInventoryGrid>("InventoryGrid" + item->Page.ToString() + (ItemInventryWindowSizeType == 2 ? "E" : ""), out var addon))
             return;
 
-        if (addon->SlotsSpan.Length <= item->Slot)
+        if (addon->Slots.Length <= item->Slot)
             return;
 
-        HighlightComponentDragDrop(addon->SlotsSpan[item->Slot], brightness);
+        HighlightComponentDragDrop(addon->Slots[item->Slot], brightness);
     }
 
     private void HighlightInInventoryBuddy(HashSet<uint> duplicateItemIds)
@@ -240,21 +241,21 @@ public unsafe class InventoryHighlight : Tweak<InventoryHighlightConfiguration>
         if (sorter == null || sorter->SortFunctionIndex != -1)
             return;
 
-        for (var i = 0u; i < sorter->Items.Size(); i++)
+        for (var i = 0u; i < sorter->Items.LongCount; i++)
         {
-            var item = sorter->Items.Get(i).Value;
+            var item = sorter->Items[i].Value;
             if (item == null)
                 continue;
 
             var slotIndex = (int)GetSlotIndex(sorter, item);
-            if (addon->SlotsSpan.Length <= slotIndex)
+            if (addon->Slots.Length <= slotIndex)
                 continue;
 
-            var slotComponent = addon->SlotsSpan[slotIndex].Value;
+            var slotComponent = addon->Slots[slotIndex].Value;
             if (slotComponent == null)
                 continue;
 
-            var inventorySlot = GetInventoryItem(sorter, (ulong)slotIndex);
+            var inventorySlot = GetInventoryItem(sorter, slotIndex);
             if (inventorySlot == null)
                 continue;
 
@@ -295,9 +296,9 @@ public unsafe class InventoryHighlight : Tweak<InventoryHighlightConfiguration>
         if (sorter == null || sorter->SortFunctionIndex != -1)
             return;
 
-        for (var i = 0u; i < sorter->Items.Size(); i++)
+        for (var i = 0u; i < sorter->Items.LongCount; i++)
         {
-            var item = sorter->Items.Get(i).Value;
+            var item = sorter->Items[i].Value;
             if (item == null)
                 continue;
 
@@ -335,10 +336,10 @@ public unsafe class InventoryHighlight : Tweak<InventoryHighlightConfiguration>
         if (!TryGetAddon<AddonInventoryGrid>("RetainerGrid" + (ItemInventryRetainerWindowSizeType == 0 ? "" : adjustedPage.ToString()), out var addon))
             return;
 
-        if (addon->SlotsSpan.Length <= adjustedSlotIndex)
+        if (addon->Slots.Length <= adjustedSlotIndex)
             return;
 
-        HighlightComponentDragDrop(addon->SlotsSpan[adjustedSlotIndex], brightness);
+        HighlightComponentDragDrop(addon->Slots[adjustedSlotIndex], brightness);
     }
 
     private void HighlightComponentDragDrop(AtkComponentDragDrop* component, byte brightness)
@@ -374,7 +375,7 @@ public unsafe class InventoryHighlight : Tweak<InventoryHighlightConfiguration>
         }
 
         if (TryGetAddon<AddonInventoryBuddy>("InventoryBuddy", out var addonInventoryBuddy))
-            ResetSlots(addonInventoryBuddy->SlotsSpan);
+            ResetSlots(addonInventoryBuddy->Slots);
 
         switch (ItemInventryRetainerWindowSizeType)
         {
@@ -395,7 +396,7 @@ public unsafe class InventoryHighlight : Tweak<InventoryHighlightConfiguration>
     private void ResetInventoryGrid(string addonName)
     {
         if (TryGetAddon<AddonInventoryGrid>(addonName, out var addon))
-            ResetSlots(addon->SlotsSpan);
+            ResetSlots(addon->Slots);
     }
 
     private void ResetSlots(Span<Pointer<AtkComponentDragDrop>> SlotsSpan)
@@ -419,21 +420,21 @@ public unsafe class InventoryHighlight : Tweak<InventoryHighlightConfiguration>
         node->MultiplyBlue = brightness;
     }
 
-    private ulong GetSlotIndex(ItemOrderModuleSorter* sorter, ItemOrderModuleSorterItemEntry* entry)
-        => (ulong)(entry->Slot + sorter->ItemsPerPage * entry->Page);
+    private long GetSlotIndex(ItemOrderModuleSorter* sorter, ItemOrderModuleSorterItemEntry* entry)
+        => entry->Slot + sorter->ItemsPerPage * entry->Page;
 
     private InventoryItem* GetInventoryItem(ItemOrderModuleSorter* sorter, ItemOrderModuleSorterItemEntry* entry)
         => GetInventoryItem(sorter, GetSlotIndex(sorter, entry));
 
-    private InventoryItem* GetInventoryItem(ItemOrderModuleSorter* sorter, ulong slotIndex)
+    private InventoryItem* GetInventoryItem(ItemOrderModuleSorter* sorter, long slotIndex)
     {
         if (sorter == null)
             return null;
 
-        if (sorter->Items.Size() <= slotIndex)
+        if (sorter->Items.LongCount <= slotIndex)
             return null;
 
-        var item = sorter->Items.Get(slotIndex).Value;
+        var item = sorter->Items[slotIndex].Value;
         if (item == null)
             return null;
 

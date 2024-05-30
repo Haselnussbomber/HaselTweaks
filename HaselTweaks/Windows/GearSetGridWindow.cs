@@ -97,7 +97,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
             using var id = ImRaii.PushId($"Gearset_{gearsetIndex}");
 
-            var name = MemoryHelper.ReadString((nint)gearset->Name, 0x2F);
+            var name = gearset->NameString;
 
             if (Config.ConvertSeparators && name == Config.SeparatorFilter)
             {
@@ -125,7 +125,7 @@ public unsafe class GearSetGridWindow : LockableWindow
                 if (ImGui.IsItemHovered())
                 {
                     using var tooltip = ImRaii.Tooltip();
-                    ImGui.TextUnformatted($"[{gearset->ID + 1}] {name}");
+                    ImGui.TextUnformatted($"[{gearset->Id + 1}] {name}");
 
                     if (gearset->GlamourSetLink != 0)
                     {
@@ -159,8 +159,8 @@ public unsafe class GearSetGridWindow : LockableWindow
                 if (slotIndex == 5)
                     continue;
 
-                var slot = gearset->ItemsSpan.GetPointer((int)slotIndex);
-                var itemId = slot->ItemID % 1000000; // strip HQ
+                var slot = gearset->Items.GetPointer((int)slotIndex);
+                var itemId = slot->ItemId % 1000000; // strip HQ
 
                 ImGui.TableNextColumn();
 
@@ -212,9 +212,9 @@ public unsafe class GearSetGridWindow : LockableWindow
             if (!gearset->Flags.HasFlag(GearsetFlag.Exists))
                 continue;
 
-            var item = gearset->ItemsSpan.GetPointer((int)slotIndex);
-            if (item->ItemID == itemId)
-                list.Add(new(gearset->ID, MemoryHelper.ReadString((nint)gearset->Name, 0x2F)));
+            var item = gearset->Items.GetPointer((int)slotIndex);
+            if (item->ItemId == itemId)
+                list.Add(new(gearset->Id, gearset->NameString));
         }
 
         return list;
@@ -226,7 +226,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
         //var isEventItem = slot.ItemID > 2000000;
         //var isCollectable = slot.ItemID is > 500000 and < 1000000;
-        var isHq = slot->ItemID is > 1000000 and < 1500000;
+        var isHq = slot->ItemId is > 1000000 and < 1500000;
 
         var startPos = ImGui.GetCursorPos();
 
@@ -319,7 +319,7 @@ public unsafe class GearSetGridWindow : LockableWindow
                     }
                 }
 
-                var usedInGearsets = GetItemInGearsetsList(slot->ItemID, slotIndex);
+                var usedInGearsets = GetItemInGearsetsList(slot->ItemId, slotIndex);
                 if (usedInGearsets.Count > 1)
                 {
                     ImGuiUtils.DrawPaddedSeparator();
@@ -328,7 +328,7 @@ public unsafe class GearSetGridWindow : LockableWindow
                     {
                         foreach (var entry in usedInGearsets)
                         {
-                            if (entry.Id == gearset->ID)
+                            if (entry.Id == gearset->Id)
                                 continue;
 
                             ImGui.TextUnformatted($"[{entry.Id + 1}] {entry.Name}");

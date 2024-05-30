@@ -63,7 +63,7 @@ public class CreatePresetDialog : ConfirmationDialog
             OnSave();
         }
 
-        if (Config.PresetTags.Any())
+        if (Config.PresetTags.Count != 0)
         {
             ImGui.Spacing();
             ImGui.TextUnformatted(t("PortraitHelperWindows.CreatePresetDialog.Tags.Label"));
@@ -113,9 +113,6 @@ public class CreatePresetDialog : ConfirmationDialog
 
         Task.Run(() =>
         {
-            var pixelData = new byte[_image.Width * _image.Height * 4];
-            _image.CopyPixelDataTo(pixelData);
-
             var guid = Guid.NewGuid();
             var thumbPath = PortraitHelper.GetPortraitThumbnailPath(guid);
 

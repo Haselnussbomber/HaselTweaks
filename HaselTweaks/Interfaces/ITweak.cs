@@ -13,9 +13,7 @@ public interface ITweak : IDisposable
     bool Ready { get; }
     bool Enabled { get; }
 
-    void SetupGenericAddressHooks();
-    void SetupAddressHooks();
-    void SetupVTableHooks();
+    void SetupHooks();
 
     void Enable();
     void Disable();

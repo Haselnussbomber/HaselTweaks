@@ -8,8 +8,33 @@
     <DalamudLibPath Condition="$(DALAMUD_HOME) != ''">$(DALAMUD_HOME)/</DalamudLibPath>
   </PropertyGroup>
 
-  <Import Project="$(DalamudLibPath)/targets/Dalamud.Plugin.targets" />
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Platforms>x64</Platforms>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AssemblySearchPaths>$(AssemblySearchPaths);$(DalamudLibPath)</AssemblySearchPaths>
+  </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="DalamudPackager" Version="2.1.12" />
+    <Reference Include="Newtonsoft.Json" Private="false" />
+    <Reference Include="Dalamud" Private="false" />
+    <Reference Include="ImGui.NET" Private="false" />
+    <Reference Include="ImGuiScene" Private="false" />
+    <Reference Include="Lumina" Private="false" />
+    <Reference Include="Lumina.Excel" Private="false" />
+  </ItemGroup>
+
+  <Target Name="Message" BeforeTargets="BeforeBuild">
+    <Message Text="Dalamud.Plugin: root at $(DalamudLibPath)" Importance="high" />
+  </Target>
+  
   <PropertyGroup>
     <Version>23.0.2</Version>
     <OutputPath>..\bin\</OutputPath>
@@ -36,13 +61,24 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106" PrivateAssets="All" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" Private="True" />
+    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" />
     <ProjectReference Include="..\HaselCommon\HaselCommon.Text\HaselCommon.Text.csproj" />
     <ProjectReference Include="..\HaselCommon\HaselCommon\HaselCommon.csproj" />
-    <ProjectReference Include="..\HaselCommon\HaselCommon.InteropSourceGenerators\HaselCommon.InteropSourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <InteropGenerator_InteropNamespace>HaselTweaks</InteropGenerator_InteropNamespace>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <CompilerVisibleProperty Include="InteropGenerator_InteropNamespace" />
+    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator\InteropGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\HaselCommon\HaselCommon.HookGenerator\HaselCommon.HookGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

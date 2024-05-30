@@ -2,6 +2,7 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Info;
+using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
@@ -50,7 +51,7 @@ public unsafe partial class SaferItemSearch : Tweak
         addon->ComparePrices->AtkComponentBase.SetEnabledState(!_isSearching);
     }
 
-    [AddressHook<InfoProxyItemSearch>(nameof(InfoProxyItemSearch.Addresses.ProcessRequestResult))]
+    [AddressHook<InfoProxyItemSearch>(nameof(InfoProxyItemSearch.ProcessRequestResult))]
     public void InfoProxyItemSearch_ProcessRequestResult(InfoProxyItemSearch* ipis, uint itemId, nint a3, nint a4, int a5, byte listingCount, int code)
     {
         _isSearching = true;

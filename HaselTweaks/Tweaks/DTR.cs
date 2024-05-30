@@ -118,7 +118,7 @@ public unsafe class DTR : Tweak<DTRConfiguration>
             return;
         }
 
-        var instanceId = uiState->AreaInstance.Instance;
+        var instanceId = uiState->PublicInstance.InstanceId;
         if (instanceId <= 0 || instanceId >= 10)
         {
             DtrInstance.SetVisibility(false);

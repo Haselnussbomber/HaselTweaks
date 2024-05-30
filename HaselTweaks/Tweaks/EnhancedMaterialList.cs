@@ -226,7 +226,9 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, atkEvent, 0);
     }
 
-    [VTableHook<AgentRecipeMaterialList>((int)AgentInterfaceVfs.ReceiveEvent)]
+    private static nint AgentRecipeMaterialList_ReceiveEventAddress => GetAgentVFuncAddress<AgentRecipeMaterialList>(AgentInterfaceVfs.ReceiveEvent);
+
+    [Hook]
     public nint AgentRecipeMaterialList_ReceiveEvent(AgentRecipeMaterialList* agent, AtkEvent* result, AtkValue* values, nint a4, nint a5)
     {
         var ret = AgentRecipeMaterialList_ReceiveEventHook.OriginalDisposeSafe(agent, result, values, a4, a5);
@@ -248,7 +250,7 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         }
     }
 
-    [AddressHook<AddonRecipeMaterialList>(nameof(AddonRecipeMaterialList.Addresses.SetupRow))]
+    [AddressHook<AddonRecipeMaterialList>(nameof(AddonRecipeMaterialList.SetupRow))]
     public nint AddonRecipeMaterialList_SetupRow(AddonRecipeMaterialList* addon, nint a2, nint a3)
     {
         var res = AddonRecipeMaterialList_SetupRowHook.OriginalDisposeSafe(addon, a2, a3);
@@ -316,14 +318,14 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         nameNode->SetText(sb.Encode());
     }
 
-    [AddressHook<AgentRecipeMaterialList>(nameof(AgentRecipeMaterialList.Addresses.OpenRecipeResultItemContextMenu))]
+    [AddressHook<AgentRecipeMaterialList>(nameof(AgentRecipeMaterialList.OpenRecipeResultItemContextMenu))]
     public nint AgentRecipeMaterialList_OpenRecipeResultItemContextMenu(AgentRecipeMaterialList* agent)
     {
         _handleRecipeResultItemContextMenu = true;
         return AgentRecipeMaterialList_OpenRecipeResultItemContextMenuHook.OriginalDisposeSafe(agent);
     }
 
-    [AddressHook<AgentRecipeItemContext>(nameof(AgentRecipeItemContext.Addresses.AddItemContextMenuEntries))]
+    [AddressHook<AgentRecipeItemContext>(nameof(AgentRecipeItemContext.AddItemContextMenuEntries))]
     public nint AgentRecipeItemContext_AddItemContextMenuEntries(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
     {
         UpdateContextMenuFlag(itemId, ref flags);
@@ -367,7 +369,7 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
             .Where(row => row != null)
             .ToList();
 
-        if (!gatheringPoints.Any())
+        if (gatheringPoints.Count == 0)
             return null;
 
         var currentTerritoryTypeId = GameMain.Instance()->CurrentTerritoryTypeId;

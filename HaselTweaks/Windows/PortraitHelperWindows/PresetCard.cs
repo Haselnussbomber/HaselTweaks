@@ -410,7 +410,7 @@ public class PresetCard : IDisposable
             {
                 try
                 {
-                    var scaledImage = _image.Clone();
+                    using var scaledImage = _image.Clone();
 
                     if (_closeTokenSource.IsCancellationRequested)
                         return;

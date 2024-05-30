@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Config;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Memory;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
@@ -92,7 +92,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
     private ulong ActiveContentId => _currentEntry?.ContentId ?? Service.ClientState.LocalContentId;
 
     // called every frame
-    [AddressHook<AgentLobby>(nameof(AgentLobby.Addresses.UpdateCharaSelectDisplay))]
+    [AddressHook<AgentLobby>(nameof(AgentLobby.UpdateCharaSelectDisplay))]
     public void UpdateCharaSelectDisplay(AgentLobby* agent, sbyte index, bool a2)
     {
         UpdateCharaSelectDisplayHook.OriginalDisposeSafe(agent, index, a2);
@@ -130,7 +130,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
             PlayEmote(emoteId);
     }
 
-    [AddressHook<CharaSelectCharacterList>(nameof(CharaSelectCharacterList.Addresses.CleanupCharacters))]
+    [AddressHook<CharaSelectCharacterList>(nameof(CharaSelectCharacterList.CleanupCharacters))]
     public void CleanupCharaSelectCharacters()
     {
         CleanupCharaSelect();
@@ -214,7 +214,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
             if (!Config.EnableCharaSelectEmote && _currentEntry != null && _currentEntry.Character != null)
             {
                 ResetEmoteMode();
-                _currentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(3);
+                _currentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(3);
             }
             Service.GetService<Configuration>().Save();
         }
@@ -354,7 +354,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
             value->Type = ValueType.Int;
             value->Int = 0;
             Log("Sending change stage to title screen event...");
-            addon->FireCallback(1, value, (void*)1);
+            addon->FireCallback(1, value, true);
             addon->Hide(false, false, 1);
         }
     }
@@ -510,9 +510,31 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
                 if (actionTimelineId == 0 || processedActionTimelineIds.Contains(actionTimelineId))
                     return;
 
-                var key = ActionTimelineManager.GetActionTimelineKey(actionTimelineId);
-                Log("Preloading tmb {0} (Emote: {1}, ActionTimeline: {2})", MemoryHelper.ReadStringNullTerminated((nint)key), emoteId, actionTimelineId);
-                ActionTimelineManager.Instance()->PreloadActionTmbByKey(&key);
+                var index = 0u;
+                foreach (var row in GetSheet<ActionTimeline>())
+                {
+                    if (row.RowId == actionTimelineId)
+                        break;
+
+                    index++;
+                }
+
+                var key = GetRow<ActionTimeline>(actionTimelineId)?.Key.RawString;
+                if (string.IsNullOrEmpty(key))
+                    return;
+
+                Log("Preloading tmb {0} (Emote: {1}, ActionTimeline: {2})", key, emoteId, actionTimelineId);
+
+                fixed (byte* keyPtr = Encoding.UTF8.GetBytes(key + "\0"))
+                {
+                    var preloadInfo = new ActionTimelineManager.PreloadActionTmbInfo
+                    {
+                        Key = keyPtr,
+                        Index = index
+                    };
+
+                    ActionTimelineManager.Instance()->PreloadActionTmb(&preloadInfo);
+                }
 
                 processedActionTimelineIds.Add(actionTimelineId);
             }
@@ -574,20 +596,20 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
 
         if (intro != 0 && loop != 0)
         {
-            ((HaselActionTimelineManager*)(nint)(&_currentEntry.Character->ActionTimelineManager))->PlayActionTimeline(intro, loop);
+            ((HaselTimelineContainer*)(nint)(&_currentEntry.Character->Timeline))->PlayActionTimeline(intro, loop);
         }
         else if (loop != 0)
         {
-            _currentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(loop);
+            _currentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(loop);
         }
         else if (intro != 0)
         {
-            _currentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(intro);
+            _currentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(intro);
         }
         else
         {
             Debug("No intro or loop, resetting to idle pose (timeline 3)");
-            _currentEntry.Character->ActionTimelineManager.Driver.PlayTimeline(3);
+            _currentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(3);
         }
     }
 
@@ -600,7 +622,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
         _currentEntry.Character->SetMode(Character.CharacterModes.Normal, 0);
     }
 
-    [AddressHook<EmoteManager>(nameof(EmoteManager.Addresses.ExecuteEmote))]
+    [AddressHook<EmoteManager>(nameof(EmoteManager.ExecuteEmote))]
     public bool ExecuteEmote(EmoteManager* handler, ushort emoteId, nint targetData)
     {
         var changePoseIndexBefore = PlayerState.Instance()->SelectedPoses[0];
@@ -653,7 +675,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
 
     #region Login: Preload territory when queued
 
-    [AddressHook<AgentLobby>(nameof(AgentLobby.Addresses.OpenLoginWaitDialog))]
+    [AddressHook<AgentLobby>(nameof(AgentLobby.OpenLoginWaitDialog))]
     public void OpenLoginWaitDialog(AgentLobby* agent, int position)
     {
         OpenLoginWaitDialogHook.OriginalDisposeSafe(agent, position);
@@ -697,7 +719,10 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
             return;
 
         Debug($"Preloading territory #{territoryId}: {territoryType.Bg.RawString}");
-        preloadManger->PreloadTerritory(2, territoryType.Bg.RawString, 40, 0, territoryId);
+        fixed (byte* ptr = territoryType.Bg.RawData)
+        {
+            preloadManger->PreloadTerritory(2, (nint)ptr, 40, 0, territoryId);
+        }
     }
 
     #endregion

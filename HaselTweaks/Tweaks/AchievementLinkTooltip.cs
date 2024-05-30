@@ -35,13 +35,15 @@ public unsafe class AchievementLinkTooltip : Tweak<AchievementLinkTooltipConfigu
 
     private void OnChatLogPanelPostReceiveEvent(AddonEvent type, AddonArgs args)
     {
-        if ((*(byte*)(args.Addon + 0x189) & 1) == 0 || *(byte*)(args.Addon + 0x389) != 0 || *(byte*)(args.Addon + 0x3C6) != 0)
+        var unitBase = (AtkUnitBase*)args.Addon;
+
+        if (!unitBase->IsReady || *(byte*)(args.Addon + 0x389) != 0 || *(byte*)(args.Addon + 0x3C6) != 0)
             return;
 
         if (args is not AddonReceiveEventArgs receiveEventArgs)
             return;
 
-        if (receiveEventArgs.AtkEventType != 0x49)
+        if (receiveEventArgs.AtkEventType != (byte)AtkEventType.LinkMouseOver)
             return;
 
         var linkData = *(LinkData**)receiveEventArgs.Data;
@@ -53,8 +55,7 @@ public unsafe class AchievementLinkTooltip : Tweak<AchievementLinkTooltipConfigu
         if (achievement == null)
             return;
 
-        var tooltipText = stackalloc Utf8String[1];
-        tooltipText->Ctor();
+        using var tooltipText = new Utf8String();
 
         ref var achievements = ref UIState.Instance()->Achievement;
         var isComplete = achievements.IsComplete((int)achievement.RowId);
@@ -75,7 +76,7 @@ public unsafe class AchievementLinkTooltip : Tweak<AchievementLinkTooltipConfigu
         var sb = new SeStringBuilder();
 
         sb.BeginMacro(MacroCode.Color)
-          .AppendIntExpression(RaptureTextModule.Instance()->TextModule.MacroDecoder.GlobalParameters.Get(61).IntValue)
+          .AppendIntExpression(RaptureTextModule.Instance()->TextModule.MacroDecoder.GlobalParameters[61].IntValue)
           .EndMacro();
 
         if (canShowName)
@@ -113,15 +114,13 @@ public unsafe class AchievementLinkTooltip : Tweak<AchievementLinkTooltipConfigu
             }
         }
 
-        tooltipText->SetString(sb.ToArray());
+        tooltipText.SetString(sb.ToArray());
 
         // ShowTooltip call @ AddonChatLog_OnRefresh, case 0x12
         AtkStage.GetSingleton()->TooltipManager.ShowTooltip(
-            ((AtkUnitBase*)args.Addon)->ID,
+            unitBase->Id,
             *(AtkResNode**)(args.Addon + 0x230),
-            tooltipText->StringPtr);
-
-        tooltipText->Dtor();
+            tooltipText.StringPtr);
     }
 
     [StructLayout(LayoutKind.Explicit)]

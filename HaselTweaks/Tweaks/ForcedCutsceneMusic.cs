@@ -1,4 +1,5 @@
-using HaselTweaks.Structs;
+using FFXIVClientStructs.FFXIV.Client.System.Scheduler;
+using FFXIVClientStructs.FFXIV.Client.System.Scheduler.Base;
 
 namespace HaselTweaks.Tweaks;
 
@@ -19,12 +20,12 @@ public unsafe partial class ForcedCutsceneMusic : Tweak<ForcedCutsceneMusicConfi
         set => Service.GameConfig.System.Set("IsSndBgm", value);
     }
 
-    [AddressHook<PlayCutSceneTask>(nameof(PlayCutSceneTask.Addresses.Ctor))]
-    public PlayCutSceneTask* PlayCutSceneTaskCtor(PlayCutSceneTask* self, uint cutsceneId, byte a3, int a4, int a5, int a6, int a7)
+    [AddressHook<ScheduleManagement>(nameof(ScheduleManagement.CreateCutSceneController))]
+    public CutSceneController* CreateCutSceneController(ScheduleManagement* self, byte* path, uint id, byte a4)
     {
-        var ret = PlayCutSceneTaskCtorHook.OriginalDisposeSafe(self, cutsceneId, a3, a4, a5, a6, a7);
+        var ret = CreateCutSceneControllerHook.OriginalDisposeSafe(self, path, id, a4);
 
-        Log($"Cutscene {cutsceneId} started");
+        Log($"Cutscene {id} started (Controller @ {(nint)ret:X})");
 
         var isBgmMuted = IsBgmMuted;
 
@@ -36,12 +37,12 @@ public unsafe partial class ForcedCutsceneMusic : Tweak<ForcedCutsceneMusicConfi
         return ret;
     }
 
-    [VTableHook<PlayCutSceneTask>(0)]
-    public PlayCutSceneTask* PlayCutSceneTaskDtor(PlayCutSceneTask* self, bool a2)
+    [VTableHook<CutSceneController>(0)]
+    public CutSceneController* CutSceneControllerDtor(CutSceneController* self, bool free)
     {
-        Log($"Cutscene {self->Id} ended");
+        Log($"Cutscene {self->CutsceneId} ended");
 
-        var ret = PlayCutSceneTaskDtorHook.OriginalDisposeSafe(self, a2);
+        var ret = CutSceneControllerDtorHook.OriginalDisposeSafe(self, free);
 
         if (_wasBgmMuted && Config.Restore)
             IsBgmMuted = true;

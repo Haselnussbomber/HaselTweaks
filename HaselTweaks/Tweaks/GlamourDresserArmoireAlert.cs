@@ -63,7 +63,7 @@ public unsafe partial class GlamourDresserArmoireAlert : Tweak
         const int NumPrismBoxSlots = 800;
         var mirageManager = MirageManager.Instance();
 
-        var itemIds = new ReadOnlySpan<uint>(mirageManager->PrismBoxItemIds, NumPrismBoxSlots);
+        var itemIds = mirageManager->PrismBoxItemIds;
         if (_lastItemIds != null && itemIds.SequenceEqual(_lastItemIds))
             return;
 
@@ -75,7 +75,7 @@ public unsafe partial class GlamourDresserArmoireAlert : Tweak
 
         for (var i = 0u; i < NumPrismBoxSlots; i++)
         {
-            var itemId = mirageManager->PrismBoxItemIds[i];
+            var itemId = mirageManager->PrismBoxItemIds[(int)i];
             if (itemId == 0)
                 continue;
 
@@ -99,7 +99,7 @@ public unsafe partial class GlamourDresserArmoireAlert : Tweak
 
         UpdatePending = false;
 
-        if (!Categories.Any())
+        if (Categories.Count == 0)
             return;
 
         if (!Service.WindowManager.IsWindowOpen<GlamourDresserArmoireAlertWindow>())

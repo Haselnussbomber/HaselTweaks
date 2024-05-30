@@ -46,6 +46,7 @@ dotnet_style_parentheses_in_other_operators = never_if_unnecessary:warning
 # Modifier preferences
 dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
 dotnet_style_readonly_field = true:warning
+dotnet_diagnostic.IDE0251.severity = none # do not suggest readonly modifier on struct members
 
 # Expression-level preferences
 dotnet_style_object_initializer = true:warning

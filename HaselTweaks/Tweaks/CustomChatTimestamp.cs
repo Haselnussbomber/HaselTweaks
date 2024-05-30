@@ -109,15 +109,16 @@ public partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguratio
         ReloadChat();
     }
 
-    [AddressHook<HaselRaptureTextModule>(nameof(HaselRaptureTextModule.Addresses.FormatAddonText2Int))]
+    [AddressHook<HaselRaptureTextModule>(nameof(HaselRaptureTextModule.FormatAddonText2Int))]
     public unsafe byte* FormatAddonText2Int(RaptureTextModule* raptureTextModule, uint addonRowId, int value)
     {
         if (addonRowId is 7840 or 7841 && !string.IsNullOrWhiteSpace(Config.Format))
         {
             try
             {
-                raptureTextModule->Unk9C0.SetString(DateTimeOffset.FromUnixTimeSeconds(value).ToLocalTime().ToString(Config.Format));
-                return raptureTextModule->Unk9C0.StringPtr;
+                var str = raptureTextModule->UnkStrings1.GetPointer(1);
+                str->SetString(DateTimeOffset.FromUnixTimeSeconds(value).ToLocalTime().ToString(Config.Format));
+                return str->StringPtr;
             }
             catch (Exception e)
             {
