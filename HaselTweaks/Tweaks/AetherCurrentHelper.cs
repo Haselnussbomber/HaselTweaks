@@ -3,6 +3,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Enums;
 using HaselCommon.Services;
+using HaselCommon.Utils;
 using HaselTweaks.Windows;
 using Lumina.Excel.GeneratedSheets;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
@@ -21,24 +22,30 @@ public class AetherCurrentHelperConfiguration
 [Tweak]
 public unsafe partial class AetherCurrentHelper : Tweak<AetherCurrentHelperConfiguration>
 {
+    private VFuncHook<AgentAetherCurrent.Delegates.ReceiveEvent>? ReceiveEventHook;
+
+    public override void SetupHooks()
+    {
+        ReceiveEventHook = new(AgentAetherCurrent.StaticVirtualTablePointer, (int)AgentInterfaceVfs.ReceiveEvent, ReceiveEventDetour);
+    }
+
     public override void Disable()
     {
         if (Service.HasService<WindowManager>())
             Service.WindowManager.CloseWindow<AetherCurrentHelperWindow>();
     }
 
-    [VTableHook<AgentAetherCurrent>((int)AgentInterfaceVfs.ReceiveEvent)]
-    private AtkValue* AgentAetherCurrent_ReceiveEvent(AgentAetherCurrent* agent, AtkValue* eventData, AtkValue* atkValue, uint valueCount, nint eventKind)
+    private AtkValue* ReceiveEventDetour(AgentAetherCurrent* agent, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
     {
-        if (OpenWindow(agent, atkValue))
+        if (OpenWindow(agent, values))
         {
             // handled, just like in the original code
-            eventData->Type = ValueType.Bool;
-            eventData->Byte = 0;
-            return eventData;
+            returnValue->Type = ValueType.Bool;
+            returnValue->Byte = 0;
+            return returnValue;
         }
 
-        return AgentAetherCurrent_ReceiveEventHook.OriginalDisposeSafe(agent, eventData, atkValue, valueCount, eventKind);
+        return ReceiveEventHook!.OriginalDisposeSafe(agent, returnValue, values, valueCount, eventKind);
     }
 
     public static bool OpenWindow(AgentAetherCurrent* agent, AtkValue* atkValue)

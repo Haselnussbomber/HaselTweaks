@@ -10,4 +10,7 @@ public unsafe partial struct AddonMJICraftScheduleSetting
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
     [FieldOffset(0x220)] public AtkComponentTreeList* TreeList;
+
+    [VirtualFunction(2)]
+    public partial void ReceiveEvent(AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData = 0);
 }

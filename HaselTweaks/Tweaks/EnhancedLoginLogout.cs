@@ -53,6 +53,23 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
 
     #region Core
 
+    public delegate void UIModuleVf111Delegate(UIModule* self, int a2, uint a3, nint a4);
+
+    private AddressHook<AgentLobby.Delegates.UpdateCharaSelectDisplay>? UpdateCharaSelectDisplayHook;
+    private AddressHook<CharaSelectCharacterList.Delegates.CleanupCharacters>? CleanupCharactersHook;
+    private AddressHook<EmoteManager.Delegates.ExecuteEmote>? ExecuteEmoteHook;
+    private AddressHook<AgentLobby.Delegates.OpenLoginWaitDialog>? OpenLoginWaitDialogHook;
+    private VFuncHook<UIModuleVf111Delegate>? UIModuleVf111Hook;
+
+    public override void SetupHooks()
+    {
+        UpdateCharaSelectDisplayHook = new(AgentLobby.MemberFunctionPointers.UpdateCharaSelectDisplay, UpdateCharaSelectDisplayDetour);
+        CleanupCharactersHook = new(CharaSelectCharacterList.MemberFunctionPointers.CleanupCharacters, CleanupCharactersDetour);
+        ExecuteEmoteHook = new(EmoteManager.MemberFunctionPointers.ExecuteEmote, ExecuteEmoteDetour);
+        OpenLoginWaitDialogHook = new(AgentLobby.MemberFunctionPointers.OpenLoginWaitDialog, OpenLoginWaitDialogDetour);
+        UIModuleVf111Hook = new(UIModule.StaticVirtualTablePointer, 111, UIModuleVf111Detour);
+    }
+
     public override void Enable()
     {
         Service.GameConfig.Changed += GameConfig_Changed;
@@ -92,10 +109,9 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
     private ulong ActiveContentId => _currentEntry?.ContentId ?? Service.ClientState.LocalContentId;
 
     // called every frame
-    [AddressHook<AgentLobby>(nameof(AgentLobby.UpdateCharaSelectDisplay))]
-    public void UpdateCharaSelectDisplay(AgentLobby* agent, sbyte index, bool a2)
+    public void UpdateCharaSelectDisplayDetour(AgentLobby* agent, sbyte index, bool a2)
     {
-        UpdateCharaSelectDisplayHook.OriginalDisposeSafe(agent, index, a2);
+        UpdateCharaSelectDisplayHook!.OriginalDisposeSafe(agent, index, a2);
 
         if (index < 0)
         {
@@ -130,11 +146,10 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
             PlayEmote(emoteId);
     }
 
-    [AddressHook<CharaSelectCharacterList>(nameof(CharaSelectCharacterList.CleanupCharacters))]
-    public void CleanupCharaSelectCharacters()
+    public void CleanupCharactersDetour()
     {
         CleanupCharaSelect();
-        CleanupCharaSelectCharactersHook.OriginalDisposeSafe();
+        CleanupCharactersHook!.OriginalDisposeSafe();
     }
 
     #endregion
@@ -622,11 +637,10 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
         _currentEntry.Character->SetMode(Character.CharacterModes.Normal, 0);
     }
 
-    [AddressHook<EmoteManager>(nameof(EmoteManager.ExecuteEmote))]
-    public bool ExecuteEmote(EmoteManager* handler, ushort emoteId, nint targetData)
+    public bool ExecuteEmoteDetour(EmoteManager* handler, ushort emoteId, nint targetData)
     {
         var changePoseIndexBefore = PlayerState.Instance()->SelectedPoses[0];
-        var success = ExecuteEmoteHook.OriginalDisposeSafe(handler, emoteId, targetData);
+        var success = ExecuteEmoteHook!.OriginalDisposeSafe(handler, emoteId, targetData);
 
         if (_excludedEmotes == null)
         {
@@ -675,10 +689,9 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
 
     #region Login: Preload territory when queued
 
-    [AddressHook<AgentLobby>(nameof(AgentLobby.OpenLoginWaitDialog))]
-    public void OpenLoginWaitDialog(AgentLobby* agent, int position)
+    public void OpenLoginWaitDialogDetour(AgentLobby* agent, int position)
     {
-        OpenLoginWaitDialogHook.OriginalDisposeSafe(agent, position);
+        OpenLoginWaitDialogHook!.OriginalDisposeSafe(agent, position);
 
         if (_currentEntry == null)
             return;
@@ -729,8 +742,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
 
     #region Logout: Clear Tell History
 
-    [VTableHook<UIModule>(111)]
-    public void UIModule_vf111(UIModule* self, int a2, uint a3, nint a4)
+    public void UIModuleVf111Detour(UIModule* self, int a2, uint a3, nint a4)
     {
         if (a2 == 7) // logout
         {
@@ -738,7 +750,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
                 AcquaintanceModule.Instance()->ClearTellHistory(); // this is what /cleartellhistory calls
         }
 
-        UIModule_vf111Hook.OriginalDisposeSafe(self, a2, a3, a4);
+        UIModuleVf111Hook!.OriginalDisposeSafe(self, a2, a3, a4);
     }
 
     #endregion

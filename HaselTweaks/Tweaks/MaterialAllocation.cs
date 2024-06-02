@@ -5,6 +5,7 @@ using Dalamud.Game.Text.SeStringHandling;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Enums;
+using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 
@@ -24,6 +25,15 @@ public class MaterialAllocationConfiguration
 public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfiguration>
 {
     private uint NextMJIGatheringNoteBookItemId;
+
+    private delegate void AgentMJIGatheringNoteBookUpdateDelegate(AgentMJIGatheringNoteBook* self);
+
+    private VFuncHook<AgentMJIGatheringNoteBookUpdateDelegate>? AgentMJIGatheringNoteBookUpdateHook;
+
+    public override void SetupHooks()
+    {
+        AgentMJIGatheringNoteBookUpdateHook = new(*(nint*)GetAgent<AgentMJIGatheringNoteBook>(), (int)AgentInterfaceVfs.Update, AgentMJIGatheringNoteBookUpdateDetour);
+    }
 
     public override void Enable()
     {
@@ -75,10 +85,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
         }
     }
 
-    private static nint AgentMJIGatheringNoteBook_UpdateAddress => GetAgentVFuncAddress<AgentMJIGatheringNoteBook>(AgentInterfaceVfs.Update);
-
-    [Hook]
-    public void AgentMJIGatheringNoteBook_Update(AgentMJIGatheringNoteBook* agent)
+    public void AgentMJIGatheringNoteBookUpdateDetour(AgentMJIGatheringNoteBook* agent)
     {
         var handleUpdate = Config.OpenGatheringLogOnItemClick
             && NextMJIGatheringNoteBookItemId != 0
@@ -87,7 +94,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
             && (agent->Data->Flags & 2) != 2 // refresh pending
             && agent->Data->SortedGatherItems.LongCount != 0;
 
-        AgentMJIGatheringNoteBook_UpdateHook!.OriginalDisposeSafe(agent);
+        AgentMJIGatheringNoteBookUpdateHook!.OriginalDisposeSafe(agent);
 
         if (handleUpdate)
         {

@@ -643,7 +643,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             return;
 
         numberArray->SetValue(0, newTab);
-        addon->OnUpdate(atkStage->GetNumberArrayData(), atkStage->GetStringArrayData());
+        addon->OnRequestedUpdate(atkStage->GetNumberArrayData(), atkStage->GetStringArrayData());
     }
 
     private void UpdateInventoryBuddy(AddonInventoryBuddy* addon)

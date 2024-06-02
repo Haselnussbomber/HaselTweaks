@@ -1,6 +1,5 @@
 global using System;
 global using System.Runtime.InteropServices;
-global using HaselCommon.Attributes;
 global using InteropGenerator.Runtime;
 global using InteropGenerator.Runtime.Attributes;
 global using static FFXIVClientStructs.Interop.SpanExtensions;

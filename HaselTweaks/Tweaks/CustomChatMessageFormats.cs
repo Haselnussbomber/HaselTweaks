@@ -250,6 +250,13 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         }
     }
 
+    private AddressHook<HaselRaptureLogModule.Delegates.FormatLogMessage>? FormatLogMessageHook;
+
+    public override unsafe void SetupHooks()
+    {
+        FormatLogMessageHook = new(HaselRaptureLogModule.MemberFunctionPointers.FormatLogMessage, FormatLogMessageDetour);
+    }
+
     public override void Enable()
     {
         ReloadChat();
@@ -273,14 +280,13 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         CachedTextColors = GenerateTextColors();
     }
 
-    [AddressHook<HaselRaptureLogModule>(nameof(HaselRaptureLogModule.FormatLogMessage))]
-    public unsafe uint RaptureLogModule_FormatLogMessage(HaselRaptureLogModule* haselRaptureLogModule, uint logKindId, Utf8String* sender, Utf8String* message, int* timestamp, nint a6, Utf8String* a7, int chatTabIndex)
+    public unsafe uint FormatLogMessageDetour(HaselRaptureLogModule* haselRaptureLogModule, uint logKindId, Utf8String* sender, Utf8String* message, int* timestamp, nint a6, Utf8String* a7, int chatTabIndex)
     {
         if (haselRaptureLogModule->LogKindSheet == 0 || haselRaptureLogModule->AtkFontCodeModule == null)
             return 0;
 
         if (!Config.FormatOverrides.TryGetValue(logKindId, out var logKindOverride) || !logKindOverride.Enabled || !logKindOverride.IsValid())
-            return RaptureLogModule_FormatLogMessageHook.OriginalDisposeSafe(haselRaptureLogModule, logKindId, sender, message, timestamp, a6, a7, chatTabIndex);
+            return FormatLogMessageHook!.OriginalDisposeSafe(haselRaptureLogModule, logKindId, sender, message, timestamp, a6, a7, chatTabIndex);
 
         var tempParseMessage1 = haselRaptureLogModule->TempParseMessage.GetPointer(1);
         tempParseMessage1->Clear();

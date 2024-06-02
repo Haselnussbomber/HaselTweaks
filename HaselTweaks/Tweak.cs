@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
+using HaselCommon.Utils;
 using HaselTweaks.Interfaces;
 
 namespace HaselTweaks;
@@ -78,22 +78,22 @@ public abstract partial class Tweak // Internal
     private bool Disposed { get; set; }
     internal Exception? LastInternalException { get; set; }
 
-    protected IEnumerable<PropertyInfo> Hooks => CachedType
-        .GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)
-        .Where(prop =>
-            prop.PropertyType.IsGenericType &&
-            prop.PropertyType.GetGenericTypeDefinition() == typeof(Hook<>)
+    protected IEnumerable<FieldInfo> Hooks => CachedType
+        .GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+        .Where(field =>
+            field.FieldType.IsGenericType &&
+            field.FieldType.GetInterfaces().Any(type => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IHook<>))
         );
 
     protected void CallHooks(string methodName)
     {
-        foreach (var property in Hooks)
+        foreach (var field in Hooks)
         {
-            var hook = property.GetValue(this);
+            var hook = field.GetValue(this);
             if (hook == null) continue;
 
-            typeof(Hook<>)
-                .MakeGenericType(property.PropertyType.GetGenericArguments().First())
+            typeof(IHook<>)
+                .MakeGenericType(field.FieldType.GetGenericArguments().First())
                 .GetMethod(methodName)?
                 .Invoke(hook, null);
         }

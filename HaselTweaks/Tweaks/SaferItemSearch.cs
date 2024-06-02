@@ -2,7 +2,7 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Info;
-using HaselTweaks.Structs;
+using HaselCommon.Utils;
 
 namespace HaselTweaks.Tweaks;
 
@@ -10,6 +10,17 @@ namespace HaselTweaks.Tweaks;
 public unsafe partial class SaferItemSearch : Tweak
 {
     private bool _isSearching;
+
+    private AddressHook<InfoProxyItemSearch.Delegates.ProcessRequestResult>? ProcessRequestResultHook;
+    private VFuncHook<InfoProxyItemSearch.Delegates.EndRequest>? EndRequestHook;
+    private VFuncHook<InfoProxyItemSearch.Delegates.AddPage>? AddPageHook;
+
+    public override void SetupHooks()
+    {
+        ProcessRequestResultHook = new(InfoProxyItemSearch.MemberFunctionPointers.ProcessRequestResult, ProcessRequestResultDetour);
+        EndRequestHook = new(InfoProxyItemSearch.StaticVirtualTablePointer, 6, EndRequestDetour);
+        AddPageHook = new(InfoProxyItemSearch.StaticVirtualTablePointer, 12, AddPageDetour);
+    }
 
     public override void Enable()
     {
@@ -51,33 +62,30 @@ public unsafe partial class SaferItemSearch : Tweak
         addon->ComparePrices->AtkComponentBase.SetEnabledState(!_isSearching);
     }
 
-    [AddressHook<InfoProxyItemSearch>(nameof(InfoProxyItemSearch.ProcessRequestResult))]
-    public void InfoProxyItemSearch_ProcessRequestResult(InfoProxyItemSearch* ipis, uint itemId, nint a3, nint a4, int a5, byte listingCount, int code)
+    public nint ProcessRequestResultDetour(InfoProxyItemSearch* ipis, nint a2, nint a3, nint a4, int a5, byte a6, int a7)
     {
         _isSearching = true;
 
         UpdateRetainerSellButton();
 
-        InfoProxyItemSearch_ProcessRequestResultHook.OriginalDisposeSafe(ipis, itemId, a3, a4, a5, listingCount, code);
+        return ProcessRequestResultHook!.OriginalDisposeSafe(ipis, a2, a3, a4, a5, a6, a7);
     }
 
-    [VTableHook<InfoProxyItemSearch>(6)]
-    public void InfoProxyItemSearch_EndRequest(InfoProxyItemSearch* ipis)
+    public void EndRequestDetour(InfoProxyItemSearch* ipis)
     {
         _isSearching = false;
 
         UpdateRetainerSellButton();
 
-        InfoProxyItemSearch_EndRequestHook.OriginalDisposeSafe(ipis);
+        EndRequestHook!.OriginalDisposeSafe(ipis);
     }
 
-    [VTableHook<InfoProxyItemSearch>(12)]
-    public void InfoProxyItemSearch_AddPage(InfoProxyItemSearch* ipis, nint data)
+    public void AddPageDetour(InfoProxyItemSearch* ipis, nint data)
     {
         _isSearching = true;
 
         UpdateRetainerSellButton();
 
-        InfoProxyItemSearch_AddPageHook.OriginalDisposeSafe(ipis, data);
+        AddPageHook!.OriginalDisposeSafe(ipis, data);
     }
 }

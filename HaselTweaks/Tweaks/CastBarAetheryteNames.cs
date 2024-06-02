@@ -1,11 +1,11 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Text;
 using HaselCommon.Text.Expressions;
+using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 
@@ -16,6 +16,15 @@ public unsafe partial class CastBarAetheryteNames : Tweak
 {
     private TeleportInfo? TeleportInfo;
     private bool IsCastingTeleport;
+
+    private AddressHook<HaselActionManager.Delegates.OpenCastBar>? OpenCastBarHook;
+    private AddressHook<Telepo.Delegates.Teleport>? TeleportHook;
+
+    public override void SetupHooks()
+    {
+        OpenCastBarHook = new(HaselActionManager.MemberFunctionPointers.OpenCastBar, OpenCastBarDetour);
+        TeleportHook = new(Telepo.MemberFunctionPointers.Teleport, TeleportDetour);
+    }
 
     public override void Enable()
     {
@@ -67,16 +76,14 @@ public unsafe partial class CastBarAetheryteNames : Tweak
         Clear();
     }
 
-    [AddressHook<HaselActionManager>(nameof(HaselActionManager.OpenCastBar))]
-    public void ActionManager_OpenCastBar(ActionManager* a1, BattleChara* a2, int type, uint rowId, uint type2, int rowId2, float a7)
+    public void OpenCastBarDetour(HaselActionManager* a1, BattleChara* a2, int type, uint rowId, uint type2, int rowId2, float a7)
     {
         IsCastingTeleport = type == 1 && rowId == 5 && type2 == 5;
 
-        ActionManager_OpenCastBarHook.OriginalDisposeSafe(a1, a2, type, rowId, type2, rowId2, a7);
+        OpenCastBarHook!.OriginalDisposeSafe(a1, a2, type, rowId, type2, rowId2, a7);
     }
 
-    [AddressHook<Telepo>(nameof(Telepo.Teleport))]
-    public bool Teleport(Telepo* telepo, uint aetheryteID, byte subIndex)
+    public bool TeleportDetour(Telepo* telepo, uint aetheryteID, byte subIndex)
     {
         TeleportInfo = null;
 
@@ -89,6 +96,6 @@ public unsafe partial class CastBarAetheryteNames : Tweak
             }
         }
 
-        return TeleportHook.OriginalDisposeSafe(telepo, aetheryteID, subIndex);
+        return TeleportHook!.OriginalDisposeSafe(telepo, aetheryteID, subIndex);
     }
 }

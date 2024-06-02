@@ -1,3 +1,5 @@
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -60,6 +62,23 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
     [Signature("48 8D 4C 24 ?? E8 ?? ?? ?? ?? 48 8B 83 ?? ?? ?? ?? 48 8B CF 0F B7 9F")]
     private nint PvPTooltipAddress { get; init; }
 
+    private VFuncHook<AddonCharacterClass.Delegates.OnSetup>? AddonCharacterClassOnSetupHook;
+    private VFuncHook<AddonCharacterClass.Delegates.OnRequestedUpdate>? AddonCharacterClassOnRequestedUpdateHook;
+    private VFuncHook<AddonCharacterClass.Delegates.ReceiveEvent>? AddonCharacterClassReceiveEventHook;
+    private AddressHook<AddonPvPCharacter.Delegates.UpdateClasses>? AddonPvPCharacterUpdateClassesHook;
+    private VFuncHook<AddonPvPCharacter.Delegates.ReceiveEvent>? AddonPvPCharacterReceiveEventHook;
+    private VFuncHook<AgentStatus.Delegates.Show>? AgentStatusShowHook;
+
+    public override void SetupHooks()
+    {
+        AddonCharacterClassOnSetupHook = new(AddonCharacterClass.StaticVirtualTablePointer, (int)AtkUnitBaseVfs.OnSetup, AddonCharacterClassOnSetupDetour);
+        AddonCharacterClassOnRequestedUpdateHook = new(AddonCharacterClass.StaticVirtualTablePointer, (int)AtkUnitBaseVfs.OnRequestedUpdate, AddonCharacterClassOnRequestedUpdateDetour);
+        AddonCharacterClassReceiveEventHook = new(AddonCharacterClass.StaticVirtualTablePointer, (int)AtkUnitBaseVfs.ReceiveEvent, AddonCharacterClassReceiveEventDetour);
+        AddonPvPCharacterUpdateClassesHook = new(AddonPvPCharacter.MemberFunctionPointers.UpdateClasses, AddonPvPCharacterUpdateClassesDetour);
+        AddonPvPCharacterReceiveEventHook = new(AddonPvPCharacter.StaticVirtualTablePointer, (int)AtkUnitBaseVfs.ReceiveEvent, AddonPvPCharacterReceiveEventDetour);
+        AgentStatusShowHook = new(*(nint*)GetAgent<AgentStatus>(), (int)AgentInterfaceVfs.Show, AgentStatusShowDetour);
+    }
+
     public override void Enable()
     {
         TooltipPatch = new(TooltipAddress + 8, [0xEB]);
@@ -70,10 +89,14 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
             TooltipPatch.Enable();
             PvpTooltipPatch.Enable();
         }
+
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "AddonPvPCharacter", AddonPvPCharacterOnSetup);
     }
 
     public override void Disable()
     {
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "AddonPvPCharacter", AddonPvPCharacterOnSetup);
+
         TooltipPatch?.Disable();
         PvpTooltipPatch?.Disable();
     }
@@ -97,10 +120,9 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
         return id >= 20 && id <= 27;
     }
 
-    [VTableHook<AddonCharacterClass>((int)AtkUnitBaseVfs.OnSetup)]
-    private nint AddonCharacterClass_OnSetup(AddonCharacterClass* addon, uint numAtkValues, AtkValue* atkValues)
+    private void AddonCharacterClassOnSetupDetour(AddonCharacterClass* addon, uint numAtkValues, AtkValue* atkValues)
     {
-        var result = AddonCharacterClass_OnSetupHook!.OriginalDisposeSafe(addon, numAtkValues, atkValues);
+        AddonCharacterClassOnSetupHook!.OriginalDisposeSafe(addon, numAtkValues, atkValues);
 
         for (var i = 0; i < NumClasses; i++)
         {
@@ -126,14 +148,11 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
                 _ => 0
             });
         }
-
-        return result;
     }
 
-    [VTableHook<AddonCharacterClass>((int)AtkUnitBaseVfs.OnRequestedUpdate)]
-    private void AddonCharacterClass_OnUpdate(AddonCharacterClass* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
+    private void AddonCharacterClassOnRequestedUpdateDetour(AddonCharacterClass* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        AddonCharacterClass_OnUpdateHook.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
+        AddonCharacterClassOnRequestedUpdateHook!.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
 
         for (var i = 0; i < NumClasses; i++)
         {
@@ -166,17 +185,14 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
         }
     }
 
-    [VTableHook<AddonCharacterClass>((int)AtkUnitBaseVfs.ReceiveEvent)]
-    private nint AddonCharacterClass_ReceiveEvent(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
+    private void AddonCharacterClassReceiveEventDetour(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)
     {
         if (HandleAddonCharacterClassEvent(addon, eventType, eventParam))
-        {
-            // handled
-            return 0;
-        }
+            return;
 
-        return AddonCharacterClass_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
+        AddonCharacterClassReceiveEventHook!.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, atkEventData);
     }
+
     private bool HandleAddonCharacterClassEvent(AddonCharacterClass* addon, AtkEventType eventType, int eventParam)
     {
         // skip events for tabs
@@ -213,10 +229,10 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
         return ProcessEvents(node->AtkComponentBase.OwnerNode, imageNode, eventType);
     }
 
-    [VTableHook<AddonPvPCharacter>((int)AtkUnitBaseVfs.OnSetup)]
-    private void AddonPvPCharacter_OnSetup(AddonPvPCharacter* addon, uint numAtkValues, AtkValue* atkValues)
+
+    private void AddonPvPCharacterOnSetup(AddonEvent type, AddonArgs args)
     {
-        AddonPvPCharacter_OnSetupHook.OriginalDisposeSafe(addon, numAtkValues, atkValues);
+        var addon = (AddonPvPCharacter*)args.Addon;
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
@@ -231,10 +247,9 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
         }
     }
 
-    [AddressHook<AddonPvPCharacter>(nameof(AddonPvPCharacter.Addresses.UpdateClasses))]
-    private void AddonPvPCharacter_UpdateClasses(AddonPvPCharacter* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
+    private void AddonPvPCharacterUpdateClassesDetour(AddonPvPCharacter* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        AddonPvPCharacter_UpdateClassesHook.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
+        AddonPvPCharacterUpdateClassesHook!.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
@@ -254,16 +269,12 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
         }
     }
 
-    [VTableHook<AddonPvPCharacter>((int)AtkUnitBaseVfs.ReceiveEvent)]
-    private nint AddonPvPCharacter_ReceiveEvent(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
+    private void AddonPvPCharacterReceiveEventDetour(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)
     {
         if (HandleAddonPvPCharacterEvent(addon, eventType, eventParam))
-        {
-            // handled
-            return 0;
-        }
+            return;
 
-        return AddonPvPCharacter_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
+        AddonPvPCharacterReceiveEventHook!.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 
     private bool HandleAddonPvPCharacterEvent(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam)
@@ -367,16 +378,13 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
         gearsetModule->EquipGearset(selectedGearset.Id - 1);
     }
 
-    private static nint AgentStatus_ShowAddress => GetAgentVFuncAddress<AgentStatus>(AgentInterfaceVfs.Show);
-
-    [Hook]
-    private void AgentStatus_Show(AgentStatus* agent)
+    private void AgentStatusShowDetour(AgentStatus* agent)
     {
         if (Config.AlwaysOpenOnClassesJobsTab)
         {
             agent->TabIndex = 2;
         }
 
-        AgentStatus_ShowHook!.OriginalDisposeSafe(agent);
+        AgentStatusShowHook!.OriginalDisposeSafe(agent);
     }
 }

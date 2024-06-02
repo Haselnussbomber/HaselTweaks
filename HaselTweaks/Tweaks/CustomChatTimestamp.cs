@@ -99,6 +99,13 @@ public partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguratio
         }
     }
 
+    private AddressHook<HaselRaptureTextModule.Delegates.FormatAddonText2Int>? FormatAddonText2IntHook;
+
+    public override unsafe void SetupHooks()
+    {
+        FormatAddonText2IntHook = new(HaselRaptureTextModule.MemberFunctionPointers.FormatAddonText2Int, FormatAddonText2IntDetour);
+    }
+
     public override void Enable()
     {
         ReloadChat();
@@ -109,14 +116,13 @@ public partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguratio
         ReloadChat();
     }
 
-    [AddressHook<HaselRaptureTextModule>(nameof(HaselRaptureTextModule.FormatAddonText2Int))]
-    public unsafe byte* FormatAddonText2Int(RaptureTextModule* raptureTextModule, uint addonRowId, int value)
+    public unsafe byte* FormatAddonText2IntDetour(HaselRaptureTextModule* self, uint addonRowId, int value)
     {
         if (addonRowId is 7840 or 7841 && !string.IsNullOrWhiteSpace(Config.Format))
         {
             try
             {
-                var str = raptureTextModule->UnkStrings1.GetPointer(1);
+                var str = ((RaptureTextModule*)self)->UnkStrings1.GetPointer(1);
                 str->SetString(DateTimeOffset.FromUnixTimeSeconds(value).ToLocalTime().ToString(Config.Format));
                 return str->StringPtr;
             }
@@ -126,7 +132,7 @@ public partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguratio
             }
         }
 
-        return FormatAddonText2IntHook.OriginalDisposeSafe(raptureTextModule, addonRowId, value);
+        return FormatAddonText2IntHook!.OriginalDisposeSafe(self, addonRowId, value);
     }
 
     public static unsafe void ReloadChat()

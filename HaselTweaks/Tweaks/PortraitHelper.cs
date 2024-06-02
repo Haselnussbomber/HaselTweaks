@@ -13,6 +13,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.Exd;
 using HaselCommon.Services;
+using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
@@ -61,6 +62,15 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
     public static ImportFlags CurrentImportFlags { get; set; } = ImportFlags.All;
     public static PortraitPreset? ClipboardPreset { get; set; }
+
+    private AddressHook<UIClipboard.Delegates.OnClipboardDataChanged>? OnClipboardDataChangedHook;
+    private AddressHook<RaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
+
+    public override void SetupHooks()
+    {
+        OnClipboardDataChangedHook = new(UIClipboard.MemberFunctionPointers.OnClipboardDataChanged, OnClipboardDataChangedDetour);
+        UpdateGearsetHook = new(RaptureGearsetModule.MemberFunctionPointers.UpdateGearset, UpdateGearsetDetour);
+    }
 
     public override void Enable()
     {
@@ -151,20 +161,18 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         }
     }
 
-    [AddressHook<UIClipboard>(nameof(UIClipboard.OnClipboardDataChanged))]
-    private void OnClipboardDataChanged(UIClipboard* uiClipboard)
+    private void OnClipboardDataChangedDetour(UIClipboard* uiClipboard)
     {
-        OnClipboardDataChangedHook.OriginalDisposeSafe(uiClipboard);
+        OnClipboardDataChangedHook!.OriginalDisposeSafe(uiClipboard);
 
         ClipboardPreset = PortraitPreset.FromExportedString(uiClipboard->Data.SystemClipboardText.ToString());
         if (ClipboardPreset != null)
             Debug($"Parsed ClipboardPreset: {ClipboardPreset}");
     }
 
-    [AddressHook<RaptureGearsetModule>(nameof(RaptureGearsetModule.UpdateGearset))]
-    public int RaptureGearsetModule_UpdateGearset(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
+    public void UpdateGearsetDetour(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
-        var ret = RaptureGearsetModule_UpdateGearsetHook.OriginalDisposeSafe(raptureGearsetModule, gearsetId);
+        UpdateGearsetHook!.OriginalDisposeSafe(raptureGearsetModule, gearsetId);
 
         _jobChangedOrGearsetUpdatedCTS?.Cancel();
         _jobChangedOrGearsetUpdatedCTS = new();
@@ -173,8 +181,6 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         {
             CheckForGearChecksumMismatch(gearsetId);
         }, delay: CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token);
-
-        return ret;
     }
 
     private void CheckForGearChecksumMismatch(int gearsetId, bool isJobChange = false)

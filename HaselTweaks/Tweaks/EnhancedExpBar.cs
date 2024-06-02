@@ -68,7 +68,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         {
             addon->ClassJob--;
             addon->RequiredExp--;
-            addon->AtkUnitBase.OnUpdate(
+            addon->AtkUnitBase.OnRequestedUpdate(
                 AtkStage.GetSingleton()->GetNumberArrayData(),
                 AtkStage.GetSingleton()->GetStringArrayData());
         }

@@ -10,8 +10,7 @@ public unsafe partial struct HaselRaptureLogModule
 
     [FieldOffset(0x100)] public HaselAtkFontCodeModule* AtkFontCodeModule;
 
-    [FieldOffset(0x108), FixedSizeArray]
-    internal FixedSizeArray10<Utf8String> _tempParseMessage;
+    [FieldOffset(0x108), FixedSizeArray] internal FixedSizeArray10<Utf8String> _tempParseMessage;
 
     [FieldOffset(0x520)] public nint LogKindSheet;
 

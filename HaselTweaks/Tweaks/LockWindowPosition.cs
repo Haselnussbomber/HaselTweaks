@@ -9,9 +9,10 @@ using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using FFXIVClientStructs.FFXIV.Component.GUI.AtkModuleInterface;
 using HaselCommon.Utils;
-using HaselTweaks.Structs;
 using ImGuiNET;
+using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
@@ -42,6 +43,25 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
     private Vector2 _hoveredWindowPos;
     private Vector2 _hoveredWindowSize;
     private int _eventIndexToDisable = 0;
+
+    private delegate bool RaptureAtkUnitManagerVf6Delegate(RaptureAtkUnitManager* self, nint a2);
+
+    private AddressHook<AtkUnitBase.Delegates.MoveDelta>? MoveDeltaHook;
+    private VFuncHook<RaptureAtkUnitManagerVf6Delegate>? RaptureAtkUnitManagerVf6Hook;
+    private AddressHook<AgentContext.Delegates.ClearMenu>? ClearMenuHook;
+    private AddressHook<AgentContext.Delegates.AddMenuItem2>? AddMenuItem2Hook;
+    private AddressHook<AgentContext.Delegates.OpenContextMenuForAddon>? OpenContextMenuForAddonHook;
+    private AddressHook<AtkEventInterface.Delegates.ReceiveEvent>? WindowContextMenuHandlerReceiveEventHook;
+
+    public override void SetupHooks()
+    {
+        MoveDeltaHook = new(AtkUnitBase.MemberFunctionPointers.MoveDelta, MoveDeltaDetour);
+        RaptureAtkUnitManagerVf6Hook = new(RaptureAtkUnitManager.StaticVirtualTablePointer, 6, RaptureAtkUnitManagerVf6Detour);
+        ClearMenuHook = new(AgentContext.MemberFunctionPointers.ClearMenu, ClearMenuDetour);
+        AddMenuItem2Hook = new(AgentContext.MemberFunctionPointers.AddMenuItem2, AddMenuItem2Detour);
+        OpenContextMenuForAddonHook = new(AgentContext.MemberFunctionPointers.OpenContextMenuForAddon, OpenContextMenuForAddonDetour);
+        WindowContextMenuHandlerReceiveEventHook = new(RaptureAtkUnitManager.Instance()->WindowContextMenuHandler.VirtualTable->ReceiveEvent, WindowContextMenuHandlerReceiveEventDetour);
+    }
 
     public override void Enable()
     {
@@ -241,8 +261,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             addon->ResetPosition = false;
     }
 
-    [AddressHook<AtkUnitBase>(nameof(AtkUnitBase.MoveDelta))]
-    public bool MoveDelta(AtkUnitBase* atkUnitBase, nint xDelta, nint yDelta)
+    public bool MoveDeltaDetour(AtkUnitBase* atkUnitBase, short* xDelta, short* yDelta)
     {
         if (atkUnitBase != null)
         {
@@ -256,11 +275,10 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
                 return false;
         }
 
-        return MoveDeltaHook.OriginalDisposeSafe(atkUnitBase, xDelta, yDelta);
+        return MoveDeltaHook!.OriginalDisposeSafe(atkUnitBase, xDelta, yDelta);
     }
 
-    [VTableHook<RaptureAtkUnitManager>(6)]
-    public bool RaptureAtkUnitManager_Vf6(RaptureAtkUnitManager* self, nint a2)
+    public bool RaptureAtkUnitManagerVf6Detour(RaptureAtkUnitManager* self, nint a2)
     {
         if (_showPicker)
         {
@@ -298,35 +316,32 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             return false;
         }
 
-        return RaptureAtkUnitManager_Vf6Hook.OriginalDisposeSafe(self, a2);
+        return RaptureAtkUnitManagerVf6Hook!.OriginalDisposeSafe(self, a2);
     }
 
-    [AddressHook<AgentContext>(nameof(AgentContext.ClearMenu))]
-    public nint AgentContext_ClearMenu(AgentContext* agent)
+    public void ClearMenuDetour(AgentContext* agent)
     {
         if (_eventIndexToDisable != 0)
             _eventIndexToDisable = 0;
 
-        return AgentContext_ClearMenuHook.OriginalDisposeSafe(agent);
+        ClearMenuHook!.OriginalDisposeSafe(agent);
     }
 
-    [AddressHook<AgentContext>(nameof(AgentContext.AddMenuItem2))]
-    public nint AgentContext_AddMenuItem2(AgentContext* agent, uint addonRowId, nint handlerPtr, long handlerParam, int disabled, int submenu)
+    public void AddMenuItem2Detour(AgentContext* agent, uint addonRowId, void* handlerPtr, long handlerParam, bool disabled, bool submenu)
     {
         if (addonRowId == 8660 && agent->ContextMenuIndex == 0) // "Return to Default Position"
         {
             _eventIndexToDisable = agent->CurrentContextMenu->CurrentEventIndex;
         }
 
-        return AgentContext_AddMenuItem2Hook.OriginalDisposeSafe(agent, addonRowId, handlerPtr, handlerParam, disabled, submenu);
+        AddMenuItem2Hook!.OriginalDisposeSafe(agent, addonRowId, handlerPtr, handlerParam, disabled, submenu);
     }
 
-    [AddressHook<AgentContext>(nameof(AgentContext.OpenContextMenuForAddon))]
-    public nint AgentContext_OpenContextMenuForAddon(AgentContext* agent, uint addonId, bool bindToOwner)
+    public void OpenContextMenuForAddonDetour(AgentContext* agent, uint ownerAddonId, bool bindToOwner)
     {
         if (_eventIndexToDisable == 7 && agent->ContextMenuIndex == 0)
         {
-            var addon = GetAddon<AtkUnitBase>((ushort)addonId);
+            var addon = GetAddon<AtkUnitBase>((ushort)ownerAddonId);
             if (addon != null)
             {
                 var name = addon->NameString;
@@ -358,21 +373,19 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             }
         }
 
-        return AgentContext_OpenContextMenuForAddonHook.OriginalDisposeSafe(agent, addonId, bindToOwner);
+        OpenContextMenuForAddonHook!.OriginalDisposeSafe(agent, ownerAddonId, bindToOwner);
     }
 
-    private static nint WindowContextMenuHandler_ReceiveEventAddress => (nint)RaptureAtkUnitManager.Instance()->WindowContextMenuHandler.VirtualTable->ReceiveEvent;
-
-    [Hook]
-    public AtkValue* WindowContextMenuHandler_ReceiveEvent(nint self, AtkValue* result, nint a3, long a4, long eventParam)
+    // TODO: use custom handler? https://discord.com/channels/581875019861328007/653504487352303619/1244784100490084352
+    public AtkValue* WindowContextMenuHandlerReceiveEventDetour(AtkEventInterface* self, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
     {
-        if (_eventIndexToDisable == 7 && eventParam is EventParamUnlock or EventParamLock)
+        if (_eventIndexToDisable == 7 && (int)eventKind is EventParamUnlock or EventParamLock)
         {
             if (TryGetAddon<AtkUnitBase>((ushort)GetAgent<AgentContext>()->OwnerAddon, out var addon))
             {
                 var name = addon->NameString;
                 var entry = Config.LockedWindows.FirstOrDefault(entry => entry?.Name == name, null);
-                var isLocked = eventParam == EventParamLock;
+                var isLocked = eventKind == EventParamLock;
 
                 if (Config.Inverted)
                     isLocked = !isLocked;
@@ -395,15 +408,15 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
 
             _eventIndexToDisable = 0;
 
-            result->Type = FFXIVClientStructs.FFXIV.Component.GUI.ValueType.Bool;
-            result->Byte = 0;
-            return result;
+            returnValue->Type = ValueType.Bool;
+            returnValue->Byte = 0;
+            return returnValue;
         }
 
         if (_eventIndexToDisable != 0)
             _eventIndexToDisable = 0;
 
-        return WindowContextMenuHandler_ReceiveEventHook!.OriginalDisposeSafe(self, result, a3, a4, eventParam);
+        return WindowContextMenuHandlerReceiveEventHook!.OriginalDisposeSafe(self, returnValue, values, valueCount, eventKind);
     }
 
     private void AddMenuEntry(string text, int eventParam)

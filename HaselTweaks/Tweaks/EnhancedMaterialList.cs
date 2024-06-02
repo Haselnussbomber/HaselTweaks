@@ -12,6 +12,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Enums;
 using HaselCommon.SheetLookup;
 using HaselCommon.Sheets;
+using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
@@ -75,6 +76,19 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         {
             SaveRestoreMaterialList(GetAgent<AgentRecipeMaterialList>());
         }
+    }
+
+    private VFuncHook<AgentRecipeMaterialList.Delegates.ReceiveEvent>? AgentRecipeMaterialListReceiveEventHook;
+    private AddressHook<AddonRecipeMaterialList.Delegates.SetupRow>? AddonRecipeMaterialListSetupRowHook;
+    private AddressHook<AgentRecipeMaterialList.Delegates.OpenRecipeResultItemContextMenu>? OpenRecipeResultItemContextMenuHook;
+    private AddressHook<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>? AddItemContextMenuEntriesHook;
+
+    public override void SetupHooks()
+    {
+        AgentRecipeMaterialListReceiveEventHook = new(AgentRecipeMaterialList.StaticVirtualTablePointer, (int)AgentInterfaceVfs.ReceiveEvent, AgentRecipeMaterialListReceiveEventDetour);
+        AddonRecipeMaterialListSetupRowHook = new(AddonRecipeMaterialList.MemberFunctionPointers.SetupRow, AddonRecipeMaterialListSetupRowDetour);
+        OpenRecipeResultItemContextMenuHook = new(AgentRecipeMaterialList.MemberFunctionPointers.OpenRecipeResultItemContextMenu, OpenRecipeResultItemContextMenuDetour);
+        AddItemContextMenuEntriesHook = new(AgentRecipeItemContext.MemberFunctionPointers.AddItemContextMenuEntries, AddItemContextMenuEntriesDetour);
     }
 
     public override void Enable()
@@ -226,12 +240,9 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, atkEvent, 0);
     }
 
-    private static nint AgentRecipeMaterialList_ReceiveEventAddress => GetAgentVFuncAddress<AgentRecipeMaterialList>(AgentInterfaceVfs.ReceiveEvent);
-
-    [Hook]
-    public nint AgentRecipeMaterialList_ReceiveEvent(AgentRecipeMaterialList* agent, AtkEvent* result, AtkValue* values, nint a4, nint a5)
+    public AtkValue* AgentRecipeMaterialListReceiveEventDetour(AgentRecipeMaterialList* agent, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
     {
-        var ret = AgentRecipeMaterialList_ReceiveEventHook.OriginalDisposeSafe(agent, result, values, a4, a5);
+        var ret = AgentRecipeMaterialListReceiveEventHook!.OriginalDisposeSafe(agent, returnValue, values, valueCount, eventKind);
         SaveRestoreMaterialList(agent);
         return ret;
     }
@@ -250,12 +261,10 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         }
     }
 
-    [AddressHook<AddonRecipeMaterialList>(nameof(AddonRecipeMaterialList.SetupRow))]
-    public nint AddonRecipeMaterialList_SetupRow(AddonRecipeMaterialList* addon, nint a2, nint a3)
+    public void AddonRecipeMaterialListSetupRowDetour(AddonRecipeMaterialList* addon, nint a2, nint a3)
     {
-        var res = AddonRecipeMaterialList_SetupRowHook.OriginalDisposeSafe(addon, a2, a3);
+        AddonRecipeMaterialListSetupRowHook!.OriginalDisposeSafe(addon, a2, a3);
         RecipeMaterialList_HandleSetupRow(a2, a3);
-        return res;
     }
 
     private void RecipeMaterialList_HandleSetupRow(nint a2, nint a3)
@@ -318,18 +327,16 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         nameNode->SetText(sb.Encode());
     }
 
-    [AddressHook<AgentRecipeMaterialList>(nameof(AgentRecipeMaterialList.OpenRecipeResultItemContextMenu))]
-    public nint AgentRecipeMaterialList_OpenRecipeResultItemContextMenu(AgentRecipeMaterialList* agent)
+    public void OpenRecipeResultItemContextMenuDetour(AgentRecipeMaterialList* agent)
     {
         _handleRecipeResultItemContextMenu = true;
-        return AgentRecipeMaterialList_OpenRecipeResultItemContextMenuHook.OriginalDisposeSafe(agent);
+        OpenRecipeResultItemContextMenuHook!.OriginalDisposeSafe(agent);
     }
 
-    [AddressHook<AgentRecipeItemContext>(nameof(AgentRecipeItemContext.AddItemContextMenuEntries))]
-    public nint AgentRecipeItemContext_AddItemContextMenuEntries(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
+    public void AddItemContextMenuEntriesDetour(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
     {
         UpdateContextMenuFlag(itemId, ref flags);
-        return AgentRecipeItemContext_AddItemContextMenuEntriesHook.OriginalDisposeSafe(agent, itemId, flags, itemName);
+        AddItemContextMenuEntriesHook!.OriginalDisposeSafe(agent, itemId, flags, itemName);
     }
 
     private void UpdateContextMenuFlag(uint itemId, ref byte flags)

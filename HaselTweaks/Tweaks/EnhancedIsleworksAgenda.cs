@@ -1,6 +1,7 @@
 using Dalamud;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
+using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows;
@@ -21,6 +22,13 @@ public class EnhancedIsleworksAgendaConfiguration
 [Tweak]
 public unsafe partial class EnhancedIsleworksAgenda : Tweak<EnhancedIsleworksAgendaConfiguration>
 {
+    private VFuncHook<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>? ReceiveEventHook;
+
+    public override void SetupHooks()
+    {
+        ReceiveEventHook = new(AddonMJICraftScheduleSetting.StaticVirtualTablePointer, (int)AtkUnitBaseVfs.ReceiveEvent, ReceiveEventDetour);
+    }
+
     public override void Enable()
     {
         if (Config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"))
@@ -56,12 +64,11 @@ public unsafe partial class EnhancedIsleworksAgenda : Tweak<EnhancedIsleworksAge
         }
     }
 
-    [VTableHook<AddonMJICraftScheduleSetting>((int)AtkUnitBaseVfs.ReceiveEvent)]
-    private void AddonMJICraftScheduleSetting_ReceiveEvent(AddonMJICraftScheduleSetting* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
+    private void ReceiveEventDetour(AddonMJICraftScheduleSetting* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)
     {
         if (eventType == AtkEventType.ListItemRollOver && eventParam == 2 && Config.DisableTreeListTooltips)
         {
-            var index = *(uint*)(a5 + 0x10);
+            var index = *(uint*)(atkEventData + 0x10);
             var itemPtr = addon->TreeList->GetItem(index);
             if (itemPtr != null && itemPtr->UIntValues.LongCount >= 1)
             {
@@ -73,6 +80,6 @@ public unsafe partial class EnhancedIsleworksAgenda : Tweak<EnhancedIsleworksAge
             }
         }
 
-        AddonMJICraftScheduleSetting_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
+        ReceiveEventHook!.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 }
