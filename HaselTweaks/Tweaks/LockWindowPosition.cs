@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text.SeStringHandling;
@@ -376,7 +377,6 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
         OpenContextMenuForAddonHook!.OriginalDisposeSafe(agent, ownerAddonId, bindToOwner);
     }
 
-    // TODO: use custom handler? https://discord.com/channels/581875019861328007/653504487352303619/1244784100490084352
     public AtkValue* WindowContextMenuHandlerReceiveEventDetour(AtkEventInterface* self, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
     {
         if (_eventIndexToDisable == 7 && (int)eventKind is EventParamUnlock or EventParamLock)
@@ -426,6 +426,6 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             .AddText(text)
             .Encode();
 
-        GetAgent<AgentContext>()->AddMenuItem(bytes, &AtkStage.Instance()->RaptureAtkUnitManager->WindowContextMenuHandler, eventParam);
+        GetAgent<AgentContext>()->AddMenuItem(bytes, Unsafe.AsPointer(ref AtkStage.Instance()->RaptureAtkUnitManager->WindowContextMenuHandler), eventParam);
     }
 }
