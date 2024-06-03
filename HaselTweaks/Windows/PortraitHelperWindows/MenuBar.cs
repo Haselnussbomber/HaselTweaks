@@ -3,7 +3,6 @@ using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
-using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -76,6 +75,7 @@ public unsafe class MenuBar : Window
         {
             ImGui.SetCursorPosY(ImGui.GetCursorPos().Y + 2);
             ImGui.TextUnformatted(t("PortraitHelperWindows.MenuBar.Initializing"));
+            UpdatePosition();
             return;
         }
 
@@ -228,6 +228,13 @@ public unsafe class MenuBar : Window
             ImGui.TextUnformatted(_portraitName);
         }
 
+        UpdatePosition();
+
+        _saveAsPresetDialog.Draw();
+    }
+
+    public void UpdatePosition()
+    {
         var scale = ImGuiHelpers.GlobalScale;
         var scaledown = 1 / scale;
         var height = (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y * 2 + ImGui.GetStyle().WindowPadding.Y * 2) * scaledown;
@@ -241,8 +248,6 @@ public unsafe class MenuBar : Window
             (AddonBannerEditor->AtkUnitBase.GetScaledWidth(true) - 8) * scaledown,
             height
         );
-
-        _saveAsPresetDialog.Draw();
     }
 
     public override void PostDraw()
