@@ -218,9 +218,11 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
             ImGui.Checkbox(key + "_Enabled", ref entry.Enabled);
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip(t(entry.Enabled
+                ImGui.BeginTooltip();
+                ImGui.TextUnformatted(t(entry.Enabled
                     ? "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsEnabled"
                     : "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsDisabled"));
+                ImGui.EndTooltip();
             }
             if (ImGui.IsItemClicked())
             {
@@ -438,7 +440,11 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
                     ImGui.Button(t("AutoSorter.Config.RunAllButton.Label"));
 
                 if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(t("AutoSorter.SortingInProgress"));
+                {
+                    ImGui.BeginTooltip();
+                    ImGui.TextUnformatted(t("AutoSorter.SortingInProgress"));
+                    ImGui.EndTooltip();
+                }
             }
         }
 

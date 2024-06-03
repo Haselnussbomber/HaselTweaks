@@ -30,7 +30,9 @@ public abstract class BaseConfigAttribute : Attribute
             ImGuiUtils.Icon(attribute.Icon, attribute.Color);
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip(t(attribute.Translationkey));
+                ImGui.BeginTooltip();
+                ImGui.TextUnformatted(t(attribute.Translationkey));
+                ImGui.EndTooltip();
             }
         }
     }

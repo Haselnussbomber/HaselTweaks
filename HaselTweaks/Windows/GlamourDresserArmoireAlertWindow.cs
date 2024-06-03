@@ -99,7 +99,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
                 ImGui.GetStyle().ItemInnerSpacing.X,
                 IconSize.Y * ImGuiHelpers.GlobalScale / 2f - ImGui.GetTextLineHeight() / 2f - 1));
 
-            ImGui.Text(GetItemName(item.RowId));
+            ImGui.TextUnformatted(GetItemName(item.RowId));
         }
 
         ImGuiContextMenu.Draw(popupKey, [

@@ -66,7 +66,9 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
         ImGui.Checkbox("##HideUnlocked", ref _hideUnlocked);
         if (ImGui.IsItemHovered())
         {
-            ImGui.SetTooltip(t("AetherCurrentHelperWindow.HideUnlockedTooltip"));
+            ImGui.BeginTooltip();
+            ImGui.TextUnformatted(t("AetherCurrentHelperWindow.HideUnlockedTooltip"));
+            ImGui.EndTooltip();
         }
 
         ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
@@ -148,7 +150,9 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
 
         if (ImGui.IsItemHovered())
         {
-            ImGui.SetTooltip(t("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip"));
+            ImGui.BeginTooltip();
+            ImGui.TextUnformatted(t("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip"));
+            ImGui.EndTooltip();
         }
 
         if (ImGui.IsItemClicked())

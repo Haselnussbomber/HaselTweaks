@@ -123,9 +123,11 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
                     if (Config.Inverted)
                         isLocked = !isLocked;
 
-                    ImGui.SetTooltip(t(isLocked
+                    ImGui.BeginTooltip();
+                    ImGui.TextUnformatted(t(isLocked
                         ? "LockWindowPosition.Config.EnableCheckmark.Tooltip.Locked"
                         : "LockWindowPosition.Config.EnableCheckmark.Tooltip.Unlocked"));
+                    ImGui.EndTooltip();
                 }
                 if (ImGui.IsItemClicked())
                 {

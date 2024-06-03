@@ -23,10 +23,12 @@ public abstract class LockableWindow : Window
             IconOffset = new(2.5f, 1f),
             ShowTooltip = () =>
             {
-                ImGui.SetTooltip(
+                ImGui.BeginTooltip();
+                ImGui.TextUnformatted(
                     WindowLocked
                     ? t("ImGuiWindow.WindowLocked")
                     : t("ImGuiWindow.WindowUnlocked"));
+                ImGui.EndTooltip();
             },
             Click = (button) =>
             {

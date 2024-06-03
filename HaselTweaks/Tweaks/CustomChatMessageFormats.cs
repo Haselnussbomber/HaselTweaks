@@ -116,9 +116,11 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
                 ImGui.Checkbox("##Enabled", ref entry.Enabled);
                 if (ImGui.IsItemHovered())
                 {
-                    ImGui.SetTooltip(t(entry.Enabled
+                    ImGui.BeginTooltip();
+                    ImGui.TextUnformatted(t(entry.Enabled
                         ? "CustomChatMessageFormats.Config.Entry.EnableCheckbox.Tooltip.IsEnabled"
                         : "CustomChatMessageFormats.Config.Entry.EnableCheckbox.Tooltip.IsDisabled"));
+                    ImGui.EndTooltip();
                 }
                 if (ImGui.IsItemClicked())
                     Service.GetService<Configuration>().Save();
@@ -135,7 +137,11 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
                         ImGuiUtils.Icon(FontAwesomeIcon.ExclamationCircle);
 
                     if (ImGui.IsItemHovered())
-                        ImGui.SetTooltip(t("CustomChatMessageFormats.Config.Entry.InvalidPayloads.Tooltip"));
+                    {
+                        ImGui.BeginTooltip();
+                        ImGui.TextUnformatted(t("CustomChatMessageFormats.Config.Entry.InvalidPayloads.Tooltip"));
+                        ImGui.EndTooltip();
+                    }
 
                     ImGuiUtils.SameLineSpace();
                 }
@@ -501,13 +507,17 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
                     var isStringPlaceholder = payload is StringPayload stringPayload && stringPayload.Parameter is ParameterExpression parameterExpression;
                     if (isStringPlaceholder)
                     {
-                        ImGui.SetTooltip(t("CustomChatMessageFormats.Config.Entry.Payload.StringPlaceholder.Tooltip"));
+                        ImGui.BeginTooltip();
+                        ImGui.TextUnformatted(t("CustomChatMessageFormats.Config.Entry.Payload.StringPlaceholder.Tooltip"));
+                        ImGui.EndTooltip();
                     }
 
                     var isStackColor = payload is ColorPayload stackColorPayload && stackColorPayload.Color?.ExpressionType is ExpressionType.StackColor;
                     if (isStackColor)
                     {
-                        ImGui.SetTooltip(t("CustomChatMessageFormats.Config.Entry.Payload.StackColor.Tooltip"));
+                        ImGui.BeginTooltip();
+                        ImGui.TextUnformatted(t("CustomChatMessageFormats.Config.Entry.Payload.StackColor.Tooltip"));
+                        ImGui.EndTooltip();
                     }
                 }
             }

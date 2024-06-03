@@ -134,7 +134,11 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextColumn();
             ImGui.TextUnformatted(t("PortraitHelperWindows.Setting.CameraYaw.Label"));
             if (ImGui.IsItemHovered())
-                ImGui.SetTooltip(t("PortraitHelperWindows.Setting.CameraYaw.Tooltip"));
+            {
+                ImGui.BeginTooltip();
+                ImGui.TextUnformatted(t("PortraitHelperWindows.Setting.CameraYaw.Tooltip"));
+                ImGui.EndTooltip();
+            }
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
@@ -157,7 +161,11 @@ public unsafe class AdvancedEditOverlay : Overlay
             ImGui.TableNextColumn();
             ImGui.TextUnformatted(t("PortraitHelperWindows.Setting.CameraPitch.Label"));
             if (ImGui.IsItemHovered())
-                ImGui.SetTooltip(t("PortraitHelperWindows.Setting.CameraPitch.Tooltip"));
+            {
+                ImGui.BeginTooltip();
+                ImGui.TextUnformatted(t("PortraitHelperWindows.Setting.CameraPitch.Tooltip"));
+                ImGui.EndTooltip();
+            }
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
