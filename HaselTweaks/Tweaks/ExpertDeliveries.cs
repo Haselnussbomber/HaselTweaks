@@ -13,7 +13,7 @@ public unsafe class ExpertDeliveries : Tweak
         if (!TryGetAddon<AtkUnitBase>(addonName, out var addon))
             return;
 
-        var atkEvent = stackalloc AtkEvent[1];
-        addon->ReceiveEvent(AtkEventType.ButtonClick, 4, atkEvent, 0);
+        var atkEvent = new AtkEvent();
+        addon->ReceiveEvent(AtkEventType.ButtonClick, 4, &atkEvent, 0);
     }
 }

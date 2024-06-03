@@ -365,11 +365,13 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
         if (Config.SkipLogo)
         {
             var addon = (AtkUnitBase*)args.Addon;
-            var value = stackalloc AtkValue[1];
-            value->Type = ValueType.Int;
-            value->Int = 0;
+            var value = new AtkValue
+            {
+                Type = ValueType.Int,
+                Int = 0
+            };
             Log("Sending change stage to title screen event...");
-            addon->FireCallback(1, value, true);
+            addon->FireCallback(1, &value, true);
             addon->Hide(false, false, 1);
         }
     }

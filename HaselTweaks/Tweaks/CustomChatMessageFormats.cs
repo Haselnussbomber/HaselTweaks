@@ -309,10 +309,8 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
 
             var tempParseMessage3 = haselRaptureLogModule->TempParseMessage.GetPointer(3);
             tempParseMessage3->SetString(haselRaptureLogModule->RaptureTextModule->FormatAddonText2Int(raptureLogModule->Use12HourClock ? 7841u : 7840u, *timestamp));
-            var buffer = stackalloc Utf8String[1];
-            buffer->Ctor();
-            tempParseMessage0->Copy(Utf8String.Concat(tempParseMessage3, buffer, tempParseMessage0));
-            buffer->Dtor();
+            using var buffer = new Utf8String();
+            tempParseMessage0->Copy(Utf8String.Concat(tempParseMessage3, &buffer, tempParseMessage0));
         }
 
         return haselRaptureLogModule->AtkFontCodeModule->CalculateLogLines(a7, tempParseMessage0, a6, false);

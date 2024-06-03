@@ -224,8 +224,8 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
             return;
 
         Log("Refreshing RecipeMaterialList");
-        var atkEvent = stackalloc AtkEvent[1];
-        recipeMaterialList->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 1, atkEvent, 0);
+        var atkEvent = new AtkEvent();
+        recipeMaterialList->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 1, &atkEvent, 0);
     }
 
     public void RefreshRecipeTree()
@@ -236,8 +236,8 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
             return;
 
         Log("Refreshing RecipeTree");
-        var atkEvent = stackalloc AtkEvent[1];
-        recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, atkEvent, 0);
+        var atkEvent = new AtkEvent();
+        recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, &atkEvent, 0);
     }
 
     public AtkValue* AgentRecipeMaterialListReceiveEventDetour(AgentRecipeMaterialList* agent, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)

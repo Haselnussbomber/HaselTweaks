@@ -74,6 +74,6 @@ public unsafe partial struct BannerUpdateData
     [FieldOffset(0x2D)] public ushort BannerFrame;
     [FieldOffset(0x2F)] public uint Checksum;
 
-    [MemberFunction("E8 ?? ?? ?? ?? 89 6B 5C")]
-    public partial void Initialize();
+    // [MemberFunction("E8 ?? ?? ?? ?? 89 6B 5C")]
+    // public partial void Initialize();
 }

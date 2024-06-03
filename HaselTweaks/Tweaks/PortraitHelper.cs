@@ -291,13 +291,16 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         if (localPlayer == null)
             return 0;
 
-        var data = stackalloc FakeAgentBannerListData[1]; // not the real struct... just enough to be able to call LoadEquipmentData
-        data->UIModule = UIModule.Instance();
+        // not the real struct... just enough to be able to call LoadEquipmentData
+        var data = new FakeAgentBannerListData
+        {
+            UIModule = UIModule.Instance()
+        };
 
         var itemIds = stackalloc uint[14];
         var stainIds = stackalloc byte[14];
 
-        if (!data->LoadEquipmentData(itemIds, stainIds))
+        if (!data.LoadEquipmentData(itemIds, stainIds))
             return 0;
 
         var gearVisibilityFlag = BannerGearVisibilityFlag.None;
@@ -375,10 +378,9 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
             return false;
         }
 
-        var bannerUpdateData = stackalloc BannerUpdateData[1];
-        bannerUpdateData->Initialize();
+        var bannerUpdateData = new BannerUpdateData();
 
-        if (!helper->InitializeBannerUpdateData(bannerUpdateData))
+        if (!helper->InitializeBannerUpdateData(&bannerUpdateData))
         {
             Warning("No Portrait Update: InitializeBannerUpdateData failed");
             return false;
@@ -390,13 +392,13 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         helper->CopyRaceGenderHeightTribe(banner, localPlayer);
         BannerModule.Instance()->UserFileEvent.HasChanges = true;
 
-        if (!helper->CopyBannerEntryToBannerUpdateData(bannerUpdateData, banner))
+        if (!helper->CopyBannerEntryToBannerUpdateData(&bannerUpdateData, banner))
         {
             Warning("No Portrait Update: CopyBannerEntryToBannerUpdateData failed");
             return false;
         }
 
-        var result = helper->SendBannerUpdateData(bannerUpdateData);
+        var result = helper->SendBannerUpdateData(&bannerUpdateData);
 
         if (result)
         {

@@ -398,12 +398,15 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             // inside "48 89 6C 24 ?? 56 48 83 EC 20 0F B7 C2", a3 != 17
             var values = stackalloc AtkValue[3];
 
+            values[0].Ctor();
             values[0].Type = ValueType.Int;
             values[0].Int = 22;
 
+            values[1].Ctor();
             values[1].Type = ValueType.Int;
             values[1].Int = *(int*)((nint)addon + 0x228);
 
+            values[2].Ctor();
             values[2].Type = ValueType.UInt;
             values[2].UInt = 0;
 
@@ -427,12 +430,15 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             // inside Vf68, fn call before return with a2 being 2
             var values = stackalloc AtkValue[3];
 
+            values[0].Ctor();
             values[0].Type = ValueType.Int;
             values[0].Int = 22;
 
+            values[1].Ctor();
             values[1].Type = ValueType.Int;
             values[1].Int = *(int*)((nint)addon + 0x280);
 
+            values[2].Ctor();
             values[2].Type = ValueType.UInt;
             values[2].UInt = 2;
 
@@ -541,8 +547,8 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             return;
 
         // fake event, so it can call SetEventIsHandled
-        var atkEvent = stackalloc AtkEvent[1];
-        addon->SetTab(tabIndex, atkEvent);
+        var atkEvent = new AtkEvent();
+        addon->SetTab(tabIndex, &atkEvent);
     }
 
     private void UpdateFieldNotes(AddonMYCWarResultNotebook* addon)
@@ -550,7 +556,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         if (IntersectingCollisionNode == addon->DescriptionCollisionNode)
             return;
 
-        var atkEvent = stackalloc AtkEvent[1];
+        var atkEvent = new AtkEvent();
         var eventParam = Math.Clamp(addon->CurrentNoteIndex % 10 + _wheelState, -1, addon->MaxNoteIndex - 1);
 
         if (eventParam == -1)
@@ -558,8 +564,8 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             if (addon->CurrentPageIndex > 0)
             {
                 var page = addon->CurrentPageIndex - 1;
-                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, atkEvent, 0);
-                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 9, atkEvent, 0);
+                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, &atkEvent, 0);
+                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 9, &atkEvent, 0);
             }
         }
         else if (eventParam == 10)
@@ -567,12 +573,12 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             if (addon->CurrentPageIndex < 4)
             {
                 var page = addon->CurrentPageIndex + 1;
-                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, atkEvent, 0);
+                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, &atkEvent, 0);
             }
         }
         else
         {
-            addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, eventParam, atkEvent, 0);
+            addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, eventParam, &atkEvent, 0);
         }
     }
 
@@ -763,9 +769,11 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         if (addon->SelectedExpansion == tabIndex)
             return;
 
-        var atkEvent = stackalloc AtkEvent[1];
+        var atkEvent = new AtkEvent();
         var data = stackalloc int[5];
+        for (var i = 0; i < 5; i++)
+            data[i] = 0;
         data[4] = tabIndex; // technically the index of an id array, but it's literally the same value
-        addon->AtkUnitBase.ReceiveEvent((AtkEventType)37, 0, atkEvent, (nint)data);
+        addon->AtkUnitBase.ReceiveEvent((AtkEventType)37, 0, &atkEvent, (nint)data);
     }
 }
