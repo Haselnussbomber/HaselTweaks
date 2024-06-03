@@ -276,7 +276,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
                 return false;
         }
 
-        return MoveDeltaHook!.OriginalDisposeSafe(atkUnitBase, xDelta, yDelta);
+        return MoveDeltaHook!.Original(atkUnitBase, xDelta, yDelta);
     }
 
     public bool RaptureAtkUnitManagerVf6Detour(RaptureAtkUnitManager* self, nint a2)
@@ -317,7 +317,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             return false;
         }
 
-        return RaptureAtkUnitManagerVf6Hook!.OriginalDisposeSafe(self, a2);
+        return RaptureAtkUnitManagerVf6Hook!.Original(self, a2);
     }
 
     public void ClearMenuDetour(AgentContext* agent)
@@ -325,7 +325,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
         if (_eventIndexToDisable != 0)
             _eventIndexToDisable = 0;
 
-        ClearMenuHook!.OriginalDisposeSafe(agent);
+        ClearMenuHook!.Original(agent);
     }
 
     public void AddMenuItem2Detour(AgentContext* agent, uint addonRowId, void* handlerPtr, long handlerParam, bool disabled, bool submenu)
@@ -335,7 +335,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             _eventIndexToDisable = agent->CurrentContextMenu->CurrentEventIndex;
         }
 
-        AddMenuItem2Hook!.OriginalDisposeSafe(agent, addonRowId, handlerPtr, handlerParam, disabled, submenu);
+        AddMenuItem2Hook!.Original(agent, addonRowId, handlerPtr, handlerParam, disabled, submenu);
     }
 
     public void OpenContextMenuForAddonDetour(AgentContext* agent, uint ownerAddonId, bool bindToOwner)
@@ -374,7 +374,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             }
         }
 
-        OpenContextMenuForAddonHook!.OriginalDisposeSafe(agent, ownerAddonId, bindToOwner);
+        OpenContextMenuForAddonHook!.Original(agent, ownerAddonId, bindToOwner);
     }
 
     public AtkValue* WindowContextMenuHandlerReceiveEventDetour(AtkEventInterface* self, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
@@ -416,7 +416,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
         if (_eventIndexToDisable != 0)
             _eventIndexToDisable = 0;
 
-        return WindowContextMenuHandlerReceiveEventHook!.OriginalDisposeSafe(self, returnValue, values, valueCount, eventKind);
+        return WindowContextMenuHandlerReceiveEventHook!.Original(self, returnValue, values, valueCount, eventKind);
     }
 
     private void AddMenuEntry(string text, int eventParam)

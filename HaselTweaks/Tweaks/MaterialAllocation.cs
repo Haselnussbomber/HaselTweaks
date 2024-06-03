@@ -94,7 +94,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
             && (agent->Data->Flags & 2) != 2 // refresh pending
             && agent->Data->SortedGatherItems.LongCount != 0;
 
-        AgentMJIGatheringNoteBookUpdateHook!.OriginalDisposeSafe(agent);
+        AgentMJIGatheringNoteBookUpdateHook!.Original(agent);
 
         if (handleUpdate)
         {

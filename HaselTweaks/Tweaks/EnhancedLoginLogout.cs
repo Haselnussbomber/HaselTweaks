@@ -111,7 +111,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
     // called every frame
     public void UpdateCharaSelectDisplayDetour(AgentLobby* agent, sbyte index, bool a2)
     {
-        UpdateCharaSelectDisplayHook!.OriginalDisposeSafe(agent, index, a2);
+        UpdateCharaSelectDisplayHook!.Original(agent, index, a2);
 
         if (index < 0)
         {
@@ -149,7 +149,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
     public void CleanupCharactersDetour()
     {
         CleanupCharaSelect();
-        CleanupCharactersHook!.OriginalDisposeSafe();
+        CleanupCharactersHook!.Original();
     }
 
     #endregion
@@ -642,7 +642,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
     public bool ExecuteEmoteDetour(EmoteManager* handler, ushort emoteId, nint targetData)
     {
         var changePoseIndexBefore = PlayerState.Instance()->SelectedPoses[0];
-        var success = ExecuteEmoteHook!.OriginalDisposeSafe(handler, emoteId, targetData);
+        var success = ExecuteEmoteHook!.Original(handler, emoteId, targetData);
 
         if (_excludedEmotes == null)
         {
@@ -693,7 +693,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
 
     public void OpenLoginWaitDialogDetour(AgentLobby* agent, int position)
     {
-        OpenLoginWaitDialogHook!.OriginalDisposeSafe(agent, position);
+        OpenLoginWaitDialogHook!.Original(agent, position);
 
         if (_currentEntry == null)
             return;
@@ -752,7 +752,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
                 AcquaintanceModule.Instance()->ClearTellHistory(); // this is what /cleartellhistory calls
         }
 
-        UIModuleVf111Hook!.OriginalDisposeSafe(self, a2, a3, a4);
+        UIModuleVf111Hook!.Original(self, a2, a3, a4);
     }
 
     #endregion

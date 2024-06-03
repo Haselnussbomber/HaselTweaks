@@ -132,7 +132,7 @@ public partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguratio
             }
         }
 
-        return FormatAddonText2IntHook!.OriginalDisposeSafe(self, addonRowId, value);
+        return FormatAddonText2IntHook!.Original(self, addonRowId, value);
     }
 
     public static unsafe void ReloadChat()

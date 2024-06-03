@@ -242,7 +242,7 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
 
     public AtkValue* AgentRecipeMaterialListReceiveEventDetour(AgentRecipeMaterialList* agent, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
     {
-        var ret = AgentRecipeMaterialListReceiveEventHook!.OriginalDisposeSafe(agent, returnValue, values, valueCount, eventKind);
+        var ret = AgentRecipeMaterialListReceiveEventHook!.Original(agent, returnValue, values, valueCount, eventKind);
         SaveRestoreMaterialList(agent);
         return ret;
     }
@@ -263,7 +263,7 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
 
     public void AddonRecipeMaterialListSetupRowDetour(AddonRecipeMaterialList* addon, nint a2, nint a3)
     {
-        AddonRecipeMaterialListSetupRowHook!.OriginalDisposeSafe(addon, a2, a3);
+        AddonRecipeMaterialListSetupRowHook!.Original(addon, a2, a3);
         RecipeMaterialList_HandleSetupRow(a2, a3);
     }
 
@@ -330,13 +330,13 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
     public void OpenRecipeResultItemContextMenuDetour(AgentRecipeMaterialList* agent)
     {
         _handleRecipeResultItemContextMenu = true;
-        OpenRecipeResultItemContextMenuHook!.OriginalDisposeSafe(agent);
+        OpenRecipeResultItemContextMenuHook!.Original(agent);
     }
 
     public void AddItemContextMenuEntriesDetour(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
     {
         UpdateContextMenuFlag(itemId, ref flags);
-        AddItemContextMenuEntriesHook!.OriginalDisposeSafe(agent, itemId, flags, itemName);
+        AddItemContextMenuEntriesHook!.Original(agent, itemId, flags, itemName);
     }
 
     private void UpdateContextMenuFlag(uint itemId, ref byte flags)

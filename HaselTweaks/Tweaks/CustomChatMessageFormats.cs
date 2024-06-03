@@ -286,7 +286,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
             return 0;
 
         if (!Config.FormatOverrides.TryGetValue(logKindId, out var logKindOverride) || !logKindOverride.Enabled || !logKindOverride.IsValid())
-            return FormatLogMessageHook!.OriginalDisposeSafe(haselRaptureLogModule, logKindId, sender, message, timestamp, a6, a7, chatTabIndex);
+            return FormatLogMessageHook!.Original(haselRaptureLogModule, logKindId, sender, message, timestamp, a6, a7, chatTabIndex);
 
         var tempParseMessage1 = haselRaptureLogModule->TempParseMessage.GetPointer(1);
         tempParseMessage1->Clear();

@@ -163,7 +163,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
     private void OnClipboardDataChangedDetour(UIClipboard* uiClipboard)
     {
-        OnClipboardDataChangedHook!.OriginalDisposeSafe(uiClipboard);
+        OnClipboardDataChangedHook!.Original(uiClipboard);
 
         ClipboardPreset = PortraitPreset.FromExportedString(uiClipboard->Data.SystemClipboardText.ToString());
         if (ClipboardPreset != null)
@@ -172,7 +172,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
     public void UpdateGearsetDetour(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
-        UpdateGearsetHook!.OriginalDisposeSafe(raptureGearsetModule, gearsetId);
+        UpdateGearsetHook!.Original(raptureGearsetModule, gearsetId);
 
         _jobChangedOrGearsetUpdatedCTS?.Cancel();
         _jobChangedOrGearsetUpdatedCTS = new();

@@ -80,6 +80,6 @@ public unsafe partial class EnhancedIsleworksAgenda : Tweak<EnhancedIsleworksAge
             }
         }
 
-        ReceiveEventHook!.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, atkEventData);
+        ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 }

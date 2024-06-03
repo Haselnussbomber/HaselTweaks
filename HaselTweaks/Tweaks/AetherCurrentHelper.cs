@@ -45,7 +45,7 @@ public unsafe partial class AetherCurrentHelper : Tweak<AetherCurrentHelperConfi
             return returnValue;
         }
 
-        return ReceiveEventHook!.OriginalDisposeSafe(agent, returnValue, values, valueCount, eventKind);
+        return ReceiveEventHook!.Original(agent, returnValue, values, valueCount, eventKind);
     }
 
     public static bool OpenWindow(AgentAetherCurrent* agent, AtkValue* atkValue)

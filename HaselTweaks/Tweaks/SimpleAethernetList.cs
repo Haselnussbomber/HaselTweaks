@@ -34,6 +34,6 @@ public unsafe partial class SimpleAethernetList : Tweak
             }
         }
 
-        ReceiveEventHook!.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, atkEventData);
+        ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 }

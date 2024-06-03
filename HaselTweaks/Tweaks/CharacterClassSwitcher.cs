@@ -122,7 +122,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
 
     private void AddonCharacterClassOnSetupDetour(AddonCharacterClass* addon, uint numAtkValues, AtkValue* atkValues)
     {
-        AddonCharacterClassOnSetupHook!.OriginalDisposeSafe(addon, numAtkValues, atkValues);
+        AddonCharacterClassOnSetupHook!.Original(addon, numAtkValues, atkValues);
 
         for (var i = 0; i < NumClasses; i++)
         {
@@ -152,7 +152,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
 
     private void AddonCharacterClassOnRequestedUpdateDetour(AddonCharacterClass* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        AddonCharacterClassOnRequestedUpdateHook!.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
+        AddonCharacterClassOnRequestedUpdateHook!.Original(addon, numberArrayData, stringArrayData);
 
         for (var i = 0; i < NumClasses; i++)
         {
@@ -190,7 +190,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
         if (HandleAddonCharacterClassEvent(addon, eventType, eventParam))
             return;
 
-        AddonCharacterClassReceiveEventHook!.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, atkEventData);
+        AddonCharacterClassReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 
     private bool HandleAddonCharacterClassEvent(AddonCharacterClass* addon, AtkEventType eventType, int eventParam)
@@ -249,7 +249,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
 
     private void AddonPvPCharacterUpdateClassesDetour(AddonPvPCharacter* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        AddonPvPCharacterUpdateClassesHook!.OriginalDisposeSafe(addon, numberArrayData, stringArrayData);
+        AddonPvPCharacterUpdateClassesHook!.Original(addon, numberArrayData, stringArrayData);
 
         for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
         {
@@ -274,7 +274,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
         if (HandleAddonPvPCharacterEvent(addon, eventType, eventParam))
             return;
 
-        AddonPvPCharacterReceiveEventHook!.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, atkEventData);
+        AddonPvPCharacterReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 
     private bool HandleAddonPvPCharacterEvent(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam)
@@ -385,6 +385,6 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
             agent->TabIndex = 2;
         }
 
-        AgentStatusShowHook!.OriginalDisposeSafe(agent);
+        AgentStatusShowHook!.Original(agent);
     }
 }

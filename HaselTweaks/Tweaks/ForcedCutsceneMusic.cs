@@ -34,7 +34,7 @@ public unsafe partial class ForcedCutsceneMusic : Tweak<ForcedCutsceneMusicConfi
 
     public CutSceneController* CreateCutSceneControllerDetour(ScheduleManagement* self, byte* path, uint id, byte a4)
     {
-        var ret = CreateCutSceneControllerHook!.OriginalDisposeSafe(self, path, id, a4);
+        var ret = CreateCutSceneControllerHook!.Original(self, path, id, a4);
 
         Log($"Cutscene {id} started (Controller @ {(nint)ret:X})");
 
@@ -52,7 +52,7 @@ public unsafe partial class ForcedCutsceneMusic : Tweak<ForcedCutsceneMusicConfi
     {
         Log($"Cutscene {self->CutsceneId} ended");
 
-        CutSceneControllerDtorHook!.OriginalDisposeSafe(self, free);
+        CutSceneControllerDtorHook!.Original(self, free);
 
         if (_wasBgmMuted && Config.Restore)
             IsBgmMuted = true;

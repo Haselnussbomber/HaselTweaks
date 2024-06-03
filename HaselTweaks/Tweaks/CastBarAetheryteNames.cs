@@ -80,7 +80,7 @@ public unsafe partial class CastBarAetheryteNames : Tweak
     {
         IsCastingTeleport = type == 1 && rowId == 5 && type2 == 5;
 
-        OpenCastBarHook!.OriginalDisposeSafe(a1, a2, type, rowId, type2, rowId2, a7);
+        OpenCastBarHook!.Original(a1, a2, type, rowId, type2, rowId2, a7);
     }
 
     public bool TeleportDetour(Telepo* telepo, uint aetheryteID, byte subIndex)
@@ -96,6 +96,6 @@ public unsafe partial class CastBarAetheryteNames : Tweak
             }
         }
 
-        return TeleportHook!.OriginalDisposeSafe(telepo, aetheryteID, subIndex);
+        return TeleportHook!.Original(telepo, aetheryteID, subIndex);
     }
 }

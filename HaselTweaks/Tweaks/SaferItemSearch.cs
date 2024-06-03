@@ -68,7 +68,7 @@ public unsafe partial class SaferItemSearch : Tweak
 
         UpdateRetainerSellButton();
 
-        return ProcessRequestResultHook!.OriginalDisposeSafe(ipis, a2, a3, a4, a5, a6, a7);
+        return ProcessRequestResultHook!.Original(ipis, a2, a3, a4, a5, a6, a7);
     }
 
     public void EndRequestDetour(InfoProxyItemSearch* ipis)
@@ -77,7 +77,7 @@ public unsafe partial class SaferItemSearch : Tweak
 
         UpdateRetainerSellButton();
 
-        EndRequestHook!.OriginalDisposeSafe(ipis);
+        EndRequestHook!.Original(ipis);
     }
 
     public void AddPageDetour(InfoProxyItemSearch* ipis, nint data)
@@ -86,6 +86,6 @@ public unsafe partial class SaferItemSearch : Tweak
 
         UpdateRetainerSellButton();
 
-        AddPageHook!.OriginalDisposeSafe(ipis, data);
+        AddPageHook!.Original(ipis, data);
     }
 }
