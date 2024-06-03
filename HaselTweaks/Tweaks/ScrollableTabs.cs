@@ -639,7 +639,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateCurrency(AtkUnitBase* addon)
     {
-        var atkStage = AtkStage.GetSingleton();
+        var atkStage = AtkStage.Instance();
         var numberArray = atkStage->GetNumberArrayData()[80];
         var currentTab = numberArray->IntArray[0];
 

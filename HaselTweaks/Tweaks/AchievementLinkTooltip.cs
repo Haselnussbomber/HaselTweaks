@@ -117,7 +117,7 @@ public unsafe class AchievementLinkTooltip : Tweak<AchievementLinkTooltipConfigu
         tooltipText.SetString(sb.ToArray());
 
         // ShowTooltip call @ AddonChatLog_OnRefresh, case 0x12
-        AtkStage.GetSingleton()->TooltipManager.ShowTooltip(
+        AtkStage.Instance()->TooltipManager.ShowTooltip(
             unitBase->Id,
             *(AtkResNode**)(args.Addon + 0x230),
             tooltipText.StringPtr);

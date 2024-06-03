@@ -426,6 +426,6 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             .AddText(text)
             .Encode();
 
-        GetAgent<AgentContext>()->AddMenuItem(bytes, &AtkStage.GetSingleton()->RaptureAtkUnitManager->WindowContextMenuHandler, eventParam);
+        GetAgent<AgentContext>()->AddMenuItem(bytes, &AtkStage.Instance()->RaptureAtkUnitManager->WindowContextMenuHandler, eventParam);
     }
 }

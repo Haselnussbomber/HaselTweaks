@@ -71,7 +71,7 @@ public unsafe partial class CastBarAetheryteNames : Tweak
             _ => GetSheetText<PlaceName>(row.PlaceName.Row, "Name"),
         };
 
-        AtkStage.GetSingleton()->GetStringArrayData()[20]->SetValue(0, placeName, false, true, false);
+        AtkStage.Instance()->GetStringArrayData()[20]->SetValue(0, placeName, false, true, false);
 
         Clear();
     }
