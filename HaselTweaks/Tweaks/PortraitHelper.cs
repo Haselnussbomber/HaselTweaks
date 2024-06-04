@@ -54,28 +54,29 @@ public class PortraitHelperConfiguration
 [Tweak]
 public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 {
-    private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
+    private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(100);
 
-    private CancellationTokenSource? _jobChangedOrGearsetUpdatedCTS;
-    private uint _lastJob = 0;
+    private CancellationTokenSource? MismatchCheckCTS;
     private DalamudLinkPayload? _openPortraitEditPayload;
 
     public static ImportFlags CurrentImportFlags { get; set; } = ImportFlags.All;
     public static PortraitPreset? ClipboardPreset { get; set; }
 
+    private delegate void ProcessPacketPlayerClassInfoDelegate(nint a1, nint packet);
+
     private AddressHook<UIClipboard.Delegates.OnClipboardDataChanged>? OnClipboardDataChangedHook;
     private AddressHook<RaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
+    private SigHook<ProcessPacketPlayerClassInfoDelegate>? ProcessPacketPlayerClassInfoHook;
 
     public override void SetupHooks()
     {
         OnClipboardDataChangedHook = new(UIClipboard.MemberFunctionPointers.OnClipboardDataChanged, OnClipboardDataChangedDetour);
         UpdateGearsetHook = new(RaptureGearsetModule.MemberFunctionPointers.UpdateGearset, UpdateGearsetDetour);
+        ProcessPacketPlayerClassInfoHook = new("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 30 48 8B 3D ?? ?? ?? ?? 48 8D 0D", ProcessPacketPlayerClassInfoDetour);
     }
 
     public override void Enable()
     {
-        _lastJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
-
         _openPortraitEditPayload = Service.PluginInterface.AddChatLinkHandler(1000, OpenPortraitEditChatHandler);
 
         if (IsAddonOpen(AgentId.BannerEditor))
@@ -91,16 +92,6 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
             Service.WindowManager.CloseWindow<MenuBar>();
             CloseOverlays();
         }
-    }
-
-    public override void OnLogin()
-    {
-        _lastJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
-    }
-
-    public override void OnLogout()
-    {
-        _lastJob = 0;
     }
 
     private void OpenPortraitEditChatHandler(uint commandId, SeString message)
@@ -141,26 +132,6 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         Service.WindowManager.CloseWindow<AlignmentToolSettingsOverlay>();
     }
 
-    public override void OnFrameworkUpdate()
-    {
-        if (!Service.ClientState.IsLoggedIn)
-            return;
-
-        var currentJob = Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0;
-        if (currentJob != 0 && currentJob != _lastJob)
-        {
-            _jobChangedOrGearsetUpdatedCTS?.Cancel();
-            _jobChangedOrGearsetUpdatedCTS = new();
-
-            _lastJob = currentJob;
-
-            Service.Framework.RunOnTick(() =>
-            {
-                CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex, true);
-            }, CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token);
-        }
-    }
-
     private void OnClipboardDataChangedDetour(UIClipboard* uiClipboard)
     {
         OnClipboardDataChangedHook!.Original(uiClipboard);
@@ -170,17 +141,30 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
             Debug($"Parsed ClipboardPreset: {ClipboardPreset}");
     }
 
-    public void UpdateGearsetDetour(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
+    private void UpdateGearsetDetour(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
         UpdateGearsetHook!.Original(raptureGearsetModule, gearsetId);
 
-        _jobChangedOrGearsetUpdatedCTS?.Cancel();
-        _jobChangedOrGearsetUpdatedCTS = new();
+        MismatchCheckCTS?.Cancel();
+        MismatchCheckCTS = new();
 
-        Service.Framework.RunOnTick(() =>
-        {
-            CheckForGearChecksumMismatch(gearsetId);
-        }, delay: CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token);
+        Service.Framework.RunOnTick(
+            () => CheckForGearChecksumMismatch(gearsetId),
+            CheckDelay,
+            cancellationToken: MismatchCheckCTS.Token);
+    }
+
+    private void ProcessPacketPlayerClassInfoDetour(nint a1, nint packet)
+    {
+        ProcessPacketPlayerClassInfoHook!.Original(a1, packet);
+
+        MismatchCheckCTS?.Cancel();
+        MismatchCheckCTS = new();
+
+        Service.Framework.RunOnTick(
+            () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex, true),
+            CheckDelay,
+            cancellationToken: MismatchCheckCTS.Token);
     }
 
     private void CheckForGearChecksumMismatch(int gearsetId, bool isJobChange = false)
@@ -237,8 +221,8 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
     private void RecheckGearChecksum(BannerModuleEntry* banner)
     {
-        _jobChangedOrGearsetUpdatedCTS?.Cancel();
-        _jobChangedOrGearsetUpdatedCTS = new();
+        MismatchCheckCTS?.Cancel();
+        MismatchCheckCTS = new();
 
         Service.Framework.RunOnTick(() =>
         {
@@ -251,7 +235,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
             {
                 Log($"Gear checksum matches now (Portrait: {banner->Checksum:X}, Equipped: {GetEquippedGearChecksum():X})");
             }
-        }, delay: CheckDelay, cancellationToken: _jobChangedOrGearsetUpdatedCTS.Token); // TODO: find out when it's safe to check again instead of randomly picking a delay. ping may vary
+        }, delay: CheckDelay, cancellationToken: MismatchCheckCTS.Token); // TODO: find out when it's safe to check again instead of randomly picking a delay. ping may vary
     }
 
     private void NotifyMismatch()
