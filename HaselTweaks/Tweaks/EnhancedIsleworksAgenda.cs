@@ -22,11 +22,11 @@ public class EnhancedIsleworksAgendaConfiguration
 [Tweak]
 public unsafe partial class EnhancedIsleworksAgenda : Tweak<EnhancedIsleworksAgendaConfiguration>
 {
-    private VFuncHook<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>? ReceiveEventHook;
+    private AddressHook<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>? ReceiveEventHook;
 
     public override void SetupHooks()
     {
-        ReceiveEventHook = new(AddonMJICraftScheduleSetting.StaticVirtualTablePointer, (int)AtkUnitBaseVfs.ReceiveEvent, ReceiveEventDetour);
+        ReceiveEventHook = new(AddonMJICraftScheduleSetting.StaticVirtualTablePointer->ReceiveEvent, ReceiveEventDetour);
     }
 
     public override void Enable()

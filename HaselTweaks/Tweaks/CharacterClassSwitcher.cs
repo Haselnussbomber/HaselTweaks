@@ -6,9 +6,7 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Enums;
 using HaselCommon.Utils;
-using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
@@ -62,21 +60,21 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
     [Signature("48 8D 4C 24 ?? E8 ?? ?? ?? ?? 48 8B 83 ?? ?? ?? ?? 48 8B CF 0F B7 9F")]
     private nint PvPTooltipAddress { get; init; }
 
-    private VFuncHook<AddonCharacterClass.Delegates.OnSetup>? AddonCharacterClassOnSetupHook;
-    private VFuncHook<AddonCharacterClass.Delegates.OnRequestedUpdate>? AddonCharacterClassOnRequestedUpdateHook;
-    private VFuncHook<AddonCharacterClass.Delegates.ReceiveEvent>? AddonCharacterClassReceiveEventHook;
+    private AddressHook<AddonCharacterClass.Delegates.OnSetup>? AddonCharacterClassOnSetupHook;
+    private AddressHook<AddonCharacterClass.Delegates.OnRequestedUpdate>? AddonCharacterClassOnRequestedUpdateHook;
+    private AddressHook<AddonCharacterClass.Delegates.ReceiveEvent>? AddonCharacterClassReceiveEventHook;
     private AddressHook<AddonPvPCharacter.Delegates.UpdateClasses>? AddonPvPCharacterUpdateClassesHook;
-    private VFuncHook<AddonPvPCharacter.Delegates.ReceiveEvent>? AddonPvPCharacterReceiveEventHook;
-    private VFuncHook<AgentStatus.Delegates.Show>? AgentStatusShowHook;
+    private AddressHook<AddonPvPCharacter.Delegates.ReceiveEvent>? AddonPvPCharacterReceiveEventHook;
+    private AddressHook<AgentStatus.Delegates.Show>? AgentStatusShowHook;
 
     public override void SetupHooks()
     {
-        AddonCharacterClassOnSetupHook = new(AddonCharacterClass.StaticVirtualTablePointer, (int)AtkUnitBaseVfs.OnSetup, AddonCharacterClassOnSetupDetour);
-        AddonCharacterClassOnRequestedUpdateHook = new(AddonCharacterClass.StaticVirtualTablePointer, (int)AtkUnitBaseVfs.OnRequestedUpdate, AddonCharacterClassOnRequestedUpdateDetour);
-        AddonCharacterClassReceiveEventHook = new(AddonCharacterClass.StaticVirtualTablePointer, (int)AtkUnitBaseVfs.ReceiveEvent, AddonCharacterClassReceiveEventDetour);
+        AddonCharacterClassOnSetupHook = new(AddonCharacterClass.StaticVirtualTablePointer->OnSetup, AddonCharacterClassOnSetupDetour);
+        AddonCharacterClassOnRequestedUpdateHook = new(AddonCharacterClass.StaticVirtualTablePointer->OnRequestedUpdate, AddonCharacterClassOnRequestedUpdateDetour);
+        AddonCharacterClassReceiveEventHook = new(AddonCharacterClass.StaticVirtualTablePointer->ReceiveEvent, AddonCharacterClassReceiveEventDetour);
         AddonPvPCharacterUpdateClassesHook = new(AddonPvPCharacter.MemberFunctionPointers.UpdateClasses, AddonPvPCharacterUpdateClassesDetour);
-        AddonPvPCharacterReceiveEventHook = new(AddonPvPCharacter.StaticVirtualTablePointer, (int)AtkUnitBaseVfs.ReceiveEvent, AddonPvPCharacterReceiveEventDetour);
-        AgentStatusShowHook = new(*(nint*)GetAgent<AgentStatus>(), (int)AgentInterfaceVfs.Show, AgentStatusShowDetour);
+        AddonPvPCharacterReceiveEventHook = new(AddonPvPCharacter.StaticVirtualTablePointer->ReceiveEvent, AddonPvPCharacterReceiveEventDetour);
+        AgentStatusShowHook = new(GetAgent<AgentStatus>()->VirtualTable->Show, AgentStatusShowDetour);
     }
 
     public override void Enable()

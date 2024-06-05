@@ -11,7 +11,6 @@ using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using FFXIVClientStructs.FFXIV.Component.Exd;
 using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
@@ -160,6 +159,9 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
         MismatchCheckCTS?.Cancel();
         MismatchCheckCTS = new();
+
+        if (!Service.ClientState.IsLoggedIn)
+            return;
 
         Service.Framework.RunOnTick(
             () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex, true),

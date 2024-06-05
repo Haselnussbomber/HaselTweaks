@@ -1,7 +1,6 @@
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Utils;
-using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
@@ -9,11 +8,11 @@ namespace HaselTweaks.Tweaks;
 [Tweak]
 public unsafe partial class SimpleAethernetList : Tweak
 {
-    private VFuncHook<AddonTeleportTown.Delegates.ReceiveEvent>? ReceiveEventHook;
+    private AddressHook<AddonTeleportTown.Delegates.ReceiveEvent>? ReceiveEventHook;
 
     public override void SetupHooks()
     {
-        ReceiveEventHook = new(AddonTeleportTown.StaticVirtualTablePointer, (int)AtkUnitBaseVfs.ReceiveEvent, ReceiveEventDetour);
+        ReceiveEventHook = new(AddonTeleportTown.StaticVirtualTablePointer->ReceiveEvent, ReceiveEventDetour);
     }
 
     private void ReceiveEventDetour(AddonTeleportTown* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)

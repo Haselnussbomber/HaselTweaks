@@ -78,14 +78,14 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         }
     }
 
-    private VFuncHook<AgentRecipeMaterialList.Delegates.ReceiveEvent>? AgentRecipeMaterialListReceiveEventHook;
+    private AddressHook<AgentRecipeMaterialList.Delegates.ReceiveEvent>? AgentRecipeMaterialListReceiveEventHook;
     private AddressHook<AddonRecipeMaterialList.Delegates.SetupRow>? AddonRecipeMaterialListSetupRowHook;
     private AddressHook<AgentRecipeMaterialList.Delegates.OpenRecipeResultItemContextMenu>? OpenRecipeResultItemContextMenuHook;
     private AddressHook<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>? AddItemContextMenuEntriesHook;
 
     public override void SetupHooks()
     {
-        AgentRecipeMaterialListReceiveEventHook = new(AgentRecipeMaterialList.StaticVirtualTablePointer, (int)AgentInterfaceVfs.ReceiveEvent, AgentRecipeMaterialListReceiveEventDetour);
+        AgentRecipeMaterialListReceiveEventHook = new(AgentRecipeMaterialList.StaticVirtualTablePointer->ReceiveEvent, AgentRecipeMaterialListReceiveEventDetour);
         AddonRecipeMaterialListSetupRowHook = new(AddonRecipeMaterialList.MemberFunctionPointers.SetupRow, AddonRecipeMaterialListSetupRowDetour);
         OpenRecipeResultItemContextMenuHook = new(AgentRecipeMaterialList.MemberFunctionPointers.OpenRecipeResultItemContextMenu, OpenRecipeResultItemContextMenuDetour);
         AddItemContextMenuEntriesHook = new(AgentRecipeItemContext.MemberFunctionPointers.AddItemContextMenuEntries, AddItemContextMenuEntriesDetour);

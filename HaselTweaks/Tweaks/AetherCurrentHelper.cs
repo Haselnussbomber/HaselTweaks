@@ -1,7 +1,6 @@
 using Dalamud.Game.ClientState.Keys;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Enums;
 using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Windows;
@@ -22,11 +21,11 @@ public class AetherCurrentHelperConfiguration
 [Tweak]
 public unsafe partial class AetherCurrentHelper : Tweak<AetherCurrentHelperConfiguration>
 {
-    private VFuncHook<AgentAetherCurrent.Delegates.ReceiveEvent>? ReceiveEventHook;
+    private AddressHook<AgentAetherCurrent.Delegates.ReceiveEvent>? ReceiveEventHook;
 
     public override void SetupHooks()
     {
-        ReceiveEventHook = new(AgentAetherCurrent.StaticVirtualTablePointer, (int)AgentInterfaceVfs.ReceiveEvent, ReceiveEventDetour);
+        ReceiveEventHook = new(AgentAetherCurrent.StaticVirtualTablePointer->ReceiveEvent, ReceiveEventDetour);
     }
 
     public override void Disable()

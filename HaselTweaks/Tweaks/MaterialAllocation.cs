@@ -4,7 +4,6 @@ using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Enums;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
@@ -28,11 +27,11 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
 
     private delegate void AgentMJIGatheringNoteBookUpdateDelegate(AgentMJIGatheringNoteBook* self, uint frameCount);
 
-    private VFuncHook<AgentMJIGatheringNoteBookUpdateDelegate>? AgentMJIGatheringNoteBookUpdateHook;
+    private AddressHook<AgentMJIGatheringNoteBookUpdateDelegate>? AgentMJIGatheringNoteBookUpdateHook;
 
     public override void SetupHooks()
     {
-        AgentMJIGatheringNoteBookUpdateHook = new(*(nint*)GetAgent<AgentMJIGatheringNoteBook>(), (int)AgentInterfaceVfs.Update, AgentMJIGatheringNoteBookUpdateDetour);
+        AgentMJIGatheringNoteBookUpdateHook = new(GetAgent<AgentMJIGatheringNoteBook>()->VirtualTable->Update, AgentMJIGatheringNoteBookUpdateDetour);
     }
 
     public override void Enable()

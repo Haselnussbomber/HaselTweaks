@@ -12,14 +12,14 @@ public unsafe partial class SaferItemSearch : Tweak
     private bool _isSearching;
 
     private AddressHook<InfoProxyItemSearch.Delegates.ProcessRequestResult>? ProcessRequestResultHook;
-    private VFuncHook<InfoProxyItemSearch.Delegates.EndRequest>? EndRequestHook;
-    private VFuncHook<InfoProxyItemSearch.Delegates.AddPage>? AddPageHook;
+    private AddressHook<InfoProxyItemSearch.Delegates.EndRequest>? EndRequestHook;
+    private AddressHook<InfoProxyItemSearch.Delegates.AddPage>? AddPageHook;
 
     public override void SetupHooks()
     {
         ProcessRequestResultHook = new(InfoProxyItemSearch.MemberFunctionPointers.ProcessRequestResult, ProcessRequestResultDetour);
-        EndRequestHook = new(InfoProxyItemSearch.StaticVirtualTablePointer, 6, EndRequestDetour);
-        AddPageHook = new(InfoProxyItemSearch.StaticVirtualTablePointer, 12, AddPageDetour);
+        EndRequestHook = new(InfoProxyItemSearch.StaticVirtualTablePointer->EndRequest, EndRequestDetour);
+        AddPageHook = new(InfoProxyItemSearch.StaticVirtualTablePointer->AddPage, AddPageDetour);
     }
 
     public override void Enable()
