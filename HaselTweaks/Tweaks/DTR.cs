@@ -8,7 +8,6 @@ using Dalamud.Interface.Utility;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselCommon.Extensions;
-using HaselCommon.Structs;
 using HaselCommon.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;

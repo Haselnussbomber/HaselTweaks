@@ -1,15 +1,14 @@
-using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
-using System.Text.RegularExpressions;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using HaselCommon.Services;
 using HaselCommon.Sheets;
-using HaselCommon.Structs;
 using HaselCommon.Utils;
+using HaselTweaks.Caches;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -17,21 +16,23 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Windows;
 
-public unsafe partial class AetherCurrentHelperWindow : LockableWindow
+public unsafe class AetherCurrentHelperWindow : LockableWindow
 {
-    private readonly Dictionary<uint, string> _questNameCache = []; // key is Quest.RowId, value is stripped from private use utf8 chars
-    private bool _hideUnlocked = true;
+    private readonly EObjDataIdCache EObjDataIdCache;
+    private readonly QuestNameCache QuestNameCache;
+    private bool HideUnlocked = true;
 
     private static readonly HaselColor TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
-
-    [GeneratedRegex("^[\\ue000-\\uf8ff]+ ")]
-    private static partial Regex Utf8PrivateUseAreaRegex();
 
     public static AetherCurrentHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.AetherCurrentHelper;
 
     public AetherCurrentHelperWindow() : base("[HaselTweaks] Aether Current Helper")
     {
         Namespace = "HaselTweaksAetherCurrentHelperWindow";
+        
+        var cacheManager = Service.GetService<CacheManager>();
+        EObjDataIdCache = cacheManager.Get<EObjDataIdCache>();
+        QuestNameCache = cacheManager.Get<QuestNameCache>();
 
         SizeCondition = ImGuiCond.FirstUseEver;
         Size = new Vector2(350);
@@ -63,7 +64,7 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
         var style = ImGui.GetStyle();
         var startPos = ImGui.GetCursorPos();
 
-        ImGui.Checkbox("##HideUnlocked", ref _hideUnlocked);
+        ImGui.Checkbox("##HideUnlocked", ref HideUnlocked);
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
@@ -100,7 +101,7 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
             }
 
             var isUnlocked = playerState->IsAetherCurrentUnlocked(aetherCurrent.Row);
-            if (!_hideUnlocked || !isUnlocked)
+            if (!HideUnlocked || !isUnlocked)
             {
                 if (type == 0)
                 {
@@ -204,12 +205,7 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
 
         // Content
         ImGui.TableNextColumn();
-        if (!_questNameCache.TryGetValue(quest.RowId, out var questName))
-        {
-            questName = Utf8PrivateUseAreaRegex().Replace(GetSheetText<Quest>(quest.RowId, "Name"), "");
-            _questNameCache.Add(quest.RowId, questName);
-        }
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {questName}");
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {QuestNameCache.Get(quest.RowId)}");
         ImGui.TextUnformatted($"{GetHumanReadableCoords(extendedIssuerLocation)} | {GetENpcResidentName(quest.IssuerStart)}");
 
         // Actions
@@ -229,7 +225,7 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
 
     private void DrawEObject(int index, bool isUnlocked, AetherCurrent aetherCurrent)
     {
-        var eobj = ExtendedEObj.GetByDataId(aetherCurrent.RowId);
+        var eobj = EObjDataIdCache.Get(aetherCurrent.RowId);
         if (eobj == null) return;
 
         var level = ExtendedLevel.GetByObjectId(eobj.RowId);

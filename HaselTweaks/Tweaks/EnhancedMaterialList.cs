@@ -1,20 +1,18 @@
 using System.Linq;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Game.Text.SeStringHandling;
-using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Memory;
-using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Enums;
 using HaselCommon.SheetLookup;
 using HaselCommon.Sheets;
 using HaselCommon.Utils;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
+using Lumina.Text;
+using Lumina.Text.Payloads;
+using Lumina.Text.ReadOnly;
 using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Tweaks;
@@ -189,7 +187,7 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
 
                 var (totalPoints, point, cost, isSameZone, placeName) = tuple.Value;
 
-                point.OpenMap(item, "HaselTweaks");
+                point.OpenMap(item, new SeStringBuilder().Append("HaselTweaks").ToReadOnlySeString());
 
                 return;
 
@@ -295,8 +293,8 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         if (nameNode == null)
             return;
 
-        var textPtr = (nint)nameNode->GetText();
-        if (textPtr == 0)
+        var textPtr = nameNode->GetText();
+        if (textPtr == null)
             return;
 
         // when you don't know how to add text nodes... Sadge
@@ -307,24 +305,25 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         nameNode->TextFlags = 192; // allow multiline text (not sure on the actual flags it sets though)
         nameNode->LineSpacing = 17;
 
-        var itemName = MemoryHelper.ReadSeStringNullTerminated(textPtr).TextValue.Replace("\r\n", "");
+        var itemName = new ReadOnlySeStringSpan(MemoryMarshal.CreateReadOnlySpanFromNullTerminated(textPtr)).ExtractText().Replace("\r\n", "");
         if (itemName.Length > 23)
             itemName = itemName[..20] + "...";
 
-        var placeName = placeNameSeString.TextValue;
+        var placeName = placeNameSeString.ExtractText();
         if (placeName.Length > 23)
             placeName = placeName[..20] + "...";
 
-        var sb = new SeStringBuilder()
-            .AddText(itemName)
-            .Add(NewLinePayload.Payload)
-            .AddUiForeground((ushort)(isSameZone ? 570 : 4))
-            .AddUiGlow(550)
-            .AddText(placeName)
-            .AddUiGlowOff()
-            .AddUiForegroundOff();
-
-        nameNode->SetText(sb.Encode());
+        nameNode->SetText(
+            new SeStringBuilder()
+            .Append(itemName)
+            .BeginMacro(MacroCode.NewLine).EndMacro()
+            .PushColorType((ushort)(isSameZone ? 570 : 4))
+            .PushEdgeColorType(550)
+            .Append(placeName)
+            .PopEdgeColorType()
+            .PopColorType()
+            .ToArray()
+        );
     }
 
     public void OpenRecipeResultItemContextMenuDetour(AgentRecipeMaterialList* agent)
@@ -363,7 +362,7 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         flags |= 2;
     }
 
-    private (int, ExtendedGatheringPoint, uint, bool, SeString)? GetPointForItem(uint itemId)
+    private (int, ExtendedGatheringPoint, uint, bool, ReadOnlySeString)? GetPointForItem(uint itemId)
     {
         var gatheringItem = ItemGatheringItemLookup.First(itemId);
         if (gatheringItem == null)
@@ -399,7 +398,7 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         if (point == null)
             return null;
 
-        var placeName = point.TerritoryType.Value?.PlaceName.Value?.Name.ToDalamudString();
+        var placeName = point.TerritoryType.Value?.PlaceName.Value?.Name;
         return placeName == null ? null : (gatheringPoints.Count, point, cost, isSameZone, placeName);
     }
 }

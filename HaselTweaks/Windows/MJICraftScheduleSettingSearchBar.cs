@@ -49,8 +49,8 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
         ImGui.SetNextItemWidth(contentRegionAvail.X - LanguageSelectorWidth * ImGuiHelpers.GlobalScale - ImGui.GetStyle().ItemSpacing.X);
         if (ImGui.InputTextWithHint("##Query", t("EnhancedIsleworksAgenda.MJICraftScheduleSettingSearchBar.QueryHint"), ref Query, 255, ImGuiInputTextFlags.EnterReturnsTrue))
         {
-            var evt = stackalloc AtkEvent[1];
-            Addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 6, evt);
+            var evt = new AtkEvent();
+            Addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 6, &evt);
         }
         ImGui.SameLine();
         ImGui.SetNextItemWidth(LanguageSelectorWidth * ImGuiHelpers.GlobalScale);

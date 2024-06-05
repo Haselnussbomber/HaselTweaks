@@ -8,7 +8,6 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Extensions;
 using HaselCommon.Sheets;
-using HaselCommon.Structs;
 using HaselCommon.Utils;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;

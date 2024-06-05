@@ -6,7 +6,6 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.Havok.Animation.Animation;
-using HaselCommon.Structs;
 using HaselCommon.Utils;
 using ImGuiNET;
 using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;

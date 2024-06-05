@@ -1,5 +1,4 @@
 using Dalamud.Interface;
-using HaselCommon.Structs;
 using HaselCommon.Utils;
 
 namespace HaselTweaks;
