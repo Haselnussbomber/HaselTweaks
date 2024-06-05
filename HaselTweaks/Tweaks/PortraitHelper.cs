@@ -490,7 +490,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         if (id == 0)
             return true;
 
-        var bannerCondition = ExdModule.GetBannerCondition(id);
+        var bannerCondition = BannerConditionRow.GetByRowId(id);
         if (bannerCondition == null)
             return false;
 

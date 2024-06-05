@@ -330,7 +330,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
         ClearMenuHook!.Original(agent);
     }
 
-    public void AddMenuItem2Detour(AgentContext* agent, uint addonRowId, void* handlerPtr, long handlerParam, bool disabled, bool submenu)
+    public void AddMenuItem2Detour(AgentContext* agent, uint addonRowId, AtkEventInterface* handlerPtr, long handlerParam, bool disabled, bool submenu)
     {
         if (addonRowId == 8660 && agent->ContextMenuIndex == 0) // "Return to Default Position"
         {
@@ -423,11 +423,11 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
 
     private void AddMenuEntry(string text, int eventParam)
     {
-        var bytes = new SeStringBuilder()
+        var label = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
             .AddText(text)
             .Encode();
 
-        GetAgent<AgentContext>()->AddMenuItem(bytes, Unsafe.AsPointer(ref AtkStage.Instance()->RaptureAtkUnitManager->WindowContextMenuHandler), eventParam);
+        GetAgent<AgentContext>()->AddMenuItem(label, (AtkEventInterface*)Unsafe.AsPointer(ref AtkStage.Instance()->RaptureAtkUnitManager->WindowContextMenuHandler), eventParam);
     }
 }

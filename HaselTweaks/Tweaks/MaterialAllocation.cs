@@ -26,7 +26,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
 {
     private uint NextMJIGatheringNoteBookItemId;
 
-    private delegate void AgentMJIGatheringNoteBookUpdateDelegate(AgentMJIGatheringNoteBook* self);
+    private delegate void AgentMJIGatheringNoteBookUpdateDelegate(AgentMJIGatheringNoteBook* self, uint frameCount);
 
     private VFuncHook<AgentMJIGatheringNoteBookUpdateDelegate>? AgentMJIGatheringNoteBookUpdateHook;
 
@@ -85,7 +85,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
         }
     }
 
-    public void AgentMJIGatheringNoteBookUpdateDetour(AgentMJIGatheringNoteBook* agent)
+    public void AgentMJIGatheringNoteBookUpdateDetour(AgentMJIGatheringNoteBook* agent, uint frameCount)
     {
         var handleUpdate = Config.OpenGatheringLogOnItemClick
             && NextMJIGatheringNoteBookItemId != 0
@@ -94,7 +94,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
             && (agent->Data->Flags & 2) != 2 // refresh pending
             && agent->Data->SortedGatherItems.LongCount != 0;
 
-        AgentMJIGatheringNoteBookUpdateHook!.Original(agent);
+        AgentMJIGatheringNoteBookUpdateHook!.Original(agent, frameCount);
 
         if (handleUpdate)
         {
