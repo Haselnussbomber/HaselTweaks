@@ -46,11 +46,11 @@ public unsafe class MenuBar : Window
     }
 
     public override bool DrawConditions()
-        => AgentBannerEditor->EditorState != null;
+        => AgentBannerEditor->EditorState != null && AgentBannerEditor->IsAddonReady();
 
     public override void PreDraw()
     {
-        if (_initialPreset != null || !AgentBannerEditor->EditorState->CharaView->CharacterLoaded)
+        if (_initialPreset != null || !AgentBannerEditor->EditorState->CharaView->CharaViewPortraitCharacterLoaded)
             return;
 
         _initialPreset = PortraitPreset.FromState();

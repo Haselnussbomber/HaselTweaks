@@ -63,10 +63,10 @@ public abstract unsafe class Overlay : Window, IDisposable
 
     public override bool DrawConditions()
     {
-        if (AgentBannerEditor == null || AddonBannerEditor == null || AgentBannerEditor->EditorState == null)
+        if (AgentBannerEditor == null || AddonBannerEditor == null || !AddonBannerEditor->AtkUnitBase.IsReady || AgentBannerEditor->EditorState == null)
             return false;
 
-        var isContextMenuOpen = *(byte*)((nint)AddonBannerEditor + 0x1A1) != 0;
+        var isContextMenuOpen = AddonBannerEditor->AtkUnitBase.NumOpenPopups != 0;
         var isCloseDialogOpen = AgentBannerEditor->EditorState->CloseDialogAddonId != 0;
 
         return IsOpen && !isContextMenuOpen && !isCloseDialogOpen;
