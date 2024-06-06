@@ -73,7 +73,7 @@ public unsafe class DTR : Tweak<DTRConfiguration>
     public DtrBarEntry? DtrFPS;
     public DtrBarEntry? DtrBusy;
     private int _lastFrameRate;
-    private int _lastInstanceId;
+    private uint _lastInstanceId;
 
     public override void Enable()
     {
