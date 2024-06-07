@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dalamud.Utility.Signatures;
-using HaselCommon.Utils;
+using HaselCommon.Interfaces;
 using HaselTweaks.Interfaces;
 
 namespace HaselTweaks;
@@ -92,10 +92,11 @@ public abstract partial class Tweak // Internal
             var hook = field.GetValue(this);
             if (hook == null) continue;
 
-            typeof(IHook<>)
-                .MakeGenericType(field.FieldType.GetGenericArguments().First())
-                .GetMethod(methodName)?
-                .Invoke(hook, null);
+            var type = methodName == "Dispose"
+                ? typeof(IDisposable)
+                : typeof(IHook<>).MakeGenericType(field.FieldType.GetGenericArguments().First());
+
+            type.GetMethod(methodName)?.Invoke(hook, null);
         }
     }
 
