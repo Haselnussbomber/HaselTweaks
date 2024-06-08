@@ -53,7 +53,7 @@ public class PortraitHelperConfiguration
 [Tweak]
 public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 {
-    private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(100);
+    private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
     private CancellationTokenSource? MismatchCheckCTS;
     private DalamudLinkPayload? _openPortraitEditPayload;
@@ -61,17 +61,17 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
     public static ImportFlags CurrentImportFlags { get; set; } = ImportFlags.All;
     public static PortraitPreset? ClipboardPreset { get; set; }
 
-    private delegate void ProcessPacketPlayerClassInfoDelegate(nint a1, nint packet);
+    private delegate void HandleUIModulePacketDelegate(UIModule* uiModule, UIModulePacketType type, uint uintParam, void* packet);
 
     private AddressHook<UIClipboard.Delegates.OnClipboardDataChanged>? OnClipboardDataChangedHook;
     private AddressHook<RaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
-    private SigHook<ProcessPacketPlayerClassInfoDelegate>? ProcessPacketPlayerClassInfoHook;
+    private AddressHook<HandleUIModulePacketDelegate>? HandleUIModulePacketHook;
 
     public override void SetupHooks()
     {
         OnClipboardDataChangedHook = new(UIClipboard.MemberFunctionPointers.OnClipboardDataChanged, OnClipboardDataChangedDetour);
         UpdateGearsetHook = new(RaptureGearsetModule.MemberFunctionPointers.UpdateGearset, UpdateGearsetDetour);
-        ProcessPacketPlayerClassInfoHook = new("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 30 48 8B 3D ?? ?? ?? ?? 48 8D 0D", ProcessPacketPlayerClassInfoDetour);
+        HandleUIModulePacketHook = new(UIModule.StaticVirtualTablePointer->HandlePacket, HandleUIModulePacketDetour);
     }
 
     public override void Enable()
@@ -153,15 +153,15 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
             cancellationToken: MismatchCheckCTS.Token);
     }
 
-    private void ProcessPacketPlayerClassInfoDetour(nint a1, nint packet)
+    private void HandleUIModulePacketDetour(UIModule* uiModule, UIModulePacketType type, uint uintParam, void* packet)
     {
-        ProcessPacketPlayerClassInfoHook!.Original(a1, packet);
+        HandleUIModulePacketHook!.Original(uiModule, type, uintParam, packet);
+
+        if (type != UIModulePacketType.ClassJobChange || !Service.ClientState.IsLoggedIn)
+            return;
 
         MismatchCheckCTS?.Cancel();
         MismatchCheckCTS = new();
-
-        if (!Service.ClientState.IsLoggedIn)
-            return;
 
         Service.Framework.RunOnTick(
             () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex, true),

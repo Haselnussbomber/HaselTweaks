@@ -6,10 +6,6 @@
 
 - **Changed:** The tweak should now support more cutscenes. This is done by hooking the CutSceneController class instead of the PlayCutSceneTask.
 
-### Portrait Helper
-
-- **Changed:** For the mismatch notifications, the tweak now checks 100ms after the game processes a job change. Previously this was done by checking the job every frame, now it's a hook.
-
 ## [23.0.2] (2024-05-15)
 
 ### Scrollable Tabs

@@ -53,13 +53,13 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
 
     #region Core
 
-    public delegate void UIModuleVf111Delegate(UIModule* self, int a2, uint a3, nint a4);
+    private delegate void HandleUIModulePacketDelegate(UIModule* uiModule, UIModulePacketType type, uint uintParam, void* packet);
 
     private AddressHook<AgentLobby.Delegates.UpdateCharaSelectDisplay>? UpdateCharaSelectDisplayHook;
     private AddressHook<CharaSelectCharacterList.Delegates.CleanupCharacters>? CleanupCharactersHook;
     private AddressHook<EmoteManager.Delegates.ExecuteEmote>? ExecuteEmoteHook;
     private AddressHook<AgentLobby.Delegates.OpenLoginWaitDialog>? OpenLoginWaitDialogHook;
-    private VFuncHook<UIModuleVf111Delegate>? UIModuleVf111Hook;
+    private AddressHook<HandleUIModulePacketDelegate>? HandleUIModulePacketHook;
 
     public override void SetupHooks()
     {
@@ -67,7 +67,7 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
         CleanupCharactersHook = new(CharaSelectCharacterList.MemberFunctionPointers.CleanupCharacters, CleanupCharactersDetour);
         ExecuteEmoteHook = new(EmoteManager.MemberFunctionPointers.ExecuteEmote, ExecuteEmoteDetour);
         OpenLoginWaitDialogHook = new(AgentLobby.MemberFunctionPointers.OpenLoginWaitDialog, OpenLoginWaitDialogDetour);
-        UIModuleVf111Hook = new(UIModule.StaticVirtualTablePointer, 111, UIModuleVf111Detour);
+        HandleUIModulePacketHook = new(UIModule.StaticVirtualTablePointer->HandlePacket, HandleUIModulePacketDetour);
     }
 
     public override void Enable()
@@ -744,15 +744,12 @@ public unsafe partial class EnhancedLoginLogout : Tweak<EnhancedLoginLogoutConfi
 
     #region Logout: Clear Tell History
 
-    public void UIModuleVf111Detour(UIModule* self, int a2, uint a3, nint a4)
+    public void HandleUIModulePacketDetour(UIModule* uiModule, UIModulePacketType type, uint uintParam, void* packet)
     {
-        if (a2 == 7) // logout
-        {
-            if (Config.ClearTellHistory)
-                AcquaintanceModule.Instance()->ClearTellHistory(); // this is what /cleartellhistory calls
-        }
+        if (type == UIModulePacketType.Logout && Config.ClearTellHistory)
+            AcquaintanceModule.Instance()->ClearTellHistory();
 
-        UIModuleVf111Hook!.Original(self, a2, a3, a4);
+        HandleUIModulePacketHook!.Original(uiModule, type, uintParam, packet);
     }
 
     #endregion
