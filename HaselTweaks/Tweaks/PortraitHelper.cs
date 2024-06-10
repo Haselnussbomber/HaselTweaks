@@ -373,7 +373,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         }
 
         // update Banner
-        banner->LastUpdated = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        banner->LastUpdated = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         banner->Checksum = currentChecksum;
         helper->CopyRaceGenderHeightTribe(banner, localPlayer);
         BannerModule.Instance()->UserFileEvent.HasChanges = true;
