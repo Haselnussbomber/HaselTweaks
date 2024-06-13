@@ -502,15 +502,15 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         addon->SetTab(tabIndex);
     }
 
-    private void UpdateTabController(AtkUnitBase* addon, TabController* TabController)
+    private void UpdateTabController(AtkUnitBase* addon, TabController* tabController)
     {
-        var tabIndex = GetTabIndex(TabController->TabIndex, TabController->TabCount);
+        var tabIndex = GetTabIndex(tabController->TabIndex, tabController->TabCount);
 
-        if (TabController->TabIndex == tabIndex)
+        if (tabController->TabIndex == tabIndex)
             return;
 
-        TabController->TabIndex = tabIndex;
-        TabController->CallbackFunction(tabIndex, addon);
+        tabController->TabIndex = tabIndex;
+        tabController->CallbackFunction(tabIndex, addon);
     }
 
     private void UpdateAOZNotebook(AddonAOZNotebook* addon)
@@ -689,7 +689,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         if (addon->JobDropdown == null ||
             addon->JobDropdown->List == null ||
             addon->JobDropdown->List->AtkComponentBase.OwnerNode == null ||
-            addon->JobDropdown->List->AtkComponentBase.OwnerNode->AtkResNode.IsVisible)
+            addon->JobDropdown->List->AtkComponentBase.OwnerNode->AtkResNode.IsVisible())
         {
             return;
         }
@@ -697,7 +697,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         if (addon->OrderDropdown == null ||
             addon->OrderDropdown->List == null ||
             addon->OrderDropdown->List->AtkComponentBase.OwnerNode == null ||
-            addon->OrderDropdown->List->AtkComponentBase.OwnerNode->AtkResNode.IsVisible)
+            addon->OrderDropdown->List->AtkComponentBase.OwnerNode->AtkResNode.IsVisible())
         {
             return;
         }

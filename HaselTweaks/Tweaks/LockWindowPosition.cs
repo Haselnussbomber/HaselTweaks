@@ -261,7 +261,7 @@ public unsafe partial class LockWindowPosition : Tweak<LockWindowPositionConfigu
             isLocked = !isLocked;
 
         if (isLocked)
-            addon->ResetPosition = false;
+            addon->ShouldResetPosition = false;
     }
 
     public bool MoveDeltaDetour(AtkUnitBase* atkUnitBase, short* xDelta, short* yDelta)
