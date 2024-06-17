@@ -6,7 +6,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class CreateTagDialog : ConfirmationDialog
 {
-    private static PortraitHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.PortraitHelper;
+    private static PortraitHelperConfiguration Config => Service.Get<Configuration>().Tweaks.PortraitHelper;
 
     private readonly ConfirmationButton _saveButton;
 
@@ -60,7 +60,7 @@ public class CreateTagDialog : ConfirmationDialog
         }
 
         Config.PresetTags.Add(new(_name.Trim()));
-        Service.GetService<Configuration>().Save();
+        Service.Get<Configuration>().Save();
 
         Close();
     }

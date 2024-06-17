@@ -1,18 +1,22 @@
 using Dalamud.Interface;
-using Dalamud.Interface.Windowing;
+using HaselCommon;
+using HaselCommon.Services;
 using ImGuiNET;
 
 namespace HaselTweaks.Utils;
 
-public abstract class LockableWindow : Window
+public abstract class LockableWindow : SimpleWindow
 {
     private static readonly ImGuiWindowFlags LockedWindowFlags = ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize;
     private readonly TitleBarButton LockButton;
 
-    public LockableWindow(string name, ImGuiWindowFlags flags = ImGuiWindowFlags.None, bool forceMainWindow = false)
-        : base(name, flags, forceMainWindow)
+    public readonly Configuration PluginConfig;
+
+    public LockableWindow(WindowManager windowManager, Configuration pluginConfig, string name) : base(windowManager, name)
     {
-        if (Service.GetService<Configuration>().LockedImGuiWindows.Contains(WindowName))
+        PluginConfig = pluginConfig;
+
+        if (pluginConfig.LockedImGuiWindows.Contains(WindowName))
             Flags |= LockedWindowFlags;
 
         LockButton = new TitleBarButton()
@@ -47,7 +51,7 @@ public abstract class LockableWindow : Window
         get => Flags.HasFlag(LockedWindowFlags);
         set
         {
-            var config = Service.GetService<Configuration>();
+            var config = PluginConfig;
             if (WindowLocked && !value)
             {
                 Flags &= ~LockedWindowFlags;

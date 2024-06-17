@@ -1,25 +1,47 @@
+using Dalamud.Hooking;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Utils;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe partial class SimpleAethernetList : Tweak
+public sealed unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider) : ITweak
 {
-    private AddressHook<AddonTeleportTown.Delegates.ReceiveEvent>? ReceiveEventHook;
+    private Hook<AddonTeleportTown.Delegates.ReceiveEvent>? ReceiveEventHook;
 
-    public override void SetupHooks()
+    public string InternalName => nameof(SimpleAethernetList);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    public void OnInitialize()
     {
-        ReceiveEventHook = new(AddonTeleportTown.StaticVirtualTablePointer->ReceiveEvent, ReceiveEventDetour);
+        ReceiveEventHook = GameInteropProvider.HookFromAddress<AddonTeleportTown.Delegates.ReceiveEvent>(
+            AddonTeleportTown.StaticVirtualTablePointer->ReceiveEvent,
+            ReceiveEventDetour);
+    }
+
+    public void OnEnable()
+    {
+        ReceiveEventHook?.Enable();
+    }
+
+    public void OnDisable()
+    {
+        ReceiveEventHook?.Disable();
+    }
+
+    public void Dispose()
+    {
+        ReceiveEventHook?.Dispose();
     }
 
     private void ReceiveEventDetour(AddonTeleportTown* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)
     {
         if (eventType == AtkEventType.ListItemRollOver)
         {
-            var agent = GetAgent<AgentTelepotTown>();
+            var agent = AgentTelepotTown.Instance();
             var index = *(uint*)(atkEventData + 0x10);
             if (agent->Data != null && index >= 0)
             {

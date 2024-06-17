@@ -1,16 +1,14 @@
 using Dalamud.Interface.Utility.Raii;
+using HaselCommon.Services;
 using HaselCommon.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
-public unsafe class AlignmentToolSettingsOverlay : Overlay
+public unsafe class AlignmentToolSettingsOverlay(WindowManager windowManager, Configuration PluginConfig)
+    : Overlay(windowManager, t("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title"))
 {
     protected override OverlayType Type => OverlayType.LeftPane;
-
-    public AlignmentToolSettingsOverlay() : base(t("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title"))
-    {
-    }
 
     public override void Draw()
     {
@@ -48,7 +46,7 @@ public unsafe class AlignmentToolSettingsOverlay : Overlay
 
         if (changed)
         {
-            Service.GetService<Configuration>().Save();
+            PluginConfig.Save();
         }
     }
 }

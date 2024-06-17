@@ -1,23 +1,35 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe partial class HideMSQComplete : Tweak
+public sealed unsafe class HideMSQComplete(IAddonLifecycle AddonLifecycle) : ITweak
 {
-    public override void Enable()
+    public string InternalName => nameof(HideMSQComplete);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    public void OnInitialize() { }
+
+    public void OnEnable()
     {
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRefresh, "ScenarioTree", ScenarioTree_PostRefresh);
+        AddonLifecycle.RegisterListener(AddonEvent.PostRefresh, "ScenarioTree", ScenarioTree_PostRefresh);
         Update();
     }
 
-    public override void Disable()
+    public void OnDisable()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostRefresh, "ScenarioTree", ScenarioTree_PostRefresh);
+        AddonLifecycle.UnregisterListener(AddonEvent.PostRefresh, "ScenarioTree", ScenarioTree_PostRefresh);
         UpdateVisibility(true);
+    }
+
+    public void Dispose()
+    {
+        OnDisable();
     }
 
     private void ScenarioTree_PostRefresh(AddonEvent type, AddonArgs args)
@@ -27,7 +39,7 @@ public unsafe partial class HideMSQComplete : Tweak
 
     private static void Update()
     {
-        var agentScenarioTree = GetAgent<AgentScenarioTree>();
+        var agentScenarioTree = AgentScenarioTree.Instance();
         UpdateVisibility(agentScenarioTree->Data != null && agentScenarioTree->Data->CurrentScenarioQuest != 0);
     }
 

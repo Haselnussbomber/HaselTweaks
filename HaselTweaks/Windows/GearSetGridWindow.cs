@@ -2,11 +2,12 @@ using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Memory;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Extensions;
+using HaselCommon.Services;
 using HaselCommon.Sheets;
 using HaselCommon.Utils;
 using HaselTweaks.Tweaks;
@@ -24,15 +25,25 @@ public unsafe class GearSetGridWindow : LockableWindow
     private static readonly Vector2 IconSize = new(34);
     private static readonly Vector2 IconInset = IconSize * 0.08333f;
     private static readonly float ItemCellWidth = IconSize.X;
-    public static GearSetGridConfiguration Config => Service.GetService<Configuration>().Tweaks.GearSetGrid;
+    private readonly IClientState ClientState;
+    private readonly TextureManager TextureManager;
 
     private bool _resetScrollPosition;
 
-    public GearSetGridWindow() : base(t("GearSetGridWindow.Title"))
+    public GearSetGridConfiguration Config => PluginConfig.Tweaks.GearSetGrid;
+
+    public GearSetGridWindow(
+        WindowManager windowManager,
+        Configuration pluginConfig,
+        IClientState clientState,
+        TextureManager textureManager)
+        : base(windowManager, pluginConfig, t("GearSetGridWindow.Title"))
     {
+        ClientState = clientState;
+        TextureManager = textureManager;
+
         Namespace = "HaselTweaks_GearSetGrid";
         DisableWindowSounds = Config.AutoOpenWithGearSetList;
-        IsOpen = true;
 
         Flags |= ImGuiWindowFlags.NoCollapse;
 
@@ -47,16 +58,12 @@ public unsafe class GearSetGridWindow : LockableWindow
 
     public override void OnOpen()
     {
+        base.OnOpen();
         _resetScrollPosition = true;
     }
 
-    public override void OnClose()
-    {
-        Service.WindowManager.CloseWindow<GearSetGridWindow>();
-    }
-
     public override bool DrawConditions()
-        => Service.ClientState.IsLoggedIn;
+        => ClientState.IsLoggedIn;
 
     public override void Draw()
     {
@@ -144,7 +151,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
                 // class icon
                 ImGui.SetCursorPos(itemStartPos);
-                Service.TextureManager.GetIcon(62100 + gearset->ClassJob).Draw(iconSize);
+                TextureManager.GetIcon(62100 + gearset->ClassJob).Draw(iconSize);
 
                 // gearset number
                 var text = $"{gearsetIndex + 1}";
@@ -170,12 +177,12 @@ public unsafe class GearSetGridWindow : LockableWindow
 
                     // icon background
                     ImGui.SetCursorPos(cursorPos);
-                    Service.TextureManager
+                    TextureManager
                         .GetPart("Character", 8, 0)
                         .Draw(IconSize * ImGuiHelpers.GlobalScale);
 
                     ImGui.SetCursorPos(cursorPos + IconInset * ImGuiHelpers.GlobalScale);
-                    Service.TextureManager
+                    TextureManager
                         .GetPart("Character", 11, 17 + slotIndex)
                         .Draw((IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
@@ -231,19 +238,19 @@ public unsafe class GearSetGridWindow : LockableWindow
 
         // icon background
         ImGui.SetCursorPos(startPos);
-        Service.TextureManager
+        TextureManager
             .GetPart("Character", 7, 4)
             .Draw(IconSize * ImGuiHelpers.GlobalScale);
 
         // icon
         ImGui.SetCursorPos(startPos + IconInset * ImGuiHelpers.GlobalScale);
-        Service.TextureManager
+        TextureManager
             .GetIcon(item.Icon, isHq)
             .Draw((IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
         // icon overlay
         ImGui.SetCursorPos(startPos);
-        Service.TextureManager
+        TextureManager
             .GetPart("Character", 7, 0)
             .Draw(IconSize * ImGuiHelpers.GlobalScale);
 
@@ -251,7 +258,7 @@ public unsafe class GearSetGridWindow : LockableWindow
         if (ImGui.IsItemHovered() || ImGui.IsPopupOpen(popupKey))
         {
             ImGui.SetCursorPos(startPos);
-            Service.TextureManager
+            TextureManager
                 .GetPart("Character", 7, 5)
                 .Draw(IconSize * ImGuiHelpers.GlobalScale);
         }

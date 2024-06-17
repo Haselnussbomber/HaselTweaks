@@ -2,10 +2,11 @@ using System.Linq;
 using System.Numerics;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using HaselCommon;
+using HaselCommon.Services;
 using HaselCommon.Sheets;
 using HaselCommon.Utils;
 using HaselTweaks.Tweaks;
@@ -14,20 +15,21 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Windows;
 
-public unsafe class GlamourDresserArmoireAlertWindow : Window
+public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 {
     private const int NumPrismBoxSlots = 800;
     private static readonly Vector2 IconSize = new(34);
-
-    private readonly GlamourDresserArmoireAlert _tweak;
+    private readonly TextureManager TextureManager;
 
     private static AddonMiragePrismPrismBox* Addon => GetAddon<AddonMiragePrismPrismBox>("MiragePrismPrismBox");
 
-    public GlamourDresserArmoireAlertWindow(GlamourDresserArmoireAlert tweak) : base(t("GlamourDresserArmoireAlertWindow.Title"))
+    public GlamourDresserArmoireAlertWindow(
+        WindowManager windowManager,
+        TextureManager textureManager)
+        : base(windowManager, t("GlamourDresserArmoireAlertWindow.Title"))
     {
-        _tweak = tweak;
+        TextureManager = textureManager;
 
-        IsOpen = true;
         DisableWindowSounds = true;
 
         Flags |= ImGuiWindowFlags.NoSavedSettings;
@@ -38,19 +40,16 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
         Size = new(360, 428);
     }
 
-    public override void OnClose()
-    {
-        Service.WindowManager.CloseWindow<GearSetGridWindow>();
-    }
+    public GlamourDresserArmoireAlert? Tweak { get; set; }
 
     public override bool DrawConditions()
-        => Addon != null && Addon->AtkUnitBase.IsVisible && _tweak.Categories.Count != 0;
+        => Tweak != null && Addon != null && Addon->AtkUnitBase.IsVisible && Tweak!.Categories.Count != 0;
 
     public override void Draw()
     {
         ImGui.TextWrapped(t("GlamourDresserArmoireAlertWindow.Info"));
 
-        foreach (var (categoryId, categoryItems) in _tweak.Categories.OrderBy(kv => kv.Key))
+        foreach (var (categoryId, categoryItems) in Tweak!.Categories.OrderBy(kv => kv.Key))
         {
             var category = GetRow<ItemUICategory>(categoryId)!;
 
@@ -77,7 +76,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
 
         using (var group = ImRaii.Group())
         {
-            Service.TextureManager
+            TextureManager
                 .GetIcon(item.Icon, isHq)
                 .Draw(IconSize * ImGuiHelpers.GlobalScale);
 
@@ -87,7 +86,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
             if (ImGui.Selectable(
                 "##Selectable",
                 false,
-                _tweak.UpdatePending
+                Tweak!.UpdatePending
                     ? ImGuiSelectableFlags.Disabled
                     : ImGuiSelectableFlags.None,
                 ImGuiHelpers.ScaledVector2(ImGui.GetContentRegionAvail().X, IconSize.Y)))
@@ -113,6 +112,6 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
 
     private void RestoreItem(uint itemIndex)
     {
-        _tweak.UpdatePending = MirageManager.Instance()->RestorePrismBoxItem(itemIndex);
+        Tweak!.UpdatePending = MirageManager.Instance()->RestorePrismBoxItem(itemIndex);
     }
 }

@@ -2,9 +2,11 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Hooking;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Utils;
+using HaselCommon.Services;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 
@@ -20,32 +22,48 @@ public class MaterialAllocationConfiguration
     public bool OpenGatheringLogOnItemClick = true;
 }
 
-[Tweak]
-public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfiguration>
+public sealed unsafe class MaterialAllocation(
+    IGameInteropProvider GameInteropProvider,
+    Configuration PluginConfig,
+    TranslationManager TranslationManager,
+    IAddonLifecycle AddonLifecycle,
+    IChatGui ChatGui,
+    AddonObserver AddonObserver)
+    : Tweak<MaterialAllocationConfiguration>(PluginConfig, TranslationManager)
 {
     private uint NextMJIGatheringNoteBookItemId;
 
     private delegate void AgentMJIGatheringNoteBookUpdateDelegate(AgentMJIGatheringNoteBook* self, uint frameCount);
 
-    private AddressHook<AgentMJIGatheringNoteBookUpdateDelegate>? AgentMJIGatheringNoteBookUpdateHook;
+    private Hook<AgentMJIGatheringNoteBookUpdateDelegate>? AgentMJIGatheringNoteBookUpdateHook;
 
-    public override void SetupHooks()
+    public override void OnInitialize()
     {
-        AgentMJIGatheringNoteBookUpdateHook = new(GetAgent<AgentMJIGatheringNoteBook>()->VirtualTable->Update, AgentMJIGatheringNoteBookUpdateDetour);
+        AgentMJIGatheringNoteBookUpdateHook = GameInteropProvider.HookFromAddress<AgentMJIGatheringNoteBookUpdateDelegate>(
+            GetAgent<AgentMJIGatheringNoteBook>()->VirtualTable->Update,
+            AgentMJIGatheringNoteBookUpdateDetour);
     }
 
-    public override void Enable()
+    public override void OnEnable()
     {
         NextMJIGatheringNoteBookItemId = 0;
 
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PostReceiveEvent);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PreSetup);
+        AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PostReceiveEvent);
+        AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PreSetup);
+
+        AddonObserver.AddonOpen += OnAddonOpen;
+
+        AgentMJIGatheringNoteBookUpdateHook?.Enable();
     }
 
-    public override void Disable()
+    public override void OnDisable()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PostReceiveEvent);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PreSetup);
+        AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PostReceiveEvent);
+        AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PreSetup);
+
+        AddonObserver.AddonOpen -= OnAddonOpen;
+
+        AgentMJIGatheringNoteBookUpdateHook?.Disable();
     }
 
     private void AddonMJICraftMaterialConfirmation_PreSetup(AddonEvent type, AddonArgs args)
@@ -69,7 +87,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
         }
     }
 
-    public override void OnAddonOpen(string addonName)
+    private void OnAddonOpen(string addonName)
     {
         if (addonName != "MJICraftMaterialConfirmation")
             return;
@@ -84,7 +102,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
         }
     }
 
-    public void AgentMJIGatheringNoteBookUpdateDetour(AgentMJIGatheringNoteBook* agent, uint frameCount)
+    private void AgentMJIGatheringNoteBookUpdateDetour(AgentMJIGatheringNoteBook* agent, uint frameCount)
     {
         var handleUpdate = Config.OpenGatheringLogOnItemClick
             && NextMJIGatheringNoteBookItemId != 0
@@ -110,7 +128,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
         if (receiveEventArgs.EventParam is > 0 and < 4 && Config.SaveLastSelectedTab)
         {
             Config.LastSelectedTab = (byte)(receiveEventArgs.EventParam - 1);
-            Service.GetService<Configuration>().Save();
+            PluginConfig.Save();
             return;
         }
 
@@ -137,7 +155,7 @@ public unsafe partial class MaterialAllocation : Tweak<MaterialAllocationConfigu
                 var item = pouchRow.Item.Value;
                 if (itemId != 0 && item != null)
                 {
-                    Service.ChatGui.Print(new XivChatEntry
+                    ChatGui.Print(new XivChatEntry
                     {
                         Message = tSe("MaterialAllocation.ItemIsNotGatherable", SeString.CreateItemLink(item.RowId, false, GetItemName(item.RowId))),
                         Type = XivChatType.Echo

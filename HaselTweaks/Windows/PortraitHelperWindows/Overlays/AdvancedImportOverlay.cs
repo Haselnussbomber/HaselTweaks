@@ -2,19 +2,20 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Common.Math;
+using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
+using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
-public unsafe class AdvancedImportOverlay : Overlay
+public unsafe class AdvancedImportOverlay(ILogger<PortraitHelper> Logger, WindowManager windowManager)
+    : Overlay(windowManager, t("PortraitHelperWindows.AdvancedImportOverlay.Title"))
 {
-    public AdvancedImportOverlay() : base(t("PortraitHelperWindows.AdvancedImportOverlay.Title"))
-    {
-    }
+    public MenuBar MenuBar { get; internal set; } = null!;
 
     public override void Draw()
     {
@@ -22,7 +23,7 @@ public unsafe class AdvancedImportOverlay : Overlay
 
         if (PortraitHelper.ClipboardPreset == null)
         {
-            Service.WindowManager.CloseWindow<AdvancedImportOverlay>();
+            Close();
             return;
         }
 
@@ -44,8 +45,8 @@ public unsafe class AdvancedImportOverlay : Overlay
 
         if (ImGui.Button(t("PortraitHelperWindows.AdvancedImportOverlay.ImportSelectedSettingsButton.Label")))
         {
-            PortraitHelper.ClipboardPreset.ToState(PortraitHelper.CurrentImportFlags);
-            PortraitHelper.CloseOverlays();
+            PortraitHelper.ClipboardPreset.ToState(Logger, PortraitHelper.CurrentImportFlags);
+            MenuBar.CloseOverlays();
         }
 
         ImGuiUtils.DrawSection(GetAddonText(14684) ?? "Design", RespectUiTheme: !IsWindow);

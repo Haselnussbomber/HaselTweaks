@@ -5,20 +5,26 @@ using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
 using HaselCommon.Extensions;
+using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Records.PortraitHelper;
+using HaselTweaks.Tweaks;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using ImGuiNET;
+using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
-public unsafe class PresetBrowserOverlay : Overlay, IDisposable
+public unsafe class PresetBrowserOverlay : Overlay
 {
     private const int SidebarWidth = 170;
+    private readonly ILogger _logger;
+    private readonly Configuration _pluginConfig;
 
     public Guid? SelectedTagId { get; set; }
     public Dictionary<Guid, PresetCard> PresetCards { get; init; } = [];
 
+    public MenuBar MenuBar { get; internal set; } = null!;
     public CreateTagDialog CreateTagDialog { get; init; } = new();
     public RenameTagDialog RenameTagDialog { get; init; } = new();
     public DeleteTagDialog DeleteTagDialog { get; init; }
@@ -28,10 +34,17 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
     private int _reorderTagOldIndex = -1;
     private int _reorderTagNewIndex = -1;
 
-    public PresetBrowserOverlay() : base(t("PortraitHelperWindows.PresetBrowserOverlay.Title"))
+    public PresetBrowserOverlay(
+        ILogger<PortraitHelper> logger,
+        Configuration pluginConfig,
+        WindowManager windowManager)
+        : base(windowManager, t("PortraitHelperWindows.PresetBrowserOverlay.Title"))
     {
+        _logger = logger;
+        _pluginConfig = pluginConfig;
+
         DeleteTagDialog = new(this);
-        DeletePresetDialog = new(this);
+        DeletePresetDialog = new(this, logger, pluginConfig);
 
         SizeConstraints = new WindowSizeConstraints
         {
@@ -40,12 +53,10 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
         };
     }
 
-    public new void Dispose()
+    public override void OnClose()
     {
-        base.Dispose();
-
-        foreach (var card in PresetCards.Values)
-            card.Dispose();
+        base.OnClose();
+        PresetCards.Dispose();
     }
 
     public override void Draw()
@@ -127,7 +138,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
                     if (preset != null)
                     {
                         preset.Tags.Add(tag.Id);
-                        Service.GetService<Configuration>().Save();
+                        _pluginConfig.Save();
                     }
                 }
             }
@@ -198,7 +209,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             var item = Config.PresetTags[_reorderTagOldIndex];
             Config.PresetTags.RemoveAt(_reorderTagOldIndex);
             Config.PresetTags.Insert(_reorderTagNewIndex, item);
-            Service.GetService<Configuration>().Save();
+            _pluginConfig.Save();
             _reorderTagOldIndex = -1;
             _reorderTagNewIndex = -1;
         }
@@ -243,7 +254,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             ImGuiUtils.TextUnformattedDisabled(FontAwesomeIcon.Tags.ToIconString());
     }
 
-    private static void RemoveUnusedTags()
+    private void RemoveUnusedTags()
     {
         foreach (var tag in Config.PresetTags.ToArray())
         {
@@ -262,7 +273,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
                 Config.PresetTags.Remove(tag);
         }
 
-        Service.GetService<Configuration>().Save();
+        _pluginConfig.Save();
     }
 
     private void DrawPresetBrowserContent()
@@ -294,7 +305,7 @@ public unsafe class PresetBrowserOverlay : Overlay, IDisposable
             {
                 if (!PresetCards.TryGetValue(preset.Id, out var card))
                 {
-                    PresetCards.Add(preset.Id, new(this, preset));
+                    PresetCards.Add(preset.Id, new(this, preset, _logger));
                 }
 
                 return card;

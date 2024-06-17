@@ -1,9 +1,11 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Services;
 using Lumina.Text;
 using Lumina.Text.Payloads;
 using Lumina.Text.ReadOnly;
@@ -11,7 +13,7 @@ using Achievement = Lumina.Excel.GeneratedSheets.Achievement;
 
 namespace HaselTweaks.Tweaks;
 
-public class AchievementLinkTooltipConfiguration
+public sealed class AchievementLinkTooltipConfiguration
 {
     [BoolConfig]
     public bool ShowCompletionStatus = true;
@@ -20,17 +22,22 @@ public class AchievementLinkTooltipConfiguration
     public bool PreventSpoiler = true;
 }
 
-[Tweak]
-public unsafe class AchievementLinkTooltip : Tweak<AchievementLinkTooltipConfiguration>
+public sealed unsafe class AchievementLinkTooltip(
+    Configuration PluginConfig,
+    TranslationManager TranslationManager,
+    IAddonLifecycle AddonLifecycle)
+    : Tweak<AchievementLinkTooltipConfiguration>(PluginConfig, TranslationManager)
 {
-    public override void Enable()
+    private readonly string[] ChatPanels = ["ChatLogPanel_0", "ChatLogPanel_1", "ChatLogPanel_2", "ChatLogPanel_3"];
+
+    public override void OnEnable()
     {
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, ["ChatLogPanel_0", "ChatLogPanel_1", "ChatLogPanel_2", "ChatLogPanel_3"], OnChatLogPanelPostReceiveEvent);
+        AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, ChatPanels, OnChatLogPanelPostReceiveEvent);
     }
 
-    public override void Disable()
+    public override void OnDisable()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, ["ChatLogPanel_0", "ChatLogPanel_1", "ChatLogPanel_2", "ChatLogPanel_3"], OnChatLogPanelPostReceiveEvent);
+        AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, ChatPanels, OnChatLogPanelPostReceiveEvent);
     }
 
     private void OnChatLogPanelPostReceiveEvent(AddonEvent type, AddonArgs args)

@@ -7,8 +7,11 @@ using Dalamud.Interface;
 using Dalamud.Interface.Internal;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
+using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using HaselCommon.Extensions;
+using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
@@ -18,6 +21,7 @@ using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using ImGuiNET;
 using Lumina.Data.Files;
 using Lumina.Excel.GeneratedSheets;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -26,14 +30,14 @@ namespace HaselTweaks.Windows.PortraitHelperWindows;
 
 public class PresetCard : IDisposable
 {
-    private static PortraitHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.PortraitHelper;
+    private static PortraitHelperConfiguration Config => Service.Get<Configuration>().Tweaks.PortraitHelper;
     public static readonly Vector2 PortraitSize = new(576, 960); // native texture size
 
     private readonly uint ButtonActiveColor = Colors.White.WithAlpha(0.3f);
     private readonly uint ButtonHoveredColor = Colors.White.WithAlpha(0.2f);
 
     private CancellationTokenSource? _closeTokenSource;
-
+    private readonly ILogger _logger;
     private readonly PresetBrowserOverlay _overlay;
     private readonly SavedPreset _preset;
     private readonly uint _bannerFrameImage;
@@ -54,10 +58,11 @@ public class PresetCard : IDisposable
 
     private float _lastScale;
 
-    public PresetCard(PresetBrowserOverlay overlay, SavedPreset preset)
+    public PresetCard(PresetBrowserOverlay overlay, SavedPreset preset, ILogger logger)
     {
         _overlay = overlay;
         _preset = preset;
+        _logger = logger;
 
         _bannerFrameImage = (uint)(GetRow<BannerFrame>(_preset.Preset!.BannerFrame)?.Image ?? 0);
         _bannerDecorationImage = (uint)(GetRow<BannerDecoration>(_preset.Preset.BannerDecoration)?.Image ?? 0);
@@ -88,7 +93,9 @@ public class PresetCard : IDisposable
         var cursorPos = ImGui.GetCursorPos();
         var center = cursorPos + PortraitSize * scale / 2f;
 
-        Service.TextureManager.GetIcon(190009).Draw(PortraitSize * scale);
+        var textureManager = Service.Get<TextureManager>();
+
+        textureManager.GetIcon(190009).Draw(PortraitSize * scale);
         ImGui.SetCursorPos(cursorPos);
 
         if (_isImageLoading)
@@ -111,19 +118,19 @@ public class PresetCard : IDisposable
         if (_bannerFrameImage != 0)
         {
             ImGui.SetCursorPos(cursorPos);
-            Service.TextureManager.GetIcon(_bannerFrameImage).Draw(PortraitSize * scale);
+            textureManager.GetIcon(_bannerFrameImage).Draw(PortraitSize * scale);
         }
 
         if (_bannerDecorationImage != 0)
         {
             ImGui.SetCursorPos(cursorPos);
-            Service.TextureManager.GetIcon(_bannerDecorationImage).Draw(PortraitSize * scale);
+            textureManager.GetIcon(_bannerDecorationImage).Draw(PortraitSize * scale);
         }
 
         if (hasErrors)
         {
             ImGui.SetCursorPos(cursorPos + new Vector2(PortraitSize.X - 190, 10) * scale);
-            Service.TextureManager.Get("ui/uld/Warning.tex", 2).Draw(160 * scale);
+            textureManager.Get("ui/uld/Warning.tex", 2).Draw(160 * scale);
         }
 
         ImGui.SetCursorPos(cursorPos);
@@ -169,7 +176,7 @@ public class PresetCard : IDisposable
                         var item = Config.Presets[oldIndex];
                         Config.Presets.RemoveAt(oldIndex);
                         Config.Presets.Insert(newIndex, item);
-                        Service.GetService<Configuration>().Save();
+                        Service.Get<Configuration>().Save();
                     }
                 }
             }
@@ -227,8 +234,8 @@ public class PresetCard : IDisposable
 
             if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
             {
-                _preset.Preset?.ToState(ImportFlags.All);
-                PortraitHelper.CloseOverlays();
+                _preset.Preset?.ToState(_logger, ImportFlags.All);
+                _overlay.MenuBar.CloseOverlays();
             }
         }
 
@@ -239,8 +246,8 @@ public class PresetCard : IDisposable
             {
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.LoadPreset.Label")))
                 {
-                    _preset.Preset?.ToState(ImportFlags.All);
-                    PortraitHelper.CloseOverlays();
+                    _preset.Preset?.ToState(_logger, ImportFlags.All);
+                    _overlay.MenuBar.CloseOverlays();
                 }
 
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.EditPreset.Label")))
@@ -250,7 +257,7 @@ public class PresetCard : IDisposable
 
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.ExportToClipboard.Label")))
                 {
-                    _preset.Preset?.ToClipboard();
+                    _preset.Preset?.ToClipboard(_logger);
                 }
 
                 if (_image != null && ImGui.BeginMenu(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Label")))
@@ -320,10 +327,10 @@ public class PresetCard : IDisposable
 
         if (!flags.HasFlag(CopyImageFlags.NoFrame) && _bannerFrameImage != 0)
         {
-            var iconPath = Service.TextureProvider.GetIconPath(_bannerFrameImage);
+            var iconPath = Service.Get<ITextureProvider>().GetIconPath(_bannerFrameImage);
             if (iconPath != null)
             {
-                var texture = Service.DataManager.GetFile<TexFile>(iconPath);
+                var texture = Service.Get<IDataManager>().GetFile<TexFile>(iconPath);
                 if (texture != null)
                 {
                     using var image = Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
@@ -335,10 +342,10 @@ public class PresetCard : IDisposable
 
         if (!flags.HasFlag(CopyImageFlags.NoDecoration) && _bannerDecorationImage != 0)
         {
-            var iconPath = Service.TextureProvider.GetIconPath(_bannerDecorationImage);
+            var iconPath = Service.Get<ITextureProvider>().GetIconPath(_bannerDecorationImage);
             if (iconPath != null)
             {
-                var texture = Service.DataManager.GetFile<TexFile>(iconPath);
+                var texture = Service.Get<IDataManager>().GetFile<TexFile>(iconPath);
                 if (texture != null)
                 {
                     using var image = Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
@@ -379,7 +386,7 @@ public class PresetCard : IDisposable
                         }
                         catch (Exception ex)
                         {
-                            Service.PluginLog.Error(ex, "Error while loading thumbnail");
+                            Service.Get<IPluginLog>().Error(ex, "Error while loading thumbnail");
                             _isImageLoading = false;
                             _doesImageFileExist = false;
                         }
@@ -426,11 +433,11 @@ public class PresetCard : IDisposable
                     if (_closeTokenSource.IsCancellationRequested)
                         return;
 
-                    _textureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, scaledImage.Width, scaledImage.Height, 4);
+                    _textureWrap = Service.Get<DalamudPluginInterface>().UiBuilder.LoadImageRaw(data, scaledImage.Width, scaledImage.Height, 4);
                 }
                 catch (Exception ex)
                 {
-                    Service.PluginLog.Error(ex, "Error while resizing/loading thumbnail");
+                    Service.Get<IPluginLog>().Error(ex, "Error while resizing/loading thumbnail");
                 }
                 finally
                 {

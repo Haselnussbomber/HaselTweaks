@@ -3,10 +3,11 @@ using System.Linq;
 using Dalamud;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon;
 using HaselCommon.Extensions;
+using HaselCommon.Services;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
@@ -14,20 +15,26 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Windows;
 
-public unsafe class MJICraftScheduleSettingSearchBar : Window
+public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
 {
     private static AddonMJICraftScheduleSetting* Addon => GetAddon<AddonMJICraftScheduleSetting>("MJICraftScheduleSetting");
-    private bool InputFocused;
-    private string Query = string.Empty;
+    private EnhancedIsleworksAgendaConfiguration Config => PluginConfig.Tweaks.EnhancedIsleworksAgenda;
+
     private const int LanguageSelectorWidth = 90;
 
-    private static EnhancedIsleworksAgendaConfiguration Config => Service.GetService<Configuration>().Tweaks.EnhancedIsleworksAgenda;
+    private readonly Configuration PluginConfig;
 
-    public MJICraftScheduleSettingSearchBar() : base("MJICraftScheduleSetting Search Bar")
+    private bool InputFocused;
+    private string Query = string.Empty;
+
+    public MJICraftScheduleSettingSearchBar(WindowManager windowManager, Configuration pluginConfig) : base(windowManager, "MJICraftScheduleSetting Search Bar")
     {
+        PluginConfig = pluginConfig;
+
         Flags |= ImGuiWindowFlags.NoSavedSettings;
         Flags |= ImGuiWindowFlags.NoDecoration;
         Flags |= ImGuiWindowFlags.NoMove;
+
         DisableWindowSounds = true;
         RespectCloseHotkey = false;
     }
@@ -64,7 +71,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
                     if (ImGui.Selectable(Enum.GetName(value), value == Config.SearchLanguage))
                     {
                         Config.SearchLanguage = value;
-                        Service.GetService<Configuration>().Save();
+                        PluginConfig.Save();
                     }
                 }
             }

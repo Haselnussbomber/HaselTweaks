@@ -1,18 +1,26 @@
 using Dalamud.Game.Gui.ContextMenu;
 using Dalamud.Game.Text;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using HaselCommon.Services;
 using HaselCommon.Sheets;
 using HaselCommon.Utils;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe class SearchTheMarkets : Tweak
+public sealed unsafe class SearchTheMarkets(IContextMenu ContextMenu, TranslationManager TranslationManager) : ITweak
 {
     private MenuItem? MenuItem;
     private ExtendedItem? Item;
 
-    public override void Enable()
+    public string InternalName => nameof(SearchTheMarkets);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    public void OnInitialize() { }
+
+    public void OnEnable()
     {
         MenuItem ??= new()
         {
@@ -29,15 +37,22 @@ public unsafe class SearchTheMarkets : Tweak
             }
         };
 
-        Service.ContextMenu.OnMenuOpened += ContextMenu_OnMenuOpened;
+        ContextMenu.OnMenuOpened += ContextMenu_OnMenuOpened;
+        TranslationManager.LanguageChanged += OnLanguageChange;
     }
 
-    public override void Disable()
+    public void OnDisable()
     {
-        Service.ContextMenu.OnMenuOpened -= ContextMenu_OnMenuOpened;
+        ContextMenu.OnMenuOpened -= ContextMenu_OnMenuOpened;
+        TranslationManager.LanguageChanged -= OnLanguageChange;
     }
 
-    public override void OnLanguageChange()
+    public void Dispose()
+    {
+        OnDisable();
+    }
+
+    private void OnLanguageChange(string langCode)
     {
         if (MenuItem != null)
             MenuItem.Name = t("ItemContextMenu.SearchTheMarkets");
@@ -51,11 +66,11 @@ public unsafe class SearchTheMarkets : Tweak
         var itemId = args.AddonName switch
         {
             _ when args.Target is MenuTargetInventory inv => inv.TargetItem?.ItemId ?? 0,
-            "RecipeNote" => GetAgent<AgentRecipeNote>()->ContextMenuResultItemId,
-            "RecipeTree" or "RecipeMaterialList" or "RecipeProductList" => GetAgent<AgentRecipeItemContext>()->ResultItemId, // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
-            "ChatLog" => GetAgent<AgentChatLog>()->ContextItemId,
-            "ContentsInfoDetail" => GetAgent<AgentContentsTimer>()->ContextMenuItemId,
-            "DailyQuestSupply" => GetAgent<AgentDailyQuestSupply>()->ContextMenuItemId,
+            "RecipeNote" => AgentRecipeNote.Instance()->ContextMenuResultItemId,
+            "RecipeTree" or "RecipeMaterialList" or "RecipeProductList" => AgentRecipeItemContext.Instance()->ResultItemId, // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
+            "ChatLog" => AgentChatLog.Instance()->ContextItemId,
+            "ContentsInfoDetail" => AgentContentsTimer.Instance()->ContextMenuItemId,
+            "DailyQuestSupply" => AgentDailyQuestSupply.Instance()->ContextMenuItemId,
             _ => 0u,
         };
 

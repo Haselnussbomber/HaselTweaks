@@ -1,11 +1,33 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Services;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe class ExpertDeliveries : Tweak
+public sealed unsafe class ExpertDeliveries(AddonObserver AddonObserver) : ITweak
 {
-    public override void OnAddonOpen(string addonName)
+    public string InternalName => nameof(ExpertDeliveries);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    public void OnInitialize() { }
+
+    public void OnEnable()
+    {
+        AddonObserver.AddonOpen += OnAddonOpen;
+    }
+
+    public void OnDisable()
+    {
+        AddonObserver.AddonOpen -= OnAddonOpen;
+    }
+
+    public void Dispose()
+    {
+        OnDisable();
+    }
+
+    public void OnAddonOpen(string addonName)
     {
         if (addonName != "GrandCompanySupplyList")
             return;

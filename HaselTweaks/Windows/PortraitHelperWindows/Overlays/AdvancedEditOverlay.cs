@@ -6,13 +6,14 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.Havok.Animation.Animation;
+using HaselCommon.Services;
 using HaselCommon.Utils;
 using ImGuiNET;
 using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
-public unsafe class AdvancedEditOverlay : Overlay
+public unsafe class AdvancedEditOverlay(WindowManager windowManager) : Overlay(windowManager, t("PortraitHelperWindows.AdvancedEditOverlay.Title"))
 {
     protected override OverlayType Type => OverlayType.LeftPane;
 
@@ -25,10 +26,6 @@ public unsafe class AdvancedEditOverlay : Overlay
     private float _duration;
     private int _frameCount;
     private bool _isDragging;
-
-    public AdvancedEditOverlay() : base(t("PortraitHelperWindows.AdvancedEditOverlay.Title"))
-    {
-    }
 
     private AgentBannerEditorState* EditorState => Agent->EditorState;
     private CharaViewPortrait* CharaView => EditorState != null ? EditorState->CharaView : null;
@@ -356,7 +353,7 @@ public unsafe class AdvancedEditOverlay : Overlay
                 }
 
                 CharaView->ToggleAnimationPlayback(true);
-                Addon->PlayAnimationCheckbox->IsChecked = false;
+                Addon->PlayAnimationCheckbox->AtkComponentButton.IsChecked = false;
 
                 if (!EditorState->HasDataChanged)
                     EditorState->SetHasChanged(true);

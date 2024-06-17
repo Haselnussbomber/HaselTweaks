@@ -1,10 +1,15 @@
+using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Game.Inventory.InventoryEventArgTypes;
+using Dalamud.Hooking;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Services;
 using HaselCommon.SheetLookup;
 using HaselCommon.Sheets;
 using HaselCommon.Utils;
@@ -13,11 +18,12 @@ using Lumina.Excel.GeneratedSheets;
 using Lumina.Text;
 using Lumina.Text.Payloads;
 using Lumina.Text.ReadOnly;
+using Microsoft.Extensions.Logging;
 using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Tweaks;
 
-public class EnhancedMaterialListConfiguration
+public sealed class EnhancedMaterialListConfiguration
 {
     [BoolConfig]
     public bool EnableZoneNames = true;
@@ -47,8 +53,17 @@ public class EnhancedMaterialListConfiguration
     public bool AddSearchForItemByCraftingMethodContextMenuEntry = true; // yep, i spelled it out
 }
 
-[Tweak]
-public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListConfiguration>
+public sealed unsafe class EnhancedMaterialList(
+    ILogger<EnhancedMaterialList> Logger,
+    IGameInteropProvider GameInteropProvider,
+    Configuration PluginConfig,
+    TranslationManager TranslationManager,
+    IAddonLifecycle AddonLifecycle,
+    IFramework Framework,
+    IClientState ClientState,
+    IGameInventory GameInventory,
+    AddonObserver AddonObserver)
+    : Tweak<EnhancedMaterialListConfiguration>(PluginConfig, TranslationManager)
 {
     private bool _canRefreshMaterialList;
     private bool _pendingMaterialListRefresh;
@@ -76,32 +91,63 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         }
     }
 
-    private AddressHook<AgentRecipeMaterialList.Delegates.ReceiveEvent>? AgentRecipeMaterialListReceiveEventHook;
-    private AddressHook<AddonRecipeMaterialList.Delegates.SetupRow>? AddonRecipeMaterialListSetupRowHook;
-    private AddressHook<AgentRecipeMaterialList.Delegates.OpenRecipeResultItemContextMenu>? OpenRecipeResultItemContextMenuHook;
-    private AddressHook<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>? AddItemContextMenuEntriesHook;
+    private Hook<AgentRecipeMaterialList.Delegates.ReceiveEvent>? AgentRecipeMaterialListReceiveEventHook;
+    private Hook<AddonRecipeMaterialList.Delegates.SetupRow>? AddonRecipeMaterialListSetupRowHook;
+    private Hook<AgentRecipeMaterialList.Delegates.OpenRecipeResultItemContextMenu>? OpenRecipeResultItemContextMenuHook;
+    private Hook<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>? AddItemContextMenuEntriesHook;
 
-    public override void SetupHooks()
+    public override void OnInitialize()
     {
-        AgentRecipeMaterialListReceiveEventHook = new(AgentRecipeMaterialList.StaticVirtualTablePointer->ReceiveEvent, AgentRecipeMaterialListReceiveEventDetour);
-        AddonRecipeMaterialListSetupRowHook = new(AddonRecipeMaterialList.MemberFunctionPointers.SetupRow, AddonRecipeMaterialListSetupRowDetour);
-        OpenRecipeResultItemContextMenuHook = new(AgentRecipeMaterialList.MemberFunctionPointers.OpenRecipeResultItemContextMenu, OpenRecipeResultItemContextMenuDetour);
-        AddItemContextMenuEntriesHook = new(AgentRecipeItemContext.MemberFunctionPointers.AddItemContextMenuEntries, AddItemContextMenuEntriesDetour);
+        AgentRecipeMaterialListReceiveEventHook = GameInteropProvider.HookFromAddress<AgentRecipeMaterialList.Delegates.ReceiveEvent>(
+            AgentRecipeMaterialList.StaticVirtualTablePointer->ReceiveEvent,
+            AgentRecipeMaterialListReceiveEventDetour);
+
+        AddonRecipeMaterialListSetupRowHook = GameInteropProvider.HookFromAddress<AddonRecipeMaterialList.Delegates.SetupRow>(
+            AddonRecipeMaterialList.MemberFunctionPointers.SetupRow,
+            AddonRecipeMaterialListSetupRowDetour);
+
+        OpenRecipeResultItemContextMenuHook = GameInteropProvider.HookFromAddress<AgentRecipeMaterialList.Delegates.OpenRecipeResultItemContextMenu>(
+            AgentRecipeMaterialList.MemberFunctionPointers.OpenRecipeResultItemContextMenu,
+            OpenRecipeResultItemContextMenuDetour);
+
+        AddItemContextMenuEntriesHook = GameInteropProvider.HookFromAddress<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>(
+            AgentRecipeItemContext.MemberFunctionPointers.AddItemContextMenuEntries,
+            AddItemContextMenuEntriesDetour);
     }
 
-    public override void Enable()
+    public override void OnEnable()
     {
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList", RecipeMaterialList_PostReceiveEvent);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "RecipeTree", RecipeTree_PostReceiveEvent);
+        AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList", RecipeMaterialList_PostReceiveEvent);
+        AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "RecipeTree", RecipeTree_PostReceiveEvent);
+
+        Framework.Update += OnFrameworkUpdate;
+        AddonObserver.AddonOpen += OnAddonOpen;
+        GameInventory.InventoryChangedRaw += OnInventoryUpdate;
+        ClientState.Login += OnLogin;
+
+        AgentRecipeMaterialListReceiveEventHook?.Enable();
+        AddonRecipeMaterialListSetupRowHook?.Enable();
+        OpenRecipeResultItemContextMenuHook?.Enable();
+        AddItemContextMenuEntriesHook?.Enable();
     }
 
-    public override void Disable()
+    public override void OnDisable()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList", RecipeMaterialList_PostReceiveEvent);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeTree", RecipeTree_PostReceiveEvent);
+        AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList", RecipeMaterialList_PostReceiveEvent);
+        AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeTree", RecipeTree_PostReceiveEvent);
+
+        Framework.Update -= OnFrameworkUpdate;
+        AddonObserver.AddonOpen -= OnAddonOpen;
+        GameInventory.InventoryChangedRaw -= OnInventoryUpdate;
+        ClientState.Login -= OnLogin;
+
+        AgentRecipeMaterialListReceiveEventHook?.Disable();
+        AddonRecipeMaterialListSetupRowHook?.Disable();
+        OpenRecipeResultItemContextMenuHook?.Disable();
+        AddItemContextMenuEntriesHook?.Disable();
     }
 
-    public override void OnAddonOpen(string addonName)
+    private void OnAddonOpen(string addonName)
     {
         if (addonName == "RecipeMaterialList")
             _canRefreshMaterialList = true;
@@ -110,7 +156,7 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
             _canRefreshRecipeTree = true;
     }
 
-    public override void OnInventoryUpdate()
+    private void OnInventoryUpdate(IReadOnlyCollection<InventoryEventArgs> events)
     {
         _pendingMaterialListRefresh = true;
         _timeOfMaterialListRefresh = DateTime.UtcNow;
@@ -118,9 +164,9 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         _timeOfRecipeTreeRefresh = DateTime.UtcNow;
     }
 
-    public override void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework framework)
     {
-        if (!Service.ClientState.IsLoggedIn)
+        if (!ClientState.IsLoggedIn)
             return;
 
         // added a 500ms delay because selling items updates the addons before the item is gone...
@@ -138,7 +184,7 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         }
     }
 
-    public override void OnLogin()
+    private void OnLogin()
     {
         if (!Config.RestoreMaterialList || Config.RestoreMaterialListRecipeId == 0)
             return;
@@ -147,7 +193,7 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         if (agentRecipeMaterialList->RecipeId != Config.RestoreMaterialListRecipeId)
         {
             _recipeMaterialListLockPending = true;
-            Log("Restoring RecipeMaterialList");
+            Logger.LogInformation("Restoring RecipeMaterialList");
             agentRecipeMaterialList->OpenByRecipeId((ushort)Config.RestoreMaterialListRecipeId, Math.Max(Config.RestoreMaterialListAmount, 1));
         }
     }
@@ -214,31 +260,31 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         }
     }
 
-    public void RefreshMaterialList()
+    private void RefreshMaterialList()
     {
         _pendingMaterialListRefresh = false;
 
         if (!Config.AutoRefreshMaterialList || !_canRefreshMaterialList || !TryGetAddon<AddonRecipeMaterialList>(AgentId.RecipeMaterialList, out var recipeMaterialList))
             return;
 
-        Log("Refreshing RecipeMaterialList");
+        Logger.LogInformation("Refreshing RecipeMaterialList");
         var atkEvent = new AtkEvent();
         recipeMaterialList->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 1, &atkEvent, 0);
     }
 
-    public void RefreshRecipeTree()
+    private void RefreshRecipeTree()
     {
         _pendingRecipeTreeRefresh = false;
 
         if (!Config.AutoRefreshRecipeTree || !_canRefreshRecipeTree || !TryGetAddon<AtkUnitBase>(AgentId.RecipeTree, out var recipeTree))
             return;
 
-        Log("Refreshing RecipeTree");
+        Logger.LogInformation("Refreshing RecipeTree");
         var atkEvent = new AtkEvent();
         recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, &atkEvent, 0);
     }
 
-    public AtkValue* AgentRecipeMaterialListReceiveEventDetour(AgentRecipeMaterialList* agent, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
+    private AtkValue* AgentRecipeMaterialListReceiveEventDetour(AgentRecipeMaterialList* agent, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
     {
         var ret = AgentRecipeMaterialListReceiveEventHook!.Original(agent, returnValue, values, valueCount, eventKind);
         SaveRestoreMaterialList(agent);
@@ -255,11 +301,11 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         {
             Config.RestoreMaterialListRecipeId = recipeId;
             Config.RestoreMaterialListAmount = amount;
-            Service.GetService<Configuration>().Save();
+            PluginConfig.Save();
         }
     }
 
-    public void AddonRecipeMaterialListSetupRowDetour(AddonRecipeMaterialList* addon, nint a2, nint a3)
+    private void AddonRecipeMaterialListSetupRowDetour(AddonRecipeMaterialList* addon, nint a2, nint a3)
     {
         AddonRecipeMaterialListSetupRowHook!.Original(addon, a2, a3);
         RecipeMaterialList_HandleSetupRow(a2, a3);
@@ -326,13 +372,13 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         );
     }
 
-    public void OpenRecipeResultItemContextMenuDetour(AgentRecipeMaterialList* agent)
+    private void OpenRecipeResultItemContextMenuDetour(AgentRecipeMaterialList* agent)
     {
         _handleRecipeResultItemContextMenu = true;
         OpenRecipeResultItemContextMenuHook!.Original(agent);
     }
 
-    public void AddItemContextMenuEntriesDetour(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
+    private void AddItemContextMenuEntriesDetour(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
     {
         UpdateContextMenuFlag(itemId, ref flags);
         AddItemContextMenuEntriesHook!.Original(agent, itemId, flags, itemName);
@@ -351,11 +397,11 @@ public unsafe partial class EnhancedMaterialList : Tweak<EnhancedMaterialListCon
         if (!IsAddonOpen(AgentId.RecipeMaterialList))
             return;
 
-        var agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>();
+        var agentRecipeMaterialList = AgentRecipeMaterialList.Instance();
         if (agentRecipeMaterialList->Recipe == null || agentRecipeMaterialList->Recipe->ResultItemId != itemId)
             return;
 
-        var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? 0);
+        var localPlayer = (Character*)(ClientState.LocalPlayer?.Address ?? 0);
         if (localPlayer == null || localPlayer->Mode == Character.CharacterModes.Crafting)
             return;
 

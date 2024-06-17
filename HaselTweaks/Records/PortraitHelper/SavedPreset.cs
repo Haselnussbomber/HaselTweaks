@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json.Serialization;
+using Dalamud.Plugin.Services;
+using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Records.PortraitHelper;
 
@@ -20,7 +22,7 @@ public record SavedPreset
         this.Tags = Tags;
     }
 
-    public void Delete()
+    public void Delete(ILogger logger, Configuration pluginConfig)
     {
         var thumbPath = Tweaks.PortraitHelper.GetPortraitThumbnailPath(Id);
         if (File.Exists(thumbPath))
@@ -31,11 +33,11 @@ public record SavedPreset
             }
             catch (Exception ex)
             {
-                Service.PluginLog.Error(ex, $"Could not delete \"{thumbPath}\"");
+                logger.LogError(ex, $"Could not delete \"{thumbPath}\"");
             }
         }
 
-        Service.GetService<Configuration>().Tweaks.PortraitHelper.Presets.Remove(this);
-        Service.GetService<Configuration>().Save();
+        pluginConfig.Tweaks.PortraitHelper.Presets.Remove(this);
+        pluginConfig.Save();
     }
 }

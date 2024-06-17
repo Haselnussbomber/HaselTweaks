@@ -1,10 +1,12 @@
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Services;
 using HaselCommon.Utils;
 
 namespace HaselTweaks.Tweaks;
 
-public class MinimapAdjustmentsConfiguration
+public sealed class MinimapAdjustmentsConfiguration
 {
     [BoolConfig]
     public bool Square = false;
@@ -56,20 +58,28 @@ public unsafe struct NaviMap
     public AtkResNode* CardinalDirections => GetNode(8);
 }
 
-[Tweak]
-public unsafe class MinimapAdjustments : Tweak<MinimapAdjustmentsConfiguration>
+public sealed unsafe class MinimapAdjustments(
+    Configuration PluginConfig,
+    TranslationManager TranslationManager,
+    IFramework Framework,
+    IClientState ClientState)
+    : Tweak<MinimapAdjustmentsConfiguration>(PluginConfig, TranslationManager)
 {
     private bool? HoverState;
     private float TargetAlpha;
 
-    public override void Enable()
+    public override void OnEnable()
     {
         HoverState = null;
         TargetAlpha = Config.DefaultOpacity;
+
+        Framework.Update += OnFrameworkUpdate;
     }
 
-    public override void Disable()
+    public override void OnDisable()
     {
+        Framework.Update -= OnFrameworkUpdate;
+
         if (!TryGetAddon<NaviMap>("_NaviMap", out var naviMap))
             return;
 
@@ -108,9 +118,9 @@ public unsafe class MinimapAdjustments : Tweak<MinimapAdjustmentsConfiguration>
         }
     }
 
-    public override void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework framework)
     {
-        if (!Service.ClientState.IsLoggedIn)
+        if (!ClientState.IsLoggedIn)
             return;
 
         if (!TryGetAddon<NaviMap>("_NaviMap", out var naviMap))

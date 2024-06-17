@@ -1,37 +1,67 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Hooking;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Info;
-using HaselCommon.Utils;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe partial class SaferItemSearch : Tweak
+public sealed unsafe class SaferItemSearch(IGameInteropProvider GameInteropProvider, IAddonLifecycle AddonLifecycle) : ITweak
 {
     private bool _isSearching;
 
-    private AddressHook<InfoProxyItemSearch.Delegates.ProcessRequestResult>? ProcessRequestResultHook;
-    private AddressHook<InfoProxyItemSearch.Delegates.EndRequest>? EndRequestHook;
-    private AddressHook<InfoProxyItemSearch.Delegates.AddPage>? AddPageHook;
+    private Hook<InfoProxyItemSearch.Delegates.ProcessRequestResult>? ProcessRequestResultHook;
+    private Hook<InfoProxyItemSearch.Delegates.EndRequest>? EndRequestHook;
+    private Hook<InfoProxyItemSearch.Delegates.AddPage>? AddPageHook;
 
-    public override void SetupHooks()
+    public string InternalName => nameof(SaferItemSearch);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    public void OnInitialize()
     {
-        ProcessRequestResultHook = new(InfoProxyItemSearch.MemberFunctionPointers.ProcessRequestResult, ProcessRequestResultDetour);
-        EndRequestHook = new(InfoProxyItemSearch.StaticVirtualTablePointer->EndRequest, EndRequestDetour);
-        AddPageHook = new(InfoProxyItemSearch.StaticVirtualTablePointer->AddPage, AddPageDetour);
+        ProcessRequestResultHook = GameInteropProvider.HookFromAddress<InfoProxyItemSearch.Delegates.ProcessRequestResult>(
+            InfoProxyItemSearch.MemberFunctionPointers.ProcessRequestResult,
+            ProcessRequestResultDetour);
+
+        EndRequestHook = GameInteropProvider.HookFromAddress<InfoProxyItemSearch.Delegates.EndRequest>(
+            InfoProxyItemSearch.StaticVirtualTablePointer->EndRequest,
+            EndRequestDetour);
+
+        AddPageHook = GameInteropProvider.HookFromAddress<InfoProxyItemSearch.Delegates.AddPage>(
+            InfoProxyItemSearch.StaticVirtualTablePointer->AddPage,
+            AddPageDetour);
     }
 
-    public override void Enable()
+    public void OnEnable()
     {
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "ItemSearch", ItemSearch_PostRequestedUpdate);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerSell", RetainerSell_PostSetup);
+        AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "ItemSearch", ItemSearch_PostRequestedUpdate);
+        AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerSell", RetainerSell_PostSetup);
+
+        ProcessRequestResultHook?.Enable();
+        EndRequestHook?.Enable();
+        AddPageHook?.Enable();
     }
 
-    public override void Disable()
+    public void OnDisable()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemSearch", ItemSearch_PostRequestedUpdate);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "RetainerSell", RetainerSell_PostSetup);
+        AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemSearch", ItemSearch_PostRequestedUpdate);
+        AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "RetainerSell", RetainerSell_PostSetup);
+
+        ProcessRequestResultHook?.Disable();
+        EndRequestHook?.Disable();
+        AddPageHook?.Disable();
+    }
+
+    public void Dispose()
+    {
+        OnDisable();
+
+        ProcessRequestResultHook?.Dispose();
+        EndRequestHook?.Dispose();
+        AddPageHook?.Dispose();
     }
 
     private void ItemSearch_PostRequestedUpdate(AddonEvent type, AddonArgs args)
@@ -62,7 +92,7 @@ public unsafe partial class SaferItemSearch : Tweak
         addon->ComparePrices->AtkComponentBase.SetEnabledState(!_isSearching);
     }
 
-    public nint ProcessRequestResultDetour(InfoProxyItemSearch* ipis, nint a2, nint a3, nint a4, int a5, byte a6, int a7)
+    private nint ProcessRequestResultDetour(InfoProxyItemSearch* ipis, nint a2, nint a3, nint a4, int a5, byte a6, int a7)
     {
         _isSearching = true;
 
@@ -71,7 +101,7 @@ public unsafe partial class SaferItemSearch : Tweak
         return ProcessRequestResultHook!.Original(ipis, a2, a3, a4, a5, a6, a7);
     }
 
-    public void EndRequestDetour(InfoProxyItemSearch* ipis)
+    private void EndRequestDetour(InfoProxyItemSearch* ipis)
     {
         _isSearching = false;
 
@@ -80,7 +110,7 @@ public unsafe partial class SaferItemSearch : Tweak
         EndRequestHook!.Original(ipis);
     }
 
-    public void AddPageDetour(InfoProxyItemSearch* ipis, nint data)
+    private void AddPageDetour(InfoProxyItemSearch* ipis, nint data)
     {
         _isSearching = true;
 

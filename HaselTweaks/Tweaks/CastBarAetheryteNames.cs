@@ -1,53 +1,84 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Hooking;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Text;
 using HaselCommon.Text.Expressions;
-using HaselCommon.Utils;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe partial class CastBarAetheryteNames : Tweak
+public sealed unsafe partial class CastBarAetheryteNames(
+    IGameInteropProvider GameInteropProvider,
+    IAddonLifecycle AddonLifecycle,
+    IClientState ClientState)
+    : ITweak, IDisposable
 {
     private TeleportInfo? TeleportInfo;
     private bool IsCastingTeleport;
 
-    private AddressHook<HaselActionManager.Delegates.OpenCastBar>? OpenCastBarHook;
-    private AddressHook<Telepo.Delegates.Teleport>? TeleportHook;
+    private Hook<HaselActionManager.Delegates.OpenCastBar>? OpenCastBarHook;
+    private Hook<Telepo.Delegates.Teleport>? TeleportHook;
 
-    public override void SetupHooks()
+    public string InternalName => nameof(CastBarAetheryteNames);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    public void OnInitialize()
     {
-        OpenCastBarHook = new(HaselActionManager.MemberFunctionPointers.OpenCastBar, OpenCastBarDetour);
-        TeleportHook = new(Telepo.MemberFunctionPointers.Teleport, TeleportDetour);
+        OpenCastBarHook = GameInteropProvider.HookFromAddress<HaselActionManager.Delegates.OpenCastBar>(
+            HaselActionManager.MemberFunctionPointers.OpenCastBar,
+            OpenCastBarDetour);
+
+        TeleportHook = GameInteropProvider.HookFromAddress<Telepo.Delegates.Teleport>(
+            Telepo.MemberFunctionPointers.Teleport,
+            TeleportDetour);
     }
 
-    public override void Enable()
+    public void OnEnable()
     {
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreRefresh, "_CastBar", OnCastBarPreRefresh);
+        ClientState.TerritoryChanged += OnTerritoryChanged;
+
+        AddonLifecycle.RegisterListener(AddonEvent.PreRefresh, "_CastBar", OnCastBarPreRefresh);
+
+        OpenCastBarHook?.Enable();
+        TeleportHook?.Enable();
     }
 
-    public override void Disable()
+    public void OnDisable()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "_CastBar", OnCastBarPreRefresh);
+        ClientState.TerritoryChanged -= OnTerritoryChanged;
+
+        AddonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "_CastBar", OnCastBarPreRefresh);
+
+        OpenCastBarHook?.Disable();
+        TeleportHook?.Disable();
     }
 
-    public override void OnTerritoryChanged(ushort id)
+    public void Dispose()
+    {
+        OnDisable();
+        OpenCastBarHook?.Dispose();
+        TeleportHook?.Dispose();
+    }
+
+    private void OnTerritoryChanged(ushort id)
     {
         Clear();
     }
 
-    public void Clear()
+    private void Clear()
     {
         IsCastingTeleport = false;
         TeleportInfo = null;
     }
 
-    public void OnCastBarPreRefresh(AddonEvent type, AddonArgs args)
+    private void OnCastBarPreRefresh(AddonEvent type, AddonArgs args)
     {
         if (!IsCastingTeleport || TeleportInfo == null)
         {
@@ -76,14 +107,14 @@ public unsafe partial class CastBarAetheryteNames : Tweak
         Clear();
     }
 
-    public void OpenCastBarDetour(HaselActionManager* a1, BattleChara* a2, int type, uint rowId, uint type2, int rowId2, float a7)
+    private void OpenCastBarDetour(HaselActionManager* a1, BattleChara* a2, int type, uint rowId, uint type2, int rowId2, float a7)
     {
         IsCastingTeleport = type == 1 && rowId == 5 && type2 == 5;
 
         OpenCastBarHook!.Original(a1, a2, type, rowId, type2, rowId2, a7);
     }
 
-    public bool TeleportDetour(Telepo* telepo, uint aetheryteID, byte subIndex)
+    private bool TeleportDetour(Telepo* telepo, uint aetheryteID, byte subIndex)
     {
         TeleportInfo = null;
 

@@ -1,48 +1,6 @@
-using System.Linq;
-using System.Reflection;
-using Dalamud.Interface;
-using HaselCommon.Utils;
-using ImGuiNET;
-
 namespace HaselTweaks;
 
 public abstract class BaseConfigAttribute : Attribute
 {
     public string DependsOn = string.Empty;
-
-    public abstract void Draw(Tweak tweak, object config, FieldInfo fieldInfo);
-
-    protected void OnChangeInternal(Tweak tweak, FieldInfo fieldInfo)
-    {
-        Service.GetService<Configuration>().Save();
-        tweak.CachedType.GetMethod(nameof(Tweak.OnConfigChangeInternal), BindingFlags.Instance | BindingFlags.NonPublic)?.Invoke(tweak, new[] { fieldInfo.Name });
-    }
-
-    protected static void DrawConfigInfos(FieldInfo fieldInfo)
-    {
-        var attributes = fieldInfo.GetCustomAttributes<ConfigInfoAttribute>();
-        if (!attributes.Any())
-            return;
-
-        foreach (var attribute in attributes)
-        {
-            ImGui.SameLine();
-            ImGuiUtils.Icon(attribute.Icon, attribute.Color);
-            if (ImGui.IsItemHovered())
-            {
-                ImGui.BeginTooltip();
-                ImGui.TextUnformatted(t(attribute.Translationkey));
-                ImGui.EndTooltip();
-            }
-        }
-    }
-
-    protected static bool DrawResetButton(string defaultValueString)
-    {
-        if (string.IsNullOrEmpty(defaultValueString))
-            return false;
-
-        ImGui.SameLine();
-        return ImGuiUtils.IconButton("##Reset", FontAwesomeIcon.Undo, t("HaselTweaks.Config.ResetToDefault", defaultValueString));
-    }
 }

@@ -2,21 +2,81 @@ using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Interface.Utility.Raii;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Extensions;
+using HaselCommon.Services;
 using HaselCommon.Utils;
 using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
 
-public class BackgroundMusicKeybindConfiguration
+public sealed class BackgroundMusicKeybindConfiguration
 {
     public VirtualKey[] Keybind = [VirtualKey.CONTROL, VirtualKey.M];
 }
 
-[Tweak]
-public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfiguration>
+public sealed unsafe class BackgroundMusicKeybind(
+    Configuration PluginConfig,
+    TranslationManager TranslationManager,
+    IGameConfig GameConfig,
+    IKeyState KeyState,
+    IFramework Framework)
+    : Tweak<BackgroundMusicKeybindConfiguration>(PluginConfig, TranslationManager)
 {
+    private bool IsBgmMuted
+    {
+        get => GameConfig.System.TryGet("IsSndBgm", out bool value) && value;
+        set => GameConfig.System.Set("IsSndBgm", value);
+    }
+
+    private bool _isPressingKeybind;
+
+    public override void OnEnable()
+    {
+        Framework.Update += OnFrameworkUpdate;
+    }
+
+    public override void OnDisable()
+    {
+        Framework.Update -= OnFrameworkUpdate;
+    }
+
+    private void OnFrameworkUpdate(IFramework framework)
+    {
+        var allKeybindsPressed = true;
+
+        foreach (var key in Config.Keybind)
+            allKeybindsPressed &= KeyState[key];
+
+        if (!allKeybindsPressed)
+        {
+            if (_isPressingKeybind)
+                _isPressingKeybind = false;
+            return;
+        }
+
+        // check if holding keys down
+        if (_isPressingKeybind)
+            return;
+
+        var numKeysPressed = KeyState.GetValidVirtualKeys().Count(key => KeyState[key]);
+        if (numKeysPressed == Config.Keybind.Length)
+        {
+            // prevents the game from handling the key press
+            if (Config.Keybind.FindFirst(x => x is not (VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT), out var key))
+            {
+                KeyState[key] = false;
+            }
+
+            IsBgmMuted = !IsBgmMuted;
+
+            RaptureLogModule.Instance()->ShowLogMessageUInt(3861, IsBgmMuted ? 1u : 0u);
+        }
+
+        _isPressingKeybind = true;
+    }
+
     public override void DrawConfig()
     {
         ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
@@ -36,7 +96,7 @@ public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfigu
             }
 
             Config.Keybind = [.. set.Order()];
-            Service.GetService<Configuration>().Save();
+            PluginConfig.Save();
         }
 
         ImGui.SameLine();
@@ -56,7 +116,7 @@ public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfigu
             }
 
             Config.Keybind = [.. set.Order()];
-            Service.GetService<Configuration>().Save();
+            PluginConfig.Save();
         }
 
         ImGui.SameLine();
@@ -76,7 +136,7 @@ public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfigu
             }
 
             Config.Keybind = [.. set.Order()];
-            Service.GetService<Configuration>().Save();
+            PluginConfig.Save();
         }
 
         ImGui.SameLine();
@@ -91,7 +151,7 @@ public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfigu
         if (!combo.Success)
             return;
 
-        foreach (var _key in Service.KeyState.GetValidVirtualKeys())
+        foreach (var _key in KeyState.GetValidVirtualKeys())
         {
             if (_key is VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT)
                 continue;
@@ -113,51 +173,8 @@ public unsafe class BackgroundMusicKeybind : Tweak<BackgroundMusicKeybindConfigu
                 }
 
                 Config.Keybind = [.. set.Order()];
-                Service.GetService<Configuration>().Save();
+                PluginConfig.Save();
             }
         }
-    }
-
-    private static bool IsBgmMuted
-    {
-        get => Service.GameConfig.System.TryGet("IsSndBgm", out bool value) && value;
-        set => Service.GameConfig.System.Set("IsSndBgm", value);
-    }
-
-    private bool _isPressingKeybind;
-
-    public override void OnFrameworkUpdate()
-    {
-        var allKeybindsPressed = true;
-
-        foreach (var key in Config.Keybind)
-            allKeybindsPressed &= Service.KeyState[key];
-
-        if (!allKeybindsPressed)
-        {
-            if (_isPressingKeybind)
-                _isPressingKeybind = false;
-            return;
-        }
-
-        // check if holding keys down
-        if (_isPressingKeybind)
-            return;
-
-        var numKeysPressed = Service.KeyState.GetValidVirtualKeys().Count(key => Service.KeyState[key]);
-        if (numKeysPressed == Config.Keybind.Length)
-        {
-            // prevents the game from handling the key press
-            if (Config.Keybind.FindFirst(x => x is not (VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT), out var key))
-            {
-                Service.KeyState[key] = false;
-            }
-
-            IsBgmMuted = !IsBgmMuted;
-
-            RaptureLogModule.Instance()->ShowLogMessageUInt(3861, IsBgmMuted ? 1u : 0u);
-        }
-
-        _isPressingKeybind = true;
     }
 }

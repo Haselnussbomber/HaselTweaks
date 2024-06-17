@@ -2,11 +2,13 @@ using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Interface.Windowing;
+using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon;
+using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
@@ -14,35 +16,74 @@ using HaselTweaks.Tweaks;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using ImGuiNET;
+using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
-public unsafe class MenuBar : Window
+public unsafe class MenuBar : SimpleWindow
 {
-    private static PortraitHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.PortraitHelper;
-
     private static AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
     private static AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
+
+    private PortraitHelperConfiguration Config => PluginConfig.Tweaks.PortraitHelper;
 
     private PortraitPreset? _initialPreset;
     private string _portraitName = string.Empty;
 
-    private readonly CreatePresetDialog _saveAsPresetDialog = new();
+    private readonly CreatePresetDialog SaveAsPresetDialog = new();
+    private readonly ILogger<PortraitHelper> Logger;
+    private readonly DalamudPluginInterface PluginInterface;
+    private readonly Configuration PluginConfig;
+    private readonly AdvancedImportOverlay AdvancedImportOverlay;
+    private readonly AdvancedEditOverlay AdvancedEditOverlay;
+    private readonly PresetBrowserOverlay PresetBrowserOverlay;
+    private readonly AlignmentToolSettingsOverlay AlignmentToolSettingsOverlay;
 
-    public MenuBar() : base("Portrait Helper MenuBar")
+    public MenuBar(
+        ILogger<PortraitHelper> logger,
+        DalamudPluginInterface pluginInterface,
+        WindowManager windowManager,
+        Configuration pluginConfig,
+        AdvancedImportOverlay advancedImportOverlay,
+        AdvancedEditOverlay advancedEditOverlay,
+        PresetBrowserOverlay presetBrowserOverlay,
+        AlignmentToolSettingsOverlay alignmentToolSettingsOverlay
+        ) : base(windowManager, "Portrait Helper MenuBar")
     {
+        Logger = logger;
+        PluginInterface = pluginInterface;
+        PluginConfig = pluginConfig;
+        AdvancedImportOverlay = advancedImportOverlay;
+        AdvancedEditOverlay = advancedEditOverlay;
+        PresetBrowserOverlay = presetBrowserOverlay;
+        AlignmentToolSettingsOverlay = alignmentToolSettingsOverlay;
+
+        PresetBrowserOverlay.MenuBar = this;
+        advancedImportOverlay.MenuBar = this;
+
         Flags |= ImGuiWindowFlags.NoSavedSettings;
         Flags |= ImGuiWindowFlags.NoDecoration;
         Flags |= ImGuiWindowFlags.NoMove;
+
         DisableWindowSounds = true;
         RespectCloseHotkey = false;
     }
 
     public override void OnClose()
     {
-        _saveAsPresetDialog.Hide();
+        base.OnClose();
+        SaveAsPresetDialog.Hide();
         _initialPreset = null;
         _portraitName = string.Empty;
+        CloseOverlays();
+    }
+
+    public void CloseOverlays()
+    {
+        AdvancedImportOverlay.Close();
+        AdvancedEditOverlay.Close();
+        PresetBrowserOverlay.Close();
+        AlignmentToolSettingsOverlay.Close();
     }
 
     public override bool DrawConditions()
@@ -87,14 +128,14 @@ public unsafe class MenuBar : Window
         }
         else if (ImGuiUtils.IconButton("Reset", FontAwesomeIcon.Undo, GetAddonText(4830) ?? "Reset"))
         {
-            _initialPreset.ToState(ImportFlags.All);
+            _initialPreset.ToState(Logger, ImportFlags.All);
             AgentBannerEditor->EditorState->SetHasChanged(false);
         }
 
         ImGui.SameLine();
         if (ImGuiUtils.IconButton("Copy", FontAwesomeIcon.Copy, t("PortraitHelperWindows.MenuBar.ExportToClipboard.Label"))) // GetAddonText(100) ?? "Copy"
         {
-            PortraitPreset.FromState()?.ToClipboard();
+            PortraitPreset.FromState()?.ToClipboard(Logger);
         }
 
         ImGui.SameLine();
@@ -106,8 +147,8 @@ public unsafe class MenuBar : Window
         {
             if (ImGuiUtils.IconButton("Paste", FontAwesomeIcon.Paste, t("PortraitHelperWindows.MenuBar.ImportFromClipboardAllSettings.Label")))
             {
-                PortraitHelper.ClipboardPreset.ToState(ImportFlags.All);
-                PortraitHelper.CloseOverlays();
+                PortraitHelper.ClipboardPreset.ToState(Logger, ImportFlags.All);
+                CloseOverlays();
             }
         }
 
@@ -116,7 +157,7 @@ public unsafe class MenuBar : Window
         {
             ImGuiUtils.IconButton("ViewModeAdvancedImport", FontAwesomeIcon.FileImport, t("PortraitHelperWindows.MenuBar.ToggleAdvancedImportMode.Label"), disabled: true);
         }
-        else if (Service.WindowManager.IsWindowOpen<AdvancedImportOverlay>())
+        else if (AdvancedImportOverlay.IsOpen)
         {
             using var colors = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
                                      .Push(ImGuiCol.ButtonActive, 0xFFB06C2B)
@@ -124,17 +165,17 @@ public unsafe class MenuBar : Window
 
             if (ImGuiUtils.IconButton("ViewModeNormal", FontAwesomeIcon.FileImport, t("PortraitHelperWindows.MenuBar.ToggleAdvancedImportMode.Label")))
             {
-                Service.WindowManager.CloseWindow<AdvancedImportOverlay>();
+                AdvancedImportOverlay.Close();
             }
         }
         else if (ImGuiUtils.IconButton("ViewModeAdvancedImport", FontAwesomeIcon.FileImport, t("PortraitHelperWindows.MenuBar.ToggleAdvancedImportMode.Label")))
         {
-            PortraitHelper.CloseOverlays();
-            Service.WindowManager.OpenWindow<AdvancedImportOverlay>();
+            CloseOverlays();
+            AdvancedImportOverlay.Open();
         }
 
         ImGui.SameLine();
-        if (Service.WindowManager.IsWindowOpen<AdvancedEditOverlay>())
+        if (AdvancedEditOverlay.IsOpen)
         {
             using var colors = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
                                      .Push(ImGuiCol.ButtonActive, 0xFFB06C2B)
@@ -142,13 +183,13 @@ public unsafe class MenuBar : Window
 
             if (ImGuiUtils.IconButton("ViewModeNormal", FontAwesomeIcon.FilePen, t("PortraitHelperWindows.MenuBar.ToggleAdvancedEditMode.Label")))
             {
-                Service.WindowManager.CloseWindow<AdvancedEditOverlay>();
+                AdvancedEditOverlay.Close();
             }
         }
         else if (ImGuiUtils.IconButton("ViewModeAdvancedEdit", FontAwesomeIcon.FilePen, t("PortraitHelperWindows.MenuBar.ToggleAdvancedEditMode.Label")))
         {
-            PortraitHelper.CloseOverlays();
-            Service.WindowManager.OpenWindow<AdvancedEditOverlay>();
+            CloseOverlays();
+            AdvancedEditOverlay.Open();
         }
 
         // ----
@@ -160,11 +201,11 @@ public unsafe class MenuBar : Window
         ImGui.SameLine();
         if (ImGuiUtils.IconButton("SaveAsPreset", FontAwesomeIcon.Download, t("PortraitHelperWindows.MenuBar.SaveAsPreset.Label")))
         {
-            _saveAsPresetDialog.Open(_portraitName, PortraitPreset.FromState(), PortraitHelper.GetCurrentCharaViewImage());
+            SaveAsPresetDialog.Open(_portraitName, PortraitPreset.FromState(), PortraitHelper.GetCurrentCharaViewImage(PluginInterface));
         }
 
         ImGui.SameLine();
-        if (Service.WindowManager.IsWindowOpen<PresetBrowserOverlay>())
+        if (PresetBrowserOverlay.IsOpen)
         {
             using var colors = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
                                      .Push(ImGuiCol.ButtonActive, 0xFFB06C2B)
@@ -172,13 +213,13 @@ public unsafe class MenuBar : Window
 
             if (ImGuiUtils.IconButton("ViewModeNormal2", FontAwesomeIcon.List, t("PortraitHelperWindows.MenuBar.TogglePresetBrowser.Label")))
             {
-                Service.WindowManager.CloseWindow<PresetBrowserOverlay>();
+                PresetBrowserOverlay.Close();
             }
         }
         else if (ImGuiUtils.IconButton("ViewModePresetBrowser", FontAwesomeIcon.List, t("PortraitHelperWindows.MenuBar.TogglePresetBrowser.Label")))
         {
-            PortraitHelper.CloseOverlays();
-            Service.WindowManager.OpenWindow<PresetBrowserOverlay>();
+            CloseOverlays();
+            PresetBrowserOverlay.Open();
         }
 
         // ----
@@ -188,7 +229,7 @@ public unsafe class MenuBar : Window
         // ----
 
         ImGui.SameLine();
-        if (Service.WindowManager.IsWindowOpen<AlignmentToolSettingsOverlay>())
+        if (AlignmentToolSettingsOverlay.IsOpen)
         {
             using var colors = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
                                      .Push(ImGuiCol.ButtonActive, 0xFFB06C2B)
@@ -198,12 +239,12 @@ public unsafe class MenuBar : Window
             {
                 if (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift))
                 {
-                    Service.WindowManager.CloseWindow<AlignmentToolSettingsOverlay>();
+                    AlignmentToolSettingsOverlay.Close();
                 }
                 else
                 {
                     Config.ShowAlignmentTool = !Config.ShowAlignmentTool;
-                    Service.GetService<Configuration>().Save();
+                    PluginConfig.Save();
                 }
             }
         }
@@ -211,13 +252,13 @@ public unsafe class MenuBar : Window
         {
             if (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift))
             {
-                PortraitHelper.CloseOverlays();
-                Service.WindowManager.OpenWindow<AlignmentToolSettingsOverlay>();
+                CloseOverlays();
+                AlignmentToolSettingsOverlay.Open();
             }
             else
             {
                 Config.ShowAlignmentTool = !Config.ShowAlignmentTool;
-                Service.GetService<Configuration>().Save();
+                PluginConfig.Save();
             }
         }
 
@@ -230,7 +271,7 @@ public unsafe class MenuBar : Window
 
         UpdatePosition();
 
-        _saveAsPresetDialog.Draw();
+        SaveAsPresetDialog.Draw();
     }
 
     public void UpdatePosition()
@@ -271,7 +312,7 @@ public unsafe class MenuBar : Window
             ImGui.SetNextWindowPos(position);
             ImGui.SetNextWindowSize(size);
 
-            if (!(ImGuiHelpers.GlobalScale <= 1 && (Service.WindowManager.IsWindowOpen<AdvancedImportOverlay>() || Service.WindowManager.IsWindowOpen<PresetBrowserOverlay>())))
+            if (!(ImGuiHelpers.GlobalScale <= 1 && (AdvancedImportOverlay.IsOpen || PresetBrowserOverlay.IsOpen)))
             {
                 ImGui.Begin("AlignmentTool", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoInputs);
 

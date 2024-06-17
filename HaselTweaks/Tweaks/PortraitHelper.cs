@@ -4,6 +4,9 @@ using System.Numerics;
 using System.Threading;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Hooking;
+using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
@@ -12,13 +15,12 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Services;
-using HaselCommon.Utils;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows.PortraitHelperWindows;
-using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using Lumina.Excel.GeneratedSheets;
+using Microsoft.Extensions.Logging;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
@@ -27,7 +29,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace HaselTweaks.Tweaks;
 
-public class PortraitHelperConfiguration
+public sealed class PortraitHelperConfiguration
 {
     public List<SavedPreset> Presets = [];
     public List<SavedPresetTag> PresetTags = [];
@@ -50,8 +52,18 @@ public class PortraitHelperConfiguration
     public bool AutoUpdatePotraitOnGearUpdate = false;
 }
 
-[Tweak]
-public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
+public sealed unsafe class PortraitHelper(
+    ILogger<PortraitHelper> Logger,
+    IGameInteropProvider GameInteropProvider,
+    Configuration PluginConfig,
+    TranslationManager TranslationManager,
+    DalamudPluginInterface PluginInterface,
+    IFramework Framework,
+    IClientState ClientState,
+    IChatGui ChatGui,
+    AddonObserver AddonObserver,
+    MenuBar MenuBar) // TODO: use transient services and store in a nullable field
+    : Tweak<PortraitHelperConfiguration>(PluginConfig, TranslationManager)
 {
     private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
@@ -63,34 +75,52 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
     private delegate void HandleUIModulePacketDelegate(UIModule* uiModule, UIModulePacketType type, uint uintParam, void* packet);
 
-    private AddressHook<UIClipboard.Delegates.OnClipboardDataChanged>? OnClipboardDataChangedHook;
-    private AddressHook<RaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
-    private AddressHook<HandleUIModulePacketDelegate>? HandleUIModulePacketHook;
+    private Hook<UIClipboard.Delegates.OnClipboardDataChanged>? OnClipboardDataChangedHook;
+    private Hook<RaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
+    private Hook<HandleUIModulePacketDelegate>? HandleUIModulePacketHook;
 
-    public override void SetupHooks()
+    public override void OnInitialize()
     {
-        OnClipboardDataChangedHook = new(UIClipboard.MemberFunctionPointers.OnClipboardDataChanged, OnClipboardDataChangedDetour);
-        UpdateGearsetHook = new(RaptureGearsetModule.MemberFunctionPointers.UpdateGearset, UpdateGearsetDetour);
-        HandleUIModulePacketHook = new(UIModule.StaticVirtualTablePointer->HandlePacket, HandleUIModulePacketDetour);
+        OnClipboardDataChangedHook = GameInteropProvider.HookFromAddress<UIClipboard.Delegates.OnClipboardDataChanged>(
+            UIClipboard.MemberFunctionPointers.OnClipboardDataChanged,
+            OnClipboardDataChangedDetour);
+
+        UpdateGearsetHook = GameInteropProvider.HookFromAddress<RaptureGearsetModule.Delegates.UpdateGearset>(
+            RaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
+            UpdateGearsetDetour);
+
+        HandleUIModulePacketHook = GameInteropProvider.HookFromAddress<HandleUIModulePacketDelegate>(
+            UIModule.StaticVirtualTablePointer->HandlePacket,
+            HandleUIModulePacketDetour);
     }
 
-    public override void Enable()
+    public override void OnEnable()
     {
-        _openPortraitEditPayload = Service.PluginInterface.AddChatLinkHandler(1000, OpenPortraitEditChatHandler);
+        _openPortraitEditPayload = PluginInterface.AddChatLinkHandler(1000, OpenPortraitEditChatHandler);
 
         if (IsAddonOpen(AgentId.BannerEditor))
             OnAddonOpen("BannerEditor");
+
+        AddonObserver.AddonOpen += OnAddonOpen;
+        AddonObserver.AddonClose += OnAddonClose;
+
+        OnClipboardDataChangedHook?.Enable();
+        UpdateGearsetHook?.Enable();
+        HandleUIModulePacketHook?.Enable();
     }
 
-    public override void Disable()
+    public override void OnDisable()
     {
-        Service.PluginInterface.RemoveChatLinkHandler(1000);
+        AddonObserver.AddonOpen -= OnAddonOpen;
+        AddonObserver.AddonClose -= OnAddonClose;
 
-        if (Service.HasService<WindowManager>())
-        {
-            Service.WindowManager.CloseWindow<MenuBar>();
-            CloseOverlays();
-        }
+        PluginInterface.RemoveChatLinkHandler(1000);
+
+        MenuBar.Close();
+
+        OnClipboardDataChangedHook?.Disable();
+        UpdateGearsetHook?.Disable();
+        HandleUIModulePacketHook?.Disable();
     }
 
     private void OpenPortraitEditChatHandler(uint commandId, SeString message)
@@ -100,44 +130,39 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         if (!raptureGearsetModule->IsValidGearset(gearsetId))
             return;
 
-        GetAgent<AgentBannerEditor>()->OpenForGearset(gearsetId);
+        AgentBannerEditor.Instance()->OpenForGearset(gearsetId);
     }
 
-    public override void OnAddonOpen(string addonName)
+    private void OnAddonOpen(string addonName)
     {
         if (addonName != "BannerEditor")
             return;
 
-        if (!IsAddonOpen(addonName))
-            return;
-
-        Service.WindowManager.OpenWindow<MenuBar>();
+        MenuBar.Open();
     }
 
-    public override void OnAddonClose(string addonName)
+    private void OnAddonClose(string addonName)
     {
         if (addonName != "BannerEditor")
             return;
 
-        Service.WindowManager.CloseWindow<MenuBar>();
-        CloseOverlays();
-    }
-
-    public static void CloseOverlays()
-    {
-        Service.WindowManager.CloseWindow<AdvancedImportOverlay>();
-        Service.WindowManager.CloseWindow<AdvancedEditOverlay>();
-        Service.WindowManager.CloseWindow<PresetBrowserOverlay>();
-        Service.WindowManager.CloseWindow<AlignmentToolSettingsOverlay>();
+        MenuBar.Close();
     }
 
     private void OnClipboardDataChangedDetour(UIClipboard* uiClipboard)
     {
         OnClipboardDataChangedHook!.Original(uiClipboard);
 
-        ClipboardPreset = PortraitPreset.FromExportedString(uiClipboard->Data.SystemClipboardText.ToString());
-        if (ClipboardPreset != null)
-            Debug($"Parsed ClipboardPreset: {ClipboardPreset}");
+        try
+        {
+            ClipboardPreset = PortraitPreset.FromExportedString(uiClipboard->Data.SystemClipboardText.ToString());
+            if (ClipboardPreset != null)
+                Logger.LogDebug("Parsed ClipboardPreset: {ClipboardPreset}", ClipboardPreset);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error reading preset");
+        }
     }
 
     private void UpdateGearsetDetour(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
@@ -147,7 +172,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         MismatchCheckCTS?.Cancel();
         MismatchCheckCTS = new();
 
-        Service.Framework.RunOnTick(
+        Framework.RunOnTick(
             () => CheckForGearChecksumMismatch(gearsetId),
             CheckDelay,
             cancellationToken: MismatchCheckCTS.Token);
@@ -157,13 +182,13 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
     {
         HandleUIModulePacketHook!.Original(uiModule, type, uintParam, packet);
 
-        if (type != UIModulePacketType.ClassJobChange || !Service.ClientState.IsLoggedIn)
+        if (type != UIModulePacketType.ClassJobChange || !ClientState.IsLoggedIn)
             return;
 
         MismatchCheckCTS?.Cancel();
         MismatchCheckCTS = new();
 
-        Service.Framework.RunOnTick(
+        Framework.RunOnTick(
             () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex, true),
             CheckDelay,
             cancellationToken: MismatchCheckCTS.Token);
@@ -197,21 +222,21 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
         if (banner->Checksum == checksum)
         {
-            Log($"Gear checksum matches! (Portrait: {banner->Checksum:X}, Equipped: {checksum:X})");
+            Logger.LogInformation("Gear checksum matches! (Portrait: {bannerChecksum:X}, Equipped: {checksum:X})", banner->Checksum, checksum);
             return;
         }
 
-        Log($"Gear checksum mismatch detected! (Portrait: {banner->Checksum:X}, Equipped: {checksum:X})");
+        Logger.LogInformation("Gear checksum mismatch detected! (Portrait: {bannerChecksum:X}, Equipped: {checksum:X})", banner->Checksum, checksum);
 
         if (!isJobChange && Config.ReequipGearsetOnUpdate && gearset->GlamourSetLink > 0 && GameMain.IsInSanctuary())
         {
-            Log($"Re-equipping Gearset #{gearset->Id + 1} to reapply glamour plate");
+            Logger.LogInformation("Re-equipping Gearset #{gearsetId} to reapply glamour plate", gearset->Id + 1);
             raptureGearsetModule->EquipGearset(gearset->Id, gearset->GlamourSetLink);
             RecheckGearChecksum(banner);
         }
         else if (!isJobChange && Config.AutoUpdatePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
         {
-            Log("Trying to send portrait update...");
+            Logger.LogInformation("Trying to send portrait update...");
             if (SendPortraitUpdate(banner))
                 RecheckGearChecksum(banner);
         }
@@ -226,23 +251,23 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         MismatchCheckCTS?.Cancel();
         MismatchCheckCTS = new();
 
-        Service.Framework.RunOnTick(() =>
+        Framework.RunOnTick(() =>
         {
             if (banner->Checksum != GetEquippedGearChecksum())
             {
-                Log($"Gear checksum still mismatching (Portrait: {banner->Checksum:X}, Equipped: {GetEquippedGearChecksum():X})");
+                Logger.LogInformation("Gear checksum still mismatching (Portrait: {bannerChecksum:X}, Equipped: {equippedChecksum:X})", banner->Checksum, GetEquippedGearChecksum());
                 NotifyMismatch();
             }
             else
             {
-                Log($"Gear checksum matches now (Portrait: {banner->Checksum:X}, Equipped: {GetEquippedGearChecksum():X})");
+                Logger.LogInformation("Gear checksum matches now (Portrait: {bannerChecksum:X}, Equipped: {equippedChecksum:X})", banner->Checksum, GetEquippedGearChecksum());
             }
         }, delay: CheckDelay, cancellationToken: MismatchCheckCTS.Token); // TODO: find out when it's safe to check again instead of randomly picking a delay. ping may vary
     }
 
     private void NotifyMismatch()
     {
-        var text = t("PortraitHelper.GearChecksumMismatch"); // based on LogMessage#5876
+        var text = TranslationManager.Translate("PortraitHelper.GearChecksumMismatch"); // based on LogMessage#5876
 
         var sb = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32);
@@ -268,7 +293,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
         UIModule.Instance()->ShowErrorText(text, false);
 
-        Service.ChatGui.PrintError(sb.Build());
+        ChatGui.PrintError(sb.Build());
     }
 
     private uint GetEquippedGearChecksum()
@@ -310,41 +335,41 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
         var gearsetId = raptureGearsetModule->CurrentGearsetIndex;
         if (!raptureGearsetModule->IsValidGearset(gearsetId))
         {
-            Warning("No Portrait Update: Gearset invalid");
+            Logger.LogWarning("No Portrait Update: Gearset invalid");
             return false;
         }
 
         var gearset = raptureGearsetModule->GetGearset(gearsetId);
         if (gearset == null)
         {
-            Warning("No Portrait Update: Gearset is null");
+            Logger.LogWarning("No Portrait Update: Gearset is null");
             return false;
         }
 
         var bannerIndex = gearset->BannerIndex;
         if (bannerIndex == 0) // no banner linked
         {
-            Information("No Portrait Update: Gearset not linked to Banner");
+            Logger.LogInformation("No Portrait Update: Gearset not linked to Banner");
             return false;
         }
 
         if (banner->BannerIndex != bannerIndex - 1)
         {
-            Warning($"No Portrait Update: Banner index mismatch (Banner: {banner->BannerIndex}, Gearset Banner Link: {bannerIndex - 1})");
+            Logger.LogWarning($"No Portrait Update: Banner index mismatch (Banner: {banner->BannerIndex}, Gearset Banner Link: {bannerIndex - 1})");
             return false;
         }
 
         var currentChecksum = GetEquippedGearChecksum();
         if (banner->Checksum == currentChecksum)
         {
-            Information("No Portrait Update: Checksum still matches");
+            Logger.LogInformation("No Portrait Update: Checksum still matches");
             return false;
         }
 
         var localPlayer = (Character*)Control.GetLocalPlayer();
         if (localPlayer == null)
         {
-            Warning("No Portrait Update: LocalPlayer is null");
+            Logger.LogWarning("No Portrait Update: LocalPlayer is null");
             return false;
         }
 
@@ -354,13 +379,13 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
         if (!helper->IsBannerNotExpired(banner, 1))
         {
-            Warning("No Portrait Update: Banner expired");
+            Logger.LogWarning("No Portrait Update: Banner expired");
             return false;
         }
 
         if (!helper->IsBannerCharacterDataNotExpired(banner, 1))
         {
-            Warning("No Portrait Update: Banner character data expired");
+            Logger.LogWarning("No Portrait Update: Banner character data expired");
             return false;
         }
 
@@ -368,7 +393,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
         if (!helper->InitializeBannerUpdateData(&bannerUpdateData))
         {
-            Warning("No Portrait Update: InitializeBannerUpdateData failed");
+            Logger.LogWarning("No Portrait Update: InitializeBannerUpdateData failed");
             return false;
         }
 
@@ -380,7 +405,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
         if (!helper->CopyBannerEntryToBannerUpdateData(&bannerUpdateData, banner))
         {
-            Warning("No Portrait Update: CopyBannerEntryToBannerUpdateData failed");
+            Logger.LogWarning("No Portrait Update: CopyBannerEntryToBannerUpdateData failed");
             return false;
         }
 
@@ -388,23 +413,23 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
         if (result)
         {
-            Log("Portrait Update sent");
+            Logger.LogInformation("Portrait Update sent");
         }
         else
         {
-            Warning("Portrait Update failed to send");
+            Logger.LogWarning("Portrait Update failed to send");
         }
 
         return result;
     }
 
-    public static Image<Bgra32>? GetCurrentCharaViewImage()
+    public static Image<Bgra32>? GetCurrentCharaViewImage(DalamudPluginInterface pluginInterface)
     {
-        var charaViewTexture = RenderTargetManager.Instance()->GetCharaViewTexture(GetAgent<AgentBannerEditor>()->EditorState->CharaView->ClientObjectIndex);
+        var charaViewTexture = RenderTargetManager.Instance()->GetCharaViewTexture(AgentBannerEditor.Instance()->EditorState->CharaView->ClientObjectIndex);
         if (charaViewTexture == null || charaViewTexture->D3D11Texture2D == null)
             return null;
 
-        var device = Service.PluginInterface.UiBuilder.Device;
+        var device = pluginInterface.UiBuilder.Device;
         var texture = CppObject.FromPointer<Texture2D>((nint)charaViewTexture->D3D11Texture2D);
 
         // thanks to ChatGPT
@@ -443,7 +468,7 @@ public unsafe partial class PortraitHelper : Tweak<PortraitHelperConfiguration>
 
     public static string GetPortraitThumbnailPath(Guid id)
     {
-        var portraitsPath = Path.Join(Service.PluginInterface.ConfigDirectory.FullName, "Portraits");
+        var portraitsPath = Path.Join(Service.Get<DalamudPluginInterface>().ConfigDirectory.FullName, "Portraits");
 
         if (!Directory.Exists(portraitsPath))
             Directory.CreateDirectory(portraitsPath);

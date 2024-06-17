@@ -61,7 +61,7 @@ public class RenameTagDialog : ConfirmationDialog
         }
 
         _tag.Name = _name.Trim();
-        Service.GetService<Configuration>().Save();
+        Service.Get<Configuration>().Save();
 
         Close();
     }

@@ -1,17 +1,22 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Keys;
+using Dalamud.Hooking;
+using Dalamud.Plugin.Services;
 using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Enums;
 using HaselTweaks.Structs;
+using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-public class CharacterClassSwitcherConfiguration
+public sealed class CharacterClassSwitcherConfiguration
 {
     [BoolConfig]
     public bool DisableTooltips = false;
@@ -20,20 +25,21 @@ public class CharacterClassSwitcherConfiguration
     public bool AlwaysOpenOnClassesJobsTab = false;
 
     [EnumConfig(DependsOn = nameof(AlwaysOpenOnClassesJobsTab))]
-    public CharacterClassSwitcher.ClassesJobsSubTabs ForceClassesJobsSubTab = CharacterClassSwitcher.ClassesJobsSubTabs.None;
+    public ClassesJobsSubTabs ForceClassesJobsSubTab = ClassesJobsSubTabs.None;
 }
 
-[Tweak, IncompatibilityWarning("SimpleTweaksPlugin", "CharacterWindowJobSwitcher")]
-public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitcherConfiguration>
+[IncompatibilityWarning("SimpleTweaksPlugin", "CharacterWindowJobSwitcher")]
+public sealed unsafe class CharacterClassSwitcher(
+    ILogger<CharacterClassSwitcher> Logger,
+    IGameInteropProvider GameInteropProvider,
+    Configuration PluginConfig,
+    TranslationManager TranslationManager,
+    IAddonLifecycle AddonLifecycle,
+    IKeyState KeyState,
+    IChatGui ChatGui)
+    : Tweak<CharacterClassSwitcherConfiguration>(PluginConfig, TranslationManager)
 {
     private const int NumClasses = 31;
-
-    public enum ClassesJobsSubTabs
-    {
-        None,
-        DoWDoM,
-        DoHDoL,
-    }
 
     private MemoryReplacement? TooltipPatch;
     private MemoryReplacement? PvpTooltipPatch;
@@ -60,24 +66,41 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
     [Signature("48 8D 4C 24 ?? E8 ?? ?? ?? ?? 48 8B 83 ?? ?? ?? ?? 48 8B CF 0F B7 9F")]
     private nint PvPTooltipAddress { get; init; }
 
-    private AddressHook<AddonCharacterClass.Delegates.OnSetup>? AddonCharacterClassOnSetupHook;
-    private AddressHook<AddonCharacterClass.Delegates.OnRequestedUpdate>? AddonCharacterClassOnRequestedUpdateHook;
-    private AddressHook<AddonCharacterClass.Delegates.ReceiveEvent>? AddonCharacterClassReceiveEventHook;
-    private AddressHook<AddonPvPCharacter.Delegates.UpdateClasses>? AddonPvPCharacterUpdateClassesHook;
-    private AddressHook<AddonPvPCharacter.Delegates.ReceiveEvent>? AddonPvPCharacterReceiveEventHook;
-    private AddressHook<AgentStatus.Delegates.Show>? AgentStatusShowHook;
+    private Hook<AddonCharacterClass.Delegates.OnSetup>? AddonCharacterClassOnSetupHook;
+    private Hook<AddonCharacterClass.Delegates.OnRequestedUpdate>? AddonCharacterClassOnRequestedUpdateHook;
+    private Hook<AddonCharacterClass.Delegates.ReceiveEvent>? AddonCharacterClassReceiveEventHook;
+    private Hook<AddonPvPCharacter.Delegates.UpdateClasses>? AddonPvPCharacterUpdateClassesHook;
+    private Hook<AddonPvPCharacter.Delegates.ReceiveEvent>? AddonPvPCharacterReceiveEventHook;
+    private Hook<AgentStatus.Delegates.Show>? AgentStatusShowHook;
 
-    public override void SetupHooks()
+    public override void OnInitialize()
     {
-        AddonCharacterClassOnSetupHook = new(AddonCharacterClass.StaticVirtualTablePointer->OnSetup, AddonCharacterClassOnSetupDetour);
-        AddonCharacterClassOnRequestedUpdateHook = new(AddonCharacterClass.StaticVirtualTablePointer->OnRequestedUpdate, AddonCharacterClassOnRequestedUpdateDetour);
-        AddonCharacterClassReceiveEventHook = new(AddonCharacterClass.StaticVirtualTablePointer->ReceiveEvent, AddonCharacterClassReceiveEventDetour);
-        AddonPvPCharacterUpdateClassesHook = new(AddonPvPCharacter.MemberFunctionPointers.UpdateClasses, AddonPvPCharacterUpdateClassesDetour);
-        AddonPvPCharacterReceiveEventHook = new(AddonPvPCharacter.StaticVirtualTablePointer->ReceiveEvent, AddonPvPCharacterReceiveEventDetour);
-        AgentStatusShowHook = new(GetAgent<AgentStatus>()->VirtualTable->Show, AgentStatusShowDetour);
+        AddonCharacterClassOnSetupHook = GameInteropProvider.HookFromAddress<AddonCharacterClass.Delegates.OnSetup>(
+            AddonCharacterClass.StaticVirtualTablePointer->OnSetup,
+            AddonCharacterClassOnSetupDetour);
+
+        AddonCharacterClassOnRequestedUpdateHook = GameInteropProvider.HookFromAddress<AddonCharacterClass.Delegates.OnRequestedUpdate>(
+            AddonCharacterClass.StaticVirtualTablePointer->OnRequestedUpdate,
+            AddonCharacterClassOnRequestedUpdateDetour);
+
+        AddonCharacterClassReceiveEventHook = GameInteropProvider.HookFromAddress<AddonCharacterClass.Delegates.ReceiveEvent>(
+            AddonCharacterClass.StaticVirtualTablePointer->ReceiveEvent,
+            AddonCharacterClassReceiveEventDetour);
+
+        AddonPvPCharacterUpdateClassesHook = GameInteropProvider.HookFromAddress<AddonPvPCharacter.Delegates.UpdateClasses>(
+            AddonPvPCharacter.MemberFunctionPointers.UpdateClasses,
+            AddonPvPCharacterUpdateClassesDetour);
+
+        AddonPvPCharacterReceiveEventHook = GameInteropProvider.HookFromAddress<AddonPvPCharacter.Delegates.ReceiveEvent>(
+            AddonPvPCharacter.StaticVirtualTablePointer->ReceiveEvent,
+            AddonPvPCharacterReceiveEventDetour);
+
+        AgentStatusShowHook = GameInteropProvider.HookFromAddress<AgentStatus.Delegates.Show>(
+            GetAgent<AgentStatus>()->VirtualTable->Show,
+            AgentStatusShowDetour);
     }
 
-    public override void Enable()
+    public override void OnEnable()
     {
         TooltipPatch = new(TooltipAddress + 8, [0xEB]);
         PvpTooltipPatch = new(PvPTooltipAddress, [0xEB, 0x63]);
@@ -88,15 +111,29 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
             PvpTooltipPatch.Enable();
         }
 
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "AddonPvPCharacter", AddonPvPCharacterOnSetup);
+        AddonCharacterClassOnSetupHook?.Enable();
+        AddonCharacterClassOnRequestedUpdateHook?.Enable();
+        AddonCharacterClassReceiveEventHook?.Enable();
+        AddonPvPCharacterUpdateClassesHook?.Enable();
+        AddonPvPCharacterReceiveEventHook?.Enable();
+        AgentStatusShowHook?.Enable();
+
+        AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "AddonPvPCharacter", AddonPvPCharacterOnSetup);
     }
 
-    public override void Disable()
+    public override void OnDisable()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "AddonPvPCharacter", AddonPvPCharacterOnSetup);
-
         TooltipPatch?.Disable();
         PvpTooltipPatch?.Disable();
+
+        AddonCharacterClassOnSetupHook?.Disable();
+        AddonCharacterClassOnRequestedUpdateHook?.Disable();
+        AddonCharacterClassReceiveEventHook?.Disable();
+        AddonPvPCharacterUpdateClassesHook?.Disable();
+        AddonPvPCharacterReceiveEventHook?.Disable();
+        AgentStatusShowHook?.Disable();
+
+        AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "AddonPvPCharacter", AddonPvPCharacterOnSetup);
     }
 
     public override void OnConfigChange(string fieldName)
@@ -217,7 +254,7 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
                 eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick ||
                 (eventType == AtkEventType.InputReceived && GamepadUtils.IsPressed(GamepadUtils.GamepadBinding.Accept));
 
-            if (isClick && !Service.KeyState[VirtualKey.SHIFT])
+            if (isClick && !KeyState[VirtualKey.SHIFT])
             {
                 SwitchClassJob(8 + (uint)eventParam - 22);
                 return true;
@@ -368,11 +405,11 @@ public unsafe partial class CharacterClassSwitcher : Tweak<CharacterClassSwitche
 
         if (selectedGearset.Id == -1)
         {
-            Service.ChatGui.PrintError(t("CharacterClassSwitcher.NoSuitableGearsetFound"));
+            ChatGui.PrintError(t("CharacterClassSwitcher.NoSuitableGearsetFound"));
             return;
         }
 
-        Log($"Equipping gearset #{selectedGearset.Id}");
+        Logger.LogInformation("Equipping gearset #{selectedGearsetId}", selectedGearset.Id);
         gearsetModule->EquipGearset(selectedGearset.Id - 1);
     }
 

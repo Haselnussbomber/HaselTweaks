@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dalamud.Interface.Utility.Raii;
+using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -15,7 +17,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class CreatePresetDialog : ConfirmationDialog
 {
-    private static PortraitHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.PortraitHelper;
+    private static PortraitHelperConfiguration Config => Service.Get<Configuration>().Tweaks.PortraitHelper;
 
     private readonly ConfirmationButton _saveButton;
 
@@ -104,14 +106,14 @@ public class CreatePresetDialog : ConfirmationDialog
     {
         if (_preset == null || _image == null || string.IsNullOrEmpty(_name?.Trim()))
         {
-            Service.PluginLog.Error("Could not save portrait: data missing"); // TODO: show error
+            Service.Get<IPluginLog>().Error("Could not save portrait: data missing"); // TODO: show error
             Close();
             return;
         }
 
         Hide();
 
-        Task.Run(() =>
+        Task.Run((Action)(() =>
         {
             var guid = Guid.NewGuid();
             var thumbPath = PortraitHelper.GetPortraitThumbnailPath(guid);
@@ -129,9 +131,9 @@ public class CreatePresetDialog : ConfirmationDialog
             });
 
             Config.Presets.Insert(0, new(guid, _name.Trim(), _preset, _tags!));
-            Service.GetService<Configuration>().Save();
+            Service.Get<Configuration>().Save();
 
             Close();
-        });
+        }));
     }
 }

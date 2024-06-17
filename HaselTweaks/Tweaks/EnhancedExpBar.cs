@@ -2,17 +2,19 @@ using System.Linq;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Services;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-public class EnhancedExpBarConfiguration
+public sealed class EnhancedExpBarConfiguration
 {
     [BoolConfig]
     public bool ForcePvPSeriesBar = true;
@@ -33,8 +35,14 @@ public class EnhancedExpBarConfiguration
     public bool DisableColorChanges = false;
 }
 
-[Tweak, IncompatibilityWarning("SimpleTweaksPlugin", "ShowExperiencePercentage")]
-public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
+[IncompatibilityWarning("SimpleTweaksPlugin", "ShowExperiencePercentage")]
+public sealed unsafe class EnhancedExpBar(
+    Configuration PluginConfig,
+    TranslationManager TranslationManager,
+    IFramework Framework,
+    IClientState ClientState,
+    IAddonLifecycle AddonLifecycle)
+    : Tweak<EnhancedExpBarConfiguration>(PluginConfig, TranslationManager)
 {
     public enum MaxLevelOverrideType
     {
@@ -44,22 +52,24 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         // No SanctuaryBar, because data is only available on the island
     }
 
-    public override void Enable()
+    public override void OnEnable()
     {
-        Service.ClientState.LeavePvP += ClientState_LeavePvP;
-        Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
+        Framework.Update += OnFrameworkUpdate;
+        ClientState.LeavePvP += ClientState_LeavePvP;
+        ClientState.TerritoryChanged += ClientState_TerritoryChanged;
         _isEnabled = true;
         RunUpdate();
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
+        AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
     }
 
-    public override void Disable()
+    public override void OnDisable()
     {
-        Service.ClientState.LeavePvP -= ClientState_LeavePvP;
-        Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
+        Framework.Update -= OnFrameworkUpdate;
+        ClientState.LeavePvP -= ClientState_LeavePvP;
+        ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
         _isEnabled = false;
         RunUpdate();
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
+        AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
     }
 
     public override void OnConfigChange(string fieldName)
@@ -86,9 +96,9 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
     private uint _lastIslandExperience = 0;
     private ushort _lastSyncedFateId = 0;
 
-    public override void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework framework)
     {
-        if (!Service.ClientState.IsLoggedIn)
+        if (!ClientState.IsLoggedIn)
             return;
 
         var pvpProfile = PvPProfile.Instance();
@@ -167,13 +177,13 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         if (nineGridNode == null)
             return;
 
-        if (Service.ClientState.LocalPlayer == null)
+        if (ClientState.LocalPlayer == null)
         {
             ResetColor(nineGridNode);
             return;
         }
 
-        if (Service.ClientState.LocalPlayer.ClassJob.GameData == null)
+        if (ClientState.LocalPlayer.ClassJob.GameData == null)
         {
             ResetColor(nineGridNode);
             return;
@@ -208,7 +218,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
 
         // --- max level overrides
 
-        if (Service.ClientState.LocalPlayer.Level == PlayerState.Instance()->MaxLevel)
+        if (ClientState.LocalPlayer.Level == PlayerState.Instance()->MaxLevel)
         {
             if (Config.MaxLevelOverride == MaxLevelOverrideType.PvPSeriesBar)
             {
@@ -242,7 +252,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
 
         var currentRank = buddy.Rank;
 
-        var job = Service.ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation;
+        var job = ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation;
         var levelLabel = (GetAddonText(4968) ?? "Rank").Trim().Replace(":", "");
         var rank = currentRank > 20 ? 20 : currentRank;
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
@@ -279,7 +289,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         var claimedRank = pvpProfile->GetSeriesClaimedRank();
         var currentRank = pvpProfile->GetSeriesCurrentRank();
 
-        var job = Service.ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation;
+        var job = ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation;
         var levelLabel = (GetAddonText(14860) ?? "Series Level").Trim().Replace(":", "");
         var rank = currentRank > 30 ? 30 : currentRank; // 30 = Series Max Rank, hopefully in the future too
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
@@ -322,7 +332,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
             return;
         }
 
-        var job = Config.SanctuaryBarHideJob ? "" : Service.ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation + "  ";
+        var job = Config.SanctuaryBarHideJob ? "" : ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation + "  ";
         var levelLabel = (GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
         var level = mjiManager->IslandState.CurrentRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var requiredExperience = GetRow<MJIRank>(mjiManager->IslandState.CurrentRank)!.ExpToNext;

@@ -1,12 +1,15 @@
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Services;
+using Microsoft.Extensions.Logging;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-public class ScrollableTabsConfiguration
+public sealed class ScrollableTabsConfiguration
 {
     [BoolConfig]
     public bool Invert = true;
@@ -81,8 +84,14 @@ public class ScrollableTabsConfiguration
     public bool HandleAdventureNoteBook = true;
 }
 
-[Tweak]
-public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
+public sealed unsafe class ScrollableTabs(
+    ILogger<ScrollableTabs> Logger,
+    Configuration PluginConfig,
+    TranslationManager TranslationManager,
+    IFramework Framework,
+    IClientState ClientState,
+    IGameConfig GameConfig)
+    : Tweak<ScrollableTabsConfiguration>(PluginConfig, TranslationManager)
 {
     private const int NumArmouryBoardTabs = 12;
     private const int NumInventoryTabs = 5;
@@ -94,9 +103,6 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private int _wheelState;
 
-    private AtkUnitBase* IntersectingAddon
-        => RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingAddon;
-
     private AtkCollisionNode* IntersectingCollisionNode
         => RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingCollisionNode;
 
@@ -106,9 +112,19 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
     private bool IsPrev
         => _wheelState == (!Config.Invert ? -1 : 1);
 
-    public override void OnFrameworkUpdate()
+    public override void OnEnable()
     {
-        if (!Service.ClientState.IsLoggedIn)
+        Framework.Update += OnFrameworkUpdate;
+    }
+
+    public override void OnDisable()
+    {
+        Framework.Update -= OnFrameworkUpdate;
+    }
+
+    private void OnFrameworkUpdate(IFramework framework)
+    {
+        if (!ClientState.IsLoggedIn)
             return;
 
         _wheelState = Math.Clamp(UIInputData.Instance()->MouseWheel, -1, 1);
@@ -118,7 +134,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         if (Config.Invert)
             _wheelState *= -1;
 
-        var hoveredUnitBase = IntersectingAddon;
+        var hoveredUnitBase = RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingAddon;
         if (hoveredUnitBase == null)
         {
             _wheelState = 0;
@@ -180,7 +196,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             // used by InventoryLarge or InventoryExpansion
             case "InventoryCrystalGrid":
                 name = "InventoryLarge";
-                if (Service.GameConfig.UiConfig.TryGet("ItemInventryWindowSizeType", out uint itemInventryWindowSizeType) && itemInventryWindowSizeType == 2)
+                if (GameConfig.UiConfig.TryGet("ItemInventryWindowSizeType", out uint itemInventryWindowSizeType) && itemInventryWindowSizeType == 2)
                     name = "InventoryExpansion";
                 break;
 
@@ -235,7 +251,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
             default:
 #if DEBUG
-                Verbose($"Unhandled AtkUnitBase: {name}");
+                Logger.LogTrace("Unhandled AtkUnitBase: {name}", name);
 #endif
                 _wheelState = 0;
                 return;

@@ -2,32 +2,49 @@ using System.Linq;
 using System.Threading;
 using Dalamud.Game.Inventory;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselCommon.Extensions;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using Lumina.Excel.GeneratedSheets;
+using Microsoft.Extensions.Logging;
 using AgentRecipeNote = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentRecipeNote;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe class AutoOpenRecipe : Tweak
+public unsafe class AutoOpenRecipe(
+    ILogger<AutoOpenRecipe> Logger,
+    IFramework Framework,
+    IGameInventory GameInventory)
+    : ITweak
 {
     private CancellationTokenSource? CheckCTS;
     private DateTime LastTimeRecipeOpened = DateTime.MinValue;
 
-    public override void Enable()
+    public string InternalName => nameof(AutoOpenRecipe);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    public void OnInitialize() { }
+
+    public void OnEnable()
     {
-        Service.GameInventory.ItemAddedExplicit += GameInventory_ItemAddedExplicit;
+        GameInventory.ItemAddedExplicit += GameInventory_ItemAddedExplicit;
     }
 
-    public override void Disable()
+    public void OnDisable()
     {
         CheckCTS?.Cancel();
         CheckCTS = null;
-        Service.GameInventory.ItemAddedExplicit -= GameInventory_ItemAddedExplicit;
+        GameInventory.ItemAddedExplicit -= GameInventory_ItemAddedExplicit;
+    }
+
+    public void Dispose()
+    {
+        OnDisable();
     }
 
     private void GameInventory_ItemAddedExplicit(InventoryItemAddedArgs data)
@@ -38,13 +55,13 @@ public unsafe class AutoOpenRecipe : Tweak
         if (data.Item.ContainerType is not (GameInventoryType.Inventory1 or GameInventoryType.Inventory2 or GameInventoryType.Inventory3 or GameInventoryType.Inventory4 or GameInventoryType.KeyItems)) // only handle inventory
             return;
 
-        if (Conditions.IsCrafting || Conditions.IsCrafting40 || GetAgent<AgentRecipeNote>()->ActiveCraftRecipeId != 0) // skip if crafting
+        if (Conditions.IsCrafting || Conditions.IsCrafting40 || AgentRecipeNote.Instance()->ActiveCraftRecipeId != 0) // skip if crafting
             return;
 
         if (DateTime.UtcNow - LastTimeRecipeOpened < TimeSpan.FromSeconds(3))
             return;
 
-        Debug($"Inventory item added: {data.Item}");
+        Logger.LogDebug($"Inventory item added: {data.Item}");
 
         CheckCTS?.Cancel();
         CheckCTS = null;
@@ -56,7 +73,7 @@ public unsafe class AutoOpenRecipe : Tweak
                 LastTimeRecipeOpened = DateTime.UtcNow;
         }
 
-        Service.Framework.RunOnTick(
+        Framework.RunOnTick(
             action,
             delay: TimeSpan.FromMilliseconds(100),
             cancellationToken: CheckCTS.Token);
@@ -78,19 +95,19 @@ public unsafe class AutoOpenRecipe : Tweak
             if (quest == null || !(questManager->GetDailyQuestById(questWork.QuestId) != null || quest.BeastTribe.Row != 0)) // check if daily or tribal quest
                 continue;
 
-            Debug($"Checking Quest #{questWork.QuestId} ({GetSheetText<Quest>((uint)questWork.QuestId | 0x10000, "Name")}) (Sequence {questWork.Sequence})");
+            Logger.LogDebug($"Checking Quest #{questWork.QuestId} ({GetSheetText<Quest>((uint)questWork.QuestId | 0x10000, "Name")}) (Sequence {questWork.Sequence})");
 
             var todoOffset = (byte)quest!.ToDoCompleteSeq.IndexOf(questWork.Sequence);
             if (todoOffset < 0 || todoOffset >= quest.ToDoQty.Length)
             {
-                Debug($"Skipping: todoOffset = {todoOffset}, quest.ToDoQty.Length = {quest.ToDoQty.Length}");
+                Logger.LogDebug($"Skipping: todoOffset = {todoOffset}, quest.ToDoQty.Length = {quest.ToDoQty.Length}");
                 continue;
             }
 
             var questEventHandler = (QuestEventHandler*)EventFramework.Instance()->GetEventHandlerById(quest.RowId);
             if (questEventHandler == null)
             {
-                Debug($"Skipping: No QuestEventHandler");
+                Logger.LogDebug($"Skipping: No QuestEventHandler");
                 continue;
             }
 
@@ -215,7 +232,7 @@ public unsafe class AutoOpenRecipe : Tweak
 
                 resultItemId %= 1000000;
 
-                Debug($"TodoArgs #{todoIndex}: {numHave}/{numNeeded} of {resultItemId}");
+                Logger.LogDebug($"TodoArgs #{todoIndex}: {numHave}/{numNeeded} of {resultItemId}");
 
                 if (resultItemId == 0)
                     continue;
@@ -235,25 +252,25 @@ public unsafe class AutoOpenRecipe : Tweak
                   ?? FindRow<Recipe>(row => row?.ItemResult.Row == resultItemId);
         if (recipe == null)
         {
-            Debug($"Not opening Recipe for Item {resultItemId}: Recipe not found");
+            Logger.LogDebug($"Not opening Recipe for Item {resultItemId}: Recipe not found");
             return false;
         }
 
         if (!recipe.UnkData5.Any(item => item.ItemIngredient == materialItemId))
         {
-            Debug($"Not opening Recipe for Item {resultItemId}: Required ingredient {materialItemId} not needed");
+            Logger.LogDebug($"Not opening Recipe for Item {resultItemId}: Required ingredient {materialItemId} not needed");
             return false;
         }
 
         if (!IngredientsAvailable(recipe, amount))
         {
-            Debug($"Not opening Recipe for Item {resultItemId}: Required ingredients not available");
+            Logger.LogDebug($"Not opening Recipe for Item {resultItemId}: Required ingredients not available");
             return false;
         }
 
-        Debug($"Requirements met, opening recipe {recipe.RowId}");
+        Logger.LogDebug($"Requirements met, opening recipe {recipe.RowId}");
 
-        var agentRecipeNote = GetAgent<AgentRecipeNote>();
+        var agentRecipeNote = AgentRecipeNote.Instance();
 
         agentRecipeNote->AgentInterface.Hide();
 
@@ -287,7 +304,7 @@ public unsafe class AutoOpenRecipe : Tweak
 
             var numNeeded = ingredient.AmountIngredient * amount;
 
-            Debug($"Checking Ingredient #{ingredient.ItemIngredient}: need {numNeeded}, have {numHave}");
+            Logger.LogDebug($"Checking Ingredient #{ingredient.ItemIngredient}: need {numNeeded}, have {numHave}");
 
             if (numHave < numNeeded)
                 return false;

@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -23,14 +24,23 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
     private bool HideUnlocked = true;
 
     private static readonly HaselColor TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
+    private static readonly string[] CompassHeadings = ["E", "NE", "N", "NW", "W", "SW", "S", "SE"];
+    private AetherCurrentHelperConfiguration Config => PluginConfig.Tweaks.AetherCurrentHelper;
 
-    public static AetherCurrentHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.AetherCurrentHelper;
+    private readonly IClientState ClientState;
+    private readonly TextureManager TextureManager;
 
-    public AetherCurrentHelperWindow() : base("[HaselTweaks] Aether Current Helper")
+    public AetherCurrentHelperWindow(
+        WindowManager windowManager,
+        Configuration pluginConfig,
+        IClientState clientState,
+        CacheManager cacheManager,
+        TextureManager textureManager)
+        : base(windowManager, pluginConfig, "[HaselTweaks] Aether Current Helper")
     {
-        Namespace = "HaselTweaksAetherCurrentHelperWindow";
-        
-        var cacheManager = Service.GetService<CacheManager>();
+        ClientState = clientState;
+        TextureManager = textureManager;
+
         EObjDataIdCache = cacheManager.Get<EObjDataIdCache>();
         QuestNameCache = cacheManager.Get<QuestNameCache>();
 
@@ -43,15 +53,10 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         };
     }
 
-    public AetherCurrentCompFlgSet? CompFlgSet { get; set; } = null;
-
-    public override void OnClose()
-    {
-        Service.WindowManager.CloseWindow<AetherCurrentHelperWindow>();
-    }
+    public AetherCurrentCompFlgSet? CompFlgSet { get; set; }
 
     public override bool DrawConditions()
-        => CompFlgSet != null && Service.ClientState.IsLoggedIn && !RaptureAtkModule.Instance()->RaptureAtkUnitManager.UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
+        => CompFlgSet != null && ClientState.IsLoggedIn && !RaptureAtkModule.Instance()->RaptureAtkUnitManager.UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
 
     public override unsafe void Draw()
     {
@@ -147,7 +152,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
         ImGui.SetCursorPosX(windowSize.X + style.WindowPadding.X - iconSize - 1);
 
-        Service.TextureManager.GetIcon(64).Draw(iconSize);
+        TextureManager.GetIcon(64).Draw(iconSize);
 
         if (ImGui.IsItemHovered())
         {
@@ -201,7 +206,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
         // Icon
         ImGui.TableNextColumn();
-        Service.TextureManager.GetIcon(quest.JournalGenre.Value!.Icon).Draw(40);
+        TextureManager.GetIcon(quest.JournalGenre.Value!.Icon).Draw(40);
 
         // Content
         ImGui.TableNextColumn();
@@ -233,7 +238,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
         // Icon
         ImGui.TableNextColumn();
-        Service.TextureManager.GetIcon(60033).Draw(40);
+        TextureManager.GetIcon(60033).Draw(40);
 
         // Content
         ImGui.TableNextColumn();
@@ -255,9 +260,9 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         ImGui.Dummy(new Vector2(0, 0));
     }
 
-    private static void DrawUnlockStatus(bool isUnlocked, ExtendedLevel level)
+    private void DrawUnlockStatus(bool isUnlocked, ExtendedLevel level)
     {
-        var isSameTerritory = level.Territory.Row == Service.ClientState.TerritoryType;
+        var isSameTerritory = level.Territory.Row == ClientState.TerritoryType;
         ImGuiUtils.PushCursorY(11);
 
         if (isUnlocked && !Config.AlwaysShowDistance)
@@ -302,7 +307,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         }
     }
 
-    private static void DrawCheckmark(bool isSameTerritory)
+    private void DrawCheckmark(bool isSameTerritory)
     {
         using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
         var icon = FontAwesomeIcon.Check.ToIconString();
@@ -323,8 +328,6 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         return t("AetherCurrentHelperWindow.Coords", x, y);
     }
 
-    private static readonly string[] CompassHeadings = ["E", "NE", "N", "NW", "W", "SW", "S", "SE"];
-
     //! https://gamedev.stackexchange.com/a/49300
     public static string GetCompassDirection(Vector2 a, Vector2 b)
     {
@@ -335,9 +338,9 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         return t($"AetherCurrentHelperWindow.Compass.{CompassHeadings[octant]}");
     }
 
-    public static string GetCompassDirection(Level? level)
+    public string GetCompassDirection(Level? level)
     {
-        var localPlayer = Service.ClientState.LocalPlayer;
+        var localPlayer = ClientState.LocalPlayer;
         return localPlayer == null || level == null
             ? string.Empty
             : GetCompassDirection(

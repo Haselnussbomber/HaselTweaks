@@ -3,6 +3,8 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using HaselCommon;
 using HaselCommon.Interfaces;
 using HaselTweaks.JsonConverters;
@@ -143,10 +145,10 @@ public partial class Configuration
             var presets = (JsonArray?)tweakConfigs?["PortraitHelper"]?["Presets"];
             if (presets != null && presets.Count > 0)
             {
-                Service.PluginLog.Info("[MigrationV6] Portrait thumbnails now use the preset guid as the name. Renaming files...");
+                Service.Get<IPluginLog>().Info("[MigrationV6] Portrait thumbnails now use the preset guid as the name. Renaming files...");
 
                 var newPresets = new JsonArray();
-                var portraitsPath = Path.Join(Service.PluginInterface.ConfigDirectory.FullName, "Portraits");
+                var portraitsPath = Path.Join(Service.Get<DalamudPluginInterface>().ConfigDirectory.FullName, "Portraits");
 
                 if (!Directory.Exists(portraitsPath))
                     Directory.CreateDirectory(portraitsPath);
@@ -175,7 +177,7 @@ public partial class Configuration
                     {
                         var newPath = PortraitHelper.GetPortraitThumbnailPath(guid);
 
-                        Service.PluginLog.Info($"[MigrationV6]   {oldPath} => {newPath}");
+                        Service.Get<IPluginLog>().Info($"[MigrationV6]   {oldPath} => {newPath}");
 
                         try
                         {
@@ -183,7 +185,7 @@ public partial class Configuration
                         }
                         catch (Exception e)
                         {
-                            Service.PluginLog.Error(e, "[MigrationV6] Could not move file {0} to {1}", oldPath, newPath);
+                            Service.Get<IPluginLog>().Error(e, "[MigrationV6] Could not move file {0} to {1}", oldPath, newPath);
                             success &= false;
                         }
 
@@ -194,14 +196,14 @@ public partial class Configuration
                     else
                     {
                         var presetCode = (string?)preset["Preset"];
-                        Service.PluginLog.Error("[MigrationV6] Could not find thumbnail {0} for {1}. Please re-import.", oldPath, presetCode ?? string.Empty);
+                        Service.Get<IPluginLog>().Error("[MigrationV6] Could not find thumbnail {0} for {1}. Please re-import.", oldPath, presetCode ?? string.Empty);
                         success &= false;
                     }
                 }
 
                 tweakConfigs!["PortraitHelper"]!["Presets"] = newPresets;
 
-                Service.PluginLog.Info("[MigrationV6] Done!");
+                Service.Get<IPluginLog>().Info("[MigrationV6] Done!");
             }
         }
 

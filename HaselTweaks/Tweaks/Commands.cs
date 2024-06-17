@@ -1,18 +1,21 @@
+using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Extensions;
+using HaselCommon.Services;
 using Lumina.Excel.GeneratedSheets;
 using BattleNpcSubKind = Dalamud.Game.ClientState.Objects.Enums.BattleNpcSubKind;
 using DalamudObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 
 namespace HaselTweaks.Tweaks;
 
-public class CommandsConfiguration
+public sealed class CommandsConfiguration
 {
     [BoolConfig]
     public bool EnableItemLinkCommand = true;
@@ -27,8 +30,12 @@ public class CommandsConfiguration
     public bool EnableGlamourPlateCommand = true;
 }
 
-[Tweak]
-public unsafe class Commands : Tweak<CommandsConfiguration>
+public sealed unsafe class Commands(
+    Configuration PluginConfig,
+    TranslationManager TranslationManager,
+    IChatGui ChatGui,
+    ITargetManager TargetManager)
+    : Tweak<CommandsConfiguration>(PluginConfig, TranslationManager)
 {
     [CommandHandler("/itemlink", "Commands.Config.EnableItemLinkCommand.Description", nameof(Config.EnableItemLinkCommand))]
     private void OnItemLinkCommand(string command, string arguments)
@@ -40,14 +47,14 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
         }
         catch (Exception e)
         {
-            Service.ChatGui.PrintError(e.Message);
+            ChatGui.PrintError(e.Message);
             return;
         }
 
         var item = GetRow<Item>(id);
         if (item == null)
         {
-            Service.ChatGui.PrintError(t("Commands.ItemLink.ItemNotFound", id));
+            ChatGui.PrintError(t("Commands.ItemLink.ItemNotFound", id));
             return;
         }
 
@@ -59,7 +66,7 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
             .AddUiForeground("\uE078 ", 32)
             .Append(tSe("Commands.ItemLink.Item", idStr, SeString.CreateItemLink(id)));
 
-        Service.ChatGui.Print(new XivChatEntry
+        ChatGui.Print(new XivChatEntry
         {
             Message = sb.Build(),
             Type = XivChatType.Echo
@@ -69,29 +76,29 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
     [CommandHandler("/whatmount", "Commands.Config.EnableWhatMountCommand.Description", nameof(Config.EnableWhatMountCommand))]
     private void OnWhatMountCommand(string command, string arguments)
     {
-        var target = (Character*)(Service.TargetManager.Target?.Address ?? 0);
+        var target = (Character*)(TargetManager.Target?.Address ?? 0);
         if (target == null)
         {
-            Service.ChatGui.PrintError(t("Commands.NoTarget"));
+            ChatGui.PrintError(t("Commands.NoTarget"));
             return;
         }
 
         if (target->GameObject.GetObjectKind() != ObjectKind.Pc)
         {
-            Service.ChatGui.PrintError(t("Commands.TargetIsNotAPlayer"));
+            ChatGui.PrintError(t("Commands.TargetIsNotAPlayer"));
             return;
         }
 
         if (target->Mount.MountId == 0)
         {
-            Service.ChatGui.PrintError(t("Commands.WhatMount.TargetNotMounted"));
+            ChatGui.PrintError(t("Commands.WhatMount.TargetNotMounted"));
             return;
         }
 
         var mount = GetRow<Mount>(target->Mount.MountId);
         if (mount == null)
         {
-            Service.ChatGui.PrintError(t("Commands.WhatMount.MountNotFound"));
+            ChatGui.PrintError(t("Commands.WhatMount.MountNotFound"));
             return;
         }
 
@@ -105,7 +112,7 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
         var itemAction = FindRow<ItemAction>(row => row?.Type == 1322 && row.Data[0] == mount.RowId);
         if (itemAction == null || itemAction.RowId == 0)
         {
-            Service.ChatGui.Print(new XivChatEntry
+            ChatGui.Print(new XivChatEntry
             {
                 Message = sb
                     .Append(tSe("Commands.WhatMount.WithoutItem", name))
@@ -118,7 +125,7 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
         var item = FindRow<Item>(row => row?.ItemAction.Row == itemAction!.RowId);
         if (item == null)
         {
-            Service.ChatGui.Print(new XivChatEntry
+            ChatGui.Print(new XivChatEntry
             {
                 Message = sb
                     .Append(tSe("Commands.WhatMount.WithoutItem", name))
@@ -130,7 +137,7 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
 
         sb.Append(tSe("Commands.WhatMount.WithItem", name, SeString.CreateItemLink(item.RowId, false, GetItemName(item.RowId))));
 
-        Service.ChatGui.Print(new XivChatEntry
+        ChatGui.Print(new XivChatEntry
         {
             Message = sb.Build(),
             Type = XivChatType.Echo
@@ -140,16 +147,16 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
     [CommandHandler("/whatbarding", "Commands.Config.EnableWhatMountCommand.Description", nameof(Config.EnableWhatBardingCommand))]
     private void OnWhatBardingCommand(string command, string arguments)
     {
-        var target = Service.TargetManager.Target;
+        var target = TargetManager.Target;
         if (target == null)
         {
-            Service.ChatGui.PrintError(t("Commands.NoTarget"));
+            ChatGui.PrintError(t("Commands.NoTarget"));
             return;
         }
 
         if (target.ObjectKind != DalamudObjectKind.BattleNpc || target.SubKind != (byte)BattleNpcSubKind.Chocobo)
         {
-            Service.ChatGui.PrintError(t("Commands.TargetIsNotAChocobo"));
+            ChatGui.PrintError(t("Commands.TargetIsNotAChocobo"));
             return;
         }
 
@@ -177,7 +184,7 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
             .Add(NewLinePayload.Payload)
             .AddText($"  {GetAddonText(4993)}: {legsRow?.Name.ToDalamudString().ToString() ?? GetAddonText(4994)}");
 
-        Service.ChatGui.Print(new XivChatEntry
+        ChatGui.Print(new XivChatEntry
         {
             Message = sb.Build(),
             Type = XivChatType.Echo
@@ -189,14 +196,14 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
     {
         if (!byte.TryParse(arguments, out var glamourPlateId) || glamourPlateId == 0 || glamourPlateId > 20)
         {
-            Service.ChatGui.PrintError(t("Commands.InvalidArguments"));
+            ChatGui.PrintError(t("Commands.InvalidArguments"));
             return;
         }
 
         var raptureGearsetModule = RaptureGearsetModule.Instance();
         if (!raptureGearsetModule->IsValidGearset(raptureGearsetModule->CurrentGearsetIndex))
         {
-            Service.ChatGui.PrintError(t("Commands.GlamourPlate.InvalidGearset"));
+            ChatGui.PrintError(t("Commands.GlamourPlate.InvalidGearset"));
             return;
         }
 

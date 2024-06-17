@@ -6,22 +6,17 @@ using ImGuiNET;
 
 namespace HaselTweaks.ImGuiComponents;
 
-public abstract class ConfirmationDialog
+public abstract class ConfirmationDialog(string title)
 {
     public delegate void InnerDrawDelegate();
 
-    public string WindowName { get; init; }
+    public string WindowName { get; init; } = title;
 
     private readonly List<ConfirmationButton> _buttons = [];
     private bool _shouldDraw;
     private bool _openCalled = true;
     private Vector2? _position;
     private int _initialPositionFrame;
-
-    public ConfirmationDialog(string title)
-    {
-        WindowName = title;
-    }
 
     public void Show()
     {

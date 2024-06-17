@@ -4,84 +4,46 @@ using Dalamud.Game.Text;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
+using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using HaselCommon.Services;
 using HaselCommon.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using Lumina.Text;
+using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 
 namespace HaselTweaks.Tweaks;
 
-public class DTRConfiguration
+public sealed class DTRConfiguration
 {
     public string FormatUnitText = " fps";
 }
 
-[Tweak]
-public unsafe class DTR : Tweak<DTRConfiguration>
+public sealed unsafe class DTR(
+    Configuration PluginConfig,
+    TranslationManager TranslationManager,
+    IDtrBar DtrBar,
+    IFramework Framework,
+    IClientState ClientState,
+    DalamudPluginInterface DalamudPluginInterface)
+    : Tweak<DTRConfiguration>(PluginConfig, TranslationManager)
 {
-    public override void DrawConfig()
-    {
-        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
-
-        ImGui.TextUnformatted(t("DTR.Config.Explanation.Pre"));
-        ImGuiUtils.TextUnformattedColored(HaselColor.From(ImGuiColors.DalamudRed), t("DTR.Config.Explanation.DalamudSettings"));
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-        }
-        if (ImGui.IsItemClicked())
-        {
-            static void OpenSettings()
-            {
-                if (ImGui.IsMouseDown(ImGuiMouseButton.Left))
-                {
-                    Service.Framework.RunOnTick(OpenSettings, delayTicks: 2);
-                    return;
-                }
-
-                Service.CommandManager.ProcessCommand("/xlsettings");
-            }
-            Service.Framework.RunOnTick(OpenSettings, delayTicks: 2);
-        }
-        ImGuiUtils.SameLineSpace();
-        ImGui.TextUnformatted(t("DTR.Config.Explanation.Post"));
-
-        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
-
-        ImGui.TextUnformatted(t("DTR.Config.FormatUnitText.Label"));
-        if (ImGui.InputText("##FormatUnitTextInput", ref Config.FormatUnitText, 20))
-        {
-            Service.GetService<Configuration>().Save();
-            _lastFrameRate = 0; // trigger update
-        }
-        ImGui.SameLine();
-        if (ImGuiUtils.IconButton("##Reset", FontAwesomeIcon.Undo, t("HaselTweaks.Config.ResetToDefault", " fps")))
-        {
-            Config.FormatUnitText = " fps";
-            Service.GetService<Configuration>().Save();
-        }
-        if (Service.TranslationManager.TryGetTranslation("DTR.Config.FormatUnitText.Description", out var description))
-        {
-            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);
-        }
-    }
-
-    public DtrBarEntry? DtrInstance;
-    public DtrBarEntry? DtrFPS;
-    public DtrBarEntry? DtrBusy;
+    private DtrBarEntry? DtrInstance;
+    private DtrBarEntry? DtrFPS;
+    private DtrBarEntry? DtrBusy;
     private int _lastFrameRate;
     private uint _lastInstanceId;
 
-    public override void Enable()
+    public override void OnEnable()
     {
-        DtrInstance = Service.DtrBar.Get("[HaselTweaks] Instance");
+        DtrInstance = DtrBar.Get("[HaselTweaks] Instance");
 
-        DtrFPS = Service.DtrBar.Get("[HaselTweaks] FPS");
+        DtrFPS = DtrBar.Get("[HaselTweaks] FPS");
 
-        DtrBusy = Service.DtrBar.Get("[HaselTweaks] Busy",
+        DtrBusy = DtrBar.Get("[HaselTweaks] Busy",
             new SeStringBuilder()
                 .PushColorType(1)
                 .PushEdgeColorType(16)
@@ -94,10 +56,14 @@ public unsafe class DTR : Tweak<DTRConfiguration>
         DtrInstance.Shown = false;
         DtrFPS.Shown = false;
         DtrBusy.Shown = false;
+
+        Framework.Update += OnFrameworkUpdate;
     }
 
-    public override void Disable()
+    public override void OnDisable()
     {
+        Framework.Update -= OnFrameworkUpdate;
+
         DtrInstance?.Dispose();
         DtrInstance = null;
         DtrFPS?.Dispose();
@@ -106,9 +72,9 @@ public unsafe class DTR : Tweak<DTRConfiguration>
         DtrBusy = null;
     }
 
-    public override void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework framework)
     {
-        if (!Service.ClientState.IsLoggedIn)
+        if (!ClientState.IsLoggedIn)
             return;
 
         UpdateInstance();
@@ -139,7 +105,7 @@ public unsafe class DTR : Tweak<DTRConfiguration>
         if (DtrBusy == null)
             return;
 
-        DtrBusy.Shown = Service.ClientState.LocalPlayer?.OnlineStatus.Id == 12;
+        DtrBusy.Shown = ClientState.LocalPlayer?.OnlineStatus.Id == 12;
     }
 
     private void UpdateFPS()
@@ -147,7 +113,7 @@ public unsafe class DTR : Tweak<DTRConfiguration>
         if (DtrFPS == null)
             return;
 
-        var frameRate = (int)(Framework.Instance()->FrameRate + 0.5f);
+        var frameRate = (int)(GameFramework.Instance()->FrameRate + 0.5f);
         if (_lastFrameRate == frameRate)
             return;
 
@@ -155,5 +121,52 @@ public unsafe class DTR : Tweak<DTRConfiguration>
         DtrFPS.Shown = true;
 
         _lastFrameRate = frameRate;
+    }
+
+    public override void DrawConfig()
+    {
+        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+
+        ImGui.TextUnformatted(t("DTR.Config.Explanation.Pre"));
+        ImGuiUtils.TextUnformattedColored(HaselColor.From(ImGuiColors.DalamudRed), t("DTR.Config.Explanation.DalamudSettings"));
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+        }
+        if (ImGui.IsItemClicked())
+        {
+            void OpenSettings()
+            {
+                if (ImGui.IsMouseDown(ImGuiMouseButton.Left))
+                {
+                    Framework.RunOnTick(OpenSettings, delayTicks: 2);
+                    return;
+                }
+
+                DalamudPluginInterface.OpenDalamudSettingsTo(SettingsOpenKind.ServerInfoBar);
+            }
+            Framework.RunOnTick(OpenSettings, delayTicks: 2);
+        }
+        ImGuiUtils.SameLineSpace();
+        ImGui.TextUnformatted(t("DTR.Config.Explanation.Post"));
+
+        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+
+        ImGui.TextUnformatted(t("DTR.Config.FormatUnitText.Label"));
+        if (ImGui.InputText("##FormatUnitTextInput", ref Config.FormatUnitText, 20))
+        {
+            PluginConfig.Save();
+            _lastFrameRate = 0; // trigger update
+        }
+        ImGui.SameLine();
+        if (ImGuiUtils.IconButton("##Reset", FontAwesomeIcon.Undo, t("HaselTweaks.Config.ResetToDefault", " fps")))
+        {
+            Config.FormatUnitText = " fps";
+            PluginConfig.Save();
+        }
+        if (TranslationManager.TryGetTranslation("DTR.Config.FormatUnitText.Description", out var description))
+        {
+            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);
+        }
     }
 }

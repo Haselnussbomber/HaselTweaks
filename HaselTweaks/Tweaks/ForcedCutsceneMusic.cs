@@ -1,42 +1,68 @@
+using Dalamud.Hooking;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.System.Scheduler;
 using FFXIVClientStructs.FFXIV.Client.System.Scheduler.Base;
-using HaselCommon.Utils;
+using HaselCommon.Extensions;
+using HaselCommon.Services;
+using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-public class ForcedCutsceneMusicConfiguration
+public sealed class ForcedCutsceneMusicConfiguration
 {
     [BoolConfig]
     public bool Restore = true;
 }
 
-[Tweak]
-public unsafe partial class ForcedCutsceneMusic : Tweak<ForcedCutsceneMusicConfiguration>
+public sealed unsafe class ForcedCutsceneMusic(
+    ILogger<ForcedCutsceneMusic> Logger,
+    IGameInteropProvider GameInteropProvider,
+    Configuration PluginConfig,
+    TranslationManager TranslationManager,
+    IGameConfig GameConfig)
+    : Tweak<ForcedCutsceneMusicConfiguration>(PluginConfig, TranslationManager)
 {
     private bool _wasBgmMuted;
 
     private delegate void CutSceneControllerDtorDelegate(CutSceneController* self, bool free);
 
-    private AddressHook<ScheduleManagement.Delegates.CreateCutSceneController>? CreateCutSceneControllerHook;
-    private VFuncHook<CutSceneControllerDtorDelegate>? CutSceneControllerDtorHook;
+    private Hook<ScheduleManagement.Delegates.CreateCutSceneController>? CreateCutSceneControllerHook;
+    private Hook<CutSceneControllerDtorDelegate>? CutSceneControllerDtorHook;
 
-    public override void SetupHooks()
+    public override void OnInitialize()
     {
-        CreateCutSceneControllerHook = new(ScheduleManagement.MemberFunctionPointers.CreateCutSceneController, CreateCutSceneControllerDetour);
-        CutSceneControllerDtorHook = new(CutSceneController.StaticVirtualTablePointer, 0, CutSceneControllerDtorDetour);
+        CreateCutSceneControllerHook = GameInteropProvider.HookFromAddress<ScheduleManagement.Delegates.CreateCutSceneController>(
+            ScheduleManagement.MemberFunctionPointers.CreateCutSceneController,
+            CreateCutSceneControllerDetour);
+
+        CutSceneControllerDtorHook = GameInteropProvider.HookFromVTable<CutSceneControllerDtorDelegate>(
+            CutSceneController.StaticVirtualTablePointer, 0,
+            CutSceneControllerDtorDetour);
     }
 
-    private static bool IsBgmMuted
+    public override void OnEnable()
     {
-        get => Service.GameConfig.System.TryGet("IsSndBgm", out bool value) && value;
-        set => Service.GameConfig.System.Set("IsSndBgm", value);
+        CreateCutSceneControllerHook?.Enable();
+        CutSceneControllerDtorHook?.Enable();
     }
 
-    public CutSceneController* CreateCutSceneControllerDetour(ScheduleManagement* self, byte* path, uint id, byte a4)
+    public override void OnDisable()
+    {
+        CreateCutSceneControllerHook?.Disable();
+        CutSceneControllerDtorHook?.Disable();
+    }
+
+    private bool IsBgmMuted
+    {
+        get => GameConfig.System.TryGet("IsSndBgm", out bool value) && value;
+        set => GameConfig.System.Set("IsSndBgm", value);
+    }
+
+    private CutSceneController* CreateCutSceneControllerDetour(ScheduleManagement* self, byte* path, uint id, byte a4)
     {
         var ret = CreateCutSceneControllerHook!.Original(self, path, id, a4);
 
-        Log($"Cutscene {id} started (Controller @ {(nint)ret:X})");
+        Logger.LogInformation($"Cutscene {id} started (Controller @ {(nint)ret:X})");
 
         var isBgmMuted = IsBgmMuted;
 
@@ -48,9 +74,9 @@ public unsafe partial class ForcedCutsceneMusic : Tweak<ForcedCutsceneMusicConfi
         return ret;
     }
 
-    public void CutSceneControllerDtorDetour(CutSceneController* self, bool free)
+    private void CutSceneControllerDtorDetour(CutSceneController* self, bool free)
     {
-        Log($"Cutscene {self->CutsceneId} ended");
+        Logger.LogInformation($"Cutscene {self->CutsceneId} ended");
 
         CutSceneControllerDtorHook!.Original(self, free);
 

@@ -1,17 +1,18 @@
 using System.Numerics;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon;
+using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
-public abstract unsafe class Overlay : Window, IDisposable
+public abstract unsafe class Overlay : SimpleWindow, IDisposable
 {
     private readonly ImRaii.Style WindowPadding = new();
     private readonly ImRaii.Color WindowBg = new();
@@ -24,7 +25,7 @@ public abstract unsafe class Overlay : Window, IDisposable
     private static AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
     private static AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
 
-    protected static PortraitHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.PortraitHelper;
+    protected static PortraitHelperConfiguration Config => Service.Get<Configuration>().Tweaks.PortraitHelper;
 
     protected enum OverlayType
     {
@@ -34,30 +35,23 @@ public abstract unsafe class Overlay : Window, IDisposable
 
     protected virtual OverlayType Type => OverlayType.Window;
 
-    public Overlay(string name) : base(name)
+    public Overlay(WindowManager windowManager, string name) : base(windowManager, name)
     {
         DisableWindowSounds = true;
         RespectCloseHotkey = false;
 
-        Update();
         UpdateWindow();
-    }
-
-    public void Dispose()
-    {
-        OnClose();
-        GC.SuppressFinalize(this);
     }
 
     public override void OnClose()
     {
+        base.OnClose();
+
         WindowPadding.Dispose();
         WindowBg.Dispose();
         WindowText.Dispose();
 
         ToggleUiVisibility(true);
-
-        IsOpen = false;
     }
 
     public override bool DrawConditions()
@@ -118,6 +112,9 @@ public abstract unsafe class Overlay : Window, IDisposable
 
     private void UpdateWindow()
     {
+        if (AddonBannerEditor == null)
+            return;
+
         if (!IsWindow)
         {
             Flags |= ImGuiWindowFlags.NoSavedSettings;
@@ -181,6 +178,9 @@ public abstract unsafe class Overlay : Window, IDisposable
 
     public void ToggleUiVisibility(bool visible)
     {
+        if (AddonBannerEditor == null)
+            return;
+
         var leftPane = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 20);
         leftPane->ToggleVisibility(visible);
 

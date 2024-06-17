@@ -3,12 +3,14 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Game.Config;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using FFXIVClientStructs.Interop;
+using HaselCommon.Services;
 using HaselCommon.Utils;
 
 namespace HaselTweaks.Tweaks;
@@ -19,29 +21,41 @@ public class InventoryHighlightConfiguration
     public bool IgnoreQuality = true;
 }
 
-[Tweak]
-public unsafe class InventoryHighlight : Tweak<InventoryHighlightConfiguration>
+public sealed unsafe class InventoryHighlight(
+    Configuration PluginConfig,
+    TranslationManager TranslationManager,
+    IFramework Framework,
+    IClientState ClientState,
+    IGameConfig GameConfig,
+    IGameGui GameGui,
+    IKeyState KeyState,
+    IAddonLifecycle AddonLifecycle)
+    : Tweak<InventoryHighlightConfiguration>(PluginConfig, TranslationManager)
 {
     private uint ItemInventryWindowSizeType = 0;
     private uint ItemInventryRetainerWindowSizeType = 0;
     private uint HoveredItemId;
     private bool WasHighlighting;
 
-    public override void Enable()
+    public override void OnEnable()
     {
-        Service.GameConfig.UiConfigChanged += GameConfig_UiConfigChanged;
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "ItemDetail", OnItemDetailPostRequestedUpdate);
+        Framework.Update += OnFrameworkUpdate;
+        ClientState.Login += UpdateItemInventryWindowSizeTypes;
+        GameConfig.UiConfigChanged += GameConfig_UiConfigChanged;
+
+        AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "ItemDetail", OnItemDetailPostRequestedUpdate);
         UpdateItemInventryWindowSizeTypes();
     }
 
-    public override void Disable()
+    public override void OnDisable()
     {
-        Service.GameConfig.UiConfigChanged -= GameConfig_UiConfigChanged;
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemDetail", OnItemDetailPostRequestedUpdate);
+        Framework.Update -= OnFrameworkUpdate;
+        ClientState.Login -= UpdateItemInventryWindowSizeTypes;
+        GameConfig.UiConfigChanged -= GameConfig_UiConfigChanged;
+
+        AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemDetail", OnItemDetailPostRequestedUpdate);
         ResetGrids();
     }
-
-    public override void OnLogin() => UpdateItemInventryWindowSizeTypes();
 
     private void GameConfig_UiConfigChanged(object? sender, ConfigChangeEvent evt)
     {
@@ -54,8 +68,8 @@ public unsafe class InventoryHighlight : Tweak<InventoryHighlightConfiguration>
 
     private void UpdateItemInventryWindowSizeTypes()
     {
-        Service.GameConfig.TryGet(UiConfigOption.ItemInventryWindowSizeType, out ItemInventryWindowSizeType);
-        Service.GameConfig.TryGet(UiConfigOption.ItemInventryRetainerWindowSizeType, out ItemInventryRetainerWindowSizeType);
+        GameConfig.TryGet(UiConfigOption.ItemInventryWindowSizeType, out ItemInventryWindowSizeType);
+        GameConfig.TryGet(UiConfigOption.ItemInventryRetainerWindowSizeType, out ItemInventryRetainerWindowSizeType);
     }
 
     private void OnItemDetailPostRequestedUpdate(AddonEvent type, AddonArgs args)
@@ -68,9 +82,9 @@ public unsafe class InventoryHighlight : Tweak<InventoryHighlightConfiguration>
         }
     }
 
-    public override void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework framework)
     {
-        HoveredItemId = NormalizeItemId((uint)Service.GameGui.HoveredItem);
+        HoveredItemId = NormalizeItemId((uint)GameGui.HoveredItem);
 
         if (IsHighlightActive())
         {
@@ -155,7 +169,7 @@ public unsafe class InventoryHighlight : Tweak<InventoryHighlightConfiguration>
 
     private bool IsHighlightActive()
     {
-        if (!Service.KeyState[VirtualKey.SHIFT])
+        if (!KeyState[VirtualKey.SHIFT])
             return false;
 
         if (IsAddonOpen("Inventory"))

@@ -9,7 +9,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class DeleteTagDialog : ConfirmationDialog
 {
-    private static PortraitHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.PortraitHelper;
+    private static PortraitHelperConfiguration Config => Service.Get<Configuration>().Tweaks.PortraitHelper;
 
     private readonly PresetBrowserOverlay _presetBrowserOverlay;
 
@@ -83,7 +83,7 @@ public class DeleteTagDialog : ConfirmationDialog
         }
 
         Config.PresetTags.Remove(_tag);
-        Service.GetService<Configuration>().Save();
+        Service.Get<Configuration>().Save();
 
         if (_presetBrowserOverlay.SelectedTagId == _tag.Id)
             _presetBrowserOverlay.SelectedTagId = null;
