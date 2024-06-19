@@ -73,11 +73,9 @@ public sealed unsafe class PortraitHelper(
     public static ImportFlags CurrentImportFlags { get; set; } = ImportFlags.All;
     public static PortraitPreset? ClipboardPreset { get; set; }
 
-    private delegate void HandleUIModulePacketDelegate(UIModule* uiModule, UIModulePacketType type, uint uintParam, void* packet);
-
     private Hook<UIClipboard.Delegates.OnClipboardDataChanged>? OnClipboardDataChangedHook;
     private Hook<RaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
-    private Hook<HandleUIModulePacketDelegate>? HandleUIModulePacketHook;
+    private Hook<UIModule.Delegates.HandlePacket>? HandleUIModulePacketHook;
 
     public override void OnInitialize()
     {
@@ -89,7 +87,7 @@ public sealed unsafe class PortraitHelper(
             RaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
             UpdateGearsetDetour);
 
-        HandleUIModulePacketHook = GameInteropProvider.HookFromAddress<HandleUIModulePacketDelegate>(
+        HandleUIModulePacketHook = GameInteropProvider.HookFromAddress<UIModule.Delegates.HandlePacket>(
             UIModule.StaticVirtualTablePointer->HandlePacket,
             HandleUIModulePacketDetour);
     }

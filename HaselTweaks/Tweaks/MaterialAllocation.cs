@@ -33,13 +33,11 @@ public sealed unsafe class MaterialAllocation(
 {
     private uint NextMJIGatheringNoteBookItemId;
 
-    private delegate void AgentMJIGatheringNoteBookUpdateDelegate(AgentMJIGatheringNoteBook* self, uint frameCount);
-
-    private Hook<AgentMJIGatheringNoteBookUpdateDelegate>? AgentMJIGatheringNoteBookUpdateHook;
+    private Hook<AgentMJIGatheringNoteBook.Delegates.Update>? AgentMJIGatheringNoteBookUpdateHook;
 
     public override void OnInitialize()
     {
-        AgentMJIGatheringNoteBookUpdateHook = GameInteropProvider.HookFromAddress<AgentMJIGatheringNoteBookUpdateDelegate>(
+        AgentMJIGatheringNoteBookUpdateHook = GameInteropProvider.HookFromAddress<AgentMJIGatheringNoteBook.Delegates.Update>(
             GetAgent<AgentMJIGatheringNoteBook>()->VirtualTable->Update,
             AgentMJIGatheringNoteBookUpdateDetour);
     }

@@ -65,13 +65,11 @@ public sealed unsafe class EnhancedLoginLogout(
 
     #region Core
 
-    private delegate void HandleUIModulePacketDelegate(UIModule* uiModule, UIModulePacketType type, uint uintParam, void* packet);
-
     private Hook<AgentLobby.Delegates.UpdateCharaSelectDisplay>? UpdateCharaSelectDisplayHook;
     private Hook<CharaSelectCharacterList.Delegates.CleanupCharacters>? CleanupCharactersHook;
     private Hook<EmoteManager.Delegates.ExecuteEmote>? ExecuteEmoteHook;
     private Hook<AgentLobby.Delegates.OpenLoginWaitDialog>? OpenLoginWaitDialogHook;
-    private Hook<HandleUIModulePacketDelegate>? HandleUIModulePacketHook;
+    private Hook<UIModule.Delegates.HandlePacket>? HandleUIModulePacketHook;
 
     public override void OnInitialize()
     {
@@ -91,7 +89,7 @@ public sealed unsafe class EnhancedLoginLogout(
             AgentLobby.MemberFunctionPointers.OpenLoginWaitDialog,
             OpenLoginWaitDialogDetour);
 
-        HandleUIModulePacketHook = GameInteropProvider.HookFromAddress<HandleUIModulePacketDelegate>(
+        HandleUIModulePacketHook = GameInteropProvider.HookFromAddress<UIModule.Delegates.HandlePacket>(
             UIModule.StaticVirtualTablePointer->HandlePacket,
             HandleUIModulePacketDetour);
     }
