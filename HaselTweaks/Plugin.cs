@@ -30,6 +30,7 @@ public sealed class Plugin : IDalamudPlugin
         Service.Collection.AddLogging(builder =>
         {
             builder.ClearProviders();
+            builder.SetMinimumLevel(LogLevel.Trace);
             builder.AddProvider(new DalamudLoggerProvider(pluginLog));
         });
 
