@@ -55,13 +55,19 @@ public sealed unsafe class SaferItemSearch(IGameInteropProvider GameInteropProvi
         AddPageHook?.Disable();
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
+        if (Status == TweakStatus.Disposed)
+            return;
+
         OnDisable();
 
         ProcessRequestResultHook?.Dispose();
         EndRequestHook?.Dispose();
         AddPageHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void ItemSearch_PostRequestedUpdate(AddonEvent type, AddonArgs args)

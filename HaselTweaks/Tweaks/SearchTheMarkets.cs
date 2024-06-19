@@ -47,9 +47,15 @@ public sealed unsafe class SearchTheMarkets(IContextMenu ContextMenu, Translatio
         TranslationManager.LanguageChanged -= OnLanguageChange;
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
+        if (Status == TweakStatus.Disposed)
+            return;
+
         OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void OnLanguageChange(string langCode)

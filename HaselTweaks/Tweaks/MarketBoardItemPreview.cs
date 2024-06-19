@@ -29,9 +29,15 @@ public sealed unsafe class MarketBoardItemPreview(ILogger<MarketBoardItemPreview
         AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "ItemSearch", ItemSearch_PostReceiveEvent);
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
+        if (Status == TweakStatus.Disposed)
+            return;
+
         OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void ItemSearch_PostReceiveEvent(AddonEvent type, AddonArgs args)

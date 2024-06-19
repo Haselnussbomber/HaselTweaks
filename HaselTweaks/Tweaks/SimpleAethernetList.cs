@@ -32,9 +32,15 @@ public sealed unsafe class SimpleAethernetList(IGameInteropProvider GameInteropP
         ReceiveEventHook?.Disable();
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
+        if (Status == TweakStatus.Disposed)
+            return;
+
         ReceiveEventHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void ReceiveEventDetour(AddonTeleportTown* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)

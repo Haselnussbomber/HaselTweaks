@@ -30,10 +30,16 @@ public sealed class KeepScreenAwake : ITweak
         _timer.Stop();
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
+        if (Status == TweakStatus.Disposed)
+            return;
+
         OnDisable();
         _timer.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)

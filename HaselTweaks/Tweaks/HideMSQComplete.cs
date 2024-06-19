@@ -27,9 +27,15 @@ public sealed unsafe class HideMSQComplete(IAddonLifecycle AddonLifecycle) : ITw
         UpdateVisibility(true);
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
+        if (Status == TweakStatus.Disposed)
+            return;
+
         OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void ScenarioTree_PostRefresh(AddonEvent type, AddonArgs args)

@@ -22,9 +22,15 @@ public sealed unsafe class ExpertDeliveries(AddonObserver AddonObserver) : ITwea
         AddonObserver.AddonOpen -= OnAddonOpen;
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
+        if (Status == TweakStatus.Disposed)
+            return;
+
         OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     public void OnAddonOpen(string addonName)

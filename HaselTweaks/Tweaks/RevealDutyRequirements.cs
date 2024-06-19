@@ -42,8 +42,14 @@ public sealed class RevealDutyRequirements(IGameInteropProvider GameInteropProvi
         Patch?.Disable();
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
+        if (Status == TweakStatus.Disposed)
+            return;
+
         Patch?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 }
