@@ -7,8 +7,11 @@ using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselCommon.Attributes;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
+using HaselCommon.Services.CommandManager;
+using HaselTweaks.Enums;
 using Lumina.Excel.GeneratedSheets;
 using BattleNpcSubKind = Dalamud.Game.ClientState.Objects.Enums.BattleNpcSubKind;
 using DalamudObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
@@ -32,12 +35,49 @@ public sealed class CommandsConfiguration
 
 public sealed unsafe class Commands(
     Configuration PluginConfig,
+    CommandManager CommandManager,
     TranslationManager TranslationManager,
     IChatGui ChatGui,
     ITargetManager TargetManager)
     : Tweak<CommandsConfiguration>(PluginConfig, TranslationManager)
 {
-    [CommandHandler("/itemlink", "Commands.Config.EnableItemLinkCommand.Description", nameof(Config.EnableItemLinkCommand))]
+    private CommandHandler? ItemLinkCommandHandler;
+    private CommandHandler? WhatMountCommandCommandHandler;
+    private CommandHandler? WhatBardingCommandCommandHandler;
+    private CommandHandler? GlamourPlateCommandCommandHandler;
+
+    public override void OnInitialize()
+    {
+        ItemLinkCommandHandler = CommandManager.Register(OnItemLinkCommand);
+        WhatMountCommandCommandHandler = CommandManager.Register(OnWhatMountCommand);
+        WhatBardingCommandCommandHandler = CommandManager.Register(OnWhatBardingCommand);
+        GlamourPlateCommandCommandHandler = CommandManager.Register(OnGlamourPlateCommand);
+    }
+
+    public override void OnEnable()
+    {
+        UpdateCommands(true);
+    }
+
+    public override void OnDisable()
+    {
+        UpdateCommands(false);
+    }
+
+    public override void OnConfigChange(string fieldName)
+    {
+        UpdateCommands(Status == TweakStatus.Enabled);
+    }
+
+    private void UpdateCommands(bool enable)
+    {
+        ItemLinkCommandHandler?.SetEnabled(enable && Config.EnableItemLinkCommand);
+        WhatMountCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatMountCommand);
+        WhatBardingCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatBardingCommand);
+        GlamourPlateCommandCommandHandler?.SetEnabled(enable && Config.EnableGlamourPlateCommand);
+    }
+
+    [CommandHandler("/itemlink", "Commands.Config.EnableItemLinkCommand.Description")]
     private void OnItemLinkCommand(string command, string arguments)
     {
         uint id;
@@ -73,7 +113,7 @@ public sealed unsafe class Commands(
         });
     }
 
-    [CommandHandler("/whatmount", "Commands.Config.EnableWhatMountCommand.Description", nameof(Config.EnableWhatMountCommand))]
+    [CommandHandler("/whatmount", "Commands.Config.EnableWhatMountCommand.Description")]
     private void OnWhatMountCommand(string command, string arguments)
     {
         var target = (Character*)(TargetManager.Target?.Address ?? 0);
@@ -144,7 +184,7 @@ public sealed unsafe class Commands(
         });
     }
 
-    [CommandHandler("/whatbarding", "Commands.Config.EnableWhatMountCommand.Description", nameof(Config.EnableWhatBardingCommand))]
+    [CommandHandler("/whatbarding", "Commands.Config.EnableWhatMountCommand.Description")]
     private void OnWhatBardingCommand(string command, string arguments)
     {
         var target = TargetManager.Target;
@@ -191,7 +231,7 @@ public sealed unsafe class Commands(
         });
     }
 
-    [CommandHandler("/glamourplate", "Commands.Config.EnableGlamourPlateCommand.Description", nameof(Config.EnableGlamourPlateCommand))]
+    [CommandHandler("/glamourplate", "Commands.Config.EnableGlamourPlateCommand.Description")]
     private void OnGlamourPlateCommand(string command, string arguments)
     {
         if (!byte.TryParse(arguments, out var glamourPlateId) || glamourPlateId == 0 || glamourPlateId > 20)

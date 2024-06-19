@@ -242,9 +242,16 @@ public partial class PluginWindow : SimpleWindow, IDisposable
                 IncompatibilityWarnings = null;
 
                 if (SelectedTweak == null || SelectedTweak.InternalName != tweak.InternalName)
+                {
                     SelectedTweak = Tweaks.FirstOrDefault(t => t.InternalName == tweak.InternalName);
+
+                    if (SelectedTweak is IConfigurableTweak configurableTweak2)
+                        configurableTweak2.OnConfigOpen();
+                }
                 else
+                {
                     SelectedTweak = null;
+                }
             }
 
             if (status is TweakStatus.InitializationFailed or TweakStatus.Outdated or not TweakStatus.Enabled)
