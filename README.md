@@ -208,6 +208,10 @@ Lock window positions so you can't move them accidentally anymore.
 Adds a context menu entry for the title bar to "Lock/Unlock Position" (can be disabled).  
 Alternatively it's possible to add windows by using the window picker in the configuration.
 
+### Market Board Item Preview
+
+Automatically try on equipment when you hover over an item in the market board search results.
+
 ### Material Allocation
 
 Enhances the Islekeep's Index "Material Allocation" window.

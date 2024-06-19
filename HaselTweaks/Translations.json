@@ -1301,6 +1301,14 @@
     "zh": "开关所有"
   },
 
+  "MarketBoardItemPreview.Tweak.Name": {
+    "en": "Market Board Item Preview"
+  },
+  "MarketBoardItemPreview.Tweak.Description": {
+    "en": "Automatically try on equipment when you hover over an item in the market board search results.",
+    "de": "Automatische Anprobe von Ausrüstungsgegenständen, wenn der Mauszeiger über einen Gegenstand in den Suchergebnissen des Marktes bewegt wird."
+  },
+
   "MaterialAllocation.Tweak.Name": {
     "en": "Material Allocation",
     "zh": "预定消耗的材料"

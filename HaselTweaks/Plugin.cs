@@ -58,6 +58,7 @@ public sealed class Plugin : IDalamudPlugin
             .AddSingleton<ITweak, InventoryHighlight>()
             .AddSingleton<ITweak, KeepScreenAwake>()
             .AddSingleton<ITweak, LockWindowPosition>()
+            .AddSingleton<ITweak, MarketBoardItemPreview>()
             .AddSingleton<ITweak, MaterialAllocation>()
             .AddSingleton<ITweak, MinimapAdjustments>()
             .AddSingleton<ITweak, PortraitHelper>()
