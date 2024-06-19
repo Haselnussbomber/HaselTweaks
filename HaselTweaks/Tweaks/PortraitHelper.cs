@@ -62,7 +62,7 @@ public sealed unsafe class PortraitHelper(
     IClientState ClientState,
     IChatGui ChatGui,
     AddonObserver AddonObserver,
-    MenuBar MenuBar) // TODO: use transient services and store in a nullable field
+    MenuBar MenuBar)
     : Tweak<PortraitHelperConfiguration>(PluginConfig, TranslationManager)
 {
     private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);

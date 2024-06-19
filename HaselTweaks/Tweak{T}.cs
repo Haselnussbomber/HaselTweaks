@@ -76,9 +76,6 @@ public abstract class Tweak<T> : Tweak, IConfigurableTweak where T : notnull
                 case StringConfigAttribute stringConfigAttribute:
                     DrawStringConfig(stringConfigAttribute, Config, field);
                     break;
-
-                default:
-                    break;
             }
         }
     }

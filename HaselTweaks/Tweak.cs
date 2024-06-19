@@ -35,7 +35,7 @@ public abstract class Tweak : ITweak, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private void CallHooks(string methodName)
+    private void DisposeHooks()
     {
         foreach (var field in GetType()
             .GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
@@ -44,15 +44,8 @@ public abstract class Tweak : ITweak, IDisposable
                 field.FieldType.GetGenericTypeDefinition() == typeof(Hook<>)))
         {
             var hook = field.GetValue(this);
-            if (hook == null) continue;
-
-            var type = methodName == "Dispose"
-                ? typeof(IDisposable)
-                : typeof(Hook<>).MakeGenericType(field.FieldType.GetGenericArguments().First());
-
-            type.GetMethod(methodName)?.Invoke(hook, null);
+            if (hook != null)
+                typeof(IDisposable).GetMethod("Dispose")?.Invoke(hook, null);
         }
     }
-
-    public void DisposeHooks() => CallHooks("Dispose");
 }
