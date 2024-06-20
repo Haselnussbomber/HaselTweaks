@@ -107,7 +107,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
                 }
             }
 
-            var result = entries.FuzzyMatch(Query.ToLower(), value => value.ItemName).FirstOrDefault();
+            var result = entries.FuzzyMatch(Query.ToLower().Trim(), value => value.ItemName).FirstOrDefault();
             if (result != default)
             {
                 var index = result.Value.Index;
