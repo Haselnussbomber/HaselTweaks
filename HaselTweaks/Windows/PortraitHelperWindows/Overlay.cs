@@ -4,23 +4,28 @@ using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon;
+using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselCommon.Windowing;
+using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
+using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
-public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverlay
+public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
 {
+    protected readonly PluginConfig PluginConfig;
+    protected readonly ExcelService ExcelService;
+
     private readonly ImRaii.Style WindowPadding = new();
     private readonly ImRaii.Color WindowBg = new();
     private readonly ImRaii.Color WindowText = new();
-    protected readonly PluginConfig PluginConfig;
 
     protected uint DefaultImGuiTextColor { get; set; }
 
@@ -33,12 +38,14 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
     public virtual OverlayType Type => OverlayType.Window;
 
     public Overlay(
-        WindowManager windowManager,
+        IWindowManager windowManager,
         PluginConfig pluginConfig,
+        ExcelService excelService,
         string name)
         : base(windowManager, name)
     {
         PluginConfig = pluginConfig;
+        ExcelService = excelService;
 
         DisableWindowSounds = true;
         RespectCloseHotkey = false;
@@ -96,7 +103,7 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
 
             if (Colors.IsLightTheme)
             {
-                WindowText.Push(ImGuiCol.Text, (uint)HaselColor.FromUiForeground(2));
+                WindowText.Push(ImGuiCol.Text, (uint)ExcelService.GetRow<UIColor>(2)!.GetForegroundColor());
             }
 
             WindowBg.Push(ImGuiCol.WindowBg, 0);

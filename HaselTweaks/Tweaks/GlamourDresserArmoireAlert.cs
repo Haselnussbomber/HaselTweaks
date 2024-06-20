@@ -17,7 +17,8 @@ public sealed unsafe class GlamourDresserArmoireAlert(
     ILogger<GlamourDresserArmoireAlert> Logger,
     IGameInventory GameInventory,
     AddonObserver AddonObserver,
-    GlamourDresserArmoireAlertWindow Window)
+    GlamourDresserArmoireAlertWindow Window,
+    ExcelService ExcelService)
     : ITweak
 {
     private bool _isPrismBoxOpen;
@@ -111,11 +112,11 @@ public sealed unsafe class GlamourDresserArmoireAlert(
             var isHq = itemId is > 1000000 and < 1500000;
             itemId %= 1000000;
 
-            var item = GetRow<ExtendedItem>(itemId);
+            var item = ExcelService.GetRow<ExtendedItem>(itemId);
             if (item == null)
                 continue;
 
-            var cabinet = FindRow<Cabinet>(row => row?.Item.Row == itemId);
+            var cabinet = ExcelService.FindRow<Cabinet>(row => row?.Item.Row == itemId);
             if (cabinet == null)
                 continue;
 

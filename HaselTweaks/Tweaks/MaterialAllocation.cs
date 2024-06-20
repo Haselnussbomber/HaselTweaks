@@ -24,6 +24,8 @@ public class MaterialAllocationConfiguration
 }
 
 public sealed unsafe class MaterialAllocation(
+    ExcelService ExcelService,
+    TextService TextService,
     IGameInteropProvider GameInteropProvider,
     PluginConfig PluginConfig,
     TranslationManager TranslationManager,
@@ -39,7 +41,7 @@ public sealed unsafe class MaterialAllocation(
     public override void OnInitialize()
     {
         AgentMJIGatheringNoteBookUpdateHook = GameInteropProvider.HookFromAddress<AgentMJIGatheringNoteBook.Delegates.Update>(
-            GetAgent<AgentMJIGatheringNoteBook>()->VirtualTable->Update,
+            AgentMJIGatheringNoteBook.Instance()->VirtualTable->Update,
             AgentMJIGatheringNoteBookUpdateDetour);
     }
 
@@ -73,7 +75,7 @@ public sealed unsafe class MaterialAllocation(
         if (Config.LastSelectedTab > 2)
             Config.LastSelectedTab = 2;
 
-        GetAgent<AgentMJICraftSchedule>()->CurReviewMaterialsTab = Config.LastSelectedTab;
+        AgentMJICraftSchedule.Instance()->CurReviewMaterialsTab = Config.LastSelectedTab;
 
         var addon = (AddonMJICraftMaterialConfirmation*)args.Addon;
         for (var i = 0; i < 3; i++)
@@ -142,13 +144,13 @@ public sealed unsafe class MaterialAllocation(
             //var list = *(HaselTweaks.Structs.AtkComponentList**)(a5 + 0x150);
             var id = addon->AtkUnitBase.AtkValues[index + 4].UInt; // MJIItemPouch RowId
 
-            var pouchRow = GetRow<MJIItemPouch>(id);
+            var pouchRow = ExcelService.GetRow<MJIItemPouch>(id);
             if (pouchRow == null || pouchRow.Item.Row == 0)
                 return;
 
             var itemId = pouchRow.Item.Row;
 
-            var mjiGatheringItemRow = FindRow<MJIGatheringItem>(row => row?.Item.Row == itemId);
+            var mjiGatheringItemRow = ExcelService.FindRow<MJIGatheringItem>(row => row?.Item.Row == itemId);
             if (mjiGatheringItemRow == null)
             {
                 var item = pouchRow.Item.Value;
@@ -156,15 +158,15 @@ public sealed unsafe class MaterialAllocation(
                 {
                     ChatGui.Print(new XivChatEntry
                     {
-                        Message = tSe("MaterialAllocation.ItemIsNotGatherable", SeString.CreateItemLink(item.RowId, false, GetItemName(item.RowId))),
+                        Message = TextService.TranslateSe("MaterialAllocation.ItemIsNotGatherable", SeString.CreateItemLink(item.RowId, false, TextService.GetItemName(item.RowId))),
                         Type = XivChatType.Echo
                     });
                 }
                 return;
             }
 
-            var agentMJIGatheringNoteBook = GetAgent<AgentMJIGatheringNoteBook>();
-            if (IsAddonOpen(AgentId.MJIGatheringNoteBook))
+            var agentMJIGatheringNoteBook = AgentMJIGatheringNoteBook.Instance();
+            if (agentMJIGatheringNoteBook->IsAddonReady())
             {
                 // just switch item
                 UpdateGatheringNoteBookItem(agentMJIGatheringNoteBook, itemId);
@@ -174,7 +176,7 @@ public sealed unsafe class MaterialAllocation(
             {
                 // open with item
                 NextMJIGatheringNoteBookItemId = itemId;
-                agentMJIGatheringNoteBook->AgentInterface.Show();
+                agentMJIGatheringNoteBook->Show();
             }
         }
     }

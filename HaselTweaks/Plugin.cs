@@ -2,7 +2,8 @@ using System.IO;
 using Dalamud.Game;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using HaselCommon;
+using HaselCommon.Logger;
+using HaselTweaks.Caches;
 using HaselTweaks.Config;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Tweaks;
@@ -39,6 +40,10 @@ public sealed class Plugin : IDalamudPlugin
             // Config
             .AddSingleton(PluginConfig.Load(pluginInterface, pluginLog))
 
+            // HaselTweaks
+            .AddSingleton<TweakManager>()
+            .AddSingleton<PluginWindow>()
+
             // Tweaks
             .AddSingleton<ITweak, AchievementLinkTooltip>()
             .AddSingleton<ITweak, AetherCurrentHelper>()
@@ -73,22 +78,20 @@ public sealed class Plugin : IDalamudPlugin
             .AddSingleton<ITweak, SearchTheMarkets>()
             .AddSingleton<ITweak, SimpleAethernetList>()
 
-            // Plugin Window
-            .AddSingleton<PluginWindow>()
-
-            // Windows: AetherCurrentHelper
+            // AetherCurrentHelper
+            .AddSingleton<EObjDataIdCache>()
             .AddSingleton<AetherCurrentHelperWindow>()
 
-            // Windows: EnhancedIsleworksAgenda
+            // EnhancedIsleworksAgenda
             .AddSingleton<MJICraftScheduleSettingSearchBar>()
 
-            // Windows: GearSetGrid
+            // GearSetGrid
             .AddSingleton<GearSetGridWindow>()
 
-            // Windows: GlamourDresserArmoireAlert
+            // GlamourDresserArmoireAlert
             .AddSingleton<GlamourDresserArmoireAlertWindow>()
 
-            // Windows: PresetHelper
+            // PresetHelper
             .AddSingleton<MenuBar>()
             .AddScoped<CreatePresetDialog>()
             .AddScoped<CreateTagDialog>()
@@ -99,9 +102,7 @@ public sealed class Plugin : IDalamudPlugin
             .AddScoped<AdvancedEditOverlay>()
             .AddScoped<AdvancedImportOverlay>()
             .AddScoped<AlignmentToolSettingsOverlay>()
-            .AddScoped<PresetBrowserOverlay>()
-
-            .AddSingleton<TweakManager>();
+            .AddScoped<PresetBrowserOverlay>();
 
         Service.BuildProvider();
 

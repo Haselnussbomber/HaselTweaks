@@ -10,7 +10,6 @@ using HaselTweaks.Config;
 using Lumina.Text;
 using Lumina.Text.Payloads;
 using Lumina.Text.ReadOnly;
-using Microsoft.Extensions.Options;
 using Achievement = Lumina.Excel.GeneratedSheets.Achievement;
 
 namespace HaselTweaks.Tweaks;
@@ -27,7 +26,9 @@ public sealed class AchievementLinkTooltipConfiguration
 public sealed unsafe class AchievementLinkTooltip(
     PluginConfig PluginConfig,
     TranslationManager TranslationManager,
-    IAddonLifecycle AddonLifecycle)
+    IAddonLifecycle AddonLifecycle,
+    ExcelService ExcelService,
+    TextService TextService)
     : Tweak<AchievementLinkTooltipConfiguration>(PluginConfig, TranslationManager)
 {
     private readonly string[] ChatPanels = ["ChatLogPanel_0", "ChatLogPanel_1", "ChatLogPanel_2", "ChatLogPanel_3"];
@@ -60,7 +61,7 @@ public sealed unsafe class AchievementLinkTooltip(
         if (linkType is not LinkMacroPayloadType.Achievement)
             return;
 
-        var achievement = GetRow<Achievement>(linkData->Id);
+        var achievement = ExcelService.GetRow<Achievement>(linkData->Id);
         if (achievement == null)
             return;
 
@@ -91,7 +92,7 @@ public sealed unsafe class AchievementLinkTooltip(
         if (canShowName)
             sb.Append(new ReadOnlySeStringSpan(achievement.Name.RawData));
         else
-            sb.Append(GetAddonText(3384)); // "???"
+            sb.Append(TextService.GetAddonText(3384)); // "???"
 
         sb.PopColor();
         sb.BeginMacro(MacroCode.NewLine).EndMacro();
@@ -99,7 +100,7 @@ public sealed unsafe class AchievementLinkTooltip(
         if (canShowDescription)
             sb.Append(new ReadOnlySeStringSpan(achievement.Description.RawData));
         else
-            sb.Append(GetAddonText(3385)); // "???"
+            sb.Append(TextService.GetAddonText(3385)); // "???"
 
         if (Config.ShowCompletionStatus)
         {
@@ -109,16 +110,16 @@ public sealed unsafe class AchievementLinkTooltip(
             {
                 sb.PushColorType(isComplete ? 43u : 518);
 
-                sb.Append(isComplete
-                    ? t("AchievementLinkTooltip.AchievementComplete")
-                    : t("AchievementLinkTooltip.AchievementUnfinished"));
+                sb.Append(TextService.Translate(isComplete
+                    ? "AchievementLinkTooltip.AchievementComplete"
+                    : "AchievementLinkTooltip.AchievementUnfinished"));
 
                 sb.PopColorType();
             }
             else
             {
                 sb.PushColorType(3);
-                sb.Append(t("AchievementLinkTooltip.AchievementsNotLoaded"));
+                sb.Append(TextService.Translate("AchievementLinkTooltip.AchievementsNotLoaded"));
                 sb.PopColorType();
             }
         }

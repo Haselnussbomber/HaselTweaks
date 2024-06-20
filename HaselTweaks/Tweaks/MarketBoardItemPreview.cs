@@ -3,6 +3,7 @@ using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Services;
 using HaselCommon.Sheets;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
@@ -10,7 +11,11 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed unsafe class MarketBoardItemPreview(ILogger<MarketBoardItemPreview> Logger, IAddonLifecycle AddonLifecycle) : ITweak
+public sealed unsafe class MarketBoardItemPreview(
+    ILogger<MarketBoardItemPreview> Logger,
+    IAddonLifecycle AddonLifecycle,
+    ExcelService ExcelService)
+    : ITweak
 {
     public string InternalName => nameof(MarketBoardItemPreview);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
@@ -50,7 +55,7 @@ public sealed unsafe class MarketBoardItemPreview(ILogger<MarketBoardItemPreview
         var itemId = *(uint*)(args.Addon + realItemIndex * 0x20 + 0x3258);
         Logger.LogTrace("Event: {atkEventData} {realItemIndex} {itemId}", itemIndex, realItemIndex, itemId);
 
-        var item = GetRow<ExtendedItem>(itemId);
+        var item = ExcelService.GetRow<ExtendedItem>(itemId);
         if (item == null || !item.CanTryOn)
             return;
 

@@ -1,6 +1,7 @@
 using Dalamud.Interface.Utility.Raii;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using ImGuiNET;
@@ -8,12 +9,15 @@ using ImGuiNET;
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
 public unsafe class AlignmentToolSettingsOverlay(
-    WindowManager windowManager,
+    TextService TextService,
+    IWindowManager windowManager,
     TranslationManager translationManager,
-    PluginConfig pluginConfig)
+    PluginConfig pluginConfig,
+    ExcelService excelService)
     : Overlay(
         windowManager,
         pluginConfig,
+        excelService,
         translationManager.Translate("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title"))
 {
     public override OverlayType Type => OverlayType.LeftPane;
@@ -23,13 +27,13 @@ public unsafe class AlignmentToolSettingsOverlay(
         base.Draw();
 
         ImGuiUtils.DrawSection(
-            t("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title.Inner"),
+            TextService.Translate("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title.Inner"),
             PushDown: false,
             RespectUiTheme: !IsWindow);
 
         var changed = false;
 
-        changed |= ImGui.Checkbox(t("PortraitHelperWindows.AlignmentToolSettingsOverlay.ShowAlignmentTool.Label"), ref Config.ShowAlignmentTool);
+        changed |= ImGui.Checkbox(TextService.Translate("PortraitHelperWindows.AlignmentToolSettingsOverlay.ShowAlignmentTool.Label"), ref Config.ShowAlignmentTool);
 
         using var _ = ImRaii.Disabled(!Config.ShowAlignmentTool);
 
@@ -37,14 +41,14 @@ public unsafe class AlignmentToolSettingsOverlay(
         ImGui.Separator();
         ImGui.Spacing();
 
-        ImGui.TextUnformatted(t("PortraitHelperWindows.AlignmentToolSettingsOverlay.VerticalLines.Label"));
+        TextService.Draw("PortraitHelperWindows.AlignmentToolSettingsOverlay.VerticalLines.Label");
         ImGui.Indent();
 
         changed |= ImGui.SliderInt("##Vertical Lines", ref Config.AlignmentToolVerticalLines, 0, 10);
         changed |= ImGui.ColorEdit4("##Vertical Color", ref Config.AlignmentToolVerticalColor);
 
         ImGui.Unindent();
-        ImGui.TextUnformatted(t("PortraitHelperWindows.AlignmentToolSettingsOverlay.HorizontalLines.Label"));
+        TextService.Draw("PortraitHelperWindows.AlignmentToolSettingsOverlay.HorizontalLines.Label");
         ImGui.Indent();
 
         changed |= ImGui.SliderInt("##Horizontal Lines", ref Config.AlignmentToolHorizontalLines, 0, 10);

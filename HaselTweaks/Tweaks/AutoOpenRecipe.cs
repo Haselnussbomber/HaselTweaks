@@ -8,6 +8,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselCommon.Extensions;
+using HaselCommon.Services;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using Lumina.Excel.GeneratedSheets;
@@ -18,6 +19,8 @@ namespace HaselTweaks.Tweaks;
 
 public unsafe class AutoOpenRecipe(
     ILogger<AutoOpenRecipe> Logger,
+    ExcelService ExcelService,
+    TextService TextService,
     IFramework Framework,
     IGameInventory GameInventory)
     : ITweak
@@ -91,11 +94,11 @@ public unsafe class AutoOpenRecipe(
             if (questWork.QuestId == 0)
                 continue;
 
-            var quest = GetRow<Quest>((uint)questWork.QuestId | 0x10000);
+            var quest = ExcelService.GetRow<Quest>((uint)questWork.QuestId | 0x10000);
             if (quest == null || !(questManager->GetDailyQuestById(questWork.QuestId) != null || quest.BeastTribe.Row != 0)) // check if daily or tribal quest
                 continue;
 
-            Logger.LogDebug($"Checking Quest #{questWork.QuestId} ({GetSheetText<Quest>((uint)questWork.QuestId | 0x10000, "Name")}) (Sequence {questWork.Sequence})");
+            Logger.LogDebug($"Checking Quest #{questWork.QuestId} ({TextService.GetQuestName((uint)questWork.QuestId | 0x10000)}) (Sequence {questWork.Sequence})");
 
             var todoOffset = (byte)quest!.ToDoCompleteSeq.IndexOf(questWork.Sequence);
             if (todoOffset < 0 || todoOffset >= quest.ToDoQty.Length)
@@ -248,8 +251,8 @@ public unsafe class AutoOpenRecipe(
     private bool TryOpenRecipe(uint materialItemId, uint resultItemId, uint amount)
     {
         var craftType = GetCurrentCraftType();
-        var recipe = FindRow<Recipe>(row => row?.ItemResult.Row == resultItemId && row.CraftType.Row == craftType)
-                  ?? FindRow<Recipe>(row => row?.ItemResult.Row == resultItemId);
+        var recipe = ExcelService.FindRow<Recipe>(row => row?.ItemResult.Row == resultItemId && row.CraftType.Row == craftType)
+                  ?? ExcelService.FindRow<Recipe>(row => row?.ItemResult.Row == resultItemId);
         if (recipe == null)
         {
             Logger.LogDebug($"Not opening Recipe for Item {resultItemId}: Recipe not found");
@@ -295,7 +298,7 @@ public unsafe class AutoOpenRecipe(
 
             var itemId = (uint)ingredient.ItemIngredient;
 
-            var item = GetRow<Item>(itemId);
+            var item = ExcelService.GetRow<Item>(itemId);
             if (item == null || item.ItemUICategory.Row == 59) // ignore Crystals
                 continue;
 
@@ -322,7 +325,7 @@ public unsafe class AutoOpenRecipe(
         if (recipeNote == null || playerState == null)
             return craftType;
 
-        var numCraftTypes = GetRowCount<CraftType>();
+        var numCraftTypes = ExcelService.GetRowCount<CraftType>();
         for (var i = 0; i < numCraftTypes; i++)
         {
             if (recipeNote->Jobs[i] == playerState->CurrentClassJobId)

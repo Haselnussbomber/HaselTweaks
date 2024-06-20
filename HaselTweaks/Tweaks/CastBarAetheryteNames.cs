@@ -5,6 +5,8 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Extensions;
+using HaselCommon.Services;
 using HaselCommon.Text;
 using HaselCommon.Text.Expressions;
 using HaselTweaks.Enums;
@@ -17,7 +19,9 @@ namespace HaselTweaks.Tweaks;
 public sealed unsafe partial class CastBarAetheryteNames(
     IGameInteropProvider GameInteropProvider,
     IAddonLifecycle AddonLifecycle,
-    IClientState ClientState)
+    IClientState ClientState,
+    ExcelService ExcelService,
+    TextService TextService)
     : ITweak, IDisposable
 {
     private TeleportInfo? TeleportInfo;
@@ -88,7 +92,7 @@ public sealed unsafe partial class CastBarAetheryteNames(
 
         var info = TeleportInfo.Value;
 
-        var row = GetRow<Aetheryte>(info.AetheryteId);
+        var row = ExcelService.GetRow<Aetheryte>(info.AetheryteId);
         if (row == null)
         {
             Clear();
@@ -97,9 +101,9 @@ public sealed unsafe partial class CastBarAetheryteNames(
 
         var placeName = true switch
         {
-            _ when info.IsApartment => GetAddonText(8518),
+            _ when info.IsApartment => TextService.GetAddonText(8518),
             _ when info.IsSharedHouse => SeString.FromAddon(8519).Resolve([new IntegerExpression(info.Ward), new IntegerExpression(info.Plot)]).ToString(),
-            _ => GetSheetText<PlaceName>(row.PlaceName.Row, "Name"),
+            _ => ExcelService.GetRow<PlaceName>(row.PlaceName.Row)?.Name?.ExtractText() ?? string.Empty,
         };
 
         AtkStage.Instance()->GetStringArrayData()[20]->SetValue(0, placeName, false, true, false);

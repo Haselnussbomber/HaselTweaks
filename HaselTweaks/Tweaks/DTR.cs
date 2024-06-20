@@ -26,6 +26,7 @@ public sealed class DTRConfiguration
 public sealed unsafe class DTR(
     PluginConfig PluginConfig,
     TranslationManager TranslationManager,
+    ExcelService ExcelService,
     IDtrBar DtrBar,
     IFramework Framework,
     IClientState ClientState,
@@ -48,7 +49,7 @@ public sealed unsafe class DTR(
             new SeStringBuilder()
                 .PushColorType(1)
                 .PushEdgeColorType(16)
-                .Append(GetRow<OnlineStatus>(12)?.Name.RawData.ToArray() ?? Encoding.UTF8.GetBytes("Busy"))
+                .Append(ExcelService.GetRow<OnlineStatus>(12)?.Name.RawData.ToArray() ?? Encoding.UTF8.GetBytes("Busy"))
                 .PopEdgeColorType()
                 .PopColorType()
                 .ToSeString()

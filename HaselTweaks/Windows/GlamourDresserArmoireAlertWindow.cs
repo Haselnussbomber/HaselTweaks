@@ -5,10 +5,12 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
-using HaselCommon;
 using HaselCommon.Services;
 using HaselCommon.Sheets;
+using HaselCommon.Textures;
 using HaselCommon.Utils;
+using HaselCommon.Windowing;
+using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
@@ -20,15 +22,21 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
     private const int NumPrismBoxSlots = 800;
     private static readonly Vector2 IconSize = new(34);
     private readonly TextureManager TextureManager;
+    private readonly ExcelService ExcelService;
+    private readonly TextService TextService;
 
     private static AddonMiragePrismPrismBox* Addon => GetAddon<AddonMiragePrismPrismBox>("MiragePrismPrismBox");
 
     public GlamourDresserArmoireAlertWindow(
-        WindowManager windowManager,
-        TextureManager textureManager)
-        : base(windowManager, t("GlamourDresserArmoireAlertWindow.Title"))
+        IWindowManager windowManager,
+        TextureManager textureManager,
+        ExcelService excelService,
+        TextService textService)
+        : base(windowManager, textService.Translate("GlamourDresserArmoireAlertWindow.Title"))
     {
         TextureManager = textureManager;
+        ExcelService = excelService;
+        TextService = textService;
 
         DisableWindowSounds = true;
 
@@ -47,11 +55,11 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 
     public override void Draw()
     {
-        ImGui.TextWrapped(t("GlamourDresserArmoireAlertWindow.Info"));
+        TextService.DrawWrapped("GlamourDresserArmoireAlertWindow.Info");
 
         foreach (var (categoryId, categoryItems) in Tweak!.Categories.OrderBy(kv => kv.Key))
         {
-            var category = GetRow<ItemUICategory>(categoryId)!;
+            var category = ExcelService.GetRow<ItemUICategory>(categoryId)!;
 
             ImGui.TextUnformatted(category.Name.ToDalamudString().ToString());
             ImGuiUtils.PushCursorY(3 * ImGuiHelpers.GlobalScale);
@@ -98,7 +106,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
                 ImGui.GetStyle().ItemInnerSpacing.X,
                 IconSize.Y * ImGuiHelpers.GlobalScale / 2f - ImGui.GetTextLineHeight() / 2f - 1));
 
-            ImGui.TextUnformatted(GetItemName(item.RowId));
+            ImGui.TextUnformatted(TextService.GetItemName(item.RowId));
         }
 
         ImGuiContextMenu.Draw(popupKey, [

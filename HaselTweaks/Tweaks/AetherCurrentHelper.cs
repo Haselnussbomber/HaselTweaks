@@ -24,6 +24,7 @@ public sealed unsafe class AetherCurrentHelper(
     IGameInteropProvider GameInteropProvider,
     IKeyState KeyState,
     PluginConfig PluginConfig,
+    ExcelService ExcelService,
     TranslationManager TranslationManager,
     AetherCurrentHelperWindow Window)
     : Tweak<AetherCurrentHelperConfiguration>(PluginConfig, TranslationManager)
@@ -82,7 +83,7 @@ public sealed unsafe class AetherCurrentHelper(
         if (index < 19)
             index = rawIndex;
 
-        var compFlgSet = GetRow<AetherCurrentCompFlgSet>(index + 1);
+        var compFlgSet = ExcelService.GetRow<AetherCurrentCompFlgSet>(index + 1);
         if (compFlgSet == null)
             return false;
 

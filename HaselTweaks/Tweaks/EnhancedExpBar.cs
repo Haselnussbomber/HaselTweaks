@@ -42,7 +42,9 @@ public sealed unsafe class EnhancedExpBar(
     TranslationManager TranslationManager,
     IFramework Framework,
     IClientState ClientState,
-    IAddonLifecycle AddonLifecycle)
+    IAddonLifecycle AddonLifecycle,
+    ExcelService ExcelService,
+    TextService TextService)
     : Tweak<EnhancedExpBarConfiguration>(PluginConfig, TranslationManager)
 {
     public enum MaxLevelOverrideType
@@ -245,7 +247,7 @@ public sealed unsafe class EnhancedExpBar(
     private void HandleCompanionBar(AtkNineGridNode* nineGridNode, AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
     {
         var buddy = UIState.Instance()->Buddy.CompanionInfo;
-        if (buddy.Rank > GetRowCount<BuddyRank>() - 1)
+        if (buddy.Rank > ExcelService.GetRowCount<BuddyRank>() - 1)
         {
             ResetColor(nineGridNode);
             return;
@@ -254,10 +256,10 @@ public sealed unsafe class EnhancedExpBar(
         var currentRank = buddy.Rank;
 
         var job = ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation;
-        var levelLabel = (GetAddonText(4968) ?? "Rank").Trim().Replace(":", "");
+        var levelLabel = (TextService.GetAddonText(4968) ?? "Rank").Trim().Replace(":", "");
         var rank = currentRank > 20 ? 20 : currentRank;
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-        var requiredExperience = GetRow<BuddyRank>(currentRank)!.ExpRequired;
+        var requiredExperience = ExcelService.GetRow<BuddyRank>(currentRank)!.ExpRequired;
 
         var xpText = requiredExperience == 0 ? "" : $"   {buddy.CurrentXP}/{requiredExperience}";
         leftText->SetText($"{job}  {levelLabel} {level}{xpText}");
@@ -281,7 +283,7 @@ public sealed unsafe class EnhancedExpBar(
             return;
         }
 
-        if (pvpProfile->SeriesCurrentRank > GetRowCount<PvPSeriesLevel>() - 1)
+        if (pvpProfile->SeriesCurrentRank > ExcelService.GetRowCount<PvPSeriesLevel>() - 1)
         {
             ResetColor(nineGridNode);
             return;
@@ -291,11 +293,11 @@ public sealed unsafe class EnhancedExpBar(
         var currentRank = pvpProfile->GetSeriesCurrentRank();
 
         var job = ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation;
-        var levelLabel = (GetAddonText(14860) ?? "Series Level").Trim().Replace(":", "");
+        var levelLabel = (TextService.GetAddonText(14860) ?? "Series Level").Trim().Replace(":", "");
         var rank = currentRank > 30 ? 30 : currentRank; // 30 = Series Max Rank, hopefully in the future too
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var star = currentRank > claimedRank ? '*' : ' ';
-        var requiredExperience = GetRow<PvPSeriesLevel>(currentRank)!.Unknown0;
+        var requiredExperience = ExcelService.GetRow<PvPSeriesLevel>(currentRank)!.Unknown0;
 
         leftText->SetText($"{job}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
 
@@ -327,16 +329,16 @@ public sealed unsafe class EnhancedExpBar(
             return;
         }
 
-        if (mjiManager->IslandState.CurrentRank > GetRowCount<MJIRank>() - 1)
+        if (mjiManager->IslandState.CurrentRank > ExcelService.GetRowCount<MJIRank>() - 1)
         {
             ResetColor(nineGridNode);
             return;
         }
 
         var job = Config.SanctuaryBarHideJob ? "" : ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation + "  ";
-        var levelLabel = (GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
+        var levelLabel = (TextService.GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
         var level = mjiManager->IslandState.CurrentRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-        var requiredExperience = GetRow<MJIRank>(mjiManager->IslandState.CurrentRank)!.ExpToNext;
+        var requiredExperience = ExcelService.GetRow<MJIRank>(mjiManager->IslandState.CurrentRank)!.ExpToNext;
 
         var expStr = mjiManager->IslandState.CurrentXP.ToString();
         var reqExpStr = requiredExperience.ToString();

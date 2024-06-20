@@ -3,11 +3,11 @@ using System.Linq;
 using Dalamud;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
+using HaselCommon.Windowing;
+using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
@@ -24,16 +24,21 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
     private const int LanguageSelectorWidth = 90;
 
     private readonly PluginConfig PluginConfig;
-
+    private readonly ExcelService ExcelService;
+    private readonly TextService TextService;
     private bool InputFocused;
     private string Query = string.Empty;
 
     public MJICraftScheduleSettingSearchBar(
-        WindowManager windowManager,
-        PluginConfig pluginConfig)
+        IWindowManager windowManager,
+        PluginConfig pluginConfig,
+        ExcelService excelService,
+        TextService textService)
         : base(windowManager, "MJICraftScheduleSetting Search Bar")
     {
         PluginConfig = pluginConfig;
+        ExcelService = excelService;
+        TextService = textService;
 
         Flags |= ImGuiWindowFlags.NoSavedSettings;
         Flags |= ImGuiWindowFlags.NoDecoration;
@@ -58,7 +63,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
         var contentRegionAvail = ImGui.GetContentRegionAvail();
 
         ImGui.SetNextItemWidth(contentRegionAvail.X - LanguageSelectorWidth * ImGuiHelpers.GlobalScale - ImGui.GetStyle().ItemSpacing.X);
-        if (ImGui.InputTextWithHint("##Query", t("EnhancedIsleworksAgenda.MJICraftScheduleSettingSearchBar.QueryHint"), ref Query, 255, ImGuiInputTextFlags.EnterReturnsTrue))
+        if (ImGui.InputTextWithHint("##Query", TextService.Translate("EnhancedIsleworksAgenda.MJICraftScheduleSettingSearchBar.QueryHint"), ref Query, 255, ImGuiInputTextFlags.EnterReturnsTrue))
         {
             var evt = new AtkEvent();
             Addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 6, &evt);
@@ -90,11 +95,11 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
                 if (item != null && item->UIntValues.LongCount >= 3 && item->UIntValues[0] != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
                 {
                     var rowId = item->UIntValues[2];
-                    var itemId = GetRow<MJICraftworksObject>(rowId)?.Item.Row ?? 0;
+                    var itemId = ExcelService.GetRow<MJICraftworksObject>(rowId)?.Item.Row ?? 0;
                     if (itemId == 0)
                         continue;
 
-                    var itemName = GetSheet<Item>(Config.SearchLanguage)?.GetRow(itemId)?.Name.ToDalamudString().ToString();
+                    var itemName = ExcelService.GetSheet<Item>(Config.SearchLanguage)?.GetRow(itemId)?.Name.ExtractText();
                     if (string.IsNullOrEmpty(itemName))
                         continue;
 

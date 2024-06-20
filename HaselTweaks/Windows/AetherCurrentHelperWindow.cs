@@ -8,7 +8,9 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Services;
 using HaselCommon.Sheets;
+using HaselCommon.Textures;
 using HaselCommon.Utils;
+using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Caches;
 using HaselTweaks.Config;
 using HaselTweaks.Tweaks;
@@ -21,7 +23,6 @@ namespace HaselTweaks.Windows;
 public unsafe class AetherCurrentHelperWindow : LockableWindow
 {
     private readonly EObjDataIdCache EObjDataIdCache;
-    private readonly QuestNameCache QuestNameCache;
     private bool HideUnlocked = true;
 
     private static readonly HaselColor TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
@@ -29,21 +30,28 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
     private AetherCurrentHelperConfiguration Config => PluginConfig.Tweaks.AetherCurrentHelper;
 
     private readonly IClientState ClientState;
+    private readonly TranslationManager Translations;
     private readonly TextureManager TextureManager;
+    private readonly ExcelService ExcelService;
+    private readonly TextService TextService;
 
     public AetherCurrentHelperWindow(
-        WindowManager windowManager,
+        IWindowManager windowManager,
         PluginConfig pluginConfig,
         IClientState clientState,
-        CacheManager cacheManager,
-        TextureManager textureManager)
+        TranslationManager translationManager,
+        TextureManager textureManager,
+        ExcelService excelService,
+        TextService textService,
+        EObjDataIdCache eObjDataIdCache)
         : base(windowManager, pluginConfig, "[HaselTweaks] Aether Current Helper")
     {
         ClientState = clientState;
+        Translations = translationManager;
         TextureManager = textureManager;
-
-        EObjDataIdCache = cacheManager.Get<EObjDataIdCache>();
-        QuestNameCache = cacheManager.Get<QuestNameCache>();
+        ExcelService = excelService;
+        TextService = textService;
+        EObjDataIdCache = eObjDataIdCache;
 
         SizeCondition = ImGuiCond.FirstUseEver;
         Size = new Vector2(350);
@@ -74,7 +82,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            ImGui.TextUnformatted(t("AetherCurrentHelperWindow.HideUnlockedTooltip"));
+            TextService.Draw("AetherCurrentHelperWindow.HideUnlockedTooltip");
             ImGui.EndTooltip();
         }
 
@@ -130,7 +138,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
             ImGui.TableNextColumn();
             ImGui.TableNextColumn();
             startPos = ImGui.GetCursorPos() + new Vector2(-startPos.X - 4, 0);
-            var text = t("AetherCurrentHelperWindow.AllAetherCurrentsAttuned");
+            var text = Translations.Translate("AetherCurrentHelperWindow.AllAetherCurrentsAttuned");
             textSize = ImGui.CalcTextSize(text);
             ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
             ImGui.TextUnformatted(text);
@@ -158,13 +166,13 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            ImGui.TextUnformatted(t("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip"));
+            TextService.Draw("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip");
             ImGui.EndTooltip();
         }
 
         if (ImGui.IsItemClicked())
         {
-            GetAgent<AgentAetherCurrent>()->AgentInterface.Show();
+            AgentAetherCurrent.Instance()->Show();
         }
 
         ImGui.SetCursorPos(startPos);
@@ -197,11 +205,11 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         else if (aetherCurrent.RowId == 2818328 && questId == 70030) // Curing What Ails
             questId = 69793; // In Agama's Footsteps
 
-        var quest = GetRow<Quest>(questId);
+        var quest = ExcelService.GetRow<Quest>(questId);
         if (questId == 0 || quest == null || quest.IssuerLocation.Row == 0)
             return;
 
-        var extendedIssuerLocation = GetRow<ExtendedLevel>(quest.IssuerLocation.Row);
+        var extendedIssuerLocation = ExcelService.GetRow<ExtendedLevel>(quest.IssuerLocation.Row);
         if (extendedIssuerLocation == null)
             return;
 
@@ -211,8 +219,8 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
         // Content
         ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {QuestNameCache.Get(quest.RowId)}");
-        ImGui.TextUnformatted($"{GetHumanReadableCoords(extendedIssuerLocation)} | {GetENpcResidentName(quest.IssuerStart)}");
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetQuestName(quest.RowId)}");
+        ImGui.TextUnformatted($"{GetHumanReadableCoords(extendedIssuerLocation)} | {TextService.GetENpcResidentName(quest.IssuerStart)}");
 
         // Actions
         ImGui.TableNextColumn();
@@ -231,7 +239,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
     private void DrawEObject(int index, bool isUnlocked, AetherCurrent aetherCurrent)
     {
-        var eobj = EObjDataIdCache.Get(aetherCurrent.RowId);
+        var eobj = EObjDataIdCache.GetValue(aetherCurrent.RowId);
         if (eobj == null) return;
 
         var level = ExtendedLevel.GetByObjectId(eobj.RowId);
@@ -243,7 +251,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
         // Content
         ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {GetEObjName(eobj.RowId)}");
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetEObjName(eobj.RowId)}");
         ImGui.TextUnformatted(GetHumanReadableCoords(level!));
 
         // Actions
@@ -321,22 +329,22 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         ImGuiUtils.TextUnformattedColored(Colors.Green, icon);
     }
 
-    private static string GetHumanReadableCoords(ExtendedLevel level)
+    private string GetHumanReadableCoords(ExtendedLevel level)
     {
         var coords = level.GetCoords();
         var x = coords.X.ToString("0.0", CultureInfo.InvariantCulture);
         var y = coords.Y.ToString("0.0", CultureInfo.InvariantCulture);
-        return t("AetherCurrentHelperWindow.Coords", x, y);
+        return Translations.Translate("AetherCurrentHelperWindow.Coords", x, y);
     }
 
     //! https://gamedev.stackexchange.com/a/49300
-    public static string GetCompassDirection(Vector2 a, Vector2 b)
+    public string GetCompassDirection(Vector2 a, Vector2 b)
     {
         var vector = a - b;
         var angle = Math.Atan2(vector.Y, vector.X);
         var octant = (int)Math.Round(8 * angle / (2 * Math.PI) + 8) % 8;
 
-        return t($"AetherCurrentHelperWindow.Compass.{CompassHeadings[octant]}");
+        return Translations.Translate($"AetherCurrentHelperWindow.Compass.{CompassHeadings[octant]}");
     }
 
     public string GetCompassDirection(Level? level)

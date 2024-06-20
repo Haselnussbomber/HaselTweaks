@@ -10,7 +10,11 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed unsafe class SearchTheMarkets(IContextMenu ContextMenu, TranslationManager TranslationManager) : ITweak
+public sealed unsafe class SearchTheMarkets(
+    IContextMenu ContextMenu,
+    TranslationManager TranslationManager,
+    TextService TextService,
+    ExcelService ExcelService) : ITweak
 {
     private MenuItem? MenuItem;
     private ExtendedItem? Item;
@@ -24,7 +28,7 @@ public sealed unsafe class SearchTheMarkets(IContextMenu ContextMenu, Translatio
     {
         MenuItem ??= new()
         {
-            Name = t("ItemContextMenu.SearchTheMarkets"),
+            Name = TextService.Translate("ItemContextMenu.SearchTheMarkets"),
             Prefix = SeIconChar.BoxedLetterH,
             PrefixColor = 32,
             OnClicked = (_) =>
@@ -61,7 +65,7 @@ public sealed unsafe class SearchTheMarkets(IContextMenu ContextMenu, Translatio
     private void OnLanguageChange(string langCode)
     {
         if (MenuItem != null)
-            MenuItem.Name = t("ItemContextMenu.SearchTheMarkets");
+            MenuItem.Name = TextService.Translate("ItemContextMenu.SearchTheMarkets");
     }
 
     private void ContextMenu_OnMenuOpened(MenuOpenedArgs args)
@@ -83,7 +87,7 @@ public sealed unsafe class SearchTheMarkets(IContextMenu ContextMenu, Translatio
         if (itemId == 0)
             return;
 
-        Item = GetRow<ExtendedItem>(itemId);
+        Item = ExcelService.GetRow<ExtendedItem>(itemId);
 
         if (Item == null || !Item.CanSearchForItem)
             return;

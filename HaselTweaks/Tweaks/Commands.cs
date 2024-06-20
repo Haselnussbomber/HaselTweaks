@@ -7,10 +7,10 @@ using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using HaselCommon.Attributes;
+using HaselCommon.Commands.Attributes;
+using HaselCommon.Commands.Interfaces;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
-using HaselCommon.Services.CommandManager;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using Lumina.Excel.GeneratedSheets;
@@ -35,24 +35,26 @@ public sealed class CommandsConfiguration
 }
 
 public sealed unsafe class Commands(
+    ExcelService ExcelService,
+    TextService TextService,
     PluginConfig PluginConfig,
-    CommandManager CommandManager,
+    ICommandRegistry Commands,
     TranslationManager TranslationManager,
     IChatGui ChatGui,
     ITargetManager TargetManager)
     : Tweak<CommandsConfiguration>(PluginConfig, TranslationManager)
 {
-    private CommandHandler? ItemLinkCommandHandler;
-    private CommandHandler? WhatMountCommandCommandHandler;
-    private CommandHandler? WhatBardingCommandCommandHandler;
-    private CommandHandler? GlamourPlateCommandCommandHandler;
+    private ICommandHandler? ItemLinkCommandHandler;
+    private ICommandHandler? WhatMountCommandCommandHandler;
+    private ICommandHandler? WhatBardingCommandCommandHandler;
+    private ICommandHandler? GlamourPlateCommandCommandHandler;
 
     public override void OnInitialize()
     {
-        ItemLinkCommandHandler = CommandManager.Register(OnItemLinkCommand);
-        WhatMountCommandCommandHandler = CommandManager.Register(OnWhatMountCommand);
-        WhatBardingCommandCommandHandler = CommandManager.Register(OnWhatBardingCommand);
-        GlamourPlateCommandCommandHandler = CommandManager.Register(OnGlamourPlateCommand);
+        ItemLinkCommandHandler = Commands.Register(OnItemLinkCommand);
+        WhatMountCommandCommandHandler = Commands.Register(OnWhatMountCommand);
+        WhatBardingCommandCommandHandler = Commands.Register(OnWhatBardingCommand);
+        GlamourPlateCommandCommandHandler = Commands.Register(OnGlamourPlateCommand);
     }
 
     public override void OnEnable()
@@ -92,10 +94,10 @@ public sealed unsafe class Commands(
             return;
         }
 
-        var item = GetRow<Item>(id);
+        var item = ExcelService.GetRow<Item>(id);
         if (item == null)
         {
-            ChatGui.PrintError(t("Commands.ItemLink.ItemNotFound", id));
+            ChatGui.PrintError(TextService.Translate("Commands.ItemLink.ItemNotFound", id));
             return;
         }
 
@@ -105,7 +107,7 @@ public sealed unsafe class Commands(
 
         var sb = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
-            .Append(tSe("Commands.ItemLink.Item", idStr, SeString.CreateItemLink(id)));
+            .Append(TextService.TranslateSe("Commands.ItemLink.Item", idStr, SeString.CreateItemLink(id)));
 
         ChatGui.Print(new XivChatEntry
         {
@@ -120,26 +122,26 @@ public sealed unsafe class Commands(
         var target = (Character*)(TargetManager.Target?.Address ?? 0);
         if (target == null)
         {
-            ChatGui.PrintError(t("Commands.NoTarget"));
+            ChatGui.PrintError(TextService.Translate("Commands.NoTarget"));
             return;
         }
 
         if (target->GameObject.GetObjectKind() != ObjectKind.Pc)
         {
-            ChatGui.PrintError(t("Commands.TargetIsNotAPlayer"));
+            ChatGui.PrintError(TextService.Translate("Commands.TargetIsNotAPlayer"));
             return;
         }
 
         if (target->Mount.MountId == 0)
         {
-            ChatGui.PrintError(t("Commands.WhatMount.TargetNotMounted"));
+            ChatGui.PrintError(TextService.Translate("Commands.WhatMount.TargetNotMounted"));
             return;
         }
 
-        var mount = GetRow<Mount>(target->Mount.MountId);
+        var mount = ExcelService.GetRow<Mount>(target->Mount.MountId);
         if (mount == null)
         {
-            ChatGui.PrintError(t("Commands.WhatMount.MountNotFound"));
+            ChatGui.PrintError(TextService.Translate("Commands.WhatMount.MountNotFound"));
             return;
         }
 
@@ -147,36 +149,36 @@ public sealed unsafe class Commands(
             .AddUiForeground("\uE078 ", 32);
 
         var name = new SeStringBuilder()
-            .AddUiForeground(GetMountName(mount.RowId), 1)
+            .AddUiForeground(TextService.GetMountName(mount.RowId), 1)
             .Build();
 
-        var itemAction = FindRow<ItemAction>(row => row?.Type == 1322 && row.Data[0] == mount.RowId);
+        var itemAction = ExcelService.FindRow<ItemAction>(row => row?.Type == 1322 && row.Data[0] == mount.RowId);
         if (itemAction == null || itemAction.RowId == 0)
         {
             ChatGui.Print(new XivChatEntry
             {
                 Message = sb
-                    .Append(tSe("Commands.WhatMount.WithoutItem", name))
+                    .Append(TextService.TranslateSe("Commands.WhatMount.WithoutItem", name))
                     .Build(),
                 Type = XivChatType.Echo
             });
             return;
         }
 
-        var item = FindRow<Item>(row => row?.ItemAction.Row == itemAction!.RowId);
+        var item = ExcelService.FindRow<Item>(row => row?.ItemAction.Row == itemAction!.RowId);
         if (item == null)
         {
             ChatGui.Print(new XivChatEntry
             {
                 Message = sb
-                    .Append(tSe("Commands.WhatMount.WithoutItem", name))
+                    .Append(TextService.TranslateSe("Commands.WhatMount.WithoutItem", name))
                     .Build(),
                 Type = XivChatType.Echo
             });
             return;
         }
 
-        sb.Append(tSe("Commands.WhatMount.WithItem", name, SeString.CreateItemLink(item.RowId, false, GetItemName(item.RowId))));
+        sb.Append(TextService.TranslateSe("Commands.WhatMount.WithItem", name, SeString.CreateItemLink(item.RowId, false, GetItemName(item.RowId))));
 
         ChatGui.Print(new XivChatEntry
         {
@@ -191,39 +193,39 @@ public sealed unsafe class Commands(
         var target = TargetManager.Target;
         if (target == null)
         {
-            ChatGui.PrintError(t("Commands.NoTarget"));
+            ChatGui.PrintError(TextService.Translate("Commands.NoTarget"));
             return;
         }
 
         if (target.ObjectKind != DalamudObjectKind.BattleNpc || target.SubKind != (byte)BattleNpcSubKind.Chocobo)
         {
-            ChatGui.PrintError(t("Commands.TargetIsNotAChocobo"));
+            ChatGui.PrintError(TextService.Translate("Commands.TargetIsNotAChocobo"));
             return;
         }
 
         var targetCharacter = (Character*)target.Address;
 
-        var topRow = FindRow<BuddyEquip>(row => row?.ModelTop == targetCharacter->DrawData.Head.Value);
-        var bodyRow = FindRow<BuddyEquip>(row => row?.ModelBody == targetCharacter->DrawData.Top.Value);
-        var legsRow = FindRow<BuddyEquip>(row => row?.ModelLegs == targetCharacter->DrawData.Feet.Value);
+        var topRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelTop == targetCharacter->DrawData.Head.Value);
+        var bodyRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelBody == targetCharacter->DrawData.Top.Value);
+        var legsRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelLegs == targetCharacter->DrawData.Feet.Value);
 
-        var stain = GetRow<Stain>(targetCharacter->DrawData.Legs.Stain)!;
+        var stain = ExcelService.GetRow<Stain>(targetCharacter->DrawData.Legs.Stain)!;
         var name = new SeStringBuilder()
             .AddUiForeground(targetCharacter->GameObject.NameString, 1)
             .Build();
 
         var sb = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
-            .Append(tSe("Commands.WhatBarding.AppearanceOf", name))
+            .Append(TextService.TranslateSe("Commands.WhatBarding.AppearanceOf", name))
             .Add(NewLinePayload.Payload)
-            .AddText($"  {GetAddonText(4987)}: ")
+            .AddText($"  {TextService.GetAddonText(4987)}: ")
             .Append(stain.Name.ToString().FirstCharToUpper())
             .Add(NewLinePayload.Payload)
-            .AddText($"  {GetAddonText(4991)}: {topRow?.Name.ToDalamudString().ToString() ?? GetAddonText(4994)}")
+            .AddText($"  {TextService.GetAddonText(4991)}: {topRow?.Name.ToDalamudString().ToString() ?? TextService.GetAddonText(4994)}")
             .Add(NewLinePayload.Payload)
-            .AddText($"  {GetAddonText(4992)}: {bodyRow?.Name.ToDalamudString().ToString() ?? GetAddonText(4994)}")
+            .AddText($"  {TextService.GetAddonText(4992)}: {bodyRow?.Name.ToDalamudString().ToString() ?? TextService.GetAddonText(4994)}")
             .Add(NewLinePayload.Payload)
-            .AddText($"  {GetAddonText(4993)}: {legsRow?.Name.ToDalamudString().ToString() ?? GetAddonText(4994)}");
+            .AddText($"  {TextService.GetAddonText(4993)}: {legsRow?.Name.ToDalamudString().ToString() ?? TextService.GetAddonText(4994)}");
 
         ChatGui.Print(new XivChatEntry
         {
@@ -237,14 +239,14 @@ public sealed unsafe class Commands(
     {
         if (!byte.TryParse(arguments, out var glamourPlateId) || glamourPlateId == 0 || glamourPlateId > 20)
         {
-            ChatGui.PrintError(t("Commands.InvalidArguments"));
+            ChatGui.PrintError(TextService.Translate("Commands.InvalidArguments"));
             return;
         }
 
         var raptureGearsetModule = RaptureGearsetModule.Instance();
         if (!raptureGearsetModule->IsValidGearset(raptureGearsetModule->CurrentGearsetIndex))
         {
-            ChatGui.PrintError(t("Commands.GlamourPlate.InvalidGearset"));
+            ChatGui.PrintError(TextService.Translate("Commands.GlamourPlate.InvalidGearset"));
             return;
         }
 

@@ -12,7 +12,6 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselCommon.SheetLookup;
 using HaselCommon.Sheets;
-using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
@@ -63,7 +62,8 @@ public sealed unsafe class EnhancedMaterialList(
     IFramework Framework,
     IClientState ClientState,
     IGameInventory GameInventory,
-    AddonObserver AddonObserver)
+    AddonObserver AddonObserver,
+    ExcelService ExcelService)
     : Tweak<EnhancedMaterialListConfiguration>(PluginConfig, TranslationManager)
 {
     private bool _canRefreshMaterialList;
@@ -88,7 +88,7 @@ public sealed unsafe class EnhancedMaterialList(
 
         if (fieldName is nameof(Config.RestoreMaterialList))
         {
-            SaveRestoreMaterialList(GetAgent<AgentRecipeMaterialList>());
+            SaveRestoreMaterialList(AgentRecipeMaterialList.Instance());
         }
     }
 
@@ -190,7 +190,7 @@ public sealed unsafe class EnhancedMaterialList(
         if (!Config.RestoreMaterialList || Config.RestoreMaterialListRecipeId == 0)
             return;
 
-        var agentRecipeMaterialList = GetAgent<AgentRecipeMaterialList>();
+        var agentRecipeMaterialList = AgentRecipeMaterialList.Instance();
         if (agentRecipeMaterialList->RecipeId != Config.RestoreMaterialListRecipeId)
         {
             _recipeMaterialListLockPending = true;
@@ -221,7 +221,7 @@ public sealed unsafe class EnhancedMaterialList(
                 var rowData = **(nint**)(data + 0x08);
                 var itemId = *(uint*)(rowData + 0x04);
 
-                var item = GetRow<ExtendedItem>(itemId);
+                var item = ExcelService.GetRow<ExtendedItem>(itemId);
                 if (item == null)
                     return;
 
@@ -322,7 +322,7 @@ public sealed unsafe class EnhancedMaterialList(
 
         // TODO: only for missing items?
 
-        var item = GetRow<Item>(itemId);
+        var item = ExcelService.GetRow<Item>(itemId);
         if (item == null)
             return;
 
@@ -415,8 +415,8 @@ public sealed unsafe class EnhancedMaterialList(
         if (gatheringItem == null)
             return null;
 
-        var gatheringPointSheet = GetSheet<ExtendedGatheringPoint>();
-        var gatheringPoints = GetSheet<GatheringPointBase>()
+        var gatheringPointSheet = ExcelService.GetSheet<ExtendedGatheringPoint>();
+        var gatheringPoints = ExcelService.GetSheet<GatheringPointBase>()
             .Where(row => row.Item.Any(item => item == gatheringItem.RowId))
             .Select(row => gatheringPointSheet.FirstOrDefault(gprow => gprow?.GatheringPointBase.Row == row.RowId && gprow.TerritoryType.Row > 1, null))
             .Where(row => row != null)
