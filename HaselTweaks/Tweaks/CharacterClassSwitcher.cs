@@ -10,6 +10,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Structs;
 using Microsoft.Extensions.Logging;
@@ -32,7 +33,7 @@ public sealed class CharacterClassSwitcherConfiguration
 public sealed unsafe class CharacterClassSwitcher(
     ILogger<CharacterClassSwitcher> Logger,
     IGameInteropProvider GameInteropProvider,
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IAddonLifecycle AddonLifecycle,
     IKeyState KeyState,

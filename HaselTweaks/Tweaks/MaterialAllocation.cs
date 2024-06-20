@@ -7,6 +7,7 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
+using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 
@@ -24,7 +25,7 @@ public class MaterialAllocationConfiguration
 
 public sealed unsafe class MaterialAllocation(
     IGameInteropProvider GameInteropProvider,
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IAddonLifecycle AddonLifecycle,
     IChatGui ChatGui,

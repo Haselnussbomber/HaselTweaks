@@ -6,9 +6,11 @@ using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
+using HaselTweaks.Config;
 using Lumina.Text;
 using Lumina.Text.Payloads;
 using Lumina.Text.ReadOnly;
+using Microsoft.Extensions.Options;
 using Achievement = Lumina.Excel.GeneratedSheets.Achievement;
 
 namespace HaselTweaks.Tweaks;
@@ -23,7 +25,7 @@ public sealed class AchievementLinkTooltipConfiguration
 }
 
 public sealed unsafe class AchievementLinkTooltip(
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IAddonLifecycle AddonLifecycle)
     : Tweak<AchievementLinkTooltipConfiguration>(PluginConfig, TranslationManager)

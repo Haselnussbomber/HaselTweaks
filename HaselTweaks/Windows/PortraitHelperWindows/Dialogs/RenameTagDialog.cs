@@ -1,3 +1,4 @@
+using HaselTweaks.Config;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using ImGuiNET;
@@ -61,7 +62,7 @@ public class RenameTagDialog : ConfirmationDialog
         }
 
         _tag.Name = _name.Trim();
-        Service.Get<Configuration>().Save();
+        Service.Get<PluginConfig>().Save();
 
         Close();
     }

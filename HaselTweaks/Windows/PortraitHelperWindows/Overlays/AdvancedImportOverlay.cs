@@ -4,6 +4,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Common.Math;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
@@ -12,8 +13,15 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
-public unsafe class AdvancedImportOverlay(ILogger<PortraitHelper> Logger, WindowManager windowManager)
-    : Overlay(windowManager, t("PortraitHelperWindows.AdvancedImportOverlay.Title"))
+public unsafe class AdvancedImportOverlay(
+    ILogger<PortraitHelper> Logger,
+    WindowManager windowManager,
+    TranslationManager translationManager,
+    PluginConfig pluginConfig)
+    : Overlay(
+        windowManager,
+        pluginConfig,
+        translationManager.Translate("PortraitHelperWindows.AdvancedImportOverlay.Title"))
 {
     public MenuBar MenuBar { get; internal set; } = null!;
 

@@ -1,12 +1,19 @@
 using Dalamud.Interface.Utility.Raii;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
-public unsafe class AlignmentToolSettingsOverlay(WindowManager windowManager, Configuration PluginConfig)
-    : Overlay(windowManager, t("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title"))
+public unsafe class AlignmentToolSettingsOverlay(
+    WindowManager windowManager,
+    TranslationManager translationManager,
+    PluginConfig pluginConfig)
+    : Overlay(
+        windowManager,
+        pluginConfig,
+        translationManager.Translate("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title"))
 {
     protected override OverlayType Type => OverlayType.LeftPane;
 

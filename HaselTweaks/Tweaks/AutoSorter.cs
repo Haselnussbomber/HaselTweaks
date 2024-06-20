@@ -9,6 +9,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
@@ -72,7 +73,7 @@ public sealed class AutoSorterConfiguration
 
 public sealed unsafe class AutoSorter(
     ILogger<AutoSorter> Logger,
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IClientState ClientState,
     IFramework Framework,

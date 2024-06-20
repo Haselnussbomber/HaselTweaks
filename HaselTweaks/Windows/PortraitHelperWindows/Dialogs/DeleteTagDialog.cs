@@ -1,4 +1,5 @@
 using System.Linq;
+using HaselTweaks.Config;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -9,7 +10,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class DeleteTagDialog : ConfirmationDialog
 {
-    private static PortraitHelperConfiguration Config => Service.Get<Configuration>().Tweaks.PortraitHelper;
+    private static PortraitHelperConfiguration Config => Service.Get<PluginConfig>().Tweaks.PortraitHelper;
 
     private readonly PresetBrowserOverlay _presetBrowserOverlay;
 
@@ -83,7 +84,7 @@ public class DeleteTagDialog : ConfirmationDialog
         }
 
         Config.PresetTags.Remove(_tag);
-        Service.Get<Configuration>().Save();
+        Service.Get<PluginConfig>().Save();
 
         if (_presetBrowserOverlay.SelectedTagId == _tag.Id)
             _presetBrowserOverlay.SelectedTagId = null;

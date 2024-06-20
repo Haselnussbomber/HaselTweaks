@@ -13,6 +13,7 @@ using Dalamud.Utility;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -30,7 +31,6 @@ namespace HaselTweaks.Windows.PortraitHelperWindows;
 
 public class PresetCard : IDisposable
 {
-    private static PortraitHelperConfiguration Config => Service.Get<Configuration>().Tweaks.PortraitHelper;
     public static readonly Vector2 PortraitSize = new(576, 960); // native texture size
 
     private readonly uint ButtonActiveColor = Colors.White.WithAlpha(0.3f);
@@ -38,6 +38,7 @@ public class PresetCard : IDisposable
 
     private CancellationTokenSource? _closeTokenSource;
     private readonly ILogger _logger;
+    private readonly PluginConfig _pluginConfig;
     private readonly PresetBrowserOverlay _overlay;
     private readonly SavedPreset _preset;
     private readonly uint _bannerFrameImage;
@@ -58,11 +59,14 @@ public class PresetCard : IDisposable
 
     private float _lastScale;
 
-    public PresetCard(PresetBrowserOverlay overlay, SavedPreset preset, ILogger logger)
+    private PortraitHelperConfiguration Config => _pluginConfig.Tweaks.PortraitHelper;
+
+    public PresetCard(PresetBrowserOverlay overlay, SavedPreset preset, ILogger logger, PluginConfig pluginConfig)
     {
         _overlay = overlay;
         _preset = preset;
         _logger = logger;
+        _pluginConfig = pluginConfig;
 
         _bannerFrameImage = (uint)(GetRow<BannerFrame>(_preset.Preset!.BannerFrame)?.Image ?? 0);
         _bannerDecorationImage = (uint)(GetRow<BannerDecoration>(_preset.Preset.BannerDecoration)?.Image ?? 0);
@@ -176,7 +180,7 @@ public class PresetCard : IDisposable
                         var item = Config.Presets[oldIndex];
                         Config.Presets.RemoveAt(oldIndex);
                         Config.Presets.Insert(newIndex, item);
-                        Service.Get<Configuration>().Save();
+                        _pluginConfig.Save();
                     }
                 }
             }

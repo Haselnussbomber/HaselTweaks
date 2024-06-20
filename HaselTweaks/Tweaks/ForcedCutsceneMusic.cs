@@ -4,6 +4,7 @@ using FFXIVClientStructs.FFXIV.Client.System.Scheduler;
 using FFXIVClientStructs.FFXIV.Client.System.Scheduler.Base;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
+using HaselTweaks.Config;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
@@ -17,7 +18,7 @@ public sealed class ForcedCutsceneMusicConfiguration
 public sealed unsafe class ForcedCutsceneMusic(
     ILogger<ForcedCutsceneMusic> Logger,
     IGameInteropProvider GameInteropProvider,
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IGameConfig GameConfig)
     : Tweak<ForcedCutsceneMusicConfiguration>(PluginConfig, TranslationManager)

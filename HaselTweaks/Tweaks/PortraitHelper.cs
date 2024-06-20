@@ -26,6 +26,7 @@ using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using PluginConfig = HaselTweaks.Config.PluginConfig;
 
 namespace HaselTweaks.Tweaks;
 
@@ -55,7 +56,7 @@ public sealed class PortraitHelperConfiguration
 public sealed unsafe class PortraitHelper(
     ILogger<PortraitHelper> Logger,
     IGameInteropProvider GameInteropProvider,
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     DalamudPluginInterface PluginInterface,
     IFramework Framework,

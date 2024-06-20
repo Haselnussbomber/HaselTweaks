@@ -8,12 +8,20 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.Havok.Animation.Animation;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using ImGuiNET;
 using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
-public unsafe class AdvancedEditOverlay(WindowManager windowManager) : Overlay(windowManager, t("PortraitHelperWindows.AdvancedEditOverlay.Title"))
+public unsafe class AdvancedEditOverlay(
+    WindowManager windowManager,
+    TranslationManager translationManager,
+    PluginConfig pluginConfig)
+    : Overlay(
+        windowManager,
+        pluginConfig,
+        translationManager.Translate("PortraitHelperWindows.AdvancedEditOverlay.Title"))
 {
     protected override OverlayType Type => OverlayType.LeftPane;
 

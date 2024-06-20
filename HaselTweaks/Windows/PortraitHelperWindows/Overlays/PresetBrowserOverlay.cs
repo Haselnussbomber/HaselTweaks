@@ -7,6 +7,7 @@ using Dalamud.Memory;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
@@ -19,7 +20,7 @@ public unsafe class PresetBrowserOverlay : Overlay
 {
     private const int SidebarWidth = 170;
     private readonly ILogger _logger;
-    private readonly Configuration _pluginConfig;
+    private readonly PluginConfig _pluginConfig;
 
     public Guid? SelectedTagId { get; set; }
     public Dictionary<Guid, PresetCard> PresetCards { get; init; } = [];
@@ -36,9 +37,10 @@ public unsafe class PresetBrowserOverlay : Overlay
 
     public PresetBrowserOverlay(
         ILogger<PortraitHelper> logger,
-        Configuration pluginConfig,
-        WindowManager windowManager)
-        : base(windowManager, t("PortraitHelperWindows.PresetBrowserOverlay.Title"))
+        WindowManager windowManager,
+        TranslationManager translationManager,
+        PluginConfig pluginConfig)
+        : base(windowManager, pluginConfig, translationManager.Translate("PortraitHelperWindows.PresetBrowserOverlay.Title"))
     {
         _logger = logger;
         _pluginConfig = pluginConfig;
@@ -138,7 +140,7 @@ public unsafe class PresetBrowserOverlay : Overlay
                     if (preset != null)
                     {
                         preset.Tags.Add(tag.Id);
-                        _pluginConfig.Save();
+                        PluginConfig.Save();
                     }
                 }
             }
@@ -209,7 +211,7 @@ public unsafe class PresetBrowserOverlay : Overlay
             var item = Config.PresetTags[_reorderTagOldIndex];
             Config.PresetTags.RemoveAt(_reorderTagOldIndex);
             Config.PresetTags.Insert(_reorderTagNewIndex, item);
-            _pluginConfig.Save();
+            PluginConfig.Save();
             _reorderTagOldIndex = -1;
             _reorderTagNewIndex = -1;
         }
@@ -273,7 +275,7 @@ public unsafe class PresetBrowserOverlay : Overlay
                 Config.PresetTags.Remove(tag);
         }
 
-        _pluginConfig.Save();
+        PluginConfig.Save();
     }
 
     private void DrawPresetBrowserContent()
@@ -305,7 +307,7 @@ public unsafe class PresetBrowserOverlay : Overlay
             {
                 if (!PresetCards.TryGetValue(preset.Id, out var card))
                 {
-                    PresetCards.Add(preset.Id, new(this, preset, _logger));
+                    PresetCards.Add(preset.Id, new(this, preset, _logger, _pluginConfig));
                 }
 
                 return card;

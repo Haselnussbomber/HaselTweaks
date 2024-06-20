@@ -7,6 +7,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
 
@@ -17,6 +18,7 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable
     private readonly ImRaii.Style WindowPadding = new();
     private readonly ImRaii.Color WindowBg = new();
     private readonly ImRaii.Color WindowText = new();
+    protected readonly PluginConfig PluginConfig;
 
     protected bool IsWindow { get; set; }
 
@@ -25,7 +27,7 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable
     private static AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
     private static AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
 
-    protected static PortraitHelperConfiguration Config => Service.Get<Configuration>().Tweaks.PortraitHelper;
+    protected PortraitHelperConfiguration Config => PluginConfig.Tweaks.PortraitHelper;
 
     protected enum OverlayType
     {
@@ -35,8 +37,10 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable
 
     protected virtual OverlayType Type => OverlayType.Window;
 
-    public Overlay(WindowManager windowManager, string name) : base(windowManager, name)
+    public Overlay(WindowManager windowManager, PluginConfig pluginConfig, string name) : base(windowManager, name)
     {
+        PluginConfig = pluginConfig;
+
         DisableWindowSounds = true;
         RespectCloseHotkey = false;
 

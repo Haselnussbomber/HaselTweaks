@@ -8,6 +8,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
+using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
@@ -22,12 +23,12 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
 
     private const int LanguageSelectorWidth = 90;
 
-    private readonly Configuration PluginConfig;
+    private readonly PluginConfig PluginConfig;
 
     private bool InputFocused;
     private string Query = string.Empty;
 
-    public MJICraftScheduleSettingSearchBar(WindowManager windowManager, Configuration pluginConfig) : base(windowManager, "MJICraftScheduleSetting Search Bar")
+    public MJICraftScheduleSettingSearchBar(WindowManager windowManager, PluginConfig pluginConfig) : base(windowManager, "MJICraftScheduleSetting Search Bar")
     {
         PluginConfig = pluginConfig;
 

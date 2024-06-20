@@ -7,6 +7,7 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,7 @@ public sealed class CustomChatTimestampConfiguration
 public sealed unsafe class CustomChatTimestamp(
     ILogger<CustomChatTimestamp> Logger,
     IGameInteropProvider GameInteropProvider,
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IGameConfig GameConfig)
     : Tweak<CustomChatTimestampConfiguration>(PluginConfig, TranslationManager)

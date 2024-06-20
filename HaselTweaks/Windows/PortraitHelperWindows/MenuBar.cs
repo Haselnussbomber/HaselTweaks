@@ -10,6 +10,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -30,10 +31,10 @@ public unsafe class MenuBar : SimpleWindow
     private PortraitPreset? _initialPreset;
     private string _portraitName = string.Empty;
 
-    private readonly CreatePresetDialog SaveAsPresetDialog = new();
+    private readonly CreatePresetDialog SaveAsPresetDialog;
     private readonly ILogger<PortraitHelper> Logger;
     private readonly DalamudPluginInterface PluginInterface;
-    private readonly Configuration PluginConfig;
+    private readonly PluginConfig PluginConfig;
     private readonly AdvancedImportOverlay AdvancedImportOverlay;
     private readonly AdvancedEditOverlay AdvancedEditOverlay;
     private readonly PresetBrowserOverlay PresetBrowserOverlay;
@@ -43,7 +44,8 @@ public unsafe class MenuBar : SimpleWindow
         ILogger<PortraitHelper> logger,
         DalamudPluginInterface pluginInterface,
         WindowManager windowManager,
-        Configuration pluginConfig,
+        PluginConfig pluginConfig,
+        TranslationManager translationManager,
         AdvancedImportOverlay advancedImportOverlay,
         AdvancedEditOverlay advancedEditOverlay,
         PresetBrowserOverlay presetBrowserOverlay,
@@ -57,6 +59,8 @@ public unsafe class MenuBar : SimpleWindow
         AdvancedEditOverlay = advancedEditOverlay;
         PresetBrowserOverlay = presetBrowserOverlay;
         AlignmentToolSettingsOverlay = alignmentToolSettingsOverlay;
+
+        SaveAsPresetDialog = new(pluginConfig, translationManager);
 
         PresetBrowserOverlay.MenuBar = this;
         advancedImportOverlay.MenuBar = this;

@@ -15,6 +15,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using ImGuiNET;
 using AtkEventInterface = FFXIVClientStructs.FFXIV.Component.GUI.AtkModuleInterface.AtkEventInterface;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
@@ -36,7 +37,7 @@ public sealed class LockWindowPositionConfiguration
 
 public sealed unsafe class LockWindowPosition(
     IGameInteropProvider GameInteropProvider,
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IAddonLifecycle AddonLifecycle)
     : Tweak<LockWindowPositionConfiguration>(PluginConfig, TranslationManager)

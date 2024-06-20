@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Logging;
 using Dalamud.Plugin.Services;
+using HaselCommon.Services;
+using HaselTweaks.Config;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -17,18 +18,25 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class CreatePresetDialog : ConfirmationDialog
 {
-    private static PortraitHelperConfiguration Config => Service.Get<Configuration>().Tweaks.PortraitHelper;
-
     private readonly ConfirmationButton _saveButton;
-
+    private readonly PluginConfig _pluginConfig;
+    private readonly TranslationManager _translationManager;
     private string? _name;
     private PortraitPreset? _preset;
     private Image<Bgra32>? _image;
     private HashSet<Guid>? _tags;
 
-    public CreatePresetDialog() : base(t("PortraitHelperWindows.CreatePresetDialog.Title"))
+    private PortraitHelperConfiguration Config => _pluginConfig.Tweaks.PortraitHelper;
+
+    public CreatePresetDialog(
+        PluginConfig pluginConfig,
+        TranslationManager translationManager)
+        : base(translationManager.Translate("PortraitHelperWindows.CreatePresetDialog.Title"))
     {
-        AddButton(_saveButton = new ConfirmationButton(t("ConfirmationButtonWindow.Save"), OnSave));
+        _pluginConfig = pluginConfig;
+        _translationManager = translationManager;
+
+        AddButton(_saveButton = new ConfirmationButton(translationManager.Translate("ConfirmationButtonWindow.Save"), OnSave));
     }
 
     public void Open(string name, PortraitPreset? preset, Image<Bgra32>? image)
@@ -131,7 +139,7 @@ public class CreatePresetDialog : ConfirmationDialog
             });
 
             Config.Presets.Insert(0, new(guid, _name.Trim(), _preset, _tags!));
-            Service.Get<Configuration>().Save();
+            Service.Get<Config.PluginConfig>().Save();
 
             Close();
         }));

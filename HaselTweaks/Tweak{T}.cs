@@ -6,6 +6,7 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Interfaces;
 using ImGuiNET;
 
@@ -15,7 +16,7 @@ namespace HaselTweaks;
 public abstract class Tweak<T> : Tweak, IConfigurableTweak where T : notnull
 {
     public Tweak(
-        Configuration pluginConfig,
+        PluginConfig pluginConfig,
         TranslationManager translationManager)
         : base()
     {
@@ -31,7 +32,7 @@ public abstract class Tweak<T> : Tweak, IConfigurableTweak where T : notnull
 
     public Type CachedConfigType { get; init; }
     public T Config { get; init; }
-    public Configuration PluginConfig { get; }
+    public PluginConfig PluginConfig { get; }
     public TranslationManager TranslationManager { get; }
 
     public virtual void OnConfigOpen() { }

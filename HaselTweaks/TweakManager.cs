@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using Dalamud.Plugin.Services;
+using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 
 namespace HaselTweaks;
 
-public sealed class TweakManager(IPluginLog PluginLog, Configuration PluginConfig, IEnumerable<ITweak> Tweaks)
+public sealed class TweakManager(IPluginLog PluginLog, PluginConfig PluginConfig, IEnumerable<ITweak> Tweaks)
 {
     public void Initialize()
     {
@@ -15,7 +16,7 @@ public sealed class TweakManager(IPluginLog PluginLog, Configuration PluginConfi
             {
                 PluginLog.Verbose($"Initializing {tweak.InternalName}");
                 tweak.OnInitialize();
-                tweak.Status = TweakStatus.Initialized;
+                tweak.Status = TweakStatus.Disabled;
             }
             catch (Exception ex)
             {

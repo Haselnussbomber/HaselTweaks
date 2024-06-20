@@ -10,6 +10,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
+using HaselTweaks.Config;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
@@ -37,7 +38,7 @@ public sealed class EnhancedExpBarConfiguration
 
 [IncompatibilityWarning("SimpleTweaksPlugin", "ShowExperiencePercentage")]
 public sealed unsafe class EnhancedExpBar(
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IFramework Framework,
     IClientState ClientState,

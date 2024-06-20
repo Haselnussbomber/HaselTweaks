@@ -3,6 +3,7 @@ using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
+using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows;
 
@@ -21,7 +22,7 @@ public sealed class EnhancedIsleworksAgendaConfiguration
 
 public sealed unsafe class EnhancedIsleworksAgenda(
     IGameInteropProvider GameInteropProvider,
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     AddonObserver AddonObserver,
     MJICraftScheduleSettingSearchBar Window)

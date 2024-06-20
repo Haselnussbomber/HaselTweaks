@@ -7,6 +7,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
@@ -17,7 +18,7 @@ public sealed class BackgroundMusicKeybindConfiguration
 }
 
 public sealed unsafe class BackgroundMusicKeybind(
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IGameConfig GameConfig,
     IKeyState KeyState,

@@ -19,6 +19,7 @@ using HaselCommon.Text.Expressions;
 using HaselCommon.Text.Payloads;
 using HaselCommon.Text.Payloads.Macro;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -71,7 +72,7 @@ public sealed class CustomChatMessageFormatsConfiguration
 public sealed unsafe class CustomChatMessageFormats(
     ILogger<CustomChatMessageFormats> Logger,
     IGameInteropProvider GameInteropProvider,
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IDataManager DataManager,
     IGameConfig GameConfig,

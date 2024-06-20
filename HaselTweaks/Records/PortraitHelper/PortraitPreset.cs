@@ -239,7 +239,7 @@ public sealed record PortraitPreset
         return preset;
     }
 
-    public unsafe void ToState(ILogger logger,ImportFlags importFlags)
+    public unsafe void ToState(ILogger logger, ImportFlags importFlags)
     {
         if (!TryGetAddon<AddonBannerEditor>(AgentId.BannerEditor, out var addonBannerEditor))
             return;

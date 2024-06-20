@@ -1,6 +1,7 @@
 using Dalamud.Interface;
 using HaselCommon;
 using HaselCommon.Services;
+using HaselTweaks.Config;
 using ImGuiNET;
 
 namespace HaselTweaks.Utils;
@@ -10,9 +11,9 @@ public abstract class LockableWindow : SimpleWindow
     private static readonly ImGuiWindowFlags LockedWindowFlags = ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize;
     private readonly TitleBarButton LockButton;
 
-    public readonly Configuration PluginConfig;
+    public readonly PluginConfig PluginConfig;
 
-    public LockableWindow(WindowManager windowManager, Configuration pluginConfig, string name) : base(windowManager, name)
+    public LockableWindow(WindowManager windowManager, PluginConfig pluginConfig, string name) : base(windowManager, name)
     {
         PluginConfig = pluginConfig;
 

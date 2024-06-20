@@ -1,5 +1,6 @@
 using Dalamud.Plugin.Services;
 using HaselCommon.Services;
+using HaselTweaks.Config;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
@@ -23,7 +24,7 @@ public sealed class GearSetGridConfiguration
 }
 
 public sealed class GearSetGrid(
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     ICommandManager CommandManager,
     AddonObserver AddonObserver,

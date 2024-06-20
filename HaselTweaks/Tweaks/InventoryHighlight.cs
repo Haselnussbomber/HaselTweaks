@@ -12,6 +12,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using FFXIVClientStructs.Interop;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 
 namespace HaselTweaks.Tweaks;
 
@@ -22,7 +23,7 @@ public class InventoryHighlightConfiguration
 }
 
 public sealed unsafe class InventoryHighlight(
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IFramework Framework,
     IClientState ClientState,

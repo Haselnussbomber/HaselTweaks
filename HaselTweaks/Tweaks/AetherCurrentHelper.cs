@@ -4,6 +4,7 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
+using HaselTweaks.Config;
 using HaselTweaks.Windows;
 using Lumina.Excel.GeneratedSheets;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
@@ -22,7 +23,7 @@ public sealed class AetherCurrentHelperConfiguration
 public sealed unsafe class AetherCurrentHelper(
     IGameInteropProvider GameInteropProvider,
     IKeyState KeyState,
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     AetherCurrentHelperWindow Window)
     : Tweak<AetherCurrentHelperConfiguration>(PluginConfig, TranslationManager)

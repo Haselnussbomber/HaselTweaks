@@ -3,6 +3,7 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 
 namespace HaselTweaks.Tweaks;
 
@@ -59,7 +60,7 @@ public unsafe struct NaviMap
 }
 
 public sealed unsafe class MinimapAdjustments(
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IFramework Framework,
     IClientState ClientState)

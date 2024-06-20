@@ -3,6 +3,8 @@ using Dalamud.Game;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using HaselCommon;
+using HaselTweaks.Config;
+using HaselTweaks.Config.Migrations;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Windows;
@@ -22,19 +24,17 @@ public sealed class Plugin : IDalamudPlugin
         ISigScanner sigScanner,
         IDataManager dataManager)
     {
-        Service.Initialize(pluginInterface);
+        Service
+            .Initialize(pluginInterface)
+            .AddLogging(builder =>
+            {
+                builder.ClearProviders();
+                builder.SetMinimumLevel(LogLevel.Trace);
+                builder.AddProvider(new DalamudLoggerProvider(pluginLog));
+            })
 
-        Service.BuildProvider();
-        Service.Collection.AddSingleton(Configuration.Load()); // TODO: rework so nothing calls Service.Get<> and BuildProvider call above isn't needed
+            .AddSingleton(PluginConfig.Load(pluginInterface, pluginLog))
 
-        Service.Collection.AddLogging(builder =>
-        {
-            builder.ClearProviders();
-            builder.SetMinimumLevel(LogLevel.Trace);
-            builder.AddProvider(new DalamudLoggerProvider(pluginLog));
-        });
-
-        Service.Collection
             .AddSingleton<ITweak, AchievementLinkTooltip>()
             .AddSingleton<ITweak, AetherCurrentHelper>()
             .AddSingleton<ITweak, AutoOpenRecipe>()
@@ -66,9 +66,8 @@ public sealed class Plugin : IDalamudPlugin
             .AddSingleton<ITweak, SaferItemSearch>()
             .AddSingleton<ITweak, ScrollableTabs>()
             .AddSingleton<ITweak, SearchTheMarkets>()
-            .AddSingleton<ITweak, SimpleAethernetList>();
+            .AddSingleton<ITweak, SimpleAethernetList>()
 
-        Service.Collection
             .AddSingleton<PluginWindow>()
             .AddSingleton<MenuBar>()
             .AddSingleton<AdvancedEditOverlay>()
@@ -78,9 +77,9 @@ public sealed class Plugin : IDalamudPlugin
             .AddSingleton<AetherCurrentHelperWindow>()
             .AddSingleton<GearSetGridWindow>()
             .AddSingleton<GlamourDresserArmoireAlertWindow>()
-            .AddSingleton<MJICraftScheduleSettingSearchBar>();
+            .AddSingleton<MJICraftScheduleSettingSearchBar>()
 
-        Service.Collection.AddSingleton<TweakManager>();
+            .AddSingleton<TweakManager>();
 
         Service.BuildProvider();
 

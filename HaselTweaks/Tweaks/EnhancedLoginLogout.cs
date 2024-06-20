@@ -21,6 +21,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Records;
 using HaselTweaks.Structs;
 using ImGuiNET;
@@ -53,7 +54,7 @@ public sealed class EnhancedLoginLogoutConfiguration
 public sealed unsafe class EnhancedLoginLogout(
     ILogger<EnhancedLoginLogout> Logger,
     IGameInteropProvider GameInteropProvider,
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IGameConfig GameConfig,
     IClientState ClientState,

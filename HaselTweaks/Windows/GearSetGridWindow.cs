@@ -10,6 +10,7 @@ using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Sheets;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -34,7 +35,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
     public GearSetGridWindow(
         WindowManager windowManager,
-        Configuration pluginConfig,
+        PluginConfig pluginConfig,
         IClientState clientState,
         TextureManager textureManager)
         : base(windowManager, pluginConfig, t("GearSetGridWindow.Title"))

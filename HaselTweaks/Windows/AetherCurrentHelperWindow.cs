@@ -10,6 +10,7 @@ using HaselCommon.Services;
 using HaselCommon.Sheets;
 using HaselCommon.Utils;
 using HaselTweaks.Caches;
+using HaselTweaks.Config;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -32,7 +33,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
     public AetherCurrentHelperWindow(
         WindowManager windowManager,
-        Configuration pluginConfig,
+        PluginConfig pluginConfig,
         IClientState clientState,
         CacheManager cacheManager,
         TextureManager textureManager)

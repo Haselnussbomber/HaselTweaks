@@ -11,6 +11,7 @@ using HaselCommon.Attributes;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Services.CommandManager;
+using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using Lumina.Excel.GeneratedSheets;
 using BattleNpcSubKind = Dalamud.Game.ClientState.Objects.Enums.BattleNpcSubKind;
@@ -34,7 +35,7 @@ public sealed class CommandsConfiguration
 }
 
 public sealed unsafe class Commands(
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     CommandManager CommandManager,
     TranslationManager TranslationManager,
     IChatGui ChatGui,

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json.Serialization;
-using Dalamud.Plugin.Services;
+using HaselTweaks.Config;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Records.PortraitHelper;
@@ -22,7 +22,7 @@ public record SavedPreset
         this.Tags = Tags;
     }
 
-    public void Delete(ILogger logger, Configuration pluginConfig)
+    public void Delete(ILogger logger, PluginConfig pluginConfig)
     {
         var thumbPath = Tweaks.PortraitHelper.GetPortraitThumbnailPath(Id);
         if (File.Exists(thumbPath))

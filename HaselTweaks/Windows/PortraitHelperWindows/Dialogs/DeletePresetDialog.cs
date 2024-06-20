@@ -1,3 +1,4 @@
+using HaselTweaks.Config;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
@@ -9,12 +10,12 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 public class DeletePresetDialog : ConfirmationDialog
 {
     private readonly ILogger _logger;
-    private readonly Configuration _pluginConfig;
+    private readonly PluginConfig _pluginConfig;
     private readonly PresetBrowserOverlay _presetBrowserOverlay;
 
     private SavedPreset? _preset;
 
-    public DeletePresetDialog(PresetBrowserOverlay presetBrowserOverlay, ILogger logger, Configuration pluginConfig)
+    public DeletePresetDialog(PresetBrowserOverlay presetBrowserOverlay, ILogger logger, PluginConfig pluginConfig)
         : base(t("PortraitHelperWindows.DeletePresetDialog.Title"))
     {
         _presetBrowserOverlay = presetBrowserOverlay;

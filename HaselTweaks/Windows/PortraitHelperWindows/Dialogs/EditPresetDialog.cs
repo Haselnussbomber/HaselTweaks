@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Interface.Utility.Raii;
+using HaselTweaks.Config;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -10,7 +11,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class EditPresetDialog : ConfirmationDialog
 {
-    private static PortraitHelperConfiguration Config => Service.Get<Configuration>().Tweaks.PortraitHelper;
+    private static PortraitHelperConfiguration Config => Service.Get<PluginConfig>().Tweaks.PortraitHelper;
 
     private readonly ConfirmationButton _saveButton;
 
@@ -109,7 +110,7 @@ public class EditPresetDialog : ConfirmationDialog
         foreach (var tag in tags)
             _preset.Tags.Add(tag);
 
-        Service.Get<Configuration>().Save();
+        Service.Get<PluginConfig>().Save();
 
         Close();
     }

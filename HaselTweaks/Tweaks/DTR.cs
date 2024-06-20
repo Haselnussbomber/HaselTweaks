@@ -10,6 +10,7 @@ using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using Lumina.Text;
@@ -23,7 +24,7 @@ public sealed class DTRConfiguration
 }
 
 public sealed unsafe class DTR(
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IDtrBar DtrBar,
     IFramework Framework,

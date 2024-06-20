@@ -13,6 +13,7 @@ using HaselCommon.Services;
 using HaselCommon.SheetLookup;
 using HaselCommon.Sheets;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 using Lumina.Text;
@@ -56,7 +57,7 @@ public sealed class EnhancedMaterialListConfiguration
 public sealed unsafe class EnhancedMaterialList(
     ILogger<EnhancedMaterialList> Logger,
     IGameInteropProvider GameInteropProvider,
-    Configuration PluginConfig,
+    PluginConfig PluginConfig,
     TranslationManager TranslationManager,
     IAddonLifecycle AddonLifecycle,
     IFramework Framework,
