@@ -28,7 +28,10 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
     private bool InputFocused;
     private string Query = string.Empty;
 
-    public MJICraftScheduleSettingSearchBar(WindowManager windowManager, PluginConfig pluginConfig) : base(windowManager, "MJICraftScheduleSetting Search Bar")
+    public MJICraftScheduleSettingSearchBar(
+        WindowManager windowManager,
+        PluginConfig pluginConfig)
+        : base(windowManager, "MJICraftScheduleSetting Search Bar")
     {
         PluginConfig = pluginConfig;
 

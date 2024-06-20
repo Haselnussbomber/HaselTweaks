@@ -9,7 +9,6 @@ using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Records.PortraitHelper;
-using HaselTweaks.Tweaks;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
@@ -26,27 +25,34 @@ public unsafe class PresetBrowserOverlay : Overlay
     public Dictionary<Guid, PresetCard> PresetCards { get; init; } = [];
 
     public MenuBar MenuBar { get; internal set; } = null!;
-    public CreateTagDialog CreateTagDialog { get; init; } = new();
-    public RenameTagDialog RenameTagDialog { get; init; } = new();
+    public CreateTagDialog CreateTagDialog { get; init; }
+    public RenameTagDialog RenameTagDialog { get; init; }
     public DeleteTagDialog DeleteTagDialog { get; init; }
     public DeletePresetDialog DeletePresetDialog { get; init; }
-    public EditPresetDialog EditPresetDialog { get; init; } = new();
+    public EditPresetDialog EditPresetDialog { get; init; }
 
     private int _reorderTagOldIndex = -1;
     private int _reorderTagNewIndex = -1;
 
     public PresetBrowserOverlay(
-        ILogger<PortraitHelper> logger,
+        ILogger<PresetBrowserOverlay> logger,
         WindowManager windowManager,
         TranslationManager translationManager,
-        PluginConfig pluginConfig)
+        PluginConfig pluginConfig,
+        CreateTagDialog createTagDialog,
+        RenameTagDialog renameTagDialog,
+        DeleteTagDialog deleteTagDialog,
+        DeletePresetDialog deletePresetDialog,
+        EditPresetDialog editPresetDialog)
         : base(windowManager, pluginConfig, translationManager.Translate("PortraitHelperWindows.PresetBrowserOverlay.Title"))
     {
         _logger = logger;
         _pluginConfig = pluginConfig;
-
-        DeleteTagDialog = new(this);
-        DeletePresetDialog = new(this, logger, pluginConfig);
+        CreateTagDialog = createTagDialog;
+        RenameTagDialog = renameTagDialog;
+        DeleteTagDialog = deleteTagDialog;
+        DeletePresetDialog = deletePresetDialog;
+        EditPresetDialog = editPresetDialog;
 
         SizeConstraints = new WindowSizeConstraints
         {
@@ -57,8 +63,8 @@ public unsafe class PresetBrowserOverlay : Overlay
 
     public override void OnClose()
     {
-        base.OnClose();
         PresetCards.Dispose();
+        base.OnClose();
     }
 
     public override void Draw()
@@ -163,7 +169,7 @@ public unsafe class PresetBrowserOverlay : Overlay
 
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveTag.Label")))
                 {
-                    DeleteTagDialog.Open(tag);
+                    DeleteTagDialog.Open(this, tag);
                 }
 
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label")))
@@ -307,7 +313,7 @@ public unsafe class PresetBrowserOverlay : Overlay
             {
                 if (!PresetCards.TryGetValue(preset.Id, out var card))
                 {
-                    PresetCards.Add(preset.Id, new(this, preset, _logger, _pluginConfig));
+                    PresetCards.Add(preset.Id, new(preset, _logger, _pluginConfig));
                 }
 
                 return card;
@@ -335,7 +341,7 @@ public unsafe class PresetBrowserOverlay : Overlay
                 {
                     for (int i = 0, index = row * presetsPerRow; i < presetsPerRow && index < presetCards.Length; i++, index++)
                     {
-                        presetCards[index]?.Draw(scale, DefaultImGuiTextColor);
+                        presetCards[index]?.Draw(this, scale, DefaultImGuiTextColor);
 
                         if (i < presetsPerRow - 1 && index + 1 < presetCards.Length)
                             ImGui.SameLine(0, style.ItemInnerSpacing.X);

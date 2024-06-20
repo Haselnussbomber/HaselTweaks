@@ -2,6 +2,7 @@ using Dalamud.Interface.Utility.Raii;
 using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
+using HaselTweaks.Enums.PortraitHelper;
 using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
@@ -15,7 +16,7 @@ public unsafe class AlignmentToolSettingsOverlay(
         pluginConfig,
         translationManager.Translate("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title"))
 {
-    protected override OverlayType Type => OverlayType.LeftPane;
+    public override OverlayType Type => OverlayType.LeftPane;
 
     public override void Draw()
     {

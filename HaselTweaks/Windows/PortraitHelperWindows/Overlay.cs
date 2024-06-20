@@ -8,19 +8,19 @@ using HaselCommon;
 using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
+using HaselTweaks.Enums.PortraitHelper;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
-public abstract unsafe class Overlay : SimpleWindow, IDisposable
+public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverlay
 {
     private readonly ImRaii.Style WindowPadding = new();
     private readonly ImRaii.Color WindowBg = new();
     private readonly ImRaii.Color WindowText = new();
     protected readonly PluginConfig PluginConfig;
-
-    protected bool IsWindow { get; set; }
 
     protected uint DefaultImGuiTextColor { get; set; }
 
@@ -29,15 +29,14 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable
 
     protected PortraitHelperConfiguration Config => PluginConfig.Tweaks.PortraitHelper;
 
-    protected enum OverlayType
-    {
-        Window,
-        LeftPane
-    }
+    public bool IsWindow { get; set; }
+    public virtual OverlayType Type => OverlayType.Window;
 
-    protected virtual OverlayType Type => OverlayType.Window;
-
-    public Overlay(WindowManager windowManager, PluginConfig pluginConfig, string name) : base(windowManager, name)
+    public Overlay(
+        WindowManager windowManager,
+        PluginConfig pluginConfig,
+        string name)
+        : base(windowManager, name)
     {
         PluginConfig = pluginConfig;
 
@@ -49,13 +48,13 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable
 
     public override void OnClose()
     {
-        base.OnClose();
-
         WindowPadding.Dispose();
         WindowBg.Dispose();
         WindowText.Dispose();
 
         ToggleUiVisibility(true);
+
+        base.OnClose();
     }
 
     public override bool DrawConditions()
@@ -71,6 +70,9 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable
 
     public override void Update()
     {
+        if (!IsOpen)
+            return;
+
         IsWindow = ImGuiHelpers.GlobalScale > 1;
 
         var isCloseDialogOpen =
@@ -180,7 +182,7 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable
         }
     }
 
-    public void ToggleUiVisibility(bool visible)
+    private void ToggleUiVisibility(bool visible)
     {
         if (AddonBannerEditor == null)
             return;

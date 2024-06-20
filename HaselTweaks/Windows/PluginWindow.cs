@@ -53,7 +53,8 @@ public partial class PluginWindow : SimpleWindow, IDisposable
         ICommandManager commandManager,
         TweakManager tweakManager,
         TextureManager textureManager,
-        IEnumerable<ITweak> tweaks) : base(windowManager, "HaselTweaks")
+        IEnumerable<ITweak> tweaks)
+        : base(windowManager, "HaselTweaks")
     {
         PluginInterface = pluginInterface;
         TranslationManager = translationManager;

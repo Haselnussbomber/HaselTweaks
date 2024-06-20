@@ -1,33 +1,37 @@
+using System.IO;
+using Dalamud.Plugin.Services;
 using HaselTweaks.Config;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
+using HaselTweaks.Tweaks;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using ImGuiNET;
-using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class DeletePresetDialog : ConfirmationDialog
 {
-    private readonly ILogger _logger;
+    private readonly INotificationManager _notificationManager;
     private readonly PluginConfig _pluginConfig;
-    private readonly PresetBrowserOverlay _presetBrowserOverlay;
+    private PresetBrowserOverlay? _presetBrowserOverlay;
 
     private SavedPreset? _preset;
 
-    public DeletePresetDialog(PresetBrowserOverlay presetBrowserOverlay, ILogger logger, PluginConfig pluginConfig)
+    public DeletePresetDialog(
+        INotificationManager notificationManager,
+        PluginConfig pluginConfig)
         : base(t("PortraitHelperWindows.DeletePresetDialog.Title"))
     {
-        _presetBrowserOverlay = presetBrowserOverlay;
-        _logger = logger;
+        _notificationManager = notificationManager;
         _pluginConfig = pluginConfig;
 
         AddButton(new ConfirmationButton(t("ConfirmationButtonWindow.Delete"), OnDelete));
         AddButton(new ConfirmationButton(t("ConfirmationButtonWindow.Cancel"), Close));
     }
 
-    public void Open(SavedPreset? preset)
+    public void Open(PresetBrowserOverlay presetBrowserOverlay, SavedPreset? preset)
     {
+        _presetBrowserOverlay = presetBrowserOverlay;
         _preset = preset;
         Show();
     }
@@ -39,7 +43,7 @@ public class DeletePresetDialog : ConfirmationDialog
     }
 
     public override bool DrawCondition()
-        => base.DrawCondition() && _preset != null;
+        => base.DrawCondition() && _presetBrowserOverlay != null && _preset != null;
 
     public override void InnerDraw()
         => ImGui.TextUnformatted(t("PortraitHelperWindows.DeletePresetDialog.Prompt", _preset!.Name));
@@ -52,13 +56,31 @@ public class DeletePresetDialog : ConfirmationDialog
             return;
         }
 
-        if (_presetBrowserOverlay.PresetCards.TryGetValue(_preset.Id, out var card))
+        if (_presetBrowserOverlay!.PresetCards.TryGetValue(_preset.Id, out var card))
         {
             _presetBrowserOverlay.PresetCards.Remove(_preset.Id);
             card.Dispose();
         }
 
-        _preset.Delete(_logger, _pluginConfig);
+        var thumbPath = PortraitHelper.GetPortraitThumbnailPath(_preset.Id);
+        if (File.Exists(thumbPath))
+        {
+            try
+            {
+                File.Delete(thumbPath);
+            }
+            catch (Exception ex)
+            {
+                _notificationManager.AddNotification(new()
+                {
+                    Title = "Could not delete preset",
+                    Content = ex.Message,
+                });
+            }
+        }
+
+        _pluginConfig.Tweaks.PortraitHelper.Presets.Remove(_preset);
+        _pluginConfig.Save();
 
         Close();
     }

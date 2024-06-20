@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Text.Json.Serialization;
-using HaselTweaks.Config;
-using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Records.PortraitHelper;
 
@@ -20,24 +17,5 @@ public record SavedPreset
         this.Name = Name;
         this.Preset = Preset;
         this.Tags = Tags;
-    }
-
-    public void Delete(ILogger logger, PluginConfig pluginConfig)
-    {
-        var thumbPath = Tweaks.PortraitHelper.GetPortraitThumbnailPath(Id);
-        if (File.Exists(thumbPath))
-        {
-            try
-            {
-                File.Delete(thumbPath);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, $"Could not delete \"{thumbPath}\"");
-            }
-        }
-
-        pluginConfig.Tweaks.PortraitHelper.Presets.Remove(this);
-        pluginConfig.Save();
     }
 }

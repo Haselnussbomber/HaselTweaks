@@ -2,11 +2,12 @@ using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
 using HaselCommon.Utils;
+using HaselTweaks.Interfaces;
 using ImGuiNET;
 
 namespace HaselTweaks.ImGuiComponents;
 
-public abstract class ConfirmationDialog(string title)
+public abstract class ConfirmationDialog(string title) : IDialog
 {
     public delegate void InnerDrawDelegate();
 

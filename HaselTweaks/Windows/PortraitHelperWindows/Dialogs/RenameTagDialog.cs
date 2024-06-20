@@ -12,8 +12,11 @@ public class RenameTagDialog : ConfirmationDialog
     private SavedPresetTag? _tag = null;
     private string? _name;
 
-    public RenameTagDialog() : base("Rename Tag")
+    public PluginConfig _pluginConfig { get; }
+
+    public RenameTagDialog(PluginConfig pluginConfig) : base("Rename Tag")
     {
+        _pluginConfig = pluginConfig;
         AddButton(_saveButton = new ConfirmationButton("Save", OnSave));
         AddButton(new ConfirmationButton("Cancel", Close));
     }
@@ -62,7 +65,7 @@ public class RenameTagDialog : ConfirmationDialog
         }
 
         _tag.Name = _name.Trim();
-        Service.Get<PluginConfig>().Save();
+        _pluginConfig.Save();
 
         Close();
     }

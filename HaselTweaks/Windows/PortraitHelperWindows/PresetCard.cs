@@ -39,7 +39,6 @@ public class PresetCard : IDisposable
     private CancellationTokenSource? _closeTokenSource;
     private readonly ILogger _logger;
     private readonly PluginConfig _pluginConfig;
-    private readonly PresetBrowserOverlay _overlay;
     private readonly SavedPreset _preset;
     private readonly uint _bannerFrameImage;
     private readonly uint _bannerDecorationImage;
@@ -61,9 +60,8 @@ public class PresetCard : IDisposable
 
     private PortraitHelperConfiguration Config => _pluginConfig.Tweaks.PortraitHelper;
 
-    public PresetCard(PresetBrowserOverlay overlay, SavedPreset preset, ILogger logger, PluginConfig pluginConfig)
+    public PresetCard(SavedPreset preset, ILogger logger, PluginConfig pluginConfig)
     {
-        _overlay = overlay;
         _preset = preset;
         _logger = logger;
         _pluginConfig = pluginConfig;
@@ -83,9 +81,10 @@ public class PresetCard : IDisposable
         _closeTokenSource?.Dispose();
         _image?.Dispose();
         _textureWrap?.Dispose();
+        GC.SuppressFinalize(this);
     }
 
-    public void Draw(float scale, uint defaultImGuiTextColor)
+    public void Draw(PresetBrowserOverlay overlay, float scale, uint defaultImGuiTextColor)
     {
         Update(scale);
 
@@ -239,7 +238,7 @@ public class PresetCard : IDisposable
             if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
             {
                 _preset.Preset?.ToState(_logger, ImportFlags.All);
-                _overlay.MenuBar.CloseOverlays();
+                overlay.MenuBar.CloseOverlays();
             }
         }
 
@@ -251,12 +250,12 @@ public class PresetCard : IDisposable
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.LoadPreset.Label")))
                 {
                     _preset.Preset?.ToState(_logger, ImportFlags.All);
-                    _overlay.MenuBar.CloseOverlays();
+                    overlay.MenuBar.CloseOverlays();
                 }
 
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.EditPreset.Label")))
                 {
-                    _overlay.EditPresetDialog.Open(_preset);
+                    overlay.EditPresetDialog.Open(_preset);
                 }
 
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.ExportToClipboard.Label")))
@@ -293,7 +292,7 @@ public class PresetCard : IDisposable
 
                 if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.DeletePreset.Label")))
                 {
-                    _overlay.DeletePresetDialog.Open(_preset);
+                    overlay.DeletePresetDialog.Open(overlay, _preset);
                 }
             }
         }

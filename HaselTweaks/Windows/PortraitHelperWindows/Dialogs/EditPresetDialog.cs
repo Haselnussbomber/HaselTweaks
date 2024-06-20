@@ -11,16 +11,18 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class EditPresetDialog : ConfirmationDialog
 {
-    private static PortraitHelperConfiguration Config => Service.Get<PluginConfig>().Tweaks.PortraitHelper;
-
+    private readonly PluginConfig _pluginConfig;
     private readonly ConfirmationButton _saveButton;
 
     private string? _name;
     private SavedPreset? _preset;
     public readonly List<Guid> tags = [];
 
-    public EditPresetDialog() : base(t("PortraitHelperWindows.EditPresetDialog.Title"))
+    private PortraitHelperConfiguration Config => _pluginConfig.Tweaks.PortraitHelper;
+
+    public EditPresetDialog(PluginConfig pluginConfig) : base(t("PortraitHelperWindows.EditPresetDialog.Title"))
     {
+        _pluginConfig = pluginConfig;
         AddButton(_saveButton = new ConfirmationButton(t("ConfirmationButtonWindow.Save"), OnSave));
         AddButton(new ConfirmationButton(t("ConfirmationButtonWindow.Cancel"), Close));
     }
@@ -110,7 +112,7 @@ public class EditPresetDialog : ConfirmationDialog
         foreach (var tag in tags)
             _preset.Tags.Add(tag);
 
-        Service.Get<PluginConfig>().Save();
+        _pluginConfig.Save();
 
         Close();
     }

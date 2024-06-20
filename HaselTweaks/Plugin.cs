@@ -4,11 +4,11 @@ using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using HaselCommon;
 using HaselTweaks.Config;
-using HaselTweaks.Config.Migrations;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Windows;
 using HaselTweaks.Windows.PortraitHelperWindows;
+using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -25,7 +25,10 @@ public sealed class Plugin : IDalamudPlugin
         IDataManager dataManager)
     {
         Service
+            // Dalamud & HaselCommon
             .Initialize(pluginInterface)
+
+            // Logging
             .AddLogging(builder =>
             {
                 builder.ClearProviders();
@@ -33,8 +36,10 @@ public sealed class Plugin : IDalamudPlugin
                 builder.AddProvider(new DalamudLoggerProvider(pluginLog));
             })
 
+            // Config
             .AddSingleton(PluginConfig.Load(pluginInterface, pluginLog))
 
+            // Tweaks
             .AddSingleton<ITweak, AchievementLinkTooltip>()
             .AddSingleton<ITweak, AetherCurrentHelper>()
             .AddSingleton<ITweak, AutoOpenRecipe>()
@@ -68,16 +73,33 @@ public sealed class Plugin : IDalamudPlugin
             .AddSingleton<ITweak, SearchTheMarkets>()
             .AddSingleton<ITweak, SimpleAethernetList>()
 
+            // Plugin Window
             .AddSingleton<PluginWindow>()
-            .AddSingleton<MenuBar>()
-            .AddSingleton<AdvancedEditOverlay>()
-            .AddSingleton<AdvancedImportOverlay>()
-            .AddSingleton<AlignmentToolSettingsOverlay>()
-            .AddSingleton<PresetBrowserOverlay>()
+
+            // Windows: AetherCurrentHelper
             .AddSingleton<AetherCurrentHelperWindow>()
-            .AddSingleton<GearSetGridWindow>()
-            .AddSingleton<GlamourDresserArmoireAlertWindow>()
+
+            // Windows: EnhancedIsleworksAgenda
             .AddSingleton<MJICraftScheduleSettingSearchBar>()
+
+            // Windows: GearSetGrid
+            .AddSingleton<GearSetGridWindow>()
+
+            // Windows: GlamourDresserArmoireAlert
+            .AddSingleton<GlamourDresserArmoireAlertWindow>()
+
+            // Windows: PresetHelper
+            .AddSingleton<MenuBar>()
+            .AddScoped<CreatePresetDialog>()
+            .AddScoped<CreateTagDialog>()
+            .AddScoped<RenameTagDialog>()
+            .AddScoped<DeleteTagDialog>()
+            .AddScoped<DeletePresetDialog>()
+            .AddScoped<EditPresetDialog>()
+            .AddScoped<AdvancedEditOverlay>()
+            .AddScoped<AdvancedImportOverlay>()
+            .AddScoped<AlignmentToolSettingsOverlay>()
+            .AddScoped<PresetBrowserOverlay>()
 
             .AddSingleton<TweakManager>();
 

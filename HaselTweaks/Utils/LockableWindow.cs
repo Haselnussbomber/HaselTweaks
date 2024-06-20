@@ -13,7 +13,8 @@ public abstract class LockableWindow : SimpleWindow
 
     public readonly PluginConfig PluginConfig;
 
-    public LockableWindow(WindowManager windowManager, PluginConfig pluginConfig, string name) : base(windowManager, name)
+    public LockableWindow(WindowManager windowManager, PluginConfig pluginConfig, string name)
+        : base(windowManager, name)
     {
         PluginConfig = pluginConfig;
 

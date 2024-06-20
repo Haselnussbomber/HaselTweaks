@@ -10,23 +10,24 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class DeleteTagDialog : ConfirmationDialog
 {
-    private static PortraitHelperConfiguration Config => Service.Get<PluginConfig>().Tweaks.PortraitHelper;
+    private PortraitHelperConfiguration Config => _pluginConfig.Tweaks.PortraitHelper;
 
-    private readonly PresetBrowserOverlay _presetBrowserOverlay;
+    private readonly PluginConfig _pluginConfig;
 
+    private PresetBrowserOverlay? _presetBrowserOverlay;
     private SavedPresetTag? _tag;
     private bool _deletePortraits;
 
-    public DeleteTagDialog(PresetBrowserOverlay presetBrowserOverlay) : base(t("PortraitHelperWindows.DeleteTagDialog.Title"))
+    public DeleteTagDialog(PluginConfig pluginConfig) : base(t("PortraitHelperWindows.DeleteTagDialog.Title"))
     {
-        _presetBrowserOverlay = presetBrowserOverlay;
-
+        _pluginConfig = pluginConfig;
         AddButton(new ConfirmationButton(t("ConfirmationButtonWindow.Delete"), OnDelete));
         AddButton(new ConfirmationButton(t("ConfirmationButtonWindow.Cancel"), Close));
     }
 
-    public void Open(SavedPresetTag tag)
+    public void Open(PresetBrowserOverlay presetBrowserOverlay, SavedPresetTag tag)
     {
+        _presetBrowserOverlay = presetBrowserOverlay;
         _tag = tag;
         _deletePortraits = false;
         Show();
@@ -65,7 +66,7 @@ public class DeleteTagDialog : ConfirmationDialog
             // remove presets with tag
             foreach (var preset in presets)
             {
-                if (_presetBrowserOverlay.PresetCards.TryGetValue(preset.Id, out var card))
+                if (_presetBrowserOverlay!.PresetCards.TryGetValue(preset.Id, out var card))
                 {
                     card.Dispose();
                     _presetBrowserOverlay.PresetCards.Remove(preset.Id);
@@ -84,9 +85,9 @@ public class DeleteTagDialog : ConfirmationDialog
         }
 
         Config.PresetTags.Remove(_tag);
-        Service.Get<PluginConfig>().Save();
+        _pluginConfig.Save();
 
-        if (_presetBrowserOverlay.SelectedTagId == _tag.Id)
+        if (_presetBrowserOverlay!.SelectedTagId == _tag.Id)
             _presetBrowserOverlay.SelectedTagId = null;
 
         Close();

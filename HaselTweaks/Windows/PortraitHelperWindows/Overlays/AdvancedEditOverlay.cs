@@ -9,6 +9,7 @@ using FFXIVClientStructs.Havok.Animation.Animation;
 using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
+using HaselTweaks.Enums.PortraitHelper;
 using ImGuiNET;
 using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
@@ -23,7 +24,7 @@ public unsafe class AdvancedEditOverlay(
         pluginConfig,
         translationManager.Translate("PortraitHelperWindows.AdvancedEditOverlay.Title"))
 {
-    protected override OverlayType Type => OverlayType.LeftPane;
+    public override OverlayType Type => OverlayType.LeftPane;
 
     private const float THIRTY_FPS = 30f;
 
