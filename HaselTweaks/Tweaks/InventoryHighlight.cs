@@ -23,15 +23,15 @@ public class InventoryHighlightConfiguration
 }
 
 public sealed unsafe class InventoryHighlight(
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
+    PluginConfig pluginConfig,
+    TextService textService,
     IFramework Framework,
     IClientState ClientState,
     IGameConfig GameConfig,
     IGameGui GameGui,
     IKeyState KeyState,
     IAddonLifecycle AddonLifecycle)
-    : Tweak<InventoryHighlightConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<InventoryHighlightConfiguration>(pluginConfig, textService)
 {
     private uint ItemInventryWindowSizeType = 0;
     private uint ItemInventryRetainerWindowSizeType = 0;

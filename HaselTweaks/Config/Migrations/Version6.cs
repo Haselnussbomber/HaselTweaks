@@ -3,8 +3,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using HaselTweaks.Extensions;
 using HaselTweaks.Interfaces;
-using HaselTweaks.Tweaks;
 
 namespace HaselTweaks.Config.Migrations;
 
@@ -51,7 +51,7 @@ public class Version6(DalamudPluginInterface PluginInterface, IPluginLog PluginL
 
             if (File.Exists(oldPath))
             {
-                var newPath = PortraitHelper.GetPortraitThumbnailPath(guid);
+                var newPath = PluginInterface.GetPortraitThumbnailPath(guid);
 
                 PluginLog.Info($"[MigrationV6]   {oldPath} => {newPath}");
 

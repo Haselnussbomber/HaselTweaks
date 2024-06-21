@@ -24,12 +24,11 @@ public sealed class AchievementLinkTooltipConfiguration
 }
 
 public sealed unsafe class AchievementLinkTooltip(
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
+    PluginConfig pluginConfig,
+    TextService textService,
     IAddonLifecycle AddonLifecycle,
-    ExcelService ExcelService,
-    TextService TextService)
-    : Tweak<AchievementLinkTooltipConfiguration>(PluginConfig, TranslationManager)
+    ExcelService ExcelService)
+    : Tweak<AchievementLinkTooltipConfiguration>(pluginConfig, textService)
 {
     private readonly string[] ChatPanels = ["ChatLogPanel_0", "ChatLogPanel_1", "ChatLogPanel_2", "ChatLogPanel_3"];
 

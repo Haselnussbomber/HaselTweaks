@@ -54,17 +54,17 @@ public sealed class EnhancedMaterialListConfiguration
 }
 
 public sealed unsafe class EnhancedMaterialList(
+    PluginConfig pluginConfig,
+    TextService textService,
     ILogger<EnhancedMaterialList> Logger,
     IGameInteropProvider GameInteropProvider,
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
     IAddonLifecycle AddonLifecycle,
     IFramework Framework,
     IClientState ClientState,
     IGameInventory GameInventory,
     AddonObserver AddonObserver,
     ExcelService ExcelService)
-    : Tweak<EnhancedMaterialListConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<EnhancedMaterialListConfiguration>(pluginConfig, textService)
 {
     private bool _canRefreshMaterialList;
     private bool _pendingMaterialListRefresh;

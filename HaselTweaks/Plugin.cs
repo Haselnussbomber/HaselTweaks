@@ -7,6 +7,7 @@ using HaselTweaks.Caches;
 using HaselTweaks.Config;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Tweaks;
+using HaselTweaks.Utils;
 using HaselTweaks.Windows;
 using HaselTweaks.Windows.PortraitHelperWindows;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
@@ -43,6 +44,7 @@ public sealed class Plugin : IDalamudPlugin
             // HaselTweaks
             .AddSingleton<TweakManager>()
             .AddSingleton<PluginWindow>()
+            .AddSingleton<BannerUtils>()
 
             // Tweaks
             .AddSingleton<ITweak, AchievementLinkTooltip>()

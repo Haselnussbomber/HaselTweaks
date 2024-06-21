@@ -86,13 +86,13 @@ public sealed class ScrollableTabsConfiguration
 }
 
 public sealed unsafe class ScrollableTabs(
+    PluginConfig pluginConfig,
+    TextService textService,
     ILogger<ScrollableTabs> Logger,
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
     IFramework Framework,
     IClientState ClientState,
     IGameConfig GameConfig)
-    : Tweak<ScrollableTabsConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<ScrollableTabsConfiguration>(pluginConfig, textService)
 {
     private const int NumArmouryBoardTabs = 12;
     private const int NumInventoryTabs = 5;
@@ -620,7 +620,7 @@ public sealed unsafe class ScrollableTabs(
 
     private void UpdateMJIMinionNoteBook(AddonMJIMinionNoteBook* addon)
     {
-        var agent = GetAgent<AgentMJIMinionNoteBook>();
+        var agent = AgentMJIMinionNoteBook.Instance();
 
         if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Normal)
         {
@@ -731,7 +731,7 @@ public sealed unsafe class ScrollableTabs(
         if (IsAddonOpen("MiragePrismPrismBoxFilter"))
             return;
 
-        var agent = GetAgent<AgentMiragePrismPrismBox>();
+        var agent = AgentMiragePrismPrismBox.Instance();
         agent->PageIndex += (byte)_wheelState;
         agent->UpdateItems(false, false);
     }

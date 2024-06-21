@@ -11,14 +11,13 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 public unsafe class AlignmentToolSettingsOverlay(
     TextService TextService,
     IWindowManager windowManager,
-    TranslationManager translationManager,
     PluginConfig pluginConfig,
     ExcelService excelService)
     : Overlay(
         windowManager,
         pluginConfig,
         excelService,
-        translationManager.Translate("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title"))
+        TextService.Translate("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title"))
 {
     public override OverlayType Type => OverlayType.LeftPane;
 

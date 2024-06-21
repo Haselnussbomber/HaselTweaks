@@ -30,7 +30,7 @@ public partial class PluginWindow : SimpleWindow, IDisposable
     private const string LogoManifestResource = "HaselTweaks.Assets.Logo.png";
 
     private readonly DalamudPluginInterface PluginInterface;
-    private readonly TranslationManager TranslationManager;
+    private readonly TextService TextService;
     private readonly ICommandManager CommandManager;
     private readonly TweakManager TweakManager;
     private readonly TextureManager TextureManager;
@@ -50,8 +50,8 @@ public partial class PluginWindow : SimpleWindow, IDisposable
     public PluginWindow(
         IWindowManager windowManager,
         DalamudPluginInterface pluginInterface,
+        TextService textService,
         IPluginLog pluginLog,
-        TranslationManager translationManager,
         ICommandManager commandManager,
         TweakManager tweakManager,
         TextureManager textureManager,
@@ -59,7 +59,7 @@ public partial class PluginWindow : SimpleWindow, IDisposable
         : base(windowManager, "HaselTweaks")
     {
         PluginInterface = pluginInterface;
-        TranslationManager = translationManager;
+        TextService = textService;
         CommandManager = commandManager;
         TweakManager = tweakManager;
         TextureManager = textureManager;
@@ -82,11 +82,11 @@ public partial class PluginWindow : SimpleWindow, IDisposable
         AllowPinning = false;
 
         PluginInterface.UiBuilder.OpenConfigUi += Toggle;
-        TranslationManager.LanguageChanged += OnLanguageChanged;
+        TextService.LanguageChanged += OnLanguageChanged;
 
         CommandManager.AddHandler("/haseltweaks", CommandInfo = new CommandInfo((_, _) => Toggle())
         {
-            HelpMessage = translationManager.Translate("HaselTweaks.CommandHandlerHelpMessage")
+            HelpMessage = textService.Translate("HaselTweaks.CommandHandlerHelpMessage")
         });
 
         try
@@ -108,7 +108,7 @@ public partial class PluginWindow : SimpleWindow, IDisposable
     public new void Dispose()
     {
         PluginInterface.UiBuilder.OpenConfigUi -= Toggle;
-        TranslationManager.LanguageChanged -= OnLanguageChanged;
+        TextService.LanguageChanged -= OnLanguageChanged;
         CommandManager.RemoveHandler("/haseltweaks");
         LogoTextureWrap?.Dispose();
         base.Dispose();
@@ -116,7 +116,7 @@ public partial class PluginWindow : SimpleWindow, IDisposable
 
     private void OnLanguageChanged(string langCode)
     {
-        CommandInfo.HelpMessage = TranslationManager.Translate("HaselTweaks.CommandHandlerHelpMessage");
+        CommandInfo.HelpMessage = TextService.Translate("HaselTweaks.CommandHandlerHelpMessage");
     }
 
     public override void OnClose()
@@ -185,7 +185,7 @@ public partial class PluginWindow : SimpleWindow, IDisposable
                     using var tooltip = ImRaii.Tooltip();
                     if (tooltip.Success)
                     {
-                        ImGuiUtils.TextUnformattedColored(color, TranslationManager.Translate($"HaselTweaks.Config.TweakStatus.{Enum.GetName(status)}"));
+                        TextService.Draw(color, $"HaselTweaks.Config.TweakStatus.{Enum.GetName(status)}");
                     }
                 }
 
@@ -234,7 +234,7 @@ public partial class PluginWindow : SimpleWindow, IDisposable
                 ImGui.PushStyleColor(ImGuiCol.Text, (uint)Colors.Grey);
             }
 
-            if (!TranslationManager.TryGetTranslation(tweak.InternalName + ".Tweak.Name", out var name))
+            if (!TextService.TryGetTranslation(tweak.InternalName + ".Tweak.Name", out var name))
                 name = tweak.InternalName;
 
             if (ImGui.Selectable(name + "##Selectable_" + tweak.InternalName, SelectedTweak != null && SelectedTweak.InternalName == tweak.InternalName))
@@ -287,23 +287,23 @@ public partial class PluginWindow : SimpleWindow, IDisposable
 
             // links, bottom left
             ImGui.SetCursorPos(cursorPos + new Vector2(0, contentAvail.Y - ImGui.GetTextLineHeight()));
-            ImGuiUtils.DrawLink("GitHub", TranslationManager.Translate("HaselTweaks.Config.GitHubLink.Tooltip"), "https://github.com/Haselnussbomber/HaselTweaks");
+            ImGuiUtils.DrawLink("GitHub", TextService.Translate("HaselTweaks.Config.GitHubLink.Tooltip"), "https://github.com/Haselnussbomber/HaselTweaks");
             ImGui.SameLine();
             ImGui.TextUnformatted("•");
             ImGui.SameLine();
-            ImGuiUtils.DrawLink("Ko-fi", TranslationManager.Translate("HaselTweaks.Config.KoFiLink.Tooltip"), "https://ko-fi.com/haselnussbomber");
+            ImGuiUtils.DrawLink("Ko-fi", TextService.Translate("HaselTweaks.Config.KoFiLink.Tooltip"), "https://ko-fi.com/haselnussbomber");
 
             // version, bottom right
 #if DEBUG
             ImGui.SetCursorPos(cursorPos + contentAvail - ImGui.CalcTextSize("dev"));
-            ImGuiUtils.DrawLink("dev", TranslationManager.Translate("HaselTweaks.Config.DevGitHubLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev");
+            ImGuiUtils.DrawLink("dev", TextService.Translate("HaselTweaks.Config.DevGitHubLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev");
 #else
             var version = GetType().Assembly.GetName().Version;
             if (version != null)
             {
                 var versionString = "v" + VersionPatchZeroRegex().Replace(version.ToString(), "");
                 ImGui.SetCursorPos(cursorPos + contentAvail - ImGui.CalcTextSize(versionString));
-                ImGuiUtils.DrawLink(versionString, TranslationManager.Translate("HaselTweaks.Config.ReleaseNotesLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/releases/tag/{versionString}");
+                ImGuiUtils.DrawLink(versionString, TextService.Translate("HaselTweaks.Config.ReleaseNotesLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/releases/tag/{versionString}");
             }
 #endif
 
@@ -312,9 +312,9 @@ public partial class PluginWindow : SimpleWindow, IDisposable
 
         using var id = ImRaii.PushId(SelectedTweak.InternalName);
 
-        ImGuiUtils.TextUnformattedColored(Colors.Gold, TranslationManager.TryGetTranslation(SelectedTweak.InternalName + ".Tweak.Name", out var name) ? name : SelectedTweak.InternalName);
+        ImGuiUtils.TextUnformattedColored(Colors.Gold, TextService.TryGetTranslation(SelectedTweak.InternalName + ".Tweak.Name", out var name) ? name : SelectedTweak.InternalName);
 
-        var statusText = TranslationManager.Translate("HaselTweaks.Config.TweakStatus." + Enum.GetName(SelectedTweak.Status));
+        var statusText = TextService.Translate("HaselTweaks.Config.TweakStatus." + Enum.GetName(SelectedTweak.Status));
         var statusColor = SelectedTweak.Status switch
         {
             TweakStatus.InitializationFailed or TweakStatus.Outdated => Colors.Red,
@@ -328,7 +328,7 @@ public partial class PluginWindow : SimpleWindow, IDisposable
 
         ImGuiUtils.TextUnformattedColored(statusColor, statusText);
 
-        if (TranslationManager.TryGetTranslation(SelectedTweak.InternalName + ".Tweak.Description", out var description))
+        if (TextService.TryGetTranslation(SelectedTweak.InternalName + ".Tweak.Description", out var description))
         {
             ImGuiUtils.DrawPaddedSeparator();
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, description);
@@ -348,60 +348,60 @@ public partial class PluginWindow : SimpleWindow, IDisposable
 
         if (IncompatibilityWarnings.Any(tuple => tuple.IsLoaded))
         {
-            ImGuiUtils.DrawSection(TranslationManager.Translate("HaselTweaks.Config.SectionTitle.IncompatibilityWarning"));
+            ImGuiUtils.DrawSection(TextService.Translate("HaselTweaks.Config.SectionTitle.IncompatibilityWarning"));
             TextureManager.GetIcon(60073).Draw(24);
             ImGui.SameLine();
             var cursorPosX = ImGui.GetCursorPosX();
 
             string getConfigName(string tweakName, string configName)
-                => TranslationManager.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{tweakName}.Config.{configName}");
+                => TextService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{tweakName}.Config.{configName}");
 
             if (IncompatibilityWarnings.Length == 1)
             {
                 var (entry, isLoaded) = IncompatibilityWarnings[0];
-                var pluginName = TranslationManager.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Name");
+                var pluginName = TextService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Name");
 
                 if (isLoaded)
                 {
                     if (entry.ConfigNames.Length == 0)
                     {
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, TranslationManager.Translate("HaselTweaks.Config.IncompatibilityWarning.Single.Plugin", pluginName));
+                        TextService.DrawWrapped(Colors.Grey2, "HaselTweaks.Config.IncompatibilityWarning.Single.Plugin", pluginName);
                     }
                     else if (entry.ConfigNames.Length == 1)
                     {
                         var configName = getConfigName(entry.InternalName, entry.ConfigNames[0]);
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, TranslationManager.Translate("HaselTweaks.Config.IncompatibilityWarning.Single.PluginSetting", configName, pluginName));
+                        TextService.DrawWrapped(Colors.Grey2, "HaselTweaks.Config.IncompatibilityWarning.Single.PluginSetting", configName, pluginName);
                     }
                     else if (entry.ConfigNames.Length > 1)
                     {
-                        var configNames = entry.ConfigNames.Select((configName) => TranslationManager.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Config.{configName}"));
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, TranslationManager.Translate("HaselTweaks.Config.IncompatibilityWarning.Single.PluginSettings", pluginName) + $"\n- {string.Join("\n- ", configNames)}");
+                        var configNames = entry.ConfigNames.Select((configName) => TextService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Config.{configName}"));
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, TextService.Translate("HaselTweaks.Config.IncompatibilityWarning.Single.PluginSettings", pluginName) + $"\n- {string.Join("\n- ", configNames)}");
                     }
                 }
             }
             else if (IncompatibilityWarnings.Length > 1)
             {
-                ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, TranslationManager.Translate("HaselTweaks.Config.IncompatibilityWarning.Multi.Preface"));
+                TextService.DrawWrapped(Colors.Grey2, "HaselTweaks.Config.IncompatibilityWarning.Multi.Preface");
 
                 foreach (var (entry, isLoaded) in IncompatibilityWarnings.Where(tuple => tuple.IsLoaded))
                 {
-                    var pluginName = TranslationManager.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Name");
+                    var pluginName = TextService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Name");
 
                     ImGui.SetCursorPosX(cursorPosX);
 
                     if (entry.ConfigNames.Length == 0)
                     {
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, TranslationManager.Translate("HaselTweaks.Config.IncompatibilityWarning.Multi.Plugin", pluginName));
+                        TextService.DrawWrapped(Colors.Grey2, "HaselTweaks.Config.IncompatibilityWarning.Multi.Plugin", pluginName);
                     }
                     else if (entry.ConfigNames.Length == 1)
                     {
-                        var configName = TranslationManager.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Config.{entry.ConfigNames[0]}");
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, TranslationManager.Translate("HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSetting", configName, pluginName));
+                        var configName = TextService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Config.{entry.ConfigNames[0]}");
+                        TextService.DrawWrapped(Colors.Grey2, "HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSetting", configName, pluginName);
                     }
                     else if (entry.ConfigNames.Length > 1)
                     {
-                        var configNames = entry.ConfigNames.Select((configName) => TranslationManager.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Config.{configName}"));
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, TranslationManager.Translate("HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSettings", pluginName) + $"\n    - {string.Join("\n    - ", configNames)}");
+                        var configNames = entry.ConfigNames.Select((configName) => TextService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Config.{configName}"));
+                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, TextService.Translate("HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSettings", pluginName) + $"\n    - {string.Join("\n    - ", configNames)}");
                     }
                 }
             }

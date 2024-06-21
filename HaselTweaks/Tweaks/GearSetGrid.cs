@@ -24,12 +24,12 @@ public sealed class GearSetGridConfiguration
 }
 
 public sealed class GearSetGrid(
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
+    PluginConfig pluginConfig,
+    TextService textService,
     ICommandManager CommandManager,
     AddonObserver AddonObserver,
     GearSetGridWindow Window)
-    : Tweak<GearSetGridConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<GearSetGridConfiguration>(pluginConfig, textService)
 {
     public override void OnEnable()
     {
@@ -40,7 +40,7 @@ public sealed class GearSetGrid(
             Window.Open();
 
         if (Config.RegisterCommand)
-            CommandManager.AddHandler("/gsg", new(OnGsgCommand) { HelpMessage = t("GearSetGrid.CommandHandlerHelpMessage") });
+            CommandManager.AddHandler("/gsg", new(OnGsgCommand) { HelpMessage = TextService.Translate("GearSetGrid.CommandHandlerHelpMessage") });
     }
 
     public override void OnDisable()
@@ -58,7 +58,7 @@ public sealed class GearSetGrid(
         if (fieldName == "RegisterCommand")
         {
             if (Config.RegisterCommand)
-                CommandManager.AddHandler("/gsg", new(OnGsgCommand) { HelpMessage = t("GearSetGrid.CommandHandlerHelpMessage") });
+                CommandManager.AddHandler("/gsg", new(OnGsgCommand) { HelpMessage = TextService.Translate("GearSetGrid.CommandHandlerHelpMessage") });
             else
                 CommandManager.RemoveHandler("/gsg");
         }

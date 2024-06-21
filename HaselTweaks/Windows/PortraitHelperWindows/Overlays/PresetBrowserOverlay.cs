@@ -4,12 +4,15 @@ using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
+using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
 using HaselTweaks.Records.PortraitHelper;
+using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
@@ -21,6 +24,10 @@ public unsafe class PresetBrowserOverlay : Overlay
     private const int SidebarWidth = 170;
     private readonly TextService TextService;
     private readonly ILogger Logger;
+    private readonly DalamudPluginInterface PluginInterface;
+    private readonly IDataManager DataManager;
+    private readonly ITextureProvider TextureProvider;
+    private readonly BannerUtils BannerUtils;
 
     public Guid? SelectedTagId { get; set; }
     public Dictionary<Guid, PresetCard> PresetCards { get; init; } = [];
@@ -36,21 +43,28 @@ public unsafe class PresetBrowserOverlay : Overlay
     private int _reorderTagNewIndex = -1;
 
     public PresetBrowserOverlay(
-        TextService textService,
         ILogger<PresetBrowserOverlay> logger,
+        DalamudPluginInterface pluginInterface,
+        IDataManager dataManager,
+        ITextureProvider textureProvider,
+        BannerUtils bannerUtils,
         IWindowManager windowManager,
-        ExcelService excelService,
         PluginConfig pluginConfig,
-        TranslationManager translationManager,
+        ExcelService excelService,
+        TextService textService,
         CreateTagDialog createTagDialog,
         RenameTagDialog renameTagDialog,
         DeleteTagDialog deleteTagDialog,
         DeletePresetDialog deletePresetDialog,
         EditPresetDialog editPresetDialog)
-        : base(windowManager, pluginConfig, excelService, translationManager.Translate("PortraitHelperWindows.PresetBrowserOverlay.Title"))
+        : base(windowManager, pluginConfig, excelService, textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Title"))
     {
         TextService = textService;
         Logger = logger;
+        PluginInterface = pluginInterface;
+        DataManager = dataManager;
+        TextureProvider = textureProvider;
+        BannerUtils = bannerUtils;
 
         CreateTagDialog = createTagDialog;
         RenameTagDialog = renameTagDialog;
@@ -317,7 +331,16 @@ public unsafe class PresetBrowserOverlay : Overlay
             {
                 if (!PresetCards.TryGetValue(preset.Id, out var card))
                 {
-                    PresetCards.Add(preset.Id, new(preset, Logger, PluginConfig));
+                    PresetCards.Add(preset.Id, new(
+                        preset,
+                        Logger,
+                        PluginInterface,
+                        DataManager,
+                        TextureProvider,
+                        PluginConfig,
+                        TextService,
+                        ExcelService,
+                        BannerUtils));
                 }
 
                 return card;

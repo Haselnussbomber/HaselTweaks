@@ -24,15 +24,14 @@ public class MaterialAllocationConfiguration
 }
 
 public sealed unsafe class MaterialAllocation(
+    PluginConfig pluginConfig,
+    TextService textService,
     ExcelService ExcelService,
-    TextService TextService,
     IGameInteropProvider GameInteropProvider,
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
     IAddonLifecycle AddonLifecycle,
     IChatGui ChatGui,
     AddonObserver AddonObserver)
-    : Tweak<MaterialAllocationConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<MaterialAllocationConfiguration>(pluginConfig, textService)
 {
     private uint NextMJIGatheringNoteBookItemId;
 

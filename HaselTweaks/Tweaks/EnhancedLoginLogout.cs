@@ -53,17 +53,16 @@ public sealed class EnhancedLoginLogoutConfiguration
 }
 
 public sealed unsafe class EnhancedLoginLogout(
+    PluginConfig pluginConfig,
+    TextService textService,
     ILogger<EnhancedLoginLogout> Logger,
     IGameInteropProvider GameInteropProvider,
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
     IGameConfig GameConfig,
     IClientState ClientState,
     IAddonLifecycle AddonLifecycle,
     TextureManager TextureManager,
-    ExcelService ExcelService,
-    TextService TextService)
-    : Tweak<EnhancedLoginLogoutConfiguration>(PluginConfig, TranslationManager)
+    ExcelService ExcelService)
+    : Tweak<EnhancedLoginLogoutConfiguration>(pluginConfig, textService)
 {
     private CharaSelectCharacter? _currentEntry = null;
 

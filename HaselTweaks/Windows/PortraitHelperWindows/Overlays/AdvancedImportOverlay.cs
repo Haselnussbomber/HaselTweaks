@@ -9,6 +9,7 @@ using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Tweaks;
+using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using Microsoft.Extensions.Logging;
@@ -19,14 +20,14 @@ public unsafe class AdvancedImportOverlay(
     ILogger<AdvancedImportOverlay> Logger,
     TextService TextService,
     IWindowManager windowManager,
-    TranslationManager translationManager,
     PluginConfig pluginConfig,
-    ExcelService excelService)
+    ExcelService excelService,
+    BannerUtils BannerUtils)
     : Overlay(
         windowManager,
         pluginConfig,
         excelService,
-        translationManager.Translate("PortraitHelperWindows.AdvancedImportOverlay.Title"))
+        TextService.Translate("PortraitHelperWindows.AdvancedImportOverlay.Title"))
 {
     public MenuBar MenuBar { get; internal set; } = null!;
 
@@ -58,13 +59,13 @@ public unsafe class AdvancedImportOverlay(
 
         if (ImGui.Button(TextService.Translate("PortraitHelperWindows.AdvancedImportOverlay.ImportSelectedSettingsButton.Label")))
         {
-            PortraitHelper.ClipboardPreset.ToState(Logger, PortraitHelper.CurrentImportFlags);
+            PortraitHelper.ClipboardPreset.ToState(Logger, BannerUtils, PortraitHelper.CurrentImportFlags);
             MenuBar.CloseOverlays();
         }
 
         ImGuiUtils.DrawSection(TextService.GetAddonText(14684) ?? "Design", RespectUiTheme: !IsWindow);
 
-        var isBannerBgUnlocked = PortraitHelper.IsBannerBgUnlocked(PortraitHelper.ClipboardPreset.BannerBg);
+        var isBannerBgUnlocked = BannerUtils.IsBannerBgUnlocked(PortraitHelper.ClipboardPreset.BannerBg);
         DrawImportSetting(
             TextService.GetAddonText(14687) ?? "Background",
             ImportFlags.BannerBg,
@@ -81,7 +82,7 @@ public unsafe class AdvancedImportOverlay(
             isBannerBgUnlocked
         );
 
-        var isBannerFrameUnlocked = PortraitHelper.IsBannerFrameUnlocked(PortraitHelper.ClipboardPreset.BannerFrame);
+        var isBannerFrameUnlocked = BannerUtils.IsBannerFrameUnlocked(PortraitHelper.ClipboardPreset.BannerFrame);
         DrawImportSetting(
             TextService.GetAddonText(14688) ?? "Frame",
             ImportFlags.BannerFrame,
@@ -98,7 +99,7 @@ public unsafe class AdvancedImportOverlay(
             isBannerFrameUnlocked
         );
 
-        var isBannerDecorationUnlocked = PortraitHelper.IsBannerDecorationUnlocked(PortraitHelper.ClipboardPreset.BannerDecoration);
+        var isBannerDecorationUnlocked = BannerUtils.IsBannerDecorationUnlocked(PortraitHelper.ClipboardPreset.BannerDecoration);
         DrawImportSetting(
             TextService.GetAddonText(14689) ?? "Accent",
             ImportFlags.BannerDecoration,
@@ -129,13 +130,13 @@ public unsafe class AdvancedImportOverlay(
 
         ImGuiUtils.DrawSection(TextService.GetAddonText(14685) ?? "Character", RespectUiTheme: !IsWindow);
 
-        var isBannerTimelineUnlocked = PortraitHelper.IsBannerTimelineUnlocked(PortraitHelper.ClipboardPreset.BannerTimeline);
+        var isBannerTimelineUnlocked = BannerUtils.IsBannerTimelineUnlocked(PortraitHelper.ClipboardPreset.BannerTimeline);
         DrawImportSetting(
             TextService.GetAddonText(14690) ?? "Pose",
             ImportFlags.BannerTimeline,
             () =>
             {
-                ImGui.TextUnformatted(PortraitHelper.GetBannerTimelineName(PortraitHelper.ClipboardPreset.BannerTimeline));
+                ImGui.TextUnformatted(BannerUtils.GetBannerTimelineName(PortraitHelper.ClipboardPreset.BannerTimeline));
 
                 if (!isBannerTimelineUnlocked)
                 {

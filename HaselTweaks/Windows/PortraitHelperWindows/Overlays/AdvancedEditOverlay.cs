@@ -21,14 +21,13 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 public unsafe class AdvancedEditOverlay(
     TextService TextService,
     IWindowManager windowManager,
-    TranslationManager translationManager,
     ExcelService excelService,
     PluginConfig pluginConfig)
     : Overlay(
         windowManager,
         pluginConfig,
         excelService,
-        translationManager.Translate("PortraitHelperWindows.AdvancedEditOverlay.Title"))
+        TextService.Translate("PortraitHelperWindows.AdvancedEditOverlay.Title"))
 {
     public override OverlayType Type => OverlayType.LeftPane;
 

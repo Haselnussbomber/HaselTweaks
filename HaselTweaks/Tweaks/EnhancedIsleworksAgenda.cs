@@ -21,12 +21,12 @@ public sealed class EnhancedIsleworksAgendaConfiguration
 }
 
 public sealed unsafe class EnhancedIsleworksAgenda(
+    PluginConfig pluginConfig,
+    TextService textService,
     IGameInteropProvider GameInteropProvider,
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
     AddonObserver AddonObserver,
     MJICraftScheduleSettingSearchBar Window)
-    : Tweak<EnhancedIsleworksAgendaConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<EnhancedIsleworksAgendaConfiguration>(pluginConfig, textService)
 {
     private Hook<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>? ReceiveEventHook;
 

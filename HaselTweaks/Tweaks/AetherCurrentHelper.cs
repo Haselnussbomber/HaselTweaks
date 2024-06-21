@@ -21,13 +21,13 @@ public sealed class AetherCurrentHelperConfiguration
 }
 
 public sealed unsafe class AetherCurrentHelper(
+    PluginConfig pluginConfig,
+    TextService textService,
     IGameInteropProvider GameInteropProvider,
     IKeyState KeyState,
-    PluginConfig PluginConfig,
     ExcelService ExcelService,
-    TranslationManager TranslationManager,
     AetherCurrentHelperWindow Window)
-    : Tweak<AetherCurrentHelperConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<AetherCurrentHelperConfiguration>(pluginConfig, textService)
 {
     private Hook<AgentAetherCurrent.Delegates.ReceiveEvent>? ReceiveEventHook;
 

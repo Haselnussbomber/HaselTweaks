@@ -16,12 +16,12 @@ public sealed class ForcedCutsceneMusicConfiguration
 }
 
 public sealed unsafe class ForcedCutsceneMusic(
+    PluginConfig pluginConfig,
+    TextService textService,
     ILogger<ForcedCutsceneMusic> Logger,
     IGameInteropProvider GameInteropProvider,
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
     IGameConfig GameConfig)
-    : Tweak<ForcedCutsceneMusicConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<ForcedCutsceneMusicConfiguration>(pluginConfig, textService)
 {
     private bool _wasBgmMuted;
 
@@ -63,7 +63,7 @@ public sealed unsafe class ForcedCutsceneMusic(
     {
         var ret = CreateCutSceneControllerHook!.Original(self, path, id, a4);
 
-        Logger.LogInformation($"Cutscene {id} started (Controller @ {(nint)ret:X})");
+        Logger.LogInformation("Cutscene {id} started (Controller @ {address:X})", id, (nint)ret);
 
         var isBgmMuted = IsBgmMuted;
 
@@ -77,7 +77,7 @@ public sealed unsafe class ForcedCutsceneMusic(
 
     private void CutSceneControllerDtorDetour(CutSceneController* self, bool free)
     {
-        Logger.LogInformation($"Cutscene {self->CutsceneId} ended");
+        Logger.LogInformation("Cutscene {id} ended", self->CutsceneId);
 
         CutSceneControllerDtorHook!.Original(self, free);
 

@@ -12,7 +12,6 @@ namespace HaselTweaks.Tweaks;
 
 public sealed unsafe class SearchTheMarkets(
     IContextMenu ContextMenu,
-    TranslationManager TranslationManager,
     TextService TextService,
     ExcelService ExcelService) : ITweak
 {
@@ -42,13 +41,13 @@ public sealed unsafe class SearchTheMarkets(
         };
 
         ContextMenu.OnMenuOpened += ContextMenu_OnMenuOpened;
-        TranslationManager.LanguageChanged += OnLanguageChange;
+        TextService.LanguageChanged += OnLanguageChange;
     }
 
     public void OnDisable()
     {
         ContextMenu.OnMenuOpened -= ContextMenu_OnMenuOpened;
-        TranslationManager.LanguageChanged -= OnLanguageChange;
+        TextService.LanguageChanged -= OnLanguageChange;
     }
 
     void IDisposable.Dispose()

@@ -30,7 +30,6 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
     private AetherCurrentHelperConfiguration Config => PluginConfig.Tweaks.AetherCurrentHelper;
 
     private readonly IClientState ClientState;
-    private readonly TranslationManager Translations;
     private readonly TextureManager TextureManager;
     private readonly ExcelService ExcelService;
     private readonly TextService TextService;
@@ -39,15 +38,13 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         IWindowManager windowManager,
         PluginConfig pluginConfig,
         IClientState clientState,
-        TranslationManager translationManager,
         TextureManager textureManager,
         ExcelService excelService,
         TextService textService,
         EObjDataIdCache eObjDataIdCache)
-        : base(windowManager, pluginConfig, "[HaselTweaks] Aether Current Helper")
+        : base(windowManager, pluginConfig, textService, "[HaselTweaks] Aether Current Helper")
     {
         ClientState = clientState;
-        Translations = translationManager;
         TextureManager = textureManager;
         ExcelService = excelService;
         TextService = textService;
@@ -138,7 +135,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
             ImGui.TableNextColumn();
             ImGui.TableNextColumn();
             startPos = ImGui.GetCursorPos() + new Vector2(-startPos.X - 4, 0);
-            var text = Translations.Translate("AetherCurrentHelperWindow.AllAetherCurrentsAttuned");
+            var text = TextService.Translate("AetherCurrentHelperWindow.AllAetherCurrentsAttuned");
             textSize = ImGui.CalcTextSize(text);
             ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
             ImGui.TextUnformatted(text);
@@ -334,7 +331,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         var coords = level.GetCoords();
         var x = coords.X.ToString("0.0", CultureInfo.InvariantCulture);
         var y = coords.Y.ToString("0.0", CultureInfo.InvariantCulture);
-        return Translations.Translate("AetherCurrentHelperWindow.Coords", x, y);
+        return TextService.Translate("AetherCurrentHelperWindow.Coords", x, y);
     }
 
     //! https://gamedev.stackexchange.com/a/49300
@@ -344,7 +341,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         var angle = Math.Atan2(vector.Y, vector.X);
         var octant = (int)Math.Round(8 * angle / (2 * Math.PI) + 8) % 8;
 
-        return Translations.Translate($"AetherCurrentHelperWindow.Compass.{CompassHeadings[octant]}");
+        return TextService.Translate($"AetherCurrentHelperWindow.Compass.{CompassHeadings[octant]}");
     }
 
     public string GetCompassDirection(Level? level)

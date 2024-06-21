@@ -43,7 +43,7 @@ public unsafe class GearSetGridWindow : LockableWindow
         TextureManager textureManager,
         ExcelService excelService,
         TextService textService)
-        : base(windowManager, pluginConfig, textService.Translate("GearSetGridWindow.Title"))
+        : base(windowManager, pluginConfig, textService, textService.Translate("GearSetGridWindow.Title"))
     {
         ClientState = clientState;
         TextureManager = textureManager;

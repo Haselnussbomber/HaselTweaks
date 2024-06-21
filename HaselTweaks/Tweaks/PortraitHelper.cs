@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
 using System.Threading;
 using Dalamud.Game.Text.SeStringHandling;
@@ -10,7 +9,6 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
-using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -19,13 +17,7 @@ using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows.PortraitHelperWindows;
-using Lumina.Excel.GeneratedSheets;
 using Microsoft.Extensions.Logging;
-using SharpDX;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using PluginConfig = HaselTweaks.Config.PluginConfig;
 
 namespace HaselTweaks.Tweaks;
@@ -54,17 +46,17 @@ public sealed class PortraitHelperConfiguration
 }
 
 public sealed unsafe class PortraitHelper(
+    PluginConfig pluginConfig,
+    TextService textService,
     ILogger<PortraitHelper> Logger,
     IGameInteropProvider GameInteropProvider,
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
     DalamudPluginInterface PluginInterface,
     IFramework Framework,
     IClientState ClientState,
     IChatGui ChatGui,
     AddonObserver AddonObserver,
     MenuBar MenuBar)
-    : Tweak<PortraitHelperConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<PortraitHelperConfiguration>(pluginConfig, textService)
 {
     private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
@@ -266,7 +258,7 @@ public sealed unsafe class PortraitHelper(
 
     private void NotifyMismatch()
     {
-        var text = TranslationManager.Translate("PortraitHelper.GearChecksumMismatch"); // based on LogMessage#5876
+        var text = TextService.Translate("PortraitHelper.GearChecksumMismatch"); // based on LogMessage#5876
 
         var sb = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32);
@@ -420,132 +412,5 @@ public sealed unsafe class PortraitHelper(
         }
 
         return result;
-    }
-
-    public static Image<Bgra32>? GetCurrentCharaViewImage(DalamudPluginInterface pluginInterface)
-    {
-        var charaViewTexture = RenderTargetManager.Instance()->GetCharaViewTexture(AgentBannerEditor.Instance()->EditorState->CharaView->ClientObjectIndex);
-        if (charaViewTexture == null || charaViewTexture->D3D11Texture2D == null)
-            return null;
-
-        var device = pluginInterface.UiBuilder.Device;
-        var texture = CppObject.FromPointer<Texture2D>((nint)charaViewTexture->D3D11Texture2D);
-
-        // thanks to ChatGPT
-        // Get the texture description
-        var desc = texture.Description;
-
-        // Create a staging texture with the same description
-        using var stagingTexture = new Texture2D(device, new Texture2DDescription()
-        {
-            ArraySize = 1,
-            BindFlags = BindFlags.None,
-            CpuAccessFlags = CpuAccessFlags.Read,
-            Format = desc.Format,
-            Height = desc.Height,
-            Width = desc.Width,
-            MipLevels = 1,
-            OptionFlags = desc.OptionFlags,
-            SampleDescription = new SampleDescription(1, 0),
-            Usage = ResourceUsage.Staging
-        });
-
-        // Copy the texture data to the staging texture
-        device.ImmediateContext.CopyResource(texture, stagingTexture);
-
-        // Map the staging texture
-        device.ImmediateContext.MapSubresource(stagingTexture, 0, MapMode.Read, SharpDX.Direct3D11.MapFlags.None, out var dataStream);
-
-        using var pixelDataStream = new MemoryStream();
-        dataStream.CopyTo(pixelDataStream);
-
-        // Unmap the staging texture
-        device.ImmediateContext.UnmapSubresource(stagingTexture, 0);
-
-        return Image.LoadPixelData<Bgra32>(pixelDataStream.ToArray(), desc.Width, desc.Height);
-    }
-
-    public static string GetPortraitThumbnailPath(Guid id)
-    {
-        var portraitsPath = Path.Join(Service.Get<DalamudPluginInterface>().ConfigDirectory.FullName, "Portraits");
-
-        if (!Directory.Exists(portraitsPath))
-            Directory.CreateDirectory(portraitsPath);
-
-        return Path.Join(portraitsPath, $"{id.ToString("D").ToLowerInvariant()}.png");
-    }
-
-    public static bool IsBannerBgUnlocked(uint id)
-    {
-        var bannerBg = GetRow<BannerBg>(id);
-        if (bannerBg == null)
-            return false;
-
-        return IsBannerConditionUnlocked(bannerBg.UnlockCondition.Row);
-    }
-
-    public static bool IsBannerFrameUnlocked(uint id)
-    {
-        var bannerFrame = GetRow<BannerFrame>(id);
-        if (bannerFrame == null)
-            return false;
-
-        return IsBannerConditionUnlocked(bannerFrame.UnlockCondition.Row);
-    }
-
-    public static bool IsBannerDecorationUnlocked(uint id)
-    {
-        var bannerDecoration = GetRow<BannerDecoration>(id);
-        if (bannerDecoration == null)
-            return false;
-
-        return IsBannerConditionUnlocked(bannerDecoration.UnlockCondition.Row);
-    }
-
-    public static bool IsBannerTimelineUnlocked(uint id)
-    {
-        var bannerTimeline = GetRow<BannerTimeline>(id);
-        if (bannerTimeline == null)
-            return false;
-
-        return IsBannerConditionUnlocked(bannerTimeline.UnlockCondition.Row);
-    }
-
-    public static bool IsBannerConditionUnlocked(uint id)
-    {
-        if (id == 0)
-            return true;
-
-        var bannerCondition = BannerConditionRow.GetByRowId(id);
-        if (bannerCondition == null)
-            return false;
-
-        return bannerCondition->GetUnlockState() == 0;
-    }
-
-    public static string GetBannerTimelineName(uint id)
-    {
-        var poseName = GetSheetText<BannerTimeline>(id, "Name");
-
-        if (string.IsNullOrEmpty(poseName))
-        {
-            var bannerTimeline = GetRow<BannerTimeline>(id);
-            if (bannerTimeline != null && bannerTimeline.Type != 0)
-            {
-                // ref: "48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 41 8B C9 49 8B F8"
-                if (bannerTimeline.Type <= 2)
-                {
-                    poseName = GetSheetText<Lumina.Excel.GeneratedSheets.Action>(bannerTimeline.AdditionalData, "Name");
-                }
-                else if (bannerTimeline.Type - 10 <= 1)
-                {
-                    poseName = GetSheetText<Emote>(bannerTimeline.AdditionalData, "Name");
-                }
-            }
-        }
-
-        return !string.IsNullOrEmpty(poseName) ?
-            poseName :
-            GetAddonText(624); // Unknown
     }
 }

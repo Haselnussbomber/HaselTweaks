@@ -1,23 +1,25 @@
+using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.ImGuiComponents;
-using HaselTweaks.Tweaks;
 using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class CreateTagDialog : ConfirmationDialog
 {
-    private PortraitHelperConfiguration Config => _pluginConfig.Tweaks.PortraitHelper;
-
-    private readonly PluginConfig _pluginConfig;
+    private readonly PluginConfig PluginConfig;
+    private readonly TextService TextService;
     private readonly ConfirmationButton _saveButton;
     private string? _name;
 
-    public CreateTagDialog(PluginConfig pluginConfig) : base(t("PortraitHelperWindows.CreateTagDialog.Title"))
+    public CreateTagDialog(PluginConfig pluginConfig, TextService textService)
+        : base(textService.Translate("PortraitHelperWindows.CreateTagDialog.Title"))
     {
-        _pluginConfig = pluginConfig;
-        AddButton(_saveButton = new ConfirmationButton(t("ConfirmationButtonWindow.Save"), OnSave));
-        AddButton(new ConfirmationButton(t("ConfirmationButtonWindow.Cancel"), Close));
+        PluginConfig = pluginConfig;
+        TextService = textService;
+
+        AddButton(_saveButton = new ConfirmationButton(textService.Translate("ConfirmationButtonWindow.Save"), OnSave));
+        AddButton(new ConfirmationButton(textService.Translate("ConfirmationButtonWindow.Cancel"), Close));
     }
 
     public void Open()
@@ -37,7 +39,7 @@ public class CreateTagDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        ImGui.TextUnformatted(t("PortraitHelperWindows.CreateTagDialog.Name.Label"));
+        TextService.Draw("PortraitHelperWindows.CreateTagDialog.Name.Label");
 
         ImGui.Spacing();
 
@@ -61,8 +63,8 @@ public class CreateTagDialog : ConfirmationDialog
             return;
         }
 
-        Config.PresetTags.Add(new(_name.Trim()));
-        _pluginConfig.Save();
+        PluginConfig.Tweaks.PortraitHelper.PresetTags.Add(new(_name.Trim()));
+        PluginConfig.Save();
 
         Close();
     }

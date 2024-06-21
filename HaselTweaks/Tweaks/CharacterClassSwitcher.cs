@@ -31,14 +31,15 @@ public sealed class CharacterClassSwitcherConfiguration
 
 [IncompatibilityWarning("SimpleTweaksPlugin", "CharacterWindowJobSwitcher")]
 public sealed unsafe class CharacterClassSwitcher(
+    PluginConfig pluginConfig,
+    TextService textService,
     ILogger<CharacterClassSwitcher> Logger,
     IGameInteropProvider GameInteropProvider,
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
     IAddonLifecycle AddonLifecycle,
     IKeyState KeyState,
-    IChatGui ChatGui)
-    : Tweak<CharacterClassSwitcherConfiguration>(PluginConfig, TranslationManager)
+    IChatGui ChatGui,
+    GamepadService GamepadService)
+    : Tweak<CharacterClassSwitcherConfiguration>(pluginConfig, textService)
 {
     private const int NumClasses = 31;
 
@@ -97,7 +98,7 @@ public sealed unsafe class CharacterClassSwitcher(
             AddonPvPCharacterReceiveEventDetour);
 
         AgentStatusShowHook = GameInteropProvider.HookFromAddress<AgentStatus.Delegates.Show>(
-            GetAgent<AgentStatus>()->VirtualTable->Show,
+            AgentStatus.Instance()->VirtualTable->Show,
             AgentStatusShowDetour);
     }
 
@@ -253,7 +254,7 @@ public sealed unsafe class CharacterClassSwitcher(
         {
             var isClick =
                 eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick ||
-                (eventType == AtkEventType.InputReceived && GamepadUtils.IsPressed(GamepadUtils.GamepadBinding.Accept));
+                (eventType == AtkEventType.InputReceived && GamepadService.IsPressed(GamepadBinding.Accept));
 
             if (isClick && !KeyState[VirtualKey.SHIFT])
             {
@@ -339,7 +340,7 @@ public sealed unsafe class CharacterClassSwitcher(
     {
         var isClick =
             eventType == AtkEventType.MouseClick ||
-            (eventType == AtkEventType.InputReceived && GamepadUtils.IsPressed(GamepadUtils.GamepadBinding.Accept));
+            (eventType == AtkEventType.InputReceived && GamepadService.IsPressed(GamepadBinding.Accept));
 
         if (isClick)
         {
@@ -406,7 +407,7 @@ public sealed unsafe class CharacterClassSwitcher(
 
         if (selectedGearset.Id == -1)
         {
-            ChatGui.PrintError(t("CharacterClassSwitcher.NoSuitableGearsetFound"));
+            ChatGui.PrintError(TextService.Translate("CharacterClassSwitcher.NoSuitableGearsetFound"));
             return;
         }
 

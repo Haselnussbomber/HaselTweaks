@@ -20,12 +20,12 @@ public sealed class CustomChatTimestampConfiguration
 }
 
 public sealed unsafe class CustomChatTimestamp(
+    PluginConfig pluginConfig,
+    TextService textService,
     ILogger<CustomChatTimestamp> Logger,
     IGameInteropProvider GameInteropProvider,
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
     IGameConfig GameConfig)
-    : Tweak<CustomChatTimestampConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<CustomChatTimestampConfiguration>(pluginConfig, textService)
 {
     private Hook<HaselRaptureTextModule.Delegates.FormatAddonText2Int>? FormatAddonText2IntHook;
 
@@ -76,9 +76,9 @@ public sealed unsafe class CustomChatTimestamp(
 
     public override void DrawConfig()
     {
-        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+        ImGuiUtils.DrawSection(TextService.Translate("HaselTweaks.Config.SectionTitle.Configuration"));
 
-        ImGui.TextUnformatted(t("CustomChatTimestamp.Config.Format.Label"));
+        TextService.Draw("CustomChatTimestamp.Config.Format.Label");
         using (ImGuiUtils.ConfigIndent())
         {
             if (ImGui.InputText("##Format", ref Config.Format, 50))
@@ -87,7 +87,7 @@ public sealed unsafe class CustomChatTimestamp(
                 ReloadChat();
             }
             ImGui.SameLine();
-            if (ImGuiUtils.IconButton("##FormatReset", FontAwesomeIcon.Undo, t("HaselTweaks.Config.ResetToDefault", "\"[HH:mm] \"")))
+            if (ImGuiUtils.IconButton("##FormatReset", FontAwesomeIcon.Undo, TextService.Translate("HaselTweaks.Config.ResetToDefault", "\"[HH:mm] \"")))
             {
                 Config.Format = "[HH:mm] ";
                 PluginConfig.Save();
@@ -95,14 +95,14 @@ public sealed unsafe class CustomChatTimestamp(
             }
 
             ImGui.PushStyleColor(ImGuiCol.Text, (uint)Colors.Grey);
-            ImGui.TextUnformatted(t("CustomChatTimestamp.Config.Format.DateTimeLink.Pre"));
+            TextService.Draw("CustomChatTimestamp.Config.Format.DateTimeLink.Pre");
             ImGuiUtils.SameLineSpace();
             using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.White))
             {
-                ImGuiUtils.DrawLink("DateTime.ToString()", t("CustomChatTimestamp.Config.Format.DateTimeLink.Tooltip"), "https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings");
+                ImGuiUtils.DrawLink("DateTime.ToString()", TextService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Tooltip"), "https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings");
             }
             ImGuiUtils.SameLineSpace();
-            ImGui.TextUnformatted(t("CustomChatTimestamp.Config.Format.DateTimeLink.Post"));
+            TextService.Draw("CustomChatTimestamp.Config.Format.DateTimeLink.Post");
             ImGui.PopStyleColor();
         }
 
@@ -115,7 +115,7 @@ public sealed unsafe class CustomChatTimestamp(
 
             ImGui.Spacing();
             ImGui.Spacing();
-            ImGui.TextUnformatted(t("CustomChatTimestamp.Config.Format.Example.Label"));
+            TextService.Draw("CustomChatTimestamp.Config.Format.Example.Label");
 
             if (!GameConfig.UiConfig.TryGet("ColorParty", out uint colorParty))
             {
@@ -138,13 +138,13 @@ public sealed unsafe class CustomChatTimestamp(
 
             ImGuiUtils.TextUnformattedColored(Colors.White, formatted);
             ImGui.SameLine(0, 0);
-            ImGuiUtils.TextUnformattedColored(colorParty, t("CustomChatTimestamp.Config.Format.Example.Message"));
+            TextService.Draw(HaselColor.FromABGR(colorParty), "CustomChatTimestamp.Config.Format.Example.Message");
         }
         catch (FormatException)
         {
             using (ImRaii.PushIndent())
             {
-                ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, t("CustomChatTimestamp.Config.Format.Invalid"));
+                TextService.DrawWrapped(Colors.Red, "CustomChatTimestamp.Config.Format.Invalid");
             }
         }
         catch (Exception e)

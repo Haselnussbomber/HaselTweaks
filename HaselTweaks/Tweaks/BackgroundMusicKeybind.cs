@@ -18,12 +18,12 @@ public sealed class BackgroundMusicKeybindConfiguration
 }
 
 public sealed unsafe class BackgroundMusicKeybind(
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
+    PluginConfig pluginConfig,
+    TextService textService,
     IGameConfig GameConfig,
     IKeyState KeyState,
     IFramework Framework)
-    : Tweak<BackgroundMusicKeybindConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<BackgroundMusicKeybindConfiguration>(pluginConfig, textService)
 {
     private bool IsBgmMuted
     {
@@ -80,10 +80,10 @@ public sealed unsafe class BackgroundMusicKeybind(
 
     public override void DrawConfig()
     {
-        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+        ImGuiUtils.DrawSection(TextService.Translate("HaselTweaks.Config.SectionTitle.Configuration"));
 
         var shift = Config.Keybind.Contains(VirtualKey.SHIFT);
-        if (ImGui.Checkbox(t("BackgroundMusicKeybind.Config.ShiftKeyCheckbox.Label"), ref shift))
+        if (ImGui.Checkbox(TextService.Translate("BackgroundMusicKeybind.Config.ShiftKeyCheckbox.Label"), ref shift))
         {
             var set = new HashSet<VirtualKey>(Config.Keybind);
 
@@ -103,7 +103,7 @@ public sealed unsafe class BackgroundMusicKeybind(
         ImGui.SameLine();
 
         var ctrl = Config.Keybind.Contains(VirtualKey.CONTROL);
-        if (ImGui.Checkbox(t("BackgroundMusicKeybind.Config.ControlKeyCheckbox.Label"), ref ctrl))
+        if (ImGui.Checkbox(TextService.Translate("BackgroundMusicKeybind.Config.ControlKeyCheckbox.Label"), ref ctrl))
         {
             var set = new HashSet<VirtualKey>(Config.Keybind);
 
@@ -123,7 +123,7 @@ public sealed unsafe class BackgroundMusicKeybind(
         ImGui.SameLine();
 
         var alt = Config.Keybind.Contains(VirtualKey.MENU);
-        if (ImGui.Checkbox(t("BackgroundMusicKeybind.Config.AltKeyCheckbox.Label"), ref alt))
+        if (ImGui.Checkbox(TextService.Translate("BackgroundMusicKeybind.Config.AltKeyCheckbox.Label"), ref alt))
         {
             var set = new HashSet<VirtualKey>(Config.Keybind);
 
@@ -142,7 +142,7 @@ public sealed unsafe class BackgroundMusicKeybind(
 
         ImGui.SameLine();
 
-        var previewValue = t("BackgroundMusicKeybind.Config.KeyCombo.Preview.None");
+        var previewValue = TextService.Translate("BackgroundMusicKeybind.Config.KeyCombo.Preview.None");
         var hasKey = Config.Keybind.FindFirst(x => x is not (VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT), out var key);
         if (hasKey)
             previewValue = key.GetFancyName();

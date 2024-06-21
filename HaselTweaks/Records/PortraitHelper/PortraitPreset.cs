@@ -226,7 +226,7 @@ public sealed record PortraitPreset
 
     public static unsafe PortraitPreset? FromState()
     {
-        var state = GetAgent<AgentBannerEditor>()->EditorState;
+        var state = AgentBannerEditor.Instance()->EditorState;
         var preset = new PortraitPreset();
 
         var portraitData = stackalloc ExportedPortraitData[1];
@@ -239,14 +239,14 @@ public sealed record PortraitPreset
         return preset;
     }
 
-    public unsafe void ToState(ILogger logger, ImportFlags importFlags)
+    public unsafe void ToState(ILogger logger, BannerUtils bannerUtils, ImportFlags importFlags)
     {
         if (!TryGetAddon<AddonBannerEditor>(AgentId.BannerEditor, out var addonBannerEditor))
             return;
 
         logger.LogDebug($"Importing Preset {ToExportedString()} with ImportFlags {importFlags}");
 
-        var state = GetAgent<AgentBannerEditor>()->EditorState;
+        var state = AgentBannerEditor.Instance()->EditorState;
         var bannerEntry = state->BannerEntry;
 
         // read current portrait and then overwrite what the flags allow below
@@ -256,22 +256,22 @@ public sealed record PortraitPreset
 
         var hasBgChanged =
             importFlags.HasFlag(ImportFlags.BannerBg) &&
-            Tweaks.PortraitHelper.IsBannerBgUnlocked(BannerBg) &&
+            bannerUtils.IsBannerBgUnlocked(BannerBg) &&
             tempPortraitData->BannerBg != BannerBg;
 
         var hasFrameChanged =
             importFlags.HasFlag(ImportFlags.BannerFrame) &&
-            Tweaks.PortraitHelper.IsBannerFrameUnlocked(BannerFrame) &&
+            bannerUtils.IsBannerFrameUnlocked(BannerFrame) &&
             bannerEntry.BannerFrame != BannerFrame;
 
         var hasDecorationChanged =
             importFlags.HasFlag(ImportFlags.BannerDecoration) &&
-            Tweaks.PortraitHelper.IsBannerDecorationUnlocked(BannerDecoration) &&
+            bannerUtils.IsBannerDecorationUnlocked(BannerDecoration) &&
             bannerEntry.BannerDecoration != BannerDecoration;
 
         var hasBannerTimelineChanged =
             importFlags.HasFlag(ImportFlags.BannerTimeline) &&
-            Tweaks.PortraitHelper.IsBannerTimelineUnlocked(BannerTimeline) &&
+            bannerUtils.IsBannerTimelineUnlocked(BannerTimeline) &&
             tempPortraitData->BannerTimeline != BannerTimeline;
 
         var hasExpressionChanged =

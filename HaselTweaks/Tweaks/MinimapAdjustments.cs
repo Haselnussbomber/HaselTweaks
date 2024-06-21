@@ -60,11 +60,11 @@ public unsafe struct NaviMap
 }
 
 public sealed unsafe class MinimapAdjustments(
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
+    PluginConfig pluginConfig,
+    TextService textService,
     IFramework Framework,
     IClientState ClientState)
-    : Tweak<MinimapAdjustmentsConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<MinimapAdjustmentsConfiguration>(pluginConfig, textService)
 {
     private bool? HoverState;
     private float TargetAlpha;

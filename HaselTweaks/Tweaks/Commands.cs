@@ -3,7 +3,6 @@ using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Plugin.Services;
-using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -35,14 +34,13 @@ public sealed class CommandsConfiguration
 }
 
 public sealed unsafe class Commands(
+    PluginConfig pluginConfig,
+    TextService textService,
     ExcelService ExcelService,
-    TextService TextService,
-    PluginConfig PluginConfig,
     ICommandRegistry Commands,
-    TranslationManager TranslationManager,
     IChatGui ChatGui,
     ITargetManager TargetManager)
-    : Tweak<CommandsConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<CommandsConfiguration>(pluginConfig, textService)
 {
     private ICommandHandler? ItemLinkCommandHandler;
     private ICommandHandler? WhatMountCommandCommandHandler;
@@ -178,7 +176,7 @@ public sealed unsafe class Commands(
             return;
         }
 
-        sb.Append(TextService.TranslateSe("Commands.WhatMount.WithItem", name, SeString.CreateItemLink(item.RowId, false, GetItemName(item.RowId))));
+        sb.Append(TextService.TranslateSe("Commands.WhatMount.WithItem", name, SeString.CreateItemLink(item.RowId, false, TextService.GetItemName(item.RowId))));
 
         ChatGui.Print(new XivChatEntry
         {
@@ -221,11 +219,11 @@ public sealed unsafe class Commands(
             .AddText($"  {TextService.GetAddonText(4987)}: ")
             .Append(stain.Name.ToString().FirstCharToUpper())
             .Add(NewLinePayload.Payload)
-            .AddText($"  {TextService.GetAddonText(4991)}: {topRow?.Name.ToDalamudString().ToString() ?? TextService.GetAddonText(4994)}")
+            .AddText($"  {TextService.GetAddonText(4991)}: {topRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}")
             .Add(NewLinePayload.Payload)
-            .AddText($"  {TextService.GetAddonText(4992)}: {bodyRow?.Name.ToDalamudString().ToString() ?? TextService.GetAddonText(4994)}")
+            .AddText($"  {TextService.GetAddonText(4992)}: {bodyRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}")
             .Add(NewLinePayload.Payload)
-            .AddText($"  {TextService.GetAddonText(4993)}: {legsRow?.Name.ToDalamudString().ToString() ?? TextService.GetAddonText(4994)}");
+            .AddText($"  {TextService.GetAddonText(4993)}: {legsRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}");
 
         ChatGui.Print(new XivChatEntry
         {

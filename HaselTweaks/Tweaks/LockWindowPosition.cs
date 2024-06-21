@@ -36,11 +36,11 @@ public sealed class LockWindowPositionConfiguration
 }
 
 public sealed unsafe class LockWindowPosition(
+    PluginConfig pluginConfig,
+    TextService textService,
     IGameInteropProvider GameInteropProvider,
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
     IAddonLifecycle AddonLifecycle)
-    : Tweak<LockWindowPositionConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<LockWindowPositionConfiguration>(pluginConfig, textService)
 {
     private const int EventParamLock = 9901;
     private const int EventParamUnlock = 9902;
@@ -116,15 +116,15 @@ public sealed unsafe class LockWindowPosition(
 
     public override void DrawConfig()
     {
-        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+        ImGuiUtils.DrawSection(TextService.Translate("HaselTweaks.Config.SectionTitle.Configuration"));
 
-        ImGui.Checkbox(t("LockWindowPosition.Config.Inverted.Label"), ref Config.Inverted);
+        ImGui.Checkbox(TextService.Translate("LockWindowPosition.Config.Inverted.Label"), ref Config.Inverted);
         if (ImGui.IsItemClicked())
         {
             PluginConfig.Save();
         }
 
-        ImGui.Checkbox(t("LockWindowPosition.Config.AddLockUnlockContextMenuEntries.Label"), ref Config.AddLockUnlockContextMenuEntries);
+        ImGui.Checkbox(TextService.Translate("LockWindowPosition.Config.AddLockUnlockContextMenuEntries.Label"), ref Config.AddLockUnlockContextMenuEntries);
         if (ImGui.IsItemClicked())
         {
             PluginConfig.Save();
@@ -135,7 +135,7 @@ public sealed unsafe class LockWindowPosition(
         ImGuiUtils.DrawPaddedSeparator();
         if (Config.LockedWindows.Count != 0)
         {
-            ImGui.TextUnformatted(t("LockWindowPosition.Config.Windows.Title"));
+            TextService.Draw("LockWindowPosition.Config.Windows.Title");
 
             if (!ImGui.BeginTable("##Table", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX))
             {
@@ -164,9 +164,9 @@ public sealed unsafe class LockWindowPosition(
                         isLocked = !isLocked;
 
                     ImGui.BeginTooltip();
-                    ImGui.TextUnformatted(t(isLocked
+                    TextService.Draw(isLocked
                         ? "LockWindowPosition.Config.EnableCheckmark.Tooltip.Locked"
-                        : "LockWindowPosition.Config.EnableCheckmark.Tooltip.Unlocked"));
+                        : "LockWindowPosition.Config.EnableCheckmark.Tooltip.Unlocked");
                     ImGui.EndTooltip();
                 }
                 if (ImGui.IsItemClicked())
@@ -180,7 +180,7 @@ public sealed unsafe class LockWindowPosition(
                 ImGui.TableNextColumn();
                 if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
                 {
-                    if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, t("LockWindowPosition.Config.DeleteButton.Tooltip")))
+                    if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, TextService.Translate("LockWindowPosition.Config.DeleteButton.Tooltip")))
                     {
                         entryToRemove = i;
                     }
@@ -190,7 +190,7 @@ public sealed unsafe class LockWindowPosition(
                     ImGuiUtils.IconButton(
                         key + "_Delete",
                         FontAwesomeIcon.Trash,
-                        t(isWindowFocused
+                        TextService.Translate(isWindowFocused
                             ? "LockWindowPosition.Config.DeleteButton.Tooltip.NotHoldingShift"
                             : "LockWindowPosition.Config.DeleteButton.Tooltip.WindowNotFocused"),
                         disabled: true);
@@ -209,20 +209,21 @@ public sealed unsafe class LockWindowPosition(
         }
         else
         {
-            ImGuiUtils.TextUnformattedDisabled(t("LockWindowPosition.Config.NoWindowsAddedYet"));
+            using (ImRaii.Disabled())
+                TextService.Draw("LockWindowPosition.Config.NoWindowsAddedYet");
             ImGuiUtils.PushCursorY(4);
         }
 
         if (_showPicker)
         {
-            if (ImGui.Button(t("LockWindowPosition.Config.Picker.CancelButton.Label")))
+            if (ImGui.Button(TextService.Translate("LockWindowPosition.Config.Picker.CancelButton.Label")))
             {
                 _showPicker = false;
             }
         }
         else
         {
-            if (ImGui.Button(t("LockWindowPosition.Config.Picker.PickWindowButton.Label")))
+            if (ImGui.Button(TextService.Translate("LockWindowPosition.Config.Picker.PickWindowButton.Label")))
             {
                 _hoveredWindowName = "";
                 _hoveredWindowPos = default;
@@ -235,7 +236,7 @@ public sealed unsafe class LockWindowPosition(
         {
             ImGui.SameLine();
 
-            if (ImGui.Button(t("LockWindowPosition.Config.Picker.ToggleAllButton.Label")))
+            if (ImGui.Button(TextService.Translate("LockWindowPosition.Config.Picker.ToggleAllButton.Label")))
             {
                 foreach (var entry in Config.LockedWindows)
                 {
@@ -402,14 +403,14 @@ public sealed unsafe class LockWindowPosition(
 
                         if (Config.AddLockUnlockContextMenuEntries)
                         {
-                            AddMenuEntry(t("LockWindowPosition.UnlockPosition"), EventParamUnlock);
+                            AddMenuEntry(TextService.Translate("LockWindowPosition.UnlockPosition"), EventParamUnlock);
                         }
                     }
                     else
                     {
                         if (Config.AddLockUnlockContextMenuEntries)
                         {
-                            AddMenuEntry(t("LockWindowPosition.LockPosition"), EventParamLock);
+                            AddMenuEntry(TextService.Translate("LockWindowPosition.LockPosition"), EventParamLock);
                         }
                     }
                 }
@@ -423,7 +424,7 @@ public sealed unsafe class LockWindowPosition(
     {
         if (_eventIndexToDisable == 7 && (int)eventKind is EventParamUnlock or EventParamLock)
         {
-            if (TryGetAddon<AtkUnitBase>((ushort)GetAgent<AgentContext>()->OwnerAddon, out var addon))
+            if (TryGetAddon<AtkUnitBase>((ushort)AgentContext.Instance()->OwnerAddon, out var addon))
             {
                 var name = addon->NameString;
                 var entry = Config.LockedWindows.FirstOrDefault(entry => entry?.Name == name, null);

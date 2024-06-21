@@ -71,16 +71,15 @@ public sealed class CustomChatMessageFormatsConfiguration
 }
 
 public sealed unsafe class CustomChatMessageFormats(
+    PluginConfig pluginConfig,
+    TextService textService,
     ILogger<CustomChatMessageFormats> Logger,
     IGameInteropProvider GameInteropProvider,
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
     IDataManager DataManager,
     ExcelService ExcelService,
-    TextService TextService,
     IGameConfig GameConfig,
     TextureManager TextureManager)
-    : Tweak<CustomChatMessageFormatsConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<CustomChatMessageFormatsConfiguration>(pluginConfig, textService)
 {
     private List<(LogKind LogKind, LogFilter LogFilter, SeString Format)>? CachedLogKindRows = null;
     private FrozenDictionary<uint, string>? CachedTextColors = null;
@@ -106,14 +105,14 @@ public sealed unsafe class CustomChatMessageFormats(
     public override void OnEnable()
     {
         ReloadChat();
-        TranslationManager.LanguageChanged += OnLanguageChange;
+        TextService.LanguageChanged += OnLanguageChange;
         FormatLogMessageHook?.Enable();
     }
 
     public override void OnDisable()
     {
         ReloadChat();
-        TranslationManager.LanguageChanged -= OnLanguageChange;
+        TextService.LanguageChanged -= OnLanguageChange;
         FormatLogMessageHook?.Disable();
     }
 

@@ -1,4 +1,5 @@
 using Dalamud.Interface;
+using HaselCommon.Services;
 using HaselCommon.Windowing;
 using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
@@ -13,7 +14,7 @@ public abstract class LockableWindow : SimpleWindow
 
     public readonly PluginConfig PluginConfig;
 
-    public LockableWindow(IWindowManager windowManager, PluginConfig pluginConfig, string name)
+    public LockableWindow(IWindowManager windowManager, PluginConfig pluginConfig, TextService textService, string name)
         : base(windowManager, name)
     {
         PluginConfig = pluginConfig;
@@ -30,10 +31,10 @@ public abstract class LockableWindow : SimpleWindow
             ShowTooltip = () =>
             {
                 ImGui.BeginTooltip();
-                ImGui.TextUnformatted(
+                textService.Draw(
                     WindowLocked
-                    ? t("ImGuiWindow.WindowLocked")
-                    : t("ImGuiWindow.WindowUnlocked"));
+                    ? "ImGuiWindow.WindowLocked"
+                    : "ImGuiWindow.WindowUnlocked");
                 ImGui.EndTooltip();
             },
             Click = (button) =>

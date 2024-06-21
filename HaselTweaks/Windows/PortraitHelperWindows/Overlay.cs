@@ -29,9 +29,6 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
 
     protected uint DefaultImGuiTextColor { get; set; }
 
-    private static AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
-    private static AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
-
     protected PortraitHelperConfiguration Config => PluginConfig.Tweaks.PortraitHelper;
 
     public bool IsWindow { get; set; }
@@ -66,11 +63,14 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
 
     public override bool DrawConditions()
     {
-        if (AgentBannerEditor == null || AddonBannerEditor == null || !AddonBannerEditor->AtkUnitBase.IsReady || AgentBannerEditor->EditorState == null)
+        var agnet = AgentBannerEditor.Instance();
+        var addon = GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
+
+        if (agnet == null || addon == null || agnet->EditorState == null || !addon->AtkUnitBase.IsReady)
             return false;
 
-        var isContextMenuOpen = AddonBannerEditor->AtkUnitBase.NumOpenPopups != 0;
-        var isCloseDialogOpen = AgentBannerEditor->EditorState->CloseDialogAddonId != 0;
+        var isContextMenuOpen = addon->AtkUnitBase.NumOpenPopups != 0;
+        var isCloseDialogOpen = agnet->EditorState->CloseDialogAddonId != 0;
 
         return IsOpen && !isContextMenuOpen && !isCloseDialogOpen;
     }
@@ -82,10 +82,11 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
 
         IsWindow = ImGuiHelpers.GlobalScale > 1;
 
+        var agent = AgentBannerEditor.Instance();
         var isCloseDialogOpen =
-            AgentBannerEditor != null
-            && AgentBannerEditor->EditorState != null
-            && AgentBannerEditor->EditorState->CloseDialogAddonId != 0;
+            agent != null
+            && agent->EditorState != null
+            && agent->EditorState->CloseDialogAddonId != 0;
 
         ToggleUiVisibility(IsWindow || isCloseDialogOpen);
     }
@@ -125,7 +126,8 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
 
     private void UpdateWindow()
     {
-        if (AddonBannerEditor == null)
+        var addon = GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
+        if (addon == null)
             return;
 
         if (!IsWindow)
@@ -137,12 +139,12 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
 
             if (Type == OverlayType.Window)
             {
-                var windowNode = (AtkResNode*)((AtkUnitBase*)AddonBannerEditor)->WindowNode;
+                var windowNode = (AtkResNode*)((AtkUnitBase*)addon)->WindowNode;
                 var scale = GetNodeScale(windowNode);
 
                 Position = new Vector2(
-                    AddonBannerEditor->AtkUnitBase.X + (windowNode->X + 8) * scale.X,
-                    AddonBannerEditor->AtkUnitBase.Y + (windowNode->Y + 40) * scale.Y
+                    addon->AtkUnitBase.X + (windowNode->X + 8) * scale.X,
+                    addon->AtkUnitBase.Y + (windowNode->Y + 40) * scale.Y
                 );
 
                 Size = new Vector2(
@@ -154,12 +156,12 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
             {
                 Flags |= ImGuiWindowFlags.AlwaysAutoResize;
 
-                var leftPane = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 20);
+                var leftPane = GetNode<AtkResNode>(&addon->AtkUnitBase, 20);
                 var scale = GetNodeScale(leftPane);
 
                 Position = new Vector2(
-                    AddonBannerEditor->AtkUnitBase.X + leftPane->X * scale.X,
-                    AddonBannerEditor->AtkUnitBase.Y + leftPane->Y * scale.Y
+                    addon->AtkUnitBase.X + leftPane->X * scale.X,
+                    addon->AtkUnitBase.Y + leftPane->Y * scale.Y
                 );
 
                 Size = new Vector2(
@@ -191,33 +193,34 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
 
     private void ToggleUiVisibility(bool visible)
     {
-        if (AddonBannerEditor == null)
+        var addon = GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
+        if (addon == null)
             return;
 
-        var leftPane = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 20);
+        var leftPane = GetNode<AtkResNode>(&addon->AtkUnitBase, 20);
         leftPane->ToggleVisibility(visible);
 
         if (Type != OverlayType.LeftPane)
         {
-            var rightPane = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 107);
+            var rightPane = GetNode<AtkResNode>(&addon->AtkUnitBase, 107);
             rightPane->ToggleVisibility(visible);
 
-            var verticalSeparatorNode = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 135);
+            var verticalSeparatorNode = GetNode<AtkResNode>(&addon->AtkUnitBase, 135);
             verticalSeparatorNode->ToggleVisibility(visible);
 
-            var controlsHint = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 2);
+            var controlsHint = GetNode<AtkResNode>(&addon->AtkUnitBase, 2);
             controlsHint->ToggleVisibility(visible);
 
-            var copyEquimentButton = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 131);
+            var copyEquimentButton = GetNode<AtkResNode>(&addon->AtkUnitBase, 131);
             copyEquimentButton->ToggleVisibility(visible);
 
-            var saveButton = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 133);
+            var saveButton = GetNode<AtkResNode>(&addon->AtkUnitBase, 133);
             saveButton->ToggleVisibility(visible);
 
-            var closeButton = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 134);
+            var closeButton = GetNode<AtkResNode>(&addon->AtkUnitBase, 134);
             closeButton->ToggleVisibility(visible);
 
-            var lowerHorizontalLine = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 136);
+            var lowerHorizontalLine = GetNode<AtkResNode>(&addon->AtkUnitBase, 136);
             lowerHorizontalLine->ToggleVisibility(visible);
         }
     }

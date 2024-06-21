@@ -2,9 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dalamud.Interface.Utility.Raii;
+using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using HaselCommon.Services;
 using HaselTweaks.Config;
+using HaselTweaks.Extensions;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -18,59 +20,63 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class CreatePresetDialog : ConfirmationDialog
 {
-    private readonly ConfirmationButton _saveButton;
-    private readonly INotificationManager _notificationManager;
-    private readonly PluginConfig _pluginConfig;
-    private readonly TranslationManager _translationManager;
-    private string? _name;
-    private PortraitPreset? _preset;
-    private Image<Bgra32>? _image;
-    private HashSet<Guid>? _tags;
+    private readonly DalamudPluginInterface PluginInterface;
+    private readonly INotificationManager NotificationManager;
+    private readonly PluginConfig PluginConfig;
+    private readonly TextService TextService;
 
-    private PortraitHelperConfiguration Config => _pluginConfig.Tweaks.PortraitHelper;
+    private readonly ConfirmationButton SaveButton;
+    private string? Name;
+    private PortraitPreset? Preset;
+    private Image<Bgra32>? Image;
+    private HashSet<Guid>? Tags;
+
+    private PortraitHelperConfiguration Config => PluginConfig.Tweaks.PortraitHelper;
 
     public CreatePresetDialog(
+        DalamudPluginInterface pluginInterface,
         INotificationManager notificationManager,
         PluginConfig pluginConfig,
-        TranslationManager translationManager)
-        : base(translationManager.Translate("PortraitHelperWindows.CreatePresetDialog.Title"))
+        TextService textService)
+        : base(textService.Translate("PortraitHelperWindows.CreatePresetDialog.Title"))
     {
-        _notificationManager = notificationManager;
-        _pluginConfig = pluginConfig;
-        _translationManager = translationManager;
+        PluginInterface = pluginInterface;
+        NotificationManager = notificationManager;
+        PluginConfig = pluginConfig;
+        TextService = textService;
 
-        AddButton(_saveButton = new ConfirmationButton(translationManager.Translate("ConfirmationButtonWindow.Save"), OnSave));
+        AddButton(SaveButton = new ConfirmationButton(textService.Translate("ConfirmationButtonWindow.Save"), OnSave));
     }
 
     public void Open(string name, PortraitPreset? preset, Image<Bgra32>? image)
     {
-        _name = name;
-        _preset = preset;
-        _image = image;
-        _tags = [];
+        Name = name;
+        Preset = preset;
+        Image = image;
+        Tags = [];
         Show();
     }
 
     public void Close()
     {
         Hide();
-        _name = null;
-        _preset = null;
-        _image?.Dispose();
-        _image = null;
-        _tags = null;
+        Name = null;
+        Preset = null;
+        Image?.Dispose();
+        Image = null;
+        Tags = null;
     }
 
     public override bool DrawCondition()
-        => base.DrawCondition() && _name != null && _preset != null && _image != null && _tags != null;
+        => base.DrawCondition() && Name != null && Preset != null && Image != null && Tags != null;
 
     public override void InnerDraw()
     {
-        ImGui.TextUnformatted(_translationManager.Translate("PortraitHelperWindows.CreatePresetDialog.Name.Label"));
+        TextService.Draw("PortraitHelperWindows.CreatePresetDialog.Name.Label");
         ImGui.Spacing();
-        ImGui.InputText("##PresetName", ref _name, 100);
+        ImGui.InputText("##PresetName", ref Name, 100);
 
-        var disabled = string.IsNullOrEmpty(_name.Trim());
+        var disabled = string.IsNullOrEmpty(Name.Trim());
         if (!disabled && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter)))
         {
             OnSave();
@@ -79,13 +85,13 @@ public class CreatePresetDialog : ConfirmationDialog
         if (Config.PresetTags.Count != 0)
         {
             ImGui.Spacing();
-            ImGui.TextUnformatted(_translationManager.Translate("PortraitHelperWindows.CreatePresetDialog.Tags.Label"));
+            TextService.Draw("PortraitHelperWindows.CreatePresetDialog.Tags.Label");
 
-            var tagNames = _tags!
+            var tagNames = Tags!
                 .Select(id => Config.PresetTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
                 .Where(name => !string.IsNullOrEmpty(name));
 
-            var preview = tagNames.Any() ? string.Join(", ", tagNames) : _translationManager.Translate("PortraitHelperWindows.CreatePresetDialog.Tags.None");
+            var preview = tagNames.Any() ? string.Join(", ", tagNames) : TextService.Translate("PortraitHelperWindows.CreatePresetDialog.Tags.None");
 
             ImGui.Spacing();
             using var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge);
@@ -93,31 +99,31 @@ public class CreatePresetDialog : ConfirmationDialog
             {
                 foreach (var tag in Config.PresetTags)
                 {
-                    var isSelected = _tags!.Contains(tag.Id);
+                    var isSelected = Tags!.Contains(tag.Id);
 
                     if (ImGui.Selectable($"{tag.Name}##PresetTag{tag.Id}", isSelected))
                     {
                         if (isSelected)
                         {
-                            _tags.Remove(tag.Id);
+                            Tags.Remove(tag.Id);
                         }
                         else
                         {
-                            _tags.Add(tag.Id);
+                            Tags.Add(tag.Id);
                         }
                     }
                 }
             }
         }
 
-        _saveButton.Disabled = disabled;
+        SaveButton.Disabled = disabled;
     }
 
     private void OnSave()
     {
-        if (_preset == null || _image == null || string.IsNullOrEmpty(_name?.Trim()))
+        if (Preset == null || Image == null || string.IsNullOrEmpty(Name?.Trim()))
         {
-            _notificationManager.AddNotification(new()
+            NotificationManager.AddNotification(new()
             {
                 Title = "Could not save portrait"
             });
@@ -130,22 +136,22 @@ public class CreatePresetDialog : ConfirmationDialog
         Task.Run(() =>
         {
             var guid = Guid.NewGuid();
-            var thumbPath = PortraitHelper.GetPortraitThumbnailPath(guid);
+            var thumbPath = PluginInterface.GetPortraitThumbnailPath(guid);
 
             if (Config.EmbedPresetStringInThumbnails)
             {
-                _image.Metadata.ExifProfile ??= new();
-                _image.Metadata.ExifProfile.SetValue(ExifTag.UserComment, _preset.ToExportedString());
+                Image.Metadata.ExifProfile ??= new();
+                Image.Metadata.ExifProfile.SetValue(ExifTag.UserComment, Preset.ToExportedString());
             }
 
-            _image.SaveAsPng(thumbPath, new PngEncoder
+            Image.SaveAsPng(thumbPath, new PngEncoder
             {
                 CompressionLevel = PngCompressionLevel.BestCompression,
                 ColorType = PngColorType.Rgb // no need for alpha channel
             });
 
-            Config.Presets.Insert(0, new(guid, _name.Trim(), _preset, _tags!));
-            _pluginConfig.Save();
+            Config.Presets.Insert(0, new(guid, Name.Trim(), Preset, Tags!));
+            PluginConfig.Save();
 
             Close();
         });

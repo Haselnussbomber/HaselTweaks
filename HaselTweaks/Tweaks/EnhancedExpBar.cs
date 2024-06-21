@@ -39,13 +39,12 @@ public sealed class EnhancedExpBarConfiguration
 [IncompatibilityWarning("SimpleTweaksPlugin", "ShowExperiencePercentage")]
 public sealed unsafe class EnhancedExpBar(
     PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
+    TextService textService,
     IFramework Framework,
     IClientState ClientState,
     IAddonLifecycle AddonLifecycle,
-    ExcelService ExcelService,
-    TextService TextService)
-    : Tweak<EnhancedExpBarConfiguration>(PluginConfig, TranslationManager)
+    ExcelService ExcelService)
+    : Tweak<EnhancedExpBarConfiguration>(PluginConfig, textService)
 {
     public enum MaxLevelOverrideType
     {

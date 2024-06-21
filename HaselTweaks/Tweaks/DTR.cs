@@ -24,14 +24,14 @@ public sealed class DTRConfiguration
 }
 
 public sealed unsafe class DTR(
-    PluginConfig PluginConfig,
-    TranslationManager TranslationManager,
+    PluginConfig pluginConfig,
+    TextService textService,
     ExcelService ExcelService,
     IDtrBar DtrBar,
     IFramework Framework,
     IClientState ClientState,
     DalamudPluginInterface DalamudPluginInterface)
-    : Tweak<DTRConfiguration>(PluginConfig, TranslationManager)
+    : Tweak<DTRConfiguration>(pluginConfig, textService)
 {
     private DtrBarEntry? DtrInstance;
     private DtrBarEntry? DtrFPS;
@@ -45,26 +45,20 @@ public sealed unsafe class DTR(
 
         DtrFPS = DtrBar.Get("[HaselTweaks] FPS");
 
-        DtrBusy = DtrBar.Get("[HaselTweaks] Busy",
-            new SeStringBuilder()
-                .PushColorType(1)
-                .PushEdgeColorType(16)
-                .Append(ExcelService.GetRow<OnlineStatus>(12)?.Name.RawData.ToArray() ?? Encoding.UTF8.GetBytes("Busy"))
-                .PopEdgeColorType()
-                .PopColorType()
-                .ToSeString()
-                .ToDalamudString());
+        DtrBusy = DtrBar.Get("[HaselTweaks] Busy");
 
         DtrInstance.Shown = false;
         DtrFPS.Shown = false;
         DtrBusy.Shown = false;
 
         Framework.Update += OnFrameworkUpdate;
+        TextService.LanguageChanged += OnLanguageChanged;
     }
 
     public override void OnDisable()
     {
         Framework.Update -= OnFrameworkUpdate;
+        TextService.LanguageChanged -= OnLanguageChanged;
 
         DtrInstance?.Dispose();
         DtrInstance = null;
@@ -81,6 +75,11 @@ public sealed unsafe class DTR(
 
         UpdateInstance();
         UpdateFPS();
+        UpdateBusy();
+    }
+
+    private void OnLanguageChanged(string langCode)
+    {
         UpdateBusy();
     }
 
@@ -107,7 +106,16 @@ public sealed unsafe class DTR(
         if (DtrBusy == null)
             return;
 
-        DtrBusy.Shown = ClientState.LocalPlayer?.OnlineStatus.Id == 12;
+        DtrBusy.Text = new SeStringBuilder()
+            .PushColorType(1)
+            .PushEdgeColorType(16)
+            .Append(ExcelService.GetRow<OnlineStatus>(12)?.Name.RawData.ToArray() ?? Encoding.UTF8.GetBytes("Busy"))
+            .PopEdgeColorType()
+            .PopColorType()
+            .ToSeString()
+            .ToDalamudString();
+
+        DtrBusy.Shown = ClientState.IsLoggedIn && ClientState.LocalPlayer?.OnlineStatus.Id == 12;
     }
 
     private void UpdateFPS()
@@ -119,7 +127,7 @@ public sealed unsafe class DTR(
         if (_lastFrameRate == frameRate)
             return;
 
-        DtrFPS.Text = t("DTR.FPS.Format", frameRate, Config.FormatUnitText);
+        DtrFPS.Text = TextService.Translate("DTR.FPS.Format", frameRate, Config.FormatUnitText);
         DtrFPS.Shown = true;
 
         _lastFrameRate = frameRate;
@@ -127,10 +135,10 @@ public sealed unsafe class DTR(
 
     public override void DrawConfig()
     {
-        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+        ImGuiUtils.DrawSection(TextService.Translate("HaselTweaks.Config.SectionTitle.Configuration"));
 
-        ImGui.TextUnformatted(t("DTR.Config.Explanation.Pre"));
-        ImGuiUtils.TextUnformattedColored(HaselColor.From(ImGuiColors.DalamudRed), t("DTR.Config.Explanation.DalamudSettings"));
+        TextService.Draw("DTR.Config.Explanation.Pre");
+        TextService.Draw(HaselColor.From(ImGuiColors.DalamudRed), "DTR.Config.Explanation.DalamudSettings");
         if (ImGui.IsItemHovered())
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
@@ -150,23 +158,24 @@ public sealed unsafe class DTR(
             Framework.RunOnTick(OpenSettings, delayTicks: 2);
         }
         ImGuiUtils.SameLineSpace();
-        ImGui.TextUnformatted(t("DTR.Config.Explanation.Post"));
+        TextService.Draw("DTR.Config.Explanation.Post");
 
-        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+        ImGuiUtils.DrawSection(TextService.Translate("HaselTweaks.Config.SectionTitle.Configuration"));
 
-        ImGui.TextUnformatted(t("DTR.Config.FormatUnitText.Label"));
+        TextService.Draw("DTR.Config.FormatUnitText.Label");
         if (ImGui.InputText("##FormatUnitTextInput", ref Config.FormatUnitText, 20))
         {
             PluginConfig.Save();
             _lastFrameRate = 0; // trigger update
         }
         ImGui.SameLine();
-        if (ImGuiUtils.IconButton("##Reset", FontAwesomeIcon.Undo, t("HaselTweaks.Config.ResetToDefault", " fps")))
+        if (ImGuiUtils.IconButton("##Reset", FontAwesomeIcon.Undo, TextService.Translate("HaselTweaks.Config.ResetToDefault", " fps")))
         {
             Config.FormatUnitText = " fps";
             PluginConfig.Save();
         }
-        if (TranslationManager.TryGetTranslation("DTR.Config.FormatUnitText.Description", out var description))
+
+        if (TextService.TryGetTranslation("DTR.Config.FormatUnitText.Description", out var description))
         {
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);
         }

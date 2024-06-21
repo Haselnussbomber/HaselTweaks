@@ -17,11 +17,12 @@ public abstract class Tweak<T> : Tweak, IConfigurableTweak where T : notnull
 {
     public Tweak(
         PluginConfig pluginConfig,
-        TranslationManager translationManager)
+        TextService textService)
         : base()
     {
         PluginConfig = pluginConfig;
-        TranslationManager = translationManager;
+        TextService = textService;
+
         CachedConfigType = typeof(T);
         Config = (T?)(typeof(TweakConfigs)
             .GetProperties()?
@@ -33,7 +34,7 @@ public abstract class Tweak<T> : Tweak, IConfigurableTweak where T : notnull
     public Type CachedConfigType { get; init; }
     public T Config { get; init; }
     public PluginConfig PluginConfig { get; }
-    public TranslationManager TranslationManager { get; }
+    public TextService TextService { get; }
 
     public virtual void OnConfigOpen() { }
     public virtual void OnConfigChange(string fieldName) { }
@@ -49,7 +50,7 @@ public abstract class Tweak<T> : Tweak, IConfigurableTweak where T : notnull
         if (!configFields.Any())
             return;
 
-        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+        TextService.Draw("HaselTweaks.Config.SectionTitle.Configuration");
 
         foreach (var (field, attr) in configFields)
         {
@@ -86,10 +87,10 @@ public abstract class Tweak<T> : Tweak, IConfigurableTweak where T : notnull
         var enumType = fieldInfo.FieldType;
 
         string GetOptionLabel(int value)
-            => t($"{InternalName}.Config.{fieldInfo.Name}.Options.{Enum.GetName(enumType, value)}.Label");
+            => TextService.Translate($"{InternalName}.Config.{fieldInfo.Name}.Options.{Enum.GetName(enumType, value)}.Label");
 
         if (!attr.NoLabel)
-            ImGui.TextUnformatted(t($"{InternalName}.Config.{fieldInfo.Name}.Label"));
+            TextService.Draw($"{InternalName}.Config.{fieldInfo.Name}.Label");
 
         using var indent = ImGuiUtils.ConfigIndent(!attr.NoLabel);
 
@@ -116,17 +117,15 @@ public abstract class Tweak<T> : Tweak, IConfigurableTweak where T : notnull
         }
         combo?.Dispose();
 
-        if (TranslationManager.TryGetTranslation($"{InternalName}.Config.{fieldInfo.Name}.Description", out var description))
-        {
+        if (TextService.TryGetTranslation($"{InternalName}.Config.{fieldInfo.Name}.Description", out var description))
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);
-        }
     }
 
     protected void DrawBoolConfig(BoolConfigAttribute attr, object config, FieldInfo fieldInfo)
     {
         var value = (bool)fieldInfo.GetValue(config)!;
 
-        if (ImGui.Checkbox(t($"{InternalName}.Config.{fieldInfo.Name}.Label") + "##Input", ref value))
+        if (ImGui.Checkbox(TextService.Translate($"{InternalName}.Config.{fieldInfo.Name}.Label") + "##Input", ref value))
         {
             fieldInfo.SetValue(config, value);
             PluginConfig.Save();
@@ -135,7 +134,7 @@ public abstract class Tweak<T> : Tweak, IConfigurableTweak where T : notnull
 
         DrawConfigInfos(fieldInfo);
 
-        if (TranslationManager.TryGetTranslation($"{InternalName}.Config.{fieldInfo.Name}.Description", out var description))
+        if (TextService.TryGetTranslation($"{InternalName}.Config.{fieldInfo.Name}.Description", out var description))
         {
             ImGuiUtils.PushCursorY(-3);
             using var descriptionIndent = ImGuiUtils.ConfigIndent();
@@ -148,7 +147,7 @@ public abstract class Tweak<T> : Tweak, IConfigurableTweak where T : notnull
     {
         var value = (float)fieldInfo.GetValue(config)!;
 
-        ImGui.TextUnformatted(t($"{InternalName}.Config.{fieldInfo.Name}.Label"));
+        TextService.Draw($"{InternalName}.Config.{fieldInfo.Name}.Label");
 
         using var indent = ImGuiUtils.ConfigIndent();
 
@@ -165,7 +164,7 @@ public abstract class Tweak<T> : Tweak, IConfigurableTweak where T : notnull
             OnConfigChange(fieldInfo.Name);
         }
 
-        if (TranslationManager.TryGetTranslation($"{InternalName}.Config.{fieldInfo.Name}.Description", out var description))
+        if (TextService.TryGetTranslation($"{InternalName}.Config.{fieldInfo.Name}.Description", out var description))
         {
             using var descriptionIndent = ImGuiUtils.ConfigIndent();
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);
@@ -176,7 +175,7 @@ public abstract class Tweak<T> : Tweak, IConfigurableTweak where T : notnull
     {
         var value = (string)fieldInfo.GetValue(config)!;
 
-        ImGui.TextUnformatted(t($"{InternalName}.Config.{fieldInfo.Name}.Label"));
+        TextService.Draw($"{InternalName}.Config.{fieldInfo.Name}.Label");
 
         if (ImGui.InputText("##Input", ref value, 50))
         {
@@ -192,13 +191,11 @@ public abstract class Tweak<T> : Tweak, IConfigurableTweak where T : notnull
             OnConfigChange(fieldInfo.Name);
         }
 
-        if (TranslationManager.TryGetTranslation($"{InternalName}.Config.{fieldInfo.Name}.Description", out var description))
-        {
+        if (TextService.TryGetTranslation($"{InternalName}.Config.{fieldInfo.Name}.Description", out var description))
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);
-        }
     }
 
-    protected static void DrawConfigInfos(FieldInfo fieldInfo)
+    protected void DrawConfigInfos(FieldInfo fieldInfo)
     {
         var attributes = fieldInfo.GetCustomAttributes<ConfigInfoAttribute>();
         if (!attributes.Any())
@@ -211,18 +208,18 @@ public abstract class Tweak<T> : Tweak, IConfigurableTweak where T : notnull
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
-                ImGui.TextUnformatted(t(attribute.Translationkey));
+                TextService.Draw(attribute.Translationkey);
                 ImGui.EndTooltip();
             }
         }
     }
 
-    protected static bool DrawResetButton(string defaultValueString)
+    protected bool DrawResetButton(string defaultValueString)
     {
         if (string.IsNullOrEmpty(defaultValueString))
             return false;
 
         ImGui.SameLine();
-        return ImGuiUtils.IconButton("##Reset", FontAwesomeIcon.Undo, t("HaselTweaks.Config.ResetToDefault", defaultValueString));
+        return ImGuiUtils.IconButton("##Reset", FontAwesomeIcon.Undo, TextService.Translate("HaselTweaks.Config.ResetToDefault", defaultValueString));
     }
 }
