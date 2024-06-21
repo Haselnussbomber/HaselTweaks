@@ -2,9 +2,34 @@
 
 ## [Unreleased]
 
+### New Tweak: Market Board Item Preview
+
+Automatically try on equipment when you hover over an item in the market board search results.
+
+### Enhanced Isleworks Agenda
+
+- **Changed:** Search text is now trimmed before fuzzy searching for the item. (Thanks to @CallumCarmicheal)
+
 ### Forced Cutscene Music
 
 - **Changed:** The tweak should now support more cutscenes. This is done by hooking the CutSceneController class instead of the PlayCutSceneTask.
+
+### Portrait Helper
+
+- **Changed:** Gear checksum mismatch is now checked when the game updates the class/job info in the agents. (Using a hook now instead of checking class/job id every frame.)
+- **Fixed:** The menu bar might've been incorrectly positioned while initializing.
+- **Fixed:** The rename tag dialog didn't use translated texts.
+
+### HaselTweaks
+
+Not so important note:  
+I'm currently working on restructuring the plugins source code, but I'm not fully done yet.  
+The plugin may or may not have some issues because of it, but so far everything seems fine.  
+If you find anything that doesn't work, please let me know via the plugins [GitHub Issues](https://github.com/Haselnussbomber/HaselTweaks/issues). Thanks!
+
+Also I'm shipping ClientStructs for now, since I've already adapted to these changes, which results in a slightly bigger size.  
+I didn't expect to release another update so close to the expansion, but I was asked to fix a bug. :>  
+Will probably switch back to Dalamuds ClientStructs again once it's released for Dawntrail.
 
 ## [23.0.2] (2024-05-15)
 
