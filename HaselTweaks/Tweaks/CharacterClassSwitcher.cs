@@ -222,7 +222,7 @@ public sealed unsafe class CharacterClassSwitcher(
         }
     }
 
-    private void AddonCharacterClassReceiveEventDetour(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)
+    private void AddonCharacterClassReceiveEventDetour(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData)
     {
         if (HandleAddonCharacterClassEvent(addon, eventType, eventParam))
             return;
