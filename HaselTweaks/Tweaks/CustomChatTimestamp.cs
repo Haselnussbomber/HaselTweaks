@@ -138,7 +138,7 @@ public sealed unsafe class CustomChatTimestamp(
 
             ImGuiUtils.TextUnformattedColored(Colors.White, formatted);
             ImGui.SameLine(0, 0);
-            TextService.Draw(HaselColor.FromABGR(colorParty), "CustomChatTimestamp.Config.Format.Example.Message");
+            TextService.Draw(HaselColor.From(colorParty), "CustomChatTimestamp.Config.Format.Example.Message");
         }
         catch (FormatException)
         {
