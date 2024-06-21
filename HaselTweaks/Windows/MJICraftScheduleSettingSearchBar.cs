@@ -50,7 +50,13 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
 
     public override bool DrawConditions()
         => Addon != null && Addon->AtkUnitBase.IsVisible;
-
+    
+    public override void OnOpen()
+    {
+        InputFocused = false;
+        Query = string.Empty;
+    }
+    
     public override void Draw()
     {
         if (!InputFocused)
