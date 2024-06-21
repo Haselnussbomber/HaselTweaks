@@ -1,5 +1,11 @@
 # Changelog
 
+## [24.0.1] (2024-06-21)
+
+### Enhanced Isleworks Agenda
+
+- **Fixed:** The search bar was only focused the first time it was opened, and the text wasn't cleared. Sorry about that!
+
 ## [24.0.0] (2024-06-21)
 
 ### New Tweak: Market Board Item Preview
@@ -1495,6 +1501,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[24.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.0...v24.0.1
 [24.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v23.0.2...v24.0.0
 [23.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v23.0.1...v23.0.2
 [23.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v23.0.0...v23.0.1
