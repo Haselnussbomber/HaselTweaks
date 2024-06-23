@@ -11,6 +11,7 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
@@ -739,7 +740,7 @@ public sealed unsafe class EnhancedLoginLogout(
         if (_currentEntry == null)
             return;
 
-        ushort territoryId = _currentEntry.TerritoryType switch
+        ushort territoryTypeId = _currentEntry.TerritoryType switch
         {
             282  // Private Cottage - Mist
          or 283  // Private House - Mist
@@ -763,22 +764,25 @@ public sealed unsafe class EnhancedLoginLogout(
             _ => _currentEntry.TerritoryType
         };
 
-        if (territoryId <= 0)
+        if (territoryTypeId <= 0)
             return;
 
-        var territoryType = ExcelService.GetRow<TerritoryType>(territoryId);
+        var territoryType = ExcelService.GetRow<TerritoryType>(territoryTypeId);
         if (territoryType == null)
             return;
 
-        var preloadManger = PreloadManger.Instance();
-        if (preloadManger == null)
-            return;
+        Logger.LogDebug("Preloading territory #{territoryId}: {bg}", territoryTypeId, territoryType.Bg.RawString);
 
-        Logger.LogDebug("Preloading territory #{territoryId}: {bg}", territoryId, territoryType.Bg.RawString);
-        fixed (byte* ptr = territoryType.Bg.RawData)
-        {
-            preloadManger->PreloadTerritory(2, (nint)ptr, 40, 0, territoryId);
-        }
+        var layoutWorld = HaselLayoutWorld.Instance();
+        layoutWorld->UnloadPrefetchLayout();
+        layoutWorld->LoadPrefetchLayout(
+            2,
+            territoryType.Bg.RawData,
+            /* LayerEntryType.PopRange */ 40,
+            0,
+            territoryTypeId,
+            GameMain.Instance(),
+            0);
     }
 
     #endregion
