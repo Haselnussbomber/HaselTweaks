@@ -2,11 +2,11 @@ using System.IO;
 using Dalamud.Game;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using HaselCommon.Extensions;
 using HaselCommon.Logger;
 using HaselTweaks.Caches;
 using HaselTweaks.Config;
 using HaselTweaks.Interfaces;
-using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using HaselTweaks.Windows;
 using HaselTweaks.Windows.PortraitHelperWindows;
@@ -45,40 +45,7 @@ public sealed class Plugin : IDalamudPlugin
             .AddSingleton<TweakManager>()
             .AddSingleton<PluginWindow>()
             .AddSingleton<BannerUtils>()
-
-            // Tweaks
-            .AddSingleton<ITweak, AchievementLinkTooltip>()
-            .AddSingleton<ITweak, AetherCurrentHelper>()
-            .AddSingleton<ITweak, AutoOpenRecipe>()
-            .AddSingleton<ITweak, AutoSorter>()
-            .AddSingleton<ITweak, BackgroundMusicKeybind>()
-            .AddSingleton<ITweak, CastBarAetheryteNames>()
-            .AddSingleton<ITweak, CharacterClassSwitcher>()
-            .AddSingleton<ITweak, Commands>()
-            .AddSingleton<ITweak, CustomChatMessageFormats>()
-            .AddSingleton<ITweak, CustomChatTimestamp>()
-            .AddSingleton<ITweak, DTR>()
-            .AddSingleton<ITweak, EnhancedExpBar>()
-            .AddSingleton<ITweak, EnhancedIsleworksAgenda>()
-            .AddSingleton<ITweak, EnhancedLoginLogout>()
-            .AddSingleton<ITweak, EnhancedMaterialList>()
-            .AddSingleton<ITweak, ExpertDeliveries>()
-            .AddSingleton<ITweak, ForcedCutsceneMusic>()
-            .AddSingleton<ITweak, GearSetGrid>()
-            .AddSingleton<ITweak, GlamourDresserArmoireAlert>()
-            .AddSingleton<ITweak, HideMSQComplete>()
-            .AddSingleton<ITweak, InventoryHighlight>()
-            .AddSingleton<ITweak, KeepScreenAwake>()
-            .AddSingleton<ITweak, LockWindowPosition>()
-            .AddSingleton<ITweak, MarketBoardItemPreview>()
-            .AddSingleton<ITweak, MaterialAllocation>()
-            .AddSingleton<ITweak, MinimapAdjustments>()
-            .AddSingleton<ITweak, PortraitHelper>()
-            .AddSingleton<ITweak, RevealDutyRequirements>()
-            .AddSingleton<ITweak, SaferItemSearch>()
-            .AddSingleton<ITweak, ScrollableTabs>()
-            .AddSingleton<ITweak, SearchTheMarkets>()
-            .AddSingleton<ITweak, SimpleAethernetList>()
+            .AddIServices<ITweak>()
 
             // AetherCurrentHelper
             .AddSingleton<EObjDataIdCache>()
