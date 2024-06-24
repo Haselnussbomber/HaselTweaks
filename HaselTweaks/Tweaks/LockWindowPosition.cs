@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -6,42 +5,31 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
-using Dalamud.Interface;
-using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
-using HaselCommon.Utils;
 using HaselTweaks.Config;
-using ImGuiNET;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using AtkEventInterface = FFXIVClientStructs.FFXIV.Component.GUI.AtkModuleInterface.AtkEventInterface;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class LockWindowPositionConfiguration
-{
-    public bool Inverted = false;
-    public bool AddLockUnlockContextMenuEntries = true;
-    public List<LockedWindowSetting> LockedWindows = [];
-
-    public record LockedWindowSetting
-    {
-        public bool Enabled = true;
-        public string Name = "";
-    }
-}
-
-public sealed unsafe class LockWindowPosition(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class LockWindowPosition(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
+    TextService TextService,
     IGameInteropProvider GameInteropProvider,
     IAddonLifecycle AddonLifecycle)
-    : Tweak<LockWindowPositionConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(LockWindowPosition);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private const int EventParamLock = 9901;
     private const int EventParamUnlock = 9902;
     private static readonly string[] IgnoredAddons = [
@@ -63,7 +51,7 @@ public sealed unsafe class LockWindowPosition(
     private Hook<AgentContext.Delegates.OpenContextMenuForAddon>? OpenContextMenuForAddonHook;
     private Hook<AtkEventInterface.Delegates.ReceiveEvent>? WindowContextMenuHandlerReceiveEventHook;
 
-    public override void OnInitialize()
+    public void OnInitialize()
     {
         MoveDeltaHook = GameInteropProvider.HookFromAddress<AtkUnitBase.Delegates.MoveDelta>(
             AtkUnitBase.MemberFunctionPointers.MoveDelta,
@@ -90,7 +78,7 @@ public sealed unsafe class LockWindowPosition(
             WindowContextMenuHandlerReceiveEventDetour);
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
         AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "GearSetList", GearSetList_PostSetup);
 
@@ -102,7 +90,7 @@ public sealed unsafe class LockWindowPosition(
         WindowContextMenuHandlerReceiveEventHook?.Enable();
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "GearSetList", GearSetList_PostSetup);
 
@@ -114,181 +102,21 @@ public sealed unsafe class LockWindowPosition(
         WindowContextMenuHandlerReceiveEventHook?.Disable();
     }
 
-    public override void DrawConfig()
+    void IDisposable.Dispose()
     {
-        ImGuiUtils.DrawSection(TextService.Translate("HaselTweaks.Config.SectionTitle.Configuration"));
+        if (Status == TweakStatus.Disposed)
+            return;
 
-        ImGui.Checkbox(TextService.Translate("LockWindowPosition.Config.Inverted.Label"), ref Config.Inverted);
-        if (ImGui.IsItemClicked())
-        {
-            PluginConfig.Save();
-        }
+        OnDisable();
+        MoveDeltaHook?.Dispose();
+        RaptureAtkUnitManagerVf6Hook?.Dispose();
+        ClearMenuHook?.Dispose();
+        AddMenuItem2Hook?.Dispose();
+        OpenContextMenuForAddonHook?.Dispose();
+        WindowContextMenuHandlerReceiveEventHook?.Dispose();
 
-        ImGui.Checkbox(TextService.Translate("LockWindowPosition.Config.AddLockUnlockContextMenuEntries.Label"), ref Config.AddLockUnlockContextMenuEntries);
-        if (ImGui.IsItemClicked())
-        {
-            PluginConfig.Save();
-        }
-
-        var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
-
-        ImGuiUtils.DrawPaddedSeparator();
-        if (Config.LockedWindows.Count != 0)
-        {
-            TextService.Draw("LockWindowPosition.Config.Windows.Title");
-
-            if (!ImGui.BeginTable("##Table", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX))
-            {
-                return;
-            }
-
-            ImGui.TableSetupColumn("Enabled", ImGuiTableColumnFlags.WidthFixed);
-            ImGui.TableSetupColumn("Name");
-            ImGui.TableSetupColumn("Action", ImGuiTableColumnFlags.WidthFixed, ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Trash).X);
-
-            var entryToRemove = -1;
-            var i = 0;
-
-            foreach (var entry in Config.LockedWindows)
-            {
-                var key = $"##Table_Row{i}";
-                ImGui.TableNextRow();
-
-                ImGui.TableNextColumn();
-                ImGui.Checkbox(key + "_Enabled", ref entry.Enabled);
-                if (ImGui.IsItemHovered())
-                {
-                    var isLocked = entry.Enabled;
-
-                    if (Config.Inverted)
-                        isLocked = !isLocked;
-
-                    ImGui.BeginTooltip();
-                    TextService.Draw(isLocked
-                        ? "LockWindowPosition.Config.EnableCheckmark.Tooltip.Locked"
-                        : "LockWindowPosition.Config.EnableCheckmark.Tooltip.Unlocked");
-                    ImGui.EndTooltip();
-                }
-                if (ImGui.IsItemClicked())
-                {
-                    PluginConfig.Save();
-                }
-
-                ImGui.TableNextColumn();
-                ImGui.TextUnformatted(entry.Name);
-
-                ImGui.TableNextColumn();
-                if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
-                {
-                    if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, TextService.Translate("LockWindowPosition.Config.DeleteButton.Tooltip")))
-                    {
-                        entryToRemove = i;
-                    }
-                }
-                else
-                {
-                    ImGuiUtils.IconButton(
-                        key + "_Delete",
-                        FontAwesomeIcon.Trash,
-                        TextService.Translate(isWindowFocused
-                            ? "LockWindowPosition.Config.DeleteButton.Tooltip.NotHoldingShift"
-                            : "LockWindowPosition.Config.DeleteButton.Tooltip.WindowNotFocused"),
-                        disabled: true);
-                }
-
-                i++;
-            }
-
-            ImGui.EndTable();
-
-            if (entryToRemove != -1)
-            {
-                Config.LockedWindows.RemoveAt(entryToRemove);
-                PluginConfig.Save();
-            }
-        }
-        else
-        {
-            using (ImRaii.Disabled())
-                TextService.Draw("LockWindowPosition.Config.NoWindowsAddedYet");
-            ImGuiUtils.PushCursorY(4);
-        }
-
-        if (_showPicker)
-        {
-            if (ImGui.Button(TextService.Translate("LockWindowPosition.Config.Picker.CancelButton.Label")))
-            {
-                _showPicker = false;
-            }
-        }
-        else
-        {
-            if (ImGui.Button(TextService.Translate("LockWindowPosition.Config.Picker.PickWindowButton.Label")))
-            {
-                _hoveredWindowName = "";
-                _hoveredWindowPos = default;
-                _hoveredWindowSize = default;
-                _showPicker = true;
-            }
-        }
-
-        if (Config.LockedWindows.Count != 0)
-        {
-            ImGui.SameLine();
-
-            if (ImGui.Button(TextService.Translate("LockWindowPosition.Config.Picker.ToggleAllButton.Label")))
-            {
-                foreach (var entry in Config.LockedWindows)
-                {
-                    entry.Enabled = !entry.Enabled;
-                }
-                PluginConfig.Save();
-            }
-        }
-
-        if (_showPicker && _hoveredWindowPos != default)
-        {
-            ImGui.SetNextWindowPos(_hoveredWindowPos);
-            ImGui.SetNextWindowSize(_hoveredWindowSize);
-
-            using var windowStyles = ImRaii.PushStyle(ImGuiStyleVar.WindowBorderSize, 1.0f);
-            using var windowColors = Colors.Gold.Push(ImGuiCol.Border)
-                                                .Push(ImGuiCol.WindowBg, new Vector4(0.847f, 0.733f, 0.49f, 0.33f));
-
-            if (ImGui.Begin("Lock Windows Picker", ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize))
-            {
-                var drawList = ImGui.GetForegroundDrawList();
-                var textPos = _hoveredWindowPos + new Vector2(0, -ImGui.GetTextLineHeight());
-                drawList.AddText(textPos + Vector2.One, Colors.Black, _hoveredWindowName);
-                drawList.AddText(textPos, Colors.Gold, _hoveredWindowName);
-
-                ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-
-                if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
-                {
-                    _showPicker = false;
-
-                    if (_hoveredWindowName != "" && !Config.LockedWindows.Any(entry => entry.Name == _hoveredWindowName))
-                    {
-                        Config.LockedWindows.Add(new()
-                        {
-                            Name = _hoveredWindowName
-                        });
-                        PluginConfig.Save();
-                    }
-                }
-
-                ImGui.End();
-            }
-        }
-    }
-
-    public override void OnConfigClose()
-    {
-        _hoveredWindowName = "";
-        _hoveredWindowPos = default;
-        _hoveredWindowSize = default;
-        _showPicker = false;
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     // block GearSetList from moving when opened by Character

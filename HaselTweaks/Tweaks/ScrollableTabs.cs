@@ -3,97 +3,28 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Services;
 using HaselTweaks.Config;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using Microsoft.Extensions.Logging;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class ScrollableTabsConfiguration
-{
-    [BoolConfig]
-    public bool Invert = true;
-
-    [BoolConfig]
-    public bool HandleAetherCurrent = true;
-
-    [BoolConfig]
-    public bool HandleArmouryBoard = true;
-
-    [BoolConfig]
-    public bool HandleAOZNotebook = true;
-
-    [BoolConfig]
-    public bool HandleCharacter = true;
-
-    [BoolConfig]
-    public bool HandleCharacterClass = true;
-
-    [BoolConfig]
-    public bool HandleCharacterRepute = true;
-
-    [BoolConfig]
-    public bool HandleInventoryBuddy = true;
-
-    [BoolConfig]
-    public bool HandleBuddy = true;
-
-    [BoolConfig]
-    public bool HandleCurrency = true;
-
-    [BoolConfig]
-    public bool HandleOrnamentNoteBook = true;
-
-    [BoolConfig]
-    public bool HandleFieldRecord = true;
-
-    [BoolConfig]
-    public bool HandleFishGuide = true;
-
-    [BoolConfig]
-    public bool HandleMiragePrismPrismBox = true;
-
-    [BoolConfig]
-    public bool HandleGoldSaucerCardList = true;
-
-    [BoolConfig]
-    public bool HandleGoldSaucerCardDeckEdit = true;
-
-    [BoolConfig]
-    public bool HandleLovmPaletteEdit = true;
-
-    [BoolConfig]
-    public bool HandleInventory = true;
-
-    [BoolConfig]
-    public bool HandleMJIMinionNoteBook = true;
-
-    [BoolConfig]
-    public bool HandleMinionNoteBook = true;
-
-    [BoolConfig]
-    public bool HandleMountNoteBook = true;
-
-    [BoolConfig]
-    public bool HandleRetainer = true;
-
-    [BoolConfig]
-    public bool HandleFateProgress = true;
-
-    [BoolConfig]
-    public bool HandleAdventureNoteBook = true;
-}
-
-public sealed unsafe class ScrollableTabs(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class ScrollableTabs(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
     ILogger<ScrollableTabs> Logger,
     IFramework Framework,
     IClientState ClientState,
     IGameConfig GameConfig)
-    : Tweak<ScrollableTabsConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(ScrollableTabs);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    private ScrollableTabsConfiguration Config => PluginConfig.Tweaks.ScrollableTabs;
+
     private const int NumArmouryBoardTabs = 12;
     private const int NumInventoryTabs = 5;
     private const int NumInventoryLargeTabs = 4;
@@ -113,14 +44,27 @@ public sealed unsafe class ScrollableTabs(
     private bool IsPrev
         => _wheelState == (!Config.Invert ? -1 : 1);
 
-    public override void OnEnable()
+    public void OnInitialize() { }
+
+    public void OnEnable()
     {
         Framework.Update += OnFrameworkUpdate;
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         Framework.Update -= OnFrameworkUpdate;
+    }
+
+    public void Dispose()
+    {
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void OnFrameworkUpdate(IFramework framework)

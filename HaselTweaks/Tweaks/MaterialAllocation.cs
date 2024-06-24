@@ -8,43 +8,41 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselTweaks.Config;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-public class MaterialAllocationConfiguration
-{
-    [BoolConfig]
-    public bool SaveLastSelectedTab = true;
-    public byte LastSelectedTab = 2;
-
-    [BoolConfig]
-    public bool OpenGatheringLogOnItemClick = true;
-}
-
-public sealed unsafe class MaterialAllocation(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class MaterialAllocation(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
+    TextService TextService,
     ExcelService ExcelService,
     IGameInteropProvider GameInteropProvider,
     IAddonLifecycle AddonLifecycle,
     IChatGui ChatGui,
     AddonObserver AddonObserver)
-    : Tweak<MaterialAllocationConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(MaterialAllocation);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    private MaterialAllocationConfiguration Config => PluginConfig.Tweaks.MaterialAllocation;
+
     private uint NextMJIGatheringNoteBookItemId;
 
     private Hook<AgentMJIGatheringNoteBook.Delegates.Update>? AgentMJIGatheringNoteBookUpdateHook;
 
-    public override void OnInitialize()
+    public void OnInitialize()
     {
         AgentMJIGatheringNoteBookUpdateHook = GameInteropProvider.HookFromAddress<AgentMJIGatheringNoteBook.Delegates.Update>(
             AgentMJIGatheringNoteBook.Instance()->VirtualTable->Update,
             AgentMJIGatheringNoteBookUpdateDetour);
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
         NextMJIGatheringNoteBookItemId = 0;
 
@@ -56,7 +54,7 @@ public sealed unsafe class MaterialAllocation(
         AgentMJIGatheringNoteBookUpdateHook?.Enable();
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PostReceiveEvent);
         AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PreSetup);
@@ -64,6 +62,18 @@ public sealed unsafe class MaterialAllocation(
         AddonObserver.AddonOpen -= OnAddonOpen;
 
         AgentMJIGatheringNoteBookUpdateHook?.Disable();
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        OnDisable();
+        AgentMJIGatheringNoteBookUpdateHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void AddonMJICraftMaterialConfirmation_PreSetup(AddonEvent type, AddonArgs args)

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Numerics;
 using System.Threading;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
@@ -13,41 +11,21 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Services;
+using HaselTweaks.Config;
+using HaselTweaks.Enums;
 using HaselTweaks.Enums.PortraitHelper;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows.PortraitHelperWindows;
 using Microsoft.Extensions.Logging;
-using PluginConfig = HaselTweaks.Config.PluginConfig;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class PortraitHelperConfiguration
-{
-    public List<SavedPreset> Presets = [];
-    public List<SavedPresetTag> PresetTags = [];
-    public bool ShowAlignmentTool = false;
-    public int AlignmentToolVerticalLines = 2;
-    public Vector4 AlignmentToolVerticalColor = new(0, 0, 0, 1f);
-    public int AlignmentToolHorizontalLines = 2;
-    public Vector4 AlignmentToolHorizontalColor = new(0, 0, 0, 1f);
-
-    [BoolConfig]
-    public bool EmbedPresetStringInThumbnails = true;
-
-    [BoolConfig]
-    public bool NotifyGearChecksumMismatch = true;
-
-    [BoolConfig, NetworkWarning]
-    public bool ReequipGearsetOnUpdate = false;
-
-    [BoolConfig, NetworkWarning]
-    public bool AutoUpdatePotraitOnGearUpdate = false;
-}
-
-public sealed unsafe class PortraitHelper(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class PortraitHelper(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
+    TextService TextService,
     ILogger<PortraitHelper> Logger,
     IGameInteropProvider GameInteropProvider,
     DalamudPluginInterface PluginInterface,
@@ -56,8 +34,11 @@ public sealed unsafe class PortraitHelper(
     IChatGui ChatGui,
     AddonObserver AddonObserver,
     MenuBar MenuBar)
-    : Tweak<PortraitHelperConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(PortraitHelper);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
     private CancellationTokenSource? MismatchCheckCTS;
@@ -70,7 +51,7 @@ public sealed unsafe class PortraitHelper(
     private Hook<RaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
     private Hook<UIModule.Delegates.HandlePacket>? HandleUIModulePacketHook;
 
-    public override void OnInitialize()
+    public void OnInitialize()
     {
         OnClipboardDataChangedHook = GameInteropProvider.HookFromAddress<UIClipboard.Delegates.OnClipboardDataChanged>(
             UIClipboard.MemberFunctionPointers.OnClipboardDataChanged,
@@ -85,7 +66,7 @@ public sealed unsafe class PortraitHelper(
             HandleUIModulePacketDetour);
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
         _openPortraitEditPayload = PluginInterface.AddChatLinkHandler(1000, OpenPortraitEditChatHandler);
 
@@ -100,7 +81,7 @@ public sealed unsafe class PortraitHelper(
         HandleUIModulePacketHook?.Enable();
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         AddonObserver.AddonOpen -= OnAddonOpen;
         AddonObserver.AddonClose -= OnAddonClose;
@@ -112,6 +93,20 @@ public sealed unsafe class PortraitHelper(
         OnClipboardDataChangedHook?.Disable();
         UpdateGearsetHook?.Disable();
         HandleUIModulePacketHook?.Disable();
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        OnDisable();
+        OnClipboardDataChangedHook?.Dispose();
+        UpdateGearsetHook?.Dispose();
+        HandleUIModulePacketHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void OpenPortraitEditChatHandler(uint commandId, SeString message)

@@ -7,6 +7,8 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselTweaks.Config;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using Lumina.Text;
 using Lumina.Text.Payloads;
 using Lumina.Text.ReadOnly;
@@ -14,32 +16,40 @@ using Achievement = Lumina.Excel.GeneratedSheets.Achievement;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class AchievementLinkTooltipConfiguration
-{
-    [BoolConfig]
-    public bool ShowCompletionStatus = true;
-
-    [BoolConfig]
-    public bool PreventSpoiler = true;
-}
-
-public sealed unsafe class AchievementLinkTooltip(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class AchievementLinkTooltip(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
+    TextService TextService,
     IAddonLifecycle AddonLifecycle,
     ExcelService ExcelService)
-    : Tweak<AchievementLinkTooltipConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(AchievementLinkTooltip);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private readonly string[] ChatPanels = ["ChatLogPanel_0", "ChatLogPanel_1", "ChatLogPanel_2", "ChatLogPanel_3"];
 
-    public override void OnEnable()
+    public void OnInitialize() { }
+
+    public void OnEnable()
     {
         AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, ChatPanels, OnChatLogPanelPostReceiveEvent);
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, ChatPanels, OnChatLogPanelPostReceiveEvent);
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void OnChatLogPanelPostReceiveEvent(AddonEvent type, AddonArgs args)

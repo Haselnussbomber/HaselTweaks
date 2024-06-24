@@ -1,45 +1,43 @@
 using System.Text;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text;
-using Dalamud.Interface;
-using Dalamud.Interface.Colors;
-using Dalamud.Interface.Utility;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselCommon.Services;
-using HaselCommon.Utils;
 using HaselTweaks.Config;
-using ImGuiNET;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using Lumina.Excel.GeneratedSheets;
 using Lumina.Text;
 using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class DTRConfiguration
-{
-    public string FormatUnitText = " fps";
-}
-
-public sealed unsafe class DTR(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class DTR(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
+    TextService TextService,
     ExcelService ExcelService,
     IDtrBar DtrBar,
     IFramework Framework,
     IClientState ClientState,
     DalamudPluginInterface DalamudPluginInterface)
-    : Tweak<DTRConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(DTR);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private DtrBarEntry? DtrInstance;
     private DtrBarEntry? DtrFPS;
     private DtrBarEntry? DtrBusy;
     private int _lastFrameRate;
     private uint _lastInstanceId;
 
-    public override void OnEnable()
+    public void OnInitialize() { }
+
+    public void OnEnable()
     {
         DtrInstance = DtrBar.Get("[HaselTweaks] Instance");
 
@@ -55,7 +53,7 @@ public sealed unsafe class DTR(
         TextService.LanguageChanged += OnLanguageChanged;
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         Framework.Update -= OnFrameworkUpdate;
         TextService.LanguageChanged -= OnLanguageChanged;
@@ -66,6 +64,17 @@ public sealed unsafe class DTR(
         DtrFPS = null;
         DtrBusy?.Dispose();
         DtrBusy = null;
+    }
+
+    public void Dispose()
+    {
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void OnFrameworkUpdate(IFramework framework)
@@ -131,53 +140,5 @@ public sealed unsafe class DTR(
         DtrFPS.Shown = true;
 
         _lastFrameRate = frameRate;
-    }
-
-    public override void DrawConfig()
-    {
-        ImGuiUtils.DrawSection(TextService.Translate("HaselTweaks.Config.SectionTitle.Configuration"));
-
-        TextService.Draw("DTR.Config.Explanation.Pre");
-        TextService.Draw(HaselColor.From(ImGuiColors.DalamudRed), "DTR.Config.Explanation.DalamudSettings");
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-        }
-        if (ImGui.IsItemClicked())
-        {
-            void OpenSettings()
-            {
-                if (ImGui.IsMouseDown(ImGuiMouseButton.Left))
-                {
-                    Framework.RunOnTick(OpenSettings, delayTicks: 2);
-                    return;
-                }
-
-                DalamudPluginInterface.OpenDalamudSettingsTo(SettingsOpenKind.ServerInfoBar);
-            }
-            Framework.RunOnTick(OpenSettings, delayTicks: 2);
-        }
-        ImGuiUtils.SameLineSpace();
-        TextService.Draw("DTR.Config.Explanation.Post");
-
-        ImGuiUtils.DrawSection(TextService.Translate("HaselTweaks.Config.SectionTitle.Configuration"));
-
-        TextService.Draw("DTR.Config.FormatUnitText.Label");
-        if (ImGui.InputText("##FormatUnitTextInput", ref Config.FormatUnitText, 20))
-        {
-            PluginConfig.Save();
-            _lastFrameRate = 0; // trigger update
-        }
-        ImGui.SameLine();
-        if (ImGuiUtils.IconButton("##Reset", FontAwesomeIcon.Undo, TextService.Translate("HaselTweaks.Config.ResetToDefault", " fps")))
-        {
-            Config.FormatUnitText = " fps";
-            PluginConfig.Save();
-        }
-
-        if (TextService.TryGetTranslation("DTR.Config.FormatUnitText.Description", out var description))
-        {
-            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);
-        }
     }
 }

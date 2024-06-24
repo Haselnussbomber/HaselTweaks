@@ -1,37 +1,27 @@
 using Dalamud.Plugin.Services;
 using HaselCommon.Services;
 using HaselTweaks.Config;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class GearSetGridConfiguration
-{
-    [BoolConfig]
-    public bool AutoOpenWithGearSetList = false;
-
-    [BoolConfig]
-    public bool RegisterCommand = true;
-
-    [BoolConfig]
-    public bool ConvertSeparators = true;
-
-    [StringConfig(DependsOn = nameof(ConvertSeparators), DefaultValue = "===========")]
-    public string SeparatorFilter = "===========";
-
-    [BoolConfig(DependsOn = nameof(ConvertSeparators))]
-    public bool DisableSeparatorSpacing = false;
-}
-
-public sealed class GearSetGrid(
+public partial class GearSetGrid(
     PluginConfig pluginConfig,
-    TextService textService,
+    ConfigGui ConfigGui,
+    TextService TextService,
     ICommandManager CommandManager,
     AddonObserver AddonObserver,
     GearSetGridWindow Window)
-    : Tweak<GearSetGridConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
-    public override void OnEnable()
+    public string InternalName => nameof(GearSetGrid);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    public void OnInitialize() { }
+
+    public void OnEnable()
     {
         AddonObserver.AddonOpen += OnAddonOpen;
         AddonObserver.AddonClose += OnAddonClose;
@@ -43,7 +33,7 @@ public sealed class GearSetGrid(
             CommandManager.AddHandler("/gsg", new(OnGsgCommand) { HelpMessage = TextService.Translate("GearSetGrid.CommandHandlerHelpMessage") });
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         AddonObserver.AddonOpen -= OnAddonOpen;
         AddonObserver.AddonClose -= OnAddonClose;
@@ -53,15 +43,15 @@ public sealed class GearSetGrid(
         CommandManager.RemoveHandler("/gsg");
     }
 
-    public override void OnConfigChange(string fieldName)
+    void IDisposable.Dispose()
     {
-        if (fieldName == "RegisterCommand")
-        {
-            if (Config.RegisterCommand)
-                CommandManager.AddHandler("/gsg", new(OnGsgCommand) { HelpMessage = TextService.Translate("GearSetGrid.CommandHandlerHelpMessage") });
-            else
-                CommandManager.RemoveHandler("/gsg");
-        }
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void OnAddonOpen(string addonName)

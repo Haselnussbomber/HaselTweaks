@@ -11,82 +11,24 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselTweaks.Config;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class EnhancedExpBarConfiguration
-{
-    [BoolConfig]
-    public bool ForcePvPSeriesBar = true;
-
-    [BoolConfig]
-    public bool ForceSanctuaryBar = true;
-
-    [BoolConfig]
-    public bool ForceCompanionBar = true;
-
-    [BoolConfig]
-    public bool SanctuaryBarHideJob = false;
-
-    [EnumConfig]
-    public EnhancedExpBar.MaxLevelOverrideType MaxLevelOverride = EnhancedExpBar.MaxLevelOverrideType.Default;
-
-    [BoolConfig]
-    public bool DisableColorChanges = false;
-}
-
-[IncompatibilityWarning("SimpleTweaksPlugin", "ShowExperiencePercentage")]
-public sealed unsafe class EnhancedExpBar(
+public unsafe partial class EnhancedExpBar(
     PluginConfig PluginConfig,
-    TextService textService,
+    ConfigGui ConfigGui,
+    TextService TextService,
     IFramework Framework,
     IClientState ClientState,
     IAddonLifecycle AddonLifecycle,
     ExcelService ExcelService)
-    : Tweak<EnhancedExpBarConfiguration>(PluginConfig, textService)
+    : IConfigurableTweak
 {
-    public enum MaxLevelOverrideType
-    {
-        Default,
-        PvPSeriesBar,
-        CompanionBar,
-        // No SanctuaryBar, because data is only available on the island
-    }
-
-    public override void OnEnable()
-    {
-        Framework.Update += OnFrameworkUpdate;
-        ClientState.LeavePvP += ClientState_LeavePvP;
-        ClientState.TerritoryChanged += ClientState_TerritoryChanged;
-        _isEnabled = true;
-        RunUpdate();
-        AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
-    }
-
-    public override void OnDisable()
-    {
-        Framework.Update -= OnFrameworkUpdate;
-        ClientState.LeavePvP -= ClientState_LeavePvP;
-        ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
-        _isEnabled = false;
-        RunUpdate();
-        AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
-    }
-
-    public override void OnConfigChange(string fieldName)
-    {
-        if (TryGetAddon<AddonExp>("_Exp", out var addon))
-        {
-            addon->ClassJob--;
-            addon->RequiredExp--;
-            addon->AtkUnitBase.OnRequestedUpdate(
-                AtkStage.Instance()->GetNumberArrayData(),
-                AtkStage.Instance()->GetStringArrayData());
-        }
-
-        RunUpdate();
-    }
+    public string InternalName => nameof(EnhancedExpBar);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private bool _isEnabled = false;
     private bool _isUpdatePending = false;
@@ -97,6 +39,39 @@ public sealed unsafe class EnhancedExpBar(
     private uint _lastBuddyObjectID;
     private uint _lastIslandExperience = 0;
     private ushort _lastSyncedFateId = 0;
+
+    public void OnInitialize() { }
+
+    public void OnEnable()
+    {
+        Framework.Update += OnFrameworkUpdate;
+        ClientState.LeavePvP += ClientState_LeavePvP;
+        ClientState.TerritoryChanged += ClientState_TerritoryChanged;
+        _isEnabled = true;
+        RunUpdate();
+        AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
+    }
+
+    public void OnDisable()
+    {
+        Framework.Update -= OnFrameworkUpdate;
+        ClientState.LeavePvP -= ClientState_LeavePvP;
+        ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
+        _isEnabled = false;
+        RunUpdate();
+        AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
+    }
+
+    public void Dispose()
+    {
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
+    }
 
     private void OnFrameworkUpdate(IFramework framework)
     {

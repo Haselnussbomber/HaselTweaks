@@ -12,42 +12,32 @@ using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using Lumina.Excel.GeneratedSheets;
 using BattleNpcSubKind = Dalamud.Game.ClientState.Objects.Enums.BattleNpcSubKind;
 using DalamudObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class CommandsConfiguration
-{
-    [BoolConfig]
-    public bool EnableItemLinkCommand = true;
-
-    [BoolConfig]
-    public bool EnableWhatMountCommand = true;
-
-    [BoolConfig]
-    public bool EnableWhatBardingCommand = true;
-
-    [BoolConfig]
-    public bool EnableGlamourPlateCommand = true;
-}
-
-public sealed unsafe class Commands(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class Commands(
+    PluginConfig PluginConfig,
+    TextService TextService,
     ExcelService ExcelService,
     ICommandRegistry Commands,
     IChatGui ChatGui,
-    ITargetManager TargetManager)
-    : Tweak<CommandsConfiguration>(pluginConfig, textService)
+    ITargetManager TargetManager,
+    ConfigGui ConfigGui)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(Commands);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private ICommandHandler? ItemLinkCommandHandler;
     private ICommandHandler? WhatMountCommandCommandHandler;
     private ICommandHandler? WhatBardingCommandCommandHandler;
     private ICommandHandler? GlamourPlateCommandCommandHandler;
 
-    public override void OnInitialize()
+    public void OnInitialize()
     {
         ItemLinkCommandHandler = Commands.Register(OnItemLinkCommand);
         WhatMountCommandCommandHandler = Commands.Register(OnWhatMountCommand);
@@ -55,19 +45,25 @@ public sealed unsafe class Commands(
         GlamourPlateCommandCommandHandler = Commands.Register(OnGlamourPlateCommand);
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
         UpdateCommands(true);
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         UpdateCommands(false);
     }
 
-    public override void OnConfigChange(string fieldName)
+    public void Dispose()
     {
-        UpdateCommands(Status == TweakStatus.Enabled);
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void UpdateCommands(bool enable)

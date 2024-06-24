@@ -9,16 +9,16 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed unsafe class SaferItemSearch(IGameInteropProvider GameInteropProvider, IAddonLifecycle AddonLifecycle) : ITweak
+public unsafe class SaferItemSearch(IGameInteropProvider GameInteropProvider, IAddonLifecycle AddonLifecycle) : ITweak
 {
+    public string InternalName => nameof(SaferItemSearch);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private bool _isSearching;
 
     private Hook<InfoProxyItemSearch.Delegates.ProcessRequestResult>? ProcessRequestResultHook;
     private Hook<InfoProxyItemSearch.Delegates.EndRequest>? EndRequestHook;
     private Hook<InfoProxyItemSearch.Delegates.AddPage>? AddPageHook;
-
-    public string InternalName => nameof(SaferItemSearch);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()
     {
@@ -61,7 +61,6 @@ public sealed unsafe class SaferItemSearch(IGameInteropProvider GameInteropProvi
             return;
 
         OnDisable();
-
         ProcessRequestResultHook?.Dispose();
         EndRequestHook?.Dispose();
         AddPageHook?.Dispose();

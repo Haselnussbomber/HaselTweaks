@@ -20,9 +20,7 @@ public sealed unsafe class MarketBoardItemPreview(
     public string InternalName => nameof(MarketBoardItemPreview);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    public void OnInitialize()
-    {
-    }
+    public void OnInitialize() { }
 
     public void OnEnable()
     {

@@ -16,22 +16,22 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed unsafe partial class CastBarAetheryteNames(
+public unsafe class CastBarAetheryteNames(
     IGameInteropProvider GameInteropProvider,
     IAddonLifecycle AddonLifecycle,
     IClientState ClientState,
     ExcelService ExcelService,
     TextService TextService)
-    : ITweak, IDisposable
+    : ITweak
 {
+    public string InternalName => nameof(CastBarAetheryteNames);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private TeleportInfo? TeleportInfo;
     private bool IsCastingTeleport;
 
     private Hook<HaselActionManager.Delegates.OpenCastBar>? OpenCastBarHook;
     private Hook<Telepo.Delegates.Teleport>? TeleportHook;
-
-    public string InternalName => nameof(CastBarAetheryteNames);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()
     {
@@ -64,11 +64,17 @@ public sealed unsafe partial class CastBarAetheryteNames(
         TeleportHook?.Disable();
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
+        if (Status == TweakStatus.Disposed)
+            return;
+
         OnDisable();
         OpenCastBarHook?.Dispose();
         TeleportHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void OnTerritoryChanged(ushort id)

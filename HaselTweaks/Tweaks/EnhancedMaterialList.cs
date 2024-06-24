@@ -13,6 +13,8 @@ using HaselCommon.Services;
 using HaselCommon.SheetLookup;
 using HaselCommon.Sheets;
 using HaselTweaks.Config;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 using Lumina.Text;
@@ -23,39 +25,9 @@ using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class EnhancedMaterialListConfiguration
-{
-    [BoolConfig]
-    public bool EnableZoneNames = true;
-
-    [BoolConfig(DependsOn = nameof(EnableZoneNames))]
-    public bool DisableZoneNameForCrystals = true;
-
-    [BoolConfig]
-    public bool ClickToOpenMap = true;
-
-    [BoolConfig(DependsOn = nameof(ClickToOpenMap))]
-    public bool DisableClickToOpenMapForCrystals = true;
-
-    [BoolConfig]
-    public bool AutoRefreshMaterialList = true;
-
-    [BoolConfig]
-    public bool AutoRefreshRecipeTree = true;
-
-    [BoolConfig]
-    public bool RestoreMaterialList = true;
-
-    public uint RestoreMaterialListRecipeId = 0;
-    public uint RestoreMaterialListAmount = 0;
-
-    [BoolConfig]
-    public bool AddSearchForItemByCraftingMethodContextMenuEntry = true; // yep, i spelled it out
-}
-
-public sealed unsafe class EnhancedMaterialList(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class EnhancedMaterialList(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
     ILogger<EnhancedMaterialList> Logger,
     IGameInteropProvider GameInteropProvider,
     IAddonLifecycle AddonLifecycle,
@@ -64,8 +36,11 @@ public sealed unsafe class EnhancedMaterialList(
     IGameInventory GameInventory,
     AddonObserver AddonObserver,
     ExcelService ExcelService)
-    : Tweak<EnhancedMaterialListConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(EnhancedMaterialList);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private bool _canRefreshMaterialList;
     private bool _pendingMaterialListRefresh;
     private DateTime _timeOfMaterialListRefresh;
@@ -76,28 +51,12 @@ public sealed unsafe class EnhancedMaterialList(
     private DateTime _timeOfRecipeTreeRefresh;
     private bool _handleRecipeResultItemContextMenu;
 
-    public override void OnConfigChange(string fieldName)
-    {
-        if (fieldName is nameof(Config.EnableZoneNames)
-                      or nameof(Config.DisableZoneNameForCrystals)
-                      or nameof(Config.DisableClickToOpenMapForCrystals))
-        {
-            _pendingMaterialListRefresh = true;
-            _timeOfMaterialListRefresh = DateTime.UtcNow;
-        }
-
-        if (fieldName is nameof(Config.RestoreMaterialList))
-        {
-            SaveRestoreMaterialList(AgentRecipeMaterialList.Instance());
-        }
-    }
-
     private Hook<AgentRecipeMaterialList.Delegates.ReceiveEvent>? AgentRecipeMaterialListReceiveEventHook;
     private Hook<AddonRecipeMaterialList.Delegates.SetupRow>? AddonRecipeMaterialListSetupRowHook;
     private Hook<AgentRecipeMaterialList.Delegates.OpenRecipeResultItemContextMenu>? OpenRecipeResultItemContextMenuHook;
     private Hook<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>? AddItemContextMenuEntriesHook;
 
-    public override void OnInitialize()
+    public void OnInitialize()
     {
         AgentRecipeMaterialListReceiveEventHook = GameInteropProvider.HookFromAddress<AgentRecipeMaterialList.Delegates.ReceiveEvent>(
             AgentRecipeMaterialList.StaticVirtualTablePointer->ReceiveEvent,
@@ -116,7 +75,7 @@ public sealed unsafe class EnhancedMaterialList(
             AddItemContextMenuEntriesDetour);
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
         AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList", RecipeMaterialList_PostReceiveEvent);
         AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "RecipeTree", RecipeTree_PostReceiveEvent);
@@ -132,7 +91,7 @@ public sealed unsafe class EnhancedMaterialList(
         AddItemContextMenuEntriesHook?.Enable();
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList", RecipeMaterialList_PostReceiveEvent);
         AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeTree", RecipeTree_PostReceiveEvent);
@@ -146,6 +105,21 @@ public sealed unsafe class EnhancedMaterialList(
         AddonRecipeMaterialListSetupRowHook?.Disable();
         OpenRecipeResultItemContextMenuHook?.Disable();
         AddItemContextMenuEntriesHook?.Disable();
+    }
+
+    public void Dispose()
+    {
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        OnDisable();
+        AgentRecipeMaterialListReceiveEventHook?.Dispose();
+        AddonRecipeMaterialListSetupRowHook?.Dispose();
+        OpenRecipeResultItemContextMenuHook?.Dispose();
+        AddItemContextMenuEntriesHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void OnAddonOpen(string addonName)

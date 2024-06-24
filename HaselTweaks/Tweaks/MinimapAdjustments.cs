@@ -4,44 +4,10 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
-
-public sealed class MinimapAdjustmentsConfiguration
-{
-    [BoolConfig]
-    public bool Square = false;
-
-    [FloatConfig(Max = 1, DefaultValue = 0.8f)]
-    public float DefaultOpacity = 0.8f;
-
-    [FloatConfig(Max = 1, DefaultValue = 1)]
-    public float HoverOpacity = 1f;
-
-    [BoolConfig]
-    public bool HideCoords = true;
-
-    [BoolConfig(DependsOn = nameof(HideCoords))]
-    public bool CoordsVisibleOnHover = true;
-
-    [BoolConfig]
-    public bool HideWeather = true;
-
-    [BoolConfig(DependsOn = nameof(HideWeather))]
-    public bool WeatherVisibleOnHover = true;
-
-    [BoolConfig]
-    public bool HideSun = false;
-
-    [BoolConfig(DependsOn = nameof(HideSun))]
-    public bool SunVisibleOnHover = true;
-
-    [BoolConfig]
-    public bool HideCardinalDirections = false;
-
-    [BoolConfig(DependsOn = nameof(HideCardinalDirections))]
-    public bool CardinalDirectionsVisibleOnHover = true;
-}
 
 public unsafe struct NaviMap
 {
@@ -59,17 +25,22 @@ public unsafe struct NaviMap
     public AtkResNode* CardinalDirections => GetNode(8);
 }
 
-public sealed unsafe class MinimapAdjustments(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class MinimapAdjustments(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
     IFramework Framework,
     IClientState ClientState)
-    : Tweak<MinimapAdjustmentsConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(MinimapAdjustments);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private bool? HoverState;
     private float TargetAlpha;
 
-    public override void OnEnable()
+    public void OnInitialize() { }
+
+    public void OnEnable()
     {
         HoverState = null;
         TargetAlpha = Config.DefaultOpacity;
@@ -77,7 +48,7 @@ public sealed unsafe class MinimapAdjustments(
         Framework.Update += OnFrameworkUpdate;
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         Framework.Update -= OnFrameworkUpdate;
 
@@ -97,26 +68,15 @@ public sealed unsafe class MinimapAdjustments(
         naviMap->Collision->DrawFlags |= 1 << 23;
     }
 
-    public override void OnConfigChange(string fieldName)
+    void IDisposable.Dispose()
     {
-        if (fieldName is nameof(Config.HideCoords)
-                      or nameof(Config.HideWeather)
-                      or nameof(Config.HideSun)
-                      or nameof(Config.HideCardinalDirections))
-        {
-            if (!TryGetAddon<NaviMap>("_NaviMap", out var naviMap))
-                return;
+        if (Status == TweakStatus.Disposed)
+            return;
 
-            naviMap->Coords->ToggleVisibility(!Config.HideCoords);
-            naviMap->Weather->ToggleVisibility(!Config.HideWeather);
-            naviMap->Sun->ToggleVisibility(!Config.HideSun);
-            naviMap->CardinalDirections->ToggleVisibility(!Config.HideCardinalDirections);
-        }
+        OnDisable();
 
-        if (fieldName is nameof(Config.DefaultOpacity))
-        {
-            TargetAlpha = Config.DefaultOpacity;
-        }
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void OnFrameworkUpdate(IFramework framework)

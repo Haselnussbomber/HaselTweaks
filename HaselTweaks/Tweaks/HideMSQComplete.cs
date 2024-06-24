@@ -8,7 +8,7 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed unsafe class HideMSQComplete(IAddonLifecycle AddonLifecycle) : ITweak
+public unsafe class HideMSQComplete(IAddonLifecycle AddonLifecycle) : ITweak
 {
     public string InternalName => nameof(HideMSQComplete);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;

@@ -46,6 +46,7 @@ public sealed class Plugin : IDalamudPlugin
             .AddSingleton<PluginWindow>()
             .AddSingleton<BannerUtils>()
             .AddIServices<ITweak>()
+            .AddSingleton<ConfigGui>()
 
             // AetherCurrentHelper
             .AddSingleton<EObjDataIdCache>()

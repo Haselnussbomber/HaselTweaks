@@ -3,26 +3,24 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.System.Scheduler;
 using FFXIVClientStructs.FFXIV.Client.System.Scheduler.Base;
 using HaselCommon.Extensions;
-using HaselCommon.Services;
 using HaselTweaks.Config;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class ForcedCutsceneMusicConfiguration
-{
-    [BoolConfig]
-    public bool Restore = true;
-}
-
-public sealed unsafe class ForcedCutsceneMusic(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class ForcedCutsceneMusic(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
     ILogger<ForcedCutsceneMusic> Logger,
     IGameInteropProvider GameInteropProvider,
     IGameConfig GameConfig)
-    : Tweak<ForcedCutsceneMusicConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(ForcedCutsceneMusic);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private bool _wasBgmMuted;
 
     private delegate void CutSceneControllerDtorDelegate(CutSceneController* self, bool free);
@@ -30,7 +28,7 @@ public sealed unsafe class ForcedCutsceneMusic(
     private Hook<ScheduleManagement.Delegates.CreateCutSceneController>? CreateCutSceneControllerHook;
     private Hook<CutSceneControllerDtorDelegate>? CutSceneControllerDtorHook;
 
-    public override void OnInitialize()
+    public void OnInitialize()
     {
         CreateCutSceneControllerHook = GameInteropProvider.HookFromAddress<ScheduleManagement.Delegates.CreateCutSceneController>(
             ScheduleManagement.MemberFunctionPointers.CreateCutSceneController,
@@ -41,16 +39,29 @@ public sealed unsafe class ForcedCutsceneMusic(
             CutSceneControllerDtorDetour);
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
         CreateCutSceneControllerHook?.Enable();
         CutSceneControllerDtorHook?.Enable();
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         CreateCutSceneControllerHook?.Disable();
         CutSceneControllerDtorHook?.Disable();
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        OnDisable();
+        CreateCutSceneControllerHook?.Dispose();
+        CutSceneControllerDtorHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private bool IsBgmMuted

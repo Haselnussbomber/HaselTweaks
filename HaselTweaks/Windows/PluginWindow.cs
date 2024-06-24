@@ -33,14 +33,12 @@ public partial class PluginWindow : SimpleWindow, IDisposable
     private readonly TextService TextService;
     private readonly ICommandManager CommandManager;
     private readonly TweakManager TweakManager;
-    private readonly TextureManager TextureManager;
     private readonly ITweak[] Tweaks;
     private readonly CommandInfo CommandInfo;
     private readonly IDalamudTextureWrap? LogoTextureWrap;
     private readonly Point _logoSize = new(425, 132);
 
     private ITweak? SelectedTweak;
-    private (IncompatibilityWarningAttribute Entry, bool IsLoaded)[]? IncompatibilityWarnings;
 
 #if !DEBUG
     [GeneratedRegex("\\.0$")]
@@ -54,7 +52,6 @@ public partial class PluginWindow : SimpleWindow, IDisposable
         IPluginLog pluginLog,
         ICommandManager commandManager,
         TweakManager tweakManager,
-        TextureManager textureManager,
         IEnumerable<ITweak> tweaks)
         : base(windowManager, "HaselTweaks")
     {
@@ -62,7 +59,6 @@ public partial class PluginWindow : SimpleWindow, IDisposable
         TextService = textService;
         CommandManager = commandManager;
         TweakManager = tweakManager;
-        TextureManager = textureManager;
         Tweaks = tweaks.ToArray();
 
         var width = SidebarWidth * 3 + ImGui.GetStyle().ItemSpacing.X + ImGui.GetStyle().FramePadding.X * 2;
@@ -122,7 +118,6 @@ public partial class PluginWindow : SimpleWindow, IDisposable
     public override void OnClose()
     {
         SelectedTweak = null;
-        IncompatibilityWarnings = null;
 
         foreach (var tweak in Tweaks.Where(tweak => tweak.Status == TweakStatus.Enabled))
         {
@@ -242,8 +237,6 @@ public partial class PluginWindow : SimpleWindow, IDisposable
                 if (SelectedTweak is IConfigurableTweak configurableTweak)
                     configurableTweak.OnConfigClose();
 
-                IncompatibilityWarnings = null;
-
                 if (SelectedTweak == null || SelectedTweak.InternalName != tweak.InternalName)
                 {
                     SelectedTweak = Tweaks.FirstOrDefault(t => t.InternalName == tweak.InternalName);
@@ -331,80 +324,12 @@ public partial class PluginWindow : SimpleWindow, IDisposable
         if (TextService.TryGetTranslation(SelectedTweak.InternalName + ".Tweak.Description", out var description))
         {
             ImGuiUtils.DrawPaddedSeparator();
+            ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);
             ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, description);
+            ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);
         }
-
-        DrawIncompatibilityWarnings();
 
         if (SelectedTweak is IConfigurableTweak configurableTweak)
             configurableTweak.DrawConfig();
-    }
-
-    private void DrawIncompatibilityWarnings()
-    {
-        IncompatibilityWarnings ??= SelectedTweak!.GetType().GetCustomAttributes<IncompatibilityWarningAttribute>()
-            .Select(iw => (Entry: iw, IsLoaded: PluginInterface.InstalledPlugins.Any(p => p.InternalName == iw.InternalName && p.IsLoaded)))
-            .ToArray();
-
-        if (IncompatibilityWarnings.Any(tuple => tuple.IsLoaded))
-        {
-            ImGuiUtils.DrawSection(TextService.Translate("HaselTweaks.Config.SectionTitle.IncompatibilityWarning"));
-            TextureManager.GetIcon(60073).Draw(24);
-            ImGui.SameLine();
-            var cursorPosX = ImGui.GetCursorPosX();
-
-            string getConfigName(string tweakName, string configName)
-                => TextService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{tweakName}.Config.{configName}");
-
-            if (IncompatibilityWarnings.Length == 1)
-            {
-                var (entry, isLoaded) = IncompatibilityWarnings[0];
-                var pluginName = TextService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Name");
-
-                if (isLoaded)
-                {
-                    if (entry.ConfigNames.Length == 0)
-                    {
-                        TextService.DrawWrapped(Colors.Grey2, "HaselTweaks.Config.IncompatibilityWarning.Single.Plugin", pluginName);
-                    }
-                    else if (entry.ConfigNames.Length == 1)
-                    {
-                        var configName = getConfigName(entry.InternalName, entry.ConfigNames[0]);
-                        TextService.DrawWrapped(Colors.Grey2, "HaselTweaks.Config.IncompatibilityWarning.Single.PluginSetting", configName, pluginName);
-                    }
-                    else if (entry.ConfigNames.Length > 1)
-                    {
-                        var configNames = entry.ConfigNames.Select((configName) => TextService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Config.{configName}"));
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, TextService.Translate("HaselTweaks.Config.IncompatibilityWarning.Single.PluginSettings", pluginName) + $"\n- {string.Join("\n- ", configNames)}");
-                    }
-                }
-            }
-            else if (IncompatibilityWarnings.Length > 1)
-            {
-                TextService.DrawWrapped(Colors.Grey2, "HaselTweaks.Config.IncompatibilityWarning.Multi.Preface");
-
-                foreach (var (entry, isLoaded) in IncompatibilityWarnings.Where(tuple => tuple.IsLoaded))
-                {
-                    var pluginName = TextService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Name");
-
-                    ImGui.SetCursorPosX(cursorPosX);
-
-                    if (entry.ConfigNames.Length == 0)
-                    {
-                        TextService.DrawWrapped(Colors.Grey2, "HaselTweaks.Config.IncompatibilityWarning.Multi.Plugin", pluginName);
-                    }
-                    else if (entry.ConfigNames.Length == 1)
-                    {
-                        var configName = TextService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Config.{entry.ConfigNames[0]}");
-                        TextService.DrawWrapped(Colors.Grey2, "HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSetting", configName, pluginName);
-                    }
-                    else if (entry.ConfigNames.Length > 1)
-                    {
-                        var configNames = entry.ConfigNames.Select((configName) => TextService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Config.{configName}"));
-                        ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, TextService.Translate("HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSettings", pluginName) + $"\n    - {string.Join("\n    - ", configNames)}");
-                    }
-                }
-            }
-        }
     }
 }

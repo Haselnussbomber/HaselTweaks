@@ -10,35 +10,35 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using FFXIVClientStructs.Interop;
-using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-public class InventoryHighlightConfiguration
-{
-    [BoolConfig]
-    public bool IgnoreQuality = true;
-}
-
-public sealed unsafe class InventoryHighlight(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class InventoryHighlight(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
     IFramework Framework,
     IClientState ClientState,
     IGameConfig GameConfig,
     IGameGui GameGui,
     IKeyState KeyState,
     IAddonLifecycle AddonLifecycle)
-    : Tweak<InventoryHighlightConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(InventoryHighlight);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private uint ItemInventryWindowSizeType = 0;
     private uint ItemInventryRetainerWindowSizeType = 0;
     private uint HoveredItemId;
     private bool WasHighlighting;
 
-    public override void OnEnable()
+    public void OnInitialize() { }
+
+    public void OnEnable()
     {
         Framework.Update += OnFrameworkUpdate;
         ClientState.Login += UpdateItemInventryWindowSizeTypes;
@@ -48,7 +48,7 @@ public sealed unsafe class InventoryHighlight(
         UpdateItemInventryWindowSizeTypes();
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         Framework.Update -= OnFrameworkUpdate;
         ClientState.Login -= UpdateItemInventryWindowSizeTypes;
@@ -56,6 +56,17 @@ public sealed unsafe class InventoryHighlight(
 
         AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemDetail", OnItemDetailPostRequestedUpdate);
         ResetGrids();
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void GameConfig_UiConfigChanged(object? sender, ConfigChangeEvent evt)

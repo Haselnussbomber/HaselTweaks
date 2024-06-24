@@ -12,35 +12,27 @@ using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class CharacterClassSwitcherConfiguration
-{
-    [BoolConfig]
-    public bool DisableTooltips = false;
-
-    [BoolConfig]
-    public bool AlwaysOpenOnClassesJobsTab = false;
-
-    [EnumConfig(DependsOn = nameof(AlwaysOpenOnClassesJobsTab))]
-    public ClassesJobsSubTabs ForceClassesJobsSubTab = ClassesJobsSubTabs.None;
-}
-
-[IncompatibilityWarning("SimpleTweaksPlugin", "CharacterWindowJobSwitcher")]
-public sealed unsafe class CharacterClassSwitcher(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class CharacterClassSwitcher(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
+    TextService TextService,
     ILogger<CharacterClassSwitcher> Logger,
     IGameInteropProvider GameInteropProvider,
     IAddonLifecycle AddonLifecycle,
     IKeyState KeyState,
     IChatGui ChatGui,
     GamepadService GamepadService)
-    : Tweak<CharacterClassSwitcherConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(CharacterClassSwitcher);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private const int NumClasses = 31;
 
     private MemoryReplacement? TooltipPatch;
@@ -75,7 +67,7 @@ public sealed unsafe class CharacterClassSwitcher(
     private Hook<AddonPvPCharacter.Delegates.ReceiveEvent>? AddonPvPCharacterReceiveEventHook;
     private Hook<AgentStatus.Delegates.Show>? AgentStatusShowHook;
 
-    public override void OnInitialize()
+    public void OnInitialize()
     {
         AddonCharacterClassOnSetupHook = GameInteropProvider.HookFromAddress<AddonCharacterClass.Delegates.OnSetup>(
             AddonCharacterClass.StaticVirtualTablePointer->OnSetup,
@@ -102,7 +94,7 @@ public sealed unsafe class CharacterClassSwitcher(
             AgentStatusShowDetour);
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
         TooltipPatch = new(TooltipAddress + 8, [0xEB]);
         PvpTooltipPatch = new(PvPTooltipAddress, [0xEB, 0x63]);
@@ -123,7 +115,7 @@ public sealed unsafe class CharacterClassSwitcher(
         AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "AddonPvPCharacter", AddonPvPCharacterOnSetup);
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         TooltipPatch?.Disable();
         PvpTooltipPatch?.Disable();
@@ -138,18 +130,21 @@ public sealed unsafe class CharacterClassSwitcher(
         AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "AddonPvPCharacter", AddonPvPCharacterOnSetup);
     }
 
-    public override void OnConfigChange(string fieldName)
+    void IDisposable.Dispose()
     {
-        if (Config.DisableTooltips)
-        {
-            TooltipPatch?.Enable();
-            PvpTooltipPatch?.Enable();
-        }
-        else
-        {
-            TooltipPatch?.Disable();
-            PvpTooltipPatch?.Disable();
-        }
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        OnDisable();
+        AddonCharacterClassOnSetupHook?.Dispose();
+        AddonCharacterClassOnRequestedUpdateHook?.Dispose();
+        AddonCharacterClassReceiveEventHook?.Dispose();
+        AddonPvPCharacterUpdateClassesHook?.Dispose();
+        AddonPvPCharacterReceiveEventHook?.Dispose();
+        AgentStatusShowHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private static bool IsCrafter(int id)

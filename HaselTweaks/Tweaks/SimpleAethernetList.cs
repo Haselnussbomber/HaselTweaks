@@ -8,12 +8,12 @@ using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider) : ITweak
+public unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider) : ITweak
 {
-    private Hook<AddonTeleportTown.Delegates.ReceiveEvent>? ReceiveEventHook;
-
     public string InternalName => nameof(SimpleAethernetList);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    private Hook<AddonTeleportTown.Delegates.ReceiveEvent>? ReceiveEventHook;
 
     public void OnInitialize()
     {

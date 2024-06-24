@@ -25,11 +25,11 @@ public unsafe class AutoOpenRecipe(
     IGameInventory GameInventory)
     : ITweak
 {
-    private CancellationTokenSource? CheckCTS;
-    private DateTime LastTimeRecipeOpened = DateTime.MinValue;
-
     public string InternalName => nameof(AutoOpenRecipe);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    private CancellationTokenSource? CheckCTS;
+    private DateTime LastTimeRecipeOpened = DateTime.MinValue;
 
     public void OnInitialize() { }
 
@@ -47,7 +47,13 @@ public unsafe class AutoOpenRecipe(
 
     public void Dispose()
     {
+        if (Status == TweakStatus.Disposed)
+            return;
+
         OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void GameInventory_ItemAddedExplicit(InventoryItemAddedArgs data)

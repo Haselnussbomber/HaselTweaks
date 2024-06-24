@@ -6,7 +6,7 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class RevealDutyRequirements(IGameInteropProvider GameInteropProvider) : ITweak
+public class RevealDutyRequirements(IGameInteropProvider GameInteropProvider) : ITweak
 {
     public string InternalName => nameof(RevealDutyRequirements);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;

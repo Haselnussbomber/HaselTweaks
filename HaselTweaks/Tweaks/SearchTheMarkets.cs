@@ -10,16 +10,16 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed unsafe class SearchTheMarkets(
+public unsafe class SearchTheMarkets(
     IContextMenu ContextMenu,
     TextService TextService,
     ExcelService ExcelService) : ITweak
 {
-    private MenuItem? MenuItem;
-    private ExtendedItem? Item;
-
     public string InternalName => nameof(SearchTheMarkets);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    private MenuItem? MenuItem;
+    private ExtendedItem? Item;
 
     public void OnInitialize() { }
 
