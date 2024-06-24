@@ -193,7 +193,7 @@ public unsafe class MenuBar : SimpleWindow
         {
             CloseOverlays();
             AdvancedImportOverlay ??= ServiceScope!.ServiceProvider.GetRequiredService<AdvancedImportOverlay>();
-            AdvancedImportOverlay.Open();
+            AdvancedImportOverlay.Open(this);
         }
 
         ImGui.SameLine();

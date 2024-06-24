@@ -31,6 +31,12 @@ public unsafe class AdvancedImportOverlay(
 {
     public MenuBar MenuBar { get; internal set; } = null!;
 
+    public void Open(MenuBar menuBar)
+    {
+        MenuBar = menuBar;
+        Open();
+    }
+
     public override void Draw()
     {
         base.Draw();
