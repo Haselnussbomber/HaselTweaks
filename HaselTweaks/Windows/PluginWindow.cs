@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -35,7 +34,6 @@ public partial class PluginWindow : SimpleWindow, IDisposable
     private readonly TweakManager TweakManager;
     private readonly ITweak[] Tweaks;
     private readonly CommandInfo CommandInfo;
-    private readonly Point _logoSize = new(425, 132);
 
     private IDalamudTextureWrap? LogoTextureWrap;
     private ITweak? SelectedTweak;
@@ -62,11 +60,10 @@ public partial class PluginWindow : SimpleWindow, IDisposable
         TweakManager = tweakManager;
         Tweaks = tweaks.ToArray();
 
-        var width = SidebarWidth * 3 + ImGui.GetStyle().ItemSpacing.X + ImGui.GetStyle().FramePadding.X * 2;
-        Size = new Vector2(width, 600);
+        Size = new Vector2(766, 600);
         SizeConstraints = new()
         {
-            MinimumSize = new Vector2(width, 600),
+            MinimumSize = new Vector2(766, 600),
             MaximumSize = new Vector2(4096, 2160)
         };
 
@@ -85,7 +82,6 @@ public partial class PluginWindow : SimpleWindow, IDisposable
         {
             HelpMessage = textService.Translate("HaselTweaks.CommandHandlerHelpMessage")
         });
-
     }
 
     public new void Dispose()
@@ -93,7 +89,6 @@ public partial class PluginWindow : SimpleWindow, IDisposable
         PluginInterface.UiBuilder.OpenConfigUi -= Toggle;
         TextService.LanguageChanged -= OnLanguageChanged;
         CommandManager.RemoveHandler("/haseltweaks");
-        LogoTextureWrap?.Dispose();
         base.Dispose();
     }
 
@@ -106,6 +101,13 @@ public partial class PluginWindow : SimpleWindow, IDisposable
     {
         LogoTextureWrap?.Dispose();
         LogoTextureWrap = null;
+
+        Size = new Vector2(SidebarWidth * 3 + ImGui.GetStyle().ItemSpacing.X + ImGui.GetStyle().FramePadding.X * 2, 600);
+        SizeConstraints = new()
+        {
+            MinimumSize = (Vector2)Size,
+            MaximumSize = new Vector2(4096, 2160)
+        };
 
         try
         {
@@ -282,8 +284,8 @@ public partial class PluginWindow : SimpleWindow, IDisposable
             if (LogoTextureWrap != null && LogoTextureWrap.ImGuiHandle != 0)
             {
                 var maxWidth = SidebarWidth * 2 * 0.85f * ImGuiHelpers.GlobalScale;
-                var ratio = maxWidth / _logoSize.X;
-                var scaledLogoSize = new Vector2(_logoSize.X, _logoSize.Y) * ratio;
+                var ratio = maxWidth / 425;
+                var scaledLogoSize = new Vector2(425, 132) * ratio;
 
                 ImGui.SetCursorPos(contentAvail / 2 - scaledLogoSize / 2 + new Vector2(ImGui.GetStyle().ItemSpacing.X, 0));
                 ImGui.Image(LogoTextureWrap.ImGuiHandle, scaledLogoSize);
