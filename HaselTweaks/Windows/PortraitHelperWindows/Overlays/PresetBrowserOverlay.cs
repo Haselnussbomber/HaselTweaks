@@ -79,6 +79,12 @@ public unsafe class PresetBrowserOverlay : Overlay
         };
     }
 
+    public void Open(MenuBar menuBar)
+    {
+        MenuBar = menuBar;
+        Open();
+    }
+
     public override void OnClose()
     {
         PresetCards.Dispose();

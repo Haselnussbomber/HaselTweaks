@@ -246,7 +246,7 @@ public unsafe class MenuBar : SimpleWindow
         {
             CloseOverlays();
             PresetBrowserOverlay ??= ServiceScope!.ServiceProvider.GetRequiredService<PresetBrowserOverlay>();
-            PresetBrowserOverlay.Open();
+            PresetBrowserOverlay.Open(this);
         }
 
         // ----
