@@ -1,5 +1,13 @@
 # Changelog
 
+## [24.0.2] (2024-06-24)
+
+### HaselTweaks
+
+- **Changed:** Completely reworked/simplified the code to draw the configuration.
+- **Fixed:** Starting with v24.0.0 some tweaks didn't correctly unload when unloading the plugin.
+- **Fixed:** Updated Chinese Translations. (Thanks to @cyf5119)
+
 ## [24.0.1] (2024-06-21)
 
 ### Enhanced Isleworks Agenda
@@ -1501,6 +1509,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[24.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.1...v24.0.2
 [24.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.0...v24.0.1
 [24.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v23.0.2...v24.0.0
 [23.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v23.0.1...v23.0.2
