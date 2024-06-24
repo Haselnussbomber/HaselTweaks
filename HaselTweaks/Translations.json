@@ -88,9 +88,6 @@
     "en": "Show Experience Percentage",
     "zh": "显示经验值百分比"
   },
-  "HaselTweaks.Config.TweakStatus.Unknown": {
-    "en": "???",
-  },
   "HaselTweaks.Config.TweakStatus.Outdated": {
     "en": "Outdated",
     "de": "Veraltet",
@@ -169,12 +166,12 @@
   "AchievementLinkTooltip.AchievementComplete": {
     "en": "\u2713 Completed",
     "de": "\u2713 Abgeschlossen",
-    "zh": "\u2713 已完成",
+    "zh": "\u2713 已完成"
   },
   "AchievementLinkTooltip.AchievementUnfinished": {
     "en": "\u2573 Unfinished",
     "de": "\u2573 Nicht abgeschlossen",
-    "zh": "\u2573 未完成",
+    "zh": "\u2573 未完成"
   },
 
   "AetherCurrentHelper.Tweak.Name": {
