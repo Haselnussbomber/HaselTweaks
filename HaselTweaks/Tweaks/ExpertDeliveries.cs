@@ -42,6 +42,6 @@ public sealed unsafe class ExpertDeliveries(AddonObserver AddonObserver) : ITwea
             return;
 
         var atkEvent = new AtkEvent();
-        addon->ReceiveEvent(AtkEventType.ButtonClick, 4, &atkEvent, 0);
+        addon->ReceiveEvent(AtkEventType.ButtonClick, 4, &atkEvent);
     }
 }

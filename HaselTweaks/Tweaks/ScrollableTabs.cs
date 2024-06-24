@@ -581,8 +581,8 @@ public sealed unsafe class ScrollableTabs(
             if (addon->CurrentPageIndex > 0)
             {
                 var page = addon->CurrentPageIndex - 1;
-                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, &atkEvent, 0);
-                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 9, &atkEvent, 0);
+                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, &atkEvent);
+                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 9, &atkEvent);
             }
         }
         else if (eventParam == 10)
@@ -590,12 +590,12 @@ public sealed unsafe class ScrollableTabs(
             if (addon->CurrentPageIndex < 4)
             {
                 var page = addon->CurrentPageIndex + 1;
-                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, &atkEvent, 0);
+                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, &atkEvent);
             }
         }
         else
         {
-            addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, eventParam, &atkEvent, 0);
+            addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, eventParam, &atkEvent);
         }
     }
 
@@ -787,10 +787,8 @@ public sealed unsafe class ScrollableTabs(
             return;
 
         var atkEvent = new AtkEvent();
-        var data = stackalloc int[5];
-        for (var i = 0; i < 5; i++)
-            data[i] = 0;
-        data[4] = tabIndex; // technically the index of an id array, but it's literally the same value
-        addon->AtkUnitBase.ReceiveEvent((AtkEventType)37, 0, &atkEvent, (nint)data);
+        var data = new AtkEventData();
+        data.ListItemData.SelectedIndex = tabIndex; // technically the index of an id array, but it's literally the same value
+        addon->AtkUnitBase.ReceiveEvent((AtkEventType)37, 0, &atkEvent, &data);
     }
 }

@@ -270,7 +270,7 @@ public sealed unsafe class EnhancedMaterialList(
 
         Logger.LogInformation("Refreshing RecipeMaterialList");
         var atkEvent = new AtkEvent();
-        recipeMaterialList->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 1, &atkEvent, 0);
+        recipeMaterialList->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 1, &atkEvent);
     }
 
     private void RefreshRecipeTree()
@@ -282,7 +282,7 @@ public sealed unsafe class EnhancedMaterialList(
 
         Logger.LogInformation("Refreshing RecipeTree");
         var atkEvent = new AtkEvent();
-        recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, &atkEvent, 0);
+        recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, &atkEvent);
     }
 
     private AtkValue* AgentRecipeMaterialListReceiveEventDetour(AgentRecipeMaterialList* agent, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
