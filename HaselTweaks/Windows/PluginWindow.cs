@@ -14,7 +14,6 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using HaselCommon.Services;
-using HaselCommon.Textures;
 using HaselCommon.Utils;
 using HaselCommon.Windowing;
 using HaselCommon.Windowing.Interfaces;
@@ -31,13 +30,14 @@ public partial class PluginWindow : SimpleWindow, IDisposable
 
     private readonly DalamudPluginInterface PluginInterface;
     private readonly TextService TextService;
+    private readonly IPluginLog PluginLog;
     private readonly ICommandManager CommandManager;
     private readonly TweakManager TweakManager;
     private readonly ITweak[] Tweaks;
     private readonly CommandInfo CommandInfo;
-    private readonly IDalamudTextureWrap? LogoTextureWrap;
     private readonly Point _logoSize = new(425, 132);
 
+    private IDalamudTextureWrap? LogoTextureWrap;
     private ITweak? SelectedTweak;
 
 #if !DEBUG
@@ -57,6 +57,7 @@ public partial class PluginWindow : SimpleWindow, IDisposable
     {
         PluginInterface = pluginInterface;
         TextService = textService;
+        PluginLog = pluginLog;
         CommandManager = commandManager;
         TweakManager = tweakManager;
         Tweaks = tweaks.ToArray();
@@ -85,20 +86,6 @@ public partial class PluginWindow : SimpleWindow, IDisposable
             HelpMessage = textService.Translate("HaselTweaks.CommandHandlerHelpMessage")
         });
 
-        try
-        {
-            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(LogoManifestResource)
-                ?? throw new Exception($"ManifestResource \"{LogoManifestResource}\" not found");
-
-            using var ms = new MemoryStream();
-            stream.CopyTo(ms);
-
-            LogoTextureWrap = pluginInterface.UiBuilder.LoadImage(ms.ToArray());
-        }
-        catch (Exception ex)
-        {
-            pluginLog.Error(ex, "Error loading logo");
-        }
     }
 
     public new void Dispose()
@@ -115,9 +102,33 @@ public partial class PluginWindow : SimpleWindow, IDisposable
         CommandInfo.HelpMessage = TextService.Translate("HaselTweaks.CommandHandlerHelpMessage");
     }
 
+    public override void OnOpen()
+    {
+        LogoTextureWrap?.Dispose();
+        LogoTextureWrap = null;
+
+        try
+        {
+            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(LogoManifestResource)
+                ?? throw new Exception($"ManifestResource \"{LogoManifestResource}\" not found");
+
+            using var ms = new MemoryStream();
+            stream.CopyTo(ms);
+
+            LogoTextureWrap = PluginInterface.UiBuilder.LoadImage(ms.ToArray());
+        }
+        catch (Exception ex)
+        {
+            PluginLog.Error(ex, "Error loading logo");
+        }
+    }
+
     public override void OnClose()
     {
         SelectedTweak = null;
+
+        LogoTextureWrap?.Dispose();
+        LogoTextureWrap = null;
 
         foreach (var tweak in Tweaks.Where(tweak => tweak.Status == TweakStatus.Enabled))
         {
