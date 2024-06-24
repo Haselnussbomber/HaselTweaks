@@ -1,25 +1,73 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Hooking;
+using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Info;
-using HaselTweaks.Structs.Addons;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe partial class SaferItemSearch : Tweak
+public sealed unsafe class SaferItemSearch(IGameInteropProvider GameInteropProvider, IAddonLifecycle AddonLifecycle) : ITweak
 {
     private bool _isSearching;
 
-    public override void Enable()
+    private Hook<InfoProxyItemSearch.Delegates.ProcessRequestResult>? ProcessRequestResultHook;
+    private Hook<InfoProxyItemSearch.Delegates.EndRequest>? EndRequestHook;
+    private Hook<InfoProxyItemSearch.Delegates.AddPage>? AddPageHook;
+
+    public string InternalName => nameof(SaferItemSearch);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    public void OnInitialize()
     {
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "ItemSearch", ItemSearch_PostRequestedUpdate);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerSell", RetainerSell_PostSetup);
+        ProcessRequestResultHook = GameInteropProvider.HookFromAddress<InfoProxyItemSearch.Delegates.ProcessRequestResult>(
+            InfoProxyItemSearch.MemberFunctionPointers.ProcessRequestResult,
+            ProcessRequestResultDetour);
+
+        EndRequestHook = GameInteropProvider.HookFromAddress<InfoProxyItemSearch.Delegates.EndRequest>(
+            InfoProxyItemSearch.StaticVirtualTablePointer->EndRequest,
+            EndRequestDetour);
+
+        AddPageHook = GameInteropProvider.HookFromAddress<InfoProxyItemSearch.Delegates.AddPage>(
+            InfoProxyItemSearch.StaticVirtualTablePointer->AddPage,
+            AddPageDetour);
     }
 
-    public override void Disable()
+    public void OnEnable()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemSearch", ItemSearch_PostRequestedUpdate);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "RetainerSell", RetainerSell_PostSetup);
+        AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "ItemSearch", ItemSearch_PostRequestedUpdate);
+        AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerSell", RetainerSell_PostSetup);
+
+        ProcessRequestResultHook?.Enable();
+        EndRequestHook?.Enable();
+        AddPageHook?.Enable();
+    }
+
+    public void OnDisable()
+    {
+        AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemSearch", ItemSearch_PostRequestedUpdate);
+        AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "RetainerSell", RetainerSell_PostSetup);
+
+        ProcessRequestResultHook?.Disable();
+        EndRequestHook?.Disable();
+        AddPageHook?.Disable();
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        OnDisable();
+
+        ProcessRequestResultHook?.Dispose();
+        EndRequestHook?.Dispose();
+        AddPageHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void ItemSearch_PostRequestedUpdate(AddonEvent type, AddonArgs args)
@@ -28,9 +76,9 @@ public unsafe partial class SaferItemSearch : Tweak
         if (addon == null)
             return;
 
-        for (var i = 0; i < addon->SearchResultsList->GetItemCount(); i++)
+        for (var i = 0; i < addon->ResultsList->GetItemCount(); i++)
         {
-            addon->SearchResultsList->SetItemDisabledState(i, _isSearching);
+            addon->ResultsList->SetItemDisabledState(i, _isSearching);
         }
     }
 
@@ -47,36 +95,33 @@ public unsafe partial class SaferItemSearch : Tweak
         if (addon == null)
             return;
 
-        addon->CheckMarketPriceButton->AtkComponentBase.SetEnabledState(!_isSearching);
+        addon->ComparePrices->AtkComponentBase.SetEnabledState(!_isSearching);
     }
 
-    [AddressHook<InfoProxyItemSearch>(nameof(InfoProxyItemSearch.Addresses.ProcessRequestResult))]
-    public void InfoProxyItemSearch_ProcessRequestResult(InfoProxyItemSearch* ipis, uint itemId, nint a3, nint a4, int a5, byte listingCount, int code)
+    private nint ProcessRequestResultDetour(InfoProxyItemSearch* ipis, nint a2, nint a3, nint a4, int a5, byte a6, int a7)
     {
         _isSearching = true;
 
         UpdateRetainerSellButton();
 
-        InfoProxyItemSearch_ProcessRequestResultHook.OriginalDisposeSafe(ipis, itemId, a3, a4, a5, listingCount, code);
+        return ProcessRequestResultHook!.Original(ipis, a2, a3, a4, a5, a6, a7);
     }
 
-    [VTableHook<InfoProxyItemSearch>(6)]
-    public void InfoProxyItemSearch_EndRequest(InfoProxyItemSearch* ipis)
+    private void EndRequestDetour(InfoProxyItemSearch* ipis)
     {
         _isSearching = false;
 
         UpdateRetainerSellButton();
 
-        InfoProxyItemSearch_EndRequestHook.OriginalDisposeSafe(ipis);
+        EndRequestHook!.Original(ipis);
     }
 
-    [VTableHook<InfoProxyItemSearch>(12)]
-    public void InfoProxyItemSearch_AddPage(InfoProxyItemSearch* ipis, nint data)
+    private void AddPageDetour(InfoProxyItemSearch* ipis, nint data)
     {
         _isSearching = true;
 
         UpdateRetainerSellButton();
 
-        InfoProxyItemSearch_AddPageHook.OriginalDisposeSafe(ipis, data);
+        AddPageHook!.Original(ipis, data);
     }
 }

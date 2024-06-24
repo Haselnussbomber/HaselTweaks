@@ -133,6 +133,42 @@
     "zh": "聚焦窗口并按住Shift以删除"
   },
 
+  "AchievementLinkTooltip.Tweak.Name": {
+    "en": "Achievement Link Tooltip"
+  },
+  "AchievementLinkTooltip.Tweak.Description": {
+    "en": "Hovering the mouse over an achievement link in the chat will display a small tooltip with the name and description of the achievement so that you don't have to click on the link.",
+    "de": "Wenn man mit der Maus über einen Erfolgslink im Chat fährt, erscheint ein kleiner Tooltip mit dem Namen und der Beschreibung des Erfolgs, so dass man nicht auf den Link klicken muss."
+  },
+  "AchievementLinkTooltip.Config.ShowCompletionStatus.Label": {
+    "en": "Show completion status",
+    "de": "Zeige Abschlussstatus"
+  },
+  "AchievementLinkTooltip.Config.ShowCompletionStatus.Description": {
+    "en": "Will show whether the achievement has been completed or not. This requires the achievement data to be loaded, so you have to open the window once.",
+    "de": "Zeigt an, ob der Erfolg abgeschlossen wurde oder nicht. Dazu müssen die Erfolgsdaten geladen sein, so dass das Fenster einmal geöffnet werden muss. "
+  },
+  "AchievementLinkTooltip.Config.PreventSpoiler.Label": {
+    "en": "Prevent spoilers",
+    "de": "Spoiler verhindern"
+  },
+  "AchievementLinkTooltip.Config.PreventSpoiler.Description": {
+    "en": "If the Achievement is not unlocked and would not be displayed in the game, the name and/or description will also be displayed as ???.",
+    "de": "Wenn der Erfolg nicht abgeschlossen ist und im Spiel nicht angezeigt werden würde, wird der Name und/oder die Beschreibung ebenfalls als ??? angezeigt."
+  },
+  "AchievementLinkTooltip.AchievementsNotLoaded": {
+    "en": "Open the Achievements window to load the completion status.",
+    "de": "Öffne das Errungenschaften-Fenster, um den Abschlussstatus zu laden."
+  },
+  "AchievementLinkTooltip.AchievementComplete": {
+    "en": "\u2713 Completed",
+    "de": "\u2713 Abgeschlossen"
+  },
+  "AchievementLinkTooltip.AchievementUnfinished": {
+    "en": "\u2573 Unfinished",
+    "de": "\u2573 Nicht abgeschlossen"
+  },
+
   "AetherCurrentHelper.Tweak.Name": {
     "en": "Aether Current Helper",
     "zh": "风脉泉助手"
@@ -375,6 +411,15 @@
     "en": "None",
     "de": "Keine Taste",
     "zh": "无"
+  },
+
+  "CastBarAetheryteNames.Tweak.Name": {
+    "en": "Cast Bar Aetheryte Names"
+  },
+  "CastBarAetheryteNames.Tweak.Description": {
+    "__": "Teleport is the name of Action#5",
+    "en": "Replaces the name of the action \"Teleport\" with the Aetheryte name of your destination.",
+    "de": "Ersetzt den Namen des Kommandos \"Teleport\" durch den Namen des Ätheryten, zu dem transportiert wird."
   },
 
   "CharacterClassSwitcher.Tweak.Name": {
@@ -1032,8 +1077,8 @@
     "zh": "在过场动画中强制播放音乐"
   },
   "ForcedCutsceneMusic.Tweak.Description": {
-    "en": "Auto-unmutes background music for most cutscenes.",
-    "de": "Schaltet die Hintergrundmusik für die meisten Zwischensequenzen automatisch an.",
+    "en": "Automatically unmutes background music in cutscenes.",
+    "de": "Schaltet die Hintergrundmusik in Zwischensequenzen automatisch an.",
     "zh": "在大多数过场动画中自动解除背景音乐静音。"
   },
   "ForcedCutsceneMusic.Config.Restore.Label": {
@@ -1254,6 +1299,14 @@
     "en": "Toggle All",
     "de": "Alle umschalten",
     "zh": "开关所有"
+  },
+
+  "MarketBoardItemPreview.Tweak.Name": {
+    "en": "Market Board Item Preview"
+  },
+  "MarketBoardItemPreview.Tweak.Description": {
+    "en": "Automatically try on equipment when you hover over an item in the market board search results.",
+    "de": "Automatische Anprobe von Ausrüstungsgegenständen, wenn der Mauszeiger über einen Gegenstand in den Suchergebnissen des Marktes bewegt wird."
   },
 
   "MaterialAllocation.Tweak.Name": {

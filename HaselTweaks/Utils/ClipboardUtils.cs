@@ -48,7 +48,9 @@ public static class ClipboardUtils
         header->biClrImportant = 0;
 
         var pixelSpan = new Span<Bgra32>((void*)(data + header->biSize), image.Width * image.Height);
-        image.CloneAs<Bgra32>().CopyPixelDataTo(pixelSpan);
+
+        using (var bgra = image.CloneAs<Bgra32>())
+            bgra.CopyPixelDataTo(pixelSpan);
 
         foreach (ref var pixel in pixelSpan)
             pixel.A = 0; // rgbReserved of RGBQUAD "must be zero"
@@ -87,7 +89,9 @@ public static class ClipboardUtils
         bitmapInfo->bV5Reserved = 0;
 
         var pixelSpan = new Span<Bgra32>((void*)(data + bitmapInfo->bV5Size), image.Width * image.Height);
-        image.CloneAs<Bgra32>().CopyPixelDataTo(pixelSpan);
+
+        using (var bgra = image.CloneAs<Bgra32>())
+            bgra.CopyPixelDataTo(pixelSpan);
 
         foreach (ref var pixel in pixelSpan)
             pixel.A = 0; // rgbReserved of RGBQUAD "must be zero"

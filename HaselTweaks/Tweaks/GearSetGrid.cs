@@ -1,9 +1,11 @@
+using Dalamud.Plugin.Services;
 using HaselCommon.Services;
+using HaselTweaks.Config;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
-public class GearSetGridConfiguration
+public sealed class GearSetGridConfiguration
 {
     [BoolConfig]
     public bool AutoOpenWithGearSetList = false;
@@ -21,36 +23,64 @@ public class GearSetGridConfiguration
     public bool DisableSeparatorSpacing = false;
 }
 
-[Tweak]
-public class GearSetGrid : Tweak<GearSetGridConfiguration>
+public sealed class GearSetGrid(
+    PluginConfig pluginConfig,
+    TextService textService,
+    ICommandManager CommandManager,
+    AddonObserver AddonObserver,
+    GearSetGridWindow Window)
+    : Tweak<GearSetGridConfiguration>(pluginConfig, textService)
 {
-    public override void Enable()
+    public override void OnEnable()
     {
+        AddonObserver.AddonOpen += OnAddonOpen;
+        AddonObserver.AddonClose += OnAddonClose;
+
         if (Config.AutoOpenWithGearSetList && IsAddonOpen("GearSetList"))
-            Service.WindowManager.OpenWindow<GearSetGridWindow>();
+            Window.Open();
+
+        if (Config.RegisterCommand)
+            CommandManager.AddHandler("/gsg", new(OnGsgCommand) { HelpMessage = TextService.Translate("GearSetGrid.CommandHandlerHelpMessage") });
     }
 
-    public override void Disable()
+    public override void OnDisable()
     {
-        if (Service.HasService<WindowManager>())
-            Service.WindowManager.CloseWindow<GearSetGridWindow>();
+        AddonObserver.AddonOpen -= OnAddonOpen;
+        AddonObserver.AddonClose -= OnAddonClose;
+
+        Window.Close();
+
+        CommandManager.RemoveHandler("/gsg");
     }
 
-    public override void OnAddonOpen(string addonName)
+    public override void OnConfigChange(string fieldName)
+    {
+        if (fieldName == "RegisterCommand")
+        {
+            if (Config.RegisterCommand)
+                CommandManager.AddHandler("/gsg", new(OnGsgCommand) { HelpMessage = TextService.Translate("GearSetGrid.CommandHandlerHelpMessage") });
+            else
+                CommandManager.RemoveHandler("/gsg");
+        }
+    }
+
+    private void OnAddonOpen(string addonName)
     {
         if (Config.AutoOpenWithGearSetList && addonName == "GearSetList")
-            Service.WindowManager.OpenWindow<GearSetGridWindow>();
+            Window.Open();
     }
 
-    public override void OnAddonClose(string addonName)
+    private void OnAddonClose(string addonName)
     {
         if (Config.AutoOpenWithGearSetList && addonName == "GearSetList")
-            Service.WindowManager.CloseWindow<GearSetGridWindow>();
+            Window.Close();
     }
 
-    [CommandHandler("/gsg", "GearSetGrid.CommandHandlerHelpMessage", nameof(Config.RegisterCommand))]
     private void OnGsgCommand(string command, string arguments)
     {
-        Service.WindowManager.ToggleWindow<GearSetGridWindow>();
+        if (Window.IsOpen)
+            Window.Close();
+        else
+            Window.Open();
     }
 }

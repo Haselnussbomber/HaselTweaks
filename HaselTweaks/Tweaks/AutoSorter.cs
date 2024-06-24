@@ -2,18 +2,23 @@ using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
+using HaselCommon.Extensions;
+using HaselCommon.Services;
 using HaselCommon.Utils;
-using HaselTweaks.Structs;
+using HaselTweaks.Config;
+using HaselTweaks.Enums;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
+using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-public class AutoSorterConfiguration
+public sealed class AutoSorterConfiguration
 {
     public List<SortingRule> Settings = [];
     public bool SortArmouryOnJobChange = true;
@@ -24,57 +29,20 @@ public class AutoSorterConfiguration
         public string? Category = null;
         public string? Condition = null;
         public string? Order = null;
-
-        public string? LocalizedCategory => AutoSorter.GetLocalizedParam(AutoSorter.CategorySet, Category);
-        public string? LocalizedCondition => AutoSorter.GetLocalizedParam(AutoSorter.ConditionSet, Condition);
-        public string? LocalizedOrder => AutoSorter.GetLocalizedParam(AutoSorter.OrderSet, Order);
-
-        public List<string>? GetErrors(HashSet<string>? usedCategories)
-        {
-            List<string>? errors = null;
-
-            if (string.IsNullOrEmpty(Category))
-            {
-                errors ??= [];
-                errors.Add(t("AutoSorter.SortingRule.Error.CategoryNotSet"));
-            }
-
-            if (string.IsNullOrEmpty(Condition))
-            {
-                errors ??= [];
-                errors.Add(t("AutoSorter.SortingRule.Error.ConditionNotSet"));
-            }
-
-            if (string.IsNullOrEmpty(Order))
-            {
-                errors ??= [];
-                errors.Add(t("AutoSorter.SortingRule.Error.OrderNotSet"));
-            }
-
-            if (Category == "armoury" && usedCategories != null && AutoSorter.ArmourySubcategories.Any(usedCategories.Contains))
-            {
-                errors ??= [];
-                errors.Add(t("AutoSorter.SortingRule.Error.OverridesArmouryRule"));
-            }
-
-            unsafe
-            {
-                if (Category is "rightsaddlebag" && !PlayerState.Instance()->HasPremiumSaddlebag)
-                {
-                    errors ??= [];
-                    errors.Add(t("AutoSorter.SortingRule.Error.PremiumSaddlebagNotSubscribed"));
-                }
-            }
-
-            return errors;
-        }
     }
 }
 
-[Tweak]
-public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
+public sealed unsafe class AutoSorter(
+    PluginConfig pluginConfig,
+    TextService textService,
+    ILogger<AutoSorter> Logger,
+    ExcelService ExcelService,
+    IClientState ClientState,
+    IFramework Framework,
+    AddonObserver AddonObserver)
+    : Tweak<AutoSorterConfiguration>(pluginConfig, textService)
 {
-    public static readonly Dictionary<string, uint> CategorySet = new()
+    private static readonly Dictionary<string, uint> CategorySet = new()
     {
         ["inventory"] = 257,
         ["retainer"] = 261,
@@ -95,7 +63,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
         ["soul"] = 291
     };
 
-    public static readonly Dictionary<string, uint> ConditionSet = new()
+    private static readonly Dictionary<string, uint> ConditionSet = new()
     {
         ["id"] = 271,
         ["spiritbond"] = 275,
@@ -125,13 +93,13 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
         ["tab"] = 273
     };
 
-    public static readonly Dictionary<string, uint> OrderSet = new()
+    private static readonly Dictionary<string, uint> OrderSet = new()
     {
         ["asc"] = 281,
         ["des"] = 283
     };
 
-    public static readonly List<string> ArmourySubcategories =
+    internal static readonly List<string> ArmourySubcategories =
     [
         "mh",
         "oh",
@@ -147,19 +115,19 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
         "soul"
     ];
 
-    public static string GetLocalizedParam(uint rowId, string? fallback = null)
+    private string GetLocalizedParam(uint rowId, string? fallback = null)
     {
-        var param = Service.DataManager.GetExcelSheet<TextCommandParam>(Service.ClientState.ClientLanguage)?.GetRow(rowId)?.Param.RawString;
+        var param = ExcelService.GetRow<TextCommandParam>(rowId)?.Param.ExtractText();
         return string.IsNullOrEmpty(param) ? fallback ?? "" : param.ToLower();
     }
 
-    public static string? GetLocalizedParam(Dictionary<string, uint> dict, string? key, string? fallback = null)
+    private string? GetLocalizedParam(Dictionary<string, uint> dict, string? key, string? fallback = null)
     {
         var str = fallback ?? key;
 
         if (!string.IsNullOrEmpty(key) && dict.TryGetValue(key, out var rowId))
         {
-            var param = Service.DataManager.GetExcelSheet<TextCommandParam>(Service.ClientState.ClientLanguage)?.GetRow(rowId)?.Param.RawString;
+            var param = ExcelService.GetRow<TextCommandParam>(rowId)?.Param.ExtractText();
 
             if (!string.IsNullOrEmpty(param))
             {
@@ -170,335 +138,48 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
         return str;
     }
 
-    public override void DrawConfig()
-    {
-        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
-
-        ImGui.Checkbox(t("AutoSorter.Config.SortArmouryOnJobChange.Label"), ref Config.SortArmouryOnJobChange);
-
-        ImGuiUtils.DrawPaddedSeparator();
-
-        using var table = ImRaii.Table("##Table", 5, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX);
-        if (!table.Success)
-            return;
-
-        var ItemInnerSpacing = ImGui.GetStyle().ItemInnerSpacing;
-        var ArrowUpButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.ArrowUp);
-        var ArrowDownButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.ArrowDown);
-        var TrashButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Trash);
-        var TerminalButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Terminal);
-
-        ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed);
-        ImGui.TableSetupColumn("Category", ImGuiTableColumnFlags.WidthStretch);
-        ImGui.TableSetupColumn("Condition", ImGuiTableColumnFlags.WidthStretch);
-        ImGui.TableSetupColumn("Order", ImGuiTableColumnFlags.WidthStretch);
-        ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed,
-            ArrowUpButtonSize.X +
-            ItemInnerSpacing.X +
-            ArrowDownButtonSize.X +
-            ItemInnerSpacing.X +
-            TrashButtonSize.X +
-            (Enabled ? ItemInnerSpacing.X + TerminalButtonSize.X : 0));
-
-        var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
-        var preview = "";
-        var i = 0;
-        var entryToRemove = -1;
-        var entryToMoveUp = -1;
-        var entryToMoveDown = -1;
-        var entryToExecute = -1;
-        var usedCategories = new HashSet<string>();
-
-        foreach (var entry in Config.Settings)
-        {
-            var key = $"##Setting[{i}]";
-
-            ImGui.TableNextRow();
-
-            ImGui.TableNextColumn();
-            ImGui.Checkbox(key + "_Enabled", ref entry.Enabled);
-            if (ImGui.IsItemHovered())
-            {
-                ImGui.SetTooltip(t(entry.Enabled
-                    ? "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsEnabled"
-                    : "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsDisabled"));
-            }
-            if (ImGui.IsItemClicked())
-            {
-                Service.GetService<Configuration>().Save();
-            }
-
-            ImGui.TableNextColumn();
-            ImGui.SetNextItemWidth(-1);
-
-            preview = entry.LocalizedCategory ?? t("AutoSorter.Config.CategoryCombo.Placeholder");
-
-            if (ImGui.BeginCombo(key + "Category", preview))
-            {
-                foreach (var kv in CategorySet)
-                {
-                    if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Category == kv.Key))
-                    {
-                        entry.Category = kv.Key;
-                        Service.GetService<Configuration>().Save();
-                    }
-
-                    if (entry.Category == kv.Key)
-                        ImGui.SetItemDefaultFocus();
-                }
-
-                ImGui.EndCombo();
-            }
-
-            ImGui.TableNextColumn();
-            ImGui.SetNextItemWidth(-1);
-
-            preview = entry.LocalizedCondition ?? t("AutoSorter.Config.ConditionCombo.Placeholder");
-
-            if (ImGui.BeginCombo(key + "Condition", preview))
-            {
-                foreach (var kv in ConditionSet)
-                {
-                    if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Condition == kv.Key))
-                    {
-                        entry.Condition = kv.Key;
-                        Service.GetService<Configuration>().Save();
-                    }
-
-                    if (entry.Condition == kv.Key)
-                        ImGui.SetItemDefaultFocus();
-                }
-
-                ImGui.EndCombo();
-            }
-
-            ImGui.TableNextColumn();
-            ImGui.SetNextItemWidth(-1);
-
-            preview = entry.LocalizedOrder ?? t("AutoSorter.Config.OrderCombo.Placeholder");
-
-            if (ImGui.BeginCombo(key + "Order", preview))
-            {
-                foreach (var kv in OrderSet)
-                {
-                    if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Order == kv.Key))
-                    {
-                        entry.Order = kv.Key;
-                        Service.GetService<Configuration>().Save();
-                    }
-
-                    if (entry.Order == kv.Key)
-                        ImGui.SetItemDefaultFocus();
-                }
-
-                ImGui.EndCombo();
-            }
-
-            ImGui.TableNextColumn();
-            if (i > 0)
-            {
-                if (ImGuiUtils.IconButton(key + "_Up", FontAwesomeIcon.ArrowUp, t("AutoSorter.Config.MoveRuleUpButton.Tooltip")))
-                {
-                    entryToMoveUp = i;
-                }
-            }
-            else
-            {
-                ImGui.Dummy(ArrowUpButtonSize);
-            }
-
-            ImGui.SameLine(0, ItemInnerSpacing.X);
-
-            if (i < Config.Settings.Count - 1)
-            {
-                if (ImGuiUtils.IconButton(key + "_Down", FontAwesomeIcon.ArrowDown, t("AutoSorter.Config.MoveRuleDownButton.Tooltip")))
-                {
-                    entryToMoveDown = i;
-                }
-            }
-            else
-            {
-                ImGui.Dummy(ArrowDownButtonSize);
-            }
-
-            ImGui.SameLine(0, ItemInnerSpacing.X);
-
-            if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
-            {
-                if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, t("AutoSorter.Config.DeleteRuleButton.Tooltip.HoldingShift")))
-                {
-                    entryToRemove = i;
-                }
-            }
-            else
-            {
-                ImGuiUtils.IconButton(
-                    key + "_Delete",
-                    FontAwesomeIcon.Trash,
-                    t(isWindowFocused
-                        ? "AutoSorter.Config.DeleteRuleButton.Tooltip.NotHoldingShift"
-                        : "AutoSorter.Config.DeleteRuleButton.Tooltip.WindowNotFocused"),
-                    disabled: true);
-            }
-
-            ImGui.SameLine(0, ItemInnerSpacing.X);
-
-            if (Enabled)
-            {
-                if (_isBusy || _queue.Count != 0)
-                {
-                    ImGui.SameLine();
-                    ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, t("AutoSorter.SortingInProgress"), disabled: true);
-                }
-                else
-                {
-                    List<string>? disabledReasons = null;
-
-                    if (entry.Category is "saddlebag" or "rightsaddlebag" && !IsInventoryBuddyOpen)
-                    {
-                        disabledReasons ??= [];
-                        disabledReasons.Add(t("AutoSorter.Config.ExecuteButton.Tooltip.SaddlebagNotOpen"));
-                    }
-
-                    if (entry.Category is "retainer" && !IsRetainerInventoryOpen)
-                    {
-                        disabledReasons ??= [];
-                        disabledReasons.Add(t("AutoSorter.Config.ExecuteButton.Tooltip.RetainerNotOpen"));
-                    }
-
-                    ImGui.SameLine(0, ItemInnerSpacing.X);
-
-                    if (disabledReasons != null)
-                    {
-                        ImGuiUtils.IconButton(
-                            key + "_Execute",
-                            FontAwesomeIcon.Terminal,
-                            disabledReasons.Count > 1
-                                ? "- " + string.Join("\n- ", disabledReasons)
-                                : disabledReasons.First(),
-                            disabled: true);
-                    }
-                    else
-                    {
-                        var errors = entry.GetErrors(usedCategories);
-                        if (errors != null)
-                        {
-                            using (ImRaii.PushColor(ImGuiCol.Text, 0xff02d2ee)) // safety yellow
-                            {
-                                ImGuiUtils.IconButton(
-                                    key + "_Execute",
-                                    FontAwesomeIcon.ExclamationTriangle,
-                                    errors.Count > 1
-                                        ? "- " + string.Join("\n- ", errors)
-                                        : errors.First());
-                            }
-                        }
-                        else if (ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, t("AutoSorter.Config.ExecuteButton.Tooltip.Ready")))
-                        {
-                            entryToExecute = i;
-                        }
-                    }
-                }
-            }
-
-            if (!string.IsNullOrEmpty(entry.Category))
-                usedCategories.Add(entry.Category);
-
-            i++;
-        }
-
-        table?.Dispose();
-
-        if (ImGui.Button(t("AutoSorter.Config.AddButton.Label")))
-        {
-            Config.Settings.Add(new());
-            Service.GetService<Configuration>().Save();
-        }
-
-        if (Enabled)
-        {
-            ImGui.SameLine();
-
-            if (!_isBusy && _queue.Count == 0)
-            {
-                if (ImGui.Button(t("AutoSorter.Config.RunAllButton.Label")))
-                {
-                    var groups = Config.Settings
-                        .FindAll(entry => !string.IsNullOrEmpty(entry.Category))
-                        .GroupBy(entry => entry.Category!);
-
-                    foreach (var group in groups)
-                    {
-                        _queue.Enqueue(group);
-                    }
-                }
-            }
-            else
-            {
-                using (ImRaii.Disabled())
-                    ImGui.Button(t("AutoSorter.Config.RunAllButton.Label"));
-
-                if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(t("AutoSorter.SortingInProgress"));
-            }
-        }
-
-        if (entryToMoveUp != -1)
-        {
-            var removedItem = Config.Settings[entryToMoveUp];
-            Config.Settings.RemoveAt(entryToMoveUp);
-            Config.Settings.Insert(entryToMoveUp - 1, removedItem);
-            Service.GetService<Configuration>().Save();
-        }
-
-        if (entryToMoveDown != -1)
-        {
-            var removedItem = Config.Settings[entryToMoveDown];
-            Config.Settings.RemoveAt(entryToMoveDown);
-            Config.Settings.Insert(entryToMoveDown + 1, removedItem);
-            Service.GetService<Configuration>().Save();
-        }
-
-        if (entryToRemove != -1)
-        {
-            Config.Settings.RemoveAt(entryToRemove);
-            Service.GetService<Configuration>().Save();
-        }
-
-        if (entryToExecute != -1)
-        {
-            var entry = Config.Settings[entryToExecute];
-            _queue.Enqueue(new[] { entry }.GroupBy(entry => entry.Category!).First());
-        }
-    }
-
     private readonly Queue<IGrouping<string, AutoSorterConfiguration.SortingRule>> _queue = new();
     private bool _isBusy = false;
     private byte _lastClassJobId = 0;
 
-    public static bool IsRetainerInventoryOpen => IsAddonOpen("InventoryRetainer") || IsAddonOpen("InventoryRetainerLarge");
-    public static bool IsInventoryBuddyOpen => IsAddonOpen("InventoryBuddy");
+    private static bool IsRetainerInventoryOpen => IsAddonOpen("InventoryRetainer") || IsAddonOpen("InventoryRetainerLarge");
+    private static bool IsInventoryBuddyOpen => IsAddonOpen("InventoryBuddy");
 
-    public override void OnLogin()
+    public override void OnEnable()
     {
-        _lastClassJobId = (byte)(Service.ClientState.LocalPlayer?.ClassJob.Id ?? 0);
+        _queue.Clear();
+
+        ClientState.Login += OnLogin;
+        ClientState.Logout += OnLogout;
+        Framework.Update += OnFrameworkUpdate;
+        AddonObserver.AddonOpen += OnAddonOpen;
+    }
+
+    public override void OnDisable()
+    {
+        _queue.Clear();
+
+        ClientState.Login -= OnLogin;
+        ClientState.Logout -= OnLogout;
+        Framework.Update -= OnFrameworkUpdate;
+        AddonObserver.AddonOpen -= OnAddonOpen;
+    }
+
+    private void OnLogin()
+    {
+        _lastClassJobId = (byte)(ClientState.LocalPlayer?.ClassJob.Id ?? 0);
         _queue.Clear();
     }
 
-    public override void OnLogout()
+    private void OnLogout()
     {
         _lastClassJobId = 0;
         _queue.Clear();
     }
 
-    public override void Disable()
+    private void OnFrameworkUpdate(IFramework framework)
     {
-        _queue.Clear();
-    }
-
-    public override void OnFrameworkUpdate()
-    {
-        if (!Service.ClientState.IsLoggedIn)
+        if (!ClientState.IsLoggedIn)
             return;
 
         if (Config.SortArmouryOnJobChange)
@@ -518,7 +199,7 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
         ProcessQueue();
     }
 
-    public override void OnAddonOpen(string addonName)
+    private void OnAddonOpen(string addonName)
     {
         switch (addonName)
         {
@@ -609,16 +290,16 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
             // check if ItemOrderModule is busy
             if (itemOrderModule == null || itemOrderModule->UserFileEvent.IsSavePending)
             {
-                Debug("ItemOrderModule is busy, waiting.");
+                Logger.LogDebug("ItemOrderModule is busy, waiting.");
                 return;
             }
 
-            for (var i = 0; i < itemOrderModule->ArmourySorterSpan.Length; i++)
+            for (var i = 0; i < itemOrderModule->ArmourySorter.Length; i++)
             {
-                var sorter = itemOrderModule->ArmourySorterSpan.GetPointer(i)->Value;
+                var sorter = itemOrderModule->ArmourySorter.GetPointer(i)->Value;
                 if (sorter != null && sorter->SortFunctionIndex != -1)
                 {
-                    Debug($"ItemOrderModule: Sorter #{i} ({sorter->InventoryType}) is busy, waiting.");
+                    Logger.LogDebug("ItemOrderModule: Sorter #{i} ({type}) is busy, waiting.", i, sorter->InventoryType.ToString());
                     return;
                 }
             }
@@ -638,89 +319,437 @@ public unsafe class AutoSorter : Tweak<AutoSorterConfiguration>
             if (string.IsNullOrEmpty(key))
                 return;
 
-            Log($"Sorting Category: {key}");
+            Logger.LogInformation("Sorting Category: {key}", key);
 
             var category = GetLocalizedParam(CategorySet, key);
             if (string.IsNullOrEmpty(category))
             {
-                Error($"Can not localize category: GetLocalizedParam returned \"{category}\".");
+                Logger.LogError("Can not localize category: GetLocalizedParam returned \"{category}\".", category);
                 return;
             }
 
             var raptureShellModule = RaptureShellModule.Instance();
             if (raptureShellModule == null)
             {
-                Warning("Could not resolve RaptureShellModule");
+                Logger.LogWarning("Could not resolve RaptureShellModule");
                 return;
             }
 
             if (raptureShellModule->IsTextCommandUnavailable)
             {
-                Warning("Text commands are unavailable, skipping.");
+                Logger.LogWarning("Text commands are unavailable, skipping.");
                 return;
             }
 
             if ((key is "saddlebag" or "rightsaddlebag") && !IsInventoryBuddyOpen)
             {
-                Warning("Sorting for saddlebag/rightsaddlebag only works when the window is open, skipping.");
+                Logger.LogWarning("Sorting for saddlebag/rightsaddlebag only works when the window is open, skipping.");
                 return;
             }
 
             var playerState = PlayerState.Instance();
             if (playerState == null)
             {
-                Warning("Could not resolve PlayerState");
+                Logger.LogWarning("Could not resolve PlayerState");
                 return;
             }
 
             if (key is "rightsaddlebag" && !playerState->HasPremiumSaddlebag)
             {
-                Warning("Not subscribed to the Companion Premium Service, skipping.");
+                Logger.LogWarning("Not subscribed to the Companion Premium Service, skipping.");
                 return;
             }
 
             if (key is "retainer" && !IsRetainerInventoryOpen)
             {
-                Warning("Sorting for retainer only works when the window is open, skipping.");
+                Logger.LogWarning("Sorting for retainer only works when the window is open, skipping.");
                 return;
             }
 
             var cmd = $"/itemsort clear {category}";
-            Log($"Executing {cmd}");
-            HaselShellCommandModule.ExecuteCommand(cmd);
+            Logger.LogInformation("Executing {cmd}", cmd);
+            ExecuteCommand(cmd);
 
             foreach (var rule in group)
             {
-                var condition = rule.LocalizedCondition;
+                var condition = GetLocalizedParam(ConditionSet, rule.Condition);
                 if (string.IsNullOrEmpty(condition))
                 {
-                    Error($"Can not localize condition \"{rule.Condition}\", skipping. (GetLocalizedParam returned \"{condition}\")");
+                    Logger.LogError("Can not localize condition \"{ruleCondition}\", skipping. (GetLocalizedParam returned \"{condition}\")", rule.Condition, condition);
                     continue;
                 }
 
-                var order = rule.LocalizedOrder;
+                var order = GetLocalizedParam(OrderSet, rule.Order);
                 if (string.IsNullOrEmpty(order))
                 {
-                    Error($"Can not localize order \"{rule.Order}\", skipping. (GetLocalizedParam returned \"{order}\")");
+                    Logger.LogError("Can not localize order \"{ruleOrder}\", skipping. (GetLocalizedParam returned \"{order}\")", rule.Order, order);
                     continue;
                 }
 
                 cmd = $"/itemsort condition {category} {condition} {order}";
-                Log($"Executing {cmd}");
-                HaselShellCommandModule.ExecuteCommand(cmd);
+                Logger.LogInformation("Executing {cmd}", cmd);
+                ExecuteCommand(cmd);
             }
 
             cmd = $"/itemsort execute {category}";
-            Log($"Executing {cmd}");
-            HaselShellCommandModule.ExecuteCommand(cmd);
+            Logger.LogInformation("Executing {cmd}", cmd);
+            ExecuteCommand(cmd);
         }
         catch (Exception ex)
         {
-            Error(ex, "Unexpected error during sorting");
+            Logger.LogError(ex, "Unexpected error during sorting");
         }
         finally
         {
             _isBusy = false;
         }
+    }
+
+    public override void DrawConfig()
+    {
+        ImGuiUtils.DrawSection(TextService.Translate("HaselTweaks.Config.SectionTitle.Configuration"));
+
+        ImGui.Checkbox(TextService.Translate("AutoSorter.Config.SortArmouryOnJobChange.Label"), ref Config.SortArmouryOnJobChange);
+
+        ImGuiUtils.DrawPaddedSeparator();
+
+        using var table = ImRaii.Table("##Table", 5, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX);
+        if (!table.Success)
+            return;
+
+        var ItemInnerSpacing = ImGui.GetStyle().ItemInnerSpacing;
+        var ArrowUpButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.ArrowUp);
+        var ArrowDownButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.ArrowDown);
+        var TrashButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Trash);
+        var TerminalButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Terminal);
+
+        ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed);
+        ImGui.TableSetupColumn("Category", ImGuiTableColumnFlags.WidthStretch);
+        ImGui.TableSetupColumn("Condition", ImGuiTableColumnFlags.WidthStretch);
+        ImGui.TableSetupColumn("Order", ImGuiTableColumnFlags.WidthStretch);
+        ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed,
+            ArrowUpButtonSize.X +
+            ItemInnerSpacing.X +
+            ArrowDownButtonSize.X +
+            ItemInnerSpacing.X +
+            TrashButtonSize.X +
+            (Status == TweakStatus.Enabled ? ItemInnerSpacing.X + TerminalButtonSize.X : 0));
+
+        var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
+        var preview = "";
+        var i = 0;
+        var entryToRemove = -1;
+        var entryToMoveUp = -1;
+        var entryToMoveDown = -1;
+        var entryToExecute = -1;
+        var usedCategories = new HashSet<string>();
+
+        foreach (var entry in Config.Settings)
+        {
+            var key = $"##Setting[{i}]";
+
+            ImGui.TableNextRow();
+
+            ImGui.TableNextColumn();
+            ImGui.Checkbox(key + "_Enabled", ref entry.Enabled);
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                TextService.Draw(entry.Enabled
+                    ? "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsEnabled"
+                    : "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsDisabled");
+                ImGui.EndTooltip();
+            }
+            if (ImGui.IsItemClicked())
+            {
+                PluginConfig.Save();
+            }
+
+            ImGui.TableNextColumn();
+            ImGui.SetNextItemWidth(-1);
+
+            preview = GetLocalizedParam(CategorySet, entry.Category) ?? TextService.Translate("AutoSorter.Config.CategoryCombo.Placeholder");
+
+            if (ImGui.BeginCombo(key + "Category", preview))
+            {
+                foreach (var kv in CategorySet)
+                {
+                    if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Category == kv.Key))
+                    {
+                        entry.Category = kv.Key;
+                        PluginConfig.Save();
+                    }
+
+                    if (entry.Category == kv.Key)
+                        ImGui.SetItemDefaultFocus();
+                }
+
+                ImGui.EndCombo();
+            }
+
+            ImGui.TableNextColumn();
+            ImGui.SetNextItemWidth(-1);
+
+            preview = GetLocalizedParam(ConditionSet, entry.Condition) ?? TextService.Translate("AutoSorter.Config.ConditionCombo.Placeholder");
+
+            if (ImGui.BeginCombo(key + "Condition", preview))
+            {
+                foreach (var kv in ConditionSet)
+                {
+                    if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Condition == kv.Key))
+                    {
+                        entry.Condition = kv.Key;
+                        PluginConfig.Save();
+                    }
+
+                    if (entry.Condition == kv.Key)
+                        ImGui.SetItemDefaultFocus();
+                }
+
+                ImGui.EndCombo();
+            }
+
+            ImGui.TableNextColumn();
+            ImGui.SetNextItemWidth(-1);
+
+            preview = GetLocalizedParam(OrderSet, entry.Order) ?? TextService.Translate("AutoSorter.Config.OrderCombo.Placeholder");
+
+            if (ImGui.BeginCombo(key + "Order", preview))
+            {
+                foreach (var kv in OrderSet)
+                {
+                    if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Order == kv.Key))
+                    {
+                        entry.Order = kv.Key;
+                        PluginConfig.Save();
+                    }
+
+                    if (entry.Order == kv.Key)
+                        ImGui.SetItemDefaultFocus();
+                }
+
+                ImGui.EndCombo();
+            }
+
+            ImGui.TableNextColumn();
+            if (i > 0)
+            {
+                if (ImGuiUtils.IconButton(key + "_Up", FontAwesomeIcon.ArrowUp, TextService.Translate("AutoSorter.Config.MoveRuleUpButton.Tooltip")))
+                {
+                    entryToMoveUp = i;
+                }
+            }
+            else
+            {
+                ImGui.Dummy(ArrowUpButtonSize);
+            }
+
+            ImGui.SameLine(0, ItemInnerSpacing.X);
+
+            if (i < Config.Settings.Count - 1)
+            {
+                if (ImGuiUtils.IconButton(key + "_Down", FontAwesomeIcon.ArrowDown, TextService.Translate("AutoSorter.Config.MoveRuleDownButton.Tooltip")))
+                {
+                    entryToMoveDown = i;
+                }
+            }
+            else
+            {
+                ImGui.Dummy(ArrowDownButtonSize);
+            }
+
+            ImGui.SameLine(0, ItemInnerSpacing.X);
+
+            if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
+            {
+                if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, TextService.Translate("AutoSorter.Config.DeleteRuleButton.Tooltip.HoldingShift")))
+                {
+                    entryToRemove = i;
+                }
+            }
+            else
+            {
+                ImGuiUtils.IconButton(
+                    key + "_Delete",
+                    FontAwesomeIcon.Trash,
+                    TextService.Translate(isWindowFocused
+                        ? "AutoSorter.Config.DeleteRuleButton.Tooltip.NotHoldingShift"
+                        : "AutoSorter.Config.DeleteRuleButton.Tooltip.WindowNotFocused"),
+                    disabled: true);
+            }
+
+            ImGui.SameLine(0, ItemInnerSpacing.X);
+
+            if (Status == TweakStatus.Enabled)
+            {
+                if (_isBusy || _queue.Count != 0)
+                {
+                    ImGui.SameLine();
+                    ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, TextService.Translate("AutoSorter.SortingInProgress"), disabled: true);
+                }
+                else
+                {
+                    List<string>? disabledReasons = null;
+
+                    if (entry.Category is "saddlebag" or "rightsaddlebag" && !IsInventoryBuddyOpen)
+                    {
+                        disabledReasons ??= [];
+                        disabledReasons.Add(TextService.Translate("AutoSorter.Config.ExecuteButton.Tooltip.SaddlebagNotOpen"));
+                    }
+
+                    if (entry.Category is "retainer" && !IsRetainerInventoryOpen)
+                    {
+                        disabledReasons ??= [];
+                        disabledReasons.Add(TextService.Translate("AutoSorter.Config.ExecuteButton.Tooltip.RetainerNotOpen"));
+                    }
+
+                    ImGui.SameLine(0, ItemInnerSpacing.X);
+
+                    if (disabledReasons != null)
+                    {
+                        ImGuiUtils.IconButton(
+                            key + "_Execute",
+                            FontAwesomeIcon.Terminal,
+                            disabledReasons.Count > 1
+                                ? "- " + string.Join("\n- ", disabledReasons)
+                                : disabledReasons.First(),
+                            disabled: true);
+                    }
+                    else
+                    {
+                        var errors = GetErrors(entry, usedCategories);
+                        if (errors != null)
+                        {
+                            using (ImRaii.PushColor(ImGuiCol.Text, 0xff02d2ee)) // safety yellow
+                            {
+                                ImGuiUtils.IconButton(
+                                    key + "_Execute",
+                                    FontAwesomeIcon.ExclamationTriangle,
+                                    errors.Count > 1
+                                        ? "- " + string.Join("\n- ", errors)
+                                        : errors.First());
+                            }
+                        }
+                        else if (ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, TextService.Translate("AutoSorter.Config.ExecuteButton.Tooltip.Ready")))
+                        {
+                            entryToExecute = i;
+                        }
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(entry.Category))
+                usedCategories.Add(entry.Category);
+
+            i++;
+        }
+
+        table?.Dispose();
+
+        if (ImGui.Button(TextService.Translate("AutoSorter.Config.AddButton.Label")))
+        {
+            Config.Settings.Add(new());
+            PluginConfig.Save();
+        }
+
+        if (Status == TweakStatus.Enabled)
+        {
+            ImGui.SameLine();
+
+            if (!_isBusy && _queue.Count == 0)
+            {
+                if (ImGui.Button(TextService.Translate("AutoSorter.Config.RunAllButton.Label")))
+                {
+                    var groups = Config.Settings
+                        .FindAll(entry => !string.IsNullOrEmpty(entry.Category))
+                        .GroupBy(entry => entry.Category!);
+
+                    foreach (var group in groups)
+                    {
+                        _queue.Enqueue(group);
+                    }
+                }
+            }
+            else
+            {
+                using (ImRaii.Disabled())
+                    ImGui.Button(TextService.Translate("AutoSorter.Config.RunAllButton.Label"));
+
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.BeginTooltip();
+                    TextService.Draw("AutoSorter.SortingInProgress");
+                    ImGui.EndTooltip();
+                }
+            }
+        }
+
+        if (entryToMoveUp != -1)
+        {
+            var removedItem = Config.Settings[entryToMoveUp];
+            Config.Settings.RemoveAt(entryToMoveUp);
+            Config.Settings.Insert(entryToMoveUp - 1, removedItem);
+            PluginConfig.Save();
+        }
+
+        if (entryToMoveDown != -1)
+        {
+            var removedItem = Config.Settings[entryToMoveDown];
+            Config.Settings.RemoveAt(entryToMoveDown);
+            Config.Settings.Insert(entryToMoveDown + 1, removedItem);
+            PluginConfig.Save();
+        }
+
+        if (entryToRemove != -1)
+        {
+            Config.Settings.RemoveAt(entryToRemove);
+            PluginConfig.Save();
+        }
+
+        if (entryToExecute != -1)
+        {
+            var entry = Config.Settings[entryToExecute];
+            _queue.Enqueue(new[] { entry }.GroupBy(entry => entry.Category!).First());
+        }
+    }
+
+    public List<string>? GetErrors(AutoSorterConfiguration.SortingRule rule, HashSet<string>? usedCategories)
+    {
+        List<string>? errors = null;
+
+        if (string.IsNullOrEmpty(rule.Category))
+        {
+            errors ??= [];
+            errors.Add(TextService.Translate("AutoSorter.SortingRule.Error.CategoryNotSet"));
+        }
+
+        if (string.IsNullOrEmpty(rule.Condition))
+        {
+            errors ??= [];
+            errors.Add(TextService.Translate("AutoSorter.SortingRule.Error.ConditionNotSet"));
+        }
+
+        if (string.IsNullOrEmpty(rule.Order))
+        {
+            errors ??= [];
+            errors.Add(TextService.Translate("AutoSorter.SortingRule.Error.OrderNotSet"));
+        }
+
+        if (rule.Category == "armoury" && usedCategories != null && ArmourySubcategories.Any(usedCategories.Contains))
+        {
+            errors ??= [];
+            errors.Add(TextService.Translate("AutoSorter.SortingRule.Error.OverridesArmouryRule"));
+        }
+
+        unsafe
+        {
+            if (rule.Category is "rightsaddlebag" && !PlayerState.Instance()->HasPremiumSaddlebag)
+            {
+                errors ??= [];
+                errors.Add(TextService.Translate("AutoSorter.SortingRule.Error.PremiumSaddlebagNotSubscribed"));
+            }
+        }
+
+        return errors;
     }
 }

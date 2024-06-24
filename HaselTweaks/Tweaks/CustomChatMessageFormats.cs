@@ -4,28 +4,33 @@ using System.Linq;
 using System.Numerics;
 using System.Text.Json.Serialization;
 using Dalamud.Game.Config;
+using Dalamud.Hooking;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Services;
 using HaselCommon.Text;
 using HaselCommon.Text.Enums;
 using HaselCommon.Text.Expressions;
 using HaselCommon.Text.Payloads;
 using HaselCommon.Text.Payloads.Macro;
+using HaselCommon.Textures;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
+using Microsoft.Extensions.Logging;
 using static HaselTweaks.Tweaks.CustomChatMessageFormatsConfiguration;
 
 namespace HaselTweaks.Tweaks;
 
-public class CustomChatMessageFormatsConfiguration
+public sealed class CustomChatMessageFormatsConfiguration
 {
     public Dictionary<uint, LogKindOverride> FormatOverrides = [];
 
@@ -65,8 +70,16 @@ public class CustomChatMessageFormatsConfiguration
     }
 }
 
-[Tweak]
-public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsConfiguration>
+public sealed unsafe class CustomChatMessageFormats(
+    PluginConfig pluginConfig,
+    TextService textService,
+    ILogger<CustomChatMessageFormats> Logger,
+    IGameInteropProvider GameInteropProvider,
+    IDataManager DataManager,
+    ExcelService ExcelService,
+    IGameConfig GameConfig,
+    TextureManager TextureManager)
+    : Tweak<CustomChatMessageFormatsConfiguration>(pluginConfig, textService)
 {
     private List<(LogKind LogKind, LogFilter LogFilter, SeString Format)>? CachedLogKindRows = null;
     private FrozenDictionary<uint, string>? CachedTextColors = null;
@@ -78,212 +91,54 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         "common/font/fonticon_lys.tex",
     ];
     private GfdFileView? gfdFileView = null;
-    private GfdFileView GfdFileView => gfdFileView ??= new(Service.DataManager.GetFile("common/font/gfdata.gfd")!.Data);
+    private GfdFileView GfdFileView => gfdFileView ??= new(DataManager.GetFile("common/font/gfdata.gfd")!.Data);
 
-    public override void DrawConfig()
+    private Hook<HaselRaptureLogModule.Delegates.FormatLogMessage>? FormatLogMessageHook;
+
+    public override void OnInitialize()
     {
-        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
-
-        CachedLogKindRows ??= GenerateLogKindCache();
-        CachedTextColors ??= GenerateTextColors();
-
-        var ItemInnerSpacing = ImGui.GetStyle().ItemInnerSpacing;
-
-        using var cellpadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, ItemInnerSpacing * ImGuiHelpers.GlobalScale);
-        using var table = ImRaii.Table("##Table", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX);
-        if (!table.Success)
-            return;
-        cellpadding?.Dispose();
-
-        ImGui.TableSetupColumn("Enabled", ImGuiTableColumnFlags.WidthFixed);
-        ImGui.TableSetupColumn("Channel Name and Format", ImGuiTableColumnFlags.WidthStretch);
-        ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthFixed,
-            ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Pen).X + ItemInnerSpacing.X + ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Trash).X);
-
-        var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
-        var entryToEdit = 0u;
-        var entryToRemove = 0u;
-
-        foreach (var (logKindId, entry) in Config.FormatOverrides)
-        {
-            using var id = ImRaii.PushId("Setting[" + logKindId.ToString() + "]");
-            var isValid = entry.IsValid();
-
-            ImGui.TableNextRow();
-
-            // Enabled
-            ImGui.TableNextColumn();
-            {
-                ImGui.Checkbox("##Enabled", ref entry.Enabled);
-                if (ImGui.IsItemHovered())
-                {
-                    ImGui.SetTooltip(t(entry.Enabled
-                        ? "CustomChatMessageFormats.Config.Entry.EnableCheckbox.Tooltip.IsEnabled"
-                        : "CustomChatMessageFormats.Config.Entry.EnableCheckbox.Tooltip.IsDisabled"));
-                }
-                if (ImGui.IsItemClicked())
-                    Service.GetService<Configuration>().Save();
-            }
-
-            // Channel Name and Format
-            ImGui.TableNextColumn();
-            {
-                ImGuiUtils.PushCursorY(-2 * ImGuiHelpers.GlobalScale);
-
-                if (!isValid)
-                {
-                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red))
-                        ImGuiUtils.Icon(FontAwesomeIcon.ExclamationCircle);
-
-                    if (ImGui.IsItemHovered())
-                        ImGui.SetTooltip(t("CustomChatMessageFormats.Config.Entry.InvalidPayloads.Tooltip"));
-
-                    ImGuiUtils.SameLineSpace();
-                }
-
-                ImGui.TextUnformatted(GetLogKindlabel(logKindId));
-
-                DrawExample(entry.Format);
-
-                if (entry.EditMode)
-                {
-                    ImGuiUtils.PushCursorY(3 * ImGuiHelpers.GlobalScale);
-                    DrawEditMode(entry);
-                }
-            }
-
-            // Actions
-            ImGui.TableNextColumn();
-            {
-                if (entry.EditMode)
-                {
-                    if (ImGuiUtils.IconButton("##CloseEditor", FontAwesomeIcon.FilePen, t("CustomChatMessageFormats.Config.Entry.CloseEditorButton.Tooltip")))
-                    {
-                        entry.EditMode = false;
-                    }
-                }
-                else
-                {
-                    if (ImGuiUtils.IconButton("##OpenEditor", FontAwesomeIcon.Pen, t("CustomChatMessageFormats.Config.Entry.OpenEditorButton.Tooltip")))
-                    {
-                        entryToEdit = logKindId;
-                    }
-                }
-
-                ImGui.SameLine(0, ItemInnerSpacing.X);
-
-                if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
-                {
-                    if (ImGuiUtils.IconButton("##Delete", FontAwesomeIcon.Trash, t("HaselTweaks.Config.Generic.DeleteButton.Tooltip.HoldingShift")))
-                    {
-                        entryToRemove = logKindId;
-                    }
-                }
-                else
-                {
-                    ImGuiUtils.IconButton(
-                        "##Delete",
-                        FontAwesomeIcon.Trash,
-                        t(isWindowFocused
-                            ? "HaselTweaks.Config.Generic.DeleteButton.Tooltip.NotHoldingShift"
-                            : "HaselTweaks.Config.Generic.DeleteButton.Tooltip.WindowNotFocused"),
-                        disabled: true);
-                }
-            }
-        }
-
-        table?.Dispose();
-
-        if (entryToEdit != 0)
-        {
-            Config.FormatOverrides[entryToEdit].EditMode = !Config.FormatOverrides[entryToEdit].EditMode;
-        }
-
-        if (entryToRemove != 0)
-        {
-            Config.FormatOverrides.Remove(entryToRemove);
-            SaveAndReloadChat();
-        }
-
-        ImGui.Spacing();
-
-        var entries = CachedLogKindRows.Where(entry => !Config.FormatOverrides.ContainsKey(entry.LogKind.RowId));
-        var entriesCount = entries.Count();
-        if (entriesCount > 0)
-        {
-            ImGui.SetNextItemWidth(-1);
-            using var combo = ImRaii.Combo("##LogKindSelect", t("CustomChatMessageFormats.LogKindSelect.PreviewValue"), ImGuiComboFlags.HeightLarge);
-            if (combo)
-            {
-                var i = 0;
-                foreach (var entry in entries)
-                {
-                    if (ImGui.Selectable($"{GetLogKindlabel(entry.LogKind.RowId)}##LogKind{entry.LogKind.RowId}", false, ImGuiSelectableFlags.None, new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetTextLineHeight() * 2)))
-                    {
-                        Config.FormatOverrides.Add(entry.LogKind.RowId, new(SeString.Parse(entry.Format.Encode())));
-                        SaveAndReloadChat();
-                    }
-
-                    var afterCursor = ImGui.GetCursorPos();
-
-                    ImGuiUtils.PushCursor(14 * ImGuiHelpers.GlobalScale, -ImGui.GetTextLineHeight() - ImGui.GetStyle().ItemSpacing.Y);
-                    DrawExample(entry.Format);
-
-                    ImGui.SetCursorPos(afterCursor);
-
-                    if (i < entriesCount - 1)
-                        ImGui.Separator();
-                    i++;
-                }
-            }
-        }
-
-        ImGui.Spacing();
-        ImGui.Separator();
-        ImGui.Spacing();
-
-        if (ImGui.Button(t("CustomChatMessageFormats.Config.OpenConfigLogColorButton.Tooltip")))
-        {
-            unsafe
-            {
-                GetAgent<AgentInterface>(AgentId.ConfigLogColor)->Show();
-            }
-        }
+        FormatLogMessageHook = GameInteropProvider.HookFromAddress<HaselRaptureLogModule.Delegates.FormatLogMessage>(
+            HaselRaptureLogModule.MemberFunctionPointers.FormatLogMessage,
+            FormatLogMessageDetour);
     }
 
-    public override void Enable()
+    public override void OnEnable()
     {
         ReloadChat();
+        TextService.LanguageChanged += OnLanguageChange;
+        FormatLogMessageHook?.Enable();
     }
 
-    public override void Disable()
+    public override void OnDisable()
     {
         ReloadChat();
+        TextService.LanguageChanged -= OnLanguageChange;
+        FormatLogMessageHook?.Disable();
     }
 
-    public override void OnConfigWindowClose()
+    public override void OnConfigClose()
     {
         CachedLogKindRows = null;
         CachedTextColors = null;
         gfdFileView = null;
     }
 
-    public override void OnLanguageChange()
+    private void OnLanguageChange(string langCode)
     {
+        // TODO: if config window is open?
         CachedLogKindRows = GenerateLogKindCache();
         CachedTextColors = GenerateTextColors();
     }
 
-    [AddressHook<HaselRaptureLogModule>(nameof(HaselRaptureLogModule.FormatLogMessage))]
-    public unsafe uint RaptureLogModule_FormatLogMessage(HaselRaptureLogModule* haselRaptureLogModule, uint logKindId, Utf8String* sender, Utf8String* message, int* timestamp, nint a6, Utf8String* a7, int chatTabIndex)
+    private unsafe uint FormatLogMessageDetour(HaselRaptureLogModule* haselRaptureLogModule, uint logKindId, Utf8String* sender, Utf8String* message, int* timestamp, nint a6, Utf8String* a7, int chatTabIndex)
     {
         if (haselRaptureLogModule->LogKindSheet == 0 || haselRaptureLogModule->AtkFontCodeModule == null)
             return 0;
 
         if (!Config.FormatOverrides.TryGetValue(logKindId, out var logKindOverride) || !logKindOverride.Enabled || !logKindOverride.IsValid())
-            return RaptureLogModule_FormatLogMessageHook.OriginalDisposeSafe(haselRaptureLogModule, logKindId, sender, message, timestamp, a6, a7, chatTabIndex);
+            return FormatLogMessageHook!.Original(haselRaptureLogModule, logKindId, sender, message, timestamp, a6, a7, chatTabIndex);
 
-        var tempParseMessage1 = haselRaptureLogModule->TempParseMessageSpan.GetPointer(1);
+        var tempParseMessage1 = haselRaptureLogModule->TempParseMessage.GetPointer(1);
         tempParseMessage1->Clear();
 
         if (!haselRaptureLogModule->RaptureTextModule->TextModule.FormatString(message->StringPtr, null, tempParseMessage1))
@@ -292,7 +147,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         var senderStr = new SeString([new RawPayload(sender->AsSpan().ToArray())]);
         var messageStr = new SeString([new RawPayload(tempParseMessage1->AsSpan().ToArray())]);
 
-        var tempParseMessage0 = haselRaptureLogModule->TempParseMessageSpan.GetPointer(0);
+        var tempParseMessage0 = haselRaptureLogModule->TempParseMessage.GetPointer(0);
         tempParseMessage0->Clear();
         tempParseMessage0->SetString(logKindOverride.Format.Resolve([senderStr, messageStr]).Encode());
 
@@ -302,27 +157,25 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
             if (raptureLogModule->UseServerTime)
                 *timestamp = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            var tempParseMessage3 = haselRaptureLogModule->TempParseMessageSpan.GetPointer(3);
+            var tempParseMessage3 = haselRaptureLogModule->TempParseMessage.GetPointer(3);
             tempParseMessage3->SetString(haselRaptureLogModule->RaptureTextModule->FormatAddonText2Int(raptureLogModule->Use12HourClock ? 7841u : 7840u, *timestamp));
-            var buffer = stackalloc Utf8String[1];
-            buffer->Ctor();
-            tempParseMessage0->Copy(Utf8String.Concat(tempParseMessage3, buffer, tempParseMessage0));
-            buffer->Dtor();
+            using var buffer = new Utf8String();
+            tempParseMessage0->Copy(Utf8String.Concat(tempParseMessage3, &buffer, tempParseMessage0));
         }
 
         return haselRaptureLogModule->AtkFontCodeModule->CalculateLogLines(a7, tempParseMessage0, a6, false);
     }
 
-    public static unsafe void ReloadChat()
+    private static unsafe void ReloadChat()
     {
         var raptureLogModule = RaptureLogModule.Instance();
         for (var i = 0; i < 4; i++)
             raptureLogModule->ChatTabIsPendingReload[i] = true;
     }
 
-    public static void SaveAndReloadChat()
+    private void SaveAndReloadChat()
     {
-        Service.GetService<Configuration>().Save();
+        PluginConfig.Save();
         ReloadChat();
     }
 
@@ -337,9 +190,9 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         var ArrowDownButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.ArrowDown);
         var TrashButtonSize = ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Trash);
 
-        ImGui.TableSetupColumn(t("CustomChatMessageFormats.Config.Entry.PayloadTableHeader.Payload.Label"), ImGuiTableColumnFlags.WidthFixed);
-        ImGui.TableSetupColumn(t("CustomChatMessageFormats.Config.Entry.PayloadTableHeader.Value.Label"), ImGuiTableColumnFlags.WidthStretch);
-        ImGui.TableSetupColumn(t("CustomChatMessageFormats.Config.Entry.PayloadTableHeader.Actions.Label"), ImGuiTableColumnFlags.WidthFixed,
+        ImGui.TableSetupColumn(TextService.Translate("CustomChatMessageFormats.Config.Entry.PayloadTableHeader.Payload.Label"), ImGuiTableColumnFlags.WidthFixed);
+        ImGui.TableSetupColumn(TextService.Translate("CustomChatMessageFormats.Config.Entry.PayloadTableHeader.Value.Label"), ImGuiTableColumnFlags.WidthStretch);
+        ImGui.TableSetupColumn(TextService.Translate("CustomChatMessageFormats.Config.Entry.PayloadTableHeader.Actions.Label"), ImGuiTableColumnFlags.WidthFixed,
             ArrowUpButtonSize.X +
             ItemInnerSpacing.X +
             ArrowDownButtonSize.X +
@@ -406,7 +259,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
 
                         ImGui.SameLine();
 
-                        if (ImGui.Button(t("CustomChatMessageFormats.Config.Entry.OpenIconSelectorButton.Label")))
+                        if (ImGui.Button(TextService.Translate("CustomChatMessageFormats.Config.Entry.OpenIconSelectorButton.Label")))
                         {
                             ImGui.OpenPopup("##IconSelector");
                         }
@@ -498,13 +351,17 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
                     var isStringPlaceholder = payload is StringPayload stringPayload && stringPayload.Parameter is ParameterExpression parameterExpression;
                     if (isStringPlaceholder)
                     {
-                        ImGui.SetTooltip(t("CustomChatMessageFormats.Config.Entry.Payload.StringPlaceholder.Tooltip"));
+                        ImGui.BeginTooltip();
+                        TextService.Draw("CustomChatMessageFormats.Config.Entry.Payload.StringPlaceholder.Tooltip");
+                        ImGui.EndTooltip();
                     }
 
                     var isStackColor = payload is ColorPayload stackColorPayload && stackColorPayload.Color?.ExpressionType is ExpressionType.StackColor;
                     if (isStackColor)
                     {
-                        ImGui.SetTooltip(t("CustomChatMessageFormats.Config.Entry.Payload.StackColor.Tooltip"));
+                        ImGui.BeginTooltip();
+                        TextService.Draw("CustomChatMessageFormats.Config.Entry.Payload.StackColor.Tooltip");
+                        ImGui.EndTooltip();
                     }
                 }
             }
@@ -514,7 +371,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
             {
                 if (i > 0)
                 {
-                    if (ImGuiUtils.IconButton("##Up", FontAwesomeIcon.ArrowUp, t("CustomChatMessageFormats.Config.Entry.Payload.MoveUpButton.Tooltip")))
+                    if (ImGuiUtils.IconButton("##Up", FontAwesomeIcon.ArrowUp, TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.MoveUpButton.Tooltip")))
                     {
                         entryToMoveUp = i;
                     }
@@ -528,7 +385,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
 
                 if (i < entry.Format.Payloads.Count - 1)
                 {
-                    if (ImGuiUtils.IconButton("##Down", FontAwesomeIcon.ArrowDown, t("CustomChatMessageFormats.Config.Entry.Payload.MoveDownButton.Tooltip")))
+                    if (ImGuiUtils.IconButton("##Down", FontAwesomeIcon.ArrowDown, TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.MoveDownButton.Tooltip")))
                     {
                         entryToMoveDown = i;
                     }
@@ -544,7 +401,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
 
                     if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
                     {
-                        if (ImGuiUtils.IconButton("##Delete", FontAwesomeIcon.Trash, t("HaselTweaks.Config.Generic.DeleteButton.Tooltip.HoldingShift")))
+                        if (ImGuiUtils.IconButton("##Delete", FontAwesomeIcon.Trash, TextService.Translate("HaselTweaks.Config.Generic.DeleteButton.Tooltip.HoldingShift")))
                         {
                             entryToRemove = i;
                         }
@@ -554,7 +411,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
                         ImGuiUtils.IconButton(
                             "##Delete",
                             FontAwesomeIcon.Trash,
-                            t(isWindowFocused
+                            TextService.Translate(isWindowFocused
                                 ? "HaselTweaks.Config.Generic.DeleteButton.Tooltip.NotHoldingShift"
                                 : "HaselTweaks.Config.Generic.DeleteButton.Tooltip.WindowNotFocused"),
                             disabled: true);
@@ -588,24 +445,24 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
             SaveAndReloadChat();
         }
 
-        ImGui.Button(t("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Label"));
+        ImGui.Button(TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Label"));
         using (var contextMenu = ImRaii.ContextPopupItem("##AddPayloadContextMenu", ImGuiPopupFlags.MouseButtonLeft))
         {
             if (contextMenu)
             {
-                if (ImGui.MenuItem(t("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.TextPayload")))
+                if (ImGui.MenuItem(TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.TextPayload")))
                 {
                     entry.Format.Payloads.Add(new TextPayload(""));
                     SaveAndReloadChat();
                 }
 
-                if (ImGui.MenuItem(t("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.IconPayload")))
+                if (ImGui.MenuItem(TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.IconPayload")))
                 {
                     entry.Format.Payloads.Add(new IconPayload() { IconId = 1 });
                     SaveAndReloadChat();
                 }
 
-                if (ImGui.MenuItem(t("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.CustomColor")))
+                if (ImGui.MenuItem(TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.CustomColor")))
                 {
                     entry.Format.Payloads.AddRange([
                         new ColorPayload() { Color = new IntegerExpression(0xFFFFFFFF) },
@@ -614,7 +471,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
                     SaveAndReloadChat();
                 }
 
-                if (ImGui.BeginMenu(t("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.LogTextColors"))) // GetAddonText(12732)
+                if (ImGui.BeginMenu(TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.LogTextColors"))) // GetAddonText(12732)
                 {
                     foreach (var (gnumIndex, label) in CachedTextColors!.ToList().OrderBy(entry => entry.Value))
                     {
@@ -640,7 +497,7 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
                     ImGui.EndMenu();
                 }
 
-                if (ImGui.MenuItem(t("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.StackColor")))
+                if (ImGui.MenuItem(TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.StackColor")))
                 {
                     entry.Format.Payloads.Add(new ColorPayload() { Color = new PlaceholderExpression(ExpressionType.StackColor) });
                     SaveAndReloadChat();
@@ -649,9 +506,9 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         }
     }
 
-    public void DrawExample(SeString format)
+    private void DrawExample(SeString format)
     {
-        var colorQueue = new Queue<ImRaii.Color>();
+        using var textColors = new ImRaii.Color();
 
         // TODO: compose player name with party index, job icon (depending on setting) and world
         var resolved = format.Resolve(["Player Name", "Message"]);
@@ -678,9 +535,9 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
 
                 case ColorPayload colorPayload:
                     if (colorPayload.Color is IntegerExpression integerExpression)
-                        colorQueue.Enqueue(ImRaii.PushColor(ImGuiCol.Text, SwapRedBlue((uint)integerExpression.ResolveNumber())));
-                    else if (colorPayload.Color?.ExpressionType == ExpressionType.StackColor && colorQueue.TryDequeue(out var color))
-                        color?.Dispose();
+                        textColors.Push(ImGuiCol.Text, SwapRedBlue((uint)integerExpression.ResolveNumber()));
+                    else if (colorPayload.Color?.ExpressionType == ExpressionType.StackColor)
+                        textColors.Pop(1);
 
                     ImGui.Dummy(Vector2.Zero);
                     break;
@@ -694,22 +551,16 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         }
 
         ImGui.NewLine();
-
-        while (colorQueue.Count > 0)
-        {
-            if (colorQueue.TryDequeue(out var color))
-                color?.Dispose();
-        }
     }
 
-    public void DrawGfdEntry(GfdFileView.GfdEntry entry)
+    private void DrawGfdEntry(GfdFileView.GfdEntry entry)
     {
         var startPos = new Vector2(entry.Left, entry.Top) * 2 + new Vector2(0, 340);
         var size = new Vector2(entry.Width, entry.Height) * 2;
 
-        Service.GameConfig.TryGet(SystemConfigOption.PadSelectButtonIcon, out uint padSelectButtonIcon);
+        GameConfig.TryGet(SystemConfigOption.PadSelectButtonIcon, out uint padSelectButtonIcon);
 
-        Service.TextureManager
+        TextureManager
             .Get(GfdTextures[padSelectButtonIcon], 1, startPos, startPos + size)
             .Draw(ImGuiHelpers.ScaledVector2(size.X, size.Y) / 2);
     }
@@ -720,12 +571,12 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
 
         void Add(uint logKindId, uint logFilterId)
         {
-            var logKindRow = GetRow<LogKind>(logKindId)!;
-            var logFilterRow = GetRow<LogFilter>(logFilterId)!;
+            var logKindRow = ExcelService.GetRow<LogKind>(logKindId)!;
+            var logFilterRow = ExcelService.GetRow<LogFilter>(logFilterId)!;
             if (logKindRow != null && logFilterRow != null && logKindRow.Format.RawData.Length > 0)
                 list.Add((logKindRow, logFilterRow, SeString.Parse(logKindRow.Format.RawData)));
             else
-                Warning($"GenerateLogKindCache(): Skipped ({logKindId}, {logFilterId})");
+                Logger.LogWarning("GenerateLogKindCache(): Skipped ({logKindId}, {logFilterId})", logKindId, logFilterId);
         }
 
         Add(10, 1); // Say
@@ -763,10 +614,10 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
     private string GetLogKindlabel(uint logKindId)
     {
         if (logKindId == 12) // Tell (Incoming)
-            return t("CustomChatMessageFormats.Config.Entry.Name.TellIncoming");
+            return TextService.Translate("CustomChatMessageFormats.Config.Entry.Name.TellIncoming");
 
         if (logKindId == 13) // Tell (Outgoing)
-            return t("CustomChatMessageFormats.Config.Entry.Name.TellOutgoing");
+            return TextService.Translate("CustomChatMessageFormats.Config.Entry.Name.TellOutgoing");
 
         CachedLogKindRows ??= GenerateLogKindCache();
 
@@ -779,40 +630,217 @@ public partial class CustomChatMessageFormats : Tweak<CustomChatMessageFormatsCo
         return $"LogKind #{logKindId}";
     }
 
-    private static FrozenDictionary<uint, string> GenerateTextColors()
+    private FrozenDictionary<uint, string> GenerateTextColors()
     {
         return new Dictionary<uint, string>
         {
-            { 13, GetAddonText(1935) + " - " + GetAddonText(653) },  // Log Text Colors - Chat 1 - Say
-            { 14, GetAddonText(1935) + " - " + GetAddonText(645) },  // Log Text Colors - Chat 1 - Shout
-            { 15, GetAddonText(1935) + " - " + GetAddonText(7886) }, // Log Text Colors - Chat 1 - Tell
-            { 16, GetAddonText(1935) + " - " + GetAddonText(7887) }, // Log Text Colors - Chat 1 - Party
-            { 17, GetAddonText(1935) + " - " + GetAddonText(7888) }, // Log Text Colors - Chat 1 - Alliance
-            { 18, GetAddonText(1936) + " - " + GetAddonText(7890) }, // Log Text Colors - Chat 2 - LS1
-            { 19, GetAddonText(1936) + " - " + GetAddonText(7891) }, // Log Text Colors - Chat 2 - LS2
-            { 20, GetAddonText(1936) + " - " + GetAddonText(7892) }, // Log Text Colors - Chat 2 - LS3
-            { 21, GetAddonText(1936) + " - " + GetAddonText(7893) }, // Log Text Colors - Chat 2 - LS4
-            { 22, GetAddonText(1936) + " - " + GetAddonText(7894) }, // Log Text Colors - Chat 2 - LS5
-            { 23, GetAddonText(1936) + " - " + GetAddonText(7895) }, // Log Text Colors - Chat 2 - LS6
-            { 24, GetAddonText(1936) + " - " + GetAddonText(7896) }, // Log Text Colors - Chat 2 - LS7
-            { 25, GetAddonText(1936) + " - " + GetAddonText(7897) }, // Log Text Colors - Chat 2 - LS8
-            { 26, GetAddonText(1936) + " - " + GetAddonText(7889) }, // Log Text Colors - Chat 2 - Free Company
-            { 27, GetAddonText(1936) + " - " + GetAddonText(7899) }, // Log Text Colors - Chat 2 - PvP Team
-            { 29, GetAddonText(1936) + " - " + GetAddonText(7898) }, // Log Text Colors - Chat 2 - Novice Network
-            { 30, GetAddonText(1935) + " - " + GetAddonText(1911) }, // Log Text Colors - Chat 1 - Personal Emotes
-            { 31, GetAddonText(1935) + " - " + GetAddonText(1911) }, // Log Text Colors - Chat 1 - Emotes
-            { 32, GetAddonText(1935) + " - " + GetAddonText(1931) }, // Log Text Colors - Chat 1 - Yell
-            { 35, GetAddonText(1936) + " - " + GetAddonText(4397) }, // Log Text Colors - Chat 2 - CWLS1
-            { 84, GetAddonText(1936) + " - " + GetAddonText(8390) }, // Log Text Colors - Chat 2 - CWLS2
-            { 85, GetAddonText(1936) + " - " + GetAddonText(8391) }, // Log Text Colors - Chat 2 - CWLS3
-            { 86, GetAddonText(1936) + " - " + GetAddonText(8392) }, // Log Text Colors - Chat 2 - CWLS4
-            { 87, GetAddonText(1936) + " - " + GetAddonText(8393) }, // Log Text Colors - Chat 2 - CWLS5
-            { 88, GetAddonText(1936) + " - " + GetAddonText(8394) }, // Log Text Colors - Chat 2 - CWLS6
-            { 89, GetAddonText(1936) + " - " + GetAddonText(8395) }, // Log Text Colors - Chat 2 - CWLS7
-            { 90, GetAddonText(1936) + " - " + GetAddonText(8396) } // Log Text Colors - Chat 2 - CWLS8
+            { 13, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(653) },  // Log Text Colors - Chat 1 - Say
+            { 14, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(645) },  // Log Text Colors - Chat 1 - Shout
+            { 15, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7886) }, // Log Text Colors - Chat 1 - Tell
+            { 16, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7887) }, // Log Text Colors - Chat 1 - Party
+            { 17, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7888) }, // Log Text Colors - Chat 1 - Alliance
+            { 18, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7890) }, // Log Text Colors - Chat 2 - LS1
+            { 19, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7891) }, // Log Text Colors - Chat 2 - LS2
+            { 20, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7892) }, // Log Text Colors - Chat 2 - LS3
+            { 21, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7893) }, // Log Text Colors - Chat 2 - LS4
+            { 22, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7894) }, // Log Text Colors - Chat 2 - LS5
+            { 23, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7895) }, // Log Text Colors - Chat 2 - LS6
+            { 24, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7896) }, // Log Text Colors - Chat 2 - LS7
+            { 25, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7897) }, // Log Text Colors - Chat 2 - LS8
+            { 26, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7889) }, // Log Text Colors - Chat 2 - Free Company
+            { 27, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7899) }, // Log Text Colors - Chat 2 - PvP Team
+            { 29, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7898) }, // Log Text Colors - Chat 2 - Novice Network
+            { 30, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1911) }, // Log Text Colors - Chat 1 - Personal Emotes
+            { 31, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1911) }, // Log Text Colors - Chat 1 - Emotes
+            { 32, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1931) }, // Log Text Colors - Chat 1 - Yell
+            { 35, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(4397) }, // Log Text Colors - Chat 2 - CWLS1
+            { 84, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8390) }, // Log Text Colors - Chat 2 - CWLS2
+            { 85, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8391) }, // Log Text Colors - Chat 2 - CWLS3
+            { 86, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8392) }, // Log Text Colors - Chat 2 - CWLS4
+            { 87, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8393) }, // Log Text Colors - Chat 2 - CWLS5
+            { 88, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8394) }, // Log Text Colors - Chat 2 - CWLS6
+            { 89, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8395) }, // Log Text Colors - Chat 2 - CWLS7
+            { 90, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8396) } // Log Text Colors - Chat 2 - CWLS8
         }.ToFrozenDictionary();
     }
 
     private static uint SwapRedBlue(uint value)
         => 0xFF000000 | ((value & 0x000000FF) << 16) | (value & 0x0000FF00) | ((value & 0x00FF0000) >> 16);
+
+    public override void DrawConfig()
+    {
+        TextService.Draw("HaselTweaks.Config.SectionTitle.Configuration");
+
+        CachedLogKindRows ??= GenerateLogKindCache();
+        CachedTextColors ??= GenerateTextColors();
+
+        var ItemInnerSpacing = ImGui.GetStyle().ItemInnerSpacing;
+
+        using var cellpadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, ItemInnerSpacing * ImGuiHelpers.GlobalScale);
+        using var table = ImRaii.Table("##Table", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX);
+        if (!table.Success)
+            return;
+        cellpadding?.Dispose();
+
+        ImGui.TableSetupColumn("Enabled", ImGuiTableColumnFlags.WidthFixed);
+        ImGui.TableSetupColumn("Channel Name and Format", ImGuiTableColumnFlags.WidthStretch);
+        ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthFixed,
+            ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Pen).X + ItemInnerSpacing.X + ImGuiUtils.GetIconButtonSize(FontAwesomeIcon.Trash).X);
+
+        var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
+        var entryToEdit = 0u;
+        var entryToRemove = 0u;
+
+        foreach (var (logKindId, entry) in Config.FormatOverrides)
+        {
+            using var id = ImRaii.PushId("Setting[" + logKindId.ToString() + "]");
+            var isValid = entry.IsValid();
+
+            ImGui.TableNextRow();
+
+            // Enabled
+            ImGui.TableNextColumn();
+            {
+                ImGui.Checkbox("##Enabled", ref entry.Enabled);
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.BeginTooltip();
+                    TextService.Draw(entry.Enabled
+                        ? "CustomChatMessageFormats.Config.Entry.EnableCheckbox.Tooltip.IsEnabled"
+                        : "CustomChatMessageFormats.Config.Entry.EnableCheckbox.Tooltip.IsDisabled");
+                    ImGui.EndTooltip();
+                }
+                if (ImGui.IsItemClicked())
+                    PluginConfig.Save();
+            }
+
+            // Channel Name and Format
+            ImGui.TableNextColumn();
+            {
+                ImGuiUtils.PushCursorY(-2 * ImGuiHelpers.GlobalScale);
+
+                if (!isValid)
+                {
+                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red))
+                        ImGuiUtils.Icon(FontAwesomeIcon.ExclamationCircle);
+
+                    if (ImGui.IsItemHovered())
+                    {
+                        ImGui.BeginTooltip();
+                        TextService.Draw("CustomChatMessageFormats.Config.Entry.InvalidPayloads.Tooltip");
+                        ImGui.EndTooltip();
+                    }
+
+                    ImGuiUtils.SameLineSpace();
+                }
+
+                ImGui.TextUnformatted(GetLogKindlabel(logKindId));
+
+                DrawExample(entry.Format);
+
+                if (entry.EditMode)
+                {
+                    ImGuiUtils.PushCursorY(3 * ImGuiHelpers.GlobalScale);
+                    DrawEditMode(entry);
+                }
+            }
+
+            // Actions
+            ImGui.TableNextColumn();
+            {
+                if (entry.EditMode)
+                {
+                    if (ImGuiUtils.IconButton("##CloseEditor", FontAwesomeIcon.FilePen, TextService.Translate("CustomChatMessageFormats.Config.Entry.CloseEditorButton.Tooltip")))
+                    {
+                        entry.EditMode = false;
+                    }
+                }
+                else
+                {
+                    if (ImGuiUtils.IconButton("##OpenEditor", FontAwesomeIcon.Pen, TextService.Translate("CustomChatMessageFormats.Config.Entry.OpenEditorButton.Tooltip")))
+                    {
+                        entryToEdit = logKindId;
+                    }
+                }
+
+                ImGui.SameLine(0, ItemInnerSpacing.X);
+
+                if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
+                {
+                    if (ImGuiUtils.IconButton("##Delete", FontAwesomeIcon.Trash, TextService.Translate("HaselTweaks.Config.Generic.DeleteButton.Tooltip.HoldingShift")))
+                    {
+                        entryToRemove = logKindId;
+                    }
+                }
+                else
+                {
+                    ImGuiUtils.IconButton(
+                        "##Delete",
+                        FontAwesomeIcon.Trash,
+                        TextService.Translate(isWindowFocused
+                            ? "HaselTweaks.Config.Generic.DeleteButton.Tooltip.NotHoldingShift"
+                            : "HaselTweaks.Config.Generic.DeleteButton.Tooltip.WindowNotFocused"),
+                        disabled: true);
+                }
+            }
+        }
+
+        table?.Dispose();
+
+        if (entryToEdit != 0)
+        {
+            Config.FormatOverrides[entryToEdit].EditMode = !Config.FormatOverrides[entryToEdit].EditMode;
+        }
+
+        if (entryToRemove != 0)
+        {
+            Config.FormatOverrides.Remove(entryToRemove);
+            SaveAndReloadChat();
+        }
+
+        ImGui.Spacing();
+
+        var entries = CachedLogKindRows.Where(entry => !Config.FormatOverrides.ContainsKey(entry.LogKind.RowId));
+        var entriesCount = entries.Count();
+        if (entriesCount > 0)
+        {
+            ImGui.SetNextItemWidth(-1);
+            using var combo = ImRaii.Combo("##LogKindSelect", TextService.Translate("CustomChatMessageFormats.LogKindSelect.PreviewValue"), ImGuiComboFlags.HeightLarge);
+            if (combo)
+            {
+                var i = 0;
+                foreach (var entry in entries)
+                {
+                    if (ImGui.Selectable($"{GetLogKindlabel(entry.LogKind.RowId)}##LogKind{entry.LogKind.RowId}", false, ImGuiSelectableFlags.None, new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetTextLineHeight() * 2)))
+                    {
+                        Config.FormatOverrides.Add(entry.LogKind.RowId, new(SeString.Parse(entry.Format.Encode())));
+                        SaveAndReloadChat();
+                    }
+
+                    var afterCursor = ImGui.GetCursorPos();
+
+                    ImGuiUtils.PushCursor(14 * ImGuiHelpers.GlobalScale, -ImGui.GetTextLineHeight() - ImGui.GetStyle().ItemSpacing.Y);
+                    DrawExample(entry.Format);
+
+                    ImGui.SetCursorPos(afterCursor);
+
+                    if (i < entriesCount - 1)
+                        ImGui.Separator();
+                    i++;
+                }
+            }
+        }
+
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.Spacing();
+
+        if (ImGui.Button(TextService.Translate("CustomChatMessageFormats.Config.OpenConfigLogColorButton.Tooltip")))
+        {
+            unsafe
+            {
+                GetAgent<AgentInterface>(AgentId.ConfigLogColor)->Show();
+            }
+        }
+    }
 }

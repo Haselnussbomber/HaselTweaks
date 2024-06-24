@@ -1,11 +1,39 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Services;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe class ExpertDeliveries : Tweak
+public sealed unsafe class ExpertDeliveries(AddonObserver AddonObserver) : ITweak
 {
-    public override void OnAddonOpen(string addonName)
+    public string InternalName => nameof(ExpertDeliveries);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    public void OnInitialize() { }
+
+    public void OnEnable()
+    {
+        AddonObserver.AddonOpen += OnAddonOpen;
+    }
+
+    public void OnDisable()
+    {
+        AddonObserver.AddonOpen -= OnAddonOpen;
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
+    }
+
+    public void OnAddonOpen(string addonName)
     {
         if (addonName != "GrandCompanySupplyList")
             return;
@@ -13,7 +41,7 @@ public unsafe class ExpertDeliveries : Tweak
         if (!TryGetAddon<AtkUnitBase>(addonName, out var addon))
             return;
 
-        var atkEvent = stackalloc AtkEvent[1];
-        addon->ReceiveEvent(AtkEventType.ButtonClick, 4, atkEvent, 0);
+        var atkEvent = new AtkEvent();
+        addon->ReceiveEvent(AtkEventType.ButtonClick, 4, &atkEvent, 0);
     }
 }

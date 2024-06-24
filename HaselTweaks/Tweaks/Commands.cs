@@ -1,19 +1,24 @@
-using Dalamud.Game.ClientState.Objects.Enums;
+using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Memory;
-using Dalamud.Utility;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselCommon.Commands.Attributes;
+using HaselCommon.Commands.Interfaces;
 using HaselCommon.Extensions;
+using HaselCommon.Services;
+using HaselTweaks.Config;
+using HaselTweaks.Enums;
 using Lumina.Excel.GeneratedSheets;
-using GameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
-using ObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
+using BattleNpcSubKind = Dalamud.Game.ClientState.Objects.Enums.BattleNpcSubKind;
+using DalamudObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 
 namespace HaselTweaks.Tweaks;
 
-public class CommandsConfiguration
+public sealed class CommandsConfiguration
 {
     [BoolConfig]
     public bool EnableItemLinkCommand = true;
@@ -28,10 +33,52 @@ public class CommandsConfiguration
     public bool EnableGlamourPlateCommand = true;
 }
 
-[Tweak]
-public unsafe class Commands : Tweak<CommandsConfiguration>
+public sealed unsafe class Commands(
+    PluginConfig pluginConfig,
+    TextService textService,
+    ExcelService ExcelService,
+    ICommandRegistry Commands,
+    IChatGui ChatGui,
+    ITargetManager TargetManager)
+    : Tweak<CommandsConfiguration>(pluginConfig, textService)
 {
-    [CommandHandler("/itemlink", "Commands.Config.EnableItemLinkCommand.Description", nameof(Config.EnableItemLinkCommand))]
+    private ICommandHandler? ItemLinkCommandHandler;
+    private ICommandHandler? WhatMountCommandCommandHandler;
+    private ICommandHandler? WhatBardingCommandCommandHandler;
+    private ICommandHandler? GlamourPlateCommandCommandHandler;
+
+    public override void OnInitialize()
+    {
+        ItemLinkCommandHandler = Commands.Register(OnItemLinkCommand);
+        WhatMountCommandCommandHandler = Commands.Register(OnWhatMountCommand);
+        WhatBardingCommandCommandHandler = Commands.Register(OnWhatBardingCommand);
+        GlamourPlateCommandCommandHandler = Commands.Register(OnGlamourPlateCommand);
+    }
+
+    public override void OnEnable()
+    {
+        UpdateCommands(true);
+    }
+
+    public override void OnDisable()
+    {
+        UpdateCommands(false);
+    }
+
+    public override void OnConfigChange(string fieldName)
+    {
+        UpdateCommands(Status == TweakStatus.Enabled);
+    }
+
+    private void UpdateCommands(bool enable)
+    {
+        ItemLinkCommandHandler?.SetEnabled(enable && Config.EnableItemLinkCommand);
+        WhatMountCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatMountCommand);
+        WhatBardingCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatBardingCommand);
+        GlamourPlateCommandCommandHandler?.SetEnabled(enable && Config.EnableGlamourPlateCommand);
+    }
+
+    [CommandHandler("/itemlink", "Commands.Config.EnableItemLinkCommand.Description")]
     private void OnItemLinkCommand(string command, string arguments)
     {
         uint id;
@@ -41,14 +88,14 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
         }
         catch (Exception e)
         {
-            Service.ChatGui.PrintError(e.Message);
+            ChatGui.PrintError(e.Message);
             return;
         }
 
-        var item = GetRow<Item>(id);
+        var item = ExcelService.GetRow<Item>(id);
         if (item == null)
         {
-            Service.ChatGui.PrintError(t("Commands.ItemLink.ItemNotFound", id));
+            ChatGui.PrintError(TextService.Translate("Commands.ItemLink.ItemNotFound", id));
             return;
         }
 
@@ -58,51 +105,41 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
 
         var sb = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
-            .Append(tSe("Commands.ItemLink.Item", idStr, SeString.CreateItemLink(id)));
+            .Append(TextService.TranslateSe("Commands.ItemLink.Item", idStr, SeString.CreateItemLink(id)));
 
-        Service.ChatGui.Print(new XivChatEntry
+        ChatGui.Print(new XivChatEntry
         {
             Message = sb.Build(),
             Type = XivChatType.Echo
         });
     }
 
-    [CommandHandler("/whatmount", "Commands.Config.EnableWhatMountCommand.Description", nameof(Config.EnableWhatMountCommand))]
+    [CommandHandler("/whatmount", "Commands.Config.EnableWhatMountCommand.Description")]
     private void OnWhatMountCommand(string command, string arguments)
     {
-        var target = Service.TargetManager.Target;
+        var target = (Character*)(TargetManager.Target?.Address ?? 0);
         if (target == null)
         {
-            Service.ChatGui.PrintError(t("Commands.NoTarget"));
+            ChatGui.PrintError(TextService.Translate("Commands.NoTarget"));
             return;
         }
 
-        if (target.ObjectKind != ObjectKind.Player)
+        if (target->GameObject.GetObjectKind() != ObjectKind.Pc)
         {
-            Service.ChatGui.PrintError(t("Commands.TargetIsNotAPlayer"));
+            ChatGui.PrintError(TextService.Translate("Commands.TargetIsNotAPlayer"));
             return;
         }
 
-        var targetGameObject = (GameObject*)target.Address;
-        if (targetGameObject->ObjectIndex + 1 > Service.ObjectTable.Length)
+        if (target->Mount.MountId == 0)
         {
-            Service.ChatGui.PrintError("Error: mount game object index out of bounds.");
+            ChatGui.PrintError(TextService.Translate("Commands.WhatMount.TargetNotMounted"));
             return;
         }
 
-        var mountObject = Service.ObjectTable[targetGameObject->ObjectIndex + 1];
-        if (mountObject == null || mountObject.ObjectKind != ObjectKind.MountType)
-        {
-            Service.ChatGui.PrintError(t("Commands.WhatMount.TargetNotMounted"));
-            return;
-        }
-
-        var modelChara = ((Character*)mountObject.Address)->CharacterData.ModelCharaId;
-
-        var mount = FindRow<Mount>(row => row?.ModelChara.Row == modelChara);
+        var mount = ExcelService.GetRow<Mount>(target->Mount.MountId);
         if (mount == null)
         {
-            Service.ChatGui.PrintError(t("Commands.WhatMount.MountNotFound"));
+            ChatGui.PrintError(TextService.Translate("Commands.WhatMount.MountNotFound"));
             return;
         }
 
@@ -110,104 +147,104 @@ public unsafe class Commands : Tweak<CommandsConfiguration>
             .AddUiForeground("\uE078 ", 32);
 
         var name = new SeStringBuilder()
-            .AddUiForeground(GetMountName(mount.RowId), 1)
+            .AddUiForeground(TextService.GetMountName(mount.RowId), 1)
             .Build();
 
-        var itemAction = FindRow<ItemAction>(row => row?.Type == 1322 && row.Data[0] == mount.RowId);
+        var itemAction = ExcelService.FindRow<ItemAction>(row => row?.Type == 1322 && row.Data[0] == mount.RowId);
         if (itemAction == null || itemAction.RowId == 0)
         {
-            Service.ChatGui.Print(new XivChatEntry
+            ChatGui.Print(new XivChatEntry
             {
                 Message = sb
-                    .Append(tSe("Commands.WhatMount.WithoutItem", name))
+                    .Append(TextService.TranslateSe("Commands.WhatMount.WithoutItem", name))
                     .Build(),
                 Type = XivChatType.Echo
             });
             return;
         }
 
-        var item = FindRow<Item>(row => row?.ItemAction.Row == itemAction!.RowId);
+        var item = ExcelService.FindRow<Item>(row => row?.ItemAction.Row == itemAction!.RowId);
         if (item == null)
         {
-            Service.ChatGui.Print(new XivChatEntry
+            ChatGui.Print(new XivChatEntry
             {
                 Message = sb
-                    .Append(tSe("Commands.WhatMount.WithoutItem", name))
+                    .Append(TextService.TranslateSe("Commands.WhatMount.WithoutItem", name))
                     .Build(),
                 Type = XivChatType.Echo
             });
             return;
         }
 
-        sb.Append(tSe("Commands.WhatMount.WithItem", name, SeString.CreateItemLink(item.RowId, false, GetItemName(item.RowId))));
+        sb.Append(TextService.TranslateSe("Commands.WhatMount.WithItem", name, SeString.CreateItemLink(item.RowId, false, TextService.GetItemName(item.RowId))));
 
-        Service.ChatGui.Print(new XivChatEntry
+        ChatGui.Print(new XivChatEntry
         {
             Message = sb.Build(),
             Type = XivChatType.Echo
         });
     }
 
-    [CommandHandler("/whatbarding", "Commands.Config.EnableWhatMountCommand.Description", nameof(Config.EnableWhatBardingCommand))]
+    [CommandHandler("/whatbarding", "Commands.Config.EnableWhatMountCommand.Description")]
     private void OnWhatBardingCommand(string command, string arguments)
     {
-        var target = Service.TargetManager.Target;
+        var target = TargetManager.Target;
         if (target == null)
         {
-            Service.ChatGui.PrintError(t("Commands.NoTarget"));
+            ChatGui.PrintError(TextService.Translate("Commands.NoTarget"));
             return;
         }
 
-        if (target.ObjectKind != ObjectKind.BattleNpc || target.SubKind != (byte)BattleNpcSubKind.Chocobo)
+        if (target.ObjectKind != DalamudObjectKind.BattleNpc || target.SubKind != (byte)BattleNpcSubKind.Chocobo)
         {
-            Service.ChatGui.PrintError(t("Commands.TargetIsNotAChocobo"));
+            ChatGui.PrintError(TextService.Translate("Commands.TargetIsNotAChocobo"));
             return;
         }
 
         var targetCharacter = (Character*)target.Address;
 
-        var topRow = FindRow<BuddyEquip>(row => row?.ModelTop == targetCharacter->DrawData.Head.Value);
-        var bodyRow = FindRow<BuddyEquip>(row => row?.ModelBody == targetCharacter->DrawData.Top.Value);
-        var legsRow = FindRow<BuddyEquip>(row => row?.ModelLegs == targetCharacter->DrawData.Feet.Value);
+        var topRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelTop == targetCharacter->DrawData.Head.Value);
+        var bodyRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelBody == targetCharacter->DrawData.Top.Value);
+        var legsRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelLegs == targetCharacter->DrawData.Feet.Value);
 
-        var stain = GetRow<Stain>(targetCharacter->DrawData.Legs.Stain)!;
+        var stain = ExcelService.GetRow<Stain>(targetCharacter->DrawData.Legs.Stain)!;
         var name = new SeStringBuilder()
-            .AddUiForeground(MemoryHelper.ReadString((nint)targetCharacter->GameObject.Name, 0x40), 1)
+            .AddUiForeground(targetCharacter->GameObject.NameString, 1)
             .Build();
 
         var sb = new SeStringBuilder()
             .AddUiForeground("\uE078 ", 32)
-            .Append(tSe("Commands.WhatBarding.AppearanceOf", name))
+            .Append(TextService.TranslateSe("Commands.WhatBarding.AppearanceOf", name))
             .Add(NewLinePayload.Payload)
-            .AddText($"  {GetAddonText(4987)}: ")
+            .AddText($"  {TextService.GetAddonText(4987)}: ")
             .Append(stain.Name.ToString().FirstCharToUpper())
             .Add(NewLinePayload.Payload)
-            .AddText($"  {GetAddonText(4991)}: {topRow?.Name.ToDalamudString().ToString() ?? GetAddonText(4994)}")
+            .AddText($"  {TextService.GetAddonText(4991)}: {topRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}")
             .Add(NewLinePayload.Payload)
-            .AddText($"  {GetAddonText(4992)}: {bodyRow?.Name.ToDalamudString().ToString() ?? GetAddonText(4994)}")
+            .AddText($"  {TextService.GetAddonText(4992)}: {bodyRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}")
             .Add(NewLinePayload.Payload)
-            .AddText($"  {GetAddonText(4993)}: {legsRow?.Name.ToDalamudString().ToString() ?? GetAddonText(4994)}");
+            .AddText($"  {TextService.GetAddonText(4993)}: {legsRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}");
 
-        Service.ChatGui.Print(new XivChatEntry
+        ChatGui.Print(new XivChatEntry
         {
             Message = sb.Build(),
             Type = XivChatType.Echo
         });
     }
 
-    [CommandHandler("/glamourplate", "Commands.Config.EnableGlamourPlateCommand.Description", nameof(Config.EnableGlamourPlateCommand))]
+    [CommandHandler("/glamourplate", "Commands.Config.EnableGlamourPlateCommand.Description")]
     private void OnGlamourPlateCommand(string command, string arguments)
     {
         if (!byte.TryParse(arguments, out var glamourPlateId) || glamourPlateId == 0 || glamourPlateId > 20)
         {
-            Service.ChatGui.PrintError(t("Commands.InvalidArguments"));
+            ChatGui.PrintError(TextService.Translate("Commands.InvalidArguments"));
             return;
         }
 
         var raptureGearsetModule = RaptureGearsetModule.Instance();
         if (!raptureGearsetModule->IsValidGearset(raptureGearsetModule->CurrentGearsetIndex))
         {
-            Service.ChatGui.PrintError(t("Commands.GlamourPlate.InvalidGearset"));
+            ChatGui.PrintError(TextService.Translate("Commands.GlamourPlate.InvalidGearset"));
             return;
         }
 

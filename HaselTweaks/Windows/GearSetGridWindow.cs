@@ -2,14 +2,17 @@ using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Memory;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Extensions;
+using HaselCommon.Services;
 using HaselCommon.Sheets;
-using HaselCommon.Structs;
+using HaselCommon.Textures;
 using HaselCommon.Utils;
+using HaselCommon.Windowing.Interfaces;
+using HaselTweaks.Config;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -25,15 +28,29 @@ public unsafe class GearSetGridWindow : LockableWindow
     private static readonly Vector2 IconSize = new(34);
     private static readonly Vector2 IconInset = IconSize * 0.08333f;
     private static readonly float ItemCellWidth = IconSize.X;
-    public static GearSetGridConfiguration Config => Service.GetService<Configuration>().Tweaks.GearSetGrid;
-
+    private readonly IClientState ClientState;
+    private readonly TextureManager TextureManager;
+    private readonly ExcelService ExcelService;
+    private readonly TextService TextService;
     private bool _resetScrollPosition;
 
-    public GearSetGridWindow() : base(t("GearSetGridWindow.Title"))
+    public GearSetGridConfiguration Config => PluginConfig.Tweaks.GearSetGrid;
+
+    public GearSetGridWindow(
+        IWindowManager windowManager,
+        PluginConfig pluginConfig,
+        IClientState clientState,
+        TextureManager textureManager,
+        ExcelService excelService,
+        TextService textService)
+        : base(windowManager, pluginConfig, textService, textService.Translate("GearSetGridWindow.Title"))
     {
-        Namespace = "HaselTweaks_GearSetGrid";
+        ClientState = clientState;
+        TextureManager = textureManager;
+        ExcelService = excelService;
+        TextService = textService;
+
         DisableWindowSounds = Config.AutoOpenWithGearSetList;
-        IsOpen = true;
 
         Flags |= ImGuiWindowFlags.NoCollapse;
 
@@ -48,23 +65,20 @@ public unsafe class GearSetGridWindow : LockableWindow
 
     public override void OnOpen()
     {
+        base.OnOpen();
         _resetScrollPosition = true;
     }
 
-    public override void OnClose()
-    {
-        Service.WindowManager.CloseWindow<GearSetGridWindow>();
-    }
-
     public override bool DrawConditions()
-        => Service.ClientState.IsLoggedIn;
+        => ClientState.IsLoggedIn;
 
     public override void Draw()
     {
         const int NUM_SLOTS = 13;
 
-        using var cellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, Vector2.Zero);
-        using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
+        using var padding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, Vector2.Zero)
+                                  .Push(ImGuiStyleVar.FramePadding, Vector2.Zero);
+
         using var table = ImRaii.Table("##Table", 1 + NUM_SLOTS, ImGuiTableFlags.ScrollY | ImGuiTableFlags.NoSavedSettings);
         if (!table)
             return;
@@ -96,7 +110,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
             using var id = ImRaii.PushId($"Gearset_{gearsetIndex}");
 
-            var name = MemoryHelper.ReadString((nint)gearset->Name, 0x2F);
+            var name = gearset->NameString;
 
             if (Config.ConvertSeparators && name == Config.SeparatorFilter)
             {
@@ -124,29 +138,27 @@ public unsafe class GearSetGridWindow : LockableWindow
                 if (ImGui.IsItemHovered())
                 {
                     using var tooltip = ImRaii.Tooltip();
-                    ImGui.TextUnformatted($"[{gearset->ID + 1}] {name}");
+                    ImGui.TextUnformatted($"[{gearset->Id + 1}] {name}");
 
                     if (gearset->GlamourSetLink != 0)
                     {
-                        ImGui.TextUnformatted($"{GetAddonText(3185)}: {gearset->GlamourSetLink}"); // "Glamour Plate: {link}"
+                        ImGui.TextUnformatted($"{TextService.GetAddonText(3185)}: {gearset->GlamourSetLink}"); // "Glamour Plate: {link}"
                     }
                 }
 
-                new ImGuiContextMenu("##GearsetContext")
-                {
+                ImGuiContextMenu.Draw("##GearsetContext", [
                     ImGuiContextMenu.CreateGearsetLinkGlamour(gearset),
                     ImGuiContextMenu.CreateGearsetChangeGlamour(gearset),
                     ImGuiContextMenu.CreateGearsetUnlinkGlamour(gearset),
                     ImGuiContextMenu.CreateGearsetChangePortrait(gearset)
-                }
-                .Draw();
+                ]);
 
                 var iconSize = 28 * ImGuiHelpers.GlobalScale;
                 var itemStartPos = startPos + new Vector2(region.X / 2f - iconSize / 2f, ImGui.GetStyle().ItemInnerSpacing.Y); // start from the right
 
                 // class icon
                 ImGui.SetCursorPos(itemStartPos);
-                Service.TextureManager.GetIcon(62100 + gearset->ClassJob).Draw(iconSize);
+                TextureManager.GetIcon(62100 + gearset->ClassJob).Draw(iconSize);
 
                 // gearset number
                 var text = $"{gearsetIndex + 1}";
@@ -160,8 +172,8 @@ public unsafe class GearSetGridWindow : LockableWindow
                 if (slotIndex == 5)
                     continue;
 
-                var slot = gearset->ItemsSpan.GetPointer((int)slotIndex);
-                var itemId = slot->ItemID % 1000000; // strip HQ
+                var slot = gearset->Items.GetPointer((int)slotIndex);
+                var itemId = slot->ItemId % 1000000; // strip HQ
 
                 ImGui.TableNextColumn();
 
@@ -172,19 +184,19 @@ public unsafe class GearSetGridWindow : LockableWindow
 
                     // icon background
                     ImGui.SetCursorPos(cursorPos);
-                    Service.TextureManager
+                    TextureManager
                         .GetPart("Character", 8, 0)
                         .Draw(IconSize * ImGuiHelpers.GlobalScale);
 
                     ImGui.SetCursorPos(cursorPos + IconInset * ImGuiHelpers.GlobalScale);
-                    Service.TextureManager
+                    TextureManager
                         .GetPart("Character", 11, 17 + slotIndex)
                         .Draw((IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
                     continue;
                 }
 
-                var item = GetRow<ExtendedItem>(itemId);
+                var item = ExcelService.GetRow<ExtendedItem>(itemId);
                 if (item == null)
                     continue;
 
@@ -213,9 +225,9 @@ public unsafe class GearSetGridWindow : LockableWindow
             if (!gearset->Flags.HasFlag(GearsetFlag.Exists))
                 continue;
 
-            var item = gearset->ItemsSpan.GetPointer((int)slotIndex);
-            if (item->ItemID == itemId)
-                list.Add(new(gearset->ID, MemoryHelper.ReadString((nint)gearset->Name, 0x2F)));
+            var item = gearset->Items.GetPointer((int)slotIndex);
+            if (item->ItemId == itemId)
+                list.Add(new(gearset->Id, gearset->NameString));
         }
 
         return list;
@@ -227,25 +239,25 @@ public unsafe class GearSetGridWindow : LockableWindow
 
         //var isEventItem = slot.ItemID > 2000000;
         //var isCollectable = slot.ItemID is > 500000 and < 1000000;
-        var isHq = slot->ItemID is > 1000000 and < 1500000;
+        var isHq = slot->ItemId is > 1000000 and < 1500000;
 
         var startPos = ImGui.GetCursorPos();
 
         // icon background
         ImGui.SetCursorPos(startPos);
-        Service.TextureManager
+        TextureManager
             .GetPart("Character", 7, 4)
             .Draw(IconSize * ImGuiHelpers.GlobalScale);
 
         // icon
         ImGui.SetCursorPos(startPos + IconInset * ImGuiHelpers.GlobalScale);
-        Service.TextureManager
+        TextureManager
             .GetIcon(item.Icon, isHq)
             .Draw((IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
         // icon overlay
         ImGui.SetCursorPos(startPos);
-        Service.TextureManager
+        TextureManager
             .GetPart("Character", 7, 0)
             .Draw(IconSize * ImGuiHelpers.GlobalScale);
 
@@ -253,90 +265,87 @@ public unsafe class GearSetGridWindow : LockableWindow
         if (ImGui.IsItemHovered() || ImGui.IsPopupOpen(popupKey))
         {
             ImGui.SetCursorPos(startPos);
-            Service.TextureManager
+            TextureManager
                 .GetPart("Character", 7, 5)
                 .Draw(IconSize * ImGuiHelpers.GlobalScale);
         }
 
         ImGui.SetCursorPos(startPos + new Vector2(0, (IconSize.Y - 3) * ImGuiHelpers.GlobalScale));
 
-        new ImGuiContextMenu(popupKey)
-        {
+        ImGuiContextMenu.Draw(popupKey, [
             ImGuiContextMenu.CreateTryOn(item, slot->GlamourId, slot->Stain),
             ImGuiContextMenu.CreateItemFinder(item.RowId),
             ImGuiContextMenu.CreateCopyItemName(item.RowId),
             ImGuiContextMenu.CreateOpenOnGarlandTools("item", item.RowId),
-            ImGuiContextMenu.CreateItemSearch(item),
-        }
-        .Draw();
+            ImGuiContextMenu.CreateItemSearch(item)
+        ]);
 
-        if (ImGui.IsItemHovered())
+        if (!ImGui.IsItemHovered())
+            return;
+
+        using var _ = ImRaii.Tooltip();
+
+        ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(item.Rarity), TextService.GetItemName(item.RowId));
+
+        var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
+        if (holdingShift)
         {
-            using (ImRaii.Tooltip())
+            ImGuiUtils.SameLineSpace();
+            ImGui.TextUnformatted($"[{item.RowId}]");
+        }
+
+        if (item.ItemUICategory.Row != 0)
+        {
+            ImGuiUtils.PushCursorY(-ImGui.GetStyle().ItemSpacing.Y);
+            ImGui.TextUnformatted(ExcelService.GetRow<ItemUICategory>(item.ItemUICategory.Row)?.Name.ExtractText() ?? string.Empty);
+        }
+
+        if (slot->GlamourId != 0 || slot->Stain != 0)
+            ImGuiUtils.DrawPaddedSeparator();
+
+        if (slot->GlamourId != 0)
+        {
+            TextService.Draw("GearSetGridWindow.ItemTooltip.LabelGlamour");
+            var glamourItem = ExcelService.GetRow<Item>(slot->GlamourId)!;
+            ImGuiUtils.SameLineSpace();
+            ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(glamourItem.Rarity), TextService.GetItemName(slot->GlamourId));
+
+            if (holdingShift)
             {
-                ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(item.Rarity), GetItemName(item.RowId));
+                ImGuiUtils.SameLineSpace();
+                ImGui.TextUnformatted($"[{slot->GlamourId}]");
+            }
+        }
 
-                var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
-                if (holdingShift)
+        if (slot->Stain != 0)
+        {
+            TextService.Draw("GearSetGridWindow.ItemTooltip.LabelDye");
+            ImGuiUtils.SameLineSpace();
+            using (ImRaii.PushColor(ImGuiCol.Text, (uint)ExcelService.GetRow<Stain>(slot->Stain)!.GetColor()))
+                ImGui.Bullet();
+            ImGui.SameLine(0, 0);
+            ImGui.TextUnformatted(ExcelService.GetRow<Stain>(slot->Stain)!.Name.ExtractText().FirstCharToUpper());
+
+            if (holdingShift)
+            {
+                ImGuiUtils.SameLineSpace();
+                ImGui.TextUnformatted($"[{slot->Stain}]");
+            }
+        }
+
+        var usedInGearsets = GetItemInGearsetsList(slot->ItemId, slotIndex);
+        if (usedInGearsets.Count > 1)
+        {
+            ImGuiUtils.DrawPaddedSeparator();
+            TextService.Draw("GearSetGridWindow.ItemTooltip.AlsoUsedInTheseGearsets");
+            using (ImRaii.PushIndent(ImGui.GetStyle().ItemSpacing.X))
+            {
+                foreach (var entry in usedInGearsets)
                 {
-                    ImGuiUtils.SameLineSpace();
-                    ImGui.TextUnformatted($"[{item.RowId}]");
-                }
+                    if (entry.Id == gearset->Id)
+                        continue;
 
-                if (item.ItemUICategory.Row != 0)
-                {
-                    ImGuiUtils.PushCursorY(-ImGui.GetStyle().ItemSpacing.Y);
-                    ImGui.TextUnformatted(GetSheetText<ItemUICategory>(item.ItemUICategory.Row, "Name"));
-                }
-
-                if (slot->GlamourId != 0 || slot->Stain != 0)
-                    ImGuiUtils.DrawPaddedSeparator();
-
-                if (slot->GlamourId != 0)
-                {
-                    ImGui.TextUnformatted(t("GearSetGridWindow.ItemTooltip.LabelGlamour"));
-                    var glamourItem = GetRow<Item>(slot->GlamourId)!;
-                    ImGuiUtils.SameLineSpace();
-                    ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(glamourItem.Rarity), GetItemName(slot->GlamourId));
-
-                    if (holdingShift)
-                    {
-                        ImGuiUtils.SameLineSpace();
-                        ImGui.TextUnformatted($"[{slot->GlamourId}]");
-                    }
-                }
-
-                if (slot->Stain != 0)
-                {
-                    ImGui.TextUnformatted(t("GearSetGridWindow.ItemTooltip.LabelDye"));
-                    ImGuiUtils.SameLineSpace();
-                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)HaselColor.FromStain(slot->Stain)))
-                        ImGui.Bullet();
-                    ImGui.SameLine(0, 0);
-                    ImGui.TextUnformatted(GetSheetText<Stain>(slot->Stain, "Name").FirstCharToUpper());
-
-                    if (holdingShift)
-                    {
-                        ImGuiUtils.SameLineSpace();
-                        ImGui.TextUnformatted($"[{slot->Stain}]");
-                    }
-                }
-
-                var usedInGearsets = GetItemInGearsetsList(slot->ItemID, slotIndex);
-                if (usedInGearsets.Count > 1)
-                {
-                    ImGuiUtils.DrawPaddedSeparator();
-                    ImGui.TextUnformatted(t("GearSetGridWindow.ItemTooltip.AlsoUsedInTheseGearsets"));
-                    using (ImRaii.PushIndent(ImGui.GetStyle().ItemSpacing.X))
-                    {
-                        foreach (var entry in usedInGearsets)
-                        {
-                            if (entry.Id == gearset->ID)
-                                continue;
-
-                            ImGui.TextUnformatted($"[{entry.Id + 1}] {entry.Name}");
-                        }
-                    }
+                    ImGui.TextUnformatted($"[{entry.Id + 1}] {entry.Name}");
                 }
             }
         }

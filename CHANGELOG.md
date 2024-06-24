@@ -1,5 +1,73 @@
 # Changelog
 
+## [24.0.1] (2024-06-21)
+
+### Enhanced Isleworks Agenda
+
+- **Fixed:** The search bar was only focused the first time it was opened, and the text wasn't cleared. Sorry about that!
+
+## [24.0.0] (2024-06-21)
+
+### New Tweak: Market Board Item Preview
+
+Automatically try on equipment when you hover over an item in the market board search results.
+
+### Enhanced Isleworks Agenda
+
+- **Changed:** Search text is now trimmed before fuzzy searching for the item. (Thanks to @CallumCarmicheal)
+
+### Forced Cutscene Music
+
+- **Changed:** The tweak should now support more cutscenes. This is done by hooking the CutSceneController class instead of the PlayCutSceneTask.
+
+### Portrait Helper
+
+- **Changed:** Gear checksum mismatch is now checked when the game updates the class/job info in the agents. (Using a hook now instead of checking class/job id every frame.)
+- **Fixed:** The menu bar might've been incorrectly positioned while initializing.
+- **Fixed:** The rename tag dialog didn't use translated texts.
+
+### HaselTweaks
+
+Not so important note:  
+I'm currently working on restructuring the plugins source code, but I'm not fully done yet.  
+The plugin may or may not have some issues because of it, but so far everything seems fine.  
+If you find anything that doesn't work, please let me know via the plugins [GitHub Issues](https://github.com/Haselnussbomber/HaselTweaks/issues). Thanks!
+
+Also I'm shipping ClientStructs for now, since I've already adapted to these changes, which results in a slightly bigger size.  
+I didn't expect to release another update so close to the expansion, but I was asked to fix a bug. :>  
+Will probably switch back to Dalamuds ClientStructs again once it's released for Dawntrail.
+
+## [23.0.2] (2024-05-15)
+
+### Scrollable Tabs
+
+- **Fixed:** The game would crashe when scrolling too far in the Expanded Retainer Inventory or Companion window.
+
+## [23.0.1] (2024-05-14)
+
+### Cast Bar Aetheryte Names
+
+- **Fixed:** The cast bar should no longer display the aetheryte name on subsequent casts.
+
+## [23.0.0] (2024-05-02)
+
+### New Tweak: Achievement Link Tooltip
+
+Hovering the mouse over an achievement link in the chat will display a small tooltip with the name and description of the achievement so that you don't have to click on the link.
+
+![Screenshot](https://github.com/Haselnussbomber/HaselTweaks/assets/96642047/579e6085-c537-46b3-bdcd-1d84618ba15e)
+
+Options include:
+
+- Show completion status (default on): Will show whether the achievement has been completed or not. This requires the achievement data to be loaded, so you have to open the window once.
+- Prevent spoilers (default on): If the Achievement is not unlocked and would not be displayed in the game, the name and/or description will also be displayed as ???.
+
+### New Tweak: Cast Bar Aetheryte Names
+
+Replaces the name of the action \"Teleport\" with the Aetheryte name of your destination.
+
+![Screenshot](https://github.com/Haselnussbomber/HaselTweaks/assets/96642047/07af2799-c989-4be2-8832-2b77aa2974dd)
+
 ## [22.0.1] (2023-04-16)
 
 ### Inventory Highlight
@@ -1433,6 +1501,11 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[24.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.0...v24.0.1
+[24.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v23.0.2...v24.0.0
+[23.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v23.0.1...v23.0.2
+[23.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v23.0.0...v23.0.1
+[23.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v22.0.1...v23.0.0
 [22.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v22.0.0...v22.0.1
 [22.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v21.0.0...v22.0.0
 [21.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v20.4.0...v21.0.0

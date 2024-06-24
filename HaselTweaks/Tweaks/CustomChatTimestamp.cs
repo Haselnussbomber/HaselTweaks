@@ -1,51 +1,108 @@
 using System.Numerics;
+using Dalamud.Hooking;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using ImGuiNET;
+using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-public class CustomChatTimestampConfiguration
+public sealed class CustomChatTimestampConfiguration
 {
     public string Format = "[HH:mm] ";
 }
 
-[Tweak]
-public partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguration>
+public sealed unsafe class CustomChatTimestamp(
+    PluginConfig pluginConfig,
+    TextService textService,
+    ILogger<CustomChatTimestamp> Logger,
+    IGameInteropProvider GameInteropProvider,
+    IGameConfig GameConfig)
+    : Tweak<CustomChatTimestampConfiguration>(pluginConfig, textService)
 {
+    private Hook<HaselRaptureTextModule.Delegates.FormatAddonText2Int>? FormatAddonText2IntHook;
+
+    public override void OnInitialize()
+    {
+        FormatAddonText2IntHook = GameInteropProvider.HookFromAddress<HaselRaptureTextModule.Delegates.FormatAddonText2Int>(
+            HaselRaptureTextModule.MemberFunctionPointers.FormatAddonText2Int,
+            FormatAddonText2IntDetour);
+    }
+
+    public override void OnEnable()
+    {
+        FormatAddonText2IntHook?.Enable();
+        ReloadChat();
+    }
+
+    public override void OnDisable()
+    {
+        FormatAddonText2IntHook?.Disable();
+        ReloadChat();
+    }
+
+    private byte* FormatAddonText2IntDetour(HaselRaptureTextModule* self, uint addonRowId, int value)
+    {
+        if (addonRowId is 7840 or 7841 && !string.IsNullOrWhiteSpace(Config.Format))
+        {
+            try
+            {
+                var str = ((RaptureTextModule*)self)->UnkStrings1.GetPointer(1);
+                str->SetString(DateTimeOffset.FromUnixTimeSeconds(value).ToLocalTime().ToString(Config.Format));
+                return str->StringPtr;
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Error formatting Chat Timestamp");
+            }
+        }
+
+        return FormatAddonText2IntHook!.Original(self, addonRowId, value);
+    }
+
+    private static void ReloadChat()
+    {
+        var raptureLogModule = RaptureLogModule.Instance();
+        for (var i = 0; i < 4; i++)
+            raptureLogModule->ChatTabIsPendingReload[i] = true;
+    }
+
     public override void DrawConfig()
     {
-        ImGuiUtils.DrawSection(t("HaselTweaks.Config.SectionTitle.Configuration"));
+        ImGuiUtils.DrawSection(TextService.Translate("HaselTweaks.Config.SectionTitle.Configuration"));
 
-        ImGui.TextUnformatted(t("CustomChatTimestamp.Config.Format.Label"));
+        TextService.Draw("CustomChatTimestamp.Config.Format.Label");
         using (ImGuiUtils.ConfigIndent())
         {
             if (ImGui.InputText("##Format", ref Config.Format, 50))
             {
-                Service.GetService<Configuration>().Save();
+                PluginConfig.Save();
                 ReloadChat();
             }
             ImGui.SameLine();
-            if (ImGuiUtils.IconButton("##FormatReset", FontAwesomeIcon.Undo, t("HaselTweaks.Config.ResetToDefault", "\"[HH:mm] \"")))
+            if (ImGuiUtils.IconButton("##FormatReset", FontAwesomeIcon.Undo, TextService.Translate("HaselTweaks.Config.ResetToDefault", "\"[HH:mm] \"")))
             {
                 Config.Format = "[HH:mm] ";
-                Service.GetService<Configuration>().Save();
+                PluginConfig.Save();
                 ReloadChat();
             }
 
             ImGui.PushStyleColor(ImGuiCol.Text, (uint)Colors.Grey);
-            ImGui.TextUnformatted(t("CustomChatTimestamp.Config.Format.DateTimeLink.Pre"));
+            TextService.Draw("CustomChatTimestamp.Config.Format.DateTimeLink.Pre");
             ImGuiUtils.SameLineSpace();
             using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.White))
             {
-                ImGuiUtils.DrawLink("DateTime.ToString()", t("CustomChatTimestamp.Config.Format.DateTimeLink.Tooltip"), "https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings");
+                ImGuiUtils.DrawLink("DateTime.ToString()", TextService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Tooltip"), "https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings");
             }
             ImGuiUtils.SameLineSpace();
-            ImGui.TextUnformatted(t("CustomChatTimestamp.Config.Format.DateTimeLink.Post"));
+            TextService.Draw("CustomChatTimestamp.Config.Format.DateTimeLink.Post");
             ImGui.PopStyleColor();
         }
 
@@ -58,9 +115,9 @@ public partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguratio
 
             ImGui.Spacing();
             ImGui.Spacing();
-            ImGui.TextUnformatted(t("CustomChatTimestamp.Config.Format.Example.Label"));
+            TextService.Draw("CustomChatTimestamp.Config.Format.Example.Label");
 
-            if (!Service.GameConfig.UiConfig.TryGet("ColorParty", out uint colorParty))
+            if (!GameConfig.UiConfig.TryGet("ColorParty", out uint colorParty))
             {
                 colorParty = 0xFFFFE666;
             }
@@ -81,13 +138,13 @@ public partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguratio
 
             ImGuiUtils.TextUnformattedColored(Colors.White, formatted);
             ImGui.SameLine(0, 0);
-            ImGuiUtils.TextUnformattedColored(colorParty, t("CustomChatTimestamp.Config.Format.Example.Message"));
+            TextService.Draw(HaselColor.From(colorParty), "CustomChatTimestamp.Config.Format.Example.Message");
         }
         catch (FormatException)
         {
             using (ImRaii.PushIndent())
             {
-                ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, t("CustomChatTimestamp.Config.Format.Invalid"));
+                TextService.DrawWrapped(Colors.Red, "CustomChatTimestamp.Config.Format.Invalid");
             }
         }
         catch (Exception e)
@@ -97,41 +154,5 @@ public partial class CustomChatTimestamp : Tweak<CustomChatTimestampConfiguratio
                 ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, e.Message);
             }
         }
-    }
-
-    public override void Enable()
-    {
-        ReloadChat();
-    }
-
-    public override void Disable()
-    {
-        ReloadChat();
-    }
-
-    [AddressHook<HaselRaptureTextModule>(nameof(HaselRaptureTextModule.Addresses.FormatAddonText2Int))]
-    public unsafe byte* FormatAddonText2Int(RaptureTextModule* raptureTextModule, uint addonRowId, int value)
-    {
-        if (addonRowId is 7840 or 7841 && !string.IsNullOrWhiteSpace(Config.Format))
-        {
-            try
-            {
-                raptureTextModule->Unk9C0.SetString(DateTimeOffset.FromUnixTimeSeconds(value).ToLocalTime().ToString(Config.Format));
-                return raptureTextModule->Unk9C0.StringPtr;
-            }
-            catch (Exception e)
-            {
-                Error(e, "Error formatting Chat Timestamp");
-            }
-        }
-
-        return FormatAddonText2IntHook.OriginalDisposeSafe(raptureTextModule, addonRowId, value);
-    }
-
-    public static unsafe void ReloadChat()
-    {
-        var raptureLogModule = RaptureLogModule.Instance();
-        for (var i = 0; i < 4; i++)
-            raptureLogModule->ChatTabIsPendingReload[i] = true;
     }
 }

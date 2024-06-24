@@ -2,18 +2,20 @@ using System.Linq;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Services;
+using HaselTweaks.Config;
 using Lumina.Excel.GeneratedSheets;
-using AddonExp = HaselTweaks.Structs.AddonExp;
-using PlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
 
 namespace HaselTweaks.Tweaks;
 
-public class EnhancedExpBarConfiguration
+public sealed class EnhancedExpBarConfiguration
 {
     [BoolConfig]
     public bool ForcePvPSeriesBar = true;
@@ -34,8 +36,15 @@ public class EnhancedExpBarConfiguration
     public bool DisableColorChanges = false;
 }
 
-[Tweak, IncompatibilityWarning("SimpleTweaksPlugin", "ShowExperiencePercentage")]
-public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
+[IncompatibilityWarning("SimpleTweaksPlugin", "ShowExperiencePercentage")]
+public sealed unsafe class EnhancedExpBar(
+    PluginConfig PluginConfig,
+    TextService textService,
+    IFramework Framework,
+    IClientState ClientState,
+    IAddonLifecycle AddonLifecycle,
+    ExcelService ExcelService)
+    : Tweak<EnhancedExpBarConfiguration>(PluginConfig, textService)
 {
     public enum MaxLevelOverrideType
     {
@@ -45,22 +54,24 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         // No SanctuaryBar, because data is only available on the island
     }
 
-    public override void Enable()
+    public override void OnEnable()
     {
-        Service.ClientState.LeavePvP += ClientState_LeavePvP;
-        Service.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
+        Framework.Update += OnFrameworkUpdate;
+        ClientState.LeavePvP += ClientState_LeavePvP;
+        ClientState.TerritoryChanged += ClientState_TerritoryChanged;
         _isEnabled = true;
         RunUpdate();
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
+        AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
     }
 
-    public override void Disable()
+    public override void OnDisable()
     {
-        Service.ClientState.LeavePvP -= ClientState_LeavePvP;
-        Service.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
+        Framework.Update -= OnFrameworkUpdate;
+        ClientState.LeavePvP -= ClientState_LeavePvP;
+        ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
         _isEnabled = false;
         RunUpdate();
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
+        AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
     }
 
     public override void OnConfigChange(string fieldName)
@@ -69,9 +80,9 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         {
             addon->ClassJob--;
             addon->RequiredExp--;
-            addon->AtkUnitBase.OnUpdate(
-                AtkStage.GetSingleton()->GetNumberArrayData(),
-                AtkStage.GetSingleton()->GetStringArrayData());
+            addon->AtkUnitBase.OnRequestedUpdate(
+                AtkStage.Instance()->GetNumberArrayData(),
+                AtkStage.Instance()->GetStringArrayData());
         }
 
         RunUpdate();
@@ -87,9 +98,9 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
     private uint _lastIslandExperience = 0;
     private ushort _lastSyncedFateId = 0;
 
-    public override void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework framework)
     {
-        if (!Service.ClientState.IsLoggedIn)
+        if (!ClientState.IsLoggedIn)
             return;
 
         var pvpProfile = PvPProfile.Instance();
@@ -101,11 +112,11 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         }
 
         var buddy = UIState.Instance()->Buddy.CompanionInfo;
-        if (_lastBuddyXp != buddy.CurrentXP || _lastBuddyRank != buddy.Rank || _lastBuddyObjectID != buddy.Companion->ObjectID)
+        if (_lastBuddyXp != buddy.CurrentXP || _lastBuddyRank != buddy.Rank || _lastBuddyObjectID != buddy.Companion->EntityId)
         {
             _lastBuddyXp = buddy.CurrentXP;
             _lastBuddyRank = buddy.Rank;
-            _lastBuddyObjectID = buddy.Companion->ObjectID;
+            _lastBuddyObjectID = buddy.Companion->EntityId;
             _isUpdatePending = true;
         }
 
@@ -160,7 +171,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         if (gaugeBarNode == null)
             return;
 
-        var gaugeBar = (Structs.AtkComponentGaugeBar*)gaugeBarNode->Component;
+        var gaugeBar = (AtkComponentGaugeBar*)gaugeBarNode->Component;
         if (gaugeBar == null)
             return;
 
@@ -168,13 +179,13 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         if (nineGridNode == null)
             return;
 
-        if (Service.ClientState.LocalPlayer == null)
+        if (ClientState.LocalPlayer == null)
         {
             ResetColor(nineGridNode);
             return;
         }
 
-        if (Service.ClientState.LocalPlayer.ClassJob.GameData == null)
+        if (ClientState.LocalPlayer.ClassJob.GameData == null)
         {
             ResetColor(nineGridNode);
             return;
@@ -189,7 +200,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
 
         // --- forced bars in certain locations
 
-        if (Config.ForceCompanionBar && UIState.Instance()->Buddy.Companion.ObjectID != 0xE0000000)
+        if (Config.ForceCompanionBar && UIState.Instance()->Buddy.CompanionInfo.Companion != null && UIState.Instance()->Buddy.CompanionInfo.Companion->EntityId != 0xE0000000)
         {
             HandleCompanionBar(nineGridNode, gaugeBar, leftText);
             return;
@@ -209,7 +220,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
 
         // --- max level overrides
 
-        if (Service.ClientState.LocalPlayer.Level == PlayerState.Instance()->MaxLevel)
+        if (ClientState.LocalPlayer.Level == PlayerState.Instance()->MaxLevel)
         {
             if (Config.MaxLevelOverride == MaxLevelOverrideType.PvPSeriesBar)
             {
@@ -232,10 +243,10 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         _isUpdatePending = false;
     }
 
-    private void HandleCompanionBar(AtkNineGridNode* nineGridNode, Structs.AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
+    private void HandleCompanionBar(AtkNineGridNode* nineGridNode, AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
     {
         var buddy = UIState.Instance()->Buddy.CompanionInfo;
-        if (buddy.Rank > GetRowCount<BuddyRank>() - 1)
+        if (buddy.Rank > ExcelService.GetRowCount<BuddyRank>() - 1)
         {
             ResetColor(nineGridNode);
             return;
@@ -243,26 +254,26 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
 
         var currentRank = buddy.Rank;
 
-        var job = Service.ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation;
-        var levelLabel = (GetAddonText(4968) ?? "Rank").Trim().Replace(":", "");
+        var job = ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation;
+        var levelLabel = (TextService.GetAddonText(4968) ?? "Rank").Trim().Replace(":", "");
         var rank = currentRank > 20 ? 20 : currentRank;
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-        var requiredExperience = GetRow<BuddyRank>(currentRank)!.ExpRequired;
+        var requiredExperience = ExcelService.GetRow<BuddyRank>(currentRank)!.ExpRequired;
 
         var xpText = requiredExperience == 0 ? "" : $"   {buddy.CurrentXP}/{requiredExperience}";
         leftText->SetText($"{job}  {levelLabel} {level}{xpText}");
 
-        gaugeBar->SetSecondaryValue(0); // rested experience bar
+        gaugeBar->SetGaugeRange(0); // rested experience bar
 
         // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-        gaugeBar->SetValue((uint)(buddy.CurrentXP / (float)requiredExperience * 10000), 0, false);
+        gaugeBar->SetGaugeValue((int)(buddy.CurrentXP / (float)requiredExperience * 10000), 0, false);
 
         ResetColor(nineGridNode);
 
         _isUpdatePending = false;
     }
 
-    private void HandlePvPBar(AtkNineGridNode* nineGridNode, Structs.AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
+    private void HandlePvPBar(AtkNineGridNode* nineGridNode, AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
     {
         var pvpProfile = PvPProfile.Instance();
         if (pvpProfile == null || pvpProfile->IsLoaded != 0x01)
@@ -271,7 +282,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
             return;
         }
 
-        if (pvpProfile->SeriesCurrentRank > GetRowCount<PvPSeriesLevel>() - 1)
+        if (pvpProfile->SeriesCurrentRank > ExcelService.GetRowCount<PvPSeriesLevel>() - 1)
         {
             ResetColor(nineGridNode);
             return;
@@ -280,19 +291,19 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         var claimedRank = pvpProfile->GetSeriesClaimedRank();
         var currentRank = pvpProfile->GetSeriesCurrentRank();
 
-        var job = Service.ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation;
-        var levelLabel = (GetAddonText(14860) ?? "Series Level").Trim().Replace(":", "");
+        var job = ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation;
+        var levelLabel = (TextService.GetAddonText(14860) ?? "Series Level").Trim().Replace(":", "");
         var rank = currentRank > 30 ? 30 : currentRank; // 30 = Series Max Rank, hopefully in the future too
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var star = currentRank > claimedRank ? '*' : ' ';
-        var requiredExperience = GetRow<PvPSeriesLevel>(currentRank)!.Unknown0;
+        var requiredExperience = ExcelService.GetRow<PvPSeriesLevel>(currentRank)!.Unknown0;
 
         leftText->SetText($"{job}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
 
-        gaugeBar->SetSecondaryValue(0); // rested experience bar
+        gaugeBar->SetGaugeRange(0); // rested experience bar
 
         // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-        gaugeBar->SetValue((uint)(pvpProfile->SeriesExperience / (float)requiredExperience * 10000), 0, false);
+        gaugeBar->SetGaugeValue((int)(pvpProfile->SeriesExperience / (float)requiredExperience * 10000), 0, false);
 
         if (!Config.DisableColorChanges)
         {
@@ -308,7 +319,7 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
         _isUpdatePending = false;
     }
 
-    private void HandleSanctuaryBar(AtkNineGridNode* nineGridNode, Structs.AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
+    private void HandleSanctuaryBar(AtkNineGridNode* nineGridNode, AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
     {
         var mjiManager = MJIManager.Instance();
         if (mjiManager == null)
@@ -317,16 +328,16 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
             return;
         }
 
-        if (mjiManager->IslandState.CurrentRank > GetRowCount<MJIRank>() - 1)
+        if (mjiManager->IslandState.CurrentRank > ExcelService.GetRowCount<MJIRank>() - 1)
         {
             ResetColor(nineGridNode);
             return;
         }
 
-        var job = Config.SanctuaryBarHideJob ? "" : Service.ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation + "  ";
-        var levelLabel = (GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
+        var job = Config.SanctuaryBarHideJob ? "" : ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation + "  ";
+        var levelLabel = (TextService.GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
         var level = mjiManager->IslandState.CurrentRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-        var requiredExperience = GetRow<MJIRank>(mjiManager->IslandState.CurrentRank)!.ExpToNext;
+        var requiredExperience = ExcelService.GetRow<MJIRank>(mjiManager->IslandState.CurrentRank)!.ExpToNext;
 
         var expStr = mjiManager->IslandState.CurrentXP.ToString();
         var reqExpStr = requiredExperience.ToString();
@@ -337,10 +348,10 @@ public unsafe partial class EnhancedExpBar : Tweak<EnhancedExpBarConfiguration>
 
         leftText->SetText($"{job}{levelLabel} {level}   {expStr}/{reqExpStr}");
 
-        gaugeBar->SetSecondaryValue(0); // rested experience bar
+        gaugeBar->SetGaugeRange(0); // rested experience bar
 
         // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-        gaugeBar->SetValue((uint)(mjiManager->IslandState.CurrentXP / (float)requiredExperience * 10000), 0, false);
+        gaugeBar->SetGaugeValue((int)(mjiManager->IslandState.CurrentXP / (float)requiredExperience * 10000), 0, false);
 
         if (!Config.DisableColorChanges)
         {

@@ -1,18 +1,25 @@
 using Dalamud.Interface;
-using Dalamud.Interface.Windowing;
+using HaselCommon.Services;
+using HaselCommon.Windowing;
+using HaselCommon.Windowing.Interfaces;
+using HaselTweaks.Config;
 using ImGuiNET;
 
 namespace HaselTweaks.Utils;
 
-public abstract class LockableWindow : Window
+public abstract class LockableWindow : SimpleWindow
 {
     private static readonly ImGuiWindowFlags LockedWindowFlags = ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize;
     private readonly TitleBarButton LockButton;
 
-    public LockableWindow(string name, ImGuiWindowFlags flags = ImGuiWindowFlags.None, bool forceMainWindow = false)
-        : base(name, flags, forceMainWindow)
+    public readonly PluginConfig PluginConfig;
+
+    public LockableWindow(IWindowManager windowManager, PluginConfig pluginConfig, TextService textService, string name)
+        : base(windowManager, name)
     {
-        if (Service.GetService<Configuration>().LockedImGuiWindows.Contains(WindowName))
+        PluginConfig = pluginConfig;
+
+        if (pluginConfig.LockedImGuiWindows.Contains(WindowName))
             Flags |= LockedWindowFlags;
 
         LockButton = new TitleBarButton()
@@ -23,10 +30,12 @@ public abstract class LockableWindow : Window
             IconOffset = new(2.5f, 1f),
             ShowTooltip = () =>
             {
-                ImGui.SetTooltip(
+                ImGui.BeginTooltip();
+                textService.Draw(
                     WindowLocked
-                    ? t("ImGuiWindow.WindowLocked")
-                    : t("ImGuiWindow.WindowUnlocked"));
+                    ? "ImGuiWindow.WindowLocked"
+                    : "ImGuiWindow.WindowUnlocked");
+                ImGui.EndTooltip();
             },
             Click = (button) =>
             {
@@ -45,7 +54,7 @@ public abstract class LockableWindow : Window
         get => Flags.HasFlag(LockedWindowFlags);
         set
         {
-            var config = Service.GetService<Configuration>();
+            var config = PluginConfig;
             if (WindowLocked && !value)
             {
                 Flags &= ~LockedWindowFlags;

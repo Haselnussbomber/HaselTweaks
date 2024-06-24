@@ -1,10 +1,13 @@
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Services;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 
 namespace HaselTweaks.Tweaks;
 
-public class MinimapAdjustmentsConfiguration
+public sealed class MinimapAdjustmentsConfiguration
 {
     [BoolConfig]
     public bool Square = false;
@@ -56,20 +59,28 @@ public unsafe struct NaviMap
     public AtkResNode* CardinalDirections => GetNode(8);
 }
 
-[Tweak]
-public unsafe class MinimapAdjustments : Tweak<MinimapAdjustmentsConfiguration>
+public sealed unsafe class MinimapAdjustments(
+    PluginConfig pluginConfig,
+    TextService textService,
+    IFramework Framework,
+    IClientState ClientState)
+    : Tweak<MinimapAdjustmentsConfiguration>(pluginConfig, textService)
 {
     private bool? HoverState;
     private float TargetAlpha;
 
-    public override void Enable()
+    public override void OnEnable()
     {
         HoverState = null;
         TargetAlpha = Config.DefaultOpacity;
+
+        Framework.Update += OnFrameworkUpdate;
     }
 
-    public override void Disable()
+    public override void OnDisable()
     {
+        Framework.Update -= OnFrameworkUpdate;
+
         if (!TryGetAddon<NaviMap>("_NaviMap", out var naviMap))
             return;
 
@@ -108,9 +119,9 @@ public unsafe class MinimapAdjustments : Tweak<MinimapAdjustmentsConfiguration>
         }
     }
 
-    public override void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework framework)
     {
-        if (!Service.ClientState.IsLoggedIn)
+        if (!ClientState.IsLoggedIn)
             return;
 
         if (!TryGetAddon<NaviMap>("_NaviMap", out var naviMap))
@@ -118,7 +129,7 @@ public unsafe class MinimapAdjustments : Tweak<MinimapAdjustmentsConfiguration>
 
         UpdateAlpha(naviMap);
 
-        var isHovered = RaptureAtkModule.Instance()->AtkModule.IntersectingAddon == naviMap;
+        var isHovered = RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingAddon == naviMap;
         if (HoverState == isHovered)
             return;
 

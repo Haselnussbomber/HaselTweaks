@@ -1,16 +1,16 @@
-using Dalamud.Memory;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Structs;
-using AddonAOZNotebook = HaselTweaks.Structs.AddonAOZNotebook;
-using AddonGSInfoCardList = HaselTweaks.Structs.AddonGSInfoCardList;
-using HaselAtkComponentRadioButton = HaselTweaks.Structs.AtkComponentRadioButton;
+using HaselCommon.Services;
+using HaselTweaks.Config;
+using Microsoft.Extensions.Logging;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-public class ScrollableTabsConfiguration
+public sealed class ScrollableTabsConfiguration
 {
     [BoolConfig]
     public bool Invert = true;
@@ -85,16 +85,27 @@ public class ScrollableTabsConfiguration
     public bool HandleAdventureNoteBook = true;
 }
 
-[Tweak]
-public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
+public sealed unsafe class ScrollableTabs(
+    PluginConfig pluginConfig,
+    TextService textService,
+    ILogger<ScrollableTabs> Logger,
+    IFramework Framework,
+    IClientState ClientState,
+    IGameConfig GameConfig)
+    : Tweak<ScrollableTabsConfiguration>(pluginConfig, textService)
 {
+    private const int NumArmouryBoardTabs = 12;
+    private const int NumInventoryTabs = 5;
+    private const int NumInventoryLargeTabs = 4;
+    private const int NumInventoryExpansionTabs = 2;
+    private const int NumInventoryRetainerTabs = 6;
+    private const int NumInventoryRetainerLargeTabs = 3;
+    private const int NumBuddyTabs = 3;
+
     private int _wheelState;
 
-    private AtkUnitBase* IntersectingAddon
-        => RaptureAtkModule.Instance()->AtkModule.IntersectingAddon;
-
     private AtkCollisionNode* IntersectingCollisionNode
-        => RaptureAtkModule.Instance()->AtkModule.IntersectingCollisionNode;
+        => RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingCollisionNode;
 
     private bool IsNext
         => _wheelState == (!Config.Invert ? 1 : -1);
@@ -102,9 +113,19 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
     private bool IsPrev
         => _wheelState == (!Config.Invert ? -1 : 1);
 
-    public override void OnFrameworkUpdate()
+    public override void OnEnable()
     {
-        if (!Service.ClientState.IsLoggedIn)
+        Framework.Update += OnFrameworkUpdate;
+    }
+
+    public override void OnDisable()
+    {
+        Framework.Update -= OnFrameworkUpdate;
+    }
+
+    private void OnFrameworkUpdate(IFramework framework)
+    {
+        if (!ClientState.IsLoggedIn)
             return;
 
         _wheelState = Math.Clamp(UIInputData.Instance()->MouseWheel, -1, 1);
@@ -114,14 +135,14 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         if (Config.Invert)
             _wheelState *= -1;
 
-        var hoveredUnitBase = IntersectingAddon;
+        var hoveredUnitBase = RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingAddon;
         if (hoveredUnitBase == null)
         {
             _wheelState = 0;
             return;
         }
 
-        var name = MemoryHelper.ReadString((nint)hoveredUnitBase->Name, 0x20);
+        var name = hoveredUnitBase->NameString;
         if (string.IsNullOrEmpty(name))
         {
             _wheelState = 0;
@@ -176,7 +197,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             // used by InventoryLarge or InventoryExpansion
             case "InventoryCrystalGrid":
                 name = "InventoryLarge";
-                if (Service.GameConfig.UiConfig.TryGet("ItemInventryWindowSizeType", out uint itemInventryWindowSizeType) && itemInventryWindowSizeType == 2)
+                if (GameConfig.UiConfig.TryGet("ItemInventryWindowSizeType", out uint itemInventryWindowSizeType) && itemInventryWindowSizeType == 2)
                     name = "InventoryExpansion";
                 break;
 
@@ -231,7 +252,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
             default:
 #if DEBUG
-                Verbose($"Unhandled AtkUnitBase: {name}");
+                Logger.LogTrace("Unhandled AtkUnitBase: {name}", name);
 #endif
                 _wheelState = 0;
                 return;
@@ -279,31 +300,31 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         }
         else if ((Config.HandleMinionNoteBook && name == "MinionNoteBook") || (Config.HandleMountNoteBook && name == "MountNoteBook"))
         {
-            UpdateMountMinion((MountMinionNoteBookBase*)unitBase);
+            UpdateMountMinion((AddonMinionMountBase*)unitBase);
         }
         else if (Config.HandleFishGuide && name == "FishGuide2")
         {
-            UpdateTabSwitcher((nint)unitBase, &((AddonFishGuide2*)unitBase)->TabSwitcher);
+            UpdateTabController(unitBase, &((AddonFishGuide2*)unitBase)->TabController);
         }
         else if (Config.HandleAdventureNoteBook && name == "AdventureNoteBook")
         {
-            UpdateTabSwitcher((nint)unitBase, &((AddonAdventureNoteBook*)unitBase)->TabSwitcher);
+            UpdateTabController(unitBase, &((AddonAdventureNoteBook*)unitBase)->TabController);
         }
         else if (Config.HandleOrnamentNoteBook && name == "OrnamentNoteBook")
         {
-            UpdateTabSwitcher((nint)unitBase, &((AddonOrnamentNoteBook*)unitBase)->TabSwitcher);
+            UpdateTabController(unitBase, &((AddonOrnamentNoteBook*)unitBase)->TabController);
         }
         else if (Config.HandleGoldSaucerCardList && name == "GSInfoCardList")
         {
-            UpdateTabSwitcher((nint)unitBase, &((AddonGSInfoCardList*)unitBase)->TabSwitcher);
+            UpdateTabController(unitBase, &((AddonGSInfoCardList*)unitBase)->TabController);
         }
         else if (Config.HandleGoldSaucerCardDeckEdit && name == "GSInfoEditDeck")
         {
-            UpdateTabSwitcher((nint)unitBase, &((AddonGSInfoEditDeck*)unitBase)->TabSwitcher);
+            UpdateTabController(unitBase, &((AddonGSInfoEditDeck*)unitBase)->TabController);
         }
         else if (Config.HandleLovmPaletteEdit && name == "LovmPaletteEdit")
         {
-            UpdateTabSwitcher((nint)unitBase, &((AddonLovmPaletteEdit*)unitBase)->TabSwitcher);
+            UpdateTabController(unitBase, &((AddonLovmPaletteEdit*)unitBase)->TabController);
         }
         else if (Config.HandleAOZNotebook && name == "AOZNotebook")
         {
@@ -345,7 +366,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         {
             var addonCharacter = name == "Character" ? (AddonCharacter*)unitBase : GetAddon<AddonCharacter>("Character");
 
-            if (addonCharacter == null || !addonCharacter->EmbeddedAddonLoaded || IntersectingCollisionNode == addonCharacter->CharacterPreviewCollisionNode)
+            if (addonCharacter == null || !addonCharacter->AddonControl.IsChildSetupComplete || IntersectingCollisionNode == addonCharacter->CharacterPreviewCollisionNode)
             {
                 _wheelState = 0;
                 return;
@@ -379,7 +400,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateArmouryBoard(AddonArmouryBoard* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, AddonArmouryBoard.NUM_TABS);
+        var tabIndex = GetTabIndex(addon->TabIndex, NumArmouryBoardTabs);
 
         if (addon->TabIndex < tabIndex)
             addon->NextTab(0);
@@ -389,17 +410,20 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateInventory(AddonInventory* addon)
     {
-        if (addon->TabIndex == AddonInventory.NUM_TABS - 1 && _wheelState > 0)
+        if (addon->TabIndex == NumInventoryTabs - 1 && _wheelState > 0)
         {
             // inside "48 89 6C 24 ?? 56 48 83 EC 20 0F B7 C2", a3 != 17
             var values = stackalloc AtkValue[3];
 
+            values[0].Ctor();
             values[0].Type = ValueType.Int;
             values[0].Int = 22;
 
+            values[1].Ctor();
             values[1].Type = ValueType.Int;
-            values[1].Int = addon->Unk228;
+            values[1].Int = *(int*)((nint)addon + 0x228);
 
+            values[2].Ctor();
             values[2].Type = ValueType.UInt;
             values[2].UInt = 0;
 
@@ -407,7 +431,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         }
         else
         {
-            var tabIndex = GetTabIndex(addon->TabIndex, AddonInventory.NUM_TABS);
+            var tabIndex = GetTabIndex(addon->TabIndex, NumInventoryTabs);
 
             if (addon->TabIndex == tabIndex)
                 return;
@@ -423,12 +447,15 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             // inside Vf68, fn call before return with a2 being 2
             var values = stackalloc AtkValue[3];
 
+            values[0].Ctor();
             values[0].Type = ValueType.Int;
             values[0].Int = 22;
 
+            values[1].Ctor();
             values[1].Type = ValueType.Int;
-            values[1].Int = addon->Unk280;
+            values[1].Int = *(int*)((nint)addon + 0x280);
 
+            values[2].Ctor();
             values[2].Type = ValueType.UInt;
             values[2].UInt = 2;
 
@@ -437,7 +464,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         else
         {
             var numEnabledButtons = 0;
-            foreach (ref var button in addon->ButtonsSpan)
+            foreach (ref var button in addon->Buttons)
             {
                 if ((button.Value->AtkComponentButton.Flags & 0x40000) != 0)
                     numEnabledButtons++;
@@ -454,7 +481,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateInventoryLarge(AddonInventoryLarge* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryLarge.NUM_TABS);
+        var tabIndex = GetTabIndex(addon->TabIndex, NumInventoryLargeTabs);
 
         if (addon->TabIndex == tabIndex)
             return;
@@ -464,7 +491,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateInventoryExpansion(AddonInventoryExpansion* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryExpansion.NUM_TABS);
+        var tabIndex = GetTabIndex(addon->TabIndex, NumInventoryExpansionTabs);
 
         if (addon->TabIndex == tabIndex)
             return;
@@ -474,7 +501,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateInventoryRetainer(AddonInventoryRetainer* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryRetainer.NUM_TABS);
+        var tabIndex = GetTabIndex(addon->TabIndex, NumInventoryRetainerTabs);
 
         if (addon->TabIndex == tabIndex)
             return;
@@ -484,7 +511,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateInventoryRetainerLarge(AddonInventoryRetainerLarge* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, AddonInventoryRetainerLarge.NUM_TABS);
+        var tabIndex = GetTabIndex(addon->TabIndex, NumInventoryRetainerLargeTabs);
 
         if (addon->TabIndex == tabIndex)
             return;
@@ -492,15 +519,15 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         addon->SetTab(tabIndex);
     }
 
-    private void UpdateTabSwitcher(nint addon, TabSwitcher* tabSwitcher)
+    private void UpdateTabController(AtkUnitBase* addon, TabController* tabController)
     {
-        var tabIndex = GetTabIndex(tabSwitcher->TabIndex, tabSwitcher->TabCount);
+        var tabIndex = GetTabIndex(tabController->TabIndex, tabController->TabCount);
 
-        if (tabSwitcher->TabIndex == tabIndex)
+        if (tabController->TabIndex == tabIndex)
             return;
 
-        tabSwitcher->TabIndex = tabIndex;
-        tabSwitcher->InvokeCallback(tabIndex, addon);
+        tabController->TabIndex = tabIndex;
+        tabController->CallbackFunction(tabIndex, addon);
     }
 
     private void UpdateAOZNotebook(AddonAOZNotebook* addon)
@@ -525,8 +552,8 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         {
             // WAYTOODANK, this is basically like writing addon->Tabs[i]
             // but because this is dynamic (depending on NumTabs), we can't do that... thanks, C#!
-            var button = *(HaselAtkComponentRadioButton**)(tabs + i * 8);
-            button->SetSelected(i == tabIndex);
+            var button = *(AtkComponentRadioButton**)(tabs + i * 8);
+            button->IsSelected = i == tabIndex;
         }
     }
 
@@ -537,8 +564,8 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             return;
 
         // fake event, so it can call SetEventIsHandled
-        var atkEvent = stackalloc AtkEvent[1];
-        addon->SetTab(tabIndex, atkEvent);
+        var atkEvent = new AtkEvent();
+        addon->SetTab(tabIndex, &atkEvent);
     }
 
     private void UpdateFieldNotes(AddonMYCWarResultNotebook* addon)
@@ -546,7 +573,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         if (IntersectingCollisionNode == addon->DescriptionCollisionNode)
             return;
 
-        var atkEvent = stackalloc AtkEvent[1];
+        var atkEvent = new AtkEvent();
         var eventParam = Math.Clamp(addon->CurrentNoteIndex % 10 + _wheelState, -1, addon->MaxNoteIndex - 1);
 
         if (eventParam == -1)
@@ -554,8 +581,8 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             if (addon->CurrentPageIndex > 0)
             {
                 var page = addon->CurrentPageIndex - 1;
-                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, atkEvent, 0);
-                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 9, atkEvent, 0);
+                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, &atkEvent, 0);
+                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 9, &atkEvent, 0);
             }
         }
         else if (eventParam == 10)
@@ -563,53 +590,53 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             if (addon->CurrentPageIndex < 4)
             {
                 var page = addon->CurrentPageIndex + 1;
-                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, atkEvent, 0);
+                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, &atkEvent, 0);
             }
         }
         else
         {
-            addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, eventParam, atkEvent, 0);
+            addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, eventParam, &atkEvent, 0);
         }
     }
 
-    private void UpdateMountMinion(MountMinionNoteBookBase* addon)
+    private void UpdateMountMinion(AddonMinionMountBase* addon)
     {
-        if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Normal)
+        if (addon->CurrentView == AddonMinionMountBase.ViewType.Normal)
         {
-            if (addon->TabSwitcher.TabIndex == 0 && _wheelState < 0)
+            if (addon->TabController.TabIndex == 0 && _wheelState < 0)
             {
                 addon->SwitchToFavorites();
             }
             else
             {
-                UpdateTabSwitcher((nint)addon, &addon->TabSwitcher);
+                UpdateTabController((AtkUnitBase*)addon, &addon->TabController);
             }
         }
-        else if (addon->CurrentView == MountMinionNoteBookBase.ViewType.Favorites && _wheelState > 0)
+        else if (addon->CurrentView == AddonMinionMountBase.ViewType.Favorites && _wheelState > 0)
         {
-            addon->TabSwitcher.InvokeCallback(0, (nint)addon);
+            addon->TabController.CallbackFunction(0, (AtkUnitBase*)addon);
         }
     }
 
     private void UpdateMJIMinionNoteBook(AddonMJIMinionNoteBook* addon)
     {
-        var agent = GetAgent<AgentMJIMinionNoteBook>();
+        var agent = AgentMJIMinionNoteBook.Instance();
 
         if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Normal)
         {
-            if (addon->Unk220.TabSwitcher.TabIndex == 0 && _wheelState < 0)
+            if (addon->TabController.TabIndex == 0 && _wheelState < 0)
             {
                 agent->CurrentView = AgentMJIMinionNoteBook.ViewType.Favorites;
                 agent->SelectedFavoriteMinion.TabIndex = 0;
                 agent->SelectedFavoriteMinion.SlotIndex = agent->SelectedNormalMinion.SlotIndex;
                 agent->SelectedFavoriteMinion.MinionId = agent->GetSelectedMinionId();
                 agent->SelectedMinion = &agent->SelectedFavoriteMinion;
-                agent->UpdateTabFlags(0x407);
+                agent->HandleCommand(0x407);
             }
             else
             {
-                UpdateTabSwitcher((nint)addon, &addon->Unk220.TabSwitcher);
-                agent->UpdateTabFlags(0x40B);
+                UpdateTabController((AtkUnitBase*)addon, &addon->TabController);
+                agent->HandleCommand(0x40B);
             }
         }
         else if (agent->CurrentView == AgentMJIMinionNoteBook.ViewType.Favorites && _wheelState > 0)
@@ -620,16 +647,16 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             agent->SelectedNormalMinion.MinionId = agent->GetSelectedMinionId();
             agent->SelectedMinion = &agent->SelectedNormalMinion;
 
-            addon->Unk220.TabSwitcher.TabIndex = 0;
-            addon->Unk220.TabSwitcher.InvokeCallback(0, (nint)addon);
+            addon->TabController.TabIndex = 0;
+            addon->TabController.CallbackFunction(0, (AtkUnitBase*)addon);
 
-            agent->UpdateTabFlags(0x40B);
+            agent->HandleCommand(0x40B);
         }
     }
 
     private void UpdateCurrency(AtkUnitBase* addon)
     {
-        var atkStage = AtkStage.GetSingleton();
+        var atkStage = AtkStage.Instance();
         var numberArray = atkStage->GetNumberArrayData()[80];
         var currentTab = numberArray->IntArray[0];
 
@@ -639,7 +666,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
             return;
 
         numberArray->SetValue(0, newTab);
-        addon->OnUpdate(atkStage->GetNumberArrayData(), atkStage->GetStringArrayData());
+        addon->OnRequestedUpdate(atkStage->GetNumberArrayData(), atkStage->GetStringArrayData());
     }
 
     private void UpdateInventoryBuddy(AddonInventoryBuddy* addon)
@@ -657,19 +684,19 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
     private void UpdateBuddy(AddonBuddy* addon)
     {
-        var tabIndex = GetTabIndex(addon->TabIndex, AddonBuddy.NUM_TABS);
+        var tabIndex = GetTabIndex(addon->TabIndex, NumBuddyTabs);
 
         if (addon->TabIndex == tabIndex)
             return;
 
         addon->SetTab(tabIndex);
 
-        for (var i = 0; i < AddonBuddy.NUM_TABS; i++)
+        for (var i = 0; i < NumBuddyTabs; i++)
         {
-            var button = addon->RadioButtonsSpan.GetPointer(i);
+            var button = addon->RadioButtons.GetPointer(i);
             if (button->Value != null)
             {
-                button->Value->SetSelected(i == addon->TabIndex);
+                button->Value->IsSelected = i == addon->TabIndex;
             }
         }
     }
@@ -679,7 +706,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         if (addon->JobDropdown == null ||
             addon->JobDropdown->List == null ||
             addon->JobDropdown->List->AtkComponentBase.OwnerNode == null ||
-            addon->JobDropdown->List->AtkComponentBase.OwnerNode->AtkResNode.IsVisible)
+            addon->JobDropdown->List->AtkComponentBase.OwnerNode->AtkResNode.IsVisible())
         {
             return;
         }
@@ -687,7 +714,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         if (addon->OrderDropdown == null ||
             addon->OrderDropdown->List == null ||
             addon->OrderDropdown->List->AtkComponentBase.OwnerNode == null ||
-            addon->OrderDropdown->List->AtkComponentBase.OwnerNode->AtkResNode.IsVisible)
+            addon->OrderDropdown->List->AtkComponentBase.OwnerNode->AtkResNode.IsVisible())
         {
             return;
         }
@@ -704,7 +731,7 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         if (IsAddonOpen("MiragePrismPrismBoxFilter"))
             return;
 
-        var agent = GetAgent<AgentMiragePrismPrismBox>();
+        var agent = AgentMiragePrismPrismBox.Instance();
         agent->PageIndex += (byte)_wheelState;
         agent->UpdateItems(false, false);
     }
@@ -720,10 +747,10 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
 
         for (var i = 0; i < addon->TabCount; i++)
         {
-            var button = addon->RadioButtonsSpan.GetPointer(i);
+            var button = addon->RadioButtons.GetPointer(i);
             if (button->Value != null)
             {
-                button->Value->SetSelected(i == addon->TabIndex);
+                button->Value->IsSelected = i == addon->TabIndex;
             }
         }
     }
@@ -759,9 +786,11 @@ public unsafe partial class ScrollableTabs : Tweak<ScrollableTabsConfiguration>
         if (addon->SelectedExpansion == tabIndex)
             return;
 
-        var atkEvent = stackalloc AtkEvent[1];
+        var atkEvent = new AtkEvent();
         var data = stackalloc int[5];
+        for (var i = 0; i < 5; i++)
+            data[i] = 0;
         data[4] = tabIndex; // technically the index of an id array, but it's literally the same value
-        addon->AtkUnitBase.ReceiveEvent((AtkEventType)37, 0, atkEvent, (nint)data);
+        addon->AtkUnitBase.ReceiveEvent((AtkEventType)37, 0, &atkEvent, (nint)data);
     }
 }

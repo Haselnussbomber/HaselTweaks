@@ -1,36 +1,66 @@
 using System.Collections.Generic;
 using System.Linq;
+using Dalamud.Game.Inventory.InventoryEventArgTypes;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using HaselCommon.Services;
 using HaselCommon.Sheets;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Windows;
 using Lumina.Excel.GeneratedSheets;
+using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe partial class GlamourDresserArmoireAlert : Tweak
+public sealed unsafe class GlamourDresserArmoireAlert(
+    ILogger<GlamourDresserArmoireAlert> Logger,
+    IGameInventory GameInventory,
+    AddonObserver AddonObserver,
+    GlamourDresserArmoireAlertWindow Window,
+    ExcelService ExcelService)
+    : ITweak
 {
     private bool _isPrismBoxOpen;
     private uint[]? _lastItemIds = null;
 
+    public string InternalName => nameof(GlamourDresserArmoireAlert);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     public Dictionary<uint, Dictionary<uint, (ExtendedItem Item, bool IsHq)>> Categories { get; } = [];
     public bool UpdatePending { get; set; } // used to disable ImGui.Selectables after clicking to restore an item
 
-    public override void Enable()
+    public void OnInitialize()
     {
-        _isPrismBoxOpen = IsAddonOpen("MiragePrismPrismBox");
+        Window.Tweak = this;
     }
 
-    public override void Disable()
+    public void OnEnable()
+    {
+        _isPrismBoxOpen = AddonObserver.IsAddonVisible("MiragePrismPrismBox");
+
+        AddonObserver.AddonOpen += OnAddonOpen;
+        AddonObserver.AddonClose += OnAddonClose;
+        GameInventory.InventoryChangedRaw += OnInventoryUpdate;
+    }
+
+    public void OnDisable()
     {
         _isPrismBoxOpen = false;
 
-        if (Service.HasService<WindowManager>())
-            Service.WindowManager.CloseWindow<GlamourDresserArmoireAlertWindow>();
+        AddonObserver.AddonOpen -= OnAddonOpen;
+        AddonObserver.AddonClose -= OnAddonClose;
+        GameInventory.InventoryChangedRaw -= OnInventoryUpdate;
+
+        Window.Close();
     }
 
-    public override void OnAddonOpen(string addonName)
+    public void Dispose()
+    {
+        OnDisable();
+    }
+
+    private void OnAddonOpen(string addonName)
     {
         if (addonName != "MiragePrismPrismBox")
             return;
@@ -39,18 +69,18 @@ public unsafe partial class GlamourDresserArmoireAlert : Tweak
         Update();
     }
 
-    public override void OnAddonClose(string addonName)
+    private void OnAddonClose(string addonName)
     {
         if (addonName != "MiragePrismPrismBox")
             return;
 
         _isPrismBoxOpen = false;
+        _lastItemIds = null;
 
-        if (Service.HasService<WindowManager>())
-            Service.WindowManager.CloseWindow<GlamourDresserArmoireAlertWindow>();
+        Window.Close();
     }
 
-    public override void OnInventoryUpdate()
+    private void OnInventoryUpdate(IReadOnlyCollection<InventoryEventArgs> events)
     {
         if (!_isPrismBoxOpen)
             return;
@@ -63,7 +93,7 @@ public unsafe partial class GlamourDresserArmoireAlert : Tweak
         const int NumPrismBoxSlots = 800;
         var mirageManager = MirageManager.Instance();
 
-        var itemIds = new ReadOnlySpan<uint>(mirageManager->PrismBoxItemIds, NumPrismBoxSlots);
+        var itemIds = mirageManager->PrismBoxItemIds;
         if (_lastItemIds != null && itemIds.SequenceEqual(_lastItemIds))
             return;
 
@@ -71,22 +101,22 @@ public unsafe partial class GlamourDresserArmoireAlert : Tweak
 
         Categories.Clear();
 
-        Log("Updating...");
+        Logger.LogInformation("Updating...");
 
         for (var i = 0u; i < NumPrismBoxSlots; i++)
         {
-            var itemId = mirageManager->PrismBoxItemIds[i];
+            var itemId = mirageManager->PrismBoxItemIds[(int)i];
             if (itemId == 0)
                 continue;
 
             var isHq = itemId is > 1000000 and < 1500000;
             itemId %= 1000000;
 
-            var item = GetRow<ExtendedItem>(itemId);
+            var item = ExcelService.GetRow<ExtendedItem>(itemId);
             if (item == null)
                 continue;
 
-            var cabinet = FindRow<Cabinet>(row => row?.Item.Row == itemId);
+            var cabinet = ExcelService.FindRow<Cabinet>(row => row?.Item.Row == itemId);
             if (cabinet == null)
                 continue;
 
@@ -99,10 +129,10 @@ public unsafe partial class GlamourDresserArmoireAlert : Tweak
 
         UpdatePending = false;
 
-        if (!Categories.Any())
+        if (Categories.Count == 0)
             return;
 
-        if (!Service.WindowManager.IsWindowOpen<GlamourDresserArmoireAlertWindow>())
-            Service.WindowManager.AddWindow(new GlamourDresserArmoireAlertWindow(this));
+        Logger.LogTrace("Open!!!");
+        Window.Open();
     }
 }

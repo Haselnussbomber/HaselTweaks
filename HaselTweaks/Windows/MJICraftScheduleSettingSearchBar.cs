@@ -3,10 +3,12 @@ using System.Linq;
 using Dalamud;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Interface.Windowing;
-using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Extensions;
+using HaselCommon.Services;
+using HaselCommon.Windowing;
+using HaselCommon.Windowing.Interfaces;
+using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
@@ -14,27 +16,47 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Windows;
 
-public unsafe class MJICraftScheduleSettingSearchBar : Window
+public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
 {
     private static AddonMJICraftScheduleSetting* Addon => GetAddon<AddonMJICraftScheduleSetting>("MJICraftScheduleSetting");
-    private bool InputFocused;
-    private string Query = string.Empty;
+    private EnhancedIsleworksAgendaConfiguration Config => PluginConfig.Tweaks.EnhancedIsleworksAgenda;
+
     private const int LanguageSelectorWidth = 90;
 
-    private static EnhancedIsleworksAgendaConfiguration Config => Service.GetService<Configuration>().Tweaks.EnhancedIsleworksAgenda;
+    private readonly PluginConfig PluginConfig;
+    private readonly ExcelService ExcelService;
+    private readonly TextService TextService;
+    private bool InputFocused;
+    private string Query = string.Empty;
 
-    public MJICraftScheduleSettingSearchBar() : base("MJICraftScheduleSetting Search Bar")
+    public MJICraftScheduleSettingSearchBar(
+        IWindowManager windowManager,
+        PluginConfig pluginConfig,
+        ExcelService excelService,
+        TextService textService)
+        : base(windowManager, "MJICraftScheduleSetting Search Bar")
     {
+        PluginConfig = pluginConfig;
+        ExcelService = excelService;
+        TextService = textService;
+
         Flags |= ImGuiWindowFlags.NoSavedSettings;
         Flags |= ImGuiWindowFlags.NoDecoration;
         Flags |= ImGuiWindowFlags.NoMove;
+
         DisableWindowSounds = true;
         RespectCloseHotkey = false;
     }
 
     public override bool DrawConditions()
         => Addon != null && Addon->AtkUnitBase.IsVisible;
-
+    
+    public override void OnOpen()
+    {
+        InputFocused = false;
+        Query = string.Empty;
+    }
+    
     public override void Draw()
     {
         if (!InputFocused)
@@ -47,10 +69,10 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
         var contentRegionAvail = ImGui.GetContentRegionAvail();
 
         ImGui.SetNextItemWidth(contentRegionAvail.X - LanguageSelectorWidth * ImGuiHelpers.GlobalScale - ImGui.GetStyle().ItemSpacing.X);
-        if (ImGui.InputTextWithHint("##Query", t("EnhancedIsleworksAgenda.MJICraftScheduleSettingSearchBar.QueryHint"), ref Query, 255, ImGuiInputTextFlags.EnterReturnsTrue))
+        if (ImGui.InputTextWithHint("##Query", TextService.Translate("EnhancedIsleworksAgenda.MJICraftScheduleSettingSearchBar.QueryHint"), ref Query, 255, ImGuiInputTextFlags.EnterReturnsTrue))
         {
-            var evt = stackalloc AtkEvent[1];
-            Addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 6, evt);
+            var evt = new AtkEvent();
+            Addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 6, &evt);
         }
         ImGui.SameLine();
         ImGui.SetNextItemWidth(LanguageSelectorWidth * ImGuiHelpers.GlobalScale);
@@ -64,7 +86,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
                     if (ImGui.Selectable(Enum.GetName(value), value == Config.SearchLanguage))
                     {
                         Config.SearchLanguage = value;
-                        Service.GetService<Configuration>().Save();
+                        PluginConfig.Save();
                     }
                 }
             }
@@ -73,17 +95,17 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
         if (lastQuery != Query)
         {
             var entries = new List<(uint Index, string ItemName)>();
-            for (var i = 0u; i < Addon->TreeList->Items.Size(); i++)
+            for (var i = 0u; i < Addon->TreeList->Items.LongCount; i++)
             {
-                var item = Addon->TreeList->Items.Get(i).Value;
-                if (item != null && item->UIntValues.Size() >= 3 && item->UIntValues.Get(0) != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
+                var item = Addon->TreeList->Items[i].Value;
+                if (item != null && item->UIntValues.LongCount >= 3 && item->UIntValues[0] != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
                 {
-                    var rowId = item->UIntValues.Get(2);
-                    var itemId = GetRow<MJICraftworksObject>(rowId)?.Item.Row ?? 0;
+                    var rowId = item->UIntValues[2];
+                    var itemId = ExcelService.GetRow<MJICraftworksObject>(rowId)?.Item.Row ?? 0;
                     if (itemId == 0)
                         continue;
 
-                    var itemName = GetSheet<Item>(Config.SearchLanguage)?.GetRow(itemId)?.Name.ToDalamudString().ToString();
+                    var itemName = ExcelService.GetSheet<Item>(Config.SearchLanguage)?.GetRow(itemId)?.Name.ExtractText();
                     if (string.IsNullOrEmpty(itemName))
                         continue;
 
@@ -91,7 +113,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
                 }
             }
 
-            var result = entries.FuzzyMatch(Query.ToLower(), value => value.ItemName).FirstOrDefault();
+            var result = entries.FuzzyMatch(Query.ToLower().Trim(), value => value.ItemName).FirstOrDefault();
             if (result != default)
             {
                 var index = result.Value.Index;
@@ -101,8 +123,8 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
                     // find parent group and expand it
                     for (var i = index; i >= 0; i--)
                     {
-                        var headerItem = Addon->TreeList->Items.Get(i).Value;
-                        if (headerItem != null && headerItem->UIntValues.Size() >= 1 && headerItem->UIntValues.Get(0) == (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
+                        var headerItem = Addon->TreeList->Items[i].Value;
+                        if (headerItem != null && headerItem->UIntValues.LongCount >= 1 && headerItem->UIntValues[0] == (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
                         {
                             Addon->TreeList->ExpandGroupExclusively(headerItem, false);
                             Addon->TreeList->LayoutRefreshPending = true;
@@ -110,7 +132,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : Window
                         }
                     }
 
-                    Addon->TreeList->SelectItem(index, true); // if it would only scroll the selected item into view... oh well
+                    Addon->TreeList->SelectItem((int)index, true); // if it would only scroll the selected item into view... oh well
                 }
             }
         }

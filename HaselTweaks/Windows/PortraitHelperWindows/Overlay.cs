@@ -1,88 +1,92 @@
 using System.Numerics;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Interface.Windowing;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Structs;
+using HaselCommon.Extensions;
+using HaselCommon.Services;
 using HaselCommon.Utils;
-using HaselTweaks.Structs;
+using HaselCommon.Windowing;
+using HaselCommon.Windowing.Interfaces;
+using HaselTweaks.Config;
+using HaselTweaks.Enums.PortraitHelper;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
+using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
-public abstract unsafe class Overlay : Window, IDisposable
+public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
 {
-    private ImRaii.Color? _windowBg;
-    private ImRaii.Style? _windowPadding;
-    private ImRaii.Color? _windowText;
+    protected readonly PluginConfig PluginConfig;
+    protected readonly ExcelService ExcelService;
 
-    protected bool IsWindow { get; set; }
+    private readonly ImRaii.Style WindowPadding = new();
+    private readonly ImRaii.Color WindowBg = new();
+    private readonly ImRaii.Color WindowText = new();
 
     protected uint DefaultImGuiTextColor { get; set; }
 
-    private static AgentBannerEditor* AgentBannerEditor => GetAgent<AgentBannerEditor>();
-    private static AddonBannerEditor* AddonBannerEditor => GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
+    protected PortraitHelperConfiguration Config => PluginConfig.Tweaks.PortraitHelper;
 
-    protected static PortraitHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.PortraitHelper;
+    public bool IsWindow { get; set; }
+    public virtual OverlayType Type => OverlayType.Window;
 
-    protected enum OverlayType
+    public Overlay(
+        IWindowManager windowManager,
+        PluginConfig pluginConfig,
+        ExcelService excelService,
+        string name)
+        : base(windowManager, name)
     {
-        Window,
-        LeftPane
-    }
+        PluginConfig = pluginConfig;
+        ExcelService = excelService;
 
-    protected virtual OverlayType Type => OverlayType.Window;
-
-    public Overlay(string name) : base(name)
-    {
         DisableWindowSounds = true;
         RespectCloseHotkey = false;
 
-        Update();
         UpdateWindow();
-    }
-
-    public void Dispose()
-    {
-        OnClose();
-        GC.SuppressFinalize(this);
     }
 
     public override void OnClose()
     {
-        _windowPadding?.Dispose();
-        _windowPadding = null;
-        _windowText?.Dispose();
-        _windowText = null;
-        _windowBg?.Dispose();
-        _windowBg = null;
+        WindowPadding.Dispose();
+        WindowBg.Dispose();
+        WindowText.Dispose();
 
         ToggleUiVisibility(true);
 
-        IsOpen = false;
+        base.OnClose();
     }
 
     public override bool DrawConditions()
     {
-        if (AgentBannerEditor == null || AddonBannerEditor == null || AgentBannerEditor->EditorState == null)
+        var agnet = AgentBannerEditor.Instance();
+        var addon = GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
+
+        if (agnet == null || addon == null || agnet->EditorState == null || !addon->AtkUnitBase.IsReady)
             return false;
 
-        var isContextMenuOpen = *(byte*)((nint)AddonBannerEditor + 0x1A1) != 0;
-        var isCloseDialogOpen = AgentBannerEditor->EditorState->CloseDialogAddonId != 0;
+        var isContextMenuOpen = addon->AtkUnitBase.NumOpenPopups != 0;
+        var isCloseDialogOpen = agnet->EditorState->CloseDialogAddonId != 0;
 
         return IsOpen && !isContextMenuOpen && !isCloseDialogOpen;
     }
 
     public override void Update()
     {
+        if (!IsOpen)
+            return;
+
         IsWindow = ImGuiHelpers.GlobalScale > 1;
 
+        var agent = AgentBannerEditor.Instance();
         var isCloseDialogOpen =
-            AgentBannerEditor != null
-            && AgentBannerEditor->EditorState != null
-            && AgentBannerEditor->EditorState->CloseDialogAddonId != 0;
+            agent != null
+            && agent->EditorState != null
+            && agent->EditorState->CloseDialogAddonId != 0;
 
         ToggleUiVisibility(IsWindow || isCloseDialogOpen);
     }
@@ -95,36 +99,37 @@ public abstract unsafe class Overlay : Window, IDisposable
         {
             if (Type == OverlayType.LeftPane)
             {
-                _windowPadding = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+                WindowPadding.Push(ImGuiStyleVar.WindowPadding, Vector2.Zero);
             }
 
             if (Colors.IsLightTheme)
             {
-                _windowText = ImRaii.PushColor(ImGuiCol.Text, (uint)HaselColor.FromUiForeground(2));
+                WindowText.Push(ImGuiCol.Text, (uint)ExcelService.GetRow<UIColor>(2)!.GetForegroundColor());
             }
 
-            _windowBg = ImRaii.PushColor(ImGuiCol.WindowBg, 0);
+            WindowBg.Push(ImGuiCol.WindowBg, 0);
         }
     }
 
     public override void Draw()
     {
-        _windowPadding?.Dispose();
-        _windowPadding = null;
-        _windowBg?.Dispose();
-        _windowBg = null;
+        WindowPadding.Dispose();
+        WindowBg.Dispose();
     }
 
     public override void PostDraw()
     {
-        _windowText?.Dispose();
-        _windowText = null;
+        WindowText.Dispose();
 
         UpdateWindow();
     }
 
     private void UpdateWindow()
     {
+        var addon = GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
+        if (addon == null)
+            return;
+
         if (!IsWindow)
         {
             Flags |= ImGuiWindowFlags.NoSavedSettings;
@@ -134,12 +139,12 @@ public abstract unsafe class Overlay : Window, IDisposable
 
             if (Type == OverlayType.Window)
             {
-                var windowNode = (AtkResNode*)((AtkUnitBase*)AddonBannerEditor)->WindowNode;
+                var windowNode = (AtkResNode*)((AtkUnitBase*)addon)->WindowNode;
                 var scale = GetNodeScale(windowNode);
 
                 Position = new Vector2(
-                    AddonBannerEditor->AtkUnitBase.X + (windowNode->X + 8) * scale.X,
-                    AddonBannerEditor->AtkUnitBase.Y + (windowNode->Y + 40) * scale.Y
+                    addon->AtkUnitBase.X + (windowNode->X + 8) * scale.X,
+                    addon->AtkUnitBase.Y + (windowNode->Y + 40) * scale.Y
                 );
 
                 Size = new Vector2(
@@ -151,12 +156,12 @@ public abstract unsafe class Overlay : Window, IDisposable
             {
                 Flags |= ImGuiWindowFlags.AlwaysAutoResize;
 
-                var leftPane = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 20);
+                var leftPane = GetNode<AtkResNode>(&addon->AtkUnitBase, 20);
                 var scale = GetNodeScale(leftPane);
 
                 Position = new Vector2(
-                    AddonBannerEditor->AtkUnitBase.X + leftPane->X * scale.X,
-                    AddonBannerEditor->AtkUnitBase.Y + leftPane->Y * scale.Y
+                    addon->AtkUnitBase.X + leftPane->X * scale.X,
+                    addon->AtkUnitBase.Y + leftPane->Y * scale.Y
                 );
 
                 Size = new Vector2(
@@ -186,32 +191,36 @@ public abstract unsafe class Overlay : Window, IDisposable
         }
     }
 
-    public void ToggleUiVisibility(bool visible)
+    private void ToggleUiVisibility(bool visible)
     {
-        var leftPane = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 20);
+        var addon = GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
+        if (addon == null)
+            return;
+
+        var leftPane = GetNode<AtkResNode>(&addon->AtkUnitBase, 20);
         leftPane->ToggleVisibility(visible);
 
         if (Type != OverlayType.LeftPane)
         {
-            var rightPane = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 107);
+            var rightPane = GetNode<AtkResNode>(&addon->AtkUnitBase, 107);
             rightPane->ToggleVisibility(visible);
 
-            var verticalSeparatorNode = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 135);
+            var verticalSeparatorNode = GetNode<AtkResNode>(&addon->AtkUnitBase, 135);
             verticalSeparatorNode->ToggleVisibility(visible);
 
-            var controlsHint = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 2);
+            var controlsHint = GetNode<AtkResNode>(&addon->AtkUnitBase, 2);
             controlsHint->ToggleVisibility(visible);
 
-            var copyEquimentButton = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 131);
+            var copyEquimentButton = GetNode<AtkResNode>(&addon->AtkUnitBase, 131);
             copyEquimentButton->ToggleVisibility(visible);
 
-            var saveButton = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 133);
+            var saveButton = GetNode<AtkResNode>(&addon->AtkUnitBase, 133);
             saveButton->ToggleVisibility(visible);
 
-            var closeButton = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 134);
+            var closeButton = GetNode<AtkResNode>(&addon->AtkUnitBase, 134);
             closeButton->ToggleVisibility(visible);
 
-            var lowerHorizontalLine = GetNode<AtkResNode>(&AddonBannerEditor->AtkUnitBase, 136);
+            var lowerHorizontalLine = GetNode<AtkResNode>(&addon->AtkUnitBase, 136);
             lowerHorizontalLine->ToggleVisibility(visible);
         }
     }

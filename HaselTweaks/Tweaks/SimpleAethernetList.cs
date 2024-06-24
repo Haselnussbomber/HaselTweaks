@@ -1,31 +1,66 @@
+using Dalamud.Hooking;
+using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
-[Tweak]
-public unsafe partial class SimpleAethernetList : Tweak
+public sealed unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider) : ITweak
 {
-    [VTableHook<AddonTeleportTown>((int)AtkUnitBaseVfs.ReceiveEvent)]
-    private void AddonTeleportTown_ReceiveEvent(AddonTeleportTown* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
+    private Hook<AddonTeleportTown.Delegates.ReceiveEvent>? ReceiveEventHook;
+
+    public string InternalName => nameof(SimpleAethernetList);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    public void OnInitialize()
+    {
+        ReceiveEventHook = GameInteropProvider.HookFromAddress<AddonTeleportTown.Delegates.ReceiveEvent>(
+            AddonTeleportTown.StaticVirtualTablePointer->ReceiveEvent,
+            ReceiveEventDetour);
+    }
+
+    public void OnEnable()
+    {
+        ReceiveEventHook?.Enable();
+    }
+
+    public void OnDisable()
+    {
+        ReceiveEventHook?.Disable();
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (Status == TweakStatus.Disposed)
+            return;
+
+        ReceiveEventHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
+    }
+
+    private void ReceiveEventDetour(AddonTeleportTown* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)
     {
         if (eventType == AtkEventType.ListItemRollOver)
         {
-            var agent = GetAgent<AgentTelepotTown>();
-            var index = *(uint*)(a5 + 0x10);
+            var agent = AgentTelepotTown.Instance();
+            var index = *(uint*)(atkEventData + 0x10);
             if (agent->Data != null && index >= 0)
             {
                 var item = addon->List->GetItem(index);
-                if (item != null && item->UIntValues.Size() >= 4)
+                if (item != null && item->UIntValues.LongCount >= 4)
                 {
-                    agent->Data->SelectedAetheryte = (byte)item->UIntValues.Get(3);
+                    agent->Data->SelectedAetheryte = (byte)item->UIntValues[3];
                     agent->Data->Flags |= 2;
                     return;
                 }
             }
         }
 
-        AddonTeleportTown_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
+        ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 }

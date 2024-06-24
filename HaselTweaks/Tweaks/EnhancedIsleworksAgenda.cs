@@ -1,12 +1,15 @@
 using Dalamud;
+using Dalamud.Hooking;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
+using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
-public class EnhancedIsleworksAgendaConfiguration
+public sealed class EnhancedIsleworksAgendaConfiguration
 {
     [BoolConfig]
     public bool EnableSearchBar = true;
@@ -17,31 +20,54 @@ public class EnhancedIsleworksAgendaConfiguration
     public ClientLanguage SearchLanguage = ClientLanguage.English;
 }
 
-[Tweak]
-public unsafe partial class EnhancedIsleworksAgenda : Tweak<EnhancedIsleworksAgendaConfiguration>
+public sealed unsafe class EnhancedIsleworksAgenda(
+    PluginConfig pluginConfig,
+    TextService textService,
+    IGameInteropProvider GameInteropProvider,
+    AddonObserver AddonObserver,
+    MJICraftScheduleSettingSearchBar Window)
+    : Tweak<EnhancedIsleworksAgendaConfiguration>(pluginConfig, textService)
 {
-    public override void Enable()
+    private Hook<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>? ReceiveEventHook;
+
+    public override void OnInitialize()
+    {
+        ReceiveEventHook = GameInteropProvider.HookFromAddress<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>(
+            AddonMJICraftScheduleSetting.StaticVirtualTablePointer->ReceiveEvent,
+            ReceiveEventDetour);
+    }
+
+    public override void OnEnable()
     {
         if (Config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"))
-            Service.WindowManager.OpenWindow<MJICraftScheduleSettingSearchBar>();
+            Window.Open();
+
+        AddonObserver.AddonOpen += OnAddonOpen;
+        AddonObserver.AddonClose += OnAddonClose;
+
+        ReceiveEventHook?.Enable();
     }
 
-    public override void Disable()
+    public override void OnDisable()
     {
-        if (Service.HasService<WindowManager>())
-            Service.WindowManager.CloseWindow<MJICraftScheduleSettingSearchBar>();
+        AddonObserver.AddonOpen -= OnAddonOpen;
+        AddonObserver.AddonClose -= OnAddonClose;
+
+        ReceiveEventHook?.Disable();
+
+        Window.Close();
     }
 
-    public override void OnAddonOpen(string addonName)
+    private void OnAddonOpen(string addonName)
     {
         if (Config.EnableSearchBar && addonName == "MJICraftScheduleSetting")
-            Service.WindowManager.OpenWindow<MJICraftScheduleSettingSearchBar>();
+            Window.Open();
     }
 
-    public override void OnAddonClose(string addonName)
+    private void OnAddonClose(string addonName)
     {
         if (addonName == "MJICraftScheduleSetting")
-            Service.WindowManager.CloseWindow<MJICraftScheduleSettingSearchBar>();
+            Window.Close();
     }
 
     public override void OnConfigChange(string fieldName)
@@ -49,22 +75,21 @@ public unsafe partial class EnhancedIsleworksAgenda : Tweak<EnhancedIsleworksAge
         if (fieldName == "EnableSearchBar")
         {
             if (Config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"))
-                Service.WindowManager.OpenWindow<MJICraftScheduleSettingSearchBar>();
+                Window.Open();
             else
-                Service.WindowManager.CloseWindow<MJICraftScheduleSettingSearchBar>();
+                Window.Close();
         }
     }
 
-    [AddressHook<AddonMJICraftScheduleSetting>(nameof(AddonMJICraftScheduleSetting.Addresses.ReceiveEvent))]
-    private void AddonMJICraftScheduleSetting_ReceiveEvent(AddonMJICraftScheduleSetting* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint a5)
+    private void ReceiveEventDetour(AddonMJICraftScheduleSetting* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)
     {
         if (eventType == AtkEventType.ListItemRollOver && eventParam == 2 && Config.DisableTreeListTooltips)
         {
-            var index = *(uint*)(a5 + 0x10);
+            var index = *(uint*)(atkEventData + 0x10);
             var itemPtr = addon->TreeList->GetItem(index);
-            if (itemPtr != null && itemPtr->UIntValues.Size() >= 1)
+            if (itemPtr != null && itemPtr->UIntValues.LongCount >= 1)
             {
-                if (itemPtr->UIntValues.Get(0) != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
+                if (itemPtr->UIntValues[0] != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
                 {
                     atkEvent->SetEventIsHandled();
                     return;
@@ -72,6 +97,6 @@ public unsafe partial class EnhancedIsleworksAgenda : Tweak<EnhancedIsleworksAge
             }
         }
 
-        AddonMJICraftScheduleSetting_ReceiveEventHook.OriginalDisposeSafe(addon, eventType, eventParam, atkEvent, a5);
+        ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 }

@@ -1,15 +1,17 @@
 using Dalamud.Game.ClientState.Keys;
+using Dalamud.Hooking;
+using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
-using HaselTweaks.Enums;
-using HaselTweaks.Structs;
+using HaselTweaks.Config;
 using HaselTweaks.Windows;
 using Lumina.Excel.GeneratedSheets;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-public class AetherCurrentHelperConfiguration
+public sealed class AetherCurrentHelperConfiguration
 {
     [BoolConfig]
     public bool AlwaysShowDistance = false;
@@ -18,32 +20,51 @@ public class AetherCurrentHelperConfiguration
     public bool CenterDistance = true;
 }
 
-[Tweak]
-public unsafe partial class AetherCurrentHelper : Tweak<AetherCurrentHelperConfiguration>
+public sealed unsafe class AetherCurrentHelper(
+    PluginConfig pluginConfig,
+    TextService textService,
+    IGameInteropProvider GameInteropProvider,
+    IKeyState KeyState,
+    ExcelService ExcelService,
+    AetherCurrentHelperWindow Window)
+    : Tweak<AetherCurrentHelperConfiguration>(pluginConfig, textService)
 {
-    public override void Disable()
+    private Hook<AgentAetherCurrent.Delegates.ReceiveEvent>? ReceiveEventHook;
+
+    public override void OnInitialize()
     {
-        if (Service.HasService<WindowManager>())
-            Service.WindowManager.CloseWindow<AetherCurrentHelperWindow>();
+        ReceiveEventHook = GameInteropProvider.HookFromAddress<AgentAetherCurrent.Delegates.ReceiveEvent>(
+            AgentAetherCurrent.StaticVirtualTablePointer->ReceiveEvent,
+            ReceiveEventDetour);
     }
 
-    [VTableHook<AgentAetherCurrent>((int)AgentInterfaceVfs.ReceiveEvent)]
-    private AtkValue* AgentAetherCurrent_ReceiveEvent(AgentAetherCurrent* agent, AtkValue* eventData, AtkValue* atkValue, uint valueCount, nint eventKind)
+    public override void OnEnable()
     {
-        if (OpenWindow(agent, atkValue))
+        ReceiveEventHook?.Enable();
+    }
+
+    public override void OnDisable()
+    {
+        ReceiveEventHook?.Disable();
+        Window.Close();
+    }
+
+    private AtkValue* ReceiveEventDetour(AgentAetherCurrent* agent, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
+    {
+        if (OpenWindow(agent, values))
         {
             // handled, just like in the original code
-            eventData->Type = ValueType.Bool;
-            eventData->Byte = 0;
-            return eventData;
+            returnValue->Type = ValueType.Bool;
+            returnValue->Byte = 0;
+            return returnValue;
         }
 
-        return AgentAetherCurrent_ReceiveEventHook.OriginalDisposeSafe(agent, eventData, atkValue, valueCount, eventKind);
+        return ReceiveEventHook!.Original(agent, returnValue, values, valueCount, eventKind);
     }
 
-    public static bool OpenWindow(AgentAetherCurrent* agent, AtkValue* atkValue)
+    public bool OpenWindow(AgentAetherCurrent* agent, AtkValue* atkValue)
     {
-        if (Service.KeyState[VirtualKey.SHIFT])
+        if (KeyState[VirtualKey.SHIFT])
             return false;
 
         if (atkValue == null)
@@ -62,12 +83,12 @@ public unsafe partial class AetherCurrentHelper : Tweak<AetherCurrentHelperConfi
         if (index < 19)
             index = rawIndex;
 
-        var compFlgSet = GetRow<AetherCurrentCompFlgSet>(index + 1);
+        var compFlgSet = ExcelService.GetRow<AetherCurrentCompFlgSet>(index + 1);
         if (compFlgSet == null)
             return false;
 
-        var window = Service.WindowManager.OpenWindow<AetherCurrentHelperWindow>();
-        window.CompFlgSet = compFlgSet;
+        Window.CompFlgSet = compFlgSet;
+        Window.Open();
 
         return true;
     }

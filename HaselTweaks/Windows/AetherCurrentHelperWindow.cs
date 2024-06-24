@@ -1,16 +1,18 @@
-using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
-using System.Text.RegularExpressions;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using HaselCommon.Services;
 using HaselCommon.Sheets;
-using HaselCommon.Structs;
+using HaselCommon.Textures;
 using HaselCommon.Utils;
-using HaselTweaks.Structs;
+using HaselCommon.Windowing.Interfaces;
+using HaselTweaks.Caches;
+using HaselTweaks.Config;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
@@ -18,21 +20,35 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Windows;
 
-public unsafe partial class AetherCurrentHelperWindow : LockableWindow
+public unsafe class AetherCurrentHelperWindow : LockableWindow
 {
-    private readonly Dictionary<uint, string> _questNameCache = []; // key is Quest.RowId, value is stripped from private use utf8 chars
-    private bool _hideUnlocked = true;
+    private readonly EObjDataIdCache EObjDataIdCache;
+    private bool HideUnlocked = true;
 
     private static readonly HaselColor TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
+    private static readonly string[] CompassHeadings = ["E", "NE", "N", "NW", "W", "SW", "S", "SE"];
+    private AetherCurrentHelperConfiguration Config => PluginConfig.Tweaks.AetherCurrentHelper;
 
-    [GeneratedRegex("^[\\ue000-\\uf8ff]+ ")]
-    private static partial Regex Utf8PrivateUseAreaRegex();
+    private readonly IClientState ClientState;
+    private readonly TextureManager TextureManager;
+    private readonly ExcelService ExcelService;
+    private readonly TextService TextService;
 
-    public static AetherCurrentHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.AetherCurrentHelper;
-
-    public AetherCurrentHelperWindow() : base("[HaselTweaks] Aether Current Helper")
+    public AetherCurrentHelperWindow(
+        IWindowManager windowManager,
+        PluginConfig pluginConfig,
+        IClientState clientState,
+        TextureManager textureManager,
+        ExcelService excelService,
+        TextService textService,
+        EObjDataIdCache eObjDataIdCache)
+        : base(windowManager, pluginConfig, textService, "[HaselTweaks] Aether Current Helper")
     {
-        Namespace = "HaselTweaksAetherCurrentHelperWindow";
+        ClientState = clientState;
+        TextureManager = textureManager;
+        ExcelService = excelService;
+        TextService = textService;
+        EObjDataIdCache = eObjDataIdCache;
 
         SizeCondition = ImGuiCond.FirstUseEver;
         Size = new Vector2(350);
@@ -43,15 +59,10 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
         };
     }
 
-    public AetherCurrentCompFlgSet? CompFlgSet { get; set; } = null;
-
-    public override void OnClose()
-    {
-        Service.WindowManager.CloseWindow<AetherCurrentHelperWindow>();
-    }
+    public AetherCurrentCompFlgSet? CompFlgSet { get; set; }
 
     public override bool DrawConditions()
-        => CompFlgSet != null && Service.ClientState.IsLoggedIn && !RaptureAtkModule.Instance()->RaptureAtkUnitManager.UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
+        => CompFlgSet != null && ClientState.IsLoggedIn && !RaptureAtkModule.Instance()->RaptureAtkUnitManager.UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
 
     public override unsafe void Draw()
     {
@@ -64,10 +75,12 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
         var style = ImGui.GetStyle();
         var startPos = ImGui.GetCursorPos();
 
-        ImGui.Checkbox("##HideUnlocked", ref _hideUnlocked);
+        ImGui.Checkbox("##HideUnlocked", ref HideUnlocked);
         if (ImGui.IsItemHovered())
         {
-            ImGui.SetTooltip(t("AetherCurrentHelperWindow.HideUnlockedTooltip"));
+            ImGui.BeginTooltip();
+            TextService.Draw("AetherCurrentHelperWindow.HideUnlockedTooltip");
+            ImGui.EndTooltip();
         }
 
         ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
@@ -99,7 +112,7 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
             }
 
             var isUnlocked = playerState->IsAetherCurrentUnlocked(aetherCurrent.Row);
-            if (!_hideUnlocked || !isUnlocked)
+            if (!HideUnlocked || !isUnlocked)
             {
                 if (type == 0)
                 {
@@ -122,7 +135,7 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
             ImGui.TableNextColumn();
             ImGui.TableNextColumn();
             startPos = ImGui.GetCursorPos() + new Vector2(-startPos.X - 4, 0);
-            var text = t("AetherCurrentHelperWindow.AllAetherCurrentsAttuned");
+            var text = TextService.Translate("AetherCurrentHelperWindow.AllAetherCurrentsAttuned");
             textSize = ImGui.CalcTextSize(text);
             ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
             ImGui.TextUnformatted(text);
@@ -145,16 +158,18 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
 
         ImGui.SetCursorPosX(windowSize.X + style.WindowPadding.X - iconSize - 1);
 
-        Service.TextureManager.GetIcon(64).Draw(iconSize);
+        TextureManager.GetIcon(64).Draw(iconSize);
 
         if (ImGui.IsItemHovered())
         {
-            ImGui.SetTooltip(t("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip"));
+            ImGui.BeginTooltip();
+            TextService.Draw("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip");
+            ImGui.EndTooltip();
         }
 
         if (ImGui.IsItemClicked())
         {
-            GetAgent<AgentAetherCurrent>()->AgentInterface.Show();
+            AgentAetherCurrent.Instance()->Show();
         }
 
         ImGui.SetCursorPos(startPos);
@@ -187,27 +202,22 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
         else if (aetherCurrent.RowId == 2818328 && questId == 70030) // Curing What Ails
             questId = 69793; // In Agama's Footsteps
 
-        var quest = GetRow<Quest>(questId);
+        var quest = ExcelService.GetRow<Quest>(questId);
         if (questId == 0 || quest == null || quest.IssuerLocation.Row == 0)
             return;
 
-        var extendedIssuerLocation = GetRow<ExtendedLevel>(quest.IssuerLocation.Row);
+        var extendedIssuerLocation = ExcelService.GetRow<ExtendedLevel>(quest.IssuerLocation.Row);
         if (extendedIssuerLocation == null)
             return;
 
         // Icon
         ImGui.TableNextColumn();
-        Service.TextureManager.GetIcon(quest.JournalGenre.Value!.Icon).Draw(40);
+        TextureManager.GetIcon(quest.JournalGenre.Value!.Icon).Draw(40);
 
         // Content
         ImGui.TableNextColumn();
-        if (!_questNameCache.TryGetValue(quest.RowId, out var questName))
-        {
-            questName = Utf8PrivateUseAreaRegex().Replace(GetSheetText<Quest>(quest.RowId, "Name"), "");
-            _questNameCache.Add(quest.RowId, questName);
-        }
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {questName}");
-        ImGui.TextUnformatted($"{GetHumanReadableCoords(extendedIssuerLocation)} | {GetENpcResidentName(quest.IssuerStart)}");
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetQuestName(quest.RowId)}");
+        ImGui.TextUnformatted($"{GetHumanReadableCoords(extendedIssuerLocation)} | {TextService.GetENpcResidentName(quest.IssuerStart)}");
 
         // Actions
         ImGui.TableNextColumn();
@@ -226,7 +236,7 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
 
     private void DrawEObject(int index, bool isUnlocked, AetherCurrent aetherCurrent)
     {
-        var eobj = ExtendedEObj.GetByDataId(aetherCurrent.RowId);
+        var eobj = EObjDataIdCache.GetValue(aetherCurrent.RowId);
         if (eobj == null) return;
 
         var level = ExtendedLevel.GetByObjectId(eobj.RowId);
@@ -234,11 +244,11 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
 
         // Icon
         ImGui.TableNextColumn();
-        Service.TextureManager.GetIcon(60033).Draw(40);
+        TextureManager.GetIcon(60033).Draw(40);
 
         // Content
         ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {GetEObjName(eobj.RowId)}");
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetEObjName(eobj.RowId)}");
         ImGui.TextUnformatted(GetHumanReadableCoords(level!));
 
         // Actions
@@ -256,9 +266,9 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
         ImGui.Dummy(new Vector2(0, 0));
     }
 
-    private static void DrawUnlockStatus(bool isUnlocked, ExtendedLevel level)
+    private void DrawUnlockStatus(bool isUnlocked, ExtendedLevel level)
     {
-        var isSameTerritory = level.Territory.Row == Service.ClientState.TerritoryType;
+        var isSameTerritory = level.Territory.Row == ClientState.TerritoryType;
         ImGuiUtils.PushCursorY(11);
 
         if (isUnlocked && !Config.AlwaysShowDistance)
@@ -303,7 +313,7 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
         }
     }
 
-    private static void DrawCheckmark(bool isSameTerritory)
+    private void DrawCheckmark(bool isSameTerritory)
     {
         using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
         var icon = FontAwesomeIcon.Check.ToIconString();
@@ -316,29 +326,27 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
         ImGuiUtils.TextUnformattedColored(Colors.Green, icon);
     }
 
-    private static string GetHumanReadableCoords(ExtendedLevel level)
+    private string GetHumanReadableCoords(ExtendedLevel level)
     {
         var coords = level.GetCoords();
         var x = coords.X.ToString("0.0", CultureInfo.InvariantCulture);
         var y = coords.Y.ToString("0.0", CultureInfo.InvariantCulture);
-        return t("AetherCurrentHelperWindow.Coords", x, y);
+        return TextService.Translate("AetherCurrentHelperWindow.Coords", x, y);
     }
 
-    private static readonly string[] CompassHeadings = ["E", "NE", "N", "NW", "W", "SW", "S", "SE"];
-
     //! https://gamedev.stackexchange.com/a/49300
-    public static string GetCompassDirection(Vector2 a, Vector2 b)
+    public string GetCompassDirection(Vector2 a, Vector2 b)
     {
         var vector = a - b;
         var angle = Math.Atan2(vector.Y, vector.X);
         var octant = (int)Math.Round(8 * angle / (2 * Math.PI) + 8) % 8;
 
-        return t($"AetherCurrentHelperWindow.Compass.{CompassHeadings[octant]}");
+        return TextService.Translate($"AetherCurrentHelperWindow.Compass.{CompassHeadings[octant]}");
     }
 
-    public static string GetCompassDirection(Level? level)
+    public string GetCompassDirection(Level? level)
     {
-        var localPlayer = Service.ClientState.LocalPlayer;
+        var localPlayer = ClientState.LocalPlayer;
         return localPlayer == null || level == null
             ? string.Empty
             : GetCompassDirection(

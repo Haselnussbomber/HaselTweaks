@@ -2,32 +2,42 @@ using System.Linq;
 using System.Numerics;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.UI;
+using HaselCommon.Services;
 using HaselCommon.Sheets;
+using HaselCommon.Textures;
 using HaselCommon.Utils;
-using HaselTweaks.Structs;
+using HaselCommon.Windowing;
+using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Windows;
 
-public unsafe class GlamourDresserArmoireAlertWindow : Window
+public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 {
     private const int NumPrismBoxSlots = 800;
     private static readonly Vector2 IconSize = new(34);
-
-    private readonly GlamourDresserArmoireAlert _tweak;
+    private readonly TextureManager TextureManager;
+    private readonly ExcelService ExcelService;
+    private readonly TextService TextService;
 
     private static AddonMiragePrismPrismBox* Addon => GetAddon<AddonMiragePrismPrismBox>("MiragePrismPrismBox");
 
-    public GlamourDresserArmoireAlertWindow(GlamourDresserArmoireAlert tweak) : base(t("GlamourDresserArmoireAlertWindow.Title"))
+    public GlamourDresserArmoireAlertWindow(
+        IWindowManager windowManager,
+        TextureManager textureManager,
+        ExcelService excelService,
+        TextService textService)
+        : base(windowManager, textService.Translate("GlamourDresserArmoireAlertWindow.Title"))
     {
-        _tweak = tweak;
+        TextureManager = textureManager;
+        ExcelService = excelService;
+        TextService = textService;
 
-        IsOpen = true;
         DisableWindowSounds = true;
 
         Flags |= ImGuiWindowFlags.NoSavedSettings;
@@ -38,21 +48,18 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
         Size = new(360, 428);
     }
 
-    public override void OnClose()
-    {
-        Service.WindowManager.CloseWindow<GearSetGridWindow>();
-    }
+    public GlamourDresserArmoireAlert? Tweak { get; set; }
 
     public override bool DrawConditions()
-        => Addon != null && Addon->AtkUnitBase.IsVisible && _tweak.Categories.Any();
+        => Tweak != null && Addon != null && Addon->AtkUnitBase.IsVisible && Tweak!.Categories.Count != 0;
 
     public override void Draw()
     {
-        ImGui.TextWrapped(t("GlamourDresserArmoireAlertWindow.Info"));
+        TextService.DrawWrapped("GlamourDresserArmoireAlertWindow.Info");
 
-        foreach (var (categoryId, categoryItems) in _tweak.Categories.OrderBy(kv => kv.Key))
+        foreach (var (categoryId, categoryItems) in Tweak!.Categories.OrderBy(kv => kv.Key))
         {
-            var category = GetRow<ItemUICategory>(categoryId)!;
+            var category = ExcelService.GetRow<ItemUICategory>(categoryId)!;
 
             ImGui.TextUnformatted(category.Name.ToDalamudString().ToString());
             ImGuiUtils.PushCursorY(3 * ImGuiHelpers.GlobalScale);
@@ -77,7 +84,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
 
         using (var group = ImRaii.Group())
         {
-            Service.TextureManager
+            TextureManager
                 .GetIcon(item.Icon, isHq)
                 .Draw(IconSize * ImGuiHelpers.GlobalScale);
 
@@ -87,7 +94,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
             if (ImGui.Selectable(
                 "##Selectable",
                 false,
-                _tweak.UpdatePending
+                Tweak!.UpdatePending
                     ? ImGuiSelectableFlags.Disabled
                     : ImGuiSelectableFlags.None,
                 ImGuiHelpers.ScaledVector2(ImGui.GetContentRegionAvail().X, IconSize.Y)))
@@ -99,22 +106,20 @@ public unsafe class GlamourDresserArmoireAlertWindow : Window
                 ImGui.GetStyle().ItemInnerSpacing.X,
                 IconSize.Y * ImGuiHelpers.GlobalScale / 2f - ImGui.GetTextLineHeight() / 2f - 1));
 
-            ImGui.Text(GetItemName(item.RowId));
+            ImGui.TextUnformatted(TextService.GetItemName(item.RowId));
         }
 
-        new ImGuiContextMenu(popupKey)
-        {
+        ImGuiContextMenu.Draw(popupKey, [
             ImGuiContextMenu.CreateTryOn(item),
             ImGuiContextMenu.CreateItemFinder(item.RowId),
             ImGuiContextMenu.CreateCopyItemName(item.RowId),
             ImGuiContextMenu.CreateOpenOnGarlandTools("item", item.RowId),
-            ImGuiContextMenu.CreateItemSearch(item),
-        }
-        .Draw();
+            ImGuiContextMenu.CreateItemSearch(item)
+        ]);
     }
 
     private void RestoreItem(uint itemIndex)
     {
-        _tweak.UpdatePending = MirageManager.Instance()->RestorePrismBoxItem(itemIndex);
+        Tweak!.UpdatePending = MirageManager.Instance()->RestorePrismBoxItem(itemIndex);
     }
 }

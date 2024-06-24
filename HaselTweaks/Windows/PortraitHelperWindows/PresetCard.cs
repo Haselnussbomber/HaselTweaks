@@ -7,17 +7,23 @@ using Dalamud.Interface;
 using Dalamud.Interface.Internal;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
+using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using HaselCommon.Extensions;
+using HaselCommon.Services;
+using HaselCommon.Textures;
 using HaselCommon.Utils;
+using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
+using HaselTweaks.Extensions;
 using HaselTweaks.Records.PortraitHelper;
-using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using ImGuiNET;
 using Lumina.Data.Files;
 using Lumina.Excel.GeneratedSheets;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -26,114 +32,139 @@ namespace HaselTweaks.Windows.PortraitHelperWindows;
 
 public class PresetCard : IDisposable
 {
-    private static PortraitHelperConfiguration Config => Service.GetService<Configuration>().Tweaks.PortraitHelper;
     public static readonly Vector2 PortraitSize = new(576, 960); // native texture size
 
     private readonly uint ButtonActiveColor = Colors.White.WithAlpha(0.3f);
     private readonly uint ButtonHoveredColor = Colors.White.WithAlpha(0.2f);
 
-    private CancellationTokenSource? _closeTokenSource;
+    private readonly ILogger Logger;
+    private readonly DalamudPluginInterface PluginInterface;
+    private readonly IDataManager DataManager;
+    private readonly ITextureProvider TextureProvider;
+    private readonly PluginConfig PluginConfig;
+    private readonly TextService TextService;
+    private readonly ExcelService ExcelService;
+    private readonly BannerUtils BannerUtils;
+    private readonly SavedPreset Preset;
+    private readonly uint BannerFrameImage;
+    private readonly uint BannerDecorationImage;
+    private readonly bool IsBannerTimelineUnlocked;
+    private readonly bool IsBannerBgUnlocked;
+    private readonly bool IsBannerFrameUnlocked;
+    private readonly bool IsBannerDecorationUnlocked;
 
-    private readonly PresetBrowserOverlay _overlay;
-    private readonly SavedPreset _preset;
-    private readonly uint _bannerFrameImage;
-    private readonly uint _bannerDecorationImage;
-    private readonly bool _isBannerTimelineUnlocked;
-    private readonly bool _isBannerBgUnlocked;
-    private readonly bool _isBannerFrameUnlocked;
-    private readonly bool _isBannerDecorationUnlocked;
+    private CancellationTokenSource? CloseTokenSource;
 
-    private bool _isImageLoading;
-    private bool _doesImageFileExist;
-    private bool _isImageUpdatePending;
+    private bool IsImageLoading;
+    private bool DoesImageFileExist;
+    private bool IsImageUpdatePending;
 
-    private Guid? _textureGuid;
-    private Image<Rgba32>? _image;
-    private IDalamudTextureWrap? _textureWrap;
-    private DateTime _lastTextureCheck = DateTime.MinValue;
+    private Guid? TextureGuid;
+    private Image<Rgba32>? Image;
+    private IDalamudTextureWrap? TextureWrap;
+    private DateTime LastTextureCheck = DateTime.MinValue;
 
-    private float _lastScale;
+    private float LastScale;
 
-    public PresetCard(PresetBrowserOverlay overlay, SavedPreset preset)
+    public PresetCard(
+        SavedPreset preset,
+        ILogger logger,
+        DalamudPluginInterface pluginInterface,
+        IDataManager dataManager,
+        ITextureProvider textureProvider,
+        PluginConfig pluginConfig,
+        TextService textService,
+        ExcelService excelService,
+        BannerUtils bannerUtils)
     {
-        _overlay = overlay;
-        _preset = preset;
+        Preset = preset;
+        Logger = logger;
+        PluginInterface = pluginInterface;
+        DataManager = dataManager;
+        TextureProvider = textureProvider;
+        PluginConfig = pluginConfig;
+        TextService = textService;
+        ExcelService = excelService;
+        BannerUtils = bannerUtils;
 
-        _bannerFrameImage = (uint)(GetRow<BannerFrame>(_preset.Preset!.BannerFrame)?.Image ?? 0);
-        _bannerDecorationImage = (uint)(GetRow<BannerDecoration>(_preset.Preset.BannerDecoration)?.Image ?? 0);
+        BannerFrameImage = (uint)(excelService.GetRow<BannerFrame>(Preset.Preset!.BannerFrame)?.Image ?? 0);
+        BannerDecorationImage = (uint)(excelService.GetRow<BannerDecoration>(Preset.Preset.BannerDecoration)?.Image ?? 0);
 
-        _isBannerTimelineUnlocked = PortraitHelper.IsBannerTimelineUnlocked(_preset.Preset.BannerTimeline);
-        _isBannerBgUnlocked = PortraitHelper.IsBannerBgUnlocked(_preset.Preset.BannerBg);
-        _isBannerFrameUnlocked = PortraitHelper.IsBannerFrameUnlocked(_preset.Preset.BannerFrame);
-        _isBannerDecorationUnlocked = PortraitHelper.IsBannerDecorationUnlocked(_preset.Preset.BannerDecoration);
+        IsBannerTimelineUnlocked = bannerUtils.IsBannerTimelineUnlocked(Preset.Preset.BannerTimeline);
+        IsBannerBgUnlocked = bannerUtils.IsBannerBgUnlocked(Preset.Preset.BannerBg);
+        IsBannerFrameUnlocked = bannerUtils.IsBannerFrameUnlocked(Preset.Preset.BannerFrame);
+        IsBannerDecorationUnlocked = bannerUtils.IsBannerDecorationUnlocked(Preset.Preset.BannerDecoration);
     }
 
     public void Dispose()
     {
-        _closeTokenSource?.Cancel();
-        _closeTokenSource?.Dispose();
-        _image?.Dispose();
-        _textureWrap?.Dispose();
+        CloseTokenSource?.Cancel();
+        CloseTokenSource?.Dispose();
+        Image?.Dispose();
+        TextureWrap?.Dispose();
+        GC.SuppressFinalize(this);
     }
 
-    public void Draw(float scale, uint defaultImGuiTextColor)
+    public void Draw(PresetBrowserOverlay overlay, float scale, uint defaultImGuiTextColor)
     {
         Update(scale);
 
-        var hasErrors = !_isBannerTimelineUnlocked || !_isBannerBgUnlocked || !_isBannerFrameUnlocked || !_isBannerDecorationUnlocked;
+        var hasErrors = !IsBannerTimelineUnlocked || !IsBannerBgUnlocked || !IsBannerFrameUnlocked || !IsBannerDecorationUnlocked;
         var style = ImGui.GetStyle();
 
-        using var _id = ImRaii.PushId(_preset.Id.ToString());
+        using var _id = ImRaii.PushId(Preset.Id.ToString());
 
         var cursorPos = ImGui.GetCursorPos();
         var center = cursorPos + PortraitSize * scale / 2f;
 
-        Service.TextureManager.GetIcon(190009).Draw(PortraitSize * scale);
+        var textureManager = Service.Get<TextureManager>();
+
+        textureManager.GetIcon(190009).Draw(PortraitSize * scale);
         ImGui.SetCursorPos(cursorPos);
 
-        if (_isImageLoading)
+        if (IsImageLoading)
         {
             DrawLoadingSpinner(ImGui.GetWindowPos() - new Vector2(ImGui.GetScrollX(), ImGui.GetScrollY()) + center);
         }
-        else if (!_doesImageFileExist)
+        else if (!DoesImageFileExist)
         {
-            using var a = ImRaii.PushFont(UiBuilder.IconFont);
-            using var b = ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red);
+            using var font = ImRaii.PushFont(UiBuilder.IconFont);
+            using var color = Colors.Red.Push(ImGuiCol.Text);
             ImGui.SetCursorPos(center - ImGui.CalcTextSize(FontAwesomeIcon.FileImage.ToIconString()) / 2f);
             ImGui.TextUnformatted(FontAwesomeIcon.FileImage.ToIconString());
         }
-        else if (_textureWrap != null)
+        else if (TextureWrap != null)
         {
             ImGui.SetCursorPos(cursorPos);
-            ImGui.Image(_textureWrap.ImGuiHandle, PortraitSize * scale);
+            ImGui.Image(TextureWrap.ImGuiHandle, PortraitSize * scale);
         }
 
-        if (_bannerFrameImage != 0)
+        if (BannerFrameImage != 0)
         {
             ImGui.SetCursorPos(cursorPos);
-            Service.TextureManager.GetIcon(_bannerFrameImage).Draw(PortraitSize * scale);
+            textureManager.GetIcon(BannerFrameImage).Draw(PortraitSize * scale);
         }
 
-        if (_bannerDecorationImage != 0)
+        if (BannerDecorationImage != 0)
         {
             ImGui.SetCursorPos(cursorPos);
-            Service.TextureManager.GetIcon(_bannerDecorationImage).Draw(PortraitSize * scale);
+            textureManager.GetIcon(BannerDecorationImage).Draw(PortraitSize * scale);
         }
 
         if (hasErrors)
         {
             ImGui.SetCursorPos(cursorPos + new Vector2(PortraitSize.X - 190, 10) * scale);
-            Service.TextureManager.Get("ui/uld/Warning.tex", 2).Draw(160 * scale);
+            textureManager.Get("ui/uld/Warning.tex", 2).Draw(160 * scale);
         }
 
         ImGui.SetCursorPos(cursorPos);
 
         {
-            using var a = ImRaii.PushColor(ImGuiCol.Button, 0);
-            using var b = ImRaii.PushColor(ImGuiCol.ButtonActive, ButtonActiveColor);
-            using var c = ImRaii.PushColor(ImGuiCol.ButtonHovered, ButtonHoveredColor);
-            using var d = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0);
-            ImGui.Button($"##{_preset.Id}_Button", PortraitSize * scale);
+            using var colors = ImRaii.PushColor(ImGuiCol.Button, 0)
+                .Push(ImGuiCol.ButtonActive, ButtonActiveColor)
+                .Push(ImGuiCol.ButtonHovered, ButtonHoveredColor);
+            using var rounding = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0);
+            ImGui.Button($"##{Preset.Id}_Button", PortraitSize * scale);
         }
 
         using (var source = ImRaii.DragDropSource())
@@ -141,11 +172,11 @@ public class PresetCard : IDisposable
             if (source.Success)
             {
                 using (ImRaii.PushColor(ImGuiCol.Text, defaultImGuiTextColor))
-                    ImGui.TextUnformatted(t("PortraitHelperWindows.PresetCard.MovingPresetCard.Tooltip", _preset.Name));
+                    TextService.Draw("PortraitHelperWindows.PresetCard.MovingPresetCard.Tooltip", Preset.Name);
 
                 unsafe
                 {
-                    var bytes = _preset.Id.ToByteArray();
+                    var bytes = Preset.Id.ToByteArray();
                     fixed (byte* ptr = bytes)
                     {
                         ImGui.SetDragDropPayload("MovePresetCard", (nint)ptr, (uint)bytes.Length);
@@ -163,13 +194,14 @@ public class PresetCard : IDisposable
                 {
                     if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
                     {
+                        var config = PluginConfig.Tweaks.PortraitHelper;
                         var presetId = MemoryHelper.Read<Guid>(payload.Data).ToString();
-                        var oldIndex = Config.Presets.AsEnumerable().IndexOf((preset) => preset.Id.ToString() == presetId);
-                        var newIndex = Config.Presets.IndexOf(_preset);
-                        var item = Config.Presets[oldIndex];
-                        Config.Presets.RemoveAt(oldIndex);
-                        Config.Presets.Insert(newIndex, item);
-                        Service.GetService<Configuration>().Save();
+                        var oldIndex = config.Presets.AsEnumerable().IndexOf((preset) => preset.Id.ToString() == presetId);
+                        var newIndex = config.Presets.IndexOf(Preset);
+                        var item = config.Presets[oldIndex];
+                        config.Presets.RemoveAt(oldIndex);
+                        config.Presets.Insert(newIndex, item);
+                        PluginConfig.Save();
                     }
                 }
             }
@@ -180,7 +212,7 @@ public class PresetCard : IDisposable
             using (ImRaii.Tooltip())
             {
                 using (ImRaii.PushColor(ImGuiCol.Text, defaultImGuiTextColor))
-                    ImGui.TextUnformatted(_preset.Name);
+                    ImGui.TextUnformatted(Preset.Name);
 
                 if (hasErrors)
                 {
@@ -188,37 +220,37 @@ public class PresetCard : IDisposable
 
                     using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red))
                     {
-                        ImGui.TextUnformatted(t("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.Title"));
+                        TextService.Draw("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.Title");
 
                         using (ImRaii.PushStyle(ImGuiStyleVar.IndentSpacing, 2))
                         using (ImRaii.PushIndent(1))
                         {
-                            if (!_isBannerTimelineUnlocked)
+                            if (!IsBannerTimelineUnlocked)
                             {
                                 ImGui.TextUnformatted("•");
                                 ImGui.SameLine(0, 5);
-                                ImGui.TextUnformatted(t("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.PoseNotUnlocked", PortraitHelper.GetBannerTimelineName(_preset.Preset!.BannerTimeline)));
+                                TextService.Draw("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.PoseNotUnlocked", BannerUtils.GetBannerTimelineName(Preset.Preset!.BannerTimeline));
                             }
 
-                            if (!_isBannerBgUnlocked)
+                            if (!IsBannerBgUnlocked)
                             {
                                 ImGui.TextUnformatted("•");
                                 ImGui.SameLine(0, 5);
-                                ImGui.TextUnformatted(t("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.BackgroundNotUnlocked", GetSheetText<BannerBg>(_preset.Preset!.BannerBg, "Name")));
+                                TextService.Draw("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.BackgroundNotUnlocked", ExcelService.GetRow<BannerBg>(Preset.Preset!.BannerBg)?.Name.ExtractText());
                             }
 
-                            if (!_isBannerFrameUnlocked)
+                            if (!IsBannerFrameUnlocked)
                             {
                                 ImGui.TextUnformatted("•");
                                 ImGui.SameLine(0, 5);
-                                ImGui.TextUnformatted(t("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.FrameNotUnlocked", GetSheetText<BannerFrame>(_preset.Preset!.BannerFrame, "Name")));
+                                TextService.Draw("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.FrameNotUnlocked", ExcelService.GetRow<BannerFrame>(Preset.Preset!.BannerFrame)?.Name.ExtractText());
                             }
 
-                            if (!_isBannerDecorationUnlocked)
+                            if (!IsBannerDecorationUnlocked)
                             {
                                 ImGui.TextUnformatted("•");
                                 ImGui.SameLine(0, 5);
-                                ImGui.TextUnformatted(t("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.DecorationNotUnlocked", GetSheetText<BannerDecoration>(_preset.Preset!.BannerDecoration, "Name")));
+                                TextService.Draw("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.DecorationNotUnlocked", ExcelService.GetRow<BannerDecoration>(Preset.Preset!.BannerDecoration)?.Name.ExtractText());
                             }
                         }
                     }
@@ -227,50 +259,50 @@ public class PresetCard : IDisposable
 
             if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
             {
-                _preset.Preset?.ToState(ImportFlags.All);
-                PortraitHelper.CloseOverlays();
+                Preset.Preset?.ToState(Logger, BannerUtils, ImportFlags.All);
+                overlay.MenuBar.CloseOverlays();
             }
         }
 
         using (ImRaii.PushColor(ImGuiCol.Text, defaultImGuiTextColor))
         {
-            using var popup = ImRaii.ContextPopupItem($"{_preset.Id}_Popup");
+            using var popup = ImRaii.ContextPopupItem($"{Preset.Id}_Popup");
             if (popup.Success)
             {
-                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.LoadPreset.Label")))
+                if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.LoadPreset.Label")))
                 {
-                    _preset.Preset?.ToState(ImportFlags.All);
-                    PortraitHelper.CloseOverlays();
+                    Preset.Preset?.ToState(Logger, BannerUtils, ImportFlags.All);
+                    overlay.MenuBar.CloseOverlays();
                 }
 
-                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.EditPreset.Label")))
+                if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.EditPreset.Label")))
                 {
-                    _overlay.EditPresetDialog.Open(_preset);
+                    overlay.EditPresetDialog.Open(Preset);
                 }
 
-                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.ExportToClipboard.Label")))
+                if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.ExportToClipboard.Label")))
                 {
-                    _preset.Preset?.ToClipboard();
+                    Preset.Preset?.ToClipboard(Logger);
                 }
 
-                if (_image != null && ImGui.BeginMenu(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Label")))
+                if (Image != null && ImGui.BeginMenu(TextService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Label")))
                 {
-                    if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Everything.Label")))
+                    if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Everything.Label")))
                     {
                         Task.Run(async () => await CopyImage());
                     }
 
-                    if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrame.Label")))
+                    if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrame.Label")))
                     {
                         Task.Run(async () => await CopyImage(CopyImageFlags.NoFrame));
                     }
 
-                    if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutDecoration.Label")))
+                    if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutDecoration.Label")))
                     {
                         Task.Run(async () => await CopyImage(CopyImageFlags.NoDecoration));
                     }
 
-                    if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrameAndDecoration.Label")))
+                    if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrameAndDecoration.Label")))
                     {
                         Task.Run(async () => await CopyImage(CopyImageFlags.NoFrame | CopyImageFlags.NoDecoration));
                     }
@@ -280,9 +312,9 @@ public class PresetCard : IDisposable
 
                 ImGui.Separator();
 
-                if (ImGui.MenuItem(t("PortraitHelperWindows.PresetCard.ContextMenu.DeletePreset.Label")))
+                if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.DeletePreset.Label")))
                 {
-                    _overlay.DeletePresetDialog.Open(_preset);
+                    overlay.DeletePresetDialog.Open(overlay, Preset);
                 }
             }
         }
@@ -313,35 +345,35 @@ public class PresetCard : IDisposable
 
     private async Task CopyImage(CopyImageFlags flags = CopyImageFlags.None)
     {
-        if (_image == null)
+        if (Image == null)
             return;
 
-        using var tempImage = _image.Clone();
+        using var tempImage = Image.Clone();
 
-        if (!flags.HasFlag(CopyImageFlags.NoFrame) && _bannerFrameImage != 0)
+        if (!flags.HasFlag(CopyImageFlags.NoFrame) && BannerFrameImage != 0)
         {
-            var iconPath = Service.TextureProvider.GetIconPath(_bannerFrameImage);
+            var iconPath = TextureProvider.GetIconPath(BannerFrameImage);
             if (iconPath != null)
             {
-                var texture = Service.DataManager.GetFile<TexFile>(iconPath);
+                var texture = DataManager.GetFile<TexFile>(iconPath);
                 if (texture != null)
                 {
-                    using var image = Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
+                    using var image = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
                     image.Mutate(x => x.Resize(tempImage.Width, tempImage.Height));
                     tempImage.Mutate(x => x.DrawImage(image, 1f));
                 }
             }
         }
 
-        if (!flags.HasFlag(CopyImageFlags.NoDecoration) && _bannerDecorationImage != 0)
+        if (!flags.HasFlag(CopyImageFlags.NoDecoration) && BannerDecorationImage != 0)
         {
-            var iconPath = Service.TextureProvider.GetIconPath(_bannerDecorationImage);
+            var iconPath = TextureProvider.GetIconPath(BannerDecorationImage);
             if (iconPath != null)
             {
-                var texture = Service.DataManager.GetFile<TexFile>(iconPath);
+                var texture = DataManager.GetFile<TexFile>(iconPath);
                 if (texture != null)
                 {
-                    using var image = Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
+                    using var image = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
                     image.Mutate(x => x.Resize(tempImage.Width, tempImage.Height));
                     tempImage.Mutate(x => x.DrawImage(image, 1f));
                 }
@@ -353,90 +385,90 @@ public class PresetCard : IDisposable
 
     private void Update(float scale)
     {
-        if (!_isImageLoading && _preset.Id != _textureGuid)
+        if (!IsImageLoading && Preset.Id != TextureGuid)
         {
-            _image?.Dispose();
-            _image = null;
+            Image?.Dispose();
+            Image = null;
 
-            _textureWrap?.Dispose();
-            _textureWrap = null;
+            TextureWrap?.Dispose();
+            TextureWrap = null;
 
-            if (DateTime.Now - _lastTextureCheck > TimeSpan.FromSeconds(1))
+            if (DateTime.Now - LastTextureCheck > TimeSpan.FromSeconds(1))
             {
-                var thumbPath = PortraitHelper.GetPortraitThumbnailPath(_preset.Id);
+                var thumbPath = PluginInterface.GetPortraitThumbnailPath(Preset.Id);
 
                 if (File.Exists(thumbPath))
                 {
-                    _isImageLoading = true;
-                    _closeTokenSource ??= new();
+                    IsImageLoading = true;
+                    CloseTokenSource ??= new();
                     Task.Run(async () =>
                     {
                         try
                         {
-                            _image = await Image.LoadAsync<Rgba32>(thumbPath, _closeTokenSource.Token);
-                            _isImageUpdatePending = true;
-                            _doesImageFileExist = true;
+                            Image = await SixLabors.ImageSharp.Image.LoadAsync<Rgba32>(thumbPath, CloseTokenSource.Token);
+                            IsImageUpdatePending = true;
+                            DoesImageFileExist = true;
                         }
                         catch (Exception ex)
                         {
-                            Service.PluginLog.Error(ex, "Error while loading thumbnail");
-                            _isImageLoading = false;
-                            _doesImageFileExist = false;
+                            Logger.LogError(ex, "Error while loading thumbnail");
+                            IsImageLoading = false;
+                            DoesImageFileExist = false;
                         }
                         finally
                         {
-                            _textureGuid = _preset.Id;
+                            TextureGuid = Preset.Id;
                         }
-                    }, _closeTokenSource.Token);
+                    }, CloseTokenSource.Token);
                 }
 
-                _lastTextureCheck = DateTime.Now;
+                LastTextureCheck = DateTime.Now;
             }
         }
 
-        if (scale != _lastScale)
+        if (scale != LastScale)
         {
-            _isImageUpdatePending = true;
-            _lastScale = scale;
+            IsImageUpdatePending = true;
+            LastScale = scale;
         }
 
-        if (_image != null && _isImageUpdatePending)
+        if (Image != null && IsImageUpdatePending)
         {
-            _textureWrap?.Dispose();
-            _isImageUpdatePending = false;
-            _closeTokenSource ??= new();
+            TextureWrap?.Dispose();
+            IsImageUpdatePending = false;
+            CloseTokenSource ??= new();
 
             Task.Run(() =>
             {
                 try
                 {
-                    var scaledImage = _image.Clone();
+                    using var scaledImage = Image.Clone();
 
-                    if (_closeTokenSource.IsCancellationRequested)
+                    if (CloseTokenSource.IsCancellationRequested)
                         return;
 
                     scaledImage.Mutate(i => i.Resize((int)(PortraitSize.X * scale), (int)(PortraitSize.Y * scale), KnownResamplers.Lanczos3));
 
-                    if (_closeTokenSource.IsCancellationRequested)
+                    if (CloseTokenSource.IsCancellationRequested)
                         return;
 
                     var data = new byte[4 * scaledImage.Width * scaledImage.Height];
                     scaledImage.CopyPixelDataTo(data);
 
-                    if (_closeTokenSource.IsCancellationRequested)
+                    if (CloseTokenSource.IsCancellationRequested)
                         return;
 
-                    _textureWrap = Service.PluginInterface.UiBuilder.LoadImageRaw(data, scaledImage.Width, scaledImage.Height, 4);
+                    TextureWrap = PluginInterface.UiBuilder.LoadImageRaw(data, scaledImage.Width, scaledImage.Height, 4);
                 }
                 catch (Exception ex)
                 {
-                    Service.PluginLog.Error(ex, "Error while resizing/loading thumbnail");
+                    Logger.LogError(ex, "Error while resizing/loading thumbnail");
                 }
                 finally
                 {
-                    _isImageLoading = false;
+                    IsImageLoading = false;
                 }
-            }, _closeTokenSource.Token);
+            }, CloseTokenSource.Token);
         }
     }
 }
