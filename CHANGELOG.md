@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Portrait Helper
+
+- **Fixed:** The Preset Browser wouldn't close properly after loading a preset.
+- **Fixed:** The Advanced Import Overlay wouldn't close properly after importing a preset.
+
 ## [24.0.3] (2024-06-24)
 
 ### HaselTweaks
