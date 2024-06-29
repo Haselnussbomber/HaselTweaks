@@ -11,8 +11,6 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-// TODO: add support for AgentAetherCurrent
-
 public unsafe partial class ScrollableTabs(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,
@@ -23,7 +21,7 @@ public unsafe partial class ScrollableTabs(
     : IConfigurableTweak
 {
     public string InternalName => nameof(ScrollableTabs);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated; // TODO: addons need updating
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private ScrollableTabsConfiguration Config => PluginConfig.Tweaks.ScrollableTabs;
 
@@ -493,20 +491,16 @@ public unsafe partial class ScrollableTabs(
 
         addon->SetTab(tabIndex);
 
-        var tabs = (nint)addon + 0x228;
-        for (var i = 0; i < addon->TabCount; i++)
+        for (var i = 0; i < addon->Tabs.Length; i++)
         {
-            // WAYTOODANK, this is basically like writing addon->Tabs[i]
-            // but because this is dynamic (depending on NumTabs), we can't do that... thanks, C#!
-            var button = *(AtkComponentRadioButton**)(tabs + i * 8);
-            button->IsSelected = i == tabIndex;
+            addon->Tabs[i].Value->IsSelected = i == tabIndex;
         }
     }
 
     private void UpdateFateProgress(AddonFateProgress* addon)
     {
         var tabIndex = GetTabIndex(addon->TabIndex, addon->TabCount);
-        if (!addon->Loaded || addon->TabIndex == tabIndex)
+        if (!addon->IsLoaded || addon->TabIndex == tabIndex)
             return;
 
         // fake event, so it can call SetEventIsHandled
@@ -603,7 +597,7 @@ public unsafe partial class ScrollableTabs(
     private void UpdateCurrency(AtkUnitBase* addon)
     {
         var atkStage = AtkStage.Instance();
-        var numberArray = atkStage->GetNumberArrayData()[80];
+        var numberArray = atkStage->GetNumberArrayData()[81];
         var currentTab = numberArray->IntArray[0];
 
         var newTab = GetTabIndex(currentTab, 4);
@@ -693,7 +687,7 @@ public unsafe partial class ScrollableTabs(
 
         for (var i = 0; i < addon->TabCount; i++)
         {
-            var button = addon->RadioButtons.GetPointer(i);
+            var button = addon->Tabs.GetPointer(i);
             if (button->Value != null)
             {
                 button->Value->IsSelected = i == addon->TabIndex;
