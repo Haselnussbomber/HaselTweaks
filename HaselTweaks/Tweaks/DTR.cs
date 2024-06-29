@@ -98,11 +98,14 @@ public unsafe partial class DTR(
             return;
 
         var instanceId = UIState.Instance()->PublicInstance.InstanceId;
-        if (_lastInstanceId == instanceId || instanceId == 0 || instanceId >= 10)
+        if (instanceId == 0 || instanceId >= 10)
         {
             DtrInstance.Shown = false;
             return;
         }
+
+        if (_lastInstanceId == instanceId)
+            return;
 
         DtrInstance.Text = ((char)(SeIconChar.Instance1 + (byte)(instanceId - 1))).ToString();
         DtrInstance.Shown = true;
