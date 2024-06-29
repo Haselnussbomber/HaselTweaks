@@ -28,7 +28,7 @@ public unsafe partial class PortraitHelper(
     TextService TextService,
     ILogger<PortraitHelper> Logger,
     IGameInteropProvider GameInteropProvider,
-    DalamudPluginInterface PluginInterface,
+    IDalamudPluginInterface PluginInterface,
     IFramework Framework,
     IClientState ClientState,
     IChatGui ChatGui,
@@ -37,7 +37,7 @@ public unsafe partial class PortraitHelper(
     : IConfigurableTweak
 {
     public string InternalName => nameof(PortraitHelper);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
@@ -295,9 +295,10 @@ public unsafe partial class PortraitHelper(
         };
 
         var itemIds = stackalloc uint[14];
-        var stainIds = stackalloc byte[14 * 2];
+        var stainIds = stackalloc byte[24];
+        var glassesIds = stackalloc ushort[2];
 
-        if (!data.LoadEquipmentData(itemIds, stainIds))
+        if (!data.LoadEquipmentData(itemIds, stainIds, glassesIds))
             return 0;
 
         var gearVisibilityFlag = BannerGearVisibilityFlag.None;
@@ -311,7 +312,7 @@ public unsafe partial class PortraitHelper(
         if (localPlayer->DrawData.IsVisorToggled)
             gearVisibilityFlag |= BannerGearVisibilityFlag.VisorClosed;
 
-        return BannerModuleEntry.GenerateChecksum(itemIds, stainIds, gearVisibilityFlag);
+        return BannerModuleEntry.GenerateChecksum(itemIds, stainIds, glassesIds, gearVisibilityFlag);
     }
 
     private bool SendPortraitUpdate(BannerModuleEntry* banner)

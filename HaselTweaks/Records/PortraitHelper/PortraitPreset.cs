@@ -465,7 +465,7 @@ public sealed record PortraitPreset
         {
             logger.LogDebug($"- AnimationProgress changed from {tempPortraitData->AnimationProgress} to {AnimationProgress}");
 
-            tempPortraitData->AnimationProgress = AnimationProgress;
+            tempPortraitData->AnimationProgress = AnimationProgress; // TODO: this doesn't apply
         }
 
         if (hasCameraPositionChanged)

@@ -20,7 +20,7 @@ namespace HaselTweaks;
 public sealed class Plugin : IDalamudPlugin
 {
     public Plugin(
-        DalamudPluginInterface pluginInterface,
+        IDalamudPluginInterface pluginInterface,
         IFramework framework,
         IPluginLog pluginLog,
         ISigScanner sigScanner,

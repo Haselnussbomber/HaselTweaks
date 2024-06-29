@@ -14,7 +14,7 @@ using ImGuiNET;
 namespace HaselTweaks.Config;
 
 public class ConfigGui(
-    DalamudPluginInterface PluginInterface,
+    IDalamudPluginInterface PluginInterface,
     PluginConfig PluginConfig,
     TextService TextService,
     TextureManager TextureManager)

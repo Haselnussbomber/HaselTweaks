@@ -23,7 +23,7 @@ public unsafe partial class AetherCurrentHelper(
     : IConfigurableTweak
 {
     public string InternalName => nameof(AetherCurrentHelper);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized; // needs updated agent
 
     private Hook<AgentAetherCurrent.Delegates.ReceiveEvent>? ReceiveEventHook;
 

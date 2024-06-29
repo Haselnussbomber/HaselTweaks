@@ -9,7 +9,7 @@ using HaselTweaks.Interfaces;
 namespace HaselTweaks.Config.Migrations;
 
 // Version 6: removed TextureHash in favor of Id
-public class Version6(DalamudPluginInterface PluginInterface, IPluginLog PluginLog) : IConfigMigration
+public class Version6(IDalamudPluginInterface PluginInterface, IPluginLog PluginLog) : IConfigMigration
 {
     public int Version => 6;
 

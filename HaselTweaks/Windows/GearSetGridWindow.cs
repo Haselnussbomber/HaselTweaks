@@ -255,7 +255,9 @@ public unsafe class GearSetGridWindow : LockableWindow
             .GetIcon(item.Icon, isHq)
             .Draw((IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
+        // TODO: FIX
         // icon overlay
+        /*
         ImGui.SetCursorPos(startPos);
         TextureManager
             .GetPart("Character", 7, 0)
@@ -269,11 +271,11 @@ public unsafe class GearSetGridWindow : LockableWindow
                 .GetPart("Character", 7, 5)
                 .Draw(IconSize * ImGuiHelpers.GlobalScale);
         }
-
+        */
         ImGui.SetCursorPos(startPos + new Vector2(0, (IconSize.Y - 3) * ImGuiHelpers.GlobalScale));
 
         ImGuiContextMenu.Draw(popupKey, [
-            ImGuiContextMenu.CreateTryOn(item, slot->GlamourId, slot->Stain),
+            ImGuiContextMenu.CreateTryOn(item, slot->GlamourId, slot->Stain1, slot->Stain2),
             ImGuiContextMenu.CreateItemFinder(item.RowId),
             ImGuiContextMenu.CreateCopyItemName(item.RowId),
             ImGuiContextMenu.CreateOpenOnGarlandTools("item", item.RowId),
@@ -300,7 +302,7 @@ public unsafe class GearSetGridWindow : LockableWindow
             ImGui.TextUnformatted(ExcelService.GetRow<ItemUICategory>(item.ItemUICategory.Row)?.Name.ExtractText() ?? string.Empty);
         }
 
-        if (slot->GlamourId != 0 || slot->Stain != 0)
+        if (slot->GlamourId != 0 || slot->Stain1 != 0 || slot->Stain2 != 0)
             ImGuiUtils.DrawPaddedSeparator();
 
         if (slot->GlamourId != 0)
@@ -317,19 +319,35 @@ public unsafe class GearSetGridWindow : LockableWindow
             }
         }
 
-        if (slot->Stain != 0)
+        if (slot->Stain1 != 0)
         {
-            TextService.Draw("GearSetGridWindow.ItemTooltip.LabelDye");
+            TextService.Draw("GearSetGridWindow.ItemTooltip.LabelDye"); // TODO: update labels
             ImGuiUtils.SameLineSpace();
-            using (ImRaii.PushColor(ImGuiCol.Text, (uint)ExcelService.GetRow<Stain>(slot->Stain)!.GetColor()))
+            using (ImRaii.PushColor(ImGuiCol.Text, (uint)ExcelService.GetRow<Stain>(slot->Stain1)!.GetColor()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
-            ImGui.TextUnformatted(ExcelService.GetRow<Stain>(slot->Stain)!.Name.ExtractText().FirstCharToUpper());
+            ImGui.TextUnformatted(ExcelService.GetRow<Stain>(slot->Stain1)!.Name.ExtractText().FirstCharToUpper());
 
             if (holdingShift)
             {
                 ImGuiUtils.SameLineSpace();
-                ImGui.TextUnformatted($"[{slot->Stain}]");
+                ImGui.TextUnformatted($"[{slot->Stain1}]");
+            }
+        }
+
+        if (slot->Stain2 != 0)
+        {
+            TextService.Draw("GearSetGridWindow.ItemTooltip.LabelDye");
+            ImGuiUtils.SameLineSpace();
+            using (ImRaii.PushColor(ImGuiCol.Text, (uint)ExcelService.GetRow<Stain>(slot->Stain2)!.GetColor()))
+                ImGui.Bullet();
+            ImGui.SameLine(0, 0);
+            ImGui.TextUnformatted(ExcelService.GetRow<Stain>(slot->Stain2)!.Name.ExtractText().FirstCharToUpper());
+
+            if (holdingShift)
+            {
+                ImGuiUtils.SameLineSpace();
+                ImGui.TextUnformatted($"[{slot->Stain2}]");
             }
         }
 

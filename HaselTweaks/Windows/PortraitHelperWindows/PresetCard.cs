@@ -39,7 +39,7 @@ public class PresetCard : IDisposable
     private readonly uint ButtonHoveredColor = Colors.White.WithAlpha(0.2f);
 
     private readonly ILogger Logger;
-    private readonly DalamudPluginInterface PluginInterface;
+    private readonly IDalamudPluginInterface PluginInterface;
     private readonly IDataManager DataManager;
     private readonly ITextureProvider TextureProvider;
     private readonly PluginConfig PluginConfig;
@@ -70,7 +70,7 @@ public class PresetCard : IDisposable
     public PresetCard(
         SavedPreset preset,
         ILogger logger,
-        DalamudPluginInterface pluginInterface,
+        IDalamudPluginInterface pluginInterface,
         IDataManager dataManager,
         ITextureProvider textureProvider,
         PluginConfig pluginConfig,

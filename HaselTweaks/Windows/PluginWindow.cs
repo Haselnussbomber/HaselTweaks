@@ -24,7 +24,7 @@ public partial class PluginWindow : SimpleWindow
 {
     private const uint SidebarWidth = 250;
 
-    private readonly DalamudPluginInterface PluginInterface;
+    private readonly IDalamudPluginInterface PluginInterface;
     private readonly TextService TextService;
     private readonly ITextureProvider TextureProvider;
     private readonly ICommandManager CommandManager;
@@ -41,7 +41,7 @@ public partial class PluginWindow : SimpleWindow
 
     public PluginWindow(
         IWindowManager windowManager,
-        DalamudPluginInterface pluginInterface,
+        IDalamudPluginInterface pluginInterface,
         TextService textService,
         ITextureProvider textureProvider,
         ICommandManager commandManager,

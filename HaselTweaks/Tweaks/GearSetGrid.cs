@@ -17,7 +17,7 @@ public partial class GearSetGrid(
     : IConfigurableTweak
 {
     public string InternalName => nameof(GearSetGrid);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized; // TODO: fix icon overlays
 
     public void OnInitialize() { }
 

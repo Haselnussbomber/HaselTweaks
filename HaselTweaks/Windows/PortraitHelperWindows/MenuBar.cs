@@ -33,7 +33,7 @@ public unsafe class MenuBar : SimpleWindow
 
     private readonly IServiceProvider ServiceProvider;
     private readonly ILogger Logger;
-    private readonly DalamudPluginInterface PluginInterface;
+    private readonly IDalamudPluginInterface PluginInterface;
     private readonly PluginConfig PluginConfig;
     private readonly TextService TextService;
     private readonly BannerUtils BannerUtils;
@@ -48,7 +48,7 @@ public unsafe class MenuBar : SimpleWindow
     public MenuBar(
         ILogger<MenuBar> logger,
         IServiceProvider serviceProvider,
-        DalamudPluginInterface pluginInterface,
+        IDalamudPluginInterface pluginInterface,
         IWindowManager windowManager,
         PluginConfig pluginConfig,
         TextService textService,

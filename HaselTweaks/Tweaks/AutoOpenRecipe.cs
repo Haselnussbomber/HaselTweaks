@@ -90,7 +90,7 @@ public unsafe class AutoOpenRecipe(
 
     private bool TryOpenRecipeForItem(uint itemId)
     {
-        var localPlayer = Control.Instance()->LocalPlayer;
+        var localPlayer = Control.GetLocalPlayer();
         if (localPlayer == null)
             return false;
 

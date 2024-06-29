@@ -23,7 +23,7 @@ public unsafe partial class DTR(
     IDtrBar DtrBar,
     IFramework Framework,
     IClientState ClientState,
-    DalamudPluginInterface DalamudPluginInterface)
+    IDalamudPluginInterface DalamudPluginInterface)
     : IConfigurableTweak
 {
     public string InternalName => nameof(DTR);

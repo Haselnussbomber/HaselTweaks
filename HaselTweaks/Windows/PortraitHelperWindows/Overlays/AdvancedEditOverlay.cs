@@ -198,6 +198,7 @@ public unsafe class AdvancedEditOverlay(
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
+            // TODO: this slider broke
             if (ImGui.DragFloat($"##DragFloatDistance", ref distance, 0.001f, 0.5f, 2f))
             {
                 var scale = 100f;
@@ -256,6 +257,7 @@ public unsafe class AdvancedEditOverlay(
             var itemWidth = (ImGui.GetColumnWidth() - ImGui.GetStyle().ItemInnerSpacing.X) / 2f - 0.5f;
             ImGui.SetNextItemWidth(itemWidth);
 
+            // TODO: this slider broke
             var zoom = (int)CharaView->CameraZoom;
             if (ImGui.DragInt($"##DragFloatZoom", ref zoom, 1, 0, 200))
             {

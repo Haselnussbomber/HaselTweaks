@@ -12,7 +12,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class DeletePresetDialog : ConfirmationDialog
 {
-    private readonly DalamudPluginInterface PluginInterface;
+    private readonly IDalamudPluginInterface PluginInterface;
     private readonly INotificationManager NotificationManager;
     private readonly PluginConfig PluginConfig;
     private readonly TextService TextService;
@@ -21,7 +21,7 @@ public class DeletePresetDialog : ConfirmationDialog
     private SavedPreset? Preset;
 
     public DeletePresetDialog(
-        DalamudPluginInterface pluginInterface,
+        IDalamudPluginInterface pluginInterface,
         INotificationManager notificationManager,
         PluginConfig pluginConfig,
         TextService textService)

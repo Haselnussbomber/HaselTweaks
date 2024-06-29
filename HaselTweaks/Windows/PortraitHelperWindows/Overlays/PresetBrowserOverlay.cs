@@ -24,7 +24,7 @@ public unsafe class PresetBrowserOverlay : Overlay
     private const int SidebarWidth = 170;
     private readonly TextService TextService;
     private readonly ILogger Logger;
-    private readonly DalamudPluginInterface PluginInterface;
+    private readonly IDalamudPluginInterface PluginInterface;
     private readonly IDataManager DataManager;
     private readonly ITextureProvider TextureProvider;
     private readonly BannerUtils BannerUtils;
@@ -44,7 +44,7 @@ public unsafe class PresetBrowserOverlay : Overlay
 
     public PresetBrowserOverlay(
         ILogger<PresetBrowserOverlay> logger,
-        DalamudPluginInterface pluginInterface,
+        IDalamudPluginInterface pluginInterface,
         IDataManager dataManager,
         ITextureProvider textureProvider,
         BannerUtils bannerUtils,

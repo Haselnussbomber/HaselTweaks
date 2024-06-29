@@ -26,13 +26,13 @@ public partial class PluginConfig : IPluginConfiguration
     public static JsonSerializerOptions? SerializerOptions { get; private set; }
 
     [JsonIgnore]
-    private static DalamudPluginInterface? PluginInterface;
+    private static IDalamudPluginInterface? PluginInterface;
 
     [JsonIgnore]
     private static IPluginLog? PluginLog;
 
     public static PluginConfig Load(
-        DalamudPluginInterface pluginInterface,
+        IDalamudPluginInterface pluginInterface,
         IPluginLog pluginLog)
     {
         PluginInterface = pluginInterface;

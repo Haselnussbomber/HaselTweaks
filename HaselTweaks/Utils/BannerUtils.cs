@@ -14,7 +14,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace HaselTweaks.Utils;
 
-public unsafe class BannerUtils(DalamudPluginInterface PluginInterface, ExcelService ExcelService, TextService TextService)
+public unsafe class BannerUtils(IDalamudPluginInterface PluginInterface, ExcelService ExcelService, TextService TextService)
 {
     public Image<Bgra32>? GetCurrentCharaViewImage()
     {
