@@ -25,7 +25,7 @@ public unsafe partial class AchievementLinkTooltip(
     : IConfigurableTweak
 {
     public string InternalName => nameof(AchievementLinkTooltip);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private readonly string[] ChatPanels = ["ChatLogPanel_0", "ChatLogPanel_1", "ChatLogPanel_2", "ChatLogPanel_3"];
 
@@ -56,7 +56,7 @@ public unsafe partial class AchievementLinkTooltip(
     {
         var unitBase = (AtkUnitBase*)args.Addon;
 
-        if (!unitBase->IsReady || *(byte*)(args.Addon + 0x389) != 0 || *(byte*)(args.Addon + 0x3C6) != 0)
+        if (!unitBase->IsReady || *(byte*)(args.Addon + 0x399) != 0 || *(byte*)(args.Addon + 0x3D6) != 0)
             return;
 
         if (args is not AddonReceiveEventArgs receiveEventArgs)
