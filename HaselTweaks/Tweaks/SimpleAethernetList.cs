@@ -34,7 +34,7 @@ public unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         ReceiveEventHook?.Dispose();
@@ -43,15 +43,15 @@ public unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider
         GC.SuppressFinalize(this);
     }
 
-    private void ReceiveEventDetour(AddonTeleportTown* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)
+    private void ReceiveEventDetour(AddonTeleportTown* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData)
     {
         if (eventType == AtkEventType.ListItemRollOver)
         {
             var agent = AgentTelepotTown.Instance();
-            var index = *(uint*)(atkEventData + 0x10);
+            var index = atkEventData->ListItemData.SelectedIndex;
             if (agent->Data != null && index >= 0)
             {
-                var item = addon->List->GetItem(index);
+                var item = addon->List->GetItem((uint)index);
                 if (item != null && item->UIntValues.LongCount >= 4)
                 {
                     agent->Data->SelectedAetheryte = (byte)item->UIntValues[3];

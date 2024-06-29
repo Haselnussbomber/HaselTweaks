@@ -1,4 +1,4 @@
-using Dalamud;
+using Dalamud.Game;
 
 namespace HaselTweaks.Tweaks;
 

@@ -12,7 +12,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class SaferItemSearch(IGameInteropProvider GameInteropProvider, IAddonLifecycle AddonLifecycle) : ITweak
 {
     public string InternalName => nameof(SaferItemSearch);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated; // AddonItemSearch needs updating
 
     private bool _isSearching;
 
@@ -57,7 +57,7 @@ public unsafe class SaferItemSearch(IGameInteropProvider GameInteropProvider, IA
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

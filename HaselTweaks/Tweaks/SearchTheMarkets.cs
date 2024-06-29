@@ -16,7 +16,7 @@ public unsafe class SearchTheMarkets(
     ExcelService ExcelService) : ITweak
 {
     public string InternalName => nameof(SearchTheMarkets);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     private MenuItem? MenuItem;
     private ExtendedItem? Item;
@@ -52,7 +52,7 @@ public unsafe class SearchTheMarkets(
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();
@@ -67,7 +67,7 @@ public unsafe class SearchTheMarkets(
             MenuItem.Name = TextService.Translate("ItemContextMenu.SearchTheMarkets");
     }
 
-    private void ContextMenu_OnMenuOpened(MenuOpenedArgs args)
+    private void ContextMenu_OnMenuOpened(IMenuOpenedArgs args)
     {
         if (MenuItem == null)
             return;

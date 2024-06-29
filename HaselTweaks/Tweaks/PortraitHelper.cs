@@ -37,7 +37,7 @@ public unsafe partial class PortraitHelper(
     : IConfigurableTweak
 {
     public string InternalName => nameof(PortraitHelper);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
@@ -97,7 +97,7 @@ public unsafe partial class PortraitHelper(
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();
@@ -295,7 +295,7 @@ public unsafe partial class PortraitHelper(
         };
 
         var itemIds = stackalloc uint[14];
-        var stainIds = stackalloc byte[14];
+        var stainIds = stackalloc byte[14 * 2];
 
         if (!data.LoadEquipmentData(itemIds, stainIds))
             return 0;

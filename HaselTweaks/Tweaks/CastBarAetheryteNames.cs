@@ -66,7 +66,7 @@ public unsafe class CastBarAetheryteNames(
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();
@@ -117,11 +117,11 @@ public unsafe class CastBarAetheryteNames(
         Clear();
     }
 
-    private void OpenCastBarDetour(HaselActionManager* a1, BattleChara* a2, int type, uint rowId, uint type2, int rowId2, float a7)
+    private void OpenCastBarDetour(HaselActionManager* a1, BattleChara* a2, int type, uint rowId, uint type2, int rowId2, float a7, float a8)
     {
         IsCastingTeleport = type == 1 && rowId == 5 && type2 == 5;
 
-        OpenCastBarHook!.Original(a1, a2, type, rowId, type2, rowId2, a7);
+        OpenCastBarHook!.Original(a1, a2, type, rowId, type2, rowId2, a7, a8);
     }
 
     private bool TeleportDetour(Telepo* telepo, uint aetheryteID, byte subIndex)

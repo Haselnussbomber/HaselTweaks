@@ -17,7 +17,7 @@ public partial class GearSetGrid(
     : IConfigurableTweak
 {
     public string InternalName => nameof(GearSetGrid);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     public void OnInitialize() { }
 
@@ -40,12 +40,13 @@ public partial class GearSetGrid(
 
         Window.Close();
 
-        CommandManager.RemoveHandler("/gsg");
+        if (Status == TweakStatus.Enabled && Config.RegisterCommand)
+            CommandManager.RemoveHandler("/gsg");
     }
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

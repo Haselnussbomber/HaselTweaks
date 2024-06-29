@@ -14,6 +14,6 @@ public unsafe partial struct HaselRaptureLogModule
 
     [FieldOffset(0x520)] public nint LogKindSheet;
 
-    [MemberFunction("E8 ?? ?? ?? ?? 89 43 28 41 FF CD")]
+    [MemberFunction("E8 ?? ?? ?? ?? 41 83 EC 01")]
     public unsafe partial uint FormatLogMessage(uint logKindId, Utf8String* sender, Utf8String* message, int* timestamp, nint a6, Utf8String* a7, int chatTabIndex);
 }

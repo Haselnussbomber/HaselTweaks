@@ -28,7 +28,7 @@ public unsafe partial class LockWindowPosition(
     : IConfigurableTweak
 {
     public string InternalName => nameof(LockWindowPosition);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     private const int EventParamLock = 9901;
     private const int EventParamUnlock = 9902;
@@ -104,7 +104,7 @@ public unsafe partial class LockWindowPosition(
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

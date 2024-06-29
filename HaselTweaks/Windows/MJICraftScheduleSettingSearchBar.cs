@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Dalamud;
+using Dalamud.Game;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -50,13 +50,13 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
 
     public override bool DrawConditions()
         => Addon != null && Addon->AtkUnitBase.IsVisible;
-    
+
     public override void OnOpen()
     {
         InputFocused = false;
         Query = string.Empty;
     }
-    
+
     public override void Draw()
     {
         if (!InputFocused)

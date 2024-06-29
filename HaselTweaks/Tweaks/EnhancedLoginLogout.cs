@@ -10,6 +10,7 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.LayoutEngine;
 using FFXIVClientStructs.FFXIV.Client.System.Scheduler;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -42,7 +43,7 @@ public unsafe partial class EnhancedLoginLogout(
     : IConfigurableTweak
 {
     public string InternalName => nameof(EnhancedLoginLogout);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     private CharaSelectCharacter? _currentEntry = null;
 
@@ -110,7 +111,7 @@ public unsafe partial class EnhancedLoginLogout(
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();
@@ -563,7 +564,7 @@ public unsafe partial class EnhancedLoginLogout(
 
         Logger.LogDebug("Preloading territory #{territoryId}: {bg}", territoryTypeId, territoryType.Bg.RawString);
 
-        var layoutWorld = HaselLayoutWorld.Instance();
+        var layoutWorld = LayoutWorld.Instance();
         layoutWorld->UnloadPrefetchLayout();
         layoutWorld->LoadPrefetchLayout(
             2,

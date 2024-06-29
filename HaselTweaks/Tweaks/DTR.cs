@@ -29,9 +29,9 @@ public unsafe partial class DTR(
     public string InternalName => nameof(DTR);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private DtrBarEntry? DtrInstance;
-    private DtrBarEntry? DtrFPS;
-    private DtrBarEntry? DtrBusy;
+    private IDtrBarEntry? DtrInstance;
+    private IDtrBarEntry? DtrFPS;
+    private IDtrBarEntry? DtrBusy;
     private int _lastFrameRate;
     private uint _lastInstanceId;
 
@@ -58,17 +58,17 @@ public unsafe partial class DTR(
         Framework.Update -= OnFrameworkUpdate;
         TextService.LanguageChanged -= OnLanguageChanged;
 
-        DtrInstance?.Dispose();
+        DtrInstance?.Remove();
         DtrInstance = null;
-        DtrFPS?.Dispose();
+        DtrFPS?.Remove();
         DtrFPS = null;
-        DtrBusy?.Dispose();
+        DtrBusy?.Remove();
         DtrBusy = null;
     }
 
     public void Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

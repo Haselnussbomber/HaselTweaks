@@ -25,7 +25,7 @@ public unsafe partial class AchievementLinkTooltip(
     : IConfigurableTweak
 {
     public string InternalName => nameof(AchievementLinkTooltip);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     private readonly string[] ChatPanels = ["ChatLogPanel_0", "ChatLogPanel_1", "ChatLogPanel_2", "ChatLogPanel_3"];
 
@@ -43,7 +43,7 @@ public unsafe partial class AchievementLinkTooltip(
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

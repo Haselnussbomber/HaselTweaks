@@ -12,6 +12,9 @@ public sealed class TweakManager(IPluginLog PluginLog, PluginConfig PluginConfig
     {
         foreach (var tweak in Tweaks)
         {
+            if (tweak.Status == TweakStatus.Outdated)
+                continue;
+
             try
             {
                 PluginLog.Verbose($"Initializing {tweak.InternalName}");

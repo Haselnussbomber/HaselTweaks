@@ -9,7 +9,7 @@ namespace HaselTweaks.Tweaks;
 public class RevealDutyRequirements(IGameInteropProvider GameInteropProvider) : ITweak
 {
     public string InternalName => nameof(RevealDutyRequirements);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     /*
         48 8B C8   mov     rcx, rax
@@ -44,7 +44,7 @@ public class RevealDutyRequirements(IGameInteropProvider GameInteropProvider) : 
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         Patch?.Dispose();

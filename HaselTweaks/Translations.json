@@ -1327,24 +1327,8 @@
     "zh": "预定消耗的材料"
   },
   "MaterialAllocation.Tweak.Description": {
-    "en": "Enhances the Islekeep's Index \"Material Allocation\" window.",
-    "de": "Verbessert das INVENTUR-Fenster des Inselführers.",
-    "zh": "增强监工小员选项中“指定开拓工坊的生产计划”窗口"
-  },
-  "MaterialAllocation.Config.SaveLastSelectedTab.Label": {
-    "en": "Save last selected tab between game sessions",
-    "de": "Zuletzt ausgewählten Tab zwischen Spielsitzungen speichern",
-    "zh": "在游戏会话之间保存上次选择的标签页（译：？）"
-  },
-  "MaterialAllocation.Config.OpenGatheringLogOnItemClick.Label": {
-    "en": "Open Sanctuary Gathering Log for gatherable items",
-    "de": "Öffne den Insel-Almanach für sammelbare Gegenstände",
-    "zh": "为可采集物品打开开拓采集笔记"
-  },
-  "MaterialAllocation.ItemIsNotGatherable": {
-    "en": "Item {0} is not gatherable.",
-    "de": "Der Gegenstand {0} ist nicht sammelbar.",
-    "zh": "物品{0}无法采集"
+    "en": "Saves the last selected tab in Islekeep's Index \"Material Allocation\" window the between game sessions.",
+    "de": "Speichert den zuletzt ausgewählten Tab des Inselführers INVENTUR-Fensters zwischen Spielsitzungen."
   },
 
   "MinimapAdjustments.Tweak.Name": {

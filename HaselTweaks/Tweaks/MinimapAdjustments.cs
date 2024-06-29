@@ -1,7 +1,6 @@
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
@@ -70,7 +69,7 @@ public unsafe partial class MinimapAdjustments(
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

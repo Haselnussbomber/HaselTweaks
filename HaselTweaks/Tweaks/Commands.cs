@@ -30,7 +30,7 @@ public unsafe partial class Commands(
     : IConfigurableTweak
 {
     public string InternalName => nameof(Commands);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     private ICommandHandler? ItemLinkCommandHandler;
     private ICommandHandler? WhatMountCommandCommandHandler;
@@ -57,7 +57,7 @@ public unsafe partial class Commands(
 
     public void Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

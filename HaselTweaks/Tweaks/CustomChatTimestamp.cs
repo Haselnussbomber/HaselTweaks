@@ -45,7 +45,7 @@ public unsafe partial class CustomChatTimestamp(
 
     public void Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

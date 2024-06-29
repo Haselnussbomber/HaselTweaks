@@ -11,7 +11,7 @@ public sealed class KeepScreenAwake : ITweak
     private readonly Timer _timer = new();
 
     public string InternalName => nameof(KeepScreenAwake);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     public void OnInitialize()
     {
@@ -32,7 +32,7 @@ public sealed class KeepScreenAwake : ITweak
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

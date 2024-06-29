@@ -214,10 +214,7 @@ Automatically try on equipment when you hover over an item in the market board s
 
 ### Material Allocation
 
-Enhances the Islekeep's Index "Material Allocation" window.
-
-- Saves the last selected tab between game sessions.
-- Clicking on a gatherable item opens the Sanctuary Gathering Log with that item selected.
+Saves the last selected tab in Islekeep's Index "Material Allocation" window the between game sessions.
 
 ### Minimap Adjustments
 

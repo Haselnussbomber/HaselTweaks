@@ -31,7 +31,7 @@ public unsafe partial class CharacterClassSwitcher(
     : IConfigurableTweak
 {
     public string InternalName => nameof(CharacterClassSwitcher);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     private const int NumClasses = 31;
 
@@ -132,7 +132,7 @@ public unsafe partial class CharacterClassSwitcher(
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Material Allocation
+
+- **Removed:** The option "Open Sanctuary Gathering Log for gatherable items" was removed, because it was added to the game!!! 🥳
+
 ### Portrait Helper
 
 - **Fixed:** The Preset Browser wouldn't close properly after loading a preset.

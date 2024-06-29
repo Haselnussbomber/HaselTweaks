@@ -1,7 +1,5 @@
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
@@ -9,6 +7,7 @@ using Dalamud.Plugin;
 using HaselCommon.Services;
 using HaselCommon.Textures;
 using HaselCommon.Utils;
+using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using ImGuiNET;
 
@@ -25,7 +24,14 @@ public class ConfigGui(
     public ImRaii.IEndObject PushContext(IConfigurableTweak tweak)
     {
         Tweak = tweak;
-        return new ImGuiUtils.EndUnconditionally(() => Tweak = null, true);
+
+        var disabled = ImRaii.Disabled(tweak.Status == TweakStatus.Outdated);
+
+        return new ImGuiUtils.EndUnconditionally(() =>
+        {
+            Tweak = null;
+            disabled.Dispose();
+        }, true);
     }
 
     public void DrawConfigurationHeader(string labelKey = "HaselTweaks.Config.SectionTitle.Configuration")

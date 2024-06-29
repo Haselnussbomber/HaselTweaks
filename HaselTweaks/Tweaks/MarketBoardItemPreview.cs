@@ -18,7 +18,7 @@ public sealed unsafe class MarketBoardItemPreview(
     : ITweak
 {
     public string InternalName => nameof(MarketBoardItemPreview);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     public void OnInitialize() { }
 
@@ -34,7 +34,7 @@ public sealed unsafe class MarketBoardItemPreview(
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

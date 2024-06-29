@@ -27,7 +27,7 @@ public unsafe partial class CustomChatMessageFormats(
     : IConfigurableTweak
 {
     public string InternalName => nameof(CustomChatMessageFormats);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     private Hook<HaselRaptureLogModule.Delegates.FormatLogMessage>? FormatLogMessageHook;
 
@@ -54,7 +54,7 @@ public unsafe partial class CustomChatMessageFormats(
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

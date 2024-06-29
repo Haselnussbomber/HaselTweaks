@@ -4,7 +4,8 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Dalamud.Interface;
-using Dalamud.Interface.Internal;
+using Dalamud.Interface.Textures;
+using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
 using Dalamud.Plugin;
@@ -352,8 +353,7 @@ public class PresetCard : IDisposable
 
         if (!flags.HasFlag(CopyImageFlags.NoFrame) && BannerFrameImage != 0)
         {
-            var iconPath = TextureProvider.GetIconPath(BannerFrameImage);
-            if (iconPath != null)
+            if (TextureProvider.TryGetIconPath(BannerFrameImage, out var iconPath))
             {
                 var texture = DataManager.GetFile<TexFile>(iconPath);
                 if (texture != null)
@@ -367,8 +367,7 @@ public class PresetCard : IDisposable
 
         if (!flags.HasFlag(CopyImageFlags.NoDecoration) && BannerDecorationImage != 0)
         {
-            var iconPath = TextureProvider.GetIconPath(BannerDecorationImage);
-            if (iconPath != null)
+            if (TextureProvider.TryGetIconPath(BannerDecorationImage, out var iconPath))
             {
                 var texture = DataManager.GetFile<TexFile>(iconPath);
                 if (texture != null)
@@ -458,7 +457,7 @@ public class PresetCard : IDisposable
                     if (CloseTokenSource.IsCancellationRequested)
                         return;
 
-                    TextureWrap = PluginInterface.UiBuilder.LoadImageRaw(data, scaledImage.Width, scaledImage.Height, 4);
+                    TextureWrap = TextureProvider.CreateFromRaw(RawImageSpecification.Rgba32(scaledImage.Width, scaledImage.Height), data);
                 }
                 catch (Exception ex)
                 {

@@ -26,7 +26,7 @@ public unsafe class AutoOpenRecipe(
     : ITweak
 {
     public string InternalName => nameof(AutoOpenRecipe);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     private CancellationTokenSource? CheckCTS;
     private DateTime LastTimeRecipeOpened = DateTime.MinValue;
@@ -47,7 +47,7 @@ public unsafe class AutoOpenRecipe(
 
     public void Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

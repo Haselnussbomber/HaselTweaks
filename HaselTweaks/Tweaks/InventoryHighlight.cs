@@ -29,7 +29,7 @@ public unsafe partial class InventoryHighlight(
     : IConfigurableTweak
 {
     public string InternalName => nameof(InventoryHighlight);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     private uint ItemInventryWindowSizeType = 0;
     private uint ItemInventryRetainerWindowSizeType = 0;
@@ -55,12 +55,14 @@ public unsafe partial class InventoryHighlight(
         GameConfig.UiConfigChanged -= GameConfig_UiConfigChanged;
 
         AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemDetail", OnItemDetailPostRequestedUpdate);
-        ResetGrids();
+
+        if (Status == TweakStatus.Enabled)
+            ResetGrids();
     }
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

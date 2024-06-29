@@ -24,7 +24,7 @@ public sealed unsafe class ExpertDeliveries(AddonObserver AddonObserver) : ITwea
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

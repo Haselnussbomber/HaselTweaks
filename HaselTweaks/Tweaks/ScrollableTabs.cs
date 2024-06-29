@@ -11,6 +11,8 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
+// TODO: add support for AgentAetherCurrent
+
 public unsafe partial class ScrollableTabs(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,
@@ -21,7 +23,7 @@ public unsafe partial class ScrollableTabs(
     : IConfigurableTweak
 {
     public string InternalName => nameof(ScrollableTabs);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated; // TODO: addons need updating
 
     private ScrollableTabsConfiguration Config => PluginConfig.Tweaks.ScrollableTabs;
 
@@ -58,7 +60,7 @@ public unsafe partial class ScrollableTabs(
 
     public void Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

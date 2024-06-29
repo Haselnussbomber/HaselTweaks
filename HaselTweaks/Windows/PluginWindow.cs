@@ -1,13 +1,11 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
-using Dalamud.Game.Command;
 #if !DEBUG
 using System.Text.RegularExpressions;
 #endif
-using Dalamud.Interface.Internal;
+using Dalamud.Game.Command;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin;
@@ -22,20 +20,18 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows;
 
-public partial class PluginWindow : SimpleWindow, IDisposable
+public partial class PluginWindow : SimpleWindow
 {
     private const uint SidebarWidth = 250;
-    private const string LogoManifestResource = "HaselTweaks.Assets.Logo.png";
 
     private readonly DalamudPluginInterface PluginInterface;
     private readonly TextService TextService;
-    private readonly IPluginLog PluginLog;
+    private readonly ITextureProvider TextureProvider;
     private readonly ICommandManager CommandManager;
     private readonly TweakManager TweakManager;
     private readonly ITweak[] Tweaks;
     private readonly CommandInfo CommandInfo;
 
-    private IDalamudTextureWrap? LogoTextureWrap;
     private ITweak? SelectedTweak;
 
 #if !DEBUG
@@ -47,7 +43,7 @@ public partial class PluginWindow : SimpleWindow, IDisposable
         IWindowManager windowManager,
         DalamudPluginInterface pluginInterface,
         TextService textService,
-        IPluginLog pluginLog,
+        ITextureProvider textureProvider,
         ICommandManager commandManager,
         TweakManager tweakManager,
         IEnumerable<ITweak> tweaks)
@@ -55,7 +51,7 @@ public partial class PluginWindow : SimpleWindow, IDisposable
     {
         PluginInterface = pluginInterface;
         TextService = textService;
-        PluginLog = pluginLog;
+        TextureProvider = textureProvider;
         CommandManager = commandManager;
         TweakManager = tweakManager;
         Tweaks = tweaks.ToArray();
@@ -99,38 +95,17 @@ public partial class PluginWindow : SimpleWindow, IDisposable
 
     public override void OnOpen()
     {
-        LogoTextureWrap?.Dispose();
-        LogoTextureWrap = null;
-
         Size = new Vector2(SidebarWidth * 3 + ImGui.GetStyle().ItemSpacing.X + ImGui.GetStyle().FramePadding.X * 2, 600);
         SizeConstraints = new()
         {
             MinimumSize = (Vector2)Size,
             MaximumSize = new Vector2(4096, 2160)
         };
-
-        try
-        {
-            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(LogoManifestResource)
-                ?? throw new Exception($"ManifestResource \"{LogoManifestResource}\" not found");
-
-            using var ms = new MemoryStream();
-            stream.CopyTo(ms);
-
-            LogoTextureWrap = PluginInterface.UiBuilder.LoadImage(ms.ToArray());
-        }
-        catch (Exception ex)
-        {
-            PluginLog.Error(ex, "Error loading logo");
-        }
     }
 
     public override void OnClose()
     {
         SelectedTweak = null;
-
-        LogoTextureWrap?.Dispose();
-        LogoTextureWrap = null;
 
         foreach (var tweak in Tweaks.Where(tweak => tweak.Status == TweakStatus.Enabled))
         {
@@ -281,14 +256,14 @@ public partial class PluginWindow : SimpleWindow, IDisposable
             var cursorPos = ImGui.GetCursorPos();
             var contentAvail = ImGui.GetContentRegionAvail();
 
-            if (LogoTextureWrap != null && LogoTextureWrap.ImGuiHandle != 0)
+            if (TextureProvider.GetFromManifestResource(Assembly.GetExecutingAssembly(), "HaselTweaks.Assets.Logo.png").TryGetWrap(out var logo, out var _))
             {
                 var maxWidth = SidebarWidth * 2 * 0.85f * ImGuiHelpers.GlobalScale;
                 var ratio = maxWidth / 425;
                 var scaledLogoSize = new Vector2(425, 132) * ratio;
 
                 ImGui.SetCursorPos(contentAvail / 2 - scaledLogoSize / 2 + new Vector2(ImGui.GetStyle().ItemSpacing.X, 0));
-                ImGui.Image(LogoTextureWrap.ImGuiHandle, scaledLogoSize);
+                ImGui.Image(logo.ImGuiHandle, scaledLogoSize);
             }
 
             // links, bottom left

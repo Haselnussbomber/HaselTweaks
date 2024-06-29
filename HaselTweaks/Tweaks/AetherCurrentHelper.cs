@@ -23,7 +23,7 @@ public unsafe partial class AetherCurrentHelper(
     : IConfigurableTweak
 {
     public string InternalName => nameof(AetherCurrentHelper);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
 
     private Hook<AgentAetherCurrent.Delegates.ReceiveEvent>? ReceiveEventHook;
 
@@ -47,7 +47,7 @@ public unsafe partial class AetherCurrentHelper(
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();
@@ -78,11 +78,11 @@ public unsafe partial class AetherCurrentHelper(
         if (atkValue == null)
             return false;
 
-        ref var firstAtkValue = ref atkValue[0];
+        var firstAtkValue = atkValue[0];
         if (firstAtkValue.Type != ValueType.Int || firstAtkValue.Int != 0)
             return false;
 
-        ref var secondAtkValue = ref atkValue[1];
+        var secondAtkValue = atkValue[1];
         if (secondAtkValue.Type != ValueType.Int)
             return false;
 

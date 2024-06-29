@@ -39,7 +39,7 @@ public unsafe partial class EnhancedMaterialList(
     : IConfigurableTweak
 {
     public string InternalName => nameof(EnhancedMaterialList);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated; // GetTeleportCost needs an update
 
     private bool _canRefreshMaterialList;
     private bool _pendingMaterialListRefresh;
@@ -53,7 +53,6 @@ public unsafe partial class EnhancedMaterialList(
 
     private Hook<AgentRecipeMaterialList.Delegates.ReceiveEvent>? AgentRecipeMaterialListReceiveEventHook;
     private Hook<AddonRecipeMaterialList.Delegates.SetupRow>? AddonRecipeMaterialListSetupRowHook;
-    private Hook<AgentRecipeMaterialList.Delegates.OpenRecipeResultItemContextMenu>? OpenRecipeResultItemContextMenuHook;
     private Hook<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>? AddItemContextMenuEntriesHook;
 
     public void OnInitialize()
@@ -65,10 +64,6 @@ public unsafe partial class EnhancedMaterialList(
         AddonRecipeMaterialListSetupRowHook = GameInteropProvider.HookFromAddress<AddonRecipeMaterialList.Delegates.SetupRow>(
             AddonRecipeMaterialList.MemberFunctionPointers.SetupRow,
             AddonRecipeMaterialListSetupRowDetour);
-
-        OpenRecipeResultItemContextMenuHook = GameInteropProvider.HookFromAddress<AgentRecipeMaterialList.Delegates.OpenRecipeResultItemContextMenu>(
-            AgentRecipeMaterialList.MemberFunctionPointers.OpenRecipeResultItemContextMenu,
-            OpenRecipeResultItemContextMenuDetour);
 
         AddItemContextMenuEntriesHook = GameInteropProvider.HookFromAddress<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>(
             AgentRecipeItemContext.MemberFunctionPointers.AddItemContextMenuEntries,
@@ -87,7 +82,6 @@ public unsafe partial class EnhancedMaterialList(
 
         AgentRecipeMaterialListReceiveEventHook?.Enable();
         AddonRecipeMaterialListSetupRowHook?.Enable();
-        OpenRecipeResultItemContextMenuHook?.Enable();
         AddItemContextMenuEntriesHook?.Enable();
     }
 
@@ -103,19 +97,17 @@ public unsafe partial class EnhancedMaterialList(
 
         AgentRecipeMaterialListReceiveEventHook?.Disable();
         AddonRecipeMaterialListSetupRowHook?.Disable();
-        OpenRecipeResultItemContextMenuHook?.Disable();
         AddItemContextMenuEntriesHook?.Disable();
     }
 
     public void Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();
         AgentRecipeMaterialListReceiveEventHook?.Dispose();
         AddonRecipeMaterialListSetupRowHook?.Dispose();
-        OpenRecipeResultItemContextMenuHook?.Dispose();
         AddItemContextMenuEntriesHook?.Dispose();
 
         Status = TweakStatus.Disposed;
@@ -262,7 +254,15 @@ public unsafe partial class EnhancedMaterialList(
     private AtkValue* AgentRecipeMaterialListReceiveEventDetour(AgentRecipeMaterialList* agent, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
     {
         var ret = AgentRecipeMaterialListReceiveEventHook!.Original(agent, returnValue, values, valueCount, eventKind);
+
+        if (eventKind != 1 && valueCount >= 1 && values->Int == 4)
+        {
+            _handleRecipeResultItemContextMenu = true;
+        }
+
+        // TODO: add conditions?
         SaveRestoreMaterialList(agent);
+
         return ret;
     }
 
@@ -347,12 +347,6 @@ public unsafe partial class EnhancedMaterialList(
         );
     }
 
-    private void OpenRecipeResultItemContextMenuDetour(AgentRecipeMaterialList* agent)
-    {
-        _handleRecipeResultItemContextMenu = true;
-        OpenRecipeResultItemContextMenuHook!.Original(agent);
-    }
-
     private void AddItemContextMenuEntriesDetour(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
     {
         UpdateContextMenuFlag(itemId, ref flags);
@@ -407,7 +401,7 @@ public unsafe partial class EnhancedMaterialList(
         {
             foreach (var p in gatheringPoints)
             {
-                var thisCost = (uint)Telepo.GetTeleportCost((ushort)currentTerritoryTypeId, (ushort)p!.TerritoryType.Row, false, false, false);
+                var thisCost = 0u; // (uint)Telepo.GetTeleportCost((ushort)currentTerritoryTypeId, (ushort)p!.TerritoryType.Row, false, false, false);
                 if (cost == 0 || thisCost < cost)
                 {
                     cost = thisCost;
