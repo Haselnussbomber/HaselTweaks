@@ -661,7 +661,12 @@ public partial class CustomChatMessageFormats
 
         GameConfig.TryGet(SystemConfigOption.PadSelectButtonIcon, out uint padSelectButtonIcon);
 
-        TextureService.Draw(GfdTextures[padSelectButtonIcon], new() { DrawSize = ImGuiHelpers.ScaledVector2(size.X, size.Y) / 2, Uv0 = startPos, Uv1 = startPos + size });
+        TextureService.Draw(GfdTextures[padSelectButtonIcon], new() {
+            DrawSize = ImGuiHelpers.ScaledVector2(size.X, size.Y) / 2,
+            Uv0 = startPos,
+            Uv1 = startPos + size,
+            TransformUv = true,
+        });
     }
 
     private List<(LogKind LogKind, LogFilter LogFilter, SeString Format)> GenerateLogKindCache()
