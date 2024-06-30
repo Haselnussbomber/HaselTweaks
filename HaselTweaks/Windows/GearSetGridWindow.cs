@@ -148,12 +148,14 @@ public unsafe class GearSetGridWindow : LockableWindow
                     }
                 }
 
-                ImGuiContextMenuService.Draw("##GearsetContext", [
-                    ImGuiContextMenuService.CreateGearsetLinkGlamour(gearset),
-                    ImGuiContextMenuService.CreateGearsetChangeGlamour(gearset),
-                    ImGuiContextMenuService.CreateGearsetUnlinkGlamour(gearset),
-                    ImGuiContextMenuService.CreateGearsetChangePortrait(gearset)
-                ]);
+                ImGuiContextMenuService.Draw("##GearsetContext", builder =>
+                {
+                    builder
+                        .AddGearsetLinkGlamour(gearset)
+                        .AddGearsetChangeGlamour(gearset)
+                        .AddGearsetUnlinkGlamour(gearset)
+                        .AddGearsetChangePortrait(gearset);
+                });
 
                 var iconSize = 28 * ImGuiHelpers.GlobalScale;
                 var itemStartPos = startPos + new Vector2(region.X / 2f - iconSize / 2f, ImGui.GetStyle().ItemInnerSpacing.Y); // start from the right
@@ -262,13 +264,15 @@ public unsafe class GearSetGridWindow : LockableWindow
 
         ImGui.SetCursorPos(startPos + new Vector2(0, (IconSize.Y - 3) * ImGuiHelpers.GlobalScale));
 
-        ImGuiContextMenuService.Draw(popupKey, [
-            ImGuiContextMenuService.CreateTryOn(item, slot->GlamourId, slot->Stain1Id, slot->Stain2Id),
-            ImGuiContextMenuService.CreateItemFinder(item.RowId),
-            ImGuiContextMenuService.CreateCopyItemName(item.RowId),
-            ImGuiContextMenuService.CreateOpenOnGarlandTools("item", item.RowId),
-            ImGuiContextMenuService.CreateItemSearch(item)
-        ]);
+        ImGuiContextMenuService.Draw(popupKey, builder =>
+        {
+            builder
+                .AddTryOn(item, slot->GlamourId, slot->Stain1Id, slot->Stain2Id)
+                .AddItemFinder(item.RowId)
+                .AddCopyItemName(item.RowId)
+                .AddOpenOnGarlandTools("item", item.RowId)
+                .AddItemSearch(item);
+        });
 
         if (!ImGui.IsItemHovered())
             return;

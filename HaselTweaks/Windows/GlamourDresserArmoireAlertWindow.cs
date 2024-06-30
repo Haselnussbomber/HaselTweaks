@@ -109,13 +109,15 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
             ImGui.TextUnformatted(TextService.GetItemName(item.RowId));
         }
 
-        ImGuiContextMenuService.Draw(popupKey, [
-            ImGuiContextMenuService.CreateTryOn(item),
-            ImGuiContextMenuService.CreateItemFinder(item.RowId),
-            ImGuiContextMenuService.CreateCopyItemName(item.RowId),
-            ImGuiContextMenuService.CreateOpenOnGarlandTools("item", item.RowId),
-            ImGuiContextMenuService.CreateItemSearch(item)
-        ]);
+        ImGuiContextMenuService.Draw(popupKey, builder =>
+        {
+            builder
+                .AddTryOn(item)
+                .AddItemFinder(item.RowId)
+                .AddCopyItemName(item.RowId)
+                .AddOpenOnGarlandTools("item", item.RowId)
+                .AddItemSearch(item);
+        });
     }
 
     private void RestoreItem(uint itemIndex)
