@@ -50,12 +50,14 @@ public unsafe partial class DTR(
         DtrBusy.Shown = false;
 
         Framework.Update += OnFrameworkUpdate;
+        ClientState.Logout += OnLogout;
         TextService.LanguageChanged += OnLanguageChanged;
     }
 
     public void OnDisable()
     {
         Framework.Update -= OnFrameworkUpdate;
+        ClientState.Logout -= OnLogout;
         TextService.LanguageChanged -= OnLanguageChanged;
 
         DtrInstance?.Remove();
@@ -85,6 +87,12 @@ public unsafe partial class DTR(
         UpdateInstance();
         UpdateFPS();
         UpdateBusy();
+    }
+
+    private void OnLogout()
+    {
+        _lastFrameRate = 0;
+        _lastInstanceId = 0;
     }
 
     private void OnLanguageChanged(string langCode)
