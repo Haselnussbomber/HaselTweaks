@@ -5,7 +5,6 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Services;
 using HaselCommon.Text;
 using HaselCommon.Text.Payloads;
-using HaselCommon.Textures;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
@@ -23,11 +22,11 @@ public unsafe partial class CustomChatMessageFormats(
     IDataManager DataManager,
     ExcelService ExcelService,
     IGameConfig GameConfig,
-    TextureManager TextureManager)
+    TextureService TextureService)
     : IConfigurableTweak
 {
     public string InternalName => nameof(CustomChatMessageFormats);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private Hook<HaselRaptureLogModule.Delegates.FormatLogMessage>? FormatLogMessageHook;
 

@@ -2,6 +2,7 @@ using System.IO;
 using Dalamud.Game;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using HaselCommon.Extensions;
 using HaselCommon.Logger;
 using HaselTweaks.Caches;

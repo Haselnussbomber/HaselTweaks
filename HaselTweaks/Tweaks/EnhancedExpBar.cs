@@ -28,7 +28,7 @@ public unsafe partial class EnhancedExpBar(
     : IConfigurableTweak
 {
     public string InternalName => nameof(EnhancedExpBar);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private bool _isEnabled = false;
     private bool _isUpdatePending = false;

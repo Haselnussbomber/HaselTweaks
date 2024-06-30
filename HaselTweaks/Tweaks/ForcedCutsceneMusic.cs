@@ -19,7 +19,7 @@ public unsafe partial class ForcedCutsceneMusic(
     : IConfigurableTweak
 {
     public string InternalName => nameof(ForcedCutsceneMusic);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private bool _wasBgmMuted;
 

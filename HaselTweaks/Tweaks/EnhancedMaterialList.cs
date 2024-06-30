@@ -6,7 +6,6 @@ using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
@@ -34,12 +33,13 @@ public unsafe partial class EnhancedMaterialList(
     IFramework Framework,
     IClientState ClientState,
     IGameInventory GameInventory,
+    IAetheryteList AetheryteList,
     AddonObserver AddonObserver,
     ExcelService ExcelService)
     : IConfigurableTweak
 {
     public string InternalName => nameof(EnhancedMaterialList);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated; // GetTeleportCost needs an update
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private bool _canRefreshMaterialList;
     private bool _pendingMaterialListRefresh;
@@ -401,11 +401,14 @@ public unsafe partial class EnhancedMaterialList(
         {
             foreach (var p in gatheringPoints)
             {
-                var thisCost = 0u; // (uint)Telepo.GetTeleportCost((ushort)currentTerritoryTypeId, (ushort)p!.TerritoryType.Row, false, false, false);
-                if (cost == 0 || thisCost < cost)
+                foreach (var aetheryte in AetheryteList)
                 {
-                    cost = thisCost;
-                    point = p;
+                    if (aetheryte.AetheryteId == p!.TerritoryType.Value!.Aetheryte.Row && (cost == 0 || aetheryte.GilCost < cost))
+                    {
+                        cost = aetheryte.GilCost;
+                        point = p;
+                        break;
+                    }
                 }
             }
         }

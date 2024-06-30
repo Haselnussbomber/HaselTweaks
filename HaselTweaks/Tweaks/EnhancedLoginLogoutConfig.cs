@@ -7,7 +7,6 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Services;
-using HaselCommon.Textures;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
 using ImGuiNET;
@@ -141,7 +140,7 @@ public unsafe partial class EnhancedLoginLogout
                 {
                     var (isChangePose, name, emote) = entry.Value;
                     ImGuiUtils.PushCursorY(-3);
-                    TextureManager.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(24 * ImGuiHelpers.GlobalScale);
+                    TextureService.DrawIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon, 24 * ImGuiHelpers.GlobalScale);
                     ImGui.SameLine();
                     ImGui.TextUnformatted(name);
                 }

@@ -31,33 +31,33 @@ public unsafe partial class CharacterClassSwitcher(
     : IConfigurableTweak
 {
     public string InternalName => nameof(CharacterClassSwitcher);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized; // TODO: fix last 2 buttons not being clickable
 
-    private const int NumClasses = 31;
+    private const int NumClasses = 33;
 
     private MemoryReplacement? TooltipPatch;
     private MemoryReplacement? PvpTooltipPatch;
 
     /* Address for AddonCharacterClass Tooltip Patch
 
-        83 FD 14         cmp     ebp, 14h
+        83 FD 16         cmp     ebp, 16h
         48 8B 6C 24 ??   mov     rbp, [rsp+68h+arg_8]
-        7D 69            jge     short loc_140EB06A1     <- replacing this with a jmp rel8
+        7D 66            jge     short loc_14118ACBF     <- replacing this with a jmp rel8
 
        completely skips the whole if () {...} block, by jumping regardless of cmp result
      */
-    [Signature("83 FD 14 48 8B 6C 24 ?? 7D 69")]
+    [Signature("83 FD 16 48 8B 6C 24 ?? 7D 66")]
     private nint TooltipAddress { get; init; }
 
     /* Address for AddonPvPCharacter Tooltip Patch
 
-        48 8D 4C 24 ??   lea     rcx, [rsp+68h+var_28]   <- replacing this with a jmp rel8
-        E8 ?? ?? ?? ??   call    Component::GUI::AtkTooltipArgs_ctor
+        48 8D 4D 8F      lea     rcx, [rbp+4Fh+var_C0]   <- replacing this with a jmp rel8
+        E8 BD 06 48 FF   call    Component::GUI::AtkTooltipArgs_ctor
         ...
 
         completely skips the tooltip code, by jumping to the end of the function
      */
-    [Signature("48 8D 4C 24 ?? E8 ?? ?? ?? ?? 48 8B 83 ?? ?? ?? ?? 48 8B CF 0F B7 9F")]
+    [Signature("48 8D 4D 8F E8 ?? ?? ?? ?? 48 8B 84 DF")]
     private nint PvPTooltipAddress { get; init; }
 
     private Hook<AddonCharacterClass.Delegates.OnSetup>? AddonCharacterClassOnSetupHook;
@@ -69,6 +69,8 @@ public unsafe partial class CharacterClassSwitcher(
 
     public void OnInitialize()
     {
+        GameInteropProvider.InitializeFromAttributes(this);
+
         AddonCharacterClassOnSetupHook = GameInteropProvider.HookFromAddress<AddonCharacterClass.Delegates.OnSetup>(
             AddonCharacterClass.StaticVirtualTablePointer->OnSetup,
             AddonCharacterClassOnSetupDetour);
@@ -97,7 +99,7 @@ public unsafe partial class CharacterClassSwitcher(
     public void OnEnable()
     {
         TooltipPatch = new(TooltipAddress + 8, [0xEB]);
-        PvpTooltipPatch = new(PvPTooltipAddress, [0xEB, 0x63]);
+        PvpTooltipPatch = new(PvPTooltipAddress, [0xEB, 0x57]);
 
         if (Config.DisableTooltips)
         {
@@ -350,7 +352,7 @@ public unsafe partial class CharacterClassSwitcher(
             // yes, you see correctly. the iconId is 62100 + ClassJob RowId :)
             var classJobId = iconId - 62100;
 
-            SwitchClassJob((uint)classJobId);
+            SwitchClassJob(classJobId);
 
             return true; // handled
         }

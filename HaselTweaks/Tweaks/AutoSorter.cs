@@ -27,7 +27,7 @@ public unsafe partial class AutoSorter(
     : IConfigurableTweak
 {
     public string InternalName => nameof(AutoSorter);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private static readonly Dictionary<string, uint> CategorySet = new()
     {

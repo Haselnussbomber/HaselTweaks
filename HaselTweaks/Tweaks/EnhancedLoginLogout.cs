@@ -17,7 +17,6 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
-using HaselCommon.Textures;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
@@ -37,7 +36,7 @@ public unsafe partial class EnhancedLoginLogout(
     IGameConfig GameConfig,
     IClientState ClientState,
     IAddonLifecycle AddonLifecycle,
-    TextureManager TextureManager,
+    TextureService TextureService,
     ExcelService ExcelService,
     ConfigGui ConfigGui)
     : IConfigurableTweak

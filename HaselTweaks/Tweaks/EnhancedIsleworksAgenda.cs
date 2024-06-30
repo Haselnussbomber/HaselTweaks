@@ -19,7 +19,7 @@ public unsafe partial class EnhancedIsleworksAgenda(
     : IConfigurableTweak
 {
     public string InternalName => nameof(EnhancedIsleworksAgenda);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private Hook<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>? ReceiveEventHook;
 
@@ -75,11 +75,11 @@ public unsafe partial class EnhancedIsleworksAgenda(
             Window.Close();
     }
 
-    private void ReceiveEventDetour(AddonMJICraftScheduleSetting* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)
+    private void ReceiveEventDetour(AddonMJICraftScheduleSetting* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData)
     {
         if (eventType == AtkEventType.ListItemRollOver && eventParam == 2 && Config.DisableTreeListTooltips)
         {
-            var index = *(uint*)(atkEventData + 0x10);
+            var index = atkEventData->ListItemData.SelectedIndex;
             var itemPtr = addon->TreeList->GetItem(index);
             if (itemPtr != null && itemPtr->UIntValues.LongCount >= 1)
             {

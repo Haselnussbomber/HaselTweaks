@@ -1151,10 +1151,13 @@
     "de": "Projektion:",
     "zh": "投影："
   },
-  "GearSetGridWindow.ItemTooltip.LabelDye": {
-    "en": "Dye:",
-    "de": "Färbung:",
-    "zh": "染色："
+  "GearSetGridWindow.ItemTooltip.LabelDye1": {
+    "en": "Dye 1:",
+    "de": "Färbung 1:"
+  },
+  "GearSetGridWindow.ItemTooltip.LabelDye2": {
+    "en": "Dye 2:",
+    "de": "Färbung 2:"
   },
   "GearSetGridWindow.ItemTooltip.AlsoUsedInTheseGearsets": {
     "en": "Also used in these Gearsets:",

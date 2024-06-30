@@ -30,7 +30,7 @@ public unsafe partial class Commands(
     : IConfigurableTweak
 {
     public string InternalName => nameof(Commands);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private ICommandHandler? ItemLinkCommandHandler;
     private ICommandHandler? WhatMountCommandCommandHandler;
@@ -199,12 +199,12 @@ public unsafe partial class Commands(
 
         var targetCharacter = (Character*)target.Address;
 
+        // TODO: incorrect
         var topRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelTop == targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Head).Id);
         var bodyRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelBody == targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Body).Id);
         var legsRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelLegs == targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Feet).Id);
 
-        var stain1 = ExcelService.GetRow<Stain>(targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Legs).Stain1)!;
-        var stain2 = ExcelService.GetRow<Stain>(targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Legs).Stain2)!;
+        var stain = ExcelService.GetRow<Stain>(targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Legs).Stain1)!;
         var name = new SeStringBuilder()
             .AddUiForeground(targetCharacter->GameObject.NameString, 1)
             .Build();
@@ -214,9 +214,7 @@ public unsafe partial class Commands(
             .Append(TextService.TranslateSe("Commands.WhatBarding.AppearanceOf", name))
             .Add(NewLinePayload.Payload)
             .AddText($"  {TextService.GetAddonText(4987)}: ")
-            .Append(stain1.Name.ToString().FirstCharToUpper())
-            .AddText(" / ")
-            .Append(stain2.Name.ToString().FirstCharToUpper())
+            .Append(stain.Name.ToString().FirstCharToUpper())
             .Add(NewLinePayload.Payload)
             .AddText($"  {TextService.GetAddonText(4991)}: {topRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}")
             .Add(NewLinePayload.Payload)

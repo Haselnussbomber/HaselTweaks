@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Numerics;
+using Dalamud.Interface.Textures;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
@@ -7,7 +8,6 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using HaselCommon.Services;
 using HaselCommon.Sheets;
-using HaselCommon.Textures;
 using HaselCommon.Utils;
 using HaselCommon.Windowing;
 using HaselCommon.Windowing.Interfaces;
@@ -21,23 +21,25 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 {
     private const int NumPrismBoxSlots = 800;
     private static readonly Vector2 IconSize = new(34);
-    private readonly TextureManager TextureManager;
+    private readonly TextureService TextureService;
     private readonly ExcelService ExcelService;
     private readonly TextService TextService;
+    private readonly ImGuiContextMenuService ImGuiContextMenuService;
 
     private static AddonMiragePrismPrismBox* Addon => GetAddon<AddonMiragePrismPrismBox>("MiragePrismPrismBox");
 
     public GlamourDresserArmoireAlertWindow(
         IWindowManager windowManager,
-        TextureManager textureManager,
+        TextureService textureService,
         ExcelService excelService,
-        TextService textService)
+        TextService textService,
+        ImGuiContextMenuService imGuiContextMenuService)
         : base(windowManager, textService.Translate("GlamourDresserArmoireAlertWindow.Title"))
     {
-        TextureManager = textureManager;
+        TextureService = textureService;
         ExcelService = excelService;
         TextService = textService;
-
+        ImGuiContextMenuService = imGuiContextMenuService;
         DisableWindowSounds = true;
 
         Flags |= ImGuiWindowFlags.NoSavedSettings;
@@ -84,9 +86,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 
         using (var group = ImRaii.Group())
         {
-            TextureManager
-                .GetIcon(item.Icon, isHq)
-                .Draw(IconSize * ImGuiHelpers.GlobalScale);
+            TextureService.DrawIcon(new GameIconLookup(item.Icon, isHq), IconSize * ImGuiHelpers.GlobalScale);
 
             ImGui.SameLine();
 
@@ -109,12 +109,12 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
             ImGui.TextUnformatted(TextService.GetItemName(item.RowId));
         }
 
-        ImGuiContextMenu.Draw(popupKey, [
-            ImGuiContextMenu.CreateTryOn(item),
-            ImGuiContextMenu.CreateItemFinder(item.RowId),
-            ImGuiContextMenu.CreateCopyItemName(item.RowId),
-            ImGuiContextMenu.CreateOpenOnGarlandTools("item", item.RowId),
-            ImGuiContextMenu.CreateItemSearch(item)
+        ImGuiContextMenuService.Draw(popupKey, [
+            ImGuiContextMenuService.CreateTryOn(item),
+            ImGuiContextMenuService.CreateItemFinder(item.RowId),
+            ImGuiContextMenuService.CreateCopyItemName(item.RowId),
+            ImGuiContextMenuService.CreateOpenOnGarlandTools("item", item.RowId),
+            ImGuiContextMenuService.CreateItemSearch(item)
         ]);
     }
 

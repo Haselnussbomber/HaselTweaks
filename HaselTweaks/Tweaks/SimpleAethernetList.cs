@@ -51,7 +51,7 @@ public unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider
             var index = atkEventData->ListItemData.SelectedIndex;
             if (agent->Data != null && index >= 0)
             {
-                var item = addon->List->GetItem((uint)index);
+                var item = addon->List->GetItem(index);
                 if (item != null && item->UIntValues.LongCount >= 4)
                 {
                     agent->Data->SelectedAetheryte = (byte)item->UIntValues[3];

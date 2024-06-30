@@ -94,8 +94,8 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
 
         if (lastQuery != Query)
         {
-            var entries = new List<(uint Index, string ItemName)>();
-            for (var i = 0u; i < Addon->TreeList->Items.LongCount; i++)
+            var entries = new List<(int Index, string ItemName)>();
+            for (var i = 0; i < Addon->TreeList->Items.LongCount; i++)
             {
                 var item = Addon->TreeList->Items[i].Value;
                 if (item != null && item->UIntValues.LongCount >= 3 && item->UIntValues[0] != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
@@ -132,7 +132,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
                         }
                     }
 
-                    Addon->TreeList->SelectItem((int)index, true); // if it would only scroll the selected item into view... oh well
+                    Addon->TreeList->SelectItem(index, true); // if it would only scroll the selected item into view... oh well
                 }
             }
         }

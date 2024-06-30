@@ -5,7 +5,6 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin;
 using HaselCommon.Services;
-using HaselCommon.Textures;
 using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
@@ -17,7 +16,7 @@ public class ConfigGui(
     IDalamudPluginInterface PluginInterface,
     PluginConfig PluginConfig,
     TextService TextService,
-    TextureManager TextureManager)
+    TextureService TextureService)
 {
     private IConfigurableTweak? Tweak = null;
 
@@ -228,7 +227,7 @@ public class ConfigGui(
 
         DrawConfigurationHeader("HaselTweaks.Config.SectionTitle.IncompatibilityWarning");
 
-        TextureManager.GetIcon(60073).Draw(24);
+        TextureService.DrawIcon(60073, 24);
         ImGui.SameLine();
         var cursorPosX = ImGui.GetCursorPosX();
 

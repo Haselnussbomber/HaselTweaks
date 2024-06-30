@@ -8,7 +8,6 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Services;
 using HaselCommon.Sheets;
-using HaselCommon.Textures;
 using HaselCommon.Utils;
 using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Caches;
@@ -30,7 +29,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
     private AetherCurrentHelperConfiguration Config => PluginConfig.Tweaks.AetherCurrentHelper;
 
     private readonly IClientState ClientState;
-    private readonly TextureManager TextureManager;
+    private readonly TextureService TextureService;
     private readonly ExcelService ExcelService;
     private readonly TextService TextService;
 
@@ -38,14 +37,14 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         IWindowManager windowManager,
         PluginConfig pluginConfig,
         IClientState clientState,
-        TextureManager textureManager,
+        TextureService textureService,
         ExcelService excelService,
         TextService textService,
         EObjDataIdCache eObjDataIdCache)
         : base(windowManager, pluginConfig, textService, "[HaselTweaks] Aether Current Helper")
     {
         ClientState = clientState;
-        TextureManager = textureManager;
+        TextureService = textureService;
         ExcelService = excelService;
         TextService = textService;
         EObjDataIdCache = eObjDataIdCache;
@@ -158,7 +157,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
         ImGui.SetCursorPosX(windowSize.X + style.WindowPadding.X - iconSize - 1);
 
-        TextureManager.GetIcon(64).Draw(iconSize);
+        TextureService.DrawIcon(64, iconSize);
 
         if (ImGui.IsItemHovered())
         {
@@ -212,7 +211,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
         // Icon
         ImGui.TableNextColumn();
-        TextureManager.GetIcon(quest.JournalGenre.Value!.Icon).Draw(40);
+        TextureService.DrawIcon(quest.JournalGenre.Value!.Icon, 40);
 
         // Content
         ImGui.TableNextColumn();
@@ -244,7 +243,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
         // Icon
         ImGui.TableNextColumn();
-        TextureManager.GetIcon(60033).Draw(40);
+        TextureService.DrawIcon(60033, 40);
 
         // Content
         ImGui.TableNextColumn();

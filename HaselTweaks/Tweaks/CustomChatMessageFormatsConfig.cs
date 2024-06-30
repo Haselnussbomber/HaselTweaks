@@ -8,13 +8,11 @@ using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using HaselCommon.Services;
 using HaselCommon.Text;
 using HaselCommon.Text.Enums;
 using HaselCommon.Text.Expressions;
 using HaselCommon.Text.Payloads;
 using HaselCommon.Text.Payloads.Macro;
-using HaselCommon.Textures;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Utils;
@@ -271,7 +269,7 @@ public partial class CustomChatMessageFormats
         {
             unsafe
             {
-                GetAgent<AgentInterface>(AgentId.ConfigLogColor)->Show();
+                AgentModule.Instance()->GetAgentByInternalId(AgentId.ConfigLogColor)->Show();
             }
         }
     }
@@ -663,9 +661,7 @@ public partial class CustomChatMessageFormats
 
         GameConfig.TryGet(SystemConfigOption.PadSelectButtonIcon, out uint padSelectButtonIcon);
 
-        TextureManager
-            .Get(GfdTextures[padSelectButtonIcon], 1, startPos, startPos + size)
-            .Draw(ImGuiHelpers.ScaledVector2(size.X, size.Y) / 2);
+        TextureService.Draw(GfdTextures[padSelectButtonIcon], new() { DrawSize = ImGuiHelpers.ScaledVector2(size.X, size.Y) / 2, Uv0 = startPos, Uv1 = startPos + size });
     }
 
     private List<(LogKind LogKind, LogFilter LogFilter, SeString Format)> GenerateLogKindCache()
