@@ -14,7 +14,7 @@ public unsafe class CharaSelectCharacter
     {
         Character = character;
         ContentId = entry->ContentId;
-        TerritoryType = entry->CharacterInfo.TerritoryType;
-        ClassJobId = entry->CharacterInfo.CurrentClassJobId;
+        TerritoryType = entry->ClientSelectData.TerritoryType;
+        ClassJobId = entry->ClientSelectData.CurrentClass;
     }
 }

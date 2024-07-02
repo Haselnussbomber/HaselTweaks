@@ -6,6 +6,7 @@ using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
@@ -371,7 +372,7 @@ public unsafe partial class EnhancedMaterialList(
             return;
 
         var localPlayer = (Character*)(ClientState.LocalPlayer?.Address ?? 0);
-        if (localPlayer == null || localPlayer->Mode == Character.CharacterModes.Crafting)
+        if (localPlayer == null || localPlayer->Mode == CharacterModes.Crafting)
             return;
 
         flags |= 2;

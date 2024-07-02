@@ -18,7 +18,7 @@ public sealed unsafe class MarketBoardItemPreview(
     : ITweak
 {
     public string InternalName => nameof(MarketBoardItemPreview);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }
 
@@ -48,10 +48,10 @@ public sealed unsafe class MarketBoardItemPreview(
         if (args is not AddonReceiveEventArgs addonReceiveEventArgs || addonReceiveEventArgs.AtkEventType != (byte)AtkEventType.ListItemRollOver)
             return;
 
-        var itemIndex = *(int*)(addonReceiveEventArgs.Data + 0x10);
-        var realItemIndex = *(byte*)(args.Addon + itemIndex + 0x2D38);
-        var itemId = *(uint*)(args.Addon + realItemIndex * 0x20 + 0x3258);
-        Logger.LogTrace("Event: {atkEventData} {realItemIndex} {itemId}", itemIndex, realItemIndex, itemId);
+        var eventData = (AtkEventData*)addonReceiveEventArgs.Data;
+        var itemIndex = eventData->ListItemData.SelectedIndex;
+        var itemId = *(uint*)((nint)AgentItemSearch.Instance() + itemIndex * 4 + 0xBBC);
+        Logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId} @ {addr:X}", itemIndex, itemId, args.Addon + itemIndex * 4 + 0xBBC);
 
         var item = ExcelService.GetRow<ExtendedItem>(itemId);
         if (item == null || !item.CanTryOn)

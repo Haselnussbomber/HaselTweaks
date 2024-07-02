@@ -176,7 +176,7 @@ public unsafe partial class EnhancedLoginLogout(
 
         _currentEntry = new(character, entry);
 
-        character->Vfx.VoiceId = entry->CharacterInfo.VoiceId;
+        character->Vfx.VoiceId = entry->ClientSelectData.VoiceId;
 
         SpawnPet();
 
@@ -434,7 +434,7 @@ public unsafe partial class EnhancedLoginLogout(
         if (emote.EmoteMode.Row != 0)
         {
             Logger.LogDebug("EmoteMode: {rowId}", emote.EmoteMode.Row);
-            _currentEntry.Character->SetMode((Character.CharacterModes)emote.EmoteMode.Value!.ConditionMode, (byte)emote.EmoteMode.Row);
+            _currentEntry.Character->SetMode((CharacterModes)emote.EmoteMode.Value!.ConditionMode, (byte)emote.EmoteMode.Row);
         }
         else
         {
@@ -468,7 +468,7 @@ public unsafe partial class EnhancedLoginLogout(
             return;
 
         Logger.LogDebug("Resetting Character Mode");
-        _currentEntry.Character->SetMode(Character.CharacterModes.Normal, 0);
+        _currentEntry.Character->SetMode(CharacterModes.Normal, 0);
     }
 
     private bool ExecuteEmoteDetour(EmoteManager* handler, ushort emoteId, nint targetData)

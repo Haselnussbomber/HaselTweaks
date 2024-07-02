@@ -1,48 +1,31 @@
+using System.Collections.Generic;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Hooking;
+using Dalamud.Game.Network.Structures;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Client.UI.Info;
+using HaselCommon.Services;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe class SaferItemSearch(IGameInteropProvider GameInteropProvider, IAddonLifecycle AddonLifecycle) : ITweak
+public unsafe class SaferItemSearch(IAddonLifecycle AddonLifecycle, MarketBoardService MarketBoardService) : ITweak
 {
     public string InternalName => nameof(SaferItemSearch);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated; // AddonItemSearch needs updating
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private bool _isSearching;
+    private bool IsSearching;
 
-    private Hook<InfoProxyItemSearch.Delegates.ProcessRequestResult>? ProcessRequestResultHook;
-    private Hook<InfoProxyItemSearch.Delegates.EndRequest>? EndRequestHook;
-    private Hook<InfoProxyItemSearch.Delegates.AddPage>? AddPageHook;
-
-    public void OnInitialize()
-    {
-        ProcessRequestResultHook = GameInteropProvider.HookFromAddress<InfoProxyItemSearch.Delegates.ProcessRequestResult>(
-            InfoProxyItemSearch.MemberFunctionPointers.ProcessRequestResult,
-            ProcessRequestResultDetour);
-
-        EndRequestHook = GameInteropProvider.HookFromAddress<InfoProxyItemSearch.Delegates.EndRequest>(
-            InfoProxyItemSearch.StaticVirtualTablePointer->EndRequest,
-            EndRequestDetour);
-
-        AddPageHook = GameInteropProvider.HookFromAddress<InfoProxyItemSearch.Delegates.AddPage>(
-            InfoProxyItemSearch.StaticVirtualTablePointer->AddPage,
-            AddPageDetour);
-    }
+    public void OnInitialize() { }
 
     public void OnEnable()
     {
         AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "ItemSearch", ItemSearch_PostRequestedUpdate);
         AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerSell", RetainerSell_PostSetup);
 
-        ProcessRequestResultHook?.Enable();
-        EndRequestHook?.Enable();
-        AddPageHook?.Enable();
+        MarketBoardService.ListingsStart += OnListingsStart;
+        MarketBoardService.ListingsEnd += OnListingsEnd;
     }
 
     public void OnDisable()
@@ -50,9 +33,8 @@ public unsafe class SaferItemSearch(IGameInteropProvider GameInteropProvider, IA
         AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemSearch", ItemSearch_PostRequestedUpdate);
         AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "RetainerSell", RetainerSell_PostSetup);
 
-        ProcessRequestResultHook?.Disable();
-        EndRequestHook?.Disable();
-        AddPageHook?.Disable();
+        MarketBoardService.ListingsStart -= OnListingsStart;
+        MarketBoardService.ListingsEnd -= OnListingsEnd;
     }
 
     void IDisposable.Dispose()
@@ -61,9 +43,6 @@ public unsafe class SaferItemSearch(IGameInteropProvider GameInteropProvider, IA
             return;
 
         OnDisable();
-        ProcessRequestResultHook?.Dispose();
-        EndRequestHook?.Dispose();
-        AddPageHook?.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);
@@ -77,7 +56,7 @@ public unsafe class SaferItemSearch(IGameInteropProvider GameInteropProvider, IA
 
         for (var i = 0; i < addon->ResultsList->GetItemCount(); i++)
         {
-            addon->ResultsList->SetItemDisabledState(i, _isSearching);
+            addon->ResultsList->SetItemDisabledState(i, IsSearching);
         }
     }
 
@@ -94,33 +73,18 @@ public unsafe class SaferItemSearch(IGameInteropProvider GameInteropProvider, IA
         if (addon == null)
             return;
 
-        addon->ComparePrices->AtkComponentBase.SetEnabledState(!_isSearching);
+        addon->ComparePrices->AtkComponentBase.SetEnabledState(!IsSearching);
     }
 
-    private nint ProcessRequestResultDetour(InfoProxyItemSearch* ipis, nint a2, nint a3, nint a4, int a5, byte a6, int a7)
+    private void OnListingsStart()
     {
-        _isSearching = true;
-
+        IsSearching = true;
         UpdateRetainerSellButton();
-
-        return ProcessRequestResultHook!.Original(ipis, a2, a3, a4, a5, a6, a7);
     }
 
-    private void EndRequestDetour(InfoProxyItemSearch* ipis)
+    private void OnListingsEnd(IReadOnlyList<IMarketBoardItemListing> listings)
     {
-        _isSearching = false;
-
+        IsSearching = false;
         UpdateRetainerSellButton();
-
-        EndRequestHook!.Original(ipis);
-    }
-
-    private void AddPageDetour(InfoProxyItemSearch* ipis, nint data)
-    {
-        _isSearching = true;
-
-        UpdateRetainerSellButton();
-
-        AddPageHook!.Original(ipis, data);
     }
 }

@@ -1151,11 +1151,11 @@
     "de": "Projektion:",
     "zh": "投影："
   },
-  "GearSetGridWindow.ItemTooltip.LabelDye1": {
+  "GearSetGridWindow.ItemTooltip.LabelDye0": {
     "en": "Dye 1:",
     "de": "Färbung 1:"
   },
-  "GearSetGridWindow.ItemTooltip.LabelDye2": {
+  "GearSetGridWindow.ItemTooltip.LabelDye1": {
     "en": "Dye 2:",
     "de": "Färbung 2:"
   },

@@ -16,7 +16,7 @@ public unsafe class SearchTheMarkets(
     ExcelService ExcelService) : ITweak
 {
     public string InternalName => nameof(SearchTheMarkets);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private MenuItem? MenuItem;
     private ExtendedItem? Item;
