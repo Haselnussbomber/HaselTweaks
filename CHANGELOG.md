@@ -1,10 +1,14 @@
 # Changelog
 
-## [Unreleased]
+## [24.1.1] (2024-07-03)
 
 ### Portrait Helper
 
-- **Fixed:** Calculating the checksum would crash the game.
+- **Fixed:** Calculating the checksum would crash the game. Sorry!
+
+### Known Issues
+
+- **Character Class Switcher:** Buttons aren't clickable and some of them crash the game. I've disabled the tweak for now until I find a solution. Sorry!
 
 ## [24.1.0] (2024-07-03)
 
@@ -1542,6 +1546,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[24.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.1.0...v24.1.1
 [24.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.3...v24.1.0
 [24.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.2...v24.0.3
 [24.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.1...v24.0.2
