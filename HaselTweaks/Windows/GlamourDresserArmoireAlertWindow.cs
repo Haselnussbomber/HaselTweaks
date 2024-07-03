@@ -19,7 +19,6 @@ namespace HaselTweaks.Windows;
 
 public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 {
-    private const int NumPrismBoxSlots = 800;
     private static readonly Vector2 IconSize = new(34);
     private readonly TextureService TextureService;
     private readonly ExcelService ExcelService;
@@ -41,6 +40,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
         TextService = textService;
         ImGuiContextMenuService = imGuiContextMenuService;
         DisableWindowSounds = true;
+        RespectCloseHotkey = false;
 
         Flags |= ImGuiWindowFlags.NoSavedSettings;
         Flags |= ImGuiWindowFlags.NoResize;

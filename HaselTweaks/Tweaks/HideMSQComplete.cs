@@ -11,7 +11,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe class HideMSQComplete(IAddonLifecycle AddonLifecycle) : ITweak
 {
     public string InternalName => nameof(HideMSQComplete);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }
 

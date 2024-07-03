@@ -29,7 +29,7 @@ public unsafe partial class InventoryHighlight(
     : IConfigurableTweak
 {
     public string InternalName => nameof(InventoryHighlight);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private uint ItemInventryWindowSizeType = 0;
     private uint ItemInventryRetainerWindowSizeType = 0;

@@ -42,7 +42,7 @@ public unsafe partial class EnhancedLoginLogout(
     : IConfigurableTweak
 {
     public string InternalName => nameof(EnhancedLoginLogout);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private CharaSelectCharacter? _currentEntry = null;
 

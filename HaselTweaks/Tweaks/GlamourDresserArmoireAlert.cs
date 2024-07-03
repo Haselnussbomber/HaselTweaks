@@ -22,7 +22,7 @@ public unsafe class GlamourDresserArmoireAlert(
     : ITweak
 {
     public string InternalName => nameof(GlamourDresserArmoireAlert);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated;
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private bool _isPrismBoxOpen;
     private uint[]? _lastItemIds = null;
