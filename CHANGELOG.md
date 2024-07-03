@@ -1,6 +1,16 @@
 # Changelog
 
-## [Unreleased]
+## [24.1.0] (2024-07-03)
+
+Preliminary update for Dawntrail (Dalamud staging).
+
+### DTR
+
+- **Fixed:** Fixed Instance not being shown after relogging.
+
+### Glamour Dresser Armoire Alert
+
+- **Fixed:** After the window closed, hitting the Escape key would no longer do anything.
 
 ### Material Allocation
 
@@ -1526,7 +1536,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
-[24.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.1...v24.0.2
+[24.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.3...v24.1.0
+[24.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.2...v24.0.3
 [24.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.1...v24.0.2
 [24.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.0...v24.0.1
 [24.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v23.0.2...v24.0.0
