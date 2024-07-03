@@ -31,7 +31,7 @@ public unsafe partial class CharacterClassSwitcher(
     : IConfigurableTweak
 {
     public string InternalName => nameof(CharacterClassSwitcher);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized; // TODO: fix last 2 buttons not being clickable
+    public TweakStatus Status { get; set; } = TweakStatus.Outdated; // TODO: fix last 2 buttons not being clickable
 
     private const int NumClasses = 33;
 
