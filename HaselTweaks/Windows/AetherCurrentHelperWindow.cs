@@ -7,7 +7,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Services;
-using HaselCommon.Sheets;
 using HaselCommon.Utils;
 using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Caches;
@@ -22,6 +21,7 @@ namespace HaselTweaks.Windows;
 public unsafe class AetherCurrentHelperWindow : LockableWindow
 {
     private readonly EObjDataIdCache EObjDataIdCache;
+    private readonly LevelObjectCache LevelObjectCache;
     private bool HideUnlocked = true;
 
     private static readonly HaselColor TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
@@ -32,6 +32,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
     private readonly TextureService TextureService;
     private readonly ExcelService ExcelService;
     private readonly TextService TextService;
+    private readonly MapService MapService;
 
     public AetherCurrentHelperWindow(
         IWindowManager windowManager,
@@ -40,14 +41,18 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         TextureService textureService,
         ExcelService excelService,
         TextService textService,
-        EObjDataIdCache eObjDataIdCache)
+        MapService mapService,
+        EObjDataIdCache eObjDataIdCache,
+        LevelObjectCache levelObjectCache)
         : base(windowManager, pluginConfig, textService, "[HaselTweaks] Aether Current Helper")
     {
         ClientState = clientState;
         TextureService = textureService;
         ExcelService = excelService;
         TextService = textService;
+        MapService = mapService;
         EObjDataIdCache = eObjDataIdCache;
+        LevelObjectCache = levelObjectCache;
 
         SizeCondition = ImGuiCond.FirstUseEver;
         Size = new Vector2(350);
@@ -205,18 +210,18 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         if (questId == 0 || quest == null || quest.IssuerLocation.Row == 0)
             return;
 
-        var extendedIssuerLocation = ExcelService.GetRow<ExtendedLevel>(quest.IssuerLocation.Row);
-        if (extendedIssuerLocation == null)
+        var issuerLocation = ExcelService.GetRow<Level>(quest.IssuerLocation.Row);
+        if (issuerLocation == null)
             return;
 
         // Icon
         ImGui.TableNextColumn();
-        TextureService.DrawIcon(quest.JournalGenre.Value!.Icon, 40);
+        TextureService.DrawIcon(quest.EventIconType.Value!.MapIconAvailable + 1, 40);
 
         // Content
         ImGui.TableNextColumn();
         ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetQuestName(quest.RowId)}");
-        ImGui.TextUnformatted($"{GetHumanReadableCoords(extendedIssuerLocation)} | {TextService.GetENpcResidentName(quest.IssuerStart)}");
+        ImGui.TextUnformatted($"{GetHumanReadableCoords(issuerLocation)} | {TextService.GetENpcResidentName(quest.IssuerStart)}");
 
         // Actions
         ImGui.TableNextColumn();
@@ -224,22 +229,22 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y) * 2));
         if (selected)
         {
-            extendedIssuerLocation.OpenMap();
+            MapService.OpenMap(issuerLocation);
         }
         ImGui.SameLine();
 
-        DrawUnlockStatus(isUnlocked, extendedIssuerLocation);
+        DrawUnlockStatus(isUnlocked, issuerLocation);
         ImGui.SameLine(); // for padding
         ImGui.Dummy(new Vector2(0, 0));
     }
 
     private void DrawEObject(int index, bool isUnlocked, AetherCurrent aetherCurrent)
     {
-        var eobj = EObjDataIdCache.GetValue(aetherCurrent.RowId);
-        if (eobj == null) return;
+        if (!EObjDataIdCache.TryGetValue(aetherCurrent.RowId, out var eobj))
+            return;
 
-        var level = ExtendedLevel.GetByObjectId(eobj.RowId);
-        if (level == null) return;
+        if (!LevelObjectCache.TryGetValue(eobj.RowId, out var level))
+            return;
 
         // Icon
         ImGui.TableNextColumn();
@@ -248,7 +253,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         // Content
         ImGui.TableNextColumn();
         ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetEObjName(eobj.RowId)}");
-        ImGui.TextUnformatted(GetHumanReadableCoords(level!));
+        ImGui.TextUnformatted(GetHumanReadableCoords(level));
 
         // Actions
         ImGui.TableNextColumn();
@@ -256,7 +261,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         ImGui.Selectable($"##AetherCurrent_{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y) * 2));
         if (selected)
         {
-            level.OpenMap();
+            MapService.OpenMap(level);
         }
         ImGui.SameLine();
 
@@ -265,7 +270,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         ImGui.Dummy(new Vector2(0, 0));
     }
 
-    private void DrawUnlockStatus(bool isUnlocked, ExtendedLevel level)
+    private void DrawUnlockStatus(bool isUnlocked, Level level)
     {
         var isSameTerritory = level.Territory.Row == ClientState.TerritoryType;
         ImGuiUtils.PushCursorY(11);
@@ -278,7 +283,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         {
             if (isSameTerritory)
             {
-                var distance = level.GetDistanceFromPlayer();
+                var distance = MapService.GetDistanceFromPlayer(level);
                 if (distance < float.MaxValue)
                 {
                     var direction = distance > 1 ? GetCompassDirection(level) : string.Empty;
@@ -325,9 +330,9 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         ImGuiUtils.TextUnformattedColored(Colors.Green, icon);
     }
 
-    private string GetHumanReadableCoords(ExtendedLevel level)
+    private string GetHumanReadableCoords(Level level)
     {
-        var coords = level.GetCoords();
+        var coords = MapService.GetCoords(level);
         var x = coords.X.ToString("0.0", CultureInfo.InvariantCulture);
         var y = coords.Y.ToString("0.0", CultureInfo.InvariantCulture);
         return TextService.Translate("AetherCurrentHelperWindow.Coords", x, y);

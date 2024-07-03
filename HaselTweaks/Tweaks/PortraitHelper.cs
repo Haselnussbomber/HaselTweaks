@@ -42,7 +42,7 @@ public unsafe partial class PortraitHelper(
     private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
     private CancellationTokenSource? MismatchCheckCTS;
-    private DalamudLinkPayload? _openPortraitEditPayload;
+    private DalamudLinkPayload? OpenPortraitEditPayload;
 
     public static ImportFlags CurrentImportFlags { get; set; } = ImportFlags.All;
     public static PortraitPreset? ClipboardPreset { get; set; }
@@ -68,7 +68,7 @@ public unsafe partial class PortraitHelper(
 
     public void OnEnable()
     {
-        _openPortraitEditPayload = PluginInterface.AddChatLinkHandler(1000, OpenPortraitEditChatHandler);
+        OpenPortraitEditPayload = PluginInterface.AddChatLinkHandler(1000, OpenPortraitEditChatHandler);
 
         if (IsAddonOpen(AgentId.BannerEditor))
             OnAddonOpen("BannerEditor");
@@ -248,7 +248,7 @@ public unsafe partial class PortraitHelper(
             {
                 Logger.LogInformation("Gear checksum matches now (Portrait: {bannerChecksum:X}, Equipped: {equippedChecksum:X})", banner->Checksum, GetEquippedGearChecksum());
             }
-        }, delay: CheckDelay, cancellationToken: MismatchCheckCTS.Token); // TODO: find out when it's safe to check again instead of randomly picking a delay. ping may vary
+        }, delay: CheckDelay, cancellationToken: MismatchCheckCTS.Token);
     }
 
     private void NotifyMismatch()
@@ -261,9 +261,9 @@ public unsafe partial class PortraitHelper(
         var raptureGearsetModule = RaptureGearsetModule.Instance();
         if (raptureGearsetModule->IsValidGearset(raptureGearsetModule->CurrentGearsetIndex))
         {
-            if (_openPortraitEditPayload != null)
+            if (OpenPortraitEditPayload != null)
             {
-                sb.Add(_openPortraitEditPayload)
+                sb.Add(OpenPortraitEditPayload)
                   .AddText(text)
                   .Add(RawPayload.LinkTerminator);
             }
@@ -295,7 +295,7 @@ public unsafe partial class PortraitHelper(
         };
 
         var itemIds = stackalloc uint[14];
-        var stainIds = stackalloc byte[28];
+        var stainIds = stackalloc byte[14 * 2];
         var glassesIds = stackalloc ushort[2];
 
         if (!data.LoadEquipmentData(itemIds, stainIds, glassesIds))
@@ -342,7 +342,7 @@ public unsafe partial class PortraitHelper(
 
         if (banner->BannerIndex != bannerIndex - 1)
         {
-            Logger.LogWarning($"No Portrait Update: Banner index mismatch (Banner: {banner->BannerIndex}, Gearset Banner Link: {bannerIndex - 1})");
+            Logger.LogWarning("No Portrait Update: Banner index mismatch (Banner: {bannerIndex}, Gearset Banner Link: {gearsetBannerIndex})", banner->BannerIndex, bannerIndex - 1);
             return false;
         }
 

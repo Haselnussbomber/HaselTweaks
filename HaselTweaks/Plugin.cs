@@ -51,6 +51,7 @@ public sealed class Plugin : IDalamudPlugin
 
             // AetherCurrentHelper
             .AddSingleton<EObjDataIdCache>()
+            .AddSingleton<LevelObjectCache>()
             .AddSingleton<AetherCurrentHelperWindow>()
 
             // EnhancedIsleworksAgenda
