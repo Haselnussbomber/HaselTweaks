@@ -31,7 +31,7 @@ public unsafe partial class CharacterClassSwitcher(
     : IConfigurableTweak
 {
     public string InternalName => nameof(CharacterClassSwitcher);
-    public TweakStatus Status { get; set; } = TweakStatus.Outdated; // TODO: fix last 2 buttons not being clickable
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private const int NumClasses = 33;
 
@@ -151,7 +151,7 @@ public unsafe partial class CharacterClassSwitcher(
 
     private static bool IsCrafter(int id)
     {
-        return id >= 20 && id <= 27;
+        return id >= 22 && id <= 29;
     }
 
     private void AddonCharacterClassOnSetupDetour(AddonCharacterClass* addon, uint numAtkValues, AtkValue* atkValues)
@@ -255,7 +255,7 @@ public unsafe partial class CharacterClassSwitcher(
 
             if (isClick && !KeyState[VirtualKey.SHIFT])
             {
-                SwitchClassJob(8 + (uint)eventParam - 22);
+                SwitchClassJob(8 + (uint)eventParam - 24);
                 return true;
             }
         }
