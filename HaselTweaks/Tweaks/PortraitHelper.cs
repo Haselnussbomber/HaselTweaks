@@ -295,7 +295,7 @@ public unsafe partial class PortraitHelper(
         };
 
         var itemIds = stackalloc uint[14];
-        var stainIds = stackalloc byte[24];
+        var stainIds = stackalloc byte[28];
         var glassesIds = stackalloc ushort[2];
 
         if (!data.LoadEquipmentData(itemIds, stainIds, glassesIds))

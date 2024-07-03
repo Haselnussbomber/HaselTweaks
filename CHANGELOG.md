@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Portrait Helper
+
+- **Fixed:** Calculating the checksum would crash the game.
+
 ## [24.1.0] (2024-07-03)
 
 Preliminary update for Dawntrail (Dalamud staging).
