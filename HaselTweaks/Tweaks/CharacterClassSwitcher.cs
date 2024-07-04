@@ -114,7 +114,7 @@ public unsafe partial class CharacterClassSwitcher(
         AddonPvPCharacterReceiveEventHook?.Enable();
         AgentStatusShowHook?.Enable();
 
-        AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "AddonPvPCharacter", AddonPvPCharacterOnSetup);
+        AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "PvPCharacter", PvPCharacterOnSetup);
     }
 
     public void OnDisable()
@@ -129,7 +129,7 @@ public unsafe partial class CharacterClassSwitcher(
         AddonPvPCharacterReceiveEventHook?.Disable();
         AgentStatusShowHook?.Disable();
 
-        AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "AddonPvPCharacter", AddonPvPCharacterOnSetup);
+        AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "PvPCharacter", PvPCharacterOnSetup);
     }
 
     void IDisposable.Dispose()
@@ -166,11 +166,11 @@ public unsafe partial class CharacterClassSwitcher(
             var node = addon->ButtonNodes.GetPointer(i)->Value;
             if (node == null) continue;
 
-            var collisionNode = (AtkCollisionNode*)node->AtkComponentBase.UldManager.RootNode;
+            var collisionNode = node->AtkComponentBase.UldManager.RootNode;
             if (collisionNode == null) continue;
 
-            collisionNode->AtkResNode.AddEvent(AtkEventType.MouseClick, (uint)i + 2, (AtkEventListener*)addon, null, false);
-            collisionNode->AtkResNode.AddEvent(AtkEventType.InputReceived, (uint)i + 2, (AtkEventListener*)addon, null, false);
+            collisionNode->AddEvent(AtkEventType.MouseClick, (uint)i + 2, (AtkEventListener*)addon, null, false);
+            collisionNode->AddEvent(AtkEventType.InputReceived, (uint)i + 2, (AtkEventListener*)addon, null, false);
         }
 
         if (Config.AlwaysOpenOnClassesJobsTab && Config.ForceClassesJobsSubTab != ClassesJobsSubTabs.None)
@@ -264,7 +264,7 @@ public unsafe partial class CharacterClassSwitcher(
     }
 
 
-    private void AddonPvPCharacterOnSetup(AddonEvent type, AddonArgs args)
+    private void PvPCharacterOnSetup(AddonEvent type, AddonArgs args)
     {
         var addon = (AddonPvPCharacter*)args.Addon;
 
@@ -273,11 +273,11 @@ public unsafe partial class CharacterClassSwitcher(
             var entry = addon->ClassEntries.GetPointer(i);
             if (entry->Base == null) continue;
 
-            var collisionNode = (AtkCollisionNode*)entry->Base->UldManager.RootNode;
+            var collisionNode = entry->Base->UldManager.RootNode;
             if (collisionNode == null) continue;
 
-            collisionNode->AtkResNode.AddEvent(AtkEventType.MouseClick, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
-            collisionNode->AtkResNode.AddEvent(AtkEventType.InputReceived, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
+            collisionNode->AddEvent(AtkEventType.MouseClick, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
+            collisionNode->AddEvent(AtkEventType.InputReceived, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
         }
     }
 
