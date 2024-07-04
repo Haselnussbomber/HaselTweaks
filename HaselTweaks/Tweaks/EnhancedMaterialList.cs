@@ -36,7 +36,8 @@ public unsafe partial class EnhancedMaterialList(
     IGameInventory GameInventory,
     IAetheryteList AetheryteList,
     AddonObserver AddonObserver,
-    ExcelService ExcelService)
+    ExcelService ExcelService,
+    MapService MapService)
     : IConfigurableTweak
 {
     public string InternalName => nameof(EnhancedMaterialList);
@@ -201,7 +202,7 @@ public unsafe partial class EnhancedMaterialList(
 
                 var (totalPoints, point, cost, isSameZone, placeName) = tuple.Value;
 
-                point.OpenMap(item, new SeStringBuilder().Append("HaselTweaks").ToReadOnlySeString());
+                MapService.OpenMap(point, item, new SeStringBuilder().Append("HaselTweaks").ToReadOnlySeString());
 
                 return;
 
@@ -378,13 +379,13 @@ public unsafe partial class EnhancedMaterialList(
         flags |= 2;
     }
 
-    private (int, ExtendedGatheringPoint, uint, bool, ReadOnlySeString)? GetPointForItem(uint itemId)
+    private (int, GatheringPoint, uint, bool, ReadOnlySeString)? GetPointForItem(uint itemId)
     {
         var gatheringItem = ItemGatheringItemLookup.First(itemId);
         if (gatheringItem == null)
             return null;
 
-        var gatheringPointSheet = ExcelService.GetSheet<ExtendedGatheringPoint>();
+        var gatheringPointSheet = ExcelService.GetSheet<GatheringPoint>();
         var gatheringPoints = ExcelService.GetSheet<GatheringPointBase>()
             .Where(row => row.Item.Any(item => item == gatheringItem.RowId))
             .Select(row => gatheringPointSheet.FirstOrDefault(gprow => gprow?.GatheringPointBase.Row == row.RowId && gprow.TerritoryType.Row > 1, null))
