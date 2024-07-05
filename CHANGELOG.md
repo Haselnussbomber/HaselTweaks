@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [25.0.0] (2024-07-05)
 
 ### New Tweak: Bigger Item Dyeing Preview
 
@@ -1564,6 +1564,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[25.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.1.3...v25.0.0
 [24.1.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.1.2...v24.1.3
 [24.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.1.1...v24.1.2
 [24.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.1.0...v24.1.1
