@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Bigger Item Dyeing Preview
+
+Increases the size of the character preview in the "Item Dyeing" window.
+
 ## [24.1.3] (2024-07-04)
 
 ### Character Class Switcher

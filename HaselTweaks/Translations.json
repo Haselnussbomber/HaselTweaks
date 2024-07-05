@@ -418,6 +418,14 @@
     "zh": "无"
   },
 
+  "BiggerItemDyeingPreview.Tweak.Name": {
+    "en": "Bigger Item Dyeing Preview"
+  },
+  "BiggerItemDyeingPreview.Tweak.Description": {
+    "en": "Increases the size of the character preview in the \"Item Dyeing\" window.",
+    "de": "Vergrößert die Charaktervorschau im \"GEGENSTÄNDE FÄRBEN\"-Fenster."
+  },
+
   "CastBarAetheryteNames.Tweak.Name": {
     "en": "Cast Bar Aetheryte Names",
     "zh": "以太之光名称替换“传送”"

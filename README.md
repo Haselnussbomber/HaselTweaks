@@ -43,6 +43,10 @@ If a new daily/tribal quest objective requires you to craft an item, and you hav
 
 Adds a configurable keybind to toggle the background music, in addition to the game's existing keybind option to toggle the sound. No more `/bgm` macro. Works in cutscenes.
 
+### Bigger Item Dyeing Preview
+
+Increases the size of the character preview in the "Item Dyeing" window.
+
 ### Cast Bar Aetheryte Names
 
 Replaces the name of the action "Teleport" with the Aetheryte name of your destination.
