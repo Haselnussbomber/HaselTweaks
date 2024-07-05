@@ -6,6 +6,7 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselCommon.Commands;
 using HaselCommon.Commands.Attributes;
 using HaselCommon.Commands.Interfaces;
 using HaselCommon.Extensions;
@@ -23,7 +24,7 @@ public unsafe partial class Commands(
     PluginConfig PluginConfig,
     TextService TextService,
     ExcelService ExcelService,
-    ICommandRegistry Commands,
+    CommandRegistry Commands,
     IChatGui ChatGui,
     ITargetManager TargetManager,
     ConfigGui ConfigGui)

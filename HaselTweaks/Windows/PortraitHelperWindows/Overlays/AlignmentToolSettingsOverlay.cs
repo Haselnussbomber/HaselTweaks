@@ -1,7 +1,7 @@
 using Dalamud.Interface.Utility.Raii;
 using HaselCommon.Services;
 using HaselCommon.Utils;
-using HaselCommon.Windowing.Interfaces;
+using HaselCommon.Windowing;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using ImGuiNET;
@@ -10,7 +10,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
 public unsafe class AlignmentToolSettingsOverlay(
     TextService TextService,
-    IWindowManager windowManager,
+    WindowManager windowManager,
     PluginConfig pluginConfig,
     ExcelService excelService)
     : Overlay(

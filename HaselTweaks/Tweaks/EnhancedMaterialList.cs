@@ -9,9 +9,8 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Extensions;
 using HaselCommon.Services;
-using HaselCommon.SheetLookup;
-using HaselCommon.Sheets;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
@@ -37,7 +36,8 @@ public unsafe partial class EnhancedMaterialList(
     IAetheryteList AetheryteList,
     AddonObserver AddonObserver,
     ExcelService ExcelService,
-    MapService MapService)
+    MapService MapService,
+    ItemService ItemService)
     : IConfigurableTweak
 {
     public string InternalName => nameof(EnhancedMaterialList);
@@ -189,7 +189,7 @@ public unsafe partial class EnhancedMaterialList(
                 var rowData = **(nint**)(data + 0x08);
                 var itemId = *(uint*)(rowData + 0x04);
 
-                var item = ExcelService.GetRow<ExtendedItem>(itemId);
+                var item = ExcelService.GetRow<Item>(itemId);
                 if (item == null)
                     return;
 
@@ -381,7 +381,7 @@ public unsafe partial class EnhancedMaterialList(
 
     private (int, GatheringPoint, uint, bool, ReadOnlySeString)? GetPointForItem(uint itemId)
     {
-        var gatheringItem = ItemGatheringItemLookup.First(itemId);
+        var gatheringItem = ItemService.GetGatheringItems(itemId).FirstOrNull();
         if (gatheringItem == null)
             return null;
 

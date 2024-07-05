@@ -4,7 +4,6 @@ using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using HaselCommon.Services;
-using HaselCommon.Sheets;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Windows;
@@ -27,7 +26,7 @@ public unsafe class GlamourDresserArmoireAlert(
     private bool _isPrismBoxOpen;
     private uint[]? _lastItemIds = null;
 
-    public Dictionary<uint, Dictionary<uint, (ExtendedItem Item, bool IsHq)>> Categories { get; } = [];
+    public Dictionary<uint, Dictionary<uint, (Item Item, bool IsHq)>> Categories { get; } = [];
     public bool UpdatePending { get; set; } // used to disable ImGui.Selectables after clicking to restore an item
 
     public void OnInitialize()
@@ -118,7 +117,7 @@ public unsafe class GlamourDresserArmoireAlert(
             var isHq = itemId is > 1000000 and < 1500000;
             itemId %= 1000000;
 
-            var item = ExcelService.GetRow<ExtendedItem>(itemId);
+            var item = ExcelService.GetRow<Item>(itemId);
             if (item == null)
                 continue;
 

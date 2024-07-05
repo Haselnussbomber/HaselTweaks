@@ -7,7 +7,6 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Windowing;
-using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
@@ -30,7 +29,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
     private string Query = string.Empty;
 
     public MJICraftScheduleSettingSearchBar(
-        IWindowManager windowManager,
+        WindowManager windowManager,
         PluginConfig pluginConfig,
         ExcelService excelService,
         TextService textService)

@@ -9,7 +9,6 @@ using Dalamud.Plugin.Services;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Utils;
-using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Utils;
@@ -48,7 +47,7 @@ public unsafe class PresetBrowserOverlay : Overlay
         IDataManager dataManager,
         ITextureProvider textureProvider,
         BannerUtils bannerUtils,
-        IWindowManager windowManager,
+        WindowManager windowManager,
         PluginConfig pluginConfig,
         ExcelService excelService,
         TextService textService,

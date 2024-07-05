@@ -9,7 +9,7 @@ using FFXIVClientStructs.Havok.Animation.Animation;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Utils;
-using HaselCommon.Windowing.Interfaces;
+using HaselCommon.Windowing;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using ImGuiNET;
@@ -20,7 +20,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
 public unsafe class AdvancedEditOverlay(
     TextService TextService,
-    IWindowManager windowManager,
+    WindowManager windowManager,
     ExcelService excelService,
     PluginConfig pluginConfig)
     : Overlay(

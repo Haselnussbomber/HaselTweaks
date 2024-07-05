@@ -8,7 +8,7 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Services;
 using HaselCommon.Utils;
-using HaselCommon.Windowing.Interfaces;
+using HaselCommon.Windowing;
 using HaselTweaks.Caches;
 using HaselTweaks.Config;
 using HaselTweaks.Tweaks;
@@ -35,7 +35,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
     private readonly MapService MapService;
 
     public AetherCurrentHelperWindow(
-        IWindowManager windowManager,
+        WindowManager windowManager,
         PluginConfig pluginConfig,
         IClientState clientState,
         TextureService textureService,

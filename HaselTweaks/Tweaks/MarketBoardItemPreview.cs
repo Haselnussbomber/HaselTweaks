@@ -4,9 +4,9 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
-using HaselCommon.Sheets;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
+using Lumina.Excel.GeneratedSheets;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
@@ -14,7 +14,8 @@ namespace HaselTweaks.Tweaks;
 public sealed unsafe class MarketBoardItemPreview(
     ILogger<MarketBoardItemPreview> Logger,
     IAddonLifecycle AddonLifecycle,
-    ExcelService ExcelService)
+    ExcelService ExcelService,
+    ItemService ItemService)
     : ITweak
 {
     public string InternalName => nameof(MarketBoardItemPreview);
@@ -53,8 +54,8 @@ public sealed unsafe class MarketBoardItemPreview(
         var itemId = *(uint*)((nint)AgentItemSearch.Instance() + itemIndex * 4 + 0xBBC);
         Logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId} @ {addr:X}", itemIndex, itemId, args.Addon + itemIndex * 4 + 0xBBC);
 
-        var item = ExcelService.GetRow<ExtendedItem>(itemId);
-        if (item == null || !item.CanTryOn)
+        var item = ExcelService.GetRow<Item>(itemId);
+        if (item == null || !ItemService.CanTryOn(item))
             return;
 
         AgentTryon.TryOn(((AtkUnitBase*)args.Addon)->Id, itemId, 0, 0, 0);

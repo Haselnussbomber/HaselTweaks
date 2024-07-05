@@ -10,7 +10,6 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselCommon.Windowing;
-using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
@@ -49,7 +48,7 @@ public unsafe class MenuBar : SimpleWindow
         ILogger<MenuBar> logger,
         IServiceProvider serviceProvider,
         IDalamudPluginInterface pluginInterface,
-        IWindowManager windowManager,
+        WindowManager windowManager,
         PluginConfig pluginConfig,
         TextService textService,
         BannerUtils bannerUtils)

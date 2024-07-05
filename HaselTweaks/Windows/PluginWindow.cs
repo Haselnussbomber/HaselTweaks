@@ -13,7 +13,6 @@ using Dalamud.Plugin.Services;
 using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselCommon.Windowing;
-using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using ImGuiNET;
@@ -40,7 +39,7 @@ public partial class PluginWindow : SimpleWindow
 #endif
 
     public PluginWindow(
-        IWindowManager windowManager,
+        WindowManager windowManager,
         IDalamudPluginInterface pluginInterface,
         TextService textService,
         ITextureProvider textureProvider,

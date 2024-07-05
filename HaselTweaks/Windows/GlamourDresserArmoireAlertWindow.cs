@@ -7,10 +7,8 @@ using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using HaselCommon.Services;
-using HaselCommon.Sheets;
 using HaselCommon.Utils;
 using HaselCommon.Windowing;
-using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
@@ -28,7 +26,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
     private static AddonMiragePrismPrismBox* Addon => GetAddon<AddonMiragePrismPrismBox>("MiragePrismPrismBox");
 
     public GlamourDresserArmoireAlertWindow(
-        IWindowManager windowManager,
+        WindowManager windowManager,
         TextureService textureService,
         ExcelService excelService,
         TextService textService,
@@ -80,7 +78,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
         );
     }
 
-    public void DrawItem(uint itemIndex, ExtendedItem item, bool isHq)
+    public void DrawItem(uint itemIndex, Item item, bool isHq)
     {
         var popupKey = $"##ItemContextMenu_{item.RowId}_Tooltip";
 

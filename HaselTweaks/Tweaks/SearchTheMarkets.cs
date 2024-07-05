@@ -3,23 +3,23 @@ using Dalamud.Game.Text;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Services;
-using HaselCommon.Sheets;
-using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
+using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
 public unsafe class SearchTheMarkets(
     IContextMenu ContextMenu,
     TextService TextService,
-    ExcelService ExcelService) : ITweak
+    ExcelService ExcelService,
+    ItemService ItemService) : ITweak
 {
     public string InternalName => nameof(SearchTheMarkets);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private MenuItem? MenuItem;
-    private ExtendedItem? Item;
+    private Item? Item;
 
     public void OnInitialize() { }
 
@@ -34,7 +34,7 @@ public unsafe class SearchTheMarkets(
             {
                 if (Item != null)
                 {
-                    ItemSearchUtils.Search(Item);
+                    ItemService.Search(Item);
                     Item = null;
                 }
             }
@@ -86,9 +86,9 @@ public unsafe class SearchTheMarkets(
         if (itemId == 0)
             return;
 
-        Item = ExcelService.GetRow<ExtendedItem>(itemId);
+        Item = ExcelService.GetRow<Item>(itemId);
 
-        if (Item == null || !Item.CanSearchForItem)
+        if (Item == null || !ItemService.CanSearchForItem(Item))
             return;
 
         args.AddMenuItem(MenuItem);

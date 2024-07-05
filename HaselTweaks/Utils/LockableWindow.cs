@@ -1,7 +1,6 @@
 using Dalamud.Interface;
 using HaselCommon.Services;
 using HaselCommon.Windowing;
-using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
 using ImGuiNET;
 
@@ -14,7 +13,7 @@ public abstract class LockableWindow : SimpleWindow
 
     public readonly PluginConfig PluginConfig;
 
-    public LockableWindow(IWindowManager windowManager, PluginConfig pluginConfig, TextService textService, string name)
+    public LockableWindow(WindowManager windowManager, PluginConfig pluginConfig, TextService textService, string name)
         : base(windowManager, name)
     {
         PluginConfig = pluginConfig;

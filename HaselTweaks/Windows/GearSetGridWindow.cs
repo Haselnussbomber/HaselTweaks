@@ -9,9 +9,8 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
-using HaselCommon.Sheets;
 using HaselCommon.Utils;
-using HaselCommon.Windowing.Interfaces;
+using HaselCommon.Windowing;
 using HaselTweaks.Config;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
@@ -38,7 +37,7 @@ public unsafe class GearSetGridWindow : LockableWindow
     public GearSetGridConfiguration Config => PluginConfig.Tweaks.GearSetGrid;
 
     public GearSetGridWindow(
-        IWindowManager windowManager,
+        WindowManager windowManager,
         PluginConfig pluginConfig,
         IClientState clientState,
         TextureService textureService,
@@ -196,7 +195,7 @@ public unsafe class GearSetGridWindow : LockableWindow
                     continue;
                 }
 
-                var item = ExcelService.GetRow<ExtendedItem>(itemId);
+                var item = ExcelService.GetRow<Item>(itemId);
                 if (item == null)
                     continue;
 
@@ -233,7 +232,7 @@ public unsafe class GearSetGridWindow : LockableWindow
         return list;
     }
 
-    public void DrawItemIcon(GearsetEntry* gearset, uint slotIndex, GearsetItem* slot, ExtendedItem item, string key)
+    public void DrawItemIcon(GearsetEntry* gearset, uint slotIndex, GearsetItem* slot, Item item, string key)
     {
         var popupKey = $"##ItemContextMenu_{key}_{item.RowId}_Tooltip";
 
