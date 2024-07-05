@@ -75,7 +75,7 @@ public unsafe class BiggerItemDyeingPreview(IAddonLifecycle AddonLifecycle) : IT
         SetWindowSize(windowNode, 760, null);
         textBackgroundNode->SetWidth(leftDyeBox->Width);
 
-        var scale = 0.57f;
+        var scale = 0.56f;
         var width = (int)(576 * scale);
         var height = (int)(960 * scale);
 
@@ -86,10 +86,10 @@ public unsafe class BiggerItemDyeingPreview(IAddonLifecycle AddonLifecycle) : IT
         SetSize(previewParent, width, height);
 
         // border
-        SetSize(border, width, height);
+        SetSize(border, width + 8, height + 10);
 
         // image
-        SetSize((AtkResNode*)image, width - 6, height - 10);
+        SetSize((AtkResNode*)image, width, height);
 
         // image sharpness
         image->Flags = 128;
@@ -98,7 +98,7 @@ public unsafe class BiggerItemDyeingPreview(IAddonLifecycle AddonLifecycle) : IT
         {
             var checkbox = addon->GetNodeById(72 + i);
             if (checkbox != null)
-                checkbox->SetPositionFloat(checkbox->X + 62, checkbox->Y + 224);
+                checkbox->SetPositionFloat(checkbox->X + 64, checkbox->Y + 224);
         }
     }
 }
