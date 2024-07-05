@@ -10,7 +10,6 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Utils;
-using HaselCommon.Windowing;
 using HaselTweaks.Config;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
@@ -32,6 +31,7 @@ public unsafe class GearSetGridWindow : LockableWindow
     private readonly ExcelService ExcelService;
     private readonly TextService TextService;
     private readonly ImGuiContextMenuService ImGuiContextMenuService;
+    private readonly ItemService ItemService;
     private bool _resetScrollPosition;
 
     public GearSetGridConfiguration Config => PluginConfig.Tweaks.GearSetGrid;
@@ -43,7 +43,8 @@ public unsafe class GearSetGridWindow : LockableWindow
         TextureService textureService,
         ExcelService excelService,
         TextService textService,
-        ImGuiContextMenuService imGuiContextMenuService)
+        ImGuiContextMenuService imGuiContextMenuService,
+        ItemService itemService)
         : base(windowManager, pluginConfig, textService, textService.Translate("GearSetGridWindow.Title"))
     {
         ClientState = clientState;
@@ -51,6 +52,8 @@ public unsafe class GearSetGridWindow : LockableWindow
         ExcelService = excelService;
         TextService = textService;
         ImGuiContextMenuService = imGuiContextMenuService;
+        ItemService = itemService;
+
         DisableWindowSounds = Config.AutoOpenWithGearSetList;
 
         Flags |= ImGuiWindowFlags.NoCollapse;
@@ -205,7 +208,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
                 var itemLevelText = $"{item.LevelItem.Row}";
                 ImGuiUtils.PushCursorX(IconSize.X * ImGuiHelpers.GlobalScale / 2f - ImGui.CalcTextSize(itemLevelText).X / 2f);
-                ImGuiUtils.TextUnformattedColored(Colors.GetItemLevelColor(gearset->ClassJob, item, Colors.Red, Colors.Yellow, Colors.Green), itemLevelText);
+                ImGuiUtils.TextUnformattedColored(ItemService.GetItemLevelColor(gearset->ClassJob, item, Colors.Red, Colors.Yellow, Colors.Green), itemLevelText);
 
                 ImGuiUtils.PushCursorY(2f * ImGuiHelpers.GlobalScale);
             }
@@ -278,7 +281,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
         using var _ = ImRaii.Tooltip();
 
-        ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(item.Rarity), TextService.GetItemName(item.RowId));
+        ImGuiUtils.TextUnformattedColored(ItemService.GetItemRarityColor(item.Rarity), TextService.GetItemName(item.RowId));
 
         var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         if (holdingShift)
@@ -301,7 +304,7 @@ public unsafe class GearSetGridWindow : LockableWindow
             TextService.Draw("GearSetGridWindow.ItemTooltip.LabelGlamour");
             var glamourItem = ExcelService.GetRow<Item>(slot->GlamourId)!;
             ImGuiUtils.SameLineSpace();
-            ImGuiUtils.TextUnformattedColored(Colors.GetItemRarityColor(glamourItem.Rarity), TextService.GetItemName(slot->GlamourId));
+            ImGuiUtils.TextUnformattedColored(ItemService.GetItemRarityColor(glamourItem.Rarity), TextService.GetItemName(slot->GlamourId));
 
             if (holdingShift)
             {

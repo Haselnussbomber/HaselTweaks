@@ -10,7 +10,7 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using FFXIVClientStructs.Interop;
-using HaselCommon.Utils;
+using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
@@ -25,7 +25,8 @@ public unsafe partial class InventoryHighlight(
     IGameConfig GameConfig,
     IGameGui GameGui,
     IKeyState KeyState,
-    IAddonLifecycle AddonLifecycle)
+    IAddonLifecycle AddonLifecycle,
+    ItemService ItemService)
     : IConfigurableTweak
 {
     public string InternalName => nameof(InventoryHighlight);
@@ -475,7 +476,7 @@ public unsafe partial class InventoryHighlight(
 
     private uint NormalizeItemId(uint itemId)
     {
-        if (Config.IgnoreQuality && ItemUtils.IsHighQuality(itemId))
+        if (Config.IgnoreQuality && ItemService.IsHighQuality(itemId))
             itemId -= 1_000_000;
 
         return itemId;
