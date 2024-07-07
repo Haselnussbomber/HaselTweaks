@@ -1338,7 +1338,7 @@
     "zh": "预定消耗的材料"
   },
   "MaterialAllocation.Tweak.Description": {
-    "en": "Saves the last selected tab in Islekeep's Index \"Material Allocation\" window the between game sessions.",
+    "en": "Saves the last selected tab in Islekeep's Index \"Material Allocation\" window between game sessions.",
     "de": "Speichert den zuletzt ausgewählten Tab des Inselführers INVENTUR-Fensters zwischen Spielsitzungen."
   },
 

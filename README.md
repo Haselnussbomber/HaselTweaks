@@ -218,7 +218,7 @@ Automatically try on equipment when you hover over an item in the market board s
 
 ### Material Allocation
 
-Saves the last selected tab in Islekeep's Index "Material Allocation" window the between game sessions.
+Saves the last selected tab in Islekeep's Index "Material Allocation" window between game sessions.
 
 ### Minimap Adjustments
 

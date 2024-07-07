@@ -263,7 +263,6 @@ public unsafe partial class CharacterClassSwitcher(
         return ProcessEvents(node->AtkComponentBase.OwnerNode, imageNode, eventType);
     }
 
-
     private void PvPCharacterOnSetup(AddonEvent type, AddonArgs args)
     {
         var addon = (AddonPvPCharacter*)args.Addon;
