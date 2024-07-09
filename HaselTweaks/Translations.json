@@ -1448,6 +1448,10 @@
     "de": "Zeigt eine Benachrichtigung im Chat an, die angeklickt werden kann, um den Portrait-Editor zu öffnen.",
     "zh": "在消息窗口中发从一条可以点击以打开肖像编辑器的通知。"
   },
+  "PortraitHelper.Config.IgnoreDoHDoL.Label": {
+    "en": "Do not notify for DoH/DoL jobs",
+    "de": "Nicht bei Handwerker oder Sammler benachrichtigen"
+  },
   "PortraitHelper.Config.ReequipGearsetOnUpdate.Label": {
     "en": "Automatically re-equip gear set to re-apply glamour plate",
     "de": "Automatisch das Set neu ausrüsten, um die Projektionsplatte anzuwenden",

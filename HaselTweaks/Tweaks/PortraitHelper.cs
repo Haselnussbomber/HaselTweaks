@@ -18,6 +18,7 @@ using HaselTweaks.Interfaces;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows.PortraitHelperWindows;
+using Lumina.Excel.GeneratedSheets;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
@@ -26,6 +27,7 @@ public unsafe partial class PortraitHelper(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,
     TextService TextService,
+    ExcelService ExcelService,
     ILogger<PortraitHelper> Logger,
     IGameInteropProvider GameInteropProvider,
     IDalamudPluginInterface PluginInterface,
@@ -189,6 +191,9 @@ public unsafe partial class PortraitHelper(
 
         var gearset = raptureGearsetModule->GetGearset(gearsetId);
         if (gearset == null)
+            return;
+
+        if (Config.IgnoreDoHDoL && ExcelService.GetRow<ClassJob>(gearset->ClassJob)?.DohDolJobIndex != -1)
             return;
 
         var bannerIndex = gearset->BannerIndex;

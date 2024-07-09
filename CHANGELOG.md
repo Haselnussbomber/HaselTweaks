@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Portrait Helper
+
+- **Added:** An option to ignore notifications for DoH/DoL jobs.
+
 ## [25.0.0] (2024-07-05)
 
 ### New Tweak: Bigger Item Dyeing Preview

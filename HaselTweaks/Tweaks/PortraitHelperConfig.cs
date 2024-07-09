@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Numerics;
+using Dalamud.Interface.Utility.Raii;
 using HaselTweaks.Records.PortraitHelper;
 
 namespace HaselTweaks.Tweaks;
@@ -18,6 +19,7 @@ public class PortraitHelperConfiguration
     public bool NotifyGearChecksumMismatch = true;
     public bool ReequipGearsetOnUpdate = false;
     public bool AutoUpdatePotraitOnGearUpdate = false;
+    public bool IgnoreDoHDoL = false;
 }
 
 public unsafe partial class PortraitHelper
@@ -34,7 +36,11 @@ public unsafe partial class PortraitHelper
 
         ConfigGui.DrawConfigurationHeader();
         ConfigGui.DrawBool("EmbedPresetStringInThumbnails", ref Config.EmbedPresetStringInThumbnails);
-        ConfigGui.DrawBool("NotifyGearChecksumMismatch", ref Config.NotifyGearChecksumMismatch);
+        ConfigGui.DrawBool("NotifyGearChecksumMismatch", ref Config.NotifyGearChecksumMismatch, drawAfterDescription: () =>
+        {
+            using var disabled = ImRaii.Disabled(!Config.NotifyGearChecksumMismatch);
+            ConfigGui.DrawBool("IgnoreDoHDoL", ref Config.IgnoreDoHDoL);
+        });
         ConfigGui.DrawBool("ReequipGearsetOnUpdate", ref Config.ReequipGearsetOnUpdate, drawAfterLabel: ConfigGui.DrawNetworkWarning);
         ConfigGui.DrawBool("AutoUpdatePotraitOnGearUpdate", ref Config.AutoUpdatePotraitOnGearUpdate, drawAfterLabel: ConfigGui.DrawNetworkWarning);
     }
