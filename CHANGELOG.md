@@ -1,5 +1,11 @@
 # Changelog
 
+## [25.1.1] (2024-07-12)
+
+### Portrait Helper
+
+- **Changed:** Gear checksum is no longer checked during duties, where you can't update your portrait anyways. Instead, it will check your gear once you have left the duty.
+
 ## [25.1.0] (2024-07-09)
 
 ### Portrait Helper
@@ -1570,6 +1576,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[25.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.1.0...v25.1.1
 [25.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.0.0...v25.1.0
 [25.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.1.3...v25.0.0
 [24.1.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.1.2...v24.1.3

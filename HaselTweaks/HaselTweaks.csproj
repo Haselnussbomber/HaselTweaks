@@ -35,7 +35,7 @@
   </Target>
   
   <PropertyGroup>
-    <Version>25.1.0</Version>
+    <Version>25.1.1</Version>
     <OutputPath>..\bin\</OutputPath>
     <DebugType>full</DebugType>
   </PropertyGroup>
