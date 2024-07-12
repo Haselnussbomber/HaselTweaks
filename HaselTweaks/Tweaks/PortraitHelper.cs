@@ -1,4 +1,5 @@
 using System.Threading;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Hooking;
@@ -31,6 +32,7 @@ public unsafe partial class PortraitHelper(
     ILogger<PortraitHelper> Logger,
     IGameInteropProvider GameInteropProvider,
     IDalamudPluginInterface PluginInterface,
+    ICondition Condition,
     IFramework Framework,
     IClientState ClientState,
     IChatGui ChatGui,
@@ -52,6 +54,7 @@ public unsafe partial class PortraitHelper(
     private Hook<UIClipboard.Delegates.OnClipboardDataChanged>? OnClipboardDataChangedHook;
     private Hook<RaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
     private Hook<UIModule.Delegates.HandlePacket>? HandleUIModulePacketHook;
+    private bool WasBoundByDuty;
 
     public void OnInitialize()
     {
@@ -77,6 +80,7 @@ public unsafe partial class PortraitHelper(
 
         AddonObserver.AddonOpen += OnAddonOpen;
         AddonObserver.AddonClose += OnAddonClose;
+        ClientState.TerritoryChanged += OnTerritoryChanged;
 
         OnClipboardDataChangedHook?.Enable();
         UpdateGearsetHook?.Enable();
@@ -87,6 +91,7 @@ public unsafe partial class PortraitHelper(
     {
         AddonObserver.AddonOpen -= OnAddonOpen;
         AddonObserver.AddonClose -= OnAddonClose;
+        ClientState.TerritoryChanged -= OnTerritoryChanged;
 
         PluginInterface.RemoveChatLinkHandler(1000);
 
@@ -137,6 +142,22 @@ public unsafe partial class PortraitHelper(
         MenuBar.Close();
     }
 
+    private void OnTerritoryChanged(ushort territoryTypeId)
+    {
+        if (WasBoundByDuty && !Condition[ConditionFlag.BoundByDuty])
+        {
+            WasBoundByDuty = false;
+
+            MismatchCheckCTS?.Cancel();
+            MismatchCheckCTS = new();
+
+            Framework.RunOnTick(
+                () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex),
+                CheckDelay,
+                cancellationToken: MismatchCheckCTS.Token);
+        }
+    }
+
     private void OnClipboardDataChangedDetour(UIClipboard* uiClipboard)
     {
         OnClipboardDataChangedHook!.Original(uiClipboard);
@@ -184,6 +205,25 @@ public unsafe partial class PortraitHelper(
 
     private void CheckForGearChecksumMismatch(int gearsetId, bool isJobChange = false)
     {
+        if (Condition.Any(ConditionFlag.BoundByDuty, ConditionFlag.BoundByDuty56, ConditionFlag.BoundByDuty95)) // delay when bound by duty
+        {
+            WasBoundByDuty = true;
+            return;
+        }
+
+        if (!Condition.OnlyAny(ConditionFlag.NormalConditions)) // requeue when any other condition is active
+        {
+            MismatchCheckCTS?.Cancel();
+            MismatchCheckCTS = new();
+
+            Framework.RunOnTick(
+                () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex),
+                CheckDelay,
+                cancellationToken: MismatchCheckCTS.Token);
+
+            return;
+        }
+
         var raptureGearsetModule = RaptureGearsetModule.Instance();
 
         if (!raptureGearsetModule->IsValidGearset(gearsetId))
