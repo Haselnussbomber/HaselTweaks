@@ -34,14 +34,12 @@ public unsafe partial class MinimapAdjustments(
     public string InternalName => nameof(MinimapAdjustments);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private bool? HoverState;
     private float TargetAlpha;
 
     public void OnInitialize() { }
 
     public void OnEnable()
     {
-        HoverState = null;
         TargetAlpha = Config.DefaultOpacity;
 
         Framework.Update += OnFrameworkUpdate;
@@ -89,10 +87,6 @@ public unsafe partial class MinimapAdjustments(
         UpdateAlpha(naviMap);
 
         var isHovered = RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingAddon == naviMap;
-        if (HoverState == isHovered)
-            return;
-
-        HoverState = isHovered;
         TargetAlpha = isHovered ? Config.HoverOpacity : Config.DefaultOpacity;
 
         UpdateVisibility(naviMap, isHovered);
