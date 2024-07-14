@@ -118,7 +118,7 @@ public unsafe partial class PortraitHelper(
         if (!raptureGearsetModule->IsValidGearset(gearsetId))
             return;
 
-        AgentBannerEditor.Instance()->OpenForGearset(gearsetId);
+        ((HaselAgentGearSet*)AgentGearSet.Instance())->OpenBannerEditorForGearset(gearsetId);
     }
 
     private void OnAddonOpen(string addonName)
