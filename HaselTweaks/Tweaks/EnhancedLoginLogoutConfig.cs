@@ -57,10 +57,10 @@ public unsafe partial class EnhancedLoginLogout
                 break;
 
             case nameof(Config.EnableCharaSelectEmote):
-                if (!Config.EnableCharaSelectEmote && _currentEntry != null && _currentEntry.Character != null)
+                if (!Config.EnableCharaSelectEmote && CurrentEntry != null && CurrentEntry.Character != null)
                 {
                     ResetEmoteMode();
-                    _currentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(3);
+                    CurrentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(3);
                 }
                 break;
         }

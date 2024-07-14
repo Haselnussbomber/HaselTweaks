@@ -21,9 +21,9 @@ public unsafe partial class ForcedCutsceneMusic(
     public string InternalName => nameof(ForcedCutsceneMusic);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private bool _wasBgmMuted;
+    private bool WasBgmMuted;
 
-    private delegate void CutSceneControllerDtorDelegate(CutSceneController* self, bool free);
+    private delegate void CutSceneControllerDtorDelegate(CutSceneController* self, byte freeFlags);
 
     private Hook<ScheduleManagement.Delegates.CreateCutSceneController>? CreateCutSceneControllerHook;
     private Hook<CutSceneControllerDtorDelegate>? CutSceneControllerDtorHook;
@@ -70,15 +70,23 @@ public unsafe partial class ForcedCutsceneMusic(
         set => GameConfig.System.Set("IsSndBgm", value);
     }
 
+    private bool ShouldHandleCutScene(uint id)
+    {
+        return id != 0; // ignore title screen cutscene
+    }
+
     private CutSceneController* CreateCutSceneControllerDetour(ScheduleManagement* self, byte* path, uint id, byte a4)
     {
         var ret = CreateCutSceneControllerHook!.Original(self, path, id, a4);
 
         Logger.LogInformation("Cutscene {id} started (Controller @ {address:X})", id, (nint)ret);
 
+        if (!ShouldHandleCutScene(id))
+            return ret;
+
         var isBgmMuted = IsBgmMuted;
 
-        _wasBgmMuted = isBgmMuted;
+        WasBgmMuted = isBgmMuted;
 
         if (isBgmMuted)
             IsBgmMuted = false;
@@ -86,13 +94,16 @@ public unsafe partial class ForcedCutsceneMusic(
         return ret;
     }
 
-    private void CutSceneControllerDtorDetour(CutSceneController* self, bool free)
+    private void CutSceneControllerDtorDetour(CutSceneController* self, byte freeFlags)
     {
         Logger.LogInformation("Cutscene {id} ended", self->CutsceneId);
 
-        CutSceneControllerDtorHook!.Original(self, free);
+        CutSceneControllerDtorHook!.Original(self, freeFlags);
 
-        if (_wasBgmMuted && Config.Restore)
+        if (!ShouldHandleCutScene(self->CutsceneId))
+            return;
+
+        if (WasBgmMuted && Config.Restore)
             IsBgmMuted = true;
     }
 }

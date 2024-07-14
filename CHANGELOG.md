@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Login/Logout
+
+- **Fixed:** Pet glamour settings were not updated when logging in.
+
+### Forced Cutscene Music
+
+- **Fixed:** No longer applies to the title screen cutscene.
+
+### Minimap Adjustments
+
+- **Fixed:** Nodes that should have been hidden were visible.
+
 ## [25.1.1] (2024-07-12)
 
 ### Portrait Helper

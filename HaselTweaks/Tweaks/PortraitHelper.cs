@@ -37,6 +37,7 @@ public unsafe partial class PortraitHelper(
     IClientState ClientState,
     IChatGui ChatGui,
     AddonObserver AddonObserver,
+    PlayerService GameEventService,
     MenuBar MenuBar)
     : IConfigurableTweak
 {
@@ -53,7 +54,6 @@ public unsafe partial class PortraitHelper(
 
     private Hook<UIClipboard.Delegates.OnClipboardDataChanged>? OnClipboardDataChangedHook;
     private Hook<RaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
-    private Hook<UIModule.Delegates.HandlePacket>? HandleUIModulePacketHook;
     private bool WasBoundByDuty;
 
     public void OnInitialize()
@@ -65,10 +65,6 @@ public unsafe partial class PortraitHelper(
         UpdateGearsetHook = GameInteropProvider.HookFromAddress<RaptureGearsetModule.Delegates.UpdateGearset>(
             RaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
             UpdateGearsetDetour);
-
-        HandleUIModulePacketHook = GameInteropProvider.HookFromAddress<UIModule.Delegates.HandlePacket>(
-            UIModule.StaticVirtualTablePointer->HandlePacket,
-            HandleUIModulePacketDetour);
     }
 
     public void OnEnable()
@@ -81,10 +77,10 @@ public unsafe partial class PortraitHelper(
         AddonObserver.AddonOpen += OnAddonOpen;
         AddonObserver.AddonClose += OnAddonClose;
         ClientState.TerritoryChanged += OnTerritoryChanged;
+        GameEventService.ClassJobChange += OnClassJobChange;
 
         OnClipboardDataChangedHook?.Enable();
         UpdateGearsetHook?.Enable();
-        HandleUIModulePacketHook?.Enable();
     }
 
     public void OnDisable()
@@ -92,6 +88,7 @@ public unsafe partial class PortraitHelper(
         AddonObserver.AddonOpen -= OnAddonOpen;
         AddonObserver.AddonClose -= OnAddonClose;
         ClientState.TerritoryChanged -= OnTerritoryChanged;
+        GameEventService.ClassJobChange -= OnClassJobChange;
 
         PluginInterface.RemoveChatLinkHandler(1000);
 
@@ -99,7 +96,6 @@ public unsafe partial class PortraitHelper(
 
         OnClipboardDataChangedHook?.Disable();
         UpdateGearsetHook?.Disable();
-        HandleUIModulePacketHook?.Disable();
     }
 
     void IDisposable.Dispose()
@@ -110,7 +106,6 @@ public unsafe partial class PortraitHelper(
         OnDisable();
         OnClipboardDataChangedHook?.Dispose();
         UpdateGearsetHook?.Dispose();
-        HandleUIModulePacketHook?.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);
@@ -187,13 +182,8 @@ public unsafe partial class PortraitHelper(
             cancellationToken: MismatchCheckCTS.Token);
     }
 
-    private void HandleUIModulePacketDetour(UIModule* uiModule, UIModulePacketType type, uint uintParam, void* packet)
+    private void OnClassJobChange(uint classJobId)
     {
-        HandleUIModulePacketHook!.Original(uiModule, type, uintParam, packet);
-
-        if (type != UIModulePacketType.ClassJobChange || !ClientState.IsLoggedIn)
-            return;
-
         MismatchCheckCTS?.Cancel();
         MismatchCheckCTS = new();
 

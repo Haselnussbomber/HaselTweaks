@@ -23,7 +23,8 @@ public unsafe partial class AutoSorter(
     ExcelService ExcelService,
     IClientState ClientState,
     IFramework Framework,
-    AddonObserver AddonObserver)
+    AddonObserver AddonObserver,
+    PlayerService GameEventService)
     : IConfigurableTweak
 {
     public string InternalName => nameof(AutoSorter);
@@ -125,33 +126,34 @@ public unsafe partial class AutoSorter(
         return str;
     }
 
-    private readonly Queue<IGrouping<string, AutoSorterConfiguration.SortingRule>> _queue = new();
-    private bool _isBusy = false;
-    private byte _lastClassJobId = 0;
+    private readonly Queue<IGrouping<string, AutoSorterConfiguration.SortingRule>> Queue = new();
+    private bool IsBusy = false;
 
-    private static bool IsRetainerInventoryOpen => IsAddonOpen("InventoryRetainer") || IsAddonOpen("InventoryRetainerLarge");
-    private static bool IsInventoryBuddyOpen => IsAddonOpen("InventoryBuddy");
+    private bool IsRetainerInventoryOpen => AddonObserver.IsAddonVisible("InventoryRetainer") || AddonObserver.IsAddonVisible("InventoryRetainerLarge");
+    private bool IsInventoryBuddyOpen => AddonObserver.IsAddonVisible("InventoryBuddy");
 
     public void OnInitialize() { }
 
     public void OnEnable()
     {
-        _queue.Clear();
+        Queue.Clear();
 
         ClientState.Login += OnLogin;
         ClientState.Logout += OnLogout;
         Framework.Update += OnFrameworkUpdate;
         AddonObserver.AddonOpen += OnAddonOpen;
+        GameEventService.ClassJobChange += OnClassJobChange;
     }
 
     public void OnDisable()
     {
-        _queue.Clear();
-
         ClientState.Login -= OnLogin;
         ClientState.Logout -= OnLogout;
         Framework.Update -= OnFrameworkUpdate;
         AddonObserver.AddonOpen -= OnAddonOpen;
+        GameEventService.ClassJobChange -= OnClassJobChange;
+
+        Queue.Clear();
     }
 
     void IDisposable.Dispose()
@@ -167,36 +169,12 @@ public unsafe partial class AutoSorter(
 
     private void OnLogin()
     {
-        _lastClassJobId = (byte)(ClientState.LocalPlayer?.ClassJob.Id ?? 0);
-        _queue.Clear();
+        Queue.Clear();
     }
 
     private void OnLogout()
     {
-        _lastClassJobId = 0;
-        _queue.Clear();
-    }
-
-    private void OnFrameworkUpdate(IFramework framework)
-    {
-        if (!ClientState.IsLoggedIn)
-            return;
-
-        if (Config.SortArmouryOnJobChange)
-        {
-            var classJobId = PlayerState.Instance()->CurrentClassJobId;
-            if (_lastClassJobId != classJobId)
-            {
-                _lastClassJobId = classJobId;
-
-                if (IsAddonOpen("ArmouryBoard"))
-                {
-                    OnOpenArmoury();
-                }
-            }
-        }
-
-        ProcessQueue();
+        Queue.Clear();
     }
 
     private void OnAddonOpen(string addonName)
@@ -221,6 +199,14 @@ public unsafe partial class AutoSorter(
         }
     }
 
+    private void OnClassJobChange(uint classJobId)
+    {
+        if (Config.SortArmouryOnJobChange && AddonObserver.IsAddonVisible("ArmouryBoard"))
+        {
+            OnOpenArmoury();
+        }
+    }
+
     private void OnOpenArmoury()
     {
         var groups = Config.Settings
@@ -229,7 +215,7 @@ public unsafe partial class AutoSorter(
 
         foreach (var group in groups)
         {
-            _queue.Enqueue(group);
+            Queue.Enqueue(group);
         }
     }
 
@@ -244,7 +230,7 @@ public unsafe partial class AutoSorter(
 
         foreach (var group in groups)
         {
-            _queue.Enqueue(group);
+            Queue.Enqueue(group);
         }
     }
 
@@ -256,7 +242,7 @@ public unsafe partial class AutoSorter(
 
         foreach (var group in groups)
         {
-            _queue.Enqueue(group);
+            Queue.Enqueue(group);
         }
     }
 
@@ -268,16 +254,16 @@ public unsafe partial class AutoSorter(
 
         foreach (var group in groups)
         {
-            _queue.Enqueue(group);
+            Queue.Enqueue(group);
         }
     }
 
-    private void ProcessQueue()
+    private void OnFrameworkUpdate(IFramework framework)
     {
-        if (_isBusy || _queue.Count == 0)
+        if (!ClientState.IsLoggedIn || IsBusy || Queue.Count == 0)
             return;
 
-        var nextGroup = _queue.Peek();
+        var nextGroup = Queue.Peek();
         if (nextGroup == null)
             return;
 
@@ -305,11 +291,11 @@ public unsafe partial class AutoSorter(
             }
         }
 
-        _isBusy = true;
+        IsBusy = true;
 
         try
         {
-            var group = _queue.Dequeue();
+            var group = Queue.Dequeue();
 
             if (!group.Any())
                 return;
@@ -401,7 +387,7 @@ public unsafe partial class AutoSorter(
         }
         finally
         {
-            _isBusy = false;
+            IsBusy = false;
         }
     }
 }

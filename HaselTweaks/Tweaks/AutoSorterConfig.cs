@@ -210,7 +210,7 @@ public partial class AutoSorter
 
             if (Status == TweakStatus.Enabled)
             {
-                if (_isBusy || _queue.Count != 0)
+                if (IsBusy || Queue.Count != 0)
                 {
                     ImGui.SameLine();
                     ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, TextService.Translate("AutoSorter.SortingInProgress"), disabled: true);
@@ -284,7 +284,7 @@ public partial class AutoSorter
         {
             ImGui.SameLine();
 
-            if (!_isBusy && _queue.Count == 0)
+            if (!IsBusy && Queue.Count == 0)
             {
                 if (ImGui.Button(TextService.Translate("AutoSorter.Config.RunAllButton.Label")))
                 {
@@ -294,7 +294,7 @@ public partial class AutoSorter
 
                     foreach (var group in groups)
                     {
-                        _queue.Enqueue(group);
+                        Queue.Enqueue(group);
                     }
                 }
             }
@@ -337,7 +337,7 @@ public partial class AutoSorter
         if (entryToExecute != -1)
         {
             var entry = Config.Settings[entryToExecute];
-            _queue.Enqueue(new[] { entry }.GroupBy(entry => entry.Category!).First());
+            Queue.Enqueue(new[] { entry }.GroupBy(entry => entry.Category!).First());
         }
     }
 
