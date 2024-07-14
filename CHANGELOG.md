@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Search the markets
+
+- **Added:** Support for Gathering Log window.
+
 ## [25.1.2] (2024-07-14)
 
 ### Enhanced Login/Logout

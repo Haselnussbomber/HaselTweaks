@@ -5,6 +5,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Services;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
+using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
@@ -75,6 +76,7 @@ public unsafe class SearchTheMarkets(
         var itemId = args.AddonName switch
         {
             _ when args.Target is MenuTargetInventory inv => inv.TargetItem?.ItemId ?? 0,
+            "GatheringNote" => HaselAgentGatheringNote.Instance()->ContextMenuItemId,
             "RecipeNote" => AgentRecipeNote.Instance()->ContextMenuResultItemId,
             "RecipeTree" or "RecipeMaterialList" or "RecipeProductList" => AgentRecipeItemContext.Instance()->ResultItemId, // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
             "ChatLog" => AgentChatLog.Instance()->ContextItemId,
