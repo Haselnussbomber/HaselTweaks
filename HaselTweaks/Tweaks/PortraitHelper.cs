@@ -201,6 +201,19 @@ public unsafe partial class PortraitHelper(
             return;
         }
 
+        if (Condition[ConditionFlag.BetweenAreas]) // requeue when moving
+        {
+            MismatchCheckCTS?.Cancel();
+            MismatchCheckCTS = new();
+
+            Framework.RunOnTick(
+                () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex),
+                CheckDelay,
+                cancellationToken: MismatchCheckCTS.Token);
+
+            return;
+        }
+
         var raptureGearsetModule = RaptureGearsetModule.Instance();
 
         if (!raptureGearsetModule->IsValidGearset(gearsetId))
