@@ -236,7 +236,7 @@ public unsafe partial class EnhancedExpBar(
         var requiredExperience = ExcelService.GetRow<BuddyRank>(currentRank)!.ExpRequired;
 
         var xpText = requiredExperience == 0 ? "" : $"   {buddy.CurrentXP}/{requiredExperience}";
-        leftText->SetText($"{job}  {levelLabel} {level}{xpText}");
+        UpdateText(leftText, $"{job}  {levelLabel} {level}{xpText}");
 
         gaugeBar->SetGaugeRange(0); // rested experience bar
 
@@ -273,7 +273,7 @@ public unsafe partial class EnhancedExpBar(
         var star = currentRank > claimedRank ? '*' : ' ';
         var requiredExperience = ExcelService.GetRow<PvPSeriesLevel>(currentRank)!.Unknown0;
 
-        leftText->SetText($"{job}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
+        UpdateText(leftText, $"{job}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
 
         gaugeBar->SetGaugeRange(0); // rested experience bar
 
@@ -321,7 +321,7 @@ public unsafe partial class EnhancedExpBar(
             expStr = reqExpStr = "--";
         }
 
-        leftText->SetText($"{job}{levelLabel} {level}   {expStr}/{reqExpStr}");
+        UpdateText(leftText, $"{job}{levelLabel} {level}   {expStr}/{reqExpStr}");
 
         gaugeBar->SetGaugeRange(0); // rested experience bar
 
@@ -341,6 +341,13 @@ public unsafe partial class EnhancedExpBar(
         }
 
         _isUpdatePending = false;
+    }
+
+    private void UpdateText(AtkTextNode* textNode, string text)
+    {
+        var stringArray = AtkStage.Instance()->GetStringArrayData()[2];
+        stringArray->SetValue(69, text);
+        textNode->SetText(stringArray->StringArray[69]);
     }
 
     private void ResetColor(AtkNineGridNode* nineGridNode)

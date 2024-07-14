@@ -53,6 +53,8 @@ public unsafe partial class EnhancedMaterialList(
     private DateTime _timeOfRecipeTreeRefresh;
     private bool _handleRecipeResultItemContextMenu;
 
+    private Dictionary<uint, AtkValue>? NameCache;
+
     private Hook<AgentRecipeMaterialList.Delegates.ReceiveEvent>? AgentRecipeMaterialListReceiveEventHook;
     private Hook<AddonRecipeMaterialList.Delegates.SetupRow>? AddonRecipeMaterialListSetupRowHook;
     private Hook<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>? AddItemContextMenuEntriesHook;
@@ -75,6 +77,7 @@ public unsafe partial class EnhancedMaterialList(
     public void OnEnable()
     {
         AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList", RecipeMaterialList_PostReceiveEvent);
+        AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "RecipeMaterialList", RecipeMaterialList_PreFinalize);
         AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "RecipeTree", RecipeTree_PostReceiveEvent);
 
         Framework.Update += OnFrameworkUpdate;
@@ -90,6 +93,7 @@ public unsafe partial class EnhancedMaterialList(
     public void OnDisable()
     {
         AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList", RecipeMaterialList_PostReceiveEvent);
+        AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "RecipeMaterialList", RecipeMaterialList_PreFinalize);
         AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeTree", RecipeTree_PostReceiveEvent);
 
         Framework.Update -= OnFrameworkUpdate;
@@ -100,6 +104,11 @@ public unsafe partial class EnhancedMaterialList(
         AgentRecipeMaterialListReceiveEventHook?.Disable();
         AddonRecipeMaterialListSetupRowHook?.Disable();
         AddItemContextMenuEntriesHook?.Disable();
+
+        if (TryGetAddon<AtkUnitBase>("RecipeMaterialList", out var addon))
+            addon->Close(true);
+
+        CleanupAtkValues();
     }
 
     public void Dispose()
@@ -336,7 +345,11 @@ public unsafe partial class EnhancedMaterialList(
         if (placeName.Length > 23)
             placeName = placeName[..20] + "...";
 
-        nameNode->SetText(
+        NameCache ??= [];
+        if (!NameCache.TryGetValue(itemId, out var atkValue))
+            NameCache.Add(itemId, atkValue = new());
+
+        atkValue.SetManagedString(
             new SeStringBuilder()
             .Append(itemName)
             .BeginMacro(MacroCode.NewLine).EndMacro()
@@ -345,8 +358,26 @@ public unsafe partial class EnhancedMaterialList(
             .Append(placeName)
             .PopEdgeColorType()
             .PopColorType()
-            .ToArray()
-        );
+            .ToArray());
+
+        nameNode->SetText(atkValue.String);
+    }
+
+    private void RecipeMaterialList_PreFinalize(AddonEvent type, AddonArgs args)
+    {
+        CleanupAtkValues();
+    }
+
+    private void CleanupAtkValues()
+    {
+        if (NameCache != null)
+        {
+            Logger.LogDebug("Releasing {num} AtkValues", NameCache.Count);
+            foreach (var atkValue in NameCache.Values)
+                atkValue.Dtor();
+            NameCache.Clear();
+            NameCache = null;
+        }
     }
 
     private void AddItemContextMenuEntriesDetour(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
