@@ -23,7 +23,7 @@ public unsafe partial class ForcedCutsceneMusic(
 
     private bool WasBgmMuted;
 
-    private delegate void CutSceneControllerDtorDelegate(CutSceneController* self, byte freeFlags);
+    private delegate void CutSceneControllerDtorDelegate(FixedCutSceneController* self, byte freeFlags);
 
     private Hook<ScheduleManagement.Delegates.CreateCutSceneController>? CreateCutSceneControllerHook;
     private Hook<CutSceneControllerDtorDelegate>? CutSceneControllerDtorHook;
@@ -94,7 +94,7 @@ public unsafe partial class ForcedCutsceneMusic(
         return ret;
     }
 
-    private void CutSceneControllerDtorDetour(CutSceneController* self, byte freeFlags)
+    private void CutSceneControllerDtorDetour(FixedCutSceneController* self, byte freeFlags)
     {
         Logger.LogInformation("Cutscene {id} ended", self->CutsceneId);
 
@@ -105,5 +105,11 @@ public unsafe partial class ForcedCutsceneMusic(
 
         if (WasBgmMuted && Config.Restore)
             IsBgmMuted = true;
+    }
+
+    [StructLayout(LayoutKind.Explicit, Size = 0x210)]
+    public unsafe partial struct FixedCutSceneController
+    {
+        [FieldOffset(0x168)] public uint CutsceneId;
     }
 }
