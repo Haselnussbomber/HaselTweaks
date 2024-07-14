@@ -1,6 +1,11 @@
 # Changelog
 
-## [Unreleased]
+## [25.2.0] (2024-07-14)
+
+### Portrait Helper
+
+- **Fixed:** A bug involving the gearset index that occurs when assigning gearset ids manually.
+- **Fixed:** A check that blocked the gear mismatch check from occuring in any other condition than just stading around, like sitting, has been changed to checking if the player is not moving between areas.
 
 ### Search the markets
 
@@ -1601,6 +1606,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[25.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.1.2...v25.2.0
 [25.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.1.1...v25.1.2
 [25.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.1.0...v25.1.1
 [25.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.0.0...v25.1.0
