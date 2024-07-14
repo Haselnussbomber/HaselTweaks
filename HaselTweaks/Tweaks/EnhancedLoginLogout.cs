@@ -135,7 +135,7 @@ public unsafe partial class EnhancedLoginLogout(
 
     private void OnGameConfigChanged(object? sender, ConfigChangeEvent change)
     {
-        if (change.Option is UiConfigOption.PetMirageTypeCarbuncleSupport or UiConfigOption.PetMirageTypeFairy)
+        if (change.Option is UiConfigOption.PetMirageTypeCarbuncleSupport or UiConfigOption.PetMirageTypeFairy && AgentLobby.Instance()->IsLoggedIn)
             UpdatePetMirageSettings();
     }
 
