@@ -118,7 +118,7 @@ public unsafe partial class PortraitHelper(
         if (!raptureGearsetModule->IsValidGearset(gearsetId))
             return;
 
-        ((HaselAgentGearSet*)AgentGearSet.Instance())->OpenBannerEditorForGearset(gearsetId);
+        AgentGearSet.Instance()->OpenBannerEditorForGearset(gearsetId);
     }
 
     private void OnAddonOpen(string addonName)
@@ -139,7 +139,7 @@ public unsafe partial class PortraitHelper(
 
     private void OnTerritoryChanged(ushort territoryTypeId)
     {
-        if (WasBoundByDuty && !Condition[ConditionFlag.BoundByDuty])
+        if (WasBoundByDuty && !Condition[ConditionFlag.BoundByDuty56])
         {
             WasBoundByDuty = false;
 
@@ -195,22 +195,9 @@ public unsafe partial class PortraitHelper(
 
     private void CheckForGearChecksumMismatch(int gearsetId, bool isJobChange = false)
     {
-        if (Condition.Any(ConditionFlag.BoundByDuty, ConditionFlag.BoundByDuty56, ConditionFlag.BoundByDuty95)) // delay when bound by duty
+        if (Condition[ConditionFlag.BoundByDuty56]) // delay when bound by duty
         {
             WasBoundByDuty = true;
-            return;
-        }
-
-        if (!Condition.OnlyAny(ConditionFlag.NormalConditions)) // requeue when any other condition is active
-        {
-            MismatchCheckCTS?.Cancel();
-            MismatchCheckCTS = new();
-
-            Framework.RunOnTick(
-                () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex),
-                CheckDelay,
-                cancellationToken: MismatchCheckCTS.Token);
-
             return;
         }
 

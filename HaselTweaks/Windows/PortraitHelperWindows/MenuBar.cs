@@ -13,6 +13,7 @@ using HaselCommon.Windowing;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
+using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
@@ -117,12 +118,16 @@ public unsafe class MenuBar : SimpleWindow
         {
             PortraitName = TextService.GetAddonText(14761) ?? "Adventurer Plate";
         }
-        else if (agent->EditorState->GearsetId > -1)
+        else if (agent->EditorState->OpenerEnabledGearsetIndex > -1)
         {
-            var gearset = RaptureGearsetModule.Instance()->GetGearset(agent->EditorState->GearsetId);
-            if (gearset != null)
+            var actualGearsetId = RaptureGearsetModule.Instance()->ResolveIdFromEnabledIndex((byte)agent->EditorState->OpenerEnabledGearsetIndex);
+            if (actualGearsetId > -1)
             {
-                PortraitName = $"{TextService.GetAddonText(756) ?? "Gear Set"} #{gearset->Id + 1}: {gearset->NameString}";
+                var gearset = RaptureGearsetModule.Instance()->GetGearset(actualGearsetId);
+                if (gearset != null)
+                {
+                    PortraitName = $"{TextService.GetAddonText(756) ?? "Gear Set"} #{gearset->Id + 1}: {gearset->NameString}";
+                }
             }
         }
     }
