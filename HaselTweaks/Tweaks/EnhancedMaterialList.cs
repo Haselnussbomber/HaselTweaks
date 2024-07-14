@@ -7,8 +7,10 @@ using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using FFXIVClientStructs.Interop;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselTweaks.Config;
@@ -53,7 +55,7 @@ public unsafe partial class EnhancedMaterialList(
     private DateTime _timeOfRecipeTreeRefresh;
     private bool _handleRecipeResultItemContextMenu;
 
-    private Dictionary<uint, AtkValue>? NameCache;
+    private Dictionary<uint, Pointer<Utf8String>>? NameCache;
 
     private Hook<AgentRecipeMaterialList.Delegates.ReceiveEvent>? AgentRecipeMaterialListReceiveEventHook;
     private Hook<AddonRecipeMaterialList.Delegates.SetupRow>? AddonRecipeMaterialListSetupRowHook;
@@ -108,7 +110,7 @@ public unsafe partial class EnhancedMaterialList(
         if (TryGetAddon<AtkUnitBase>("RecipeMaterialList", out var addon))
             addon->Close(true);
 
-        CleanupAtkValues();
+        CleanupUtf8Strings();
     }
 
     public void Dispose()
@@ -346,35 +348,35 @@ public unsafe partial class EnhancedMaterialList(
             placeName = placeName[..20] + "...";
 
         NameCache ??= [];
-        if (!NameCache.TryGetValue(itemId, out var atkValue))
-            NameCache.Add(itemId, atkValue = new());
+        if (!NameCache.TryGetValue(itemId, out var ptr))
+            NameCache.Add(itemId, ptr = Utf8String.CreateEmpty());
 
-        atkValue.SetManagedString(
+        ptr.Value->SetString(
             new SeStringBuilder()
-            .Append(itemName)
-            .BeginMacro(MacroCode.NewLine).EndMacro()
-            .PushColorType((ushort)(isSameZone ? 570 : 4))
-            .PushEdgeColorType(550)
-            .Append(placeName)
-            .PopEdgeColorType()
-            .PopColorType()
-            .ToArray());
+                .Append(itemName)
+                .BeginMacro(MacroCode.NewLine).EndMacro()
+                .PushColorType((ushort)(isSameZone ? 570 : 4))
+                .PushEdgeColorType(550)
+                .Append(placeName)
+                .PopEdgeColorType()
+                .PopColorType()
+                .ToArray());
 
-        nameNode->SetText(atkValue.String);
+        nameNode->SetText(ptr.Value->StringPtr);
     }
 
     private void RecipeMaterialList_PreFinalize(AddonEvent type, AddonArgs args)
     {
-        CleanupAtkValues();
+        CleanupUtf8Strings();
     }
 
-    private void CleanupAtkValues()
+    private void CleanupUtf8Strings()
     {
         if (NameCache != null)
         {
-            Logger.LogDebug("Releasing {num} AtkValues", NameCache.Count);
-            foreach (var atkValue in NameCache.Values)
-                atkValue.Dtor();
+            Logger.LogDebug("Releasing {num} Utf8Strings", NameCache.Count);
+            foreach (var ptr in NameCache.Values)
+                ptr.Value->Dtor(true);
             NameCache.Clear();
             NameCache = null;
         }
