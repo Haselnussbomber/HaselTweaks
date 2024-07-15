@@ -726,8 +726,8 @@
     "zh": "正如其名，可配置的消息窗口时间戳格式。"
   },
   "CustomChatTimestamp.Config.Format.Label": {
-    "en": "Format:",
-    "zh": "格式："
+    "en": "Format",
+    "zh": "格式"
   },
   "CustomChatTimestamp.Config.Format.DateTimeLink.Pre": {
     "en": "This gets passed to C#'s",
@@ -789,7 +789,7 @@
   },
   "DTR.Config.FpsFormat.Description": {
     "en": "This is passed into C#s string.Format function with the FPS value as first argument.",
-    "de": "Dies wird an C#s string.Format Funktion übergeben mit dem FPS-Wert als erstem Argument."
+    "de": "Dies wird an die C#-Funktion string.Format übergeben mit dem FPS-Wert als erstem Argument."
   },
   "DTR.Config.Format.Example.Label": {
     "en": "Example with the current format:",

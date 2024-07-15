@@ -63,7 +63,6 @@ public partial class CustomChatTimestamp
             var formatted = DateTime.Now.ToString(Config.Format);
 
             ImGui.Spacing();
-            ImGui.Spacing();
             TextService.Draw("CustomChatTimestamp.Config.Format.Example.Label");
 
             if (!GameConfig.UiConfig.TryGet("ColorParty", out uint colorParty))
@@ -82,8 +81,7 @@ public partial class CustomChatTimestamp
 
             var size = new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetStyle().WindowPadding.Y * 2 + ImGui.GetTextLineHeight() + 2);
             using var child = ImRaii.Child("##FormatExample", size, true);
-            if (!child.Success)
-                return;
+            if (!child) return;
 
             ImGuiUtils.TextUnformattedColored(Colors.White, formatted);
             ImGui.SameLine(0, 0);

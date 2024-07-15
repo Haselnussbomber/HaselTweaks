@@ -1,3 +1,4 @@
+using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
@@ -57,20 +58,23 @@ public partial class DTR
 
         ConfigGui.DrawString("FpsFormat", ref Config.FpsFormat, "{0} fps");
 
-        using (ImGuiUtils.ConfigIndent())
+        ImGui.Spacing();
+        TextService.Draw("DTR.Config.Format.Example.Label");
+
+        var size = new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetStyle().WindowPadding.Y * 2 + ImGui.GetTextLineHeight() + 2);
+        using var child = ImRaii.Child("##FormatExample", size, true);
+        if (!child) return;
+
+        try
         {
-            TextService.Draw("DTR.Config.Format.Example.Label");
             unsafe
             {
-                try
-                {
-                    ImGui.TextUnformatted(string.Format(Config.FpsFormat, (int)(GameFramework.Instance()->FrameRate + 0.5f)));
-                }
-                catch (FormatException)
-                {
-                    TextService.Draw(Colors.Red, "DTR.Config.FpsFormat.Invalid");
-                }
+                ImGui.TextUnformatted(string.Format(Config.FpsFormat, (int)(GameFramework.Instance()->FrameRate + 0.5f)));
             }
+        }
+        catch (FormatException)
+        {
+            TextService.Draw(Colors.Red, "DTR.Config.FpsFormat.Invalid");
         }
     }
 }
