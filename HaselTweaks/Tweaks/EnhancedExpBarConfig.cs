@@ -1,5 +1,4 @@
-using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
 namespace HaselTweaks.Tweaks;
 
@@ -30,16 +29,7 @@ public unsafe partial class EnhancedExpBar
 
     public void OnConfigChange(string fieldName)
     {
-        if (TryGetAddon<AddonExp>("_Exp", out var addon))
-        {
-            addon->ClassJob--;
-            addon->RequiredExp--;
-            addon->AtkUnitBase.OnRequestedUpdate(
-                AtkStage.Instance()->GetNumberArrayData(),
-                AtkStage.Instance()->GetStringArrayData());
-        }
-
-        RunUpdate();
+        TriggerReset();
     }
 
     public void DrawConfig()

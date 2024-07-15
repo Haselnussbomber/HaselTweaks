@@ -2,17 +2,18 @@ using System.Linq;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text;
+using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
+using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
@@ -21,45 +22,49 @@ public unsafe partial class EnhancedExpBar(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,
     TextService TextService,
-    IFramework Framework,
     IClientState ClientState,
     IAddonLifecycle AddonLifecycle,
+    IGameInteropProvider GameInteropProvider,
     ExcelService ExcelService)
     : IConfigurableTweak
 {
     public string InternalName => nameof(EnhancedExpBar);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private bool _isEnabled = false;
-    private bool _isUpdatePending = false;
-    private ushort _lastSeriesXp = 0;
-    private byte _lastSeriesClaimedRank = 0;
-    private uint _lastBuddyXp;
-    private byte _lastBuddyRank;
-    private uint _lastBuddyObjectID;
-    private uint _lastIslandExperience = 0;
-    private ushort _lastSyncedFateId = 0;
+    private Hook<HaselAgentHUD.Delegates.UpdateExp>? UpdateExpHook;
+    private byte ColorMultiplyRed = 100;
+    private byte ColorMultiplyGreen = 100;
+    private byte ColorMultiplyBlue = 100;
 
-    public void OnInitialize() { }
+    public void OnInitialize()
+    {
+        UpdateExpHook = GameInteropProvider.HookFromAddress<HaselAgentHUD.Delegates.UpdateExp>(
+            HaselAgentHUD.MemberFunctionPointers.UpdateExp,
+            UpdateExpDetour);
+    }
 
     public void OnEnable()
     {
-        Framework.Update += OnFrameworkUpdate;
-        ClientState.LeavePvP += ClientState_LeavePvP;
-        ClientState.TerritoryChanged += ClientState_TerritoryChanged;
-        _isEnabled = true;
-        RunUpdate();
-        AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
+        ClientState.LeavePvP += OnLeavePvP;
+        ClientState.TerritoryChanged += OnTerritoryChanged;
+
+        AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_Exp", OnAddonExpPostRequestedUpdate);
+
+        UpdateExpHook?.Enable();
+
+        TriggerReset();
     }
 
     public void OnDisable()
     {
-        Framework.Update -= OnFrameworkUpdate;
-        ClientState.LeavePvP -= ClientState_LeavePvP;
-        ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
-        _isEnabled = false;
-        RunUpdate();
-        AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "_Exp", AddonExp_PostRequestedUpdate);
+        ClientState.LeavePvP -= OnLeavePvP;
+        ClientState.TerritoryChanged -= OnTerritoryChanged;
+
+        AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "_Exp", OnAddonExpPostRequestedUpdate);
+
+        UpdateExpHook?.Disable();
+
+        TriggerReset();
     }
 
     public void Dispose()
@@ -68,200 +73,107 @@ public unsafe partial class EnhancedExpBar(
             return;
 
         OnDisable();
+        UpdateExpHook?.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);
     }
 
-    private void OnFrameworkUpdate(IFramework framework)
+    private void OnLeavePvP()
+        => TriggerReset();
+
+    private void OnTerritoryChanged(ushort territoryType)
+        => TriggerReset();
+
+    private void UpdateExpDetour(HaselAgentHUD* thisPtr, NumberArrayData* expNumberArray, StringArrayData* expStringArray, StringArrayData* characterStringArray)
     {
+        UpdateExpHook!.Original(thisPtr, expNumberArray, expStringArray, characterStringArray);
+
         if (!ClientState.IsLoggedIn)
             return;
 
-        var pvpProfile = PvPProfile.Instance();
-        if (pvpProfile != null && pvpProfile->IsLoaded == 0x01 && (_lastSeriesXp != pvpProfile->SeriesExperience || _lastSeriesClaimedRank != pvpProfile->SeriesClaimedRank))
+        SetColor(); // reset unless overwritten
+
+        if (Config.ForceCompanionBar && UIState.Instance()->Buddy.CompanionInfo.Companion != null && UIState.Instance()->Buddy.CompanionInfo.Companion->EntityId != 0xE0000000)
         {
-            _lastSeriesXp = pvpProfile->SeriesExperience;
-            _lastSeriesClaimedRank = pvpProfile->SeriesClaimedRank;
-            _isUpdatePending = true;
+            OverwriteWithCompanionBar();
+            return;
         }
 
-        var buddy = UIState.Instance()->Buddy.CompanionInfo;
-        if (_lastBuddyXp != buddy.CurrentXP || _lastBuddyRank != buddy.Rank || _lastBuddyObjectID != buddy.Companion->EntityId)
+        if (Config.ForcePvPSeriesBar && GameMain.IsInPvPArea())
         {
-            _lastBuddyXp = buddy.CurrentXP;
-            _lastBuddyRank = buddy.Rank;
-            _lastBuddyObjectID = buddy.Companion->EntityId;
-            _isUpdatePending = true;
+            OverwriteWithPvPBar();
+            return;
         }
 
-        var mjiManager = MJIManager.Instance();
-        if (mjiManager != null && _lastIslandExperience != mjiManager->IslandState.CurrentXP)
+        if (Config.ForceSanctuaryBar && GameMain.Instance()->CurrentTerritoryIntendedUseId == 49)
         {
-            _lastIslandExperience = mjiManager->IslandState.CurrentXP;
-            _isUpdatePending = true;
+            OverwriteWithSanctuaryBar();
+            return;
         }
 
-        var fateManager = FateManager.Instance();
-        if (fateManager != null && _lastSyncedFateId != fateManager->SyncedFateId)
-        {
-            _lastSyncedFateId = fateManager->SyncedFateId;
-            _isUpdatePending = true;
-        }
-
-        if (_isUpdatePending)
-            RunUpdate();
-    }
-
-    // request update immediately upon leaving the pvp area, because
-    // otherwise it might get updated too late, like a second after the black screen ends
-    private void ClientState_LeavePvP()
-        => _isUpdatePending = true;
-
-    private void ClientState_TerritoryChanged(ushort territoryType)
-        => _isUpdatePending = true;
-
-    private void RunUpdate()
-    {
-        if (!TryGetAddon<AddonExp>("_Exp", out var addon))
+        if (!((AgentHUD*)thisPtr)->ExpIsMaxLevel)
             return;
 
-        HandleAddonExpPostRequestedUpdate(addon);
+        switch (Config.MaxLevelOverride)
+        {
+            case MaxLevelOverrideType.PvPSeriesBar:
+                OverwriteWithPvPBar();
+                return;
+
+            case MaxLevelOverrideType.CompanionBar:
+                OverwriteWithCompanionBar();
+                return;
+        }
     }
 
-    private void AddonExp_PostRequestedUpdate(AddonEvent type, AddonArgs args)
+    private void OnAddonExpPostRequestedUpdate(AddonEvent type, AddonArgs args)
     {
-        if (!_isEnabled || type != AddonEvent.PostRequestedUpdate)
-            return;
+        var addon = (AtkUnitBase*)args.Addon;
 
-        HandleAddonExpPostRequestedUpdate((AddonExp*)args.Addon);
-    }
-
-    private void HandleAddonExpPostRequestedUpdate(AddonExp* addon)
-    {
-        if (addon == null)
-            return;
-
-        var gaugeBarNode = GetNode<AtkComponentNode>(&addon->AtkUnitBase, 6);
+        var gaugeBarNode = GetNode<AtkComponentNode>(addon, 6);
         if (gaugeBarNode == null)
-            return;
-
-        var gaugeBar = (AtkComponentGaugeBar*)gaugeBarNode->Component;
-        if (gaugeBar == null)
             return;
 
         var nineGridNode = GetNode<AtkNineGridNode>(gaugeBarNode->Component, 4);
         if (nineGridNode == null)
             return;
 
-        if (ClientState.LocalPlayer == null)
-        {
-            ResetColor(nineGridNode);
-            return;
-        }
+        if (nineGridNode->AtkResNode.MultiplyRed != ColorMultiplyRed)
+            nineGridNode->AtkResNode.MultiplyRed = ColorMultiplyRed;
 
-        if (ClientState.LocalPlayer.ClassJob.GameData == null)
-        {
-            ResetColor(nineGridNode);
-            return;
-        }
+        if (nineGridNode->AtkResNode.MultiplyGreen != ColorMultiplyGreen)
+            nineGridNode->AtkResNode.MultiplyGreen = ColorMultiplyGreen;
 
-        var leftText = GetNode<AtkTextNode>(&addon->AtkUnitBase, 4);
-        if (leftText == null)
-        {
-            ResetColor(nineGridNode);
-            return;
-        }
-
-        // --- forced bars in certain locations
-
-        if (Config.ForceCompanionBar && UIState.Instance()->Buddy.CompanionInfo.Companion != null && UIState.Instance()->Buddy.CompanionInfo.Companion->EntityId != 0xE0000000)
-        {
-            HandleCompanionBar(nineGridNode, gaugeBar, leftText);
-            return;
-        }
-
-        if (Config.ForcePvPSeriesBar && GameMain.IsInPvPArea())
-        {
-            HandlePvPBar(nineGridNode, gaugeBar, leftText);
-            return;
-        }
-
-        if (Config.ForceSanctuaryBar && GameMain.Instance()->CurrentTerritoryIntendedUseId == 49)
-        {
-            HandleSanctuaryBar(nineGridNode, gaugeBar, leftText);
-            return;
-        }
-
-        // --- max level overrides
-
-        if (ClientState.LocalPlayer.Level == PlayerState.Instance()->MaxLevel)
-        {
-            if (Config.MaxLevelOverride == MaxLevelOverrideType.PvPSeriesBar)
-            {
-                HandlePvPBar(nineGridNode, gaugeBar, leftText);
-                return;
-            }
-
-            if (Config.MaxLevelOverride == MaxLevelOverrideType.CompanionBar)
-            {
-                HandleCompanionBar(nineGridNode, gaugeBar, leftText);
-                return;
-            }
-        }
-
-        // nothing matches so let it fetch fresh data
-        addon->ClassJob--;
-        addon->RequiredExp--;
-        ResetColor(nineGridNode);
-
-        _isUpdatePending = false;
+        if (nineGridNode->AtkResNode.MultiplyBlue != ColorMultiplyBlue)
+            nineGridNode->AtkResNode.MultiplyBlue = ColorMultiplyBlue;
     }
 
-    private void HandleCompanionBar(AtkNineGridNode* nineGridNode, AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
+    private void OverwriteWithCompanionBar()
     {
         var buddy = UIState.Instance()->Buddy.CompanionInfo;
+
         if (buddy.Rank > ExcelService.GetRowCount<BuddyRank>() - 1)
-        {
-            ResetColor(nineGridNode);
             return;
-        }
 
         var currentRank = buddy.Rank;
-
         var job = ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation;
         var levelLabel = (TextService.GetAddonText(4968) ?? "Rank").Trim().Replace(":", "");
         var rank = currentRank > 20 ? 20 : currentRank;
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var requiredExperience = ExcelService.GetRow<BuddyRank>(currentRank)!.ExpRequired;
-
         var xpText = requiredExperience == 0 ? "" : $"   {buddy.CurrentXP}/{requiredExperience}";
-        UpdateText(leftText, $"{job}  {levelLabel} {level}{xpText}");
 
-        gaugeBar->SetGaugeRange(0); // rested experience bar
-
-        // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-        gaugeBar->SetGaugeValue((int)(buddy.CurrentXP / (float)requiredExperience * 10000), 0, false);
-
-        ResetColor(nineGridNode);
-
-        _isUpdatePending = false;
+        SetText($"{job}  {levelLabel} {level}{xpText}");
+        SetExperience((int)buddy.CurrentXP, (int)requiredExperience);
     }
 
-    private void HandlePvPBar(AtkNineGridNode* nineGridNode, AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
+    private void OverwriteWithPvPBar()
     {
         var pvpProfile = PvPProfile.Instance();
-        if (pvpProfile == null || pvpProfile->IsLoaded != 0x01)
-        {
-            ResetColor(nineGridNode);
-            return;
-        }
 
-        if (pvpProfile->SeriesCurrentRank > ExcelService.GetRowCount<PvPSeriesLevel>() - 1)
-        {
-            ResetColor(nineGridNode);
+        if (pvpProfile == null || pvpProfile->IsLoaded != 0x01 || pvpProfile->SeriesCurrentRank > ExcelService.GetRowCount<PvPSeriesLevel>() - 1)
             return;
-        }
 
         var claimedRank = pvpProfile->GetSeriesClaimedRank();
         var currentRank = pvpProfile->GetSeriesCurrentRank();
@@ -273,41 +185,19 @@ public unsafe partial class EnhancedExpBar(
         var star = currentRank > claimedRank ? '*' : ' ';
         var requiredExperience = ExcelService.GetRow<PvPSeriesLevel>(currentRank)!.Unknown0;
 
-        UpdateText(leftText, $"{job}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
-
-        gaugeBar->SetGaugeRange(0); // rested experience bar
-
-        // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-        gaugeBar->SetGaugeValue((int)(pvpProfile->SeriesExperience / (float)requiredExperience * 10000), 0, false);
+        SetText($"{job}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
+        SetExperience(pvpProfile->SeriesExperience, requiredExperience);
 
         if (!Config.DisableColorChanges)
-        {
-            // trying to make it look like the xp bar in the PvP Profile window and failing miserably. eh, good enough
-            nineGridNode->AtkResNode.MultiplyRed = 65;
-            nineGridNode->AtkResNode.MultiplyGreen = 35;
-        }
-        else
-        {
-            ResetColor(nineGridNode);
-        }
-
-        _isUpdatePending = false;
+            SetColor(65, 35); // trying to make it look like the xp bar in the PvP Profile window and failing miserably. eh, good enough
     }
 
-    private void HandleSanctuaryBar(AtkNineGridNode* nineGridNode, AtkComponentGaugeBar* gaugeBar, AtkTextNode* leftText)
+    private void OverwriteWithSanctuaryBar()
     {
         var mjiManager = MJIManager.Instance();
-        if (mjiManager == null)
-        {
-            ResetColor(nineGridNode);
-            return;
-        }
 
-        if (mjiManager->IslandState.CurrentRank > ExcelService.GetRowCount<MJIRank>() - 1)
-        {
-            ResetColor(nineGridNode);
+        if (mjiManager == null || mjiManager->IslandState.CurrentRank > ExcelService.GetRowCount<MJIRank>() - 1)
             return;
-        }
 
         var job = Config.SanctuaryBarHideJob ? "" : ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation + "  ";
         var levelLabel = (TextService.GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
@@ -317,48 +207,61 @@ public unsafe partial class EnhancedExpBar(
         var expStr = mjiManager->IslandState.CurrentXP.ToString();
         var reqExpStr = requiredExperience.ToString();
         if (requiredExperience == 0)
-        {
             expStr = reqExpStr = "--";
-        }
 
-        UpdateText(leftText, $"{job}{levelLabel} {level}   {expStr}/{reqExpStr}");
-
-        gaugeBar->SetGaugeRange(0); // rested experience bar
-
-        // max value is set to 10000 in AddonExp_OnSetup and we won't change that, so adjust
-        gaugeBar->SetGaugeValue((int)(mjiManager->IslandState.CurrentXP / (float)requiredExperience * 10000), 0, false);
+        SetText($"{job}{levelLabel} {level}   {expStr}/{reqExpStr}");
+        SetExperience((int)mjiManager->IslandState.CurrentXP, (int)requiredExperience);
 
         if (!Config.DisableColorChanges)
-        {
-            // blue seems nice.. just like the sky ^_^
-            nineGridNode->AtkResNode.MultiplyRed = 25;
-            nineGridNode->AtkResNode.MultiplyGreen = 60;
-            nineGridNode->AtkResNode.MultiplyBlue = 255;
-        }
-        else
-        {
-            ResetColor(nineGridNode);
-        }
-
-        _isUpdatePending = false;
+            SetColor(25, 60, 255); // blue seems nice.. just like the sky ^_^
     }
 
-    private void UpdateText(AtkTextNode* textNode, string text)
+    private void SetText(string text)
     {
         var stringArray = AtkStage.Instance()->GetStringArrayData()[2];
         stringArray->SetValue(69, text);
-        textNode->SetText(stringArray->StringArray[69]);
     }
 
-    private void ResetColor(AtkNineGridNode* nineGridNode)
+    private void SetExperience(int experience, int maxExperience, int restedExperience = 0)
     {
-        if (nineGridNode->AtkResNode.MultiplyRed != 100)
-            nineGridNode->AtkResNode.MultiplyRed = 100;
+        var numberArray = AtkStage.Instance()->GetNumberArrayData()[3];
 
-        if (nineGridNode->AtkResNode.MultiplyGreen != 100)
-            nineGridNode->AtkResNode.MultiplyGreen = 100;
+        numberArray->SetValue(16, experience);
+        numberArray->SetValue(17, maxExperience == 0 ? 0 : (int)MathF.Round(experience / (float)maxExperience * 1000f));
+        numberArray->SetValue(18, maxExperience);
+        numberArray->SetValue(19, restedExperience);
+        numberArray->SetValue(20, restedExperience == 0 ? 0 : (int)MathF.Round(restedExperience / (float)maxExperience * 1000f));
+    }
 
-        if (nineGridNode->AtkResNode.MultiplyBlue != 100)
-            nineGridNode->AtkResNode.MultiplyBlue = 100;
+    private void TriggerReset()
+    {
+        // trigger update with wrong data
+        var agentHUD = AgentHUD.Instance();
+
+        agentHUD->ExpCurrentExperience = 0;
+        agentHUD->ExpNeededExperience = 0;
+        agentHUD->ExpRestedExperience = 0;
+        agentHUD->CharacterClassJobId = 0;
+
+        agentHUD->ExpClassJobId = 0;
+        agentHUD->ExpLevel = 0;
+        agentHUD->ExpContentLevel = 0;
+
+        agentHUD->ExpIsLevelSynced = false;
+        agentHUD->ExpUnkBool2 = false;
+        agentHUD->ExpIsMaxLevel = false;
+        agentHUD->ExpIsInEureka = false;
+    }
+
+    private void SetColor(byte red = 100, byte green = 100, byte blue = 100)
+    {
+        if (ColorMultiplyRed != red)
+            ColorMultiplyRed = red;
+
+        if (ColorMultiplyGreen != green)
+            ColorMultiplyGreen = green;
+
+        if (ColorMultiplyBlue != blue)
+            ColorMultiplyBlue = blue;
     }
 }
