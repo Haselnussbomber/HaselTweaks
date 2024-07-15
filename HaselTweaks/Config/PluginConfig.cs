@@ -17,7 +17,7 @@ namespace HaselTweaks.Config;
 public partial class PluginConfig : IPluginConfiguration
 {
     [JsonIgnore]
-    public const int CURRENT_CONFIG_VERSION = 6;
+    public const int CURRENT_CONFIG_VERSION = 7;
 
     [JsonIgnore]
     public int LastSavedConfigHash { get; set; }
@@ -66,7 +66,8 @@ public partial class PluginConfig : IPluginConfiguration
         IConfigMigration[] migrations = [
             new Version2(),
             new Version5(),
-            new Version6(pluginInterface, pluginLog)
+            new Version6(pluginInterface, pluginLog),
+            new Version7()
         ];
 
         foreach (var migration in migrations)

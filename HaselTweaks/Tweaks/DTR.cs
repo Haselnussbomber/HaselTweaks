@@ -32,8 +32,8 @@ public unsafe partial class DTR(
     private IDtrBarEntry? DtrInstance;
     private IDtrBarEntry? DtrFPS;
     private IDtrBarEntry? DtrBusy;
-    private int _lastFrameRate;
-    private uint _lastInstanceId;
+    private int LastFrameRate;
+    private uint LastInstanceId;
 
     public void OnInitialize() { }
 
@@ -91,8 +91,8 @@ public unsafe partial class DTR(
 
     private void OnLogout()
     {
-        _lastFrameRate = 0;
-        _lastInstanceId = 0;
+        LastFrameRate = 0;
+        LastInstanceId = 0;
     }
 
     private void OnLanguageChanged(string langCode)
@@ -112,13 +112,13 @@ public unsafe partial class DTR(
             return;
         }
 
-        if (_lastInstanceId == instanceId)
+        if (LastInstanceId == instanceId)
             return;
 
         DtrInstance.Text = ((char)(SeIconChar.Instance1 + (byte)(instanceId - 1))).ToString();
         DtrInstance.Shown = true;
 
-        _lastInstanceId = instanceId;
+        LastInstanceId = instanceId;
     }
 
     private void UpdateBusy()
@@ -144,12 +144,12 @@ public unsafe partial class DTR(
             return;
 
         var frameRate = (int)(GameFramework.Instance()->FrameRate + 0.5f);
-        if (_lastFrameRate == frameRate)
+        if (LastFrameRate == frameRate)
             return;
 
-        DtrFPS.Text = TextService.Translate("DTR.FPS.Format", frameRate, Config.FormatUnitText);
+        DtrFPS.Text = string.Format(Config.FpsFormat, frameRate);
         DtrFPS.Shown = true;
 
-        _lastFrameRate = frameRate;
+        LastFrameRate = frameRate;
     }
 }

@@ -783,18 +783,12 @@
     "de": "auf den Tab Server-Infoleiste.",
     "zh": "> 服务器信息栏。"
   },
-  "DTR.Config.FormatUnitText.Label": {
-    "en": "Text of the FPS unit",
-    "de": "Text der FPS-Einheit",
-    "zh": "FPS单元的文本"
+  "DTR.Config.FpsFormat.Label": {
+    "en": "FPS-Format"
   },
-  "DTR.Config.FormatUnitText.Description": {
-    "en": "Some people like it all uppercase, some lowercase... Here you can define it yourself.",
-    "de": "Manche mögen es in Großbuchstaben, manche nicht... Hier kannst du es selbst definieren.",
-    "zh": "有些人喜欢全大写，有些人喜欢全小写...你可以在这里自定义。"
-  },
-  "DTR.FPS.Format": {
-    "en": "{0:0}{1}"
+  "DTR.Config.FpsFormat.Description": {
+    "en": "This is passed into C#s string.Format function with the FPS value as first argument.",
+    "de": "Dies wird an C#s string.Format Funktion übergeben mit dem FPS-Wert als erstem Argument."
   },
 
   "EnhancedExpBar.Tweak.Name": {

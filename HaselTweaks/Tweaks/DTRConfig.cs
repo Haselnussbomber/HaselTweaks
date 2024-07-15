@@ -1,6 +1,5 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
-using Dalamud.Interface.Utility;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
 using ImGuiNET;
@@ -9,7 +8,7 @@ namespace HaselTweaks.Tweaks;
 
 public class DTRConfiguration
 {
-    public string FormatUnitText = " fps";
+    public string FpsFormat = "{0} fps";
 }
 
 public partial class DTR
@@ -49,24 +48,10 @@ public partial class DTR
         ImGuiUtils.SameLineSpace();
         TextService.Draw("DTR.Config.Explanation.Post");
 
-        ImGuiUtils.DrawSection(TextService.Translate("HaselTweaks.Config.SectionTitle.Configuration"));
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.Spacing();
 
-        TextService.Draw("DTR.Config.FormatUnitText.Label");
-        if (ImGui.InputText("##FormatUnitTextInput", ref Config.FormatUnitText, 20))
-        {
-            PluginConfig.Save();
-            _lastFrameRate = 0; // trigger update
-        }
-        ImGui.SameLine();
-        if (ImGuiUtils.IconButton("##Reset", FontAwesomeIcon.Undo, TextService.Translate("HaselTweaks.Config.ResetToDefault", " fps")))
-        {
-            Config.FormatUnitText = " fps";
-            PluginConfig.Save();
-        }
-
-        if (TextService.TryGetTranslation("DTR.Config.FormatUnitText.Description", out var description))
-        {
-            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, description);
-        }
+        ConfigGui.DrawString("FpsFormat", ref Config.FpsFormat, "{0} fps");
     }
 }
