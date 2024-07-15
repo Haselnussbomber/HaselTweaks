@@ -40,10 +40,13 @@ public unsafe partial class DTR(
     public void OnEnable()
     {
         DtrInstance = DtrBar.Get("[HaselTweaks] Instance");
+        DtrInstance.Tooltip = "HaselTweaks";
 
         DtrFPS = DtrBar.Get("[HaselTweaks] FPS");
+        DtrFPS.Tooltip = "HaselTweaks";
 
         DtrBusy = DtrBar.Get("[HaselTweaks] Busy");
+        DtrBusy.Tooltip = "HaselTweaks";
 
         DtrInstance.Shown = false;
         DtrFPS.Shown = false;
