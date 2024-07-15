@@ -1,5 +1,16 @@
 # Changelog
 
+## [25.2.1] (2024-07-15)
+
+### DTR
+
+- **Changed:** The configuration option to set the FPS unit was changed to a customizable format string. This allows to have text in front of it as well as being able to utilize the custom number formatting options C# provides. Configuration should migrate automatically.
+- **Changed:** Server Info Bar entries by HaselTweaks now show the plugin name in their tooltips.
+
+### Enhanced Experience Bar
+
+- **Changed:** Tweak almost completely reworked internally. Updates should now be seamless.
+
 ## [25.2.0] (2024-07-14)
 
 ### Portrait Helper
@@ -1606,6 +1617,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[25.2.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.0...v25.2.1
 [25.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.1.2...v25.2.0
 [25.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.1.1...v25.1.2
 [25.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.1.0...v25.1.1
