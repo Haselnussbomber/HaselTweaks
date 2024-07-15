@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [25.2.2] (2024-07-14)
 
 ### Portrait Helper
 
@@ -1623,6 +1623,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[25.2.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.1...v25.2.2
 [25.2.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.0...v25.2.1
 [25.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.1.2...v25.2.0
 [25.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.1.1...v25.1.2
