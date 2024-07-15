@@ -1,8 +1,11 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
+using Dalamud.Interface.Utility.Raii;
+using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
 using ImGuiNET;
+using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 
 namespace HaselTweaks.Tweaks;
 
@@ -53,5 +56,21 @@ public partial class DTR
         ImGui.Spacing();
 
         ConfigGui.DrawString("FpsFormat", ref Config.FpsFormat, "{0} fps");
+
+        using (ImGuiUtils.ConfigIndent())
+        {
+            TextService.Draw("DTR.Config.Format.Example.Label");
+            unsafe
+            {
+                try
+                {
+                    ImGui.TextUnformatted(string.Format(Config.FpsFormat, (int)(GameFramework.Instance()->FrameRate + 0.5f)));
+                }
+                catch (FormatException)
+                {
+                    TextService.Draw(Colors.Red, "DTR.Config.FpsFormat.Invalid");
+                }
+            }
+        }
     }
 }

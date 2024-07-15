@@ -147,7 +147,15 @@ public unsafe partial class DTR(
         if (LastFrameRate == frameRate)
             return;
 
-        DtrFPS.Text = string.Format(Config.FpsFormat, frameRate);
+        try
+        {
+            DtrFPS.Text = string.Format(Config.FpsFormat, frameRate);
+        }
+        catch (FormatException)
+        {
+            DtrFPS.Text = TextService.Translate("DTR.FpsFormat.Invalid");
+        }
+
         DtrFPS.Shown = true;
 
         LastFrameRate = frameRate;

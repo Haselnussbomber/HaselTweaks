@@ -784,11 +784,26 @@
     "zh": "> 服务器信息栏。"
   },
   "DTR.Config.FpsFormat.Label": {
-    "en": "FPS-Format"
+    "en": "FPS Format",
+    "de": "FPS-Format"
   },
   "DTR.Config.FpsFormat.Description": {
     "en": "This is passed into C#s string.Format function with the FPS value as first argument.",
     "de": "Dies wird an C#s string.Format Funktion übergeben mit dem FPS-Wert als erstem Argument."
+  },
+  "DTR.Config.Format.Example.Label": {
+    "en": "Example with the current format:",
+    "de": "Beispiel mit dem aktuellen Format:",
+    "zh": "当前格式样例："
+  },
+  "DTR.Config.FpsFormat.Invalid": {
+    "en": "The current format is not valid.",
+    "de": "Das aktuelle Format ist ungültig.",
+    "zh": "当前格式无效。"
+  },
+  "DTR.FpsFormat.Invalid": {
+    "en": "Invalid FPS Format",
+    "de": "Ungültiges FPS-Format"
   },
 
   "EnhancedExpBar.Tweak.Name": {
