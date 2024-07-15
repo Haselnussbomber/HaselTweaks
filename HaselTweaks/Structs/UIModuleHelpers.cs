@@ -29,10 +29,10 @@ public unsafe partial struct BannerModuleHelper
     [MemberFunction("E8 ?? ?? ?? ?? 48 8B AC 24 ?? ?? ?? ?? 48 8B 4C 24 ?? 48 33 CC E8 ?? ?? ?? ?? 48 83 C4 60")]
     public partial bool SendBannerUpdateData(BannerUpdateData* bannerUpdateData);
 
-    [MemberFunction("E8 ?? ?? ?? ?? 88 44 24 23")]
+    [MemberFunction("E8 ?? ?? ?? ?? 88 44 24 22 40 84 ED")]
     public partial bool IsBannerNotExpired(BannerModuleEntry* bannerModuleEntry, int type);
 
-    [MemberFunction("40 53 48 83 EC 20 4C 8B 1D")]
+    [MemberFunction("E8 ?? ?? ?? ?? 84 C0 74 1D 4C 8D 44 24")]
     public partial bool IsBannerCharacterDataNotExpired(BannerModuleEntry* bannerModuleEntry, int type);
 
     [MemberFunction("41 0F B6 80 ?? ?? ?? ?? 88 42 60")]

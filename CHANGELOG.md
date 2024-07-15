@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Portrait Helper
+
+- **Fixed:** Portraits of gearsets without a glamour plate linked weren't automatically updated when the the gearset was updated.
+
 ## [25.2.1] (2024-07-15)
 
 ### DTR
