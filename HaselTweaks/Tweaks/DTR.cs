@@ -47,6 +47,14 @@ public unsafe partial class DTR(
 
         DtrBusy = DtrBar.Get("[HaselTweaks] Busy");
         DtrBusy.Tooltip = "HaselTweaks";
+        DtrBusy.Text = new SeStringBuilder()
+            .PushColorType(1)
+            .PushEdgeColorType(16)
+            .Append(ExcelService.GetRow<OnlineStatus>(12)?.Name.RawData.ToArray() ?? Encoding.UTF8.GetBytes("Busy"))
+            .PopEdgeColorType()
+            .PopColorType()
+            .ToSeString()
+            .ToDalamudString();
 
         DtrInstance.Shown = false;
         DtrFPS.Shown = false;
@@ -128,15 +136,6 @@ public unsafe partial class DTR(
     {
         if (DtrBusy == null)
             return;
-
-        DtrBusy.Text = new SeStringBuilder()
-            .PushColorType(1)
-            .PushEdgeColorType(16)
-            .Append(ExcelService.GetRow<OnlineStatus>(12)?.Name.RawData.ToArray() ?? Encoding.UTF8.GetBytes("Busy"))
-            .PopEdgeColorType()
-            .PopColorType()
-            .ToSeString()
-            .ToDalamudString();
 
         DtrBusy.Shown = ClientState.IsLoggedIn && ClientState.LocalPlayer?.OnlineStatus.Id == 12;
     }
