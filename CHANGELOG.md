@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Login/Logout
+
+- **Fixed:** The login queue territory preload option now correctly preloads the outside housing territory when you've logged out inside of a Company Workshop, the Apartment Lobby or an Apartment.
+- **Fixed:** The login queue territory preload option now also supports Shirogane and Empyreum.
+
 ## [25.2.3] (2024-07-16)
 
 ### DTR
