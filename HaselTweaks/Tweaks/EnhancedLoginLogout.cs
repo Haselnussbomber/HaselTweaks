@@ -542,20 +542,46 @@ public unsafe partial class EnhancedLoginLogout(
          or 283  // Private House - Mist
          or 284  // Private Mansion - Mist
          or 384  // Private Chambers - Mist
+         or 423  // Company Workshop - Mist
+         or 573  // Topmast Apartment Lobby
+         or 608  // Topmast Apartment
          => 339, // Mist
 
             342  // Private Cottage - The Lavender Beds
          or 343  // Private House - The Lavender Beds
          or 344  // Private Mansion - The Lavender Beds
          or 385  // Private Chambers - The Lavender Beds
+         or 425  // Company Workshop - The Lavender Beds
+         or 574  // Lily Hills Apartment Lobby
+         or 609  // Lily Hills Apartment
          => 340, // The Lavender Beds
-
 
             345  // Private Cottage - The Goblet
          or 346  // Private House - The Goblet
          or 347  // Private Mansion - The Goblet
          or 386  // Private Chambers - The Goblet
+         or 424  // Company Workshop - The Goblet
+         or 575  // Sultana's Breath Apartment Lobby
+         or 610  // Sultana's Breath Apartment
          => 341, // The Goblet
+
+            649  // Private Cottage - Shirogane
+         or 650  // Private House - Shirogane
+         or 651  // Private Mansion - Shirogane
+         or 652  // Private Chambers - Shirogane
+         or 653  // Company Workshop - Shirogane
+         or 654  // Kobai Goten Apartment Lobby
+         or 655  // Kobai Goten Apartment
+         => 641, // Shirogane
+
+            980  // Private Cottage - Empyreum
+         or 981  // Private House - Empyreum
+         or 982  // Private Mansion - Empyreum
+         or 983  // Private Chambers - Empyreum
+         or 984  // Company Workshop - Empyreum
+         or 985  // Ingleside Apartment Lobby
+         or 999  // Ingleside Apartment
+         => 979, // Empyreum
 
             _ => CurrentEntry.TerritoryType
         };
