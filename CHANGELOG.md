@@ -1,5 +1,11 @@
 # Changelog
 
+## [25.2.3] (2024-07-16)
+
+### DTR
+
+- **Fixed:** The busy status no longer updates its text every frame, but only when needed. (Thanks to @nebel for pointing this out)
+
 ## [25.2.2] (2024-07-14)
 
 ### Portrait Helper
