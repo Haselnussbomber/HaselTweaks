@@ -128,6 +128,7 @@ public unsafe partial class DTR(
         if (instanceId == 0 || instanceId >= 10)
         {
             DtrInstance.Shown = false;
+            LastInstanceId = 0;
             return;
         }
 
