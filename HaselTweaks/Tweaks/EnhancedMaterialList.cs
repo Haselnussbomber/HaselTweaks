@@ -4,13 +4,12 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Hooking;
+using Dalamud.Memory;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
-using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using FFXIVClientStructs.Interop;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselTweaks.Config;
@@ -55,8 +54,6 @@ public unsafe partial class EnhancedMaterialList(
     private DateTime _timeOfRecipeTreeRefresh;
     private bool _handleRecipeResultItemContextMenu;
 
-    private Dictionary<uint, Pointer<Utf8String>>? NameCache;
-
     private Hook<AgentRecipeMaterialList.Delegates.ReceiveEvent>? AgentRecipeMaterialListReceiveEventHook;
     private Hook<AddonRecipeMaterialList.Delegates.SetupRow>? AddonRecipeMaterialListSetupRowHook;
     private Hook<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>? AddItemContextMenuEntriesHook;
@@ -79,7 +76,6 @@ public unsafe partial class EnhancedMaterialList(
     public void OnEnable()
     {
         AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList", RecipeMaterialList_PostReceiveEvent);
-        AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "RecipeMaterialList", RecipeMaterialList_PreFinalize);
         AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "RecipeTree", RecipeTree_PostReceiveEvent);
 
         Framework.Update += OnFrameworkUpdate;
@@ -95,7 +91,6 @@ public unsafe partial class EnhancedMaterialList(
     public void OnDisable()
     {
         AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList", RecipeMaterialList_PostReceiveEvent);
-        AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "RecipeMaterialList", RecipeMaterialList_PreFinalize);
         AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeTree", RecipeTree_PostReceiveEvent);
 
         Framework.Update -= OnFrameworkUpdate;
@@ -109,8 +104,6 @@ public unsafe partial class EnhancedMaterialList(
 
         if (TryGetAddon<AtkUnitBase>("RecipeMaterialList", out var addon))
             addon->Close(true);
-
-        CleanupUtf8Strings();
     }
 
     public void Dispose()
@@ -347,39 +340,18 @@ public unsafe partial class EnhancedMaterialList(
         if (placeName.Length > 23)
             placeName = placeName[..20] + "...";
 
-        NameCache ??= [];
-        if (!NameCache.TryGetValue(itemId, out var ptr))
-            NameCache.Add(itemId, ptr = Utf8String.CreateEmpty());
+        var str = new SeStringBuilder()
+            .Append(itemName)
+            .BeginMacro(MacroCode.NewLine).EndMacro()
+            .PushColorType((ushort)(isSameZone ? 570 : 4))
+            .PushEdgeColorType(550)
+            .Append(placeName)
+            .PopEdgeColorType()
+            .PopColorType()
+            .ToArray()
+            .NullTerminate();
 
-        ptr.Value->SetString(
-            new SeStringBuilder()
-                .Append(itemName)
-                .BeginMacro(MacroCode.NewLine).EndMacro()
-                .PushColorType((ushort)(isSameZone ? 570 : 4))
-                .PushEdgeColorType(550)
-                .Append(placeName)
-                .PopEdgeColorType()
-                .PopColorType()
-                .ToArray());
-
-        nameNode->SetText(ptr.Value->StringPtr);
-    }
-
-    private void RecipeMaterialList_PreFinalize(AddonEvent type, AddonArgs args)
-    {
-        CleanupUtf8Strings();
-    }
-
-    private void CleanupUtf8Strings()
-    {
-        if (NameCache != null)
-        {
-            Logger.LogDebug("Releasing {num} Utf8Strings", NameCache.Count);
-            foreach (var ptr in NameCache.Values)
-                ptr.Value->Dtor(true);
-            NameCache.Clear();
-            NameCache = null;
-        }
+        nameNode->SetText(str);
     }
 
     private void AddItemContextMenuEntriesDetour(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
