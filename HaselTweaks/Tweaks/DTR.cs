@@ -127,8 +127,11 @@ public unsafe partial class DTR(
         var instanceId = UIState.Instance()->PublicInstance.InstanceId;
         if (instanceId == 0 || instanceId >= 10)
         {
-            DtrInstance.Shown = false;
-            LastInstanceId = 0;
+            if (DtrInstance.Shown)
+                DtrInstance.Shown = false;
+
+            if (LastInstanceId != 0)
+                LastInstanceId = 0;
             return;
         }
 
@@ -136,7 +139,9 @@ public unsafe partial class DTR(
             return;
 
         DtrInstance.Text = ((char)(SeIconChar.Instance1 + (byte)(instanceId - 1))).ToString();
-        DtrInstance.Shown = true;
+        
+        if (!DtrInstance.Shown)
+            DtrInstance.Shown = true;
 
         LastInstanceId = instanceId;
     }
@@ -167,7 +172,8 @@ public unsafe partial class DTR(
             DtrFPS.Text = TextService.Translate("DTR.FpsFormat.Invalid");
         }
 
-        DtrFPS.Shown = true;
+        if (!DtrFPS.Shown)
+            DtrFPS.Shown = true;
 
         LastFrameRate = frameRate;
     }
