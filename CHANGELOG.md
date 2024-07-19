@@ -2,6 +2,10 @@
 
 ## [25.2.5] (2024-07-19)
 
+### DTR
+
+- **Fixed:** Instance not showing up again after switching to a zone without instances and switching back to a zone with the same Instance Id.
+
 ### Search the markets
 
 - **Fixed:** The tweak incorrectly used Dalamuds language setting to search for the item instead of the clients language.
