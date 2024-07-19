@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Search the markets
+
+- **Fixed:** The tweak incorrectly used Dalamuds language setting to search for the item instead of the clients language.
+- **Fixed:** It wasn't possible to search for items if they were high quality.
+
 ## [25.2.4] (2024-07-17)
 
 ### Enhanced Login/Logout

@@ -88,6 +88,9 @@ public unsafe class SearchTheMarkets(
         if (itemId == 0)
             return;
 
+        if (ItemService.IsHighQuality(itemId))
+            itemId -= 1_000_000;
+
         Item = ExcelService.GetRow<Item>(itemId);
 
         if (Item == null || !ItemService.CanSearchForItem(Item))
