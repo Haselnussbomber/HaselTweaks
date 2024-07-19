@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [25.2.5] (2024-07-19)
 
 ### Search the markets
 
@@ -1642,6 +1642,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[25.2.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.4...v25.2.5
 [25.2.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.3...v25.2.4
 [25.2.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.2...v25.2.3
 [25.2.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.1...v25.2.2

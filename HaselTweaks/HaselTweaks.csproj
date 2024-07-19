@@ -33,9 +33,9 @@
   <Target Name="Message" BeforeTargets="BeforeBuild">
     <Message Text="Dalamud.Plugin: root at $(DalamudLibPath)" Importance="high" />
   </Target>
-  
+
   <PropertyGroup>
-    <Version>25.2.4</Version>
+    <Version>25.2.5</Version>
     <OutputPath>..\bin\</OutputPath>
     <DebugType>full</DebugType>
   </PropertyGroup>
@@ -72,11 +72,11 @@
     <ProjectReference Include="..\HaselCommon\HaselCommon.Text\HaselCommon.Text.csproj" />
     <ProjectReference Include="..\HaselCommon\HaselCommon\HaselCommon.csproj" />
   </ItemGroup>
-  
+
   <PropertyGroup>
     <InteropGenerator_InteropNamespace>HaselTweaks</InteropGenerator_InteropNamespace>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <CompilerVisibleProperty Include="InteropGenerator_InteropNamespace" />
     <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator\InteropGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
