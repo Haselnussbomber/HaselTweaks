@@ -41,7 +41,6 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 7.0.x
           cache: true
           cache-dependency-path: ${{ env.plugin_name }}/packages.lock.json
 
