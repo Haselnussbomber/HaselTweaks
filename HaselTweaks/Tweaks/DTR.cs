@@ -54,14 +54,14 @@ public unsafe partial class DTR(
         DtrBusy.Shown = false;
 
         Framework.Update += OnFrameworkUpdate;
-        ClientState.Logout += OnLogout;
+        ClientState.Logout += ResetCache;
         TextService.LanguageChanged += OnLanguageChanged;
     }
 
     public void OnDisable()
     {
         Framework.Update -= OnFrameworkUpdate;
-        ClientState.Logout -= OnLogout;
+        ClientState.Logout -= ResetCache;
         TextService.LanguageChanged -= OnLanguageChanged;
 
         DtrInstance?.Remove();
@@ -70,6 +70,8 @@ public unsafe partial class DTR(
         DtrFPS = null;
         DtrBusy?.Remove();
         DtrBusy = null;
+
+        ResetCache();
     }
 
     public void Dispose()
@@ -93,7 +95,7 @@ public unsafe partial class DTR(
         UpdateBusy();
     }
 
-    private void OnLogout()
+    private void ResetCache()
     {
         LastFrameRate = 0;
         LastInstanceId = 0;
