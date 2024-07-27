@@ -787,8 +787,8 @@ public partial class CustomChatMessageFormats
 
         Add(10, 1); // Say
         Add(11, 2); // Shout
-        Add(12, 3); // Tell (Incoming)
-        Add(13, 3); // Tell (Outgoing)
+        Add(12, 3); // Tell (Outgoing)
+        Add(13, 3); // Tell (Incoming)
         Add(14, 4); // Party
         Add(15, 17); // Alliance
         Add(16, 8); // Linkshell [1]
@@ -819,11 +819,11 @@ public partial class CustomChatMessageFormats
 
     private string GetLogKindlabel(uint logKindId)
     {
-        if (logKindId == 12) // Tell (Incoming)
-            return TextService.Translate("CustomChatMessageFormats.Config.Entry.Name.TellIncoming");
-
-        if (logKindId == 13) // Tell (Outgoing)
+        if (logKindId == 12) // Tell (Outgoing)
             return TextService.Translate("CustomChatMessageFormats.Config.Entry.Name.TellOutgoing");
+
+        if (logKindId == 13) // Tell (Incoming)
+            return TextService.Translate("CustomChatMessageFormats.Config.Entry.Name.TellIncoming");
 
         CachedLogKindRows ??= GenerateLogKindCache();
 
