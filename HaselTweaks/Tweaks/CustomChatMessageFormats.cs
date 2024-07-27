@@ -3,12 +3,12 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Services;
-using HaselCommon.Text;
-using HaselCommon.Text.Payloads;
+using HaselCommon.Services.SeStringEvaluation;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
+using Lumina.Text.ReadOnly;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
@@ -19,10 +19,9 @@ public unsafe partial class CustomChatMessageFormats(
     TextService TextService,
     ILogger<CustomChatMessageFormats> Logger,
     IGameInteropProvider GameInteropProvider,
-    IDataManager DataManager,
     ExcelService ExcelService,
-    IGameConfig GameConfig,
-    TextureService TextureService)
+    TextureService TextureService,
+    SeStringEvaluatorService SeStringEvaluator)
     : IConfigurableTweak
 {
     public string InternalName => nameof(CustomChatMessageFormats);
@@ -81,37 +80,40 @@ public unsafe partial class CustomChatMessageFormats(
 
     private unsafe uint FormatLogMessageDetour(HaselRaptureLogModule* haselRaptureLogModule, uint logKindId, Utf8String* sender, Utf8String* message, int* timestamp, nint a6, Utf8String* a7, int chatTabIndex)
     {
-        if (haselRaptureLogModule->LogKindSheet == 0 || haselRaptureLogModule->AtkFontCodeModule == null)
+        var raptureLogModule = (RaptureLogModule*)haselRaptureLogModule;
+        if (raptureLogModule->LogKindSheet == null || raptureLogModule->AtkFontCodeModule == null)
             return 0;
 
         if (!Config.FormatOverrides.TryGetValue(logKindId, out var logKindOverride) || !logKindOverride.Enabled || !logKindOverride.IsValid())
             return FormatLogMessageHook!.Original(haselRaptureLogModule, logKindId, sender, message, timestamp, a6, a7, chatTabIndex);
 
-        var tempParseMessage1 = haselRaptureLogModule->TempParseMessage.GetPointer(1);
+        var tempParseMessage1 = raptureLogModule->TempParseMessage.GetPointer(1);
         tempParseMessage1->Clear();
 
-        if (!haselRaptureLogModule->RaptureTextModule->TextModule.FormatString(message->StringPtr, null, tempParseMessage1))
+        if (!raptureLogModule->RaptureTextModule->TextModule.FormatString(message->StringPtr, null, tempParseMessage1))
             return 0;
 
-        var senderStr = new SeString([new RawPayload(sender->AsSpan().ToArray())]);
-        var messageStr = new SeString([new RawPayload(tempParseMessage1->AsSpan().ToArray())]);
+        var senderStr = new ReadOnlySeStringSpan(sender->AsSpan());
+        var messageStr = new ReadOnlySeStringSpan(tempParseMessage1->AsSpan());
 
-        var tempParseMessage0 = haselRaptureLogModule->TempParseMessage.GetPointer(0);
+        var tempParseMessage0 = raptureLogModule->TempParseMessage.GetPointer(0);
         tempParseMessage0->Clear();
-        tempParseMessage0->SetString(logKindOverride.Format.Resolve([senderStr, messageStr]).Encode());
+        tempParseMessage0->SetString(
+            SeStringEvaluator.Evaluate(
+                logKindOverride.Format,
+                new SeStringContext([senderStr, messageStr])));
 
-        var raptureLogModule = (RaptureLogModule*)haselRaptureLogModule;
         if (raptureLogModule->ChatTabShouldDisplayTime[chatTabIndex] && timestamp != null)
         {
             if (raptureLogModule->UseServerTime)
                 *timestamp = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            var tempParseMessage3 = haselRaptureLogModule->TempParseMessage.GetPointer(3);
-            tempParseMessage3->SetString(haselRaptureLogModule->RaptureTextModule->FormatAddonText2Int(raptureLogModule->Use12HourClock ? 7841u : 7840u, *timestamp));
+            var tempParseMessage3 = raptureLogModule->TempParseMessage.GetPointer(3);
+            tempParseMessage3->SetString(((HaselRaptureTextModule*)raptureLogModule->RaptureTextModule)->FormatAddonText2Int(raptureLogModule->Use12HourClock ? 7841u : 7840u, *timestamp));
             using var buffer = new Utf8String();
             tempParseMessage0->Copy(Utf8String.Concat(tempParseMessage3, &buffer, tempParseMessage0));
         }
 
-        return haselRaptureLogModule->AtkFontCodeModule->CalculateLogLines(a7, tempParseMessage0, a6, false);
+        return ((HaselAtkFontCodeModule*)raptureLogModule->AtkFontCodeModule)->CalculateLogLines(a7, tempParseMessage0, a6, false);
     }
 }

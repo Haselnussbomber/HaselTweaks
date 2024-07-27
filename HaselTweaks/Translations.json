@@ -603,6 +603,14 @@
     "de": "Ermöglicht die Anpassung von Nachrichtenformaten für verschiedene Chat-Kanäle.",
     "zh": "让你能自定义各种聊天频道的消息格式。"
   },
+  "CustomChatMessageFormats.Config.LStr1.Label": {
+    "en": "Player Name",
+    "de": "Spieler Name"
+  },
+  "CustomChatMessageFormats.Config.LStr2.Label": {
+    "en": "Message",
+    "de": "Nachricht"
+  },
   "CustomChatMessageFormats.Config.Entry.Name.TellIncoming": {
     "en": "Tell (Incoming)",
     "de": "Flüstern (Eingehend)",

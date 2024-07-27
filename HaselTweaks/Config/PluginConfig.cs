@@ -43,7 +43,7 @@ public partial class PluginConfig : IPluginConfiguration
             IncludeFields = true,
             WriteIndented = true,
         };
-        SerializerOptions.Converters.Add(new HaselCommonTextSeStringConverter());
+        SerializerOptions.Converters.Add(new ReadOnlySeStringConverter());
 
         var fileInfo = pluginInterface.ConfigFile;
         if (!fileInfo.Exists || fileInfo.Length < 2)

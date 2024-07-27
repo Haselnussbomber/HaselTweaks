@@ -1,5 +1,3 @@
-using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-
 namespace HaselTweaks.Tweaks;
 
 public class EnhancedExpBarConfiguration

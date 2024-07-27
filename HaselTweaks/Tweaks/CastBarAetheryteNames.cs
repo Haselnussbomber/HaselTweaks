@@ -7,8 +7,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
-using HaselCommon.Text;
-using HaselCommon.Text.Expressions;
+using HaselCommon.Services.SeStringEvaluation;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
@@ -21,7 +20,8 @@ public unsafe class CastBarAetheryteNames(
     IAddonLifecycle AddonLifecycle,
     IClientState ClientState,
     ExcelService ExcelService,
-    TextService TextService)
+    TextService TextService,
+    SeStringEvaluatorService SeStringEvaluator)
     : ITweak
 {
     public string InternalName => nameof(CastBarAetheryteNames);
@@ -108,7 +108,7 @@ public unsafe class CastBarAetheryteNames(
         var placeName = true switch
         {
             _ when info.IsApartment => TextService.GetAddonText(8518),
-            _ when info.IsSharedHouse => SeString.FromAddon(8519).Resolve([new IntegerExpression(info.Ward), new IntegerExpression(info.Plot)]).ToString(),
+            _ when info.IsSharedHouse => SeStringEvaluator.EvaluateFromAddon(8519, new SeStringParameter[] { (uint)info.Ward, (uint)info.Plot }).ToString(),
             _ => ExcelService.GetRow<PlaceName>(row.PlaceName.Row)?.Name?.ExtractText() ?? string.Empty,
         };
 

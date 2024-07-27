@@ -8,7 +8,6 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Services;
 using HaselCommon.Utils;
-using HaselCommon.Windowing;
 using HaselTweaks.Caches;
 using HaselTweaks.Config;
 using HaselTweaks.Tweaks;

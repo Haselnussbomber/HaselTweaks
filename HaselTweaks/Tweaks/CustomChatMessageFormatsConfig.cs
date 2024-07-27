@@ -1,23 +1,20 @@
-using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using System.Text.Json.Serialization;
-using Dalamud.Game.Config;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using HaselCommon.Text;
-using HaselCommon.Text.Enums;
-using HaselCommon.Text.Expressions;
-using HaselCommon.Text.Payloads;
-using HaselCommon.Text.Payloads.Macro;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
-using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
+using Lumina.Text;
+using Lumina.Text.Expressions;
+using Lumina.Text.Payloads;
+using Lumina.Text.ReadOnly;
 using Microsoft.Extensions.Logging;
 using static HaselTweaks.Tweaks.CustomChatMessageFormatsConfiguration;
 
@@ -30,12 +27,12 @@ public class CustomChatMessageFormatsConfiguration
     public record LogKindOverride
     {
         public bool Enabled = true;
-        public SeString Format;
+        public ReadOnlySeString Format;
 
         [JsonIgnore]
         public bool EditMode;
 
-        public LogKindOverride(SeString format)
+        public LogKindOverride(ReadOnlySeString format)
         {
             Format = format;
         }
@@ -44,11 +41,14 @@ public class CustomChatMessageFormatsConfiguration
         {
             var colorCount = 0;
 
-            foreach (var payload in Format.Payloads)
+            foreach (var payload in Format)
             {
-                if (payload is ColorPayload colorPayload)
+                if (payload.Type == ReadOnlySePayloadType.Macro && payload.MacroCode == MacroCode.Color)
                 {
-                    if (colorPayload.Color?.ExpressionType == ExpressionType.StackColor)
+                    if (!payload.TryGetExpression(out var eColor))
+                        continue;
+
+                    if (eColor.TryGetPlaceholderExpression(out var ph) && ph == (int)ExpressionType.StackColor)
                         colorCount--;
                     else
                         colorCount++;
@@ -68,17 +68,8 @@ public partial class CustomChatMessageFormats
     public CustomChatMessageFormatsConfiguration Config => PluginConfig.Tweaks.CustomChatMessageFormats;
 
     private bool IsConfigWindowOpen;
-    private List<(LogKind LogKind, LogFilter LogFilter, SeString Format)>? CachedLogKindRows = null;
-    private FrozenDictionary<uint, string>? CachedTextColors = null;
-    private static readonly string[] GfdTextures = [
-        "common/font/fonticon_xinput.tex",
-        "common/font/fonticon_ps3.tex",
-        "common/font/fonticon_ps4.tex",
-        "common/font/fonticon_ps5.tex",
-        "common/font/fonticon_lys.tex",
-    ];
-    private GfdFileView? gfdFileView = null;
-    private GfdFileView GfdFileView => gfdFileView ??= new(DataManager.GetFile("common/font/gfdata.gfd")!.Data);
+    private List<(LogKind LogKind, LogFilter LogFilter, ReadOnlySeString Format)>? CachedLogKindRows = null;
+    private TextColorEntry[]? CachedTextColors = null;
 
     public void OnConfigOpen()
     {
@@ -90,7 +81,6 @@ public partial class CustomChatMessageFormats
         IsConfigWindowOpen = false;
         CachedLogKindRows = null;
         CachedTextColors = null;
-        gfdFileView = null;
     }
 
     public void OnConfigChange(string fieldName) { }
@@ -243,7 +233,7 @@ public partial class CustomChatMessageFormats
                 {
                     if (ImGui.Selectable($"{GetLogKindlabel(entry.LogKind.RowId)}##LogKind{entry.LogKind.RowId}", false, ImGuiSelectableFlags.None, new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetTextLineHeight() * 2)))
                     {
-                        Config.FormatOverrides.Add(entry.LogKind.RowId, new(SeString.Parse(entry.Format.Encode())));
+                        Config.FormatOverrides.Add(entry.LogKind.RowId, new(entry.Format));
                         SaveAndReloadChat();
                     }
 
@@ -307,7 +297,7 @@ public partial class CustomChatMessageFormats
         var entryToMoveDown = -1;
         var entryToRemove = -1;
 
-        foreach (var payload in entry.Format.Payloads)
+        foreach (var payload in entry.Format)
         {
             using var id = ImRaii.PushId("PayloadEdit[" + i.ToString() + "]");
 
@@ -318,20 +308,12 @@ public partial class CustomChatMessageFormats
             {
                 ImGuiUtils.PushCursorY(2f * ImGuiHelpers.GlobalScale);
 
-                switch (payload)
-                {
-                    case TextPayload textPayload:
-                        ImGui.TextUnformatted("Text");
-                        break;
-
-                    case MacroPayload macroPayload:
-                        ImGui.TextUnformatted(macroPayload.Code.ToString());
-                        break;
-
-                    default:
-                        ImGui.TextUnformatted(payload.GetType().Name);
-                        break;
-                }
+                if (payload.Type == ReadOnlySePayloadType.Text)
+                    ImGui.TextUnformatted("Text");
+                else if (payload.Type == ReadOnlySePayloadType.Macro)
+                    ImGui.TextUnformatted(payload.MacroCode.ToString());
+                else if (payload.Type == ReadOnlySePayloadType.Invalid)
+                    ImGui.TextUnformatted("Invalid");
             }
 
             // Value
@@ -339,117 +321,180 @@ public partial class CustomChatMessageFormats
             {
                 ImGuiUtils.PushCursorY(2f * ImGuiHelpers.GlobalScale);
 
-                switch (payload)
+                if (payload.Type == ReadOnlySePayloadType.Text)
                 {
-                    case TextPayload textPayload:
-                        var text = textPayload.Text ?? string.Empty;
-                        ImGui.SetNextItemWidth(-1);
-                        ImGuiUtils.PushCursorY(-ImGui.GetStyle().CellPadding.Y);
-                        if (ImGui.InputText($"##TextPayload{i}", ref text, 255))
+                    var text = Encoding.UTF8.GetString(payload.Body.ToArray());
+                    ImGui.SetNextItemWidth(-1);
+                    ImGuiUtils.PushCursorY(-ImGui.GetStyle().CellPadding.Y);
+                    if (ImGui.InputText($"##TextPayload{i}", ref text, 255))
+                    {
+                        var sb = new SeStringBuilder();
+                        var j = 0;
+                        foreach (var tempPayload in entry.Format)
                         {
-                            textPayload.Text = text;
-                            SaveAndReloadChat();
+                            if (i == j)
+                                sb.Append(text);
+                            else
+                                sb.Append(tempPayload);
+                            j++;
                         }
-                        break;
+                        entry.Format = sb.ToReadOnlySeString();
+                        SaveAndReloadChat();
+                    }
+                }
+                else if (payload.Type == ReadOnlySePayloadType.Macro)
+                {
+                    switch (payload.MacroCode)
+                    {
+                        case MacroCode.Icon:
+                            if (!payload.TryGetExpression(out var iconExpr) || !iconExpr.TryGetUInt(out var iconId))
+                                break;
 
-                    case IconPayload iconPayload:
-                        var iconId = (uint)(iconPayload.IconId?.ResolveNumber() ?? 0);
+                            TextureService.DrawGfd(iconId, 20);
 
-                        if (GfdFileView.TryGetEntry(iconId, out var gfdEntry))
-                            DrawGfdEntry(gfdEntry);
+                            ImGui.SameLine();
 
-                        ImGui.SameLine();
-
-                        if (ImGui.Button(TextService.Translate("CustomChatMessageFormats.Config.Entry.OpenIconSelectorButton.Label")))
-                        {
-                            ImGui.OpenPopup("##IconSelector");
-                        }
-
-                        using (var iconSelectMenu = ImRaii.Popup("##IconSelector", ImGuiWindowFlags.NoMove))
-                        {
-                            if (iconSelectMenu)
+                            if (ImGui.Button(TextService.Translate("CustomChatMessageFormats.Config.Entry.OpenIconSelectorButton.Label")))
                             {
-                                var maxLineWidth = 20 * 20;
-                                var posStart = ImGui.GetCursorPosX();
+                                ImGui.OpenPopup("##IconSelector");
+                            }
 
-                                foreach (var selectorGfdEntry in GfdFileView.Entries)
+                            using (var iconSelectMenu = ImRaii.Popup("##IconSelector", ImGuiWindowFlags.NoMove))
+                            {
+                                if (iconSelectMenu)
                                 {
-                                    if (selectorGfdEntry.IsEmpty || selectorGfdEntry.Id is 69 or 123)
-                                        continue;
+                                    var maxLineWidth = 20 * 20;
+                                    var posStart = ImGui.GetCursorPosX();
 
-                                    var startPos = ImGui.GetCursorPos();
-                                    using var buttonColor = ImRaii.PushColor(ImGuiCol.Button, 0);
-                                    using var buttonActiveColor = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xAAFFFFFF);
-                                    using var buttonHoveredColor = ImRaii.PushColor(ImGuiCol.ButtonHovered, 0x77FFFFFF);
-                                    using var buttonRounding = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0);
-                                    if (ImGui.Button($"##Icon{selectorGfdEntry.Id}", ImGuiHelpers.ScaledVector2(selectorGfdEntry.Width, selectorGfdEntry.Height)))
+                                    foreach (var selectorGfdEntry in TextureService.GfdFileView.Value.Entries)
                                     {
-                                        iconPayload.IconId = new IntegerExpression(selectorGfdEntry.Id);
-                                        SaveAndReloadChat();
+                                        if (selectorGfdEntry.IsEmpty || selectorGfdEntry.Id is 69 or 123)
+                                            continue;
+
+                                        var startPos = ImGui.GetCursorPos();
+                                        using var buttonColor = ImRaii.PushColor(ImGuiCol.Button, 0);
+                                        using var buttonActiveColor = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xAAFFFFFF);
+                                        using var buttonHoveredColor = ImRaii.PushColor(ImGuiCol.ButtonHovered, 0x77FFFFFF);
+                                        using var buttonRounding = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0);
+                                        var size = ImGuiHelpers.ScaledVector2(selectorGfdEntry.Width, selectorGfdEntry.Height) * 2;
+                                        if (ImGui.Button($"##Icon{selectorGfdEntry.Id}", size))
+                                        {
+                                            var sb = new SeStringBuilder();
+                                            var j = 0;
+                                            foreach (var tempPayload in entry.Format)
+                                            {
+                                                if (i == j)
+                                                    sb.AppendIcon(selectorGfdEntry.Id);
+                                                else
+                                                    sb.Append(tempPayload);
+                                                j++;
+                                            }
+                                            entry.Format = sb.ToReadOnlySeString();
+                                            SaveAndReloadChat();
+                                        }
+
+                                        ImGui.SetCursorPos(startPos);
+                                        TextureService.DrawGfd(selectorGfdEntry.Id, size);
+
+                                        ImGui.SameLine();
+
+                                        if (ImGui.GetCursorPosX() - posStart > maxLineWidth)
+                                            ImGui.NewLine();
                                     }
-
-                                    ImGui.SetCursorPos(startPos);
-                                    DrawGfdEntry(selectorGfdEntry);
-
-                                    ImGui.SameLine();
-
-                                    if (ImGui.GetCursorPosX() - posStart > maxLineWidth)
-                                        ImGui.NewLine();
                                 }
                             }
-                        }
 
-                        break;
+                            break;
 
-                    case StringPayload stringPayload:
-                        ImGui.TextUnformatted($"{stringPayload.Parameter}");
-                        break;
-
-                    case ColorPayload colorPayload:
-                        uint value;
-                        switch (colorPayload.Color)
-                        {
-                            case ParameterExpression parameterExpression
-                            when parameterExpression.ExpressionType is ExpressionType.PlayerParameter
-                              && parameterExpression.Operand is IntegerExpression operandExpression:
-                                value = (uint)parameterExpression.ResolveNumber();
-
-                                using (ImRaii.PushColor(ImGuiCol.Text, SwapRedBlue(value)))
+                        case MacroCode.String:
+                            {
+                                if (payload.TryGetExpression(out var strExpr)
+                                    && strExpr.TryGetParameterExpression(out var expressionType, out var operand)
+                                    && (ExpressionType)expressionType == ExpressionType.LocalString
+                                    && operand.TryGetUInt(out var uintVal))
                                 {
-                                    if (CachedTextColors!.TryGetValue(operandExpression.Value, out var label))
-                                        ImGui.TextUnformatted(label);
-                                    else
-                                        ImGui.TextUnformatted(operandExpression.ToString());
+                                    if (uintVal == 1)
+                                    {
+                                        TextService.Draw("CustomChatMessageFormats.Config.LStr1.Label"); // "Player Name"
+                                        break;
+                                    }
+                                    if (uintVal == 2)
+                                    {
+                                        TextService.Draw("CustomChatMessageFormats.Config.LStr2.Label"); // "Message"
+                                        break;
+                                    }
                                 }
+
+                                ImGui.TextUnformatted(payload.ToString());
                                 break;
+                            }
 
-                            case IntegerExpression integerExpression:
-                                value = (uint)integerExpression.ResolveNumber();
+                        case MacroCode.Color:
+                            {
+                                if (!payload.TryGetExpression(out var eColor))
+                                    break;
 
-                                ImGui.SetNextItemWidth(-1);
-                                ImGuiUtils.PushCursorY(-ImGui.GetStyle().CellPadding.Y);
-                                var hexColor = ImGui.ColorConvertU32ToFloat4(SwapRedBlue(value));
-                                if (ImGui.ColorEdit4("##ColorPicker", ref hexColor, ImGuiColorEditFlags.NoAlpha))
+                                if (eColor.TryGetParameterExpression(out var eColorExprType, out var operand)
+                                    && (ExpressionType)eColorExprType == ExpressionType.GlobalNumber
+                                    && operand.TryGetUInt(out var parameterIndex)
+                                    && SeStringEvaluator.TryGetGNumDefault(parameterIndex - 1, out var eColorVal))
                                 {
-                                    colorPayload.Color = new IntegerExpression(SwapRedBlue(ImGui.ColorConvertFloat4ToU32(hexColor)));
-                                    SaveAndReloadChat();
+                                    using (ImRaii.PushColor(ImGuiCol.Text, SwapRedBlue(eColorVal)))
+                                    {
+                                        var textColorEntry = CachedTextColors?.FirstOrDefault(entry => entry.GNumIndex == parameterIndex);
+                                        if (textColorEntry != null)
+                                            ImGui.TextUnformatted(textColorEntry.Label);
+                                        else
+                                            ImGui.TextUnformatted((parameterIndex - 1).ToString());
+                                    }
+                                    break;
                                 }
-                                break;
 
-                            default:
-                                ImGui.TextUnformatted($"{colorPayload.Color}");
-                                break;
-                        }
-                        break;
+                                if (eColor.TryGetUInt(out eColorVal))
+                                {
+                                    ImGui.SetNextItemWidth(-1);
+                                    ImGuiUtils.PushCursorY(-ImGui.GetStyle().CellPadding.Y);
+                                    var hexColor = ImGui.ColorConvertU32ToFloat4(SwapRedBlue(eColorVal));
+                                    if (ImGui.ColorEdit4("##ColorPicker", ref hexColor, ImGuiColorEditFlags.NoAlpha))
+                                    {
+                                        var sb = new SeStringBuilder();
+                                        var j = 0;
+                                        foreach (var tempPayload in entry.Format)
+                                        {
+                                            if (i == j)
+                                                sb.PushColorRgba(SwapRedBlue(ImGui.ColorConvertFloat4ToU32(hexColor)));
+                                            else
+                                                sb.Append(tempPayload);
+                                            j++;
+                                        }
+                                        entry.Format = sb.ToReadOnlySeString();
+                                        SaveAndReloadChat();
+                                    }
+                                    break;
+                                }
 
-                    default:
-                        ImGui.TextUnformatted($"{payload}");
-                        break;
+                                ImGui.TextUnformatted(payload.ToString());
+                                break;
+                            }
+
+                        default:
+                            ImGui.TextUnformatted(payload.ToString());
+                            break;
+                    }
+
+                }
+                else if (payload.Type == ReadOnlySePayloadType.Invalid)
+                {
+                    ImGui.TextUnformatted("Invalid");
                 }
 
                 if (ImGui.IsItemHovered())
                 {
-                    var isStringPlaceholder = payload is StringPayload stringPayload && stringPayload.Parameter is ParameterExpression parameterExpression;
+                    var isStringPlaceholder =
+                        payload.Type == ReadOnlySePayloadType.Macro
+                        && payload.MacroCode == MacroCode.String
+                        && payload.TryGetExpression(out var expr)
+                        && expr.TryGetParameterExpression(out _, out _);
                     if (isStringPlaceholder)
                     {
                         ImGui.BeginTooltip();
@@ -457,7 +502,12 @@ public partial class CustomChatMessageFormats
                         ImGui.EndTooltip();
                     }
 
-                    var isStackColor = payload is ColorPayload stackColorPayload && stackColorPayload.Color?.ExpressionType is ExpressionType.StackColor;
+                    var isStackColor =
+                        payload.Type == ReadOnlySePayloadType.Macro
+                        && payload.MacroCode == MacroCode.Color
+                        && payload.TryGetExpression(out expr)
+                        && expr.TryGetPlaceholderExpression(out var exprType)
+                        && (ExpressionType)exprType == ExpressionType.StackColor;
                     if (isStackColor)
                     {
                         ImGui.BeginTooltip();
@@ -484,7 +534,7 @@ public partial class CustomChatMessageFormats
 
                 ImGui.SameLine(0, ItemInnerSpacing.X);
 
-                if (i < entry.Format.Payloads.Count - 1)
+                if (i < entry.Format.PayloadCount - 1)
                 {
                     if (ImGuiUtils.IconButton("##Down", FontAwesomeIcon.ArrowDown, TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.MoveDownButton.Tooltip")))
                     {
@@ -496,7 +546,7 @@ public partial class CustomChatMessageFormats
                     ImGui.Dummy(ArrowDownButtonSize);
                 }
 
-                if (payload is not StringPayload)
+                if (payload.Type != ReadOnlySePayloadType.Macro || payload.MacroCode != MacroCode.String)
                 {
                     ImGui.SameLine(0, ItemInnerSpacing.X);
 
@@ -526,23 +576,77 @@ public partial class CustomChatMessageFormats
 
         if (entryToMoveUp != -1)
         {
-            var removedItem = entry.Format.Payloads[entryToMoveUp];
-            entry.Format.Payloads.RemoveAt(entryToMoveUp);
-            entry.Format.Payloads.Insert(entryToMoveUp - 1, removedItem);
+            var sb = new SeStringBuilder();
+            ReadOnlySePayload? tempPayload = null;
+            var j = 0;
+            foreach (var payload in entry.Format)
+            {
+                if (j == entryToMoveUp - 1)
+                {
+                    tempPayload = payload;
+                    j++;
+                    continue;
+                }
+
+                if (j == entryToMoveUp && tempPayload != null)
+                {
+                    sb.Append(payload);
+                    sb.Append((ReadOnlySePayload)tempPayload);
+                    tempPayload = null;
+                    j++;
+                    continue;
+                }
+
+                sb.Append(payload);
+                j++;
+            }
+            entry.Format = sb.ToReadOnlySeString();
             SaveAndReloadChat();
         }
 
         if (entryToMoveDown != -1)
         {
-            var removedItem = entry.Format.Payloads[entryToMoveDown];
-            entry.Format.Payloads.RemoveAt(entryToMoveDown);
-            entry.Format.Payloads.Insert(entryToMoveDown + 1, removedItem);
+            var sb = new SeStringBuilder();
+            ReadOnlySePayload? tempPayload = null;
+            var j = 0;
+            foreach (var payload in entry.Format)
+            {
+                if (j == entryToMoveDown)
+                {
+                    tempPayload = payload;
+                    j++;
+                    continue;
+                }
+
+                sb.Append(payload);
+
+                if (tempPayload != null)
+                {
+                    sb.Append((ReadOnlySePayload)tempPayload);
+                    tempPayload = null;
+                }
+
+                j++;
+            }
+
+            if (tempPayload != null)
+                sb.Append((ReadOnlySePayload)tempPayload);
+
+            entry.Format = sb.ToReadOnlySeString();
             SaveAndReloadChat();
         }
 
         if (entryToRemove != -1)
         {
-            entry.Format.Payloads.RemoveAt(entryToRemove);
+            var sb = new SeStringBuilder();
+            var j = 0;
+            foreach (var payload in entry.Format)
+            {
+                if (j != entryToRemove)
+                    sb.Append(payload);
+                j++;
+            }
+            entry.Format = sb.ToReadOnlySeString();
             SaveAndReloadChat();
         }
 
@@ -553,43 +657,53 @@ public partial class CustomChatMessageFormats
             {
                 if (ImGui.MenuItem(TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.TextPayload")))
                 {
-                    entry.Format.Payloads.Add(new TextPayload(""));
+                    var sb = new SeStringBuilder();
+                    sb.Append(entry.Format);
+                    sb.Append(" ");
+                    entry.Format = sb.ToReadOnlySeString();
                     SaveAndReloadChat();
                 }
 
                 if (ImGui.MenuItem(TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.IconPayload")))
                 {
-                    entry.Format.Payloads.Add(new IconPayload() { IconId = 1 });
+                    var sb = new SeStringBuilder();
+                    sb.Append(entry.Format);
+                    sb.AppendIcon(1);
+                    entry.Format = sb.ToReadOnlySeString();
                     SaveAndReloadChat();
                 }
 
                 if (ImGui.MenuItem(TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.CustomColor")))
                 {
-                    entry.Format.Payloads.AddRange([
-                        new ColorPayload() { Color = new IntegerExpression(0xFFFFFFFF) },
-                        new ColorPayload() { Color = new PlaceholderExpression(ExpressionType.StackColor) }
-                    ]);
+                    var sb = new SeStringBuilder();
+                    sb.Append(entry.Format);
+                    sb.PushColorRgba(0xFFFFFFFF);
+                    sb.PopColor();
+                    entry.Format = sb.ToReadOnlySeString();
                     SaveAndReloadChat();
                 }
 
                 if (ImGui.BeginMenu(TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.LogTextColors"))) // GetAddonText(12732)
                 {
-                    foreach (var (gnumIndex, label) in CachedTextColors!.ToList().OrderBy(entry => entry.Value))
+                    foreach (var textColorEntry in CachedTextColors!)
                     {
-                        if (gnumIndex == 30) // skip Personal Emotes which is the same as Emotes
+                        if (textColorEntry.GNumIndex == 30) // skip Personal Emotes which is the same as Emotes
                             continue;
 
-                        var parameterExpression = new ParameterExpression(ExpressionType.PlayerParameter, gnumIndex);
-                        var value = (uint)parameterExpression.ResolveNumber();
+                        var gNumIndex = textColorEntry.GNumIndex;
 
-                        using (ImRaii.PushColor(ImGuiCol.Text, SwapRedBlue(value)))
+                        if (!SeStringEvaluator.TryGetGNumDefault((uint)gNumIndex - 1, out var value))
+                            continue;
+
+                        using (ImRaii.PushColor(ImGuiCol.Text, SwapRedBlue(value | 0xFF000000u)))
                         {
-                            if (ImGui.MenuItem(label + "##TextColor" + gnumIndex.ToString()))
+                            if (ImGui.MenuItem(textColorEntry.Label + "##TextColor" + gNumIndex.ToString()))
                             {
-                                entry.Format.Payloads.AddRange([
-                                    new ColorPayload() { Color = parameterExpression },
-                                    new ColorPayload() { Color = new PlaceholderExpression(ExpressionType.StackColor) }
-                                ]);
+                                var sb = new SeStringBuilder();
+                                sb.Append(entry.Format);
+                                sb.BeginMacro(MacroCode.Color).AppendGlobalNumberExpression(gNumIndex).EndMacro();
+                                sb.PopColor();
+                                entry.Format = sb.ToReadOnlySeString();
                                 SaveAndReloadChat();
                             }
                         }
@@ -600,51 +714,54 @@ public partial class CustomChatMessageFormats
 
                 if (ImGui.MenuItem(TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.StackColor")))
                 {
-                    entry.Format.Payloads.Add(new ColorPayload() { Color = new PlaceholderExpression(ExpressionType.StackColor) });
+                    var sb = new SeStringBuilder();
+                    sb.Append(entry.Format);
+                    sb.PopColor();
+                    entry.Format = sb.ToReadOnlySeString();
                     SaveAndReloadChat();
                 }
             }
         }
     }
 
-    private void DrawExample(SeString format)
+    private void DrawExample(ReadOnlySeString format)
     {
         using var textColors = new ImRaii.Color();
 
-        // TODO: compose player name with party index, job icon (depending on setting) and world
-        var resolved = format.Resolve(["Player Name", "Message"]);
+        var resolved = SeStringEvaluator.Evaluate(format, new([
+            TextService.Translate("CustomChatMessageFormats.Config.LStr1.Label"), // "Player Name"
+            TextService.Translate("CustomChatMessageFormats.Config.LStr2.Label"), // "Message"
+        ]));
 
-        for (var i = 0; i < resolved.Payloads.Count; i++)
+        foreach (var payload in resolved)
         {
-            var payload = resolved.Payloads[i];
-
-            switch (payload)
+            if (payload.Type == ReadOnlySePayloadType.Text)
             {
-                case TextPayload textPayload:
-                    ImGui.TextUnformatted(textPayload.Text);
+                ImGui.TextUnformatted(Encoding.UTF8.GetString(payload.Body.ToArray()));
+                ImGui.SameLine(0, 0);
+                continue;
+            }
+
+            if (payload.Type != ReadOnlySePayloadType.Macro)
+                continue;
+
+            switch (payload.MacroCode)
+            {
+                case MacroCode.Icon:
+                    if (payload.TryGetExpression(out var iconExpr) && iconExpr.TryGetUInt(out var iconId))
+                        TextureService.DrawGfd(iconId, 20);
                     break;
 
-                case IconPayload iconPayload:
-                    var iconId = (uint)(iconPayload.IconId?.ResolveNumber() ?? 0);
+                case MacroCode.Color:
+                    if (!payload.TryGetExpression(out var eColor))
+                        break;
 
-                    if (GfdFileView.TryGetEntry(iconId, out var gfdEntry))
-                        DrawGfdEntry(gfdEntry);
-                    else
-                        ImGui.Dummy(new(20));
-
-                    break;
-
-                case ColorPayload colorPayload:
-                    if (colorPayload.Color is IntegerExpression integerExpression)
-                        textColors.Push(ImGuiCol.Text, SwapRedBlue((uint)integerExpression.ResolveNumber()));
-                    else if (colorPayload.Color?.ExpressionType == ExpressionType.StackColor)
-                        textColors.Pop(1);
+                    if (eColor.TryGetPlaceholderExpression(out var ph) && ph == (int)ExpressionType.StackColor)
+                        textColors.Pop();
+                    else if (eColor.TryGetUInt(out var eColorVal)) //if (TryResolveUInt(ref context, eColor, out var eColorVal))
+                        textColors.Push(ImGuiCol.Text, SwapRedBlue(eColorVal | 0xFF000000u));
 
                     ImGui.Dummy(Vector2.Zero);
-                    break;
-
-                default:
-                    ImGui.TextUnformatted(payload.ToString());
                     break;
             }
 
@@ -654,32 +771,16 @@ public partial class CustomChatMessageFormats
         ImGui.NewLine();
     }
 
-    private void DrawGfdEntry(GfdFileView.GfdEntry entry)
+    private List<(LogKind LogKind, LogFilter LogFilter, ReadOnlySeString Format)> GenerateLogKindCache()
     {
-        var startPos = new Vector2(entry.Left, entry.Top) * 2 + new Vector2(0, 340);
-        var size = new Vector2(entry.Width, entry.Height) * 2;
-
-        GameConfig.TryGet(SystemConfigOption.PadSelectButtonIcon, out uint padSelectButtonIcon);
-
-        TextureService.Draw(GfdTextures[padSelectButtonIcon], new()
-        {
-            DrawSize = ImGuiHelpers.ScaledVector2(size.X, size.Y) / 2,
-            Uv0 = startPos,
-            Uv1 = startPos + size,
-            TransformUv = true,
-        });
-    }
-
-    private List<(LogKind LogKind, LogFilter LogFilter, SeString Format)> GenerateLogKindCache()
-    {
-        var list = new List<(LogKind LogKind, LogFilter LogFilter, SeString Format)>();
+        var list = new List<(LogKind LogKind, LogFilter LogFilter, ReadOnlySeString Format)>();
 
         void Add(uint logKindId, uint logFilterId)
         {
             var logKindRow = ExcelService.GetRow<LogKind>(logKindId)!;
             var logFilterRow = ExcelService.GetRow<LogFilter>(logFilterId)!;
             if (logKindRow != null && logFilterRow != null && logKindRow.Format.RawData.Length > 0)
-                list.Add((logKindRow, logFilterRow, SeString.Parse(logKindRow.Format.RawData)));
+                list.Add((logKindRow, logFilterRow, new(logKindRow.Format.RawData.ToArray())));
             else
                 Logger.LogWarning("GenerateLogKindCache(): Skipped ({logKindId}, {logFilterId})", logKindId, logFilterId);
         }
@@ -735,38 +836,39 @@ public partial class CustomChatMessageFormats
         return $"LogKind #{logKindId}";
     }
 
-    private FrozenDictionary<uint, string> GenerateTextColors()
+    private record TextColorEntry(int GNumIndex, string Label);
+    private TextColorEntry[] GenerateTextColors()
     {
-        return new Dictionary<uint, string>
+        return new TextColorEntry[]
         {
-            { 13, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(653) },  // Log Text Colors - Chat 1 - Say
-            { 14, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(645) },  // Log Text Colors - Chat 1 - Shout
-            { 15, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7886) }, // Log Text Colors - Chat 1 - Tell
-            { 16, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7887) }, // Log Text Colors - Chat 1 - Party
-            { 17, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7888) }, // Log Text Colors - Chat 1 - Alliance
-            { 18, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7890) }, // Log Text Colors - Chat 2 - LS1
-            { 19, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7891) }, // Log Text Colors - Chat 2 - LS2
-            { 20, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7892) }, // Log Text Colors - Chat 2 - LS3
-            { 21, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7893) }, // Log Text Colors - Chat 2 - LS4
-            { 22, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7894) }, // Log Text Colors - Chat 2 - LS5
-            { 23, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7895) }, // Log Text Colors - Chat 2 - LS6
-            { 24, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7896) }, // Log Text Colors - Chat 2 - LS7
-            { 25, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7897) }, // Log Text Colors - Chat 2 - LS8
-            { 26, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7889) }, // Log Text Colors - Chat 2 - Free Company
-            { 27, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7899) }, // Log Text Colors - Chat 2 - PvP Team
-            { 29, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7898) }, // Log Text Colors - Chat 2 - Novice Network
-            { 30, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1911) }, // Log Text Colors - Chat 1 - Personal Emotes
-            { 31, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1911) }, // Log Text Colors - Chat 1 - Emotes
-            { 32, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1931) }, // Log Text Colors - Chat 1 - Yell
-            { 35, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(4397) }, // Log Text Colors - Chat 2 - CWLS1
-            { 84, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8390) }, // Log Text Colors - Chat 2 - CWLS2
-            { 85, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8391) }, // Log Text Colors - Chat 2 - CWLS3
-            { 86, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8392) }, // Log Text Colors - Chat 2 - CWLS4
-            { 87, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8393) }, // Log Text Colors - Chat 2 - CWLS5
-            { 88, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8394) }, // Log Text Colors - Chat 2 - CWLS6
-            { 89, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8395) }, // Log Text Colors - Chat 2 - CWLS7
-            { 90, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8396) } // Log Text Colors - Chat 2 - CWLS8
-        }.ToFrozenDictionary();
+            new(13, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(653)),  // Log Text Colors - Chat 1 - Say
+            new(14, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(645)),  // Log Text Colors - Chat 1 - Shout
+            new(15, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7886)), // Log Text Colors - Chat 1 - Tell
+            new(16, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7887)), // Log Text Colors - Chat 1 - Party
+            new(17, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7888)), // Log Text Colors - Chat 1 - Alliance
+            new(18, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7890)), // Log Text Colors - Chat 2 - LS1
+            new(19, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7891)), // Log Text Colors - Chat 2 - LS2
+            new(20, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7892)), // Log Text Colors - Chat 2 - LS3
+            new(21, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7893)), // Log Text Colors - Chat 2 - LS4
+            new(22, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7894)), // Log Text Colors - Chat 2 - LS5
+            new(23, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7895)), // Log Text Colors - Chat 2 - LS6
+            new(24, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7896)), // Log Text Colors - Chat 2 - LS7
+            new(25, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7897)), // Log Text Colors - Chat 2 - LS8
+            new(26, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7889)), // Log Text Colors - Chat 2 - Free Company
+            new(27, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7899)), // Log Text Colors - Chat 2 - PvP Team
+            new(29, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7898)), // Log Text Colors - Chat 2 - Novice Network
+            new(30, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1911)), // Log Text Colors - Chat 1 - Personal Emotes
+            new(31, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1911)), // Log Text Colors - Chat 1 - Emotes
+            new(32, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1931)), // Log Text Colors - Chat 1 - Yell
+            new(35, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(4397)), // Log Text Colors - Chat 2 - CWLS1
+            new(84, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8390)), // Log Text Colors - Chat 2 - CWLS2
+            new(85, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8391)), // Log Text Colors - Chat 2 - CWLS3
+            new(86, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8392)), // Log Text Colors - Chat 2 - CWLS4
+            new(87, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8393)), // Log Text Colors - Chat 2 - CWLS5
+            new(88, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8394)), // Log Text Colors - Chat 2 - CWLS6
+            new(89, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8395)), // Log Text Colors - Chat 2 - CWLS7
+            new(90, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8396)) // Log Text Colors - Chat 2 - CWLS8
+        }.OrderBy(kv => kv.Label).ToArray();
     }
 
     private static uint SwapRedBlue(uint value)

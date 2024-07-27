@@ -141,7 +141,7 @@ public unsafe partial class DTR(
             return;
 
         DtrInstance.Text = ((char)(SeIconChar.Instance1 + (byte)(instanceId - 1))).ToString();
-        
+
         if (!DtrInstance.Shown)
             DtrInstance.Shown = true;
 
