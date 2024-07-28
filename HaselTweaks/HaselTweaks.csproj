@@ -28,6 +28,26 @@
     <Reference Include="ImGuiScene" Private="false" />
     <Reference Include="Lumina" Private="false" />
     <Reference Include="Lumina.Excel" Private="false" />
+    <Reference Include="SharpDX" Private="false" />
+    <Reference Include="SharpDX.Direct3D11" Private="false" />
+    <Reference Include="SharpDX.DXGI" Private="false" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('$(ProjectDir)..\FFXIVClientStructs')">
+    <Reference Include="InteropGenerator.Runtime" Private="false" />
+    <Reference Include="FFXIVClientStructs" Private="false" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="Exists('$(ProjectDir)..\FFXIVClientStructs')">
+    <InteropGenerator_InteropNamespace>HaselTweaks</InteropGenerator_InteropNamespace>
+    <DefineConstants>HAS_LOCAL_CS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists('$(ProjectDir)..\FFXIVClientStructs')">
+    <CompilerVisibleProperty Include="InteropGenerator_InteropNamespace" />
+    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator\InteropGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" Private="True" />
+    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" Private="True" />
   </ItemGroup>
 
   <Target Name="Message" BeforeTargets="BeforeBuild">
@@ -53,12 +73,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="SharpDX" Private="false" />
-    <Reference Include="SharpDX.Direct3D11" Private="false" />
-    <Reference Include="SharpDX.DXGI" Private="false" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
@@ -67,17 +81,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" Private="True" />
-    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" />
     <ProjectReference Include="..\HaselCommon\HaselCommon\HaselCommon.csproj" />
-  </ItemGroup>
-
-  <PropertyGroup>
-    <InteropGenerator_InteropNamespace>HaselTweaks</InteropGenerator_InteropNamespace>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <CompilerVisibleProperty Include="InteropGenerator_InteropNamespace" />
-    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator\InteropGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

@@ -130,13 +130,6 @@
           "Microsoft.Extensions.Logging": "[8.0.0, )"
         }
       },
-      "haselcommon.text": {
-        "type": "Project",
-        "dependencies": {
-          "FFXIVClientStructs": "[1.0.0, )",
-          "HaselCommon": "[1.0.0, )"
-        }
-      },
       "interopgenerator.runtime": {
         "type": "Project"
       }
