@@ -1,5 +1,19 @@
 # Changelog
 
+## [25.2.6] (2024-07-29)
+
+### Auto Sorter
+
+- **Fixed:** An issue where the `/isort` commands would use parameters based on the plugin language instead of the client language. (Yes, again. The language parameter got lost in a code rewrite.)
+
+### Custom Chat Message Formats
+
+- **Fixed:** Tell (Incoming) and Tell (Outgoing) were swapped.
+
+### DTR
+
+- **Fixed:** Instance not showing up again after disabling and re-enabling the tweak.
+
 ## [25.2.5] (2024-07-19)
 
 ### DTR

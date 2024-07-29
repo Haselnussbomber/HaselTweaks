@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <Version>25.2.6</Version>
     <TargetFramework>net8.0-windows</TargetFramework>
     <Platforms>x64</Platforms>
     <Nullable>enable</Nullable>
@@ -19,6 +20,8 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AssemblySearchPaths>$(AssemblySearchPaths);$(DalamudLibPath)</AssemblySearchPaths>
+    <OutputPath>..\bin\</OutputPath>
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -53,12 +56,6 @@
   <Target Name="Message" BeforeTargets="BeforeBuild">
     <Message Text="Dalamud.Plugin: root at $(DalamudLibPath)" Importance="high" />
   </Target>
-
-  <PropertyGroup>
-    <Version>25.2.5</Version>
-    <OutputPath>..\bin\</OutputPath>
-    <DebugType>full</DebugType>
-  </PropertyGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
