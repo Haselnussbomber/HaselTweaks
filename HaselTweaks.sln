@@ -6,8 +6,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HaselTweaks", "HaselTweaks\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HaselCommon", "HaselCommon\HaselCommon\HaselCommon.csproj", "{12F3003D-1236-4490-A88D-E72092F17DCB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HaselCommon.Text", "HaselCommon\HaselCommon.Text\HaselCommon.Text.csproj", "{E245BDDE-C1E6-4F4D-A4A7-34A1EF8A3EE2}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InteropGenerator", "FFXIVClientStructs\InteropGenerator\InteropGenerator.csproj", "{1C8DE1C3-A80F-4BAA-BE30-A6FCFE53B61F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InteropGenerator.Runtime", "FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj", "{D6125D41-88CC-4DFE-B3C7-B5B51E5701B4}"
@@ -40,14 +38,6 @@ Global
 		{12F3003D-1236-4490-A88D-E72092F17DCB}.Release|Any CPU.Build.0 = Release|x64
 		{12F3003D-1236-4490-A88D-E72092F17DCB}.Release|x64.ActiveCfg = Release|x64
 		{12F3003D-1236-4490-A88D-E72092F17DCB}.Release|x64.Build.0 = Release|x64
-		{E245BDDE-C1E6-4F4D-A4A7-34A1EF8A3EE2}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{E245BDDE-C1E6-4F4D-A4A7-34A1EF8A3EE2}.Debug|Any CPU.Build.0 = Debug|x64
-		{E245BDDE-C1E6-4F4D-A4A7-34A1EF8A3EE2}.Debug|x64.ActiveCfg = Debug|x64
-		{E245BDDE-C1E6-4F4D-A4A7-34A1EF8A3EE2}.Debug|x64.Build.0 = Debug|x64
-		{E245BDDE-C1E6-4F4D-A4A7-34A1EF8A3EE2}.Release|Any CPU.ActiveCfg = Release|x64
-		{E245BDDE-C1E6-4F4D-A4A7-34A1EF8A3EE2}.Release|Any CPU.Build.0 = Release|x64
-		{E245BDDE-C1E6-4F4D-A4A7-34A1EF8A3EE2}.Release|x64.ActiveCfg = Release|x64
-		{E245BDDE-C1E6-4F4D-A4A7-34A1EF8A3EE2}.Release|x64.Build.0 = Release|x64
 		{1C8DE1C3-A80F-4BAA-BE30-A6FCFE53B61F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1C8DE1C3-A80F-4BAA-BE30-A6FCFE53B61F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C8DE1C3-A80F-4BAA-BE30-A6FCFE53B61F}.Debug|x64.ActiveCfg = Debug|Any CPU
