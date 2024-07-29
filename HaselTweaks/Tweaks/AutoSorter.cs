@@ -105,7 +105,7 @@ public unsafe partial class AutoSorter(
 
     private string GetLocalizedParam(uint rowId, string? fallback = null)
     {
-        var param = ExcelService.GetRow<TextCommandParam>(rowId)?.Param.ExtractText();
+        var param = ExcelService.GetRow<TextCommandParam>(rowId, ClientState.ClientLanguage)?.Param.ExtractText();
         return string.IsNullOrEmpty(param) ? fallback ?? "" : param.ToLower();
     }
 
@@ -115,7 +115,7 @@ public unsafe partial class AutoSorter(
 
         if (!string.IsNullOrEmpty(key) && dict.TryGetValue(key, out var rowId))
         {
-            var param = ExcelService.GetRow<TextCommandParam>(rowId)?.Param.ExtractText();
+            var param = ExcelService.GetRow<TextCommandParam>(rowId, ClientState.ClientLanguage)?.Param.ExtractText();
 
             if (!string.IsNullOrEmpty(param))
             {
