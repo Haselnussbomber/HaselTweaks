@@ -1,5 +1,15 @@
 # Changelog
 
+## [25.2.7] (2024-07-30)
+
+### Expert Deliveries
+
+- **Fixed:** Turning in an item would reset the item selection to the first entry. (This only affected controller users.)
+
+### DTR
+
+- **Fixed:** A change in the fps format would not be reflected immediately.
+
 ## [25.2.6] (2024-07-29)
 
 ### Auto Sorter
