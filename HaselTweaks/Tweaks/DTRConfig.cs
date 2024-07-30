@@ -21,7 +21,11 @@ public partial class DTR
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
-    public void OnConfigChange(string fieldName) { }
+
+    public void OnConfigChange(string fieldName)
+    {
+        ResetCache();
+    }
 
     public void DrawConfig()
     {
