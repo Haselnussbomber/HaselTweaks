@@ -356,7 +356,6 @@ public unsafe partial class ScrollableTabs(
     {
         if (addon->TabIndex == NumInventoryTabs - 1 && _wheelState > 0)
         {
-            // inside "48 89 6C 24 ?? 56 48 83 EC 20 0F B7 C2", a3 != 17
             var values = stackalloc AtkValue[3];
 
             values[0].Ctor();

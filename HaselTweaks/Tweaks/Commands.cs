@@ -62,6 +62,10 @@ public unsafe partial class Commands(
             return;
 
         OnDisable();
+        ItemLinkCommandHandler?.Dispose();
+        WhatMountCommandCommandHandler?.Dispose();
+        WhatBardingCommandCommandHandler?.Dispose();
+        GlamourPlateCommandCommandHandler?.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);

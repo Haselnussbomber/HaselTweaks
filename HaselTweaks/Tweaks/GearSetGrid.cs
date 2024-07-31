@@ -1,4 +1,6 @@
-using Dalamud.Plugin.Services;
+using HaselCommon.Commands;
+using HaselCommon.Commands.Attributes;
+using HaselCommon.Commands.Interfaces;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
@@ -10,27 +12,30 @@ namespace HaselTweaks.Tweaks;
 public partial class GearSetGrid(
     PluginConfig pluginConfig,
     ConfigGui ConfigGui,
-    TextService TextService,
-    ICommandManager CommandManager,
+    CommandRegistry Commands,
     AddonObserver AddonObserver,
     GearSetGridWindow Window)
     : IConfigurableTweak
 {
     public string InternalName => nameof(GearSetGrid);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized; // TODO: fix icon overlays
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    public void OnInitialize() { }
+    private ICommandHandler? GsgCommand;
+
+    public void OnInitialize()
+    {
+        GsgCommand = Commands.Register(OnGsgCommand);
+    }
 
     public void OnEnable()
     {
         AddonObserver.AddonOpen += OnAddonOpen;
         AddonObserver.AddonClose += OnAddonClose;
 
+        GsgCommand?.SetEnabled(Config.RegisterCommand);
+
         if (Config.AutoOpenWithGearSetList && IsAddonOpen("GearSetList"))
             Window.Open();
-
-        if (Config.RegisterCommand)
-            CommandManager.AddHandler("/gsg", new(OnGsgCommand) { HelpMessage = TextService.Translate("GearSetGrid.CommandHandlerHelpMessage") });
     }
 
     public void OnDisable()
@@ -38,10 +43,9 @@ public partial class GearSetGrid(
         AddonObserver.AddonOpen -= OnAddonOpen;
         AddonObserver.AddonClose -= OnAddonClose;
 
-        Window.Close();
+        GsgCommand?.SetEnabled(false);
 
-        if (Status == TweakStatus.Enabled && Config.RegisterCommand)
-            CommandManager.RemoveHandler("/gsg");
+        Window.Close();
     }
 
     void IDisposable.Dispose()
@@ -50,6 +54,7 @@ public partial class GearSetGrid(
             return;
 
         OnDisable();
+        GsgCommand?.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);
@@ -67,6 +72,7 @@ public partial class GearSetGrid(
             Window.Close();
     }
 
+    [CommandHandler("/gsg", "GearSetGrid.CommandHandlerHelpMessage")]
     private void OnGsgCommand(string command, string arguments)
     {
         if (Window.IsOpen)

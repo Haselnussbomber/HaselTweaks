@@ -13,8 +13,7 @@ public unsafe partial struct UIModuleHelpers
     [FieldOffset(8)] public BannerModuleHelper* BannerModuleHelper; // no clue, but hosts helper functions
 }
 
-// inlined ctor "48 89 08 33 C9 48 89 48 10 48 89 48 18"
-// TODO: "E8 ?? ?? ?? ?? 84 C0 75 03 40 32 F6" - it copies the current portrait to the BannerModuleHelper?
+// TODO: it copies the current portrait to the BannerModuleHelper?
 // TODO: "83 BE ?? ?? ?? ?? ?? 0F 84 ?? ?? ?? ?? 48 8B 8E ?? ?? ?? ?? 48 89 BC 24 ?? ?? ?? ??" - code for sending Adventurer Plate data
 [GenerateInterop]
 [StructLayout(LayoutKind.Explicit, Size = 0x50)]

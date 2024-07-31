@@ -1,5 +1,4 @@
 using Dalamud.Interface.Utility.Raii;
-using HaselCommon.Services;
 using HaselTweaks.Config;
 
 namespace HaselTweaks.Tweaks;
@@ -24,10 +23,7 @@ public partial class GearSetGrid
     {
         if (fieldName == "RegisterCommand")
         {
-            if (Config.RegisterCommand)
-                CommandManager.AddHandler("/gsg", new(OnGsgCommand) { HelpMessage = TextService.Translate("GearSetGrid.CommandHandlerHelpMessage") });
-            else
-                CommandManager.RemoveHandler("/gsg");
+            GsgCommand?.SetEnabled(Config.RegisterCommand);
         }
     }
 
