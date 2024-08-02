@@ -8,6 +8,7 @@ using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using Microsoft.Extensions.Logging;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
+using AddonBuddy = HaselTweaks.Structs.AddonBuddy;
 
 namespace HaselTweaks.Tweaks;
 
