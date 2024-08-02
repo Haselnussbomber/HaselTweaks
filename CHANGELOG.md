@@ -1,5 +1,11 @@
 # Changelog
 
+## [25.2.8] (2024-08-02)
+
+### Scrollable Tabs
+
+- **Fixed:** Fixed tabs not changing their enabled state in the Buddy window.
+
 ## [25.2.7] (2024-07-30)
 
 ### Expert Deliveries
