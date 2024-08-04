@@ -99,7 +99,7 @@ public unsafe partial class AchievementLinkTooltip(
           .EndMacro();
 
         if (canShowName)
-            sb.Append(new ReadOnlySeStringSpan(achievement.Name.RawData));
+            sb.Append(achievement.Name.AsReadOnly());
         else
             sb.Append(TextService.GetAddonText(3384)); // "???"
 
@@ -107,7 +107,7 @@ public unsafe partial class AchievementLinkTooltip(
         sb.BeginMacro(MacroCode.NewLine).EndMacro();
 
         if (canShowDescription)
-            sb.Append(new ReadOnlySeStringSpan(achievement.Description.RawData));
+            sb.Append(achievement.Description.AsReadOnly());
         else
             sb.Append(TextService.GetAddonText(3385)); // "???"
 
