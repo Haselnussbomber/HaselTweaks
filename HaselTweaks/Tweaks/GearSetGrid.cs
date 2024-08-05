@@ -1,6 +1,4 @@
 using HaselCommon.Commands;
-using HaselCommon.Commands.Attributes;
-using HaselCommon.Commands.Interfaces;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
@@ -12,7 +10,7 @@ namespace HaselTweaks.Tweaks;
 public partial class GearSetGrid(
     PluginConfig pluginConfig,
     ConfigGui ConfigGui,
-    CommandRegistry Commands,
+    CommandService CommandService,
     AddonObserver AddonObserver,
     GearSetGridWindow Window)
     : IConfigurableTweak
@@ -20,11 +18,11 @@ public partial class GearSetGrid(
     public string InternalName => nameof(GearSetGrid);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private ICommandHandler? GsgCommand;
+    private CommandHandler? GsgCommand;
 
     public void OnInitialize()
     {
-        GsgCommand = Commands.Register(OnGsgCommand);
+        GsgCommand = CommandService.Register(OnGsgCommand);
     }
 
     public void OnEnable()

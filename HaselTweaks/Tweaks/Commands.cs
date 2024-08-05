@@ -7,8 +7,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Commands;
-using HaselCommon.Commands.Attributes;
-using HaselCommon.Commands.Interfaces;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselTweaks.Config;
@@ -24,7 +22,7 @@ public unsafe partial class Commands(
     PluginConfig PluginConfig,
     TextService TextService,
     ExcelService ExcelService,
-    CommandRegistry Commands,
+    CommandService CommandService,
     IChatGui ChatGui,
     ITargetManager TargetManager,
     ConfigGui ConfigGui)
@@ -33,17 +31,17 @@ public unsafe partial class Commands(
     public string InternalName => nameof(Commands);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private ICommandHandler? ItemLinkCommandHandler;
-    private ICommandHandler? WhatMountCommandCommandHandler;
-    private ICommandHandler? WhatBardingCommandCommandHandler;
-    private ICommandHandler? GlamourPlateCommandCommandHandler;
+    private CommandHandler? ItemLinkCommandHandler;
+    private CommandHandler? WhatMountCommandCommandHandler;
+    private CommandHandler? WhatBardingCommandCommandHandler;
+    private CommandHandler? GlamourPlateCommandCommandHandler;
 
     public void OnInitialize()
     {
-        ItemLinkCommandHandler = Commands.Register(OnItemLinkCommand);
-        WhatMountCommandCommandHandler = Commands.Register(OnWhatMountCommand);
-        WhatBardingCommandCommandHandler = Commands.Register(OnWhatBardingCommand);
-        GlamourPlateCommandCommandHandler = Commands.Register(OnGlamourPlateCommand);
+        ItemLinkCommandHandler = CommandService.Register(OnItemLinkCommand);
+        WhatMountCommandCommandHandler = CommandService.Register(OnWhatMountCommand);
+        WhatBardingCommandCommandHandler = CommandService.Register(OnWhatBardingCommand);
+        GlamourPlateCommandCommandHandler = CommandService.Register(OnGlamourPlateCommand);
     }
 
     public void OnEnable()

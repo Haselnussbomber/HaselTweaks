@@ -7,11 +7,7 @@ using System.Text.RegularExpressions;
 #endif
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using HaselCommon.Commands;
-using HaselCommon.Commands.Attributes;
-using HaselCommon.Commands.Interfaces;
 using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselCommon.Windowing;
@@ -25,13 +21,10 @@ public partial class PluginWindow : SimpleWindow
 {
     private const uint SidebarWidth = 250;
 
-    private readonly IDalamudPluginInterface PluginInterface;
     private readonly TextService TextService;
     private readonly ITextureProvider TextureProvider;
-    private readonly CommandRegistry Commands;
     private readonly TweakManager TweakManager;
     private readonly ITweak[] Tweaks;
-    private readonly ICommandHandler? HaselTweaksCommand;
 
     private ITweak? SelectedTweak;
 
@@ -42,18 +35,14 @@ public partial class PluginWindow : SimpleWindow
 
     public PluginWindow(
         WindowManager windowManager,
-        IDalamudPluginInterface pluginInterface,
         TextService textService,
         ITextureProvider textureProvider,
-        CommandRegistry commands,
         TweakManager tweakManager,
         IEnumerable<ITweak> tweaks)
         : base(windowManager, "HaselTweaks")
     {
-        PluginInterface = pluginInterface;
         TextService = textService;
         TextureProvider = textureProvider;
-        Commands = commands;
         TweakManager = tweakManager;
         Tweaks = tweaks.ToArray();
 
@@ -71,23 +60,6 @@ public partial class PluginWindow : SimpleWindow
 
         AllowClickthrough = false;
         AllowPinning = false;
-
-        PluginInterface.UiBuilder.OpenConfigUi += Toggle;
-        HaselTweaksCommand = Commands.Register(HaselTweaksCommandHandler);
-        HaselTweaksCommand?.SetEnabled(true);
-    }
-
-    public new void Dispose()
-    {
-        PluginInterface.UiBuilder.OpenConfigUi -= Toggle;
-        HaselTweaksCommand?.Dispose();
-        base.Dispose();
-    }
-
-    [CommandHandler("/haseltweaks", "HaselTweaks.CommandHandlerHelpMessage")]
-    private void HaselTweaksCommandHandler(string command, string arguments)
-    {
-        Toggle();
     }
 
     public override void OnOpen()
