@@ -1,5 +1,11 @@
 # Changelog
 
+## [25.2.9] (2024-08-09)
+
+### Commands
+
+- **Fixed:** /whatsbarding did not return the correct information. (I forgot to fix it after Dawntrail released, sorry!)
+
 ## [25.2.8] (2024-08-02)
 
 ### Scrollable Tabs
@@ -1676,6 +1682,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[25.2.9]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.8...v25.2.9
 [25.2.8]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.7...v25.2.8
 [25.2.7]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.6...v25.2.7
 [25.2.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.5...v25.2.6
