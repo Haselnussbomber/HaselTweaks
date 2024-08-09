@@ -7,6 +7,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using HaselCommon.Services.SeStringEvaluation;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
 using ImGuiNET;
@@ -728,10 +729,13 @@ public partial class CustomChatMessageFormats
     {
         using var textColors = new ImRaii.Color();
 
-        var resolved = SeStringEvaluator.Evaluate(format, new([
-            TextService.Translate("CustomChatMessageFormats.Config.LStr1.Label"), // "Player Name"
-            TextService.Translate("CustomChatMessageFormats.Config.LStr2.Label"), // "Message"
-        ]));
+        var resolved = SeStringEvaluator.Evaluate(format, new SeStringContext()
+        {
+            LocalParameters = [
+                TextService.Translate("CustomChatMessageFormats.Config.LStr1.Label"), // "Player Name"
+                TextService.Translate("CustomChatMessageFormats.Config.LStr2.Label"), // "Message"
+            ]
+        });
 
         foreach (var payload in resolved)
         {

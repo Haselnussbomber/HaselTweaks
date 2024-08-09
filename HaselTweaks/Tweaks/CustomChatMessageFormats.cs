@@ -101,7 +101,7 @@ public unsafe partial class CustomChatMessageFormats(
         tempParseMessage0->SetString(
             SeStringEvaluator.Evaluate(
                 logKindOverride.Format,
-                new SeStringContext([senderStr, messageStr])));
+                new SeStringContext() { LocalParameters = [senderStr, messageStr] }));
 
         if (raptureLogModule->ChatTabShouldDisplayTime[chatTabIndex] && timestamp != null)
         {
