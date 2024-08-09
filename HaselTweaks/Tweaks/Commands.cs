@@ -202,10 +202,9 @@ public unsafe partial class Commands(
 
         var targetCharacter = (Character*)target.Address;
 
-        // TODO: incorrect
-        var topRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelTop == targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Head).Id);
-        var bodyRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelBody == targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Body).Id);
-        var legsRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelLegs == targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Feet).Id);
+        var topRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelTop == (int)targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Head).Value);
+        var bodyRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelBody == (int)targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Body).Value);
+        var legsRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelLegs == (int)targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Feet).Value);
 
         var stain = ExcelService.GetRow<Stain>(targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Legs).Stain1)!;
         var name = new SeStringBuilder()
