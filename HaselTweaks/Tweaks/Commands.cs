@@ -206,7 +206,7 @@ public unsafe partial class Commands(
         var bodyRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelBody == (int)targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Body).Value);
         var legsRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelLegs == (int)targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Feet).Value);
 
-        var stain = ExcelService.GetRow<Stain>(targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Legs).Stain1)!;
+        var stain = ExcelService.GetRow<Stain>(targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Legs).Stain0)!;
         var name = new SeStringBuilder()
             .AddUiForeground(targetCharacter->GameObject.NameString, 1)
             .Build();
