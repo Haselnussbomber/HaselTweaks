@@ -1,5 +1,11 @@
 # Changelog
 
+## [25.2.11] (2024-08-14)
+
+### HaselTweaks
+
+- **Fixed:** The main plugin window did not stay docked after restarting the game. (This only affects people who enabled window docking in the Dalamud settings and had the window docked.)
+
 ## [25.2.10] (2024-08-09)
 
 ### Commands
@@ -1688,6 +1694,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[25.2.11]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.10...v25.2.11
 [25.2.10]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.9...v25.2.10
 [25.2.9]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.8...v25.2.9
 [25.2.8]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.7...v25.2.8
