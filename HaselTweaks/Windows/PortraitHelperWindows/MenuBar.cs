@@ -81,6 +81,10 @@ public unsafe class MenuBar : SimpleWindow
         InitialPreset = null;
         PortraitName = string.Empty;
         CloseOverlays();
+        AdvancedImportOverlay?.Dispose();
+        AdvancedEditOverlay?.Dispose();
+        PresetBrowserOverlay?.Dispose();
+        AlignmentToolSettingsOverlay?.Dispose();
         ServiceScope?.Dispose();
         ServiceScope = null;
         base.OnClose();
@@ -88,14 +92,10 @@ public unsafe class MenuBar : SimpleWindow
 
     public void CloseOverlays()
     {
-        AdvancedImportOverlay?.Dispose();
-        AdvancedImportOverlay = null;
-        AdvancedEditOverlay?.Dispose();
-        AdvancedEditOverlay = null;
-        PresetBrowserOverlay?.Dispose();
-        PresetBrowserOverlay = null;
-        AlignmentToolSettingsOverlay?.Dispose();
-        AlignmentToolSettingsOverlay = null;
+        AdvancedImportOverlay?.Close();
+        AdvancedEditOverlay?.Close();
+        PresetBrowserOverlay?.Close();
+        AlignmentToolSettingsOverlay?.Close();
     }
 
     public override bool DrawConditions()
@@ -188,6 +188,7 @@ public unsafe class MenuBar : SimpleWindow
 
             if (ImGuiUtils.IconButton("ViewModeNormal", FontAwesomeIcon.FileImport, TextService.Translate("PortraitHelperWindows.MenuBar.ToggleAdvancedImportMode.Label")))
             {
+                AdvancedImportOverlay?.Close();
                 AdvancedImportOverlay?.Dispose();
                 AdvancedImportOverlay = null;
             }
@@ -208,6 +209,7 @@ public unsafe class MenuBar : SimpleWindow
 
             if (ImGuiUtils.IconButton("ViewModeNormal", FontAwesomeIcon.FilePen, TextService.Translate("PortraitHelperWindows.MenuBar.ToggleAdvancedEditMode.Label")))
             {
+                AdvancedEditOverlay?.Close();
                 AdvancedEditOverlay?.Dispose();
                 AdvancedEditOverlay = null;
             }
@@ -241,6 +243,7 @@ public unsafe class MenuBar : SimpleWindow
 
             if (ImGuiUtils.IconButton("ViewModeNormal2", FontAwesomeIcon.List, TextService.Translate("PortraitHelperWindows.MenuBar.TogglePresetBrowser.Label")))
             {
+                PresetBrowserOverlay?.Close();
                 PresetBrowserOverlay?.Dispose();
                 PresetBrowserOverlay = null;
             }
@@ -269,6 +272,7 @@ public unsafe class MenuBar : SimpleWindow
             {
                 if (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift))
                 {
+                    AlignmentToolSettingsOverlay?.Close();
                     AlignmentToolSettingsOverlay?.Dispose();
                     AlignmentToolSettingsOverlay = null;
                 }

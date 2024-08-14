@@ -281,7 +281,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
         using var _ = ImRaii.Tooltip();
 
-        ImGuiUtils.TextUnformattedColored(ItemService.GetItemRarityColor(item.Rarity), TextService.GetItemName(item.RowId));
+        ImGuiUtils.TextUnformattedColored(ItemService.GetItemRarityColor(item), TextService.GetItemName(item.RowId));
 
         var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         if (holdingShift)
@@ -304,7 +304,7 @@ public unsafe class GearSetGridWindow : LockableWindow
             TextService.Draw("GearSetGridWindow.ItemTooltip.LabelGlamour");
             var glamourItem = ExcelService.GetRow<Item>(slot->GlamourId)!;
             ImGuiUtils.SameLineSpace();
-            ImGuiUtils.TextUnformattedColored(ItemService.GetItemRarityColor(glamourItem.Rarity), TextService.GetItemName(slot->GlamourId));
+            ImGuiUtils.TextUnformattedColored(ItemService.GetItemRarityColor(glamourItem), TextService.GetItemName(slot->GlamourId));
 
             if (holdingShift)
             {

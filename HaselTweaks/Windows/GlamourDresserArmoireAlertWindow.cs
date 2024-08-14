@@ -37,6 +37,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
         ExcelService = excelService;
         TextService = textService;
         ImGuiContextMenuService = imGuiContextMenuService;
+
         DisableWindowSounds = true;
         RespectCloseHotkey = false;
 
