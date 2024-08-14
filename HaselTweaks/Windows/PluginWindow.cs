@@ -55,8 +55,7 @@ public partial class PluginWindow : SimpleWindow
 
         SizeCondition = ImGuiCond.Always;
 
-        Flags |= ImGuiWindowFlags.AlwaysAutoResize;
-        Flags |= ImGuiWindowFlags.NoSavedSettings;
+        Flags |= ImGuiWindowFlags.NoResize;
 
         AllowClickthrough = false;
         AllowPinning = false;
