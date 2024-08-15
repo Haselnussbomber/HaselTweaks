@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.2.12] (2024-08-15)
+
+### Search the markets
+
+- **Fixed:** The tweak incorrectly used Dalamuds language setting to search for the item instead of the clients language (yes, again).  
+  (I re-wrote the function to get proper item names and forgot to pass the client language.)
+
 ## [25.2.11] (2024-08-14)
 
 ### HaselTweaks
@@ -1694,6 +1701,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[25.2.12]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.11...v25.2.12
 [25.2.11]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.10...v25.2.11
 [25.2.10]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.9...v25.2.10
 [25.2.9]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.8...v25.2.9
