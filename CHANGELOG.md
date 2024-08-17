@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [26.0.0] (2024-08-17)
 
 ### New Tweak: Disable Mount Tilt
 
@@ -1707,6 +1707,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[26.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.12...v26.0.0
 [25.2.12]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.11...v25.2.12
 [25.2.11]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.10...v25.2.11
 [25.2.10]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.9...v25.2.10
