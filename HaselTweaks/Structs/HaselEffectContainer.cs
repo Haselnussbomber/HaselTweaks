@@ -8,8 +8,8 @@ public unsafe partial struct HaselEffectContainer
 {
     [FieldOffset(0)] public ContainerInterface ContainerInterface;
 
-    [FieldOffset(0x34)] public int UnkMountTiltField34;
-    [FieldOffset(0x38)] public int UnkMountTiltField38;
+    [FieldOffset(0x34)] public int MountTiltSetupState1;
+    [FieldOffset(0x38)] public int MountTiltSetupState2;
     [FieldOffset(0x3C)] public byte Unk3C;
     [FieldOffset(0x40)] public byte TiltParam1Type;
     [FieldOffset(0x44)] public float TiltParam1Value;

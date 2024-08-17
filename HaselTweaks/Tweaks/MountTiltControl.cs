@@ -50,7 +50,7 @@ public unsafe partial class MountTiltControl(IGameInteropProvider GameInteropPro
         if (thisPtr->ContainerInterface.OwnerObject->GetObjectKind() != ObjectKind.Mount)
             return;
 
-        thisPtr->UnkMountTiltField34 = 0;
-        thisPtr->UnkMountTiltField38 = 0;
+        thisPtr->MountTiltSetupState1 = 0;
+        thisPtr->MountTiltSetupState2 = 0;
     }
 }

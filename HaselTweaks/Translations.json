@@ -1433,8 +1433,8 @@
     "en": "Disable Mount Tilt"
   },
   "MountTiltControl.Tweak.Description": {
-    "en": "Disables leaning into curves while flying.",
-    "de": "Deaktiviert das Neigen in Kurven während des Fliegens."
+    "en": "Disables leaning into turns during riding or flying.",
+    "de": "Deaktiviert die Neigung in Kurven während des Reitens oder Fliegens."
   },
 
   "PortraitHelper.Tweak.Name": {

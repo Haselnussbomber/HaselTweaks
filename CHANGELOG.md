@@ -4,7 +4,7 @@
 
 ### New Tweak: Disable Mount Tilt
 
-Disables leaning into curves while flying.
+Disables leaning into turns during riding or flying.
 
 ## [25.2.12] (2024-08-15)
 
