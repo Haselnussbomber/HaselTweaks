@@ -1,5 +1,11 @@
 # Changelog
 
+## [26.0.2] (2024-08-18)
+
+### HaselTweaks
+
+- **Fixed:** Chat commands were incorrectly registred for disabled tweaks.
+
 ## [26.0.1] (2024-08-17)
 
 ### Portrait Helper
