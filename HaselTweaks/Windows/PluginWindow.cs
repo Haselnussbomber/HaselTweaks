@@ -22,9 +22,10 @@ public partial class PluginWindow : SimpleWindow
     private const uint SidebarWidth = 250;
 
     private readonly TextService TextService;
+    private readonly TranslationManager TranslationManager;
     private readonly ITextureProvider TextureProvider;
     private readonly TweakManager TweakManager;
-    private readonly ITweak[] Tweaks;
+    private ITweak[] Tweaks;
 
     private ITweak? SelectedTweak;
 
@@ -36,12 +37,14 @@ public partial class PluginWindow : SimpleWindow
     public PluginWindow(
         WindowManager windowManager,
         TextService textService,
+        TranslationManager translationManager,
         ITextureProvider textureProvider,
         TweakManager tweakManager,
         IEnumerable<ITweak> tweaks)
         : base(windowManager, "HaselTweaks")
     {
         TextService = textService;
+        TranslationManager = translationManager;
         TextureProvider = textureProvider;
         TweakManager = tweakManager;
         Tweaks = tweaks.ToArray();
@@ -59,6 +62,18 @@ public partial class PluginWindow : SimpleWindow
 
         AllowClickthrough = false;
         AllowPinning = false;
+
+        SortTweaksbyName();
+    }
+
+    private void OnLanguageChanged(string langCode)
+    {
+        SortTweaksbyName();
+    }
+
+    private void SortTweaksbyName()
+    {
+        Tweaks = [.. Tweaks.OrderBy(tweak => TextService.TryGetTranslation(tweak.InternalName + ".Tweak.Name", out var name) ? name : tweak.InternalName)];
     }
 
     public override void OnOpen()
@@ -69,10 +84,12 @@ public partial class PluginWindow : SimpleWindow
             MinimumSize = (Vector2)Size,
             MaximumSize = new Vector2(4096, 2160)
         };
+        TranslationManager.LanguageChanged += OnLanguageChanged;
     }
 
     public override void OnClose()
     {
+        TranslationManager.LanguageChanged -= OnLanguageChanged;
         SelectedTweak = null;
 
         foreach (var tweak in Tweaks.Where(tweak => tweak.Status == TweakStatus.Enabled))
@@ -105,7 +122,7 @@ public partial class PluginWindow : SimpleWindow
         ImGui.TableSetupColumn("Checkbox", ImGuiTableColumnFlags.WidthFixed);
         ImGui.TableSetupColumn("Tweak Name", ImGuiTableColumnFlags.WidthStretch);
 
-        foreach (var tweak in Tweaks.OrderBy(t => t.InternalName))
+        foreach (var tweak in Tweaks)
         {
             ImGui.TableNextRow();
             ImGui.TableNextColumn();
