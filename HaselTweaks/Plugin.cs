@@ -97,7 +97,7 @@ public sealed class Plugin : IDalamudPlugin
         framework.RunOnFrameworkThread(() =>
         {
             Service.Get<TweakManager>().Initialize();
-            Service.Get<CommandService>().Register(OnCommand);
+            Service.Get<CommandService>().Register(OnCommand, true);
             PluginInterface.UiBuilder.OpenMainUi += ToggleWindow;
         });
     }
