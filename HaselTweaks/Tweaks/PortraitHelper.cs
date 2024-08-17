@@ -53,7 +53,7 @@ public unsafe partial class PortraitHelper(
     public static PortraitPreset? ClipboardPreset { get; set; }
 
     private Hook<UIClipboard.Delegates.OnClipboardDataChanged>? OnClipboardDataChangedHook;
-    private Hook<RaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
+    private Hook<HaselRaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
     private bool WasBoundByDuty;
 
     public void OnInitialize()
@@ -62,8 +62,8 @@ public unsafe partial class PortraitHelper(
             UIClipboard.MemberFunctionPointers.OnClipboardDataChanged,
             OnClipboardDataChangedDetour);
 
-        UpdateGearsetHook = GameInteropProvider.HookFromAddress<RaptureGearsetModule.Delegates.UpdateGearset>(
-            RaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
+        UpdateGearsetHook = GameInteropProvider.HookFromAddress<HaselRaptureGearsetModule.Delegates.UpdateGearset>(
+            HaselRaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
             UpdateGearsetDetour);
     }
 
@@ -169,9 +169,9 @@ public unsafe partial class PortraitHelper(
         }
     }
 
-    private void UpdateGearsetDetour(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
+    private int UpdateGearsetDetour(HaselRaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
-        UpdateGearsetHook!.Original(raptureGearsetModule, gearsetId);
+        var ret = UpdateGearsetHook!.Original(raptureGearsetModule, gearsetId);
 
         MismatchCheckCTS?.Cancel();
         MismatchCheckCTS = new();
@@ -180,6 +180,8 @@ public unsafe partial class PortraitHelper(
             () => CheckForGearChecksumMismatch(gearsetId),
             CheckDelay,
             cancellationToken: MismatchCheckCTS.Token);
+
+        return ret;
     }
 
     private void OnClassJobChange(uint classJobId)
