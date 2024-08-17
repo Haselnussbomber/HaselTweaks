@@ -33,6 +33,7 @@ public sealed class TweakManager(IPluginLog PluginLog, PluginConfig PluginConfig
 
             try
             {
+                PluginLog.Verbose($"Enabling {tweak.InternalName}");
                 tweak.OnEnable();
                 tweak.Status = TweakStatus.Enabled;
             }
