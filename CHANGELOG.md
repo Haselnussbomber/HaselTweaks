@@ -1,5 +1,16 @@
 # Changelog
 
+## [26.0.1] (2024-08-17)
+
+### Portrait Helper
+
+- **Fixed:** Updating the gearset caused the Gearset List to refresh and scroll to the top.  
+  Note: This is caused by a bug in ClientStructs (wrong return type of a function). If other plugins hook this too, my fix won't be effective and you have to wait for a Dalamud update.
+
+### DTR
+
+- **Known Issue:** When the plugin is reloaded via Dalamuds auto-update feature, the DTR entries might not be re-created. This is a bug in Dalamud and is being worked on.
+
 ## [26.0.0] (2024-08-17)
 
 ### New Tweak: Disable Mount Tilt
@@ -1707,6 +1718,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[26.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v26.0.0...v26.0.1
 [26.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.12...v26.0.0
 [25.2.12]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.11...v25.2.12
 [25.2.11]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.10...v25.2.11
