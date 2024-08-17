@@ -1429,6 +1429,14 @@
     "zh": "鼠标悬停时可见"
   },
 
+  "MountTiltControl.Tweak.Name": {
+    "en": "Disable Mount Tilt"
+  },
+  "MountTiltControl.Tweak.Description": {
+    "en": "Disables leaning into curves while flying.",
+    "de": "Deaktiviert das Neigen in Kurven während des Fliegens."
+  },
+
   "PortraitHelper.Tweak.Name": {
     "en": "Portrait Helper",
     "zh": "肖像助手"

@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Disable Mount Tilt
+
+Disables leaning into curves while flying.
+
 ## [25.2.12] (2024-08-15)
 
 ### Search the markets
