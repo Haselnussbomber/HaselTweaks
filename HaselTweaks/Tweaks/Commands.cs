@@ -33,6 +33,7 @@ public unsafe partial class Commands(
 
     private CommandHandler? ItemLinkCommandHandler;
     private CommandHandler? WhatMountCommandCommandHandler;
+    private CommandHandler? WhatEmoteCommandCommandHandler;
     private CommandHandler? WhatBardingCommandCommandHandler;
     private CommandHandler? GlamourPlateCommandCommandHandler;
 
@@ -40,6 +41,7 @@ public unsafe partial class Commands(
     {
         ItemLinkCommandHandler = CommandService.Register(OnItemLinkCommand);
         WhatMountCommandCommandHandler = CommandService.Register(OnWhatMountCommand);
+        WhatEmoteCommandCommandHandler = CommandService.Register(OnWhatEmoteCommand);
         WhatBardingCommandCommandHandler = CommandService.Register(OnWhatBardingCommand);
         GlamourPlateCommandCommandHandler = CommandService.Register(OnGlamourPlateCommand);
     }
@@ -62,6 +64,7 @@ public unsafe partial class Commands(
         OnDisable();
         ItemLinkCommandHandler?.Dispose();
         WhatMountCommandCommandHandler?.Dispose();
+        WhatEmoteCommandCommandHandler?.Dispose();
         WhatBardingCommandCommandHandler?.Dispose();
         GlamourPlateCommandCommandHandler?.Dispose();
 
@@ -73,6 +76,7 @@ public unsafe partial class Commands(
     {
         ItemLinkCommandHandler?.SetEnabled(enable && Config.EnableItemLinkCommand);
         WhatMountCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatMountCommand);
+        WhatEmoteCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatEmoteCommand);
         WhatBardingCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatBardingCommand);
         GlamourPlateCommandCommandHandler?.SetEnabled(enable && Config.EnableGlamourPlateCommand);
     }
@@ -184,7 +188,48 @@ public unsafe partial class Commands(
         });
     }
 
-    [CommandHandler("/whatbarding", "Commands.Config.EnableWhatMountCommand.Description")]
+    [CommandHandler("/whatemote", "Commands.Config.EnableWhatEmoteCommand.Description")]
+    private void OnWhatEmoteCommand(string command, string arguments)
+    {
+        var target = TargetManager.Target;
+        if (target == null)
+        {
+            ChatGui.PrintError(TextService.Translate("Commands.NoTarget"));
+            return;
+        }
+
+        if (target.ObjectKind != DalamudObjectKind.Player)
+        {
+            ChatGui.PrintError(TextService.Translate("Commands.TargetIsNotAPlayer"));
+            return;
+        }
+
+        var gameObject = (Character*)target.Address;
+
+        var emoteId = gameObject->EmoteController.EmoteId;
+        if (emoteId == 0)
+        {
+            ChatGui.PrintError(TextService.Translate("Commands.Emote.NotExecutingEmote"));
+            return;
+        }
+
+        var emote = ExcelService.GetRow<Emote>(emoteId);
+        if (emote == null)
+        {
+            ChatGui.PrintError(TextService.Translate("Commands.Emote.NotFound", emoteId.ToString()));
+            return;
+        }
+
+        ChatGui.Print(new XivChatEntry
+        {
+            Message = new SeStringBuilder()
+                .AddUiForeground("\uE078 ", 32)
+                .Append(TextService.TranslateSe("Commands.Emote", emoteId.ToString(), TextService.GetEmoteName(emoteId)))
+                .Build(),
+            Type = XivChatType.Echo
+        });
+    }
+    [CommandHandler("/whatbarding", "Commands.Config.EnableWhatBardingCommand.Description")]
     private void OnWhatBardingCommand(string command, string arguments)
     {
         var target = TargetManager.Target;

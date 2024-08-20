@@ -7,6 +7,7 @@ public class CommandsConfiguration
 {
     public bool EnableItemLinkCommand = true;
     public bool EnableWhatMountCommand = true;
+    public bool EnableWhatEmoteCommand = true;
     public bool EnableWhatBardingCommand = true;
     public bool EnableGlamourPlateCommand = true;
 }
@@ -30,6 +31,7 @@ public unsafe partial class Commands
         ConfigGui.DrawConfigurationHeader();
         ConfigGui.DrawBool("EnableItemLinkCommand", ref Config.EnableItemLinkCommand);
         ConfigGui.DrawBool("EnableWhatMountCommand", ref Config.EnableWhatMountCommand);
+        ConfigGui.DrawBool("EnableWhatEmoteCommand", ref Config.EnableWhatEmoteCommand);
         ConfigGui.DrawBool("EnableWhatBardingCommand", ref Config.EnableWhatBardingCommand);
         ConfigGui.DrawBool("EnableGlamourPlateCommand", ref Config.EnableGlamourPlateCommand, noFixSpaceAfter: true);
     }

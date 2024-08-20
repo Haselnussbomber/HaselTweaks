@@ -513,6 +513,13 @@
     "de": "Visiere einen Spieler an und führe den Befehl aus, um zu sehen, welches Reittier dein Ziel reitet und welcher Gegenstand dieses Reittier lehrt.",
     "zh": "选择一个玩家并执行此命令来查看你的目标骑着什么坐骑以及用什么道具解锁此坐骑。"
   },
+  "Commands.Config.EnableWhatEmoteCommand.Label": {
+    "en": "/whatemote"
+  },
+  "Commands.Config.EnableWhatEmoteCommand.Description": {
+    "en": "Target a player and execute the command to see which emote your target is currently executing.",
+    "de": "Visiere einen Spieler an und führe den Befehl aus, um zu sehen, welches Emote dein Ziel gerade ausführt."
+  },
   "Commands.Config.EnableWhatBardingCommand.Label": {
     "en": "/whatbarding"
   },
@@ -538,6 +545,17 @@
     "en": "Item #{0}: {1}",
     "de": "Gegenstand #{0}: {1}",
     "zh": "物品#{0}：{1}。"
+  },
+  "Commands.Emote.NotExecutingEmote": {
+    "en": "Target is not executing an emote.",
+    "de": "Ziel führt kein Emote aus."
+  },
+  "Commands.Emote.NotFound": {
+    "en": "Emote {0} not found.",
+    "de": "Emote {0} nicht gefunden."
+  },
+  "Commands.Emote": {
+    "en": "Emote #{0}: {1}"
   },
   "Commands.InvalidArguments": {
     "en": "Invalid arguments.",
