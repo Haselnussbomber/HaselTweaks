@@ -45,9 +45,11 @@ public unsafe partial class CustomChatMessageFormats(
 
     public void OnDisable()
     {
-        ReloadChat();
         TextService.LanguageChanged -= OnLanguageChange;
         FormatLogMessageHook?.Disable();
+
+        if (Status is TweakStatus.Enabled)
+            ReloadChat();
     }
 
     void IDisposable.Dispose()

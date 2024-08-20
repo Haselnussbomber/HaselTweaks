@@ -24,7 +24,9 @@ public unsafe class HideMSQComplete(IAddonLifecycle AddonLifecycle) : ITweak
     public void OnDisable()
     {
         AddonLifecycle.UnregisterListener(AddonEvent.PostRefresh, "ScenarioTree", ScenarioTree_PostRefresh);
-        UpdateVisibility(true);
+
+        if (Status is TweakStatus.Enabled)
+            UpdateVisibility(true);
     }
 
     void IDisposable.Dispose()

@@ -26,6 +26,9 @@ public sealed class KeepScreenAwake : ITweak
 
     public void OnDisable()
     {
+        if (Status is not TweakStatus.Enabled)
+            return;
+
         PInvoke.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
         Timer.Stop();
     }

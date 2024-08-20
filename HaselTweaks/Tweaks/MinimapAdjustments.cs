@@ -49,6 +49,9 @@ public unsafe partial class MinimapAdjustments(
     {
         Framework.Update -= OnFrameworkUpdate;
 
+        if (Status is not TweakStatus.Enabled)
+            return;
+
         if (!TryGetAddon<NaviMap>("_NaviMap", out var naviMap))
             return;
 

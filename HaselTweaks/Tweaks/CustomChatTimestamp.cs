@@ -40,7 +40,9 @@ public unsafe partial class CustomChatTimestamp(
     public void OnDisable()
     {
         FormatAddonText2IntHook?.Disable();
-        ReloadChat();
+
+        if (Status is TweakStatus.Enabled)
+            ReloadChat();
     }
 
     public void Dispose()

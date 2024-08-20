@@ -102,7 +102,7 @@ public unsafe partial class EnhancedMaterialList(
         AddonRecipeMaterialListSetupRowHook?.Disable();
         AddItemContextMenuEntriesHook?.Disable();
 
-        if (TryGetAddon<AtkUnitBase>("RecipeMaterialList", out var addon))
+        if (Status is TweakStatus.Enabled && TryGetAddon<AtkUnitBase>("RecipeMaterialList", out var addon))
             addon->Close(true);
     }
 

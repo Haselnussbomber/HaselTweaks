@@ -64,7 +64,8 @@ public unsafe partial class EnhancedExpBar(
 
         UpdateExpHook?.Disable();
 
-        TriggerReset();
+        if (Status is TweakStatus.Enabled)
+            TriggerReset();
     }
 
     public void Dispose()

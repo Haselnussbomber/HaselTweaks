@@ -57,7 +57,7 @@ public unsafe partial class InventoryHighlight(
 
         AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemDetail", OnItemDetailPostRequestedUpdate);
 
-        if (Status == TweakStatus.Enabled)
+        if (Status is TweakStatus.Enabled)
             ResetGrids();
     }
 
