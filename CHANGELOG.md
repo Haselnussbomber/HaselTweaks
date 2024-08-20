@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### HaselTweaks
+
+- **Fixed:** When the plugin unloaded, some disabled tweaks ran code to reset states to default.
+
 ## [26.1.0] (2024-08-20)
 
 ### Commands
