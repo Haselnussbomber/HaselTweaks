@@ -81,6 +81,8 @@ Available Commands:
   Prints an item link for the given item id in chat.
 - `/whatmount`  
   Target a player and execute the command to see what mount your target is riding and which item teaches this mount.
+- `/whatemote`  
+  Target a player and execute the command to see which emote your target is currently executing.
 - `/whatbarding`  
   Target a players chocobo companion and execute the command to see what barding it is wearing.
 - `/glamourplate <id>`  
