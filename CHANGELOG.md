@@ -1,5 +1,13 @@
 # Changelog
 
+## [26.1.0] (2024-08-20)
+
+### Commands
+
+- **Added:** New command `/whatemote`  
+  Target a player and execute the command to see which emote your target is currently executing.
+- **Fixed:** `/whatbarding` used the wrong command description (when enabled, visible in the Plugin Installer).
+
 ## [26.0.2] (2024-08-18)
 
 ### HaselTweaks
@@ -1724,6 +1732,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[26.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v26.0.2...v26.1.0
 [26.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v26.0.1...v26.0.2
 [26.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v26.0.0...v26.0.1
 [26.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.12...v26.0.0
