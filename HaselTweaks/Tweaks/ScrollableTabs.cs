@@ -596,7 +596,7 @@ public unsafe partial class ScrollableTabs(
     private void UpdateCurrency(AtkUnitBase* addon)
     {
         var atkStage = AtkStage.Instance();
-        var numberArray = atkStage->GetNumberArrayData()[81];
+        var numberArray = atkStage->GetNumberArrayData(NumberArrayType.Currency);
         var currentTab = numberArray->IntArray[0];
 
         var newTab = GetTabIndex(currentTab, 4);

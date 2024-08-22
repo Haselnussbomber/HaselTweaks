@@ -112,7 +112,7 @@ public unsafe class CastBarAetheryteNames(
             _ => ExcelService.GetRow<PlaceName>(row.PlaceName.Row)?.Name?.ExtractText() ?? string.Empty,
         };
 
-        AtkStage.Instance()->GetStringArrayData()[20]->SetValue(0, placeName, false, true, false);
+        AtkStage.Instance()->GetStringArrayData(StringArrayType.CastBar)->SetValue(0, placeName, false, true, false);
 
         Clear();
     }

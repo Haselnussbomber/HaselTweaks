@@ -219,13 +219,12 @@ public unsafe partial class EnhancedExpBar(
 
     private void SetText(string text)
     {
-        var stringArray = AtkStage.Instance()->GetStringArrayData()[2];
-        stringArray->SetValue(69, text);
+        AtkStage.Instance()->GetStringArrayData(StringArrayType.Hud)->SetValue(69, text);
     }
 
     private void SetExperience(int experience, int maxExperience, int restedExperience = 0)
     {
-        var numberArray = AtkStage.Instance()->GetNumberArrayData()[3];
+        var numberArray = AtkStage.Instance()->GetNumberArrayData(NumberArrayType.Hud);
 
         numberArray->SetValue(16, experience);
         numberArray->SetValue(17, maxExperience == 0 ? 0 : (int)MathF.Round(experience / (float)maxExperience * 1000f));
