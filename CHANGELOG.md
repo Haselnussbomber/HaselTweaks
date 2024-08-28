@@ -1,10 +1,14 @@
 # Changelog
 
-## [Unreleased]
+## [26.1.1] (2024-08-28)
 
 ### HaselTweaks
 
 - **Fixed:** When the plugin unloaded, some disabled tweaks ran code to reset states to default.
+
+### Gear Set Grid
+
+- **Fixed:** Missing icons for empty slots.
 
 ## [26.1.0] (2024-08-20)
 
@@ -1738,6 +1742,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[26.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v26.1.0...v26.1.1
 [26.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v26.0.2...v26.1.0
 [26.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v26.0.1...v26.0.2
 [26.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v26.0.0...v26.0.1
