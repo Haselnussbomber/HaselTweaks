@@ -17,20 +17,7 @@ public partial class CharacterClassSwitcher
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
-
-    public void OnConfigChange(string fieldName)
-    {
-        if (Config.DisableTooltips)
-        {
-            TooltipPatch?.Enable();
-            PvpTooltipPatch?.Enable();
-        }
-        else
-        {
-            TooltipPatch?.Disable();
-            PvpTooltipPatch?.Disable();
-        }
-    }
+    public void OnConfigChange(string fieldName) { }
 
     public void DrawConfig()
     {

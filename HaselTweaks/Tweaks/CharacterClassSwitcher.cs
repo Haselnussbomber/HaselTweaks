@@ -3,13 +3,11 @@ using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
-using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
@@ -35,31 +33,7 @@ public unsafe partial class CharacterClassSwitcher(
 
     private const int NumClasses = 33;
 
-    private MemoryReplacement? TooltipPatch;
-    private MemoryReplacement? PvpTooltipPatch;
-
-    /* Address for AddonCharacterClass Tooltip Patch
-
-        83 FD 16         cmp     ebp, 16h
-        48 8B 6C 24 ??   mov     rbp, [rsp+68h+arg_8]
-        7D 66            jge     short loc_14118ACBF     <- replacing this with a jmp rel8
-
-       completely skips the whole if () {...} block, by jumping regardless of cmp result
-     */
-    [Signature("83 FD 16 48 8B 6C 24 ?? 7D 66")]
-    private nint TooltipAddress { get; init; }
-
-    /* Address for AddonPvPCharacter Tooltip Patch
-
-        48 8D 4D 8F      lea     rcx, [rbp+4Fh+var_C0]   <- replacing this with a jmp rel8
-        E8 BD 06 48 FF   call    Component::GUI::AtkTooltipArgs_ctor
-        ...
-
-        completely skips the tooltip code, by jumping to the end of the function
-     */
-    [Signature("48 8D 4D 8F E8 ?? ?? ?? ?? 48 8B 84 DF")]
-    private nint PvPTooltipAddress { get; init; }
-
+    private Hook<AtkTooltipManager.Delegates.ShowTooltip>? AtkTooltipManagerShowTooltipHook;
     private Hook<AddonCharacterClass.Delegates.OnSetup>? AddonCharacterClassOnSetupHook;
     private Hook<AddonCharacterClass.Delegates.OnRequestedUpdate>? AddonCharacterClassOnRequestedUpdateHook;
     private Hook<AddonCharacterClass.Delegates.ReceiveEvent>? AddonCharacterClassReceiveEventHook;
@@ -70,6 +44,10 @@ public unsafe partial class CharacterClassSwitcher(
     public void OnInitialize()
     {
         GameInteropProvider.InitializeFromAttributes(this);
+
+        AtkTooltipManagerShowTooltipHook = GameInteropProvider.HookFromAddress<AtkTooltipManager.Delegates.ShowTooltip>(
+            AtkTooltipManager.Addresses.ShowTooltip.Value,
+            AtkTooltipManagerShowTooltipDetour);
 
         AddonCharacterClassOnSetupHook = GameInteropProvider.HookFromAddress<AddonCharacterClass.Delegates.OnSetup>(
             AddonCharacterClass.StaticVirtualTablePointer->OnSetup,
@@ -98,15 +76,7 @@ public unsafe partial class CharacterClassSwitcher(
 
     public void OnEnable()
     {
-        TooltipPatch = new(TooltipAddress + 8, [0xEB]);
-        PvpTooltipPatch = new(PvPTooltipAddress, [0xEB, 0x57]);
-
-        if (Config.DisableTooltips)
-        {
-            TooltipPatch.Enable();
-            PvpTooltipPatch.Enable();
-        }
-
+        AtkTooltipManagerShowTooltipHook?.Enable();
         AddonCharacterClassOnSetupHook?.Enable();
         AddonCharacterClassOnRequestedUpdateHook?.Enable();
         AddonCharacterClassReceiveEventHook?.Enable();
@@ -119,9 +89,7 @@ public unsafe partial class CharacterClassSwitcher(
 
     public void OnDisable()
     {
-        TooltipPatch?.Disable();
-        PvpTooltipPatch?.Disable();
-
+        AtkTooltipManagerShowTooltipHook?.Disable();
         AddonCharacterClassOnSetupHook?.Disable();
         AddonCharacterClassOnRequestedUpdateHook?.Disable();
         AddonCharacterClassReceiveEventHook?.Disable();
@@ -138,6 +106,7 @@ public unsafe partial class CharacterClassSwitcher(
             return;
 
         OnDisable();
+        AtkTooltipManagerShowTooltipHook?.Dispose();
         AddonCharacterClassOnSetupHook?.Dispose();
         AddonCharacterClassOnRequestedUpdateHook?.Dispose();
         AddonCharacterClassReceiveEventHook?.Dispose();
@@ -152,6 +121,26 @@ public unsafe partial class CharacterClassSwitcher(
     private static bool IsCrafter(int id)
     {
         return id >= 22 && id <= 29;
+    }
+
+    private void AtkTooltipManagerShowTooltipDetour(
+        AtkTooltipManager* thisPtr,
+        AtkTooltipManager.AtkTooltipType type,
+        ushort parentId,
+        AtkResNode* targetNode,
+        AtkTooltipManager.AtkTooltipArgs* tooltipArgs,
+        delegate* unmanaged[Stdcall]<float*, float*, void*> unkDelegate,
+        bool unk7,
+        bool unk8)
+    {
+        if (Config.DisableTooltips && (
+            (TryGetAddon<AtkUnitBase>("CharacterClass", out var unitBase) && unitBase->Id == parentId) ||
+            (TryGetAddon("PvPCharacter", out unitBase) && unitBase->Id == parentId)))
+        {
+            return;
+        }
+
+        AtkTooltipManagerShowTooltipHook!.Original(thisPtr, type, parentId, targetNode, tooltipArgs, unkDelegate, unk7, unk8);
     }
 
     private void AddonCharacterClassOnSetupDetour(AddonCharacterClass* addon, uint numAtkValues, AtkValue* atkValues)
