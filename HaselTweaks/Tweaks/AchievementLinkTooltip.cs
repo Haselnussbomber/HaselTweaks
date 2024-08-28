@@ -11,7 +11,6 @@ using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using Lumina.Text;
 using Lumina.Text.Payloads;
-using Lumina.Text.ReadOnly;
 using Achievement = Lumina.Excel.GeneratedSheets.Achievement;
 
 namespace HaselTweaks.Tweaks;

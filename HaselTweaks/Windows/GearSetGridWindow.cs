@@ -193,7 +193,12 @@ public unsafe class GearSetGridWindow : LockableWindow
                     TextureService.DrawPart("Character", 8, 0, IconSize * ImGuiHelpers.GlobalScale);
 
                     ImGui.SetCursorPos(cursorPos + IconInset * ImGuiHelpers.GlobalScale);
-                    TextureService.DrawPart("Character", 11, 17 + slotIndex, (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
+                    var iconIndex = slotIndex switch
+                    {
+                        12 => 11u, // left ring
+                        _ => slotIndex,
+                    };
+                    TextureService.DrawPart("Character", 12, 17 + iconIndex, (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
                     continue;
                 }
