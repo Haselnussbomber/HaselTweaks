@@ -181,7 +181,7 @@
   "AetherCurrentHelper.Tweak.Description": {
     "en": "Clicking on a zone in the Aether Currents window opens a helper window that shows where to find the aether currents or which quests unlocks them. Clicking on an entry marks the location of the aether current or the quest giver on the map.",
     "de": "Ein Klick auf eine Zone im Windätherquellen-Fenster öffnet ein Hilfsfenster, das zeigt, wo die Windätherquellen zu finden sind oder welche Quests sie freischalten. Ein Klick auf einen Eintrag markiert die Position der Windätherquelle oder des Questgebers auf der Karte.",
-    "zh": "在风脉泉窗口点击地图将打开一个显示哪里能找到风脉泉或哪个任务能解锁它们的辅助窗口。点击任意一项将在地图上标注出风脉泉或任务接取NPC的位置。"
+    "zh": "在风脉泉窗口点击一个区域将打开一个显示哪里能找到风脉泉或哪个任务能解锁它们的辅助窗口。点击任意一项将在地图上标注出风脉泉或任务接取NPC的位置。"
   },
   "AetherCurrentHelper.Config.AlwaysShowDistance.Label": {
     "en": "Show distance instead of checkmark when unlocked",
@@ -207,7 +207,7 @@
     "de": "Alle Windätherquellen gebündelt!",
     "fr": "Toutes les sources d'éther sont réunies !",
     "ja": "すべてのエーテル風車を結集！",
-    "zh": "所有风脉泉已共鸣！"
+    "zh": "所有的风脉泉已共鸣！"
   },
   "AetherCurrentHelperWindow.HideUnlockedTooltip": {
     "en": "Check to hide unlocked Aether Currents",
@@ -270,7 +270,7 @@
   "AutoOpenRecipe.Tweak.Description": {
     "en": "When a new daily/tribal quest objective requires you to craft an item and you have all materials for it in your inventory at that moment, this tweak will automatically open the recipe.",
     "de": "Wenn ein neues tägliches/stammesbezogenes Questziel verlangt, dass ein Gegenstand hergestellt werden soll und alle Materialien dafür in jenem Moment im Inventar verfügbar sind, wird automatisch das Rezept geöffnet.",
-    "zh": "当一个新的日常/友好部族任务目标需要你制作一个物品时，若你的物品栏中有所有的材料，该调整将自动打开制作笔记。"
+    "zh": "当一个新的日常/友好部族任务目标需要你制作一个物品时，若那一刻你的背包中有全部所需材料，该调整将自动打开制作笔记。"
   },
 
   "AutoSorter.Tweak.Name": {
@@ -330,12 +330,12 @@
   "AutoSorter.Config.DeleteRuleButton.Tooltip.NotHoldingShift": {
     "en": "Hold shift to delete rule",
     "de": "Shift gedrückt halten, um die Regel zu löschen",
-    "zh": "按住Shift以删除规则"
+    "zh": "按住shift以删除规则"
   },
   "AutoSorter.Config.DeleteRuleButton.Tooltip.WindowNotFocused": {
     "en": "Focus window and hold shift to delete rule",
     "de": "Fokussiere das Fenster und halte Shift gedrückt, um die Regel zu löschen",
-    "zh": "聚焦窗口并按住Shift以删除规则"
+    "zh": "聚焦窗口并按住shift以删除规则"
   },
   "AutoSorter.Config.ExecuteButton.Tooltip.Ready": {
     "en": "Execute rule",
@@ -419,22 +419,24 @@
   },
 
   "BiggerItemDyeingPreview.Tweak.Name": {
-    "en": "Bigger Item Dyeing Preview"
+    "en": "Bigger Item Dyeing Preview",
+    "zh": "更大的染色预览"
   },
   "BiggerItemDyeingPreview.Tweak.Description": {
     "en": "Increases the size of the character preview in the \"Item Dyeing\" window.",
-    "de": "Vergrößert die Charaktervorschau im \"GEGENSTÄNDE FÄRBEN\"-Fenster."
+    "de": "Vergrößert die Charaktervorschau im \"GEGENSTÄNDE FÄRBEN\"-Fenster.",
+    "zh": "增加“染色”窗口中角色预览部分的大小。"
   },
 
   "CastBarAetheryteNames.Tweak.Name": {
     "en": "Cast Bar Aetheryte Names",
-    "zh": "以太之光名称替换“传送”"
+    "zh": "咏唱以太之光之名"
   },
   "CastBarAetheryteNames.Tweak.Description": {
     "__": "Teleport is the name of Action#5",
     "en": "Replaces the name of the action \"Teleport\" with the Aetheryte name of your destination.",
     "de": "Ersetzt den Namen des Kommandos \"Teleport\" durch den Namen des Ätheryten, zu dem transportiert wird.",
-    "zh": "将技能“传送”的名称替换为目的地的以太之光名称。"
+    "zh": "在咏唱“传送”时，将咏唱栏上的名称替换为目标以太之光的名称。"
   },
 
   "CharacterClassSwitcher.Tweak.Name": {
@@ -444,12 +446,12 @@
   "CharacterClassSwitcher.Tweak.Description": {
     "en": "Clicking on a class/job in the character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window.",
     "de": "Ein Klick auf eine Klasse/Job im Charakterfenster findet die passende Ausrüstung und rüstet sie aus. Halte die Umschalttaste bei Handwerkern gedrückt, um das ursprüngliche Desynthesefenster zu öffnen.",
-    "zh": "在角色窗口点击一个职业或特职会寻找合适的套装并装备。在制作职业上按住Shift以打开原来的分解窗口。"
+    "zh": "在角色窗口点击一个职业或特职会寻找合适的套装并装备。在制作职业上按住shift以打开原来的分解窗口。"
   },
   "CharacterClassSwitcher.Config.DisableTooltips.Label": {
     "en": "Disable Tooltips",
     "de": "Tooltips deaktivieren",
-    "zh": "禁用鼠标悬停文字提示"
+    "zh": "禁用鼠标悬停文本提示"
   },
   "CharacterClassSwitcher.Config.AlwaysOpenOnClassesJobsTab.Label": {
     "en": "Always open on the Classes/Jobs tab",
@@ -490,12 +492,12 @@
 
   "Commands.Tweak.Name": {
     "en": "Commands",
-    "zh": "命令"
+    "zh": "指令"
   },
   "Commands.Tweak.Description": {
     "en": "A variety of useful chat commands.",
     "de": "Eine Vielzahl von nützlichen Chat-Befehlen.",
-    "zh": "各种有用的消息命令。"
+    "zh": "各种有用的文本指令。"
   },
   "Commands.Config.EnableItemLinkCommand.Label": {
     "en": "/itemlink <id>"
@@ -511,14 +513,15 @@
   "Commands.Config.EnableWhatMountCommand.Description": {
     "en": "Target a player and execute the command to see what mount your target is riding and which item teaches this mount.",
     "de": "Visiere einen Spieler an und führe den Befehl aus, um zu sehen, welches Reittier dein Ziel reitet und welcher Gegenstand dieses Reittier lehrt.",
-    "zh": "选择一个玩家并执行此命令来查看你的目标骑着什么坐骑以及用什么道具解锁此坐骑。"
+    "zh": "选择一个玩家并执行此指令来查看你的目标骑着什么坐骑以及用什么道具解锁此坐骑。"
   },
   "Commands.Config.EnableWhatEmoteCommand.Label": {
     "en": "/whatemote"
   },
   "Commands.Config.EnableWhatEmoteCommand.Description": {
     "en": "Target a player and execute the command to see which emote your target is currently executing.",
-    "de": "Visiere einen Spieler an und führe den Befehl aus, um zu sehen, welches Emote dein Ziel gerade ausführt."
+    "de": "Visiere einen Spieler an und führe den Befehl aus, um zu sehen, welches Emote dein Ziel gerade ausführt.",
+    "zh": "选择一个玩家并执行此指令来查看你的目标正在使用的情感动作"
   },
   "Commands.Config.EnableWhatBardingCommand.Label": {
     "en": "/whatbarding"
@@ -526,7 +529,7 @@
   "Commands.Config.EnableWhatBardingCommand.Description": {
     "en": "Target a players chocobo companion and execute the command to see what barding it is wearing.",
     "de": "Visiere den Chocobo-Begleiter eines Spielers an und führe den Befehl aus, um zu sehen, welche Ausrüstung es trägt.",
-    "zh": "选择一个玩家的陆行鸟并执行此命令来查看它穿着什么鸟甲。"
+    "zh": "选择一个玩家的陆行鸟并执行此指令来查看它穿着什么鸟甲。"
   },
   "Commands.Config.EnableGlamourPlateCommand.Label": {
     "en": "/glamourplate <id>"
@@ -534,7 +537,7 @@
   "Commands.Config.EnableGlamourPlateCommand.Description": {
     "en": "This shortcut command executes the \"/gearset change\" command with the current gear set id and the given glamour plate id (1-20).",
     "de": "Dieser Abkürzungsbefehl führt den Befehl \"/gearset change\" mit der Nummer des aktuellen Ausrüstungssets und der angegebenen Projektionsplatten-Nummer (1-20) aus.",
-    "zh": "该快捷命令使用当前的套装编号和给定的投影模板编号(1-20)执行“/套装 更换”命令。"
+    "zh": "该快捷指令使用当前的套装编号和给定的投影模板编号(1-20)执行“/套装 更换”命令。"
   },
   "Commands.ItemLink.ItemNotFound": {
     "en": "Item {0} not found.",
@@ -544,18 +547,21 @@
   "Commands.ItemLink.Item": {
     "en": "Item #{0}: {1}",
     "de": "Gegenstand #{0}: {1}",
-    "zh": "物品#{0}：{1}。"
+    "zh": "物品#{0}：{1}"
   },
   "Commands.Emote.NotExecutingEmote": {
     "en": "Target is not executing an emote.",
-    "de": "Ziel führt kein Emote aus."
+    "de": "Ziel führt kein Emote aus.",
+    "zh": "目标未使用情感动作。"
   },
   "Commands.Emote.NotFound": {
     "en": "Emote {0} not found.",
-    "de": "Emote {0} nicht gefunden."
+    "de": "Emote {0} nicht gefunden.",
+    "zh": "情感动作{0}未找到。"
   },
   "Commands.Emote": {
-    "en": "Emote #{0}: {1}"
+    "en": "Emote #{0}: {1}",
+    "zh": "情感动作#{0}：{1}"
   },
   "Commands.InvalidArguments": {
     "en": "Invalid arguments.",
@@ -623,11 +629,13 @@
   },
   "CustomChatMessageFormats.Config.LStr1.Label": {
     "en": "Player Name",
-    "de": "Spieler Name"
+    "de": "Spieler Name",
+    "zh": "玩家名称"
   },
   "CustomChatMessageFormats.Config.LStr2.Label": {
     "en": "Message",
-    "de": "Nachricht"
+    "de": "Nachricht",
+    "zh": "消息"
   },
   "CustomChatMessageFormats.Config.Entry.Name.TellIncoming": {
     "en": "Tell (Incoming)",
@@ -652,7 +660,7 @@
   "CustomChatMessageFormats.Config.Entry.InvalidPayloads.Tooltip": {
     "en": "This entry is inactive.\nMake sure that each color payload ends with a stackcolor payload.",
     "de": "Dieser Eintrag ist inaktiv.\nBitte stelle sicher, dass jedes Color Payload mit einem stackcolor Payload endet.",
-    "zh": "此功能未激活。请确保每个 Color Payload 以 Stackcolor Payload 结尾。"
+    "zh": "此功能未激活。请确保每个颜色负荷以栈色负荷结尾。"
   },
   "CustomChatMessageFormats.Config.Entry.OpenEditorButton.Tooltip": {
     "en": "Open editor",
@@ -667,7 +675,7 @@
   "CustomChatMessageFormats.Config.Entry.PayloadTableHeader.Payload.Label": {
     "en": "Payload",
     "de": "Payload",
-    "zh": "Payload"
+    "zh": "负荷"
   },
   "CustomChatMessageFormats.Config.Entry.PayloadTableHeader.Value.Label": {
     "en": "Value",
@@ -692,7 +700,7 @@
   "CustomChatMessageFormats.Config.Entry.Payload.StackColor.Tooltip": {
     "en": "This entry is an end marker for the the previous Color payload.",
     "de": "Dieser Eintrag ist eine Endmarkierung für das vorherige Color Payload.",
-    "zh": "这是前一个 Color Payload 的结束标记。"
+    "zh": "这是前一个颜色负荷的结束标记。"
   },
   "CustomChatMessageFormats.Config.Entry.Payload.MoveUpButton.Tooltip": {
     "en": "Move up",
@@ -707,7 +715,7 @@
   "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Label": {
     "en": "Add Payload",
     "de": "Payload hinzufügen",
-    "zh": "添加 Payload"
+    "zh": "添加负荷"
   },
   "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.TextPayload": {
     "en": "Text",
@@ -729,7 +737,7 @@
   },
   "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.StackColor": {
     "en": "stackcolor",
-    "zh": "stackcolor"
+    "zh": "栈色"
   },
   "CustomChatMessageFormats.LogKindSelect.PreviewValue": {
     "en": "Add message format...",
@@ -778,7 +786,7 @@
   "CustomChatTimestamp.Config.Format.Example.Message": {
     "en": "(\uE090Player Name) This is a test message.",
     "de": "(\uE090Spieler Name) Dies ist eine Testnachricht.",
-    "zh": "(\uE090Player Name) 这是一条测试消息。"
+    "zh": "(\uE090玩家名) 这是一条测试消息。"
   },
   "CustomChatTimestamp.Config.Format.Invalid": {
     "en": "The current format is not valid.",
@@ -811,11 +819,13 @@
   },
   "DTR.Config.FpsFormat.Label": {
     "en": "FPS Format",
-    "de": "FPS-Format"
+    "de": "FPS-Format",
+    "zh": "FPS格式"
   },
   "DTR.Config.FpsFormat.Description": {
     "en": "This is passed into C#s string.Format function with the FPS value as first argument.",
-    "de": "Dies wird an die C#-Funktion string.Format übergeben mit dem FPS-Wert als erstem Argument."
+    "de": "Dies wird an die C#-Funktion string.Format übergeben mit dem FPS-Wert als erstem Argument.",
+    "zh": "这将以FPS值作为第一个参数被传递到C#的string.Format函数中。"
   },
   "DTR.Config.Format.Example.Label": {
     "en": "Example with the current format:",
@@ -829,7 +839,8 @@
   },
   "DTR.FpsFormat.Invalid": {
     "en": "Invalid FPS Format",
-    "de": "Ungültiges FPS-Format"
+    "de": "Ungültiges FPS-Format",
+    "zh": "无效的FPS格式。"
   },
 
   "EnhancedExpBar.Tweak.Name": {
@@ -889,7 +900,7 @@
   "EnhancedExpBar.Config.DisableColorChanges.Label": {
     "en": "Disable color change",
     "de": "Farbanpassung deaktivieren",
-    "zh": "禁用颜色改变"
+    "zh": "禁用颜色更改"
   },
 
   "EnhancedIsleworksAgenda.Tweak.Name": {
@@ -944,7 +955,7 @@
   "EnhancedLoginLogout.Config.SkipLogo.Label": {
     "en": "Skip Logo",
     "de": "Logo überspringen",
-    "zh": "跳过 Logo"
+    "zh": "跳过Logo"
   },
   "EnhancedLoginLogout.Config.SkipLogo.Description": {
     "en": "Instantly shows the title screen.",
@@ -983,7 +994,7 @@
   "EnhancedLoginLogout.Config.PlayEmote.Note": {
     "en": "Note: Emote settings are per character and not all emotes are supported (e.g. sitting or underwater emotes). What is supported, however, are alternative standing idle poses.",
     "de": "Hinweis: Die Emote-Einstellungen gelten pro Charakter und nicht alle Emotes werden unterstützt (z.B. sitzende oder Unterwasser-Emotes). Was jedoch unterstützt wird, sind alternative stehende Leerlaufposen.",
-    "zh": "注意：情感动作设置会适用于每个角色，但并非所有的情感动作都能支持（例如坐下或水下情感动作）。然而，支持的是另一种站立姿势。（译：？）"
+    "zh": "注意：情感动作设置每个角色独立，且并非所有的情感动作都能支持（例如坐下或水下情感动作）。可能会被替换为另一种站立姿势。"
   },
   "EnhancedLoginLogout.Config.PlayEmote.CurrentEmote": {
     "en": "Current Emote:",
@@ -1108,12 +1119,12 @@
   "EnhancedMaterialList.Config.AddSearchForItemByCraftingMethodContextMenuEntry.Label": {
     "en": "Add \"Search for Item by Crafting Method\" context menu entry",
     "de": "Kontextmenüeintrag \"Syntheserezept anzeigen\" hinzufügen",
-    "zh": "添加“通过制作方法搜索物品”条目到次级菜单（译：？）"
+    "zh": "添加“显示合成配方”到次级菜单。"
   },
   "EnhancedMaterialList.Config.AddSearchForItemByCraftingMethodContextMenuEntry.Description": {
     "en": "For the result item. No more need to open the recipe tree first.",
     "de": "Für den Resultatgegenstand. Es ist nicht mehr notwendig, zuerst den Rezeptbaum zu öffnen.",
-    "zh": "用于结果物品。不再需要先打开配方树。"
+    "zh": "对于目标物品。不再需要先打开配方树。"
   },
 
   "ExpertDeliveries.Tweak.Name": {
@@ -1196,18 +1207,20 @@
   },
   "GearSetGridWindow.ItemTooltip.LabelDye0": {
     "en": "Dye 1:",
-    "de": "Färbung 1:"
+    "de": "Färbung 1:",
+    "zh": "染色一："
   },
   "GearSetGridWindow.ItemTooltip.LabelDye1": {
     "en": "Dye 2:",
-    "de": "Färbung 2:"
+    "de": "Färbung 2:",
+    "zh": "染色二："
   },
   "GearSetGridWindow.ItemTooltip.AlsoUsedInTheseGearsets": {
     "en": "Also used in these Gearsets:",
     "de": "Wird auch in diesen Ausrüstungssets benutzt:",
     "fr": "Aussi utilisé dans ces ensembles d'équipement :",
     "ja": "これらのギアセットでも使用されます：",
-    "zh": "也在这些套装中使用："
+    "zh": "也在这些套装中被使用："
   },
 
   "GlamourDresserArmoireAlert.Tweak.Name": {
@@ -1246,7 +1259,7 @@
   "InventoryHighlight.Tweak.Description": {
     "en": "Hold down the shift key while the inventory is open to highlight identical items.",
     "de": "Halte Umschalttaste gedrückt während das Inventar offen ist, um identische Gegenstände hervorzuheben.",
-    "zh": "在打开物品栏时，按住Shift键以高亮显示相同的物品。"
+    "zh": "在打开物品栏时，按住shift键以高亮显示相同的物品。"
   },
   "InventoryHighlight.Config.IgnoreQuality.Label": {
     "en": "Ignore item quality",
@@ -1330,12 +1343,12 @@
   "LockWindowPosition.Config.DeleteButton.Tooltip.NotHoldingShift": {
     "en": "Hold shift to delete rule",
     "de": "Shift gedrückt halten, um die Regel zu löschen",
-    "zh": "按住Shift以删除规则"
+    "zh": "按住shift以删除规则"
   },
   "LockWindowPosition.Config.DeleteButton.Tooltip.WindowNotFocused": {
     "en": "Focus window and hold shift to delete rule",
     "de": "Fokussiere das Fenster und halte Shift gedrückt, um die Regel zu löschen",
-    "zh": "聚焦窗口且按住Shift以删除规则"
+    "zh": "聚焦窗口且按住shift以删除规则"
   },
   "LockWindowPosition.Config.NoWindowsAddedYet": {
     "en": "No windows added yet.",
@@ -1373,8 +1386,9 @@
     "zh": "预定消耗的材料"
   },
   "MaterialAllocation.Tweak.Description": {
-    "en": "Saves the last selected tab in Islekeep's Index \"Material Allocation\" window between game sessions.",
-    "de": "Speichert den zuletzt ausgewählten Tab des Inselführers INVENTUR-Fensters zwischen Spielsitzungen."
+      "en": "Saves the last selected tab in Islekeep's Index \"Material Allocation\" window between game sessions.",
+    "de": "Speichert den zuletzt ausgewählten Tab des Inselführers INVENTUR-Fensters zwischen Spielsitzungen.",
+    "zh": "保持在无人岛菜单“开拓工房预定消耗的材料”窗口中最后选择的标签页。"
   },
 
   "MinimapAdjustments.Tweak.Name": {
@@ -1448,11 +1462,13 @@
   },
 
   "MountTiltControl.Tweak.Name": {
-    "en": "Disable Mount Tilt"
+    "en": "Disable Mount Tilt",
+    "zh": "禁用坐骑倾斜"
   },
   "MountTiltControl.Tweak.Description": {
     "en": "Disables leaning into turns during riding or flying.",
-    "de": "Deaktiviert die Neigung in Kurven während des Reitens oder Fliegens."
+    "de": "Deaktiviert die Neigung in Kurven während des Reitens oder Fliegens.",
+    "zh": "禁用骑乘或飞行时转弯的倾斜。"
   },
 
   "PortraitHelper.Tweak.Name": {
@@ -1493,7 +1509,8 @@
   },
   "PortraitHelper.Config.IgnoreDoHDoL.Label": {
     "en": "Do not notify for DoH/DoL jobs",
-    "de": "Nicht bei Handwerker oder Sammler benachrichtigen"
+    "de": "Nicht bei Handwerker oder Sammler benachrichtigen",
+    "zh": "不提醒制作&采集职业"
   },
   "PortraitHelper.Config.ReequipGearsetOnUpdate.Label": {
     "en": "Automatically re-equip gear set to re-apply glamour plate",
@@ -1915,7 +1932,7 @@
   "RevealDutyRequirements.Tweak.Description": {
     "en": "Reveals duty names in duty finder, which were shown as \"???\". Useful for unlocking Mentor roulette.",
     "de": "Zeigt die Namen der Inhalte in der Inhaltssuche an, die als \"???\" angezeigt werden. Nützlich zum Freischalten des Mentor-Roulettes.",
-    "zh": "揭示任务搜索器中显示为“？？？”的任务的名称。解锁导随用的。"
+    "zh": "揭示任务搜索器中显示为“???”的任务的名称。解锁导随用的。"
   },
 
   "SaferItemSearch.Tweak.Name": {
