@@ -3,34 +3,32 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.System.Scheduler;
 using FFXIVClientStructs.FFXIV.Client.System.Scheduler.Base;
 using HaselCommon.Extensions;
-using HaselCommon.Services;
 using HaselTweaks.Config;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class ForcedCutsceneMusicConfiguration
-{
-    [BoolConfig]
-    public bool Restore = true;
-}
-
-public sealed unsafe class ForcedCutsceneMusic(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class ForcedCutsceneMusic(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
     ILogger<ForcedCutsceneMusic> Logger,
     IGameInteropProvider GameInteropProvider,
     IGameConfig GameConfig)
-    : Tweak<ForcedCutsceneMusicConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
-    private bool _wasBgmMuted;
+    public string InternalName => nameof(ForcedCutsceneMusic);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private delegate void CutSceneControllerDtorDelegate(CutSceneController* self, bool free);
+    private bool WasBgmMuted;
+
+    private delegate void CutSceneControllerDtorDelegate(FixedCutSceneController* self, byte freeFlags);
 
     private Hook<ScheduleManagement.Delegates.CreateCutSceneController>? CreateCutSceneControllerHook;
     private Hook<CutSceneControllerDtorDelegate>? CutSceneControllerDtorHook;
 
-    public override void OnInitialize()
+    public void OnInitialize()
     {
         CreateCutSceneControllerHook = GameInteropProvider.HookFromAddress<ScheduleManagement.Delegates.CreateCutSceneController>(
             ScheduleManagement.MemberFunctionPointers.CreateCutSceneController,
@@ -41,16 +39,29 @@ public sealed unsafe class ForcedCutsceneMusic(
             CutSceneControllerDtorDetour);
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
         CreateCutSceneControllerHook?.Enable();
         CutSceneControllerDtorHook?.Enable();
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         CreateCutSceneControllerHook?.Disable();
         CutSceneControllerDtorHook?.Disable();
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
+            return;
+
+        OnDisable();
+        CreateCutSceneControllerHook?.Dispose();
+        CutSceneControllerDtorHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private bool IsBgmMuted
@@ -59,15 +70,23 @@ public sealed unsafe class ForcedCutsceneMusic(
         set => GameConfig.System.Set("IsSndBgm", value);
     }
 
+    private bool ShouldHandleCutScene(uint id)
+    {
+        return id != 0; // ignore title screen cutscene
+    }
+
     private CutSceneController* CreateCutSceneControllerDetour(ScheduleManagement* self, byte* path, uint id, byte a4)
     {
         var ret = CreateCutSceneControllerHook!.Original(self, path, id, a4);
 
         Logger.LogInformation("Cutscene {id} started (Controller @ {address:X})", id, (nint)ret);
 
+        if (!ShouldHandleCutScene(id))
+            return ret;
+
         var isBgmMuted = IsBgmMuted;
 
-        _wasBgmMuted = isBgmMuted;
+        WasBgmMuted = isBgmMuted;
 
         if (isBgmMuted)
             IsBgmMuted = false;
@@ -75,13 +94,22 @@ public sealed unsafe class ForcedCutsceneMusic(
         return ret;
     }
 
-    private void CutSceneControllerDtorDetour(CutSceneController* self, bool free)
+    private void CutSceneControllerDtorDetour(FixedCutSceneController* self, byte freeFlags)
     {
         Logger.LogInformation("Cutscene {id} ended", self->CutsceneId);
 
-        CutSceneControllerDtorHook!.Original(self, free);
+        CutSceneControllerDtorHook!.Original(self, freeFlags);
 
-        if (_wasBgmMuted && Config.Restore)
+        if (!ShouldHandleCutScene(self->CutsceneId))
+            return;
+
+        if (WasBgmMuted && Config.Restore)
             IsBgmMuted = true;
+    }
+
+    [StructLayout(LayoutKind.Explicit, Size = 0x210)]
+    public unsafe partial struct FixedCutSceneController
+    {
+        [FieldOffset(0x168)] public uint CutsceneId;
     }
 }

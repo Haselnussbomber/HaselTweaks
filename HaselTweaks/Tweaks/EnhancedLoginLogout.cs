@@ -1,70 +1,50 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Config;
 using Dalamud.Hooking;
-using Dalamud.Interface;
-using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin.Services;
-using Dalamud.Utility;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.LayoutEngine;
 using FFXIVClientStructs.FFXIV.Client.System.Scheduler;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
-using HaselCommon.Textures;
-using HaselCommon.Utils;
 using HaselTweaks.Config;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Records;
 using HaselTweaks.Structs;
-using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
 using Microsoft.Extensions.Logging;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class EnhancedLoginLogoutConfiguration
-{
-    public bool SkipLogo = true;
-    public bool ShowPets = false;
-    public bool EnableCharaSelectEmote = false;
-    public bool PreloadTerritory = true;
-    public bool ClearTellHistory = false;
-
-    public Vector3 PetPosition = new(-0.6f, 0f, 0f);
-
-    public Dictionary<ulong, PetMirageSetting> PetMirageSettings = [];
-    public Dictionary<ulong, uint> SelectedEmotes = [];
-
-    public class PetMirageSetting
-    {
-        public uint CarbuncleType;
-        public uint FairyType;
-    }
-}
-
-public sealed unsafe class EnhancedLoginLogout(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class EnhancedLoginLogout(
+    PluginConfig PluginConfig,
+    TextService TextService,
     ILogger<EnhancedLoginLogout> Logger,
     IGameInteropProvider GameInteropProvider,
     IGameConfig GameConfig,
     IClientState ClientState,
     IAddonLifecycle AddonLifecycle,
-    TextureManager TextureManager,
-    ExcelService ExcelService)
-    : Tweak<EnhancedLoginLogoutConfiguration>(pluginConfig, textService)
+    TextureService TextureService,
+    ExcelService ExcelService,
+    PlayerService PlayerService,
+    ConfigGui ConfigGui)
+    : IConfigurableTweak
 {
-    private CharaSelectCharacter? _currentEntry = null;
+    public string InternalName => nameof(EnhancedLoginLogout);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    private CharaSelectCharacter? CurrentEntry = null;
 
     #region Core
 
@@ -72,9 +52,8 @@ public sealed unsafe class EnhancedLoginLogout(
     private Hook<CharaSelectCharacterList.Delegates.CleanupCharacters>? CleanupCharactersHook;
     private Hook<EmoteManager.Delegates.ExecuteEmote>? ExecuteEmoteHook;
     private Hook<AgentLobby.Delegates.OpenLoginWaitDialog>? OpenLoginWaitDialogHook;
-    private Hook<UIModule.Delegates.HandlePacket>? HandleUIModulePacketHook;
 
-    public override void OnInitialize()
+    public void OnInitialize()
     {
         UpdateCharaSelectDisplayHook = GameInteropProvider.HookFromAddress<AgentLobby.Delegates.UpdateCharaSelectDisplay>(
             AgentLobby.MemberFunctionPointers.UpdateCharaSelectDisplay,
@@ -91,15 +70,13 @@ public sealed unsafe class EnhancedLoginLogout(
         OpenLoginWaitDialogHook = GameInteropProvider.HookFromAddress<AgentLobby.Delegates.OpenLoginWaitDialog>(
             AgentLobby.MemberFunctionPointers.OpenLoginWaitDialog,
             OpenLoginWaitDialogDetour);
-
-        HandleUIModulePacketHook = GameInteropProvider.HookFromAddress<UIModule.Delegates.HandlePacket>(
-            UIModule.StaticVirtualTablePointer->HandlePacket,
-            HandleUIModulePacketDetour);
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
-        GameConfig.Changed += GameConfig_Changed;
+        GameConfig.Changed += OnGameConfigChanged;
+        ClientState.Login += OnLogin;
+        PlayerService.LoggingOut += OnLogout;
 
         UpdateCharacterSettings();
         PreloadEmotes();
@@ -110,12 +87,13 @@ public sealed unsafe class EnhancedLoginLogout(
         CleanupCharactersHook?.Enable();
         ExecuteEmoteHook?.Enable();
         OpenLoginWaitDialogHook?.Enable();
-        HandleUIModulePacketHook?.Enable();
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
-        GameConfig.Changed -= GameConfig_Changed;
+        GameConfig.Changed -= OnGameConfigChanged;
+        ClientState.Login -= OnLogin;
+        PlayerService.LoggingOut -= OnLogout;
 
         AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Logo", OnLogoPostSetup);
 
@@ -125,16 +103,39 @@ public sealed unsafe class EnhancedLoginLogout(
         CleanupCharactersHook?.Disable();
         ExecuteEmoteHook?.Disable();
         OpenLoginWaitDialogHook?.Disable();
-        HandleUIModulePacketHook?.Disable();
     }
 
-    private void OnLogin() => UpdateCharacterSettings();
-    private void OnLogout() => _isRecordingEmote = false;
-    public override void OnConfigClose() => _isRecordingEmote = false;
-
-    private void GameConfig_Changed(object? sender, ConfigChangeEvent change)
+    void IDisposable.Dispose()
     {
-        if (change.Option is UiConfigOption.PetMirageTypeCarbuncleSupport or UiConfigOption.PetMirageTypeFairy)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
+            return;
+
+        OnDisable();
+        UpdateCharaSelectDisplayHook?.Dispose();
+        CleanupCharactersHook?.Dispose();
+        ExecuteEmoteHook?.Dispose();
+        OpenLoginWaitDialogHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
+    }
+
+    private void OnLogin()
+    {
+        UpdateCharacterSettings();
+    }
+
+    private void OnLogout()
+    {
+        _isRecordingEmote = false;
+
+        if (Config.ClearTellHistory)
+            AcquaintanceModule.Instance()->ClearTellHistory();
+    }
+
+    private void OnGameConfigChanged(object? sender, ConfigChangeEvent change)
+    {
+        if (change.Option is UiConfigOption.PetMirageTypeCarbuncleSupport or UiConfigOption.PetMirageTypeFairy && AgentLobby.Instance()->IsLoggedIn)
             UpdatePetMirageSettings();
     }
 
@@ -146,10 +147,10 @@ public sealed unsafe class EnhancedLoginLogout(
     private void CleanupCharaSelect()
     {
         DespawnPet();
-        _currentEntry = null;
+        CurrentEntry = null;
     }
 
-    private ulong ActiveContentId => _currentEntry?.ContentId ?? ClientState.LocalContentId;
+    private ulong ActiveContentId => CurrentEntry?.ContentId ?? ClientState.LocalContentId;
 
     // called every frame
     private void UpdateCharaSelectDisplayDetour(AgentLobby* agent, sbyte index, bool a2)
@@ -172,16 +173,16 @@ public sealed unsafe class EnhancedLoginLogout(
             return;
         }
 
-        if (_currentEntry?.ContentId == entry->ContentId)
+        if (CurrentEntry?.ContentId == entry->ContentId)
             return;
 
         var character = CharaSelectCharacterList.GetCurrentCharacter();
         if (character == null)
             return;
 
-        _currentEntry = new(character, entry);
+        CurrentEntry = new(character, entry);
 
-        character->Vfx.VoiceId = entry->CharacterInfo.VoiceId;
+        character->Vfx.VoiceId = entry->ClientSelectData.VoiceId;
 
         SpawnPet();
 
@@ -193,210 +194,6 @@ public sealed unsafe class EnhancedLoginLogout(
     {
         CleanupCharaSelect();
         CleanupCharactersHook!.Original();
-    }
-
-    #endregion
-
-    #region Config
-
-    private bool _isRecordingEmote;
-    private readonly uint[] _changePoseEmoteIds = [91, 92, 93, 107, 108, 218, 219,];
-    private List<uint>? _excludedEmotes;
-
-    public override void DrawConfig()
-    {
-        var scale = ImGuiHelpers.GlobalScale;
-
-        ImGuiUtils.DrawSection(TextService.Translate("EnhancedLoginLogout.Config.LoginOptions.Title"));
-        // SkipLogo
-        if (ImGui.Checkbox(TextService.Translate("EnhancedLoginLogout.Config.SkipLogo.Label"), ref Config.SkipLogo))
-        {
-            PluginConfig.Save();
-        }
-        using (ImGuiUtils.ConfigIndent())
-        {
-            ImGuiUtils.PushCursorY(-3);
-            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey, TextService.Translate("EnhancedLoginLogout.Config.SkipLogo.Description"));
-            ImGuiUtils.PushCursorY(3);
-        }
-
-        // ShowPets
-        if (ImGui.Checkbox(TextService.Translate("EnhancedLoginLogout.Config.ShowPets.Label"), ref Config.ShowPets))
-        {
-            if (!Config.ShowPets)
-                DespawnPet();
-            else
-                SpawnPet();
-
-            PluginConfig.Save();
-        }
-        using (ImGuiUtils.ConfigIndent())
-        {
-            ImGuiUtils.PushCursorY(-3);
-            TextService.DrawWrapped(Colors.Grey, "EnhancedLoginLogout.Config.ShowPets.Description");
-            ImGuiUtils.PushCursorY(3);
-
-            if (ActiveContentId != 0)
-            {
-                if (!Config.PetMirageSettings.ContainsKey(ActiveContentId))
-                    TextService.Draw(Colors.Red, "EnhancedLoginLogout.Config.ShowPets.Error.MissingPetMirageSettings");
-            }
-
-            ImGuiUtils.PushCursorY(3);
-        }
-
-        // PetPosition
-        var showPetsDisabled = Config.ShowPets ? null : ImRaii.Disabled();
-
-        using (ImGuiUtils.ConfigIndent())
-        {
-            if (ImGui.DragFloat3(TextService.Translate("EnhancedLoginLogout.Config.PetPosition.Label"), ref Config.PetPosition, 0.01f, -10f, 10f))
-            {
-                ApplyPetPosition();
-                PluginConfig.Save();
-            }
-            ImGui.SameLine();
-            if (ImGuiUtils.IconButton("##PetPositionReset", FontAwesomeIcon.Undo, TextService.Translate("HaselTweaks.Config.ResetToDefault", "-0.6, 0, 0")))
-            {
-                Config.PetPosition = new(-0.6f, 0f, 0f);
-                ApplyPetPosition();
-                PluginConfig.Save();
-            }
-        }
-
-        showPetsDisabled?.Dispose();
-
-        // PlayEmote
-        if (ImGui.Checkbox(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.Label"), ref Config.EnableCharaSelectEmote))
-        {
-            if (!Config.EnableCharaSelectEmote && _currentEntry != null && _currentEntry.Character != null)
-            {
-                ResetEmoteMode();
-                _currentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(3);
-            }
-            PluginConfig.Save();
-        }
-
-        var playEmoteDisabled = Config.EnableCharaSelectEmote ? null : ImRaii.Disabled();
-
-        using (ImGuiUtils.ConfigIndent())
-        {
-            ImGuiUtils.PushCursorY(-3);
-            TextService.DrawWrapped(Colors.Grey, "EnhancedLoginLogout.Config.PlayEmote.Description");
-            TextService.DrawWrapped(Colors.Grey, "EnhancedLoginLogout.Config.PlayEmote.Note");
-            ImGuiUtils.PushCursorY(3);
-
-            if (Config.EnableCharaSelectEmote)
-            {
-                if (ActiveContentId != 0)
-                {
-                    ImGuiUtils.PushCursorY(3);
-                    TextService.Draw("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote");
-                    ImGui.SameLine();
-
-                    if (!Config.SelectedEmotes.TryGetValue(ActiveContentId, out var selectedEmoteId) || selectedEmoteId == 0)
-                    {
-                        TextService.Draw("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.None");
-                    }
-                    else
-                    {
-                        var defaultIdlePoseEmote = ExcelService.GetRow<Emote>(90)!; // first "Change Pose"
-                        var changePoseIndex = 1;
-
-                        var entry = ExcelService.GetSheet<Emote>()
-                            .Select(row => (
-                                IsChangePose: _changePoseEmoteIds.Contains(row.RowId),
-                                Name: _changePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name.ToDalamudString()} ({changePoseIndex++})" : $"{row.Name.ToDalamudString()}",
-                                Emote: row
-                            ) as (bool IsChangePose, string Name, Emote Emote)?)
-                            .FirstOrDefault(entry => entry != null && entry.Value.Emote.RowId == selectedEmoteId, null);
-
-                        if (entry.HasValue)
-                        {
-                            var (isChangePose, name, emote) = entry.Value;
-                            ImGuiUtils.PushCursorY(-3);
-                            TextureManager.GetIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon).Draw(24 * scale);
-                            ImGui.SameLine();
-                            ImGui.TextUnformatted(name);
-                        }
-                        else
-                        {
-                            TextService.Draw("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.Unknown");
-                        }
-                    }
-
-                    if (ClientState.IsLoggedIn)
-                    {
-                        ImGui.SameLine();
-
-                        ImGuiUtils.PushCursorY(-3);
-
-                        if (_isRecordingEmote)
-                        {
-                            if (ImGui.Button(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.StopRecordingButton.Label")))
-                            {
-                                _isRecordingEmote = false;
-                            }
-                        }
-                        else
-                        {
-                            if (ImGui.Button(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.ChangeButton.Label")))
-                            {
-                                _isRecordingEmote = true;
-
-                                var agentEmote = AgentModule.Instance()->GetAgentByInternalId(AgentId.Emote);
-                                if (!agentEmote->IsAgentActive())
-                                {
-                                    agentEmote->Show();
-                                }
-                            }
-                        }
-
-                        if (selectedEmoteId != 0)
-                        {
-                            ImGui.SameLine();
-
-                            ImGuiUtils.PushCursorY(-3);
-                            if (ImGui.Button(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.UnsetButton.Label")))
-                            {
-                                SaveEmote(0);
-                            }
-                        }
-
-                        if (_isRecordingEmote)
-                        {
-                            TextService.Draw(Colors.Gold, "EnhancedLoginLogout.Config.PlayEmote.RecordingInfo");
-                            ImGuiUtils.PushCursorY(3);
-                        }
-                    }
-                    else
-                    {
-                        TextService.Draw("EnhancedLoginLogout.Config.PlayEmote.NotLoggedIn");
-                    }
-                }
-            }
-        }
-
-        playEmoteDisabled?.Dispose();
-
-        // PreloadTerritory
-        if (ImGui.Checkbox(TextService.Translate("EnhancedLoginLogout.Config.PreloadTerritory.Label"), ref Config.PreloadTerritory))
-        {
-            PluginConfig.Save();
-        }
-        using (ImGuiUtils.ConfigIndent())
-        {
-            ImGuiUtils.PushCursorY(-3);
-            TextService.DrawWrapped(Colors.Grey, "EnhancedLoginLogout.Config.PreloadTerritory.Description");
-            ImGuiUtils.PushCursorY(3);
-        }
-
-        ImGuiUtils.DrawSection(TextService.Translate("EnhancedLoginLogout.Config.LogoutOptions.Title"));
-        // ClearTellHistory
-        if (ImGui.Checkbox(TextService.Translate("EnhancedLoginLogout.Config.ClearTellHistory.Label"), ref Config.ClearTellHistory))
-        {
-            PluginConfig.Save();
-        }
     }
 
     #endregion
@@ -462,10 +259,10 @@ public sealed unsafe class EnhancedLoginLogout(
 
     private void SpawnPet()
     {
-        if (!Config.ShowPets || _currentEntry == null)
+        if (!Config.ShowPets || CurrentEntry == null)
             return;
 
-        if (!(_currentEntry.ClassJobId is 26 or 27 or 28)) // Arcanist, Summoner, Scholar (Machinist: 31)
+        if (!(CurrentEntry.ClassJobId is 26 or 27 or 28)) // Arcanist, Summoner, Scholar (Machinist: 31)
         {
             DespawnPet();
             return;
@@ -477,7 +274,7 @@ public sealed unsafe class EnhancedLoginLogout(
         if (!Config.PetMirageSettings.TryGetValue(ActiveContentId, out var petMirageSettings))
             return;
 
-        var bNpcId = _currentEntry.ClassJobId switch
+        var bNpcId = CurrentEntry.ClassJobId switch
         {
             // Arcanist or Summoner
             26 or 27 when petMirageSettings.CarbuncleType is 0 => 13498u, // Carbuncle
@@ -619,7 +416,7 @@ public sealed unsafe class EnhancedLoginLogout(
         if (!Config.EnableCharaSelectEmote)
             return;
 
-        if (_currentEntry == null || _currentEntry.Character == null)
+        if (CurrentEntry == null || CurrentEntry.Character == null)
             return;
 
         if (emoteId == 0)
@@ -643,7 +440,7 @@ public sealed unsafe class EnhancedLoginLogout(
         if (emote.EmoteMode.Row != 0)
         {
             Logger.LogDebug("EmoteMode: {rowId}", emote.EmoteMode.Row);
-            _currentEntry.Character->SetMode((Character.CharacterModes)emote.EmoteMode.Value!.ConditionMode, (byte)emote.EmoteMode.Row);
+            CurrentEntry.Character->SetMode((CharacterModes)emote.EmoteMode.Value!.ConditionMode, (byte)emote.EmoteMode.Row);
         }
         else
         {
@@ -654,30 +451,30 @@ public sealed unsafe class EnhancedLoginLogout(
 
         if (intro != 0 && loop != 0)
         {
-            ((HaselTimelineContainer*)(nint)(&_currentEntry.Character->Timeline))->PlayActionTimeline(intro, loop);
+            ((HaselTimelineContainer*)(nint)(&CurrentEntry.Character->Timeline))->PlayActionTimeline(intro, loop);
         }
         else if (loop != 0)
         {
-            _currentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(loop);
+            CurrentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(loop);
         }
         else if (intro != 0)
         {
-            _currentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(intro);
+            CurrentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(intro);
         }
         else
         {
             Logger.LogDebug("No intro or loop, resetting to idle pose (timeline 3)");
-            _currentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(3);
+            CurrentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(3);
         }
     }
 
     private void ResetEmoteMode()
     {
-        if (_currentEntry == null || _currentEntry.Character == null)
+        if (CurrentEntry == null || CurrentEntry.Character == null)
             return;
 
         Logger.LogDebug("Resetting Character Mode");
-        _currentEntry.Character->SetMode(Character.CharacterModes.Normal, 0);
+        CurrentEntry.Character->SetMode(CharacterModes.Normal, 0);
     }
 
     private bool ExecuteEmoteDetour(EmoteManager* handler, ushort emoteId, nint targetData)
@@ -736,61 +533,78 @@ public sealed unsafe class EnhancedLoginLogout(
     {
         OpenLoginWaitDialogHook!.Original(agent, position);
 
-        if (_currentEntry == null)
+        if (CurrentEntry == null)
             return;
 
-        ushort territoryId = _currentEntry.TerritoryType switch
+        ushort territoryTypeId = CurrentEntry.TerritoryType switch
         {
             282  // Private Cottage - Mist
          or 283  // Private House - Mist
          or 284  // Private Mansion - Mist
          or 384  // Private Chambers - Mist
+         or 423  // Company Workshop - Mist
+         or 573  // Topmast Apartment Lobby
+         or 608  // Topmast Apartment
          => 339, // Mist
 
             342  // Private Cottage - The Lavender Beds
          or 343  // Private House - The Lavender Beds
          or 344  // Private Mansion - The Lavender Beds
          or 385  // Private Chambers - The Lavender Beds
+         or 425  // Company Workshop - The Lavender Beds
+         or 574  // Lily Hills Apartment Lobby
+         or 609  // Lily Hills Apartment
          => 340, // The Lavender Beds
-
 
             345  // Private Cottage - The Goblet
          or 346  // Private House - The Goblet
          or 347  // Private Mansion - The Goblet
          or 386  // Private Chambers - The Goblet
+         or 424  // Company Workshop - The Goblet
+         or 575  // Sultana's Breath Apartment Lobby
+         or 610  // Sultana's Breath Apartment
          => 341, // The Goblet
 
-            _ => _currentEntry.TerritoryType
+            649  // Private Cottage - Shirogane
+         or 650  // Private House - Shirogane
+         or 651  // Private Mansion - Shirogane
+         or 652  // Private Chambers - Shirogane
+         or 653  // Company Workshop - Shirogane
+         or 654  // Kobai Goten Apartment Lobby
+         or 655  // Kobai Goten Apartment
+         => 641, // Shirogane
+
+            980  // Private Cottage - Empyreum
+         or 981  // Private House - Empyreum
+         or 982  // Private Mansion - Empyreum
+         or 983  // Private Chambers - Empyreum
+         or 984  // Company Workshop - Empyreum
+         or 985  // Ingleside Apartment Lobby
+         or 999  // Ingleside Apartment
+         => 979, // Empyreum
+
+            _ => CurrentEntry.TerritoryType
         };
 
-        if (territoryId <= 0)
+        if (territoryTypeId <= 0)
             return;
 
-        var territoryType = ExcelService.GetRow<TerritoryType>(territoryId);
+        var territoryType = ExcelService.GetRow<TerritoryType>(territoryTypeId);
         if (territoryType == null)
             return;
 
-        var preloadManger = PreloadManger.Instance();
-        if (preloadManger == null)
-            return;
+        Logger.LogDebug("Preloading territory #{territoryId}: {bg}", territoryTypeId, territoryType.Bg.RawString);
 
-        Logger.LogDebug("Preloading territory #{territoryId}: {bg}", territoryId, territoryType.Bg.RawString);
-        fixed (byte* ptr = territoryType.Bg.RawData)
-        {
-            preloadManger->PreloadTerritory(2, (nint)ptr, 40, 0, territoryId);
-        }
-    }
-
-    #endregion
-
-    #region Logout: Clear Tell History
-
-    private void HandleUIModulePacketDetour(UIModule* uiModule, UIModulePacketType type, uint uintParam, void* packet)
-    {
-        if (type == UIModulePacketType.Logout && Config.ClearTellHistory)
-            AcquaintanceModule.Instance()->ClearTellHistory();
-
-        HandleUIModulePacketHook!.Original(uiModule, type, uintParam, packet);
+        var layoutWorld = LayoutWorld.Instance();
+        layoutWorld->UnloadPrefetchLayout();
+        layoutWorld->LoadPrefetchLayout(
+            2,
+            territoryType.Bg.RawData,
+            /* LayerEntryType.PopRange */ 40,
+            0,
+            territoryTypeId,
+            GameMain.Instance(),
+            0);
     }
 
     #endregion

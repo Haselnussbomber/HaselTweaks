@@ -10,7 +10,6 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselCommon.Windowing;
-using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
@@ -33,7 +32,7 @@ public unsafe class MenuBar : SimpleWindow
 
     private readonly IServiceProvider ServiceProvider;
     private readonly ILogger Logger;
-    private readonly DalamudPluginInterface PluginInterface;
+    private readonly IDalamudPluginInterface PluginInterface;
     private readonly PluginConfig PluginConfig;
     private readonly TextService TextService;
     private readonly BannerUtils BannerUtils;
@@ -48,8 +47,8 @@ public unsafe class MenuBar : SimpleWindow
     public MenuBar(
         ILogger<MenuBar> logger,
         IServiceProvider serviceProvider,
-        DalamudPluginInterface pluginInterface,
-        IWindowManager windowManager,
+        IDalamudPluginInterface pluginInterface,
+        WindowManager windowManager,
         PluginConfig pluginConfig,
         TextService textService,
         BannerUtils bannerUtils)
@@ -82,6 +81,10 @@ public unsafe class MenuBar : SimpleWindow
         InitialPreset = null;
         PortraitName = string.Empty;
         CloseOverlays();
+        AdvancedImportOverlay?.Dispose();
+        AdvancedEditOverlay?.Dispose();
+        PresetBrowserOverlay?.Dispose();
+        AlignmentToolSettingsOverlay?.Dispose();
         ServiceScope?.Dispose();
         ServiceScope = null;
         base.OnClose();
@@ -89,14 +92,10 @@ public unsafe class MenuBar : SimpleWindow
 
     public void CloseOverlays()
     {
-        AdvancedImportOverlay?.Dispose();
-        AdvancedImportOverlay = null;
-        AdvancedEditOverlay?.Dispose();
-        AdvancedEditOverlay = null;
-        PresetBrowserOverlay?.Dispose();
-        PresetBrowserOverlay = null;
-        AlignmentToolSettingsOverlay?.Dispose();
-        AlignmentToolSettingsOverlay = null;
+        AdvancedImportOverlay?.Close();
+        AdvancedEditOverlay?.Close();
+        PresetBrowserOverlay?.Close();
+        AlignmentToolSettingsOverlay?.Close();
     }
 
     public override bool DrawConditions()
@@ -118,12 +117,16 @@ public unsafe class MenuBar : SimpleWindow
         {
             PortraitName = TextService.GetAddonText(14761) ?? "Adventurer Plate";
         }
-        else if (agent->EditorState->GearsetId > -1)
+        else if (agent->EditorState->OpenerEnabledGearsetIndex > -1)
         {
-            var gearset = RaptureGearsetModule.Instance()->GetGearset(agent->EditorState->GearsetId);
-            if (gearset != null)
+            var actualGearsetId = RaptureGearsetModule.Instance()->ResolveIdFromEnabledIndex((byte)agent->EditorState->OpenerEnabledGearsetIndex);
+            if (actualGearsetId > -1)
             {
-                PortraitName = $"{TextService.GetAddonText(756) ?? "Gear Set"} #{gearset->Id + 1}: {gearset->NameString}";
+                var gearset = RaptureGearsetModule.Instance()->GetGearset(actualGearsetId);
+                if (gearset != null)
+                {
+                    PortraitName = $"{TextService.GetAddonText(756) ?? "Gear Set"} #{gearset->Id + 1}: {gearset->NameString}";
+                }
             }
         }
     }
@@ -185,6 +188,7 @@ public unsafe class MenuBar : SimpleWindow
 
             if (ImGuiUtils.IconButton("ViewModeNormal", FontAwesomeIcon.FileImport, TextService.Translate("PortraitHelperWindows.MenuBar.ToggleAdvancedImportMode.Label")))
             {
+                AdvancedImportOverlay?.Close();
                 AdvancedImportOverlay?.Dispose();
                 AdvancedImportOverlay = null;
             }
@@ -193,7 +197,7 @@ public unsafe class MenuBar : SimpleWindow
         {
             CloseOverlays();
             AdvancedImportOverlay ??= ServiceScope!.ServiceProvider.GetRequiredService<AdvancedImportOverlay>();
-            AdvancedImportOverlay.Open();
+            AdvancedImportOverlay.Open(this);
         }
 
         ImGui.SameLine();
@@ -205,6 +209,7 @@ public unsafe class MenuBar : SimpleWindow
 
             if (ImGuiUtils.IconButton("ViewModeNormal", FontAwesomeIcon.FilePen, TextService.Translate("PortraitHelperWindows.MenuBar.ToggleAdvancedEditMode.Label")))
             {
+                AdvancedEditOverlay?.Close();
                 AdvancedEditOverlay?.Dispose();
                 AdvancedEditOverlay = null;
             }
@@ -238,6 +243,7 @@ public unsafe class MenuBar : SimpleWindow
 
             if (ImGuiUtils.IconButton("ViewModeNormal2", FontAwesomeIcon.List, TextService.Translate("PortraitHelperWindows.MenuBar.TogglePresetBrowser.Label")))
             {
+                PresetBrowserOverlay?.Close();
                 PresetBrowserOverlay?.Dispose();
                 PresetBrowserOverlay = null;
             }
@@ -246,7 +252,7 @@ public unsafe class MenuBar : SimpleWindow
         {
             CloseOverlays();
             PresetBrowserOverlay ??= ServiceScope!.ServiceProvider.GetRequiredService<PresetBrowserOverlay>();
-            PresetBrowserOverlay.Open();
+            PresetBrowserOverlay.Open(this);
         }
 
         // ----
@@ -266,6 +272,7 @@ public unsafe class MenuBar : SimpleWindow
             {
                 if (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift))
                 {
+                    AlignmentToolSettingsOverlay?.Close();
                     AlignmentToolSettingsOverlay?.Dispose();
                     AlignmentToolSettingsOverlay = null;
                 }

@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <Version>26.1.1</Version>
     <TargetFramework>net8.0-windows</TargetFramework>
     <Platforms>x64</Platforms>
     <Nullable>enable</Nullable>
@@ -19,29 +20,42 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AssemblySearchPaths>$(AssemblySearchPaths);$(DalamudLibPath)</AssemblySearchPaths>
+    <OutputPath>..\bin\</OutputPath>
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DalamudPackager" Version="2.1.12" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
-    <Reference Include="Newtonsoft.Json" Private="false" />
+    <PackageReference Include="DalamudPackager" Version="2.1.13" />
     <Reference Include="Dalamud" Private="false" />
     <Reference Include="ImGui.NET" Private="false" />
     <Reference Include="ImGuiScene" Private="false" />
     <Reference Include="Lumina" Private="false" />
     <Reference Include="Lumina.Excel" Private="false" />
+    <Reference Include="SharpDX" Private="false" />
+    <Reference Include="SharpDX.Direct3D11" Private="false" />
+    <Reference Include="SharpDX.DXGI" Private="false" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('$(ProjectDir)..\FFXIVClientStructs')">
+    <Reference Include="InteropGenerator.Runtime" Private="false" />
+    <Reference Include="FFXIVClientStructs" Private="false" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="Exists('$(ProjectDir)..\FFXIVClientStructs')">
+    <InteropGenerator_InteropNamespace>HaselTweaks</InteropGenerator_InteropNamespace>
+    <DefineConstants>HAS_LOCAL_CS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists('$(ProjectDir)..\FFXIVClientStructs')">
+    <CompilerVisibleProperty Include="InteropGenerator_InteropNamespace" />
+    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator\InteropGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" Private="True" />
+    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" Private="True" />
   </ItemGroup>
 
   <Target Name="Message" BeforeTargets="BeforeBuild">
     <Message Text="Dalamud.Plugin: root at $(DalamudLibPath)" Importance="high" />
   </Target>
-  
-  <PropertyGroup>
-    <Version>24.0.1</Version>
-    <OutputPath>..\bin\</OutputPath>
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
@@ -56,30 +70,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="SharpDX" Private="false" />
-    <Reference Include="SharpDX.Direct3D11" Private="false" />
-    <Reference Include="SharpDX.DXGI" Private="false" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106" PrivateAssets="All" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" Private="True" />
-    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" />
-    <ProjectReference Include="..\HaselCommon\HaselCommon.Text\HaselCommon.Text.csproj" />
     <ProjectReference Include="..\HaselCommon\HaselCommon\HaselCommon.csproj" />
-  </ItemGroup>
-  
-  <PropertyGroup>
-    <InteropGenerator_InteropNamespace>HaselTweaks</InteropGenerator_InteropNamespace>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <CompilerVisibleProperty Include="InteropGenerator_InteropNamespace" />
-    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator\InteropGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

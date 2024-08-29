@@ -1,11 +1,13 @@
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed unsafe class ExpertDeliveries(AddonObserver AddonObserver) : ITweak
+public sealed unsafe class ExpertDeliveries(ILogger<ExpertDeliveries> Logger, AddonObserver AddonObserver) : ITweak
 {
     public string InternalName => nameof(ExpertDeliveries);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
@@ -24,7 +26,7 @@ public sealed unsafe class ExpertDeliveries(AddonObserver AddonObserver) : ITwea
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();
@@ -41,7 +43,13 @@ public sealed unsafe class ExpertDeliveries(AddonObserver AddonObserver) : ITwea
         if (!TryGetAddon<AtkUnitBase>(addonName, out var addon))
             return;
 
+        // prevent item selection for controller users to reset to the first entry
+        if (*(short*)&AgentGrandCompanySupply.Instance()->SelectedTab == 2)
+            return;
+
+        Logger.LogDebug("Changing tab...");
+
         var atkEvent = new AtkEvent();
-        addon->ReceiveEvent(AtkEventType.ButtonClick, 4, &atkEvent, 0);
+        addon->ReceiveEvent(AtkEventType.ButtonClick, 4, &atkEvent);
     }
 }

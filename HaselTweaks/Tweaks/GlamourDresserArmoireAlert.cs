@@ -4,7 +4,6 @@ using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using HaselCommon.Services;
-using HaselCommon.Sheets;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Windows;
@@ -13,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed unsafe class GlamourDresserArmoireAlert(
+public unsafe class GlamourDresserArmoireAlert(
     ILogger<GlamourDresserArmoireAlert> Logger,
     IGameInventory GameInventory,
     AddonObserver AddonObserver,
@@ -21,13 +20,13 @@ public sealed unsafe class GlamourDresserArmoireAlert(
     ExcelService ExcelService)
     : ITweak
 {
-    private bool _isPrismBoxOpen;
-    private uint[]? _lastItemIds = null;
-
     public string InternalName => nameof(GlamourDresserArmoireAlert);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    public Dictionary<uint, Dictionary<uint, (ExtendedItem Item, bool IsHq)>> Categories { get; } = [];
+    private bool _isPrismBoxOpen;
+    private uint[]? _lastItemIds = null;
+
+    public Dictionary<uint, Dictionary<uint, (Item Item, bool IsHq)>> Categories { get; } = [];
     public bool UpdatePending { get; set; } // used to disable ImGui.Selectables after clicking to restore an item
 
     public void OnInitialize()
@@ -55,9 +54,15 @@ public sealed unsafe class GlamourDresserArmoireAlert(
         Window.Close();
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
+            return;
+
         OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void OnAddonOpen(string addonName)
@@ -112,7 +117,7 @@ public sealed unsafe class GlamourDresserArmoireAlert(
             var isHq = itemId is > 1000000 and < 1500000;
             itemId %= 1000000;
 
-            var item = ExcelService.GetRow<ExtendedItem>(itemId);
+            var item = ExcelService.GetRow<Item>(itemId);
             if (item == null)
                 continue;
 

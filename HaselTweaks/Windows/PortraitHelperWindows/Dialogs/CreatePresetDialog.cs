@@ -20,7 +20,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 public class CreatePresetDialog : ConfirmationDialog
 {
-    private readonly DalamudPluginInterface PluginInterface;
+    private readonly IDalamudPluginInterface PluginInterface;
     private readonly INotificationManager NotificationManager;
     private readonly PluginConfig PluginConfig;
     private readonly TextService TextService;
@@ -34,7 +34,7 @@ public class CreatePresetDialog : ConfirmationDialog
     private PortraitHelperConfiguration Config => PluginConfig.Tweaks.PortraitHelper;
 
     public CreatePresetDialog(
-        DalamudPluginInterface pluginInterface,
+        IDalamudPluginInterface pluginInterface,
         INotificationManager notificationManager,
         PluginConfig pluginConfig,
         TextService textService)

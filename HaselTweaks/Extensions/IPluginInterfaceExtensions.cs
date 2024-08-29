@@ -3,10 +3,10 @@ using Dalamud.Plugin;
 
 namespace HaselTweaks.Extensions;
 
-public static class PluginInterfaceExtensions
+public static class IPluginInterfaceExtensions
 {
     // This is kinda stupid, but the easiest way to call this in the config loader
-    public static string GetPortraitThumbnailPath(this DalamudPluginInterface pluginInterface, Guid id)
+    public static string GetPortraitThumbnailPath(this IDalamudPluginInterface pluginInterface, Guid id)
     {
         var portraitsPath = Path.Join(pluginInterface.ConfigDirectory.FullName, "Portraits");
 

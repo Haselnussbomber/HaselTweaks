@@ -7,46 +7,55 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselTweaks.Config;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using Lumina.Text;
 using Lumina.Text.Payloads;
-using Lumina.Text.ReadOnly;
 using Achievement = Lumina.Excel.GeneratedSheets.Achievement;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class AchievementLinkTooltipConfiguration
-{
-    [BoolConfig]
-    public bool ShowCompletionStatus = true;
-
-    [BoolConfig]
-    public bool PreventSpoiler = true;
-}
-
-public sealed unsafe class AchievementLinkTooltip(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class AchievementLinkTooltip(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
+    TextService TextService,
     IAddonLifecycle AddonLifecycle,
     ExcelService ExcelService)
-    : Tweak<AchievementLinkTooltipConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(AchievementLinkTooltip);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private readonly string[] ChatPanels = ["ChatLogPanel_0", "ChatLogPanel_1", "ChatLogPanel_2", "ChatLogPanel_3"];
 
-    public override void OnEnable()
+    public void OnInitialize() { }
+
+    public void OnEnable()
     {
         AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, ChatPanels, OnChatLogPanelPostReceiveEvent);
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, ChatPanels, OnChatLogPanelPostReceiveEvent);
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
+            return;
+
+        OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void OnChatLogPanelPostReceiveEvent(AddonEvent type, AddonArgs args)
     {
         var unitBase = (AtkUnitBase*)args.Addon;
 
-        if (!unitBase->IsReady || *(byte*)(args.Addon + 0x389) != 0 || *(byte*)(args.Addon + 0x3C6) != 0)
+        if (!unitBase->IsReady || *(byte*)(args.Addon + 0x399) != 0 || *(byte*)(args.Addon + 0x3D6) != 0)
             return;
 
         if (args is not AddonReceiveEventArgs receiveEventArgs)
@@ -89,7 +98,7 @@ public sealed unsafe class AchievementLinkTooltip(
           .EndMacro();
 
         if (canShowName)
-            sb.Append(new ReadOnlySeStringSpan(achievement.Name.RawData));
+            sb.Append(achievement.Name.AsReadOnly());
         else
             sb.Append(TextService.GetAddonText(3384)); // "???"
 
@@ -97,7 +106,7 @@ public sealed unsafe class AchievementLinkTooltip(
         sb.BeginMacro(MacroCode.NewLine).EndMacro();
 
         if (canShowDescription)
-            sb.Append(new ReadOnlySeStringSpan(achievement.Description.RawData));
+            sb.Append(achievement.Description.AsReadOnly());
         else
             sb.Append(TextService.GetAddonText(3385)); // "???"
 

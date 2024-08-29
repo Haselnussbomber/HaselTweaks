@@ -3,23 +3,23 @@ using Dalamud.Game.Text;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Services;
-using HaselCommon.Sheets;
-using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
+using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed unsafe class SearchTheMarkets(
+public unsafe class SearchTheMarkets(
     IContextMenu ContextMenu,
     TextService TextService,
-    ExcelService ExcelService) : ITweak
+    ExcelService ExcelService,
+    ItemService ItemService) : ITweak
 {
-    private MenuItem? MenuItem;
-    private ExtendedItem? Item;
-
     public string InternalName => nameof(SearchTheMarkets);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    private MenuItem? MenuItem;
+    private Item? Item;
 
     public void OnInitialize() { }
 
@@ -34,7 +34,7 @@ public sealed unsafe class SearchTheMarkets(
             {
                 if (Item != null)
                 {
-                    ItemSearchUtils.Search(Item);
+                    ItemService.Search(Item);
                     Item = null;
                 }
             }
@@ -52,7 +52,7 @@ public sealed unsafe class SearchTheMarkets(
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();
@@ -67,7 +67,7 @@ public sealed unsafe class SearchTheMarkets(
             MenuItem.Name = TextService.Translate("ItemContextMenu.SearchTheMarkets");
     }
 
-    private void ContextMenu_OnMenuOpened(MenuOpenedArgs args)
+    private void ContextMenu_OnMenuOpened(IMenuOpenedArgs args)
     {
         if (MenuItem == null)
             return;
@@ -75,6 +75,7 @@ public sealed unsafe class SearchTheMarkets(
         var itemId = args.AddonName switch
         {
             _ when args.Target is MenuTargetInventory inv => inv.TargetItem?.ItemId ?? 0,
+            "GatheringNote" => AgentGatheringNote.Instance()->ContextMenuItemId,
             "RecipeNote" => AgentRecipeNote.Instance()->ContextMenuResultItemId,
             "RecipeTree" or "RecipeMaterialList" or "RecipeProductList" => AgentRecipeItemContext.Instance()->ResultItemId, // see function "E8 ?? ?? ?? ?? 45 8B C4 41 8B D7" which is passing the uint (a2) to AgentRecipeItemContext
             "ChatLog" => AgentChatLog.Instance()->ContextItemId,
@@ -86,9 +87,12 @@ public sealed unsafe class SearchTheMarkets(
         if (itemId == 0)
             return;
 
-        Item = ExcelService.GetRow<ExtendedItem>(itemId);
+        if (ItemService.IsHighQuality(itemId))
+            itemId -= 1_000_000;
 
-        if (Item == null || !Item.CanSearchForItem)
+        Item = ExcelService.GetRow<Item>(itemId);
+
+        if (Item == null || !ItemService.CanSearchForItem(Item))
             return;
 
         args.AddMenuItem(MenuItem);

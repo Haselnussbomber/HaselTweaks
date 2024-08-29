@@ -3,71 +3,37 @@ using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
-using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
-using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class CharacterClassSwitcherConfiguration
-{
-    [BoolConfig]
-    public bool DisableTooltips = false;
-
-    [BoolConfig]
-    public bool AlwaysOpenOnClassesJobsTab = false;
-
-    [EnumConfig(DependsOn = nameof(AlwaysOpenOnClassesJobsTab))]
-    public ClassesJobsSubTabs ForceClassesJobsSubTab = ClassesJobsSubTabs.None;
-}
-
-[IncompatibilityWarning("SimpleTweaksPlugin", "CharacterWindowJobSwitcher")]
-public sealed unsafe class CharacterClassSwitcher(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class CharacterClassSwitcher(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
+    TextService TextService,
     ILogger<CharacterClassSwitcher> Logger,
     IGameInteropProvider GameInteropProvider,
     IAddonLifecycle AddonLifecycle,
     IKeyState KeyState,
     IChatGui ChatGui,
     GamepadService GamepadService)
-    : Tweak<CharacterClassSwitcherConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
-    private const int NumClasses = 31;
+    public string InternalName => nameof(CharacterClassSwitcher);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private MemoryReplacement? TooltipPatch;
-    private MemoryReplacement? PvpTooltipPatch;
+    private const int NumClasses = 33;
 
-    /* Address for AddonCharacterClass Tooltip Patch
-
-        83 FD 14         cmp     ebp, 14h
-        48 8B 6C 24 ??   mov     rbp, [rsp+68h+arg_8]
-        7D 69            jge     short loc_140EB06A1     <- replacing this with a jmp rel8
-
-       completely skips the whole if () {...} block, by jumping regardless of cmp result
-     */
-    [Signature("83 FD 14 48 8B 6C 24 ?? 7D 69")]
-    private nint TooltipAddress { get; init; }
-
-    /* Address for AddonPvPCharacter Tooltip Patch
-
-        48 8D 4C 24 ??   lea     rcx, [rsp+68h+var_28]   <- replacing this with a jmp rel8
-        E8 ?? ?? ?? ??   call    Component::GUI::AtkTooltipArgs_ctor
-        ...
-
-        completely skips the tooltip code, by jumping to the end of the function
-     */
-    [Signature("48 8D 4C 24 ?? E8 ?? ?? ?? ?? 48 8B 83 ?? ?? ?? ?? 48 8B CF 0F B7 9F")]
-    private nint PvPTooltipAddress { get; init; }
-
+    private Hook<AtkTooltipManager.Delegates.ShowTooltip>? AtkTooltipManagerShowTooltipHook;
     private Hook<AddonCharacterClass.Delegates.OnSetup>? AddonCharacterClassOnSetupHook;
     private Hook<AddonCharacterClass.Delegates.OnRequestedUpdate>? AddonCharacterClassOnRequestedUpdateHook;
     private Hook<AddonCharacterClass.Delegates.ReceiveEvent>? AddonCharacterClassReceiveEventHook;
@@ -75,8 +41,14 @@ public sealed unsafe class CharacterClassSwitcher(
     private Hook<AddonPvPCharacter.Delegates.ReceiveEvent>? AddonPvPCharacterReceiveEventHook;
     private Hook<AgentStatus.Delegates.Show>? AgentStatusShowHook;
 
-    public override void OnInitialize()
+    public void OnInitialize()
     {
+        GameInteropProvider.InitializeFromAttributes(this);
+
+        AtkTooltipManagerShowTooltipHook = GameInteropProvider.HookFromAddress<AtkTooltipManager.Delegates.ShowTooltip>(
+            AtkTooltipManager.Addresses.ShowTooltip.Value,
+            AtkTooltipManagerShowTooltipDetour);
+
         AddonCharacterClassOnSetupHook = GameInteropProvider.HookFromAddress<AddonCharacterClass.Delegates.OnSetup>(
             AddonCharacterClass.StaticVirtualTablePointer->OnSetup,
             AddonCharacterClassOnSetupDetour);
@@ -102,17 +74,9 @@ public sealed unsafe class CharacterClassSwitcher(
             AgentStatusShowDetour);
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
-        TooltipPatch = new(TooltipAddress + 8, [0xEB]);
-        PvpTooltipPatch = new(PvPTooltipAddress, [0xEB, 0x63]);
-
-        if (Config.DisableTooltips)
-        {
-            TooltipPatch.Enable();
-            PvpTooltipPatch.Enable();
-        }
-
+        AtkTooltipManagerShowTooltipHook?.Enable();
         AddonCharacterClassOnSetupHook?.Enable();
         AddonCharacterClassOnRequestedUpdateHook?.Enable();
         AddonCharacterClassReceiveEventHook?.Enable();
@@ -120,14 +84,12 @@ public sealed unsafe class CharacterClassSwitcher(
         AddonPvPCharacterReceiveEventHook?.Enable();
         AgentStatusShowHook?.Enable();
 
-        AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "AddonPvPCharacter", AddonPvPCharacterOnSetup);
+        AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "PvPCharacter", PvPCharacterOnSetup);
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
-        TooltipPatch?.Disable();
-        PvpTooltipPatch?.Disable();
-
+        AtkTooltipManagerShowTooltipHook?.Disable();
         AddonCharacterClassOnSetupHook?.Disable();
         AddonCharacterClassOnRequestedUpdateHook?.Disable();
         AddonCharacterClassReceiveEventHook?.Disable();
@@ -135,26 +97,50 @@ public sealed unsafe class CharacterClassSwitcher(
         AddonPvPCharacterReceiveEventHook?.Disable();
         AgentStatusShowHook?.Disable();
 
-        AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "AddonPvPCharacter", AddonPvPCharacterOnSetup);
+        AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "PvPCharacter", PvPCharacterOnSetup);
     }
 
-    public override void OnConfigChange(string fieldName)
+    void IDisposable.Dispose()
     {
-        if (Config.DisableTooltips)
-        {
-            TooltipPatch?.Enable();
-            PvpTooltipPatch?.Enable();
-        }
-        else
-        {
-            TooltipPatch?.Disable();
-            PvpTooltipPatch?.Disable();
-        }
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
+            return;
+
+        OnDisable();
+        AtkTooltipManagerShowTooltipHook?.Dispose();
+        AddonCharacterClassOnSetupHook?.Dispose();
+        AddonCharacterClassOnRequestedUpdateHook?.Dispose();
+        AddonCharacterClassReceiveEventHook?.Dispose();
+        AddonPvPCharacterUpdateClassesHook?.Dispose();
+        AddonPvPCharacterReceiveEventHook?.Dispose();
+        AgentStatusShowHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private static bool IsCrafter(int id)
     {
-        return id >= 20 && id <= 27;
+        return id >= 22 && id <= 29;
+    }
+
+    private void AtkTooltipManagerShowTooltipDetour(
+        AtkTooltipManager* thisPtr,
+        AtkTooltipManager.AtkTooltipType type,
+        ushort parentId,
+        AtkResNode* targetNode,
+        AtkTooltipManager.AtkTooltipArgs* tooltipArgs,
+        delegate* unmanaged[Stdcall]<float*, float*, void*> unkDelegate,
+        bool unk7,
+        bool unk8)
+    {
+        if (Config.DisableTooltips && (
+            (TryGetAddon<AtkUnitBase>("CharacterClass", out var unitBase) && unitBase->Id == parentId) ||
+            (TryGetAddon("PvPCharacter", out unitBase) && unitBase->Id == parentId)))
+        {
+            return;
+        }
+
+        AtkTooltipManagerShowTooltipHook!.Original(thisPtr, type, parentId, targetNode, tooltipArgs, unkDelegate, unk7, unk8);
     }
 
     private void AddonCharacterClassOnSetupDetour(AddonCharacterClass* addon, uint numAtkValues, AtkValue* atkValues)
@@ -169,11 +155,11 @@ public sealed unsafe class CharacterClassSwitcher(
             var node = addon->ButtonNodes.GetPointer(i)->Value;
             if (node == null) continue;
 
-            var collisionNode = (AtkCollisionNode*)node->AtkComponentBase.UldManager.RootNode;
+            var collisionNode = node->AtkComponentBase.UldManager.RootNode;
             if (collisionNode == null) continue;
 
-            collisionNode->AtkResNode.AddEvent(AtkEventType.MouseClick, (uint)i + 2, (AtkEventListener*)addon, null, false);
-            collisionNode->AtkResNode.AddEvent(AtkEventType.InputReceived, (uint)i + 2, (AtkEventListener*)addon, null, false);
+            collisionNode->AddEvent(AtkEventType.MouseClick, (uint)i + 2, (AtkEventListener*)addon, null, false);
+            collisionNode->AddEvent(AtkEventType.InputReceived, (uint)i + 2, (AtkEventListener*)addon, null, false);
         }
 
         if (Config.AlwaysOpenOnClassesJobsTab && Config.ForceClassesJobsSubTab != ClassesJobsSubTabs.None)
@@ -222,7 +208,7 @@ public sealed unsafe class CharacterClassSwitcher(
         }
     }
 
-    private void AddonCharacterClassReceiveEventDetour(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)
+    private void AddonCharacterClassReceiveEventDetour(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData)
     {
         if (HandleAddonCharacterClassEvent(addon, eventType, eventParam))
             return;
@@ -258,7 +244,7 @@ public sealed unsafe class CharacterClassSwitcher(
 
             if (isClick && !KeyState[VirtualKey.SHIFT])
             {
-                SwitchClassJob(8 + (uint)eventParam - 22);
+                SwitchClassJob(8 + (uint)eventParam - 24);
                 return true;
             }
         }
@@ -266,8 +252,7 @@ public sealed unsafe class CharacterClassSwitcher(
         return ProcessEvents(node->AtkComponentBase.OwnerNode, imageNode, eventType);
     }
 
-
-    private void AddonPvPCharacterOnSetup(AddonEvent type, AddonArgs args)
+    private void PvPCharacterOnSetup(AddonEvent type, AddonArgs args)
     {
         var addon = (AddonPvPCharacter*)args.Addon;
 
@@ -276,11 +261,11 @@ public sealed unsafe class CharacterClassSwitcher(
             var entry = addon->ClassEntries.GetPointer(i);
             if (entry->Base == null) continue;
 
-            var collisionNode = (AtkCollisionNode*)entry->Base->UldManager.RootNode;
+            var collisionNode = entry->Base->UldManager.RootNode;
             if (collisionNode == null) continue;
 
-            collisionNode->AtkResNode.AddEvent(AtkEventType.MouseClick, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
-            collisionNode->AtkResNode.AddEvent(AtkEventType.InputReceived, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
+            collisionNode->AddEvent(AtkEventType.MouseClick, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
+            collisionNode->AddEvent(AtkEventType.InputReceived, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
         }
     }
 
@@ -355,7 +340,7 @@ public sealed unsafe class CharacterClassSwitcher(
             // yes, you see correctly. the iconId is 62100 + ClassJob RowId :)
             var classJobId = iconId - 62100;
 
-            SwitchClassJob((uint)classJobId);
+            SwitchClassJob(classJobId);
 
             return true; // handled
         }

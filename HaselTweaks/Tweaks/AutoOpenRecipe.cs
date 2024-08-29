@@ -25,11 +25,11 @@ public unsafe class AutoOpenRecipe(
     IGameInventory GameInventory)
     : ITweak
 {
-    private CancellationTokenSource? CheckCTS;
-    private DateTime LastTimeRecipeOpened = DateTime.MinValue;
-
     public string InternalName => nameof(AutoOpenRecipe);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    private CancellationTokenSource? CheckCTS;
+    private DateTime LastTimeRecipeOpened = DateTime.MinValue;
 
     public void OnInitialize() { }
 
@@ -47,7 +47,13 @@ public unsafe class AutoOpenRecipe(
 
     public void Dispose()
     {
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
+            return;
+
         OnDisable();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void GameInventory_ItemAddedExplicit(InventoryItemAddedArgs data)
@@ -64,7 +70,7 @@ public unsafe class AutoOpenRecipe(
         if (DateTime.UtcNow - LastTimeRecipeOpened < TimeSpan.FromSeconds(3))
             return;
 
-        Logger.LogDebug($"Inventory item added: {data.Item}");
+        Logger.LogDebug("Inventory item added: {item}", data.Item);
 
         CheckCTS?.Cancel();
         CheckCTS = null;
@@ -84,7 +90,7 @@ public unsafe class AutoOpenRecipe(
 
     private bool TryOpenRecipeForItem(uint itemId)
     {
-        var localPlayer = Control.Instance()->LocalPlayer;
+        var localPlayer = Control.GetLocalPlayer();
         if (localPlayer == null)
             return false;
 
@@ -98,19 +104,19 @@ public unsafe class AutoOpenRecipe(
             if (quest == null || !(questManager->GetDailyQuestById(questWork.QuestId) != null || quest.BeastTribe.Row != 0)) // check if daily or tribal quest
                 continue;
 
-            Logger.LogDebug($"Checking Quest #{questWork.QuestId} ({TextService.GetQuestName((uint)questWork.QuestId | 0x10000)}) (Sequence {questWork.Sequence})");
+            Logger.LogDebug("Checking Quest #{questId} ({questName}) (Sequence {questSequence})", questWork.QuestId, TextService.GetQuestName((uint)questWork.QuestId | 0x10000), questWork.Sequence);
 
             var todoOffset = (byte)quest!.ToDoCompleteSeq.IndexOf(questWork.Sequence);
             if (todoOffset < 0 || todoOffset >= quest.ToDoQty.Length)
             {
-                Logger.LogDebug($"Skipping: todoOffset = {todoOffset}, quest.ToDoQty.Length = {quest.ToDoQty.Length}");
+                Logger.LogDebug("Skipping: todoOffset = {todoOffset}, quest.ToDoQty.Length = {length}", todoOffset, quest.ToDoQty.Length);
                 continue;
             }
 
             var questEventHandler = (QuestEventHandler*)EventFramework.Instance()->GetEventHandlerById(quest.RowId);
             if (questEventHandler == null)
             {
-                Logger.LogDebug($"Skipping: No QuestEventHandler");
+                Logger.LogDebug("Skipping: No QuestEventHandler");
                 continue;
             }
 
@@ -235,7 +241,7 @@ public unsafe class AutoOpenRecipe(
 
                 resultItemId %= 1000000;
 
-                Logger.LogDebug($"TodoArgs #{todoIndex}: {numHave}/{numNeeded} of {resultItemId}");
+                Logger.LogDebug("TodoArgs #{todoIndex}: {numHave}/{numNeeded} of {resultItemId}", todoIndex, numHave, numNeeded, resultItemId);
 
                 if (resultItemId == 0)
                     continue;
@@ -255,23 +261,23 @@ public unsafe class AutoOpenRecipe(
                   ?? ExcelService.FindRow<Recipe>(row => row?.ItemResult.Row == resultItemId);
         if (recipe == null)
         {
-            Logger.LogDebug($"Not opening Recipe for Item {resultItemId}: Recipe not found");
+            Logger.LogDebug("Not opening Recipe for Item {resultItemId}: Recipe not found", resultItemId);
             return false;
         }
 
         if (!recipe.UnkData5.Any(item => item.ItemIngredient == materialItemId))
         {
-            Logger.LogDebug($"Not opening Recipe for Item {resultItemId}: Required ingredient {materialItemId} not needed");
+            Logger.LogDebug("Not opening Recipe for Item {resultItemId}: Required ingredient {materialItemId} not needed", resultItemId, materialItemId);
             return false;
         }
 
         if (!IngredientsAvailable(recipe, amount))
         {
-            Logger.LogDebug($"Not opening Recipe for Item {resultItemId}: Required ingredients not available");
+            Logger.LogDebug("Not opening Recipe for Item {resultItemId}: Required ingredients not available", resultItemId);
             return false;
         }
 
-        Logger.LogDebug($"Requirements met, opening recipe {recipe.RowId}");
+        Logger.LogDebug("Requirements met, opening recipe {recipeId}", recipe.RowId);
 
         var agentRecipeNote = AgentRecipeNote.Instance();
 
@@ -307,7 +313,7 @@ public unsafe class AutoOpenRecipe(
 
             var numNeeded = ingredient.AmountIngredient * amount;
 
-            Logger.LogDebug($"Checking Ingredient #{ingredient.ItemIngredient}: need {numNeeded}, have {numHave}");
+            Logger.LogDebug("Checking Ingredient #{itemIngredient}: need {numNeeded}, have {numHave}", ingredient.ItemIngredient, numNeeded, numHave);
 
             if (numHave < numNeeded)
                 return false;

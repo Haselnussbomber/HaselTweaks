@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using Dalamud;
+using Dalamud.Game;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Windowing;
-using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
@@ -30,7 +29,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
     private string Query = string.Empty;
 
     public MJICraftScheduleSettingSearchBar(
-        IWindowManager windowManager,
+        WindowManager windowManager,
         PluginConfig pluginConfig,
         ExcelService excelService,
         TextService textService)
@@ -50,13 +49,13 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
 
     public override bool DrawConditions()
         => Addon != null && Addon->AtkUnitBase.IsVisible;
-    
+
     public override void OnOpen()
     {
         InputFocused = false;
         Query = string.Empty;
     }
-    
+
     public override void Draw()
     {
         if (!InputFocused)
@@ -94,8 +93,8 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
 
         if (lastQuery != Query)
         {
-            var entries = new List<(uint Index, string ItemName)>();
-            for (var i = 0u; i < Addon->TreeList->Items.LongCount; i++)
+            var entries = new List<(int Index, string ItemName)>();
+            for (var i = 0; i < Addon->TreeList->Items.LongCount; i++)
             {
                 var item = Addon->TreeList->Items[i].Value;
                 if (item != null && item->UIntValues.LongCount >= 3 && item->UIntValues[0] != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
@@ -132,7 +131,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
                         }
                     }
 
-                    Addon->TreeList->SelectItem((int)index, true); // if it would only scroll the selected item into view... oh well
+                    Addon->TreeList->SelectItem(index, true); // if it would only scroll the selected item into view... oh well
                 }
             }
         }

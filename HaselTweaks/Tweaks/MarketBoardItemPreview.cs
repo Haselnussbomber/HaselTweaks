@@ -4,9 +4,9 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
-using HaselCommon.Sheets;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
+using Lumina.Excel.GeneratedSheets;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
@@ -14,15 +14,14 @@ namespace HaselTweaks.Tweaks;
 public sealed unsafe class MarketBoardItemPreview(
     ILogger<MarketBoardItemPreview> Logger,
     IAddonLifecycle AddonLifecycle,
-    ExcelService ExcelService)
+    ExcelService ExcelService,
+    ItemService ItemService)
     : ITweak
 {
     public string InternalName => nameof(MarketBoardItemPreview);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    public void OnInitialize()
-    {
-    }
+    public void OnInitialize() { }
 
     public void OnEnable()
     {
@@ -36,7 +35,7 @@ public sealed unsafe class MarketBoardItemPreview(
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();
@@ -50,13 +49,13 @@ public sealed unsafe class MarketBoardItemPreview(
         if (args is not AddonReceiveEventArgs addonReceiveEventArgs || addonReceiveEventArgs.AtkEventType != (byte)AtkEventType.ListItemRollOver)
             return;
 
-        var itemIndex = *(int*)(addonReceiveEventArgs.Data + 0x10);
-        var realItemIndex = *(byte*)(args.Addon + itemIndex + 0x2D38);
-        var itemId = *(uint*)(args.Addon + realItemIndex * 0x20 + 0x3258);
-        Logger.LogTrace("Event: {atkEventData} {realItemIndex} {itemId}", itemIndex, realItemIndex, itemId);
+        var eventData = (AtkEventData*)addonReceiveEventArgs.Data;
+        var itemIndex = eventData->ListItemData.SelectedIndex;
+        var itemId = *(uint*)((nint)AgentItemSearch.Instance() + itemIndex * 4 + 0xBBC);
+        Logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId} @ {addr:X}", itemIndex, itemId, args.Addon + itemIndex * 4 + 0xBBC);
 
-        var item = ExcelService.GetRow<ExtendedItem>(itemId);
-        if (item == null || !item.CanTryOn)
+        var item = ExcelService.GetRow<Item>(itemId);
+        if (item == null || !ItemService.CanTryOn(item))
             return;
 
         AgentTryon.TryOn(((AtkUnitBase*)args.Addon)->Id, itemId, 0, 0, 0);

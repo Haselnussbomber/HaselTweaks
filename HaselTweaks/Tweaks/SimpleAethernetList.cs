@@ -8,12 +8,12 @@ using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider) : ITweak
+public unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider) : ITweak
 {
-    private Hook<AddonTeleportTown.Delegates.ReceiveEvent>? ReceiveEventHook;
-
     public string InternalName => nameof(SimpleAethernetList);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
+    private Hook<AddonTeleportTown.Delegates.ReceiveEvent>? ReceiveEventHook;
 
     public void OnInitialize()
     {
@@ -34,7 +34,7 @@ public sealed unsafe class SimpleAethernetList(IGameInteropProvider GameInteropP
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         ReceiveEventHook?.Dispose();
@@ -43,12 +43,12 @@ public sealed unsafe class SimpleAethernetList(IGameInteropProvider GameInteropP
         GC.SuppressFinalize(this);
     }
 
-    private void ReceiveEventDetour(AddonTeleportTown* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)
+    private void ReceiveEventDetour(AddonTeleportTown* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData)
     {
         if (eventType == AtkEventType.ListItemRollOver)
         {
             var agent = AgentTelepotTown.Instance();
-            var index = *(uint*)(atkEventData + 0x10);
+            var index = atkEventData->ListItemData.SelectedIndex;
             if (agent->Data != null && index >= 0)
             {
                 var item = addon->List->GetItem(index);

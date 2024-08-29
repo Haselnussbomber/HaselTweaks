@@ -17,7 +17,7 @@ namespace HaselTweaks.Config;
 public partial class PluginConfig : IPluginConfiguration
 {
     [JsonIgnore]
-    public const int CURRENT_CONFIG_VERSION = 6;
+    public const int CURRENT_CONFIG_VERSION = 7;
 
     [JsonIgnore]
     public int LastSavedConfigHash { get; set; }
@@ -26,13 +26,13 @@ public partial class PluginConfig : IPluginConfiguration
     public static JsonSerializerOptions? SerializerOptions { get; private set; }
 
     [JsonIgnore]
-    private static DalamudPluginInterface? PluginInterface;
+    private static IDalamudPluginInterface? PluginInterface;
 
     [JsonIgnore]
     private static IPluginLog? PluginLog;
 
     public static PluginConfig Load(
-        DalamudPluginInterface pluginInterface,
+        IDalamudPluginInterface pluginInterface,
         IPluginLog pluginLog)
     {
         PluginInterface = pluginInterface;
@@ -43,7 +43,7 @@ public partial class PluginConfig : IPluginConfiguration
             IncludeFields = true,
             WriteIndented = true,
         };
-        SerializerOptions.Converters.Add(new HaselCommonTextSeStringConverter());
+        SerializerOptions.Converters.Add(new ReadOnlySeStringConverter());
 
         var fileInfo = pluginInterface.ConfigFile;
         if (!fileInfo.Exists || fileInfo.Length < 2)
@@ -66,7 +66,8 @@ public partial class PluginConfig : IPluginConfiguration
         IConfigMigration[] migrations = [
             new Version2(),
             new Version5(),
-            new Version6(pluginInterface, pluginLog)
+            new Version6(pluginInterface, pluginLog),
+            new Version7()
         ];
 
         foreach (var migration in migrations)

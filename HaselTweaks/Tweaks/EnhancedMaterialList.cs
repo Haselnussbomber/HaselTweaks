@@ -4,15 +4,17 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Hooking;
+using Dalamud.Memory;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Extensions;
 using HaselCommon.Services;
-using HaselCommon.SheetLookup;
-using HaselCommon.Sheets;
 using HaselTweaks.Config;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;
 using Lumina.Text;
@@ -23,49 +25,25 @@ using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class EnhancedMaterialListConfiguration
-{
-    [BoolConfig]
-    public bool EnableZoneNames = true;
-
-    [BoolConfig(DependsOn = nameof(EnableZoneNames))]
-    public bool DisableZoneNameForCrystals = true;
-
-    [BoolConfig]
-    public bool ClickToOpenMap = true;
-
-    [BoolConfig(DependsOn = nameof(ClickToOpenMap))]
-    public bool DisableClickToOpenMapForCrystals = true;
-
-    [BoolConfig]
-    public bool AutoRefreshMaterialList = true;
-
-    [BoolConfig]
-    public bool AutoRefreshRecipeTree = true;
-
-    [BoolConfig]
-    public bool RestoreMaterialList = true;
-
-    public uint RestoreMaterialListRecipeId = 0;
-    public uint RestoreMaterialListAmount = 0;
-
-    [BoolConfig]
-    public bool AddSearchForItemByCraftingMethodContextMenuEntry = true; // yep, i spelled it out
-}
-
-public sealed unsafe class EnhancedMaterialList(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class EnhancedMaterialList(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
     ILogger<EnhancedMaterialList> Logger,
     IGameInteropProvider GameInteropProvider,
     IAddonLifecycle AddonLifecycle,
     IFramework Framework,
     IClientState ClientState,
     IGameInventory GameInventory,
+    IAetheryteList AetheryteList,
     AddonObserver AddonObserver,
-    ExcelService ExcelService)
-    : Tweak<EnhancedMaterialListConfiguration>(pluginConfig, textService)
+    ExcelService ExcelService,
+    MapService MapService,
+    ItemService ItemService)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(EnhancedMaterialList);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private bool _canRefreshMaterialList;
     private bool _pendingMaterialListRefresh;
     private DateTime _timeOfMaterialListRefresh;
@@ -76,28 +54,11 @@ public sealed unsafe class EnhancedMaterialList(
     private DateTime _timeOfRecipeTreeRefresh;
     private bool _handleRecipeResultItemContextMenu;
 
-    public override void OnConfigChange(string fieldName)
-    {
-        if (fieldName is nameof(Config.EnableZoneNames)
-                      or nameof(Config.DisableZoneNameForCrystals)
-                      or nameof(Config.DisableClickToOpenMapForCrystals))
-        {
-            _pendingMaterialListRefresh = true;
-            _timeOfMaterialListRefresh = DateTime.UtcNow;
-        }
-
-        if (fieldName is nameof(Config.RestoreMaterialList))
-        {
-            SaveRestoreMaterialList(AgentRecipeMaterialList.Instance());
-        }
-    }
-
     private Hook<AgentRecipeMaterialList.Delegates.ReceiveEvent>? AgentRecipeMaterialListReceiveEventHook;
     private Hook<AddonRecipeMaterialList.Delegates.SetupRow>? AddonRecipeMaterialListSetupRowHook;
-    private Hook<AgentRecipeMaterialList.Delegates.OpenRecipeResultItemContextMenu>? OpenRecipeResultItemContextMenuHook;
     private Hook<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>? AddItemContextMenuEntriesHook;
 
-    public override void OnInitialize()
+    public void OnInitialize()
     {
         AgentRecipeMaterialListReceiveEventHook = GameInteropProvider.HookFromAddress<AgentRecipeMaterialList.Delegates.ReceiveEvent>(
             AgentRecipeMaterialList.StaticVirtualTablePointer->ReceiveEvent,
@@ -107,16 +68,12 @@ public sealed unsafe class EnhancedMaterialList(
             AddonRecipeMaterialList.MemberFunctionPointers.SetupRow,
             AddonRecipeMaterialListSetupRowDetour);
 
-        OpenRecipeResultItemContextMenuHook = GameInteropProvider.HookFromAddress<AgentRecipeMaterialList.Delegates.OpenRecipeResultItemContextMenu>(
-            AgentRecipeMaterialList.MemberFunctionPointers.OpenRecipeResultItemContextMenu,
-            OpenRecipeResultItemContextMenuDetour);
-
         AddItemContextMenuEntriesHook = GameInteropProvider.HookFromAddress<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>(
             AgentRecipeItemContext.MemberFunctionPointers.AddItemContextMenuEntries,
             AddItemContextMenuEntriesDetour);
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
         AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList", RecipeMaterialList_PostReceiveEvent);
         AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "RecipeTree", RecipeTree_PostReceiveEvent);
@@ -128,11 +85,10 @@ public sealed unsafe class EnhancedMaterialList(
 
         AgentRecipeMaterialListReceiveEventHook?.Enable();
         AddonRecipeMaterialListSetupRowHook?.Enable();
-        OpenRecipeResultItemContextMenuHook?.Enable();
         AddItemContextMenuEntriesHook?.Enable();
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeMaterialList", RecipeMaterialList_PostReceiveEvent);
         AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "RecipeTree", RecipeTree_PostReceiveEvent);
@@ -144,8 +100,24 @@ public sealed unsafe class EnhancedMaterialList(
 
         AgentRecipeMaterialListReceiveEventHook?.Disable();
         AddonRecipeMaterialListSetupRowHook?.Disable();
-        OpenRecipeResultItemContextMenuHook?.Disable();
         AddItemContextMenuEntriesHook?.Disable();
+
+        if (Status is TweakStatus.Enabled && TryGetAddon<AtkUnitBase>("RecipeMaterialList", out var addon))
+            addon->Close(true);
+    }
+
+    public void Dispose()
+    {
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
+            return;
+
+        OnDisable();
+        AgentRecipeMaterialListReceiveEventHook?.Dispose();
+        AddonRecipeMaterialListSetupRowHook?.Dispose();
+        AddItemContextMenuEntriesHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void OnAddonOpen(string addonName)
@@ -221,7 +193,7 @@ public sealed unsafe class EnhancedMaterialList(
                 var rowData = **(nint**)(data + 0x08);
                 var itemId = *(uint*)(rowData + 0x04);
 
-                var item = ExcelService.GetRow<ExtendedItem>(itemId);
+                var item = ExcelService.GetRow<Item>(itemId);
                 if (item == null)
                     return;
 
@@ -234,7 +206,7 @@ public sealed unsafe class EnhancedMaterialList(
 
                 var (totalPoints, point, cost, isSameZone, placeName) = tuple.Value;
 
-                point.OpenMap(item, new SeStringBuilder().Append("HaselTweaks").ToReadOnlySeString());
+                MapService.OpenMap(point, item, new SeStringBuilder().Append("HaselTweaks").ToReadOnlySeString());
 
                 return;
 
@@ -270,7 +242,7 @@ public sealed unsafe class EnhancedMaterialList(
 
         Logger.LogInformation("Refreshing RecipeMaterialList");
         var atkEvent = new AtkEvent();
-        recipeMaterialList->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 1, &atkEvent, 0);
+        recipeMaterialList->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 1, &atkEvent);
     }
 
     private void RefreshRecipeTree()
@@ -282,13 +254,21 @@ public sealed unsafe class EnhancedMaterialList(
 
         Logger.LogInformation("Refreshing RecipeTree");
         var atkEvent = new AtkEvent();
-        recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, &atkEvent, 0);
+        recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, &atkEvent);
     }
 
     private AtkValue* AgentRecipeMaterialListReceiveEventDetour(AgentRecipeMaterialList* agent, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
     {
         var ret = AgentRecipeMaterialListReceiveEventHook!.Original(agent, returnValue, values, valueCount, eventKind);
+
+        if (eventKind != 1 && valueCount >= 1 && values->Int == 4)
+        {
+            _handleRecipeResultItemContextMenu = true;
+        }
+
+        // TODO: add conditions?
         SaveRestoreMaterialList(agent);
+
         return ret;
     }
 
@@ -360,8 +340,7 @@ public sealed unsafe class EnhancedMaterialList(
         if (placeName.Length > 23)
             placeName = placeName[..20] + "...";
 
-        nameNode->SetText(
-            new SeStringBuilder()
+        var str = new SeStringBuilder()
             .Append(itemName)
             .BeginMacro(MacroCode.NewLine).EndMacro()
             .PushColorType((ushort)(isSameZone ? 570 : 4))
@@ -370,13 +349,9 @@ public sealed unsafe class EnhancedMaterialList(
             .PopEdgeColorType()
             .PopColorType()
             .ToArray()
-        );
-    }
+            .NullTerminate();
 
-    private void OpenRecipeResultItemContextMenuDetour(AgentRecipeMaterialList* agent)
-    {
-        _handleRecipeResultItemContextMenu = true;
-        OpenRecipeResultItemContextMenuHook!.Original(agent);
+        nameNode->SetText(str);
     }
 
     private void AddItemContextMenuEntriesDetour(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
@@ -403,19 +378,19 @@ public sealed unsafe class EnhancedMaterialList(
             return;
 
         var localPlayer = (Character*)(ClientState.LocalPlayer?.Address ?? 0);
-        if (localPlayer == null || localPlayer->Mode == Character.CharacterModes.Crafting)
+        if (localPlayer == null || localPlayer->Mode == CharacterModes.Crafting)
             return;
 
         flags |= 2;
     }
 
-    private (int, ExtendedGatheringPoint, uint, bool, ReadOnlySeString)? GetPointForItem(uint itemId)
+    private (int, GatheringPoint, uint, bool, ReadOnlySeString)? GetPointForItem(uint itemId)
     {
-        var gatheringItem = ItemGatheringItemLookup.First(itemId);
+        var gatheringItem = ItemService.GetGatheringItems(itemId).FirstOrNull();
         if (gatheringItem == null)
             return null;
 
-        var gatheringPointSheet = ExcelService.GetSheet<ExtendedGatheringPoint>();
+        var gatheringPointSheet = ExcelService.GetSheet<GatheringPoint>();
         var gatheringPoints = ExcelService.GetSheet<GatheringPointBase>()
             .Where(row => row.Item.Any(item => item == gatheringItem.RowId))
             .Select(row => gatheringPointSheet.FirstOrDefault(gprow => gprow?.GatheringPointBase.Row == row.RowId && gprow.TerritoryType.Row > 1, null))
@@ -433,11 +408,14 @@ public sealed unsafe class EnhancedMaterialList(
         {
             foreach (var p in gatheringPoints)
             {
-                var thisCost = (uint)Telepo.GetTeleportCost((ushort)currentTerritoryTypeId, (ushort)p!.TerritoryType.Row, false, false, false);
-                if (cost == 0 || thisCost < cost)
+                foreach (var aetheryte in AetheryteList)
                 {
-                    cost = thisCost;
-                    point = p;
+                    if (aetheryte.AetheryteId == p!.TerritoryType.Value!.Aetheryte.Row && (cost == 0 || aetheryte.GilCost < cost))
+                    {
+                        cost = aetheryte.GilCost;
+                        point = p;
+                        break;
+                    }
                 }
             }
         }

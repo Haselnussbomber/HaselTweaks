@@ -5,48 +5,56 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselTweaks.Config;
+using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Windows;
 using Lumina.Excel.GeneratedSheets;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class AetherCurrentHelperConfiguration
-{
-    [BoolConfig]
-    public bool AlwaysShowDistance = false;
-
-    [BoolConfig]
-    public bool CenterDistance = true;
-}
-
-public sealed unsafe class AetherCurrentHelper(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class AetherCurrentHelper(
+    PluginConfig PluginConfig,
     IGameInteropProvider GameInteropProvider,
     IKeyState KeyState,
     ExcelService ExcelService,
-    AetherCurrentHelperWindow Window)
-    : Tweak<AetherCurrentHelperConfiguration>(pluginConfig, textService)
+    AetherCurrentHelperWindow Window,
+    ConfigGui ConfigGui)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(AetherCurrentHelper);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized; // needs updated agent
+
     private Hook<AgentAetherCurrent.Delegates.ReceiveEvent>? ReceiveEventHook;
 
-    public override void OnInitialize()
+    public void OnInitialize()
     {
         ReceiveEventHook = GameInteropProvider.HookFromAddress<AgentAetherCurrent.Delegates.ReceiveEvent>(
             AgentAetherCurrent.StaticVirtualTablePointer->ReceiveEvent,
             ReceiveEventDetour);
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
         ReceiveEventHook?.Enable();
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         ReceiveEventHook?.Disable();
         Window.Close();
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
+            return;
+
+        OnDisable();
+        ReceiveEventHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private AtkValue* ReceiveEventDetour(AgentAetherCurrent* agent, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
@@ -70,11 +78,11 @@ public sealed unsafe class AetherCurrentHelper(
         if (atkValue == null)
             return false;
 
-        ref var firstAtkValue = ref atkValue[0];
+        var firstAtkValue = atkValue[0];
         if (firstAtkValue.Type != ValueType.Int || firstAtkValue.Int != 0)
             return false;
 
-        ref var secondAtkValue = ref atkValue[1];
+        var secondAtkValue = atkValue[1];
         if (secondAtkValue.Type != ValueType.Int)
             return false;
 

@@ -43,6 +43,10 @@ If a new daily/tribal quest objective requires you to craft an item, and you hav
 
 Adds a configurable keybind to toggle the background music, in addition to the game's existing keybind option to toggle the sound. No more `/bgm` macro. Works in cutscenes.
 
+### Bigger Item Dyeing Preview
+
+Increases the size of the character preview in the "Item Dyeing" window.
+
 ### Cast Bar Aetheryte Names
 
 Replaces the name of the action "Teleport" with the Aetheryte name of your destination.
@@ -77,6 +81,8 @@ Available Commands:
   Prints an item link for the given item id in chat.
 - `/whatmount`  
   Target a player and execute the command to see what mount your target is riding and which item teaches this mount.
+- `/whatemote`  
+  Target a player and execute the command to see which emote your target is currently executing.
 - `/whatbarding`  
   Target a players chocobo companion and execute the command to see what barding it is wearing.
 - `/glamourplate <id>`  
@@ -89,6 +95,10 @@ Lets you customize message formats for various chat channels.
 ### Custom Chat Timestamp
 
 Lets you customize the chat timestamp format using C#'s [`DateTime.ToString()`](https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings).
+
+### Disable Mount Tilt
+
+Disables leaning into turns during riding or flying.
 
 ### DTR
 
@@ -214,10 +224,7 @@ Automatically try on equipment when you hover over an item in the market board s
 
 ### Material Allocation
 
-Enhances the Islekeep's Index "Material Allocation" window.
-
-- Saves the last selected tab between game sessions.
-- Clicking on a gatherable item opens the Sanctuary Gathering Log with that item selected.
+Saves the last selected tab in Islekeep's Index "Material Allocation" window between game sessions.
 
 ### Minimap Adjustments
 

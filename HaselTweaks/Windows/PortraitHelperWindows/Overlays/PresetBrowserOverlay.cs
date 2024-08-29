@@ -9,7 +9,6 @@ using Dalamud.Plugin.Services;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Utils;
-using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Utils;
@@ -24,7 +23,7 @@ public unsafe class PresetBrowserOverlay : Overlay
     private const int SidebarWidth = 170;
     private readonly TextService TextService;
     private readonly ILogger Logger;
-    private readonly DalamudPluginInterface PluginInterface;
+    private readonly IDalamudPluginInterface PluginInterface;
     private readonly IDataManager DataManager;
     private readonly ITextureProvider TextureProvider;
     private readonly BannerUtils BannerUtils;
@@ -44,11 +43,11 @@ public unsafe class PresetBrowserOverlay : Overlay
 
     public PresetBrowserOverlay(
         ILogger<PresetBrowserOverlay> logger,
-        DalamudPluginInterface pluginInterface,
+        IDalamudPluginInterface pluginInterface,
         IDataManager dataManager,
         ITextureProvider textureProvider,
         BannerUtils bannerUtils,
-        IWindowManager windowManager,
+        WindowManager windowManager,
         PluginConfig pluginConfig,
         ExcelService excelService,
         TextService textService,
@@ -77,6 +76,12 @@ public unsafe class PresetBrowserOverlay : Overlay
             MinimumSize = new Vector2(600, 500),
             MaximumSize = new Vector2(4069),
         };
+    }
+
+    public void Open(MenuBar menuBar)
+    {
+        MenuBar = menuBar;
+        Open();
     }
 
     public override void OnClose()

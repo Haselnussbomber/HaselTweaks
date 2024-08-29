@@ -1,5 +1,246 @@
 # Changelog
 
+## [26.1.1] (2024-08-28)
+
+### HaselTweaks
+
+- **Fixed:** When the plugin unloaded, some disabled tweaks ran code to reset states to default.
+
+### Gear Set Grid
+
+- **Fixed:** Missing icons for empty slots.
+
+## [26.1.0] (2024-08-20)
+
+### Commands
+
+- **Added:** New command `/whatemote`  
+  Target a player and execute the command to see which emote your target is currently executing.
+- **Fixed:** `/whatbarding` used the wrong command description (when enabled, visible in the Plugin Installer).
+
+## [26.0.2] (2024-08-18)
+
+### HaselTweaks
+
+- **Fixed:** Chat commands were incorrectly registred for disabled tweaks.
+
+## [26.0.1] (2024-08-17)
+
+### Portrait Helper
+
+- **Fixed:** Updating the gearset caused the Gearset List to refresh and scroll to the top.  
+  Note: This is caused by a bug in ClientStructs (wrong return type of a function). If other plugins hook this too, my fix won't be effective and you have to wait for a Dalamud update.
+
+### DTR
+
+- **Known Issue:** When the plugin is reloaded via Dalamuds auto-update feature, the DTR entries might not be re-created. This is a bug in Dalamud and is being worked on.
+
+## [26.0.0] (2024-08-17)
+
+### New Tweak: Disable Mount Tilt
+
+Disables leaning into turns during riding or flying.
+
+## [25.2.12] (2024-08-15)
+
+### Search the markets
+
+- **Fixed:** The tweak incorrectly used Dalamuds language setting to search for the item instead of the clients language (yes, again).  
+  (I re-wrote the function to get proper item names and forgot to pass the client language.)
+
+## [25.2.11] (2024-08-14)
+
+### HaselTweaks
+
+- **Fixed:** The main plugin window did not stay docked after restarting the game. (This only affects people who enabled window docking in the Dalamud settings and had the window docked.)
+
+## [25.2.10] (2024-08-09)
+
+### Commands
+
+- **Fixed:** /whatbarding did not return the correct color. (Sometimes you just miss something!)
+
+## [25.2.9] (2024-08-09)
+
+### Commands
+
+- **Fixed:** /whatbarding did not return the correct information. (I forgot to fix it after Dawntrail released, sorry!)
+
+## [25.2.8] (2024-08-02)
+
+### Scrollable Tabs
+
+- **Fixed:** Fixed tabs not changing their enabled state in the Buddy window.
+
+## [25.2.7] (2024-07-30)
+
+### Expert Deliveries
+
+- **Fixed:** Turning in an item would reset the item selection to the first entry. (This only affected controller users.)
+
+### DTR
+
+- **Fixed:** A change in the fps format would not be reflected immediately.
+
+## [25.2.6] (2024-07-29)
+
+### Auto Sorter
+
+- **Fixed:** An issue where the `/isort` commands would use parameters based on the plugin language instead of the client language. (Yes, again. The language parameter got lost in a code rewrite.)
+
+### Custom Chat Message Formats
+
+- **Fixed:** Tell (Incoming) and Tell (Outgoing) were swapped.
+
+### DTR
+
+- **Fixed:** Instance not showing up again after disabling and re-enabling the tweak.
+
+## [25.2.5] (2024-07-19)
+
+### DTR
+
+- **Fixed:** Instance not showing up again after switching to a zone without instances and switching back to a zone with the same Instance Id.
+
+### Search the markets
+
+- **Fixed:** The tweak incorrectly used Dalamuds language setting to search for the item instead of the clients language.
+- **Fixed:** It wasn't possible to search for items if they were high quality.
+
+## [25.2.4] (2024-07-17)
+
+### Enhanced Login/Logout
+
+- **Fixed:** The login queue territory preload option now correctly preloads the outside housing territory when you've logged out inside of a Company Workshop, the Apartment Lobby or an Apartment and now also supports Shirogane and Empyreum.
+
+## [25.2.3] (2024-07-16)
+
+### DTR
+
+- **Fixed:** The busy status no longer updates its text every frame, but only when needed. (Thanks to @nebel for pointing this out)
+
+## [25.2.2] (2024-07-14)
+
+### Portrait Helper
+
+- **Fixed:** Portraits of gearsets without a glamour plate linked weren't automatically updated when the the gearset was updated.
+
+## [25.2.1] (2024-07-15)
+
+### DTR
+
+- **Changed:** The configuration option to set the FPS unit was changed to a customizable format string. This allows to have text in front of it as well as being able to utilize the custom number formatting options C# provides. Configuration should migrate automatically.
+- **Changed:** Server Info Bar entries by HaselTweaks now show the plugin name in their tooltips.
+
+### Enhanced Experience Bar
+
+- **Changed:** Tweak almost completely reworked internally. Updates should now be seamless.
+
+## [25.2.0] (2024-07-14)
+
+### Portrait Helper
+
+- **Fixed:** A bug involving the gearset index that occurs when assigning gearset ids manually.
+- **Fixed:** A check that blocked the gear mismatch check from occuring in any other condition than just stading around, like sitting, has been changed to checking if the player is not moving between areas.
+
+### Search the markets
+
+- **Added:** Support for Gathering Log window.
+
+## [25.1.2] (2024-07-14)
+
+### Enhanced Login/Logout
+
+- **Fixed:** Pet glamour settings were not updated when logging in.
+
+### Forced Cutscene Music
+
+- **Fixed:** No longer applies to the title screen cutscene.
+
+### Minimap Adjustments
+
+- **Fixed:** Nodes that should have been hidden were visible.
+
+### Portrait Helper
+
+- **Possibly Fixed:** Clicking the notification in chat would not open the correct gear set.
+  - *Note:* I'm calling a different function now which resolves the gearset id. This seems to be necessary for some older gearsets.
+
+## [25.1.1] (2024-07-12)
+
+### Portrait Helper
+
+- **Changed:** Gear checksum is no longer checked during duties, where you can't update your portrait anyways. Instead, it will check your gear once you have left the duty.
+
+## [25.1.0] (2024-07-09)
+
+### Portrait Helper
+
+- **Added:** An option to ignore notifications for DoH/DoL jobs.
+
+## [25.0.0] (2024-07-05)
+
+### New Tweak: Bigger Item Dyeing Preview
+
+Increases the size of the character preview in the "Item Dyeing" window.
+
+## [24.1.3] (2024-07-04)
+
+### Character Class Switcher
+
+- **Fixed:** Hovering over a job in the PvP Character window would crash the game.
+
+## [24.1.2] (2024-07-03)
+
+### Character Class Switcher
+
+- **Fixed:** Buttons weren't clickable and some of them would crash the game. Tweak enabled again.
+
+## [24.1.1] (2024-07-03)
+
+### Portrait Helper
+
+- **Fixed:** Calculating the checksum would crash the game. Sorry!
+
+### Known Issues
+
+- **Character Class Switcher:** Buttons aren't clickable and some of them crash the game. I've disabled the tweak for now until I find a solution. Sorry!
+
+## [24.1.0] (2024-07-03)
+
+Preliminary update for Dawntrail (Dalamud staging).
+
+### DTR
+
+- **Fixed:** Fixed Instance not being shown after relogging.
+
+### Glamour Dresser Armoire Alert
+
+- **Fixed:** After the window closed, hitting the Escape key would no longer do anything.
+
+### Material Allocation
+
+- **Removed:** The option "Open Sanctuary Gathering Log for gatherable items" was removed, because it was added to the game!!! 🥳
+
+### Portrait Helper
+
+- **Fixed:** The Preset Browser wouldn't close properly after loading a preset.
+- **Fixed:** The Advanced Import Overlay wouldn't close properly after importing a preset.
+
+## [24.0.3] (2024-06-24)
+
+### HaselTweaks
+
+- **Fixed:** The plugin might've not registered its `/haseltweaks` command.
+
+## [24.0.2] (2024-06-24)
+
+### HaselTweaks
+
+- **Changed:** Completely reworked/simplified the code to draw the configuration.
+- **Fixed:** Starting with v24.0.0 some tweaks didn't correctly unload when unloading the plugin.
+- **Fixed:** Updated Chinese Translations. (Thanks to @cyf5119)
+
 ## [24.0.1] (2024-06-21)
 
 ### Enhanced Isleworks Agenda
@@ -1501,6 +1742,34 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[26.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v26.1.0...v26.1.1
+[26.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v26.0.2...v26.1.0
+[26.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v26.0.1...v26.0.2
+[26.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v26.0.0...v26.0.1
+[26.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.12...v26.0.0
+[25.2.12]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.11...v25.2.12
+[25.2.11]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.10...v25.2.11
+[25.2.10]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.9...v25.2.10
+[25.2.9]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.8...v25.2.9
+[25.2.8]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.7...v25.2.8
+[25.2.7]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.6...v25.2.7
+[25.2.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.5...v25.2.6
+[25.2.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.4...v25.2.5
+[25.2.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.3...v25.2.4
+[25.2.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.2...v25.2.3
+[25.2.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.1...v25.2.2
+[25.2.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.2.0...v25.2.1
+[25.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.1.2...v25.2.0
+[25.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.1.1...v25.1.2
+[25.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.1.0...v25.1.1
+[25.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v25.0.0...v25.1.0
+[25.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.1.3...v25.0.0
+[24.1.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.1.2...v24.1.3
+[24.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.1.1...v24.1.2
+[24.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.1.0...v24.1.1
+[24.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.3...v24.1.0
+[24.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.2...v24.0.3
+[24.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.1...v24.0.2
 [24.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v24.0.0...v24.0.1
 [24.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v23.0.2...v24.0.0
 [23.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v23.0.1...v23.0.2

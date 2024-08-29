@@ -8,7 +8,6 @@ using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Utils;
 using HaselCommon.Windowing;
-using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Interfaces;
@@ -35,7 +34,7 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
     public virtual OverlayType Type => OverlayType.Window;
 
     public Overlay(
-        IWindowManager windowManager,
+        WindowManager windowManager,
         PluginConfig pluginConfig,
         ExcelService excelService,
         string name)

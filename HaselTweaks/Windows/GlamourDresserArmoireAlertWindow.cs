@@ -1,16 +1,14 @@
 using System.Linq;
 using System.Numerics;
+using Dalamud.Interface.Textures;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using HaselCommon.Services;
-using HaselCommon.Sheets;
-using HaselCommon.Textures;
 using HaselCommon.Utils;
 using HaselCommon.Windowing;
-using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
@@ -19,26 +17,29 @@ namespace HaselTweaks.Windows;
 
 public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 {
-    private const int NumPrismBoxSlots = 800;
     private static readonly Vector2 IconSize = new(34);
-    private readonly TextureManager TextureManager;
+    private readonly TextureService TextureService;
     private readonly ExcelService ExcelService;
     private readonly TextService TextService;
+    private readonly ImGuiContextMenuService ImGuiContextMenuService;
 
     private static AddonMiragePrismPrismBox* Addon => GetAddon<AddonMiragePrismPrismBox>("MiragePrismPrismBox");
 
     public GlamourDresserArmoireAlertWindow(
-        IWindowManager windowManager,
-        TextureManager textureManager,
+        WindowManager windowManager,
+        TextureService textureService,
         ExcelService excelService,
-        TextService textService)
+        TextService textService,
+        ImGuiContextMenuService imGuiContextMenuService)
         : base(windowManager, textService.Translate("GlamourDresserArmoireAlertWindow.Title"))
     {
-        TextureManager = textureManager;
+        TextureService = textureService;
         ExcelService = excelService;
         TextService = textService;
+        ImGuiContextMenuService = imGuiContextMenuService;
 
         DisableWindowSounds = true;
+        RespectCloseHotkey = false;
 
         Flags |= ImGuiWindowFlags.NoSavedSettings;
         Flags |= ImGuiWindowFlags.NoResize;
@@ -78,15 +79,13 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
         );
     }
 
-    public void DrawItem(uint itemIndex, ExtendedItem item, bool isHq)
+    public void DrawItem(uint itemIndex, Item item, bool isHq)
     {
         var popupKey = $"##ItemContextMenu_{item.RowId}_Tooltip";
 
         using (var group = ImRaii.Group())
         {
-            TextureManager
-                .GetIcon(item.Icon, isHq)
-                .Draw(IconSize * ImGuiHelpers.GlobalScale);
+            TextureService.DrawIcon(new GameIconLookup(item.Icon, isHq), IconSize * ImGuiHelpers.GlobalScale);
 
             ImGui.SameLine();
 
@@ -109,13 +108,15 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
             ImGui.TextUnformatted(TextService.GetItemName(item.RowId));
         }
 
-        ImGuiContextMenu.Draw(popupKey, [
-            ImGuiContextMenu.CreateTryOn(item),
-            ImGuiContextMenu.CreateItemFinder(item.RowId),
-            ImGuiContextMenu.CreateCopyItemName(item.RowId),
-            ImGuiContextMenu.CreateOpenOnGarlandTools("item", item.RowId),
-            ImGuiContextMenu.CreateItemSearch(item)
-        ]);
+        ImGuiContextMenuService.Draw(popupKey, builder =>
+        {
+            builder
+                .AddTryOn(item)
+                .AddItemFinder(item.RowId)
+                .AddCopyItemName(item.RowId)
+                .AddOpenOnGarlandTools("item", item.RowId)
+                .AddItemSearch(item);
+        });
     }
 
     private void RestoreItem(uint itemIndex)

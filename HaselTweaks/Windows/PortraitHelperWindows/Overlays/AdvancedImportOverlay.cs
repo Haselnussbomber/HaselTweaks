@@ -5,7 +5,6 @@ using FFXIVClientStructs.FFXIV.Common.Math;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselCommon.Utils;
-using HaselCommon.Windowing.Interfaces;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -19,7 +18,7 @@ namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 public unsafe class AdvancedImportOverlay(
     ILogger<AdvancedImportOverlay> Logger,
     TextService TextService,
-    IWindowManager windowManager,
+    WindowManager windowManager,
     PluginConfig pluginConfig,
     ExcelService excelService,
     BannerUtils BannerUtils)
@@ -30,6 +29,12 @@ public unsafe class AdvancedImportOverlay(
         TextService.Translate("PortraitHelperWindows.AdvancedImportOverlay.Title"))
 {
     public MenuBar MenuBar { get; internal set; } = null!;
+
+    public void Open(MenuBar menuBar)
+    {
+        MenuBar = menuBar;
+        Open();
+    }
 
     public override void Draw()
     {

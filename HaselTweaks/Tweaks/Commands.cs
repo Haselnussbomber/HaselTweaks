@@ -6,74 +6,77 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using HaselCommon.Commands.Attributes;
-using HaselCommon.Commands.Interfaces;
+using HaselCommon.Commands;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
+using HaselTweaks.Interfaces;
 using Lumina.Excel.GeneratedSheets;
 using BattleNpcSubKind = Dalamud.Game.ClientState.Objects.Enums.BattleNpcSubKind;
 using DalamudObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class CommandsConfiguration
-{
-    [BoolConfig]
-    public bool EnableItemLinkCommand = true;
-
-    [BoolConfig]
-    public bool EnableWhatMountCommand = true;
-
-    [BoolConfig]
-    public bool EnableWhatBardingCommand = true;
-
-    [BoolConfig]
-    public bool EnableGlamourPlateCommand = true;
-}
-
-public sealed unsafe class Commands(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class Commands(
+    PluginConfig PluginConfig,
+    TextService TextService,
     ExcelService ExcelService,
-    ICommandRegistry Commands,
+    CommandService CommandService,
     IChatGui ChatGui,
-    ITargetManager TargetManager)
-    : Tweak<CommandsConfiguration>(pluginConfig, textService)
+    ITargetManager TargetManager,
+    ConfigGui ConfigGui)
+    : IConfigurableTweak
 {
-    private ICommandHandler? ItemLinkCommandHandler;
-    private ICommandHandler? WhatMountCommandCommandHandler;
-    private ICommandHandler? WhatBardingCommandCommandHandler;
-    private ICommandHandler? GlamourPlateCommandCommandHandler;
+    public string InternalName => nameof(Commands);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    public override void OnInitialize()
+    private CommandHandler? ItemLinkCommandHandler;
+    private CommandHandler? WhatMountCommandCommandHandler;
+    private CommandHandler? WhatEmoteCommandCommandHandler;
+    private CommandHandler? WhatBardingCommandCommandHandler;
+    private CommandHandler? GlamourPlateCommandCommandHandler;
+
+    public void OnInitialize()
     {
-        ItemLinkCommandHandler = Commands.Register(OnItemLinkCommand);
-        WhatMountCommandCommandHandler = Commands.Register(OnWhatMountCommand);
-        WhatBardingCommandCommandHandler = Commands.Register(OnWhatBardingCommand);
-        GlamourPlateCommandCommandHandler = Commands.Register(OnGlamourPlateCommand);
+        ItemLinkCommandHandler = CommandService.Register(OnItemLinkCommand);
+        WhatMountCommandCommandHandler = CommandService.Register(OnWhatMountCommand);
+        WhatEmoteCommandCommandHandler = CommandService.Register(OnWhatEmoteCommand);
+        WhatBardingCommandCommandHandler = CommandService.Register(OnWhatBardingCommand);
+        GlamourPlateCommandCommandHandler = CommandService.Register(OnGlamourPlateCommand);
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
         UpdateCommands(true);
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         UpdateCommands(false);
     }
 
-    public override void OnConfigChange(string fieldName)
+    public void Dispose()
     {
-        UpdateCommands(Status == TweakStatus.Enabled);
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
+            return;
+
+        OnDisable();
+        ItemLinkCommandHandler?.Dispose();
+        WhatMountCommandCommandHandler?.Dispose();
+        WhatEmoteCommandCommandHandler?.Dispose();
+        WhatBardingCommandCommandHandler?.Dispose();
+        GlamourPlateCommandCommandHandler?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void UpdateCommands(bool enable)
     {
         ItemLinkCommandHandler?.SetEnabled(enable && Config.EnableItemLinkCommand);
         WhatMountCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatMountCommand);
+        WhatEmoteCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatEmoteCommand);
         WhatBardingCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatBardingCommand);
         GlamourPlateCommandCommandHandler?.SetEnabled(enable && Config.EnableGlamourPlateCommand);
     }
@@ -185,7 +188,48 @@ public sealed unsafe class Commands(
         });
     }
 
-    [CommandHandler("/whatbarding", "Commands.Config.EnableWhatMountCommand.Description")]
+    [CommandHandler("/whatemote", "Commands.Config.EnableWhatEmoteCommand.Description")]
+    private void OnWhatEmoteCommand(string command, string arguments)
+    {
+        var target = TargetManager.Target;
+        if (target == null)
+        {
+            ChatGui.PrintError(TextService.Translate("Commands.NoTarget"));
+            return;
+        }
+
+        if (target.ObjectKind != DalamudObjectKind.Player)
+        {
+            ChatGui.PrintError(TextService.Translate("Commands.TargetIsNotAPlayer"));
+            return;
+        }
+
+        var gameObject = (Character*)target.Address;
+
+        var emoteId = gameObject->EmoteController.EmoteId;
+        if (emoteId == 0)
+        {
+            ChatGui.PrintError(TextService.Translate("Commands.Emote.NotExecutingEmote"));
+            return;
+        }
+
+        var emote = ExcelService.GetRow<Emote>(emoteId);
+        if (emote == null)
+        {
+            ChatGui.PrintError(TextService.Translate("Commands.Emote.NotFound", emoteId.ToString()));
+            return;
+        }
+
+        ChatGui.Print(new XivChatEntry
+        {
+            Message = new SeStringBuilder()
+                .AddUiForeground("\uE078 ", 32)
+                .Append(TextService.TranslateSe("Commands.Emote", emoteId.ToString(), TextService.GetEmoteName(emoteId)))
+                .Build(),
+            Type = XivChatType.Echo
+        });
+    }
+    [CommandHandler("/whatbarding", "Commands.Config.EnableWhatBardingCommand.Description")]
     private void OnWhatBardingCommand(string command, string arguments)
     {
         var target = TargetManager.Target;
@@ -203,11 +247,11 @@ public sealed unsafe class Commands(
 
         var targetCharacter = (Character*)target.Address;
 
-        var topRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelTop == targetCharacter->DrawData.Head.Value);
-        var bodyRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelBody == targetCharacter->DrawData.Top.Value);
-        var legsRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelLegs == targetCharacter->DrawData.Feet.Value);
+        var topRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelTop == (int)targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Head).Value);
+        var bodyRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelBody == (int)targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Body).Value);
+        var legsRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelLegs == (int)targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Feet).Value);
 
-        var stain = ExcelService.GetRow<Stain>(targetCharacter->DrawData.Legs.Stain)!;
+        var stain = ExcelService.GetRow<Stain>(targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Legs).Stain0)!;
         var name = new SeStringBuilder()
             .AddUiForeground(targetCharacter->GameObject.NameString, 1)
             .Build();

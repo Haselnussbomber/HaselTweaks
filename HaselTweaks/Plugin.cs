@@ -2,11 +2,13 @@ using System.IO;
 using Dalamud.Game;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using HaselCommon.Commands;
+using HaselCommon.Extensions;
 using HaselCommon.Logger;
+using HaselCommon.Services;
 using HaselTweaks.Caches;
 using HaselTweaks.Config;
 using HaselTweaks.Interfaces;
-using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using HaselTweaks.Windows;
 using HaselTweaks.Windows.PortraitHelperWindows;
@@ -19,13 +21,17 @@ namespace HaselTweaks;
 
 public sealed class Plugin : IDalamudPlugin
 {
+    private readonly IDalamudPluginInterface PluginInterface;
+
     public Plugin(
-        DalamudPluginInterface pluginInterface,
+        IDalamudPluginInterface pluginInterface,
         IFramework framework,
         IPluginLog pluginLog,
         ISigScanner sigScanner,
         IDataManager dataManager)
     {
+        PluginInterface = pluginInterface;
+
         Service
             // Dalamud & HaselCommon
             .Initialize(pluginInterface)
@@ -45,43 +51,12 @@ public sealed class Plugin : IDalamudPlugin
             .AddSingleton<TweakManager>()
             .AddSingleton<PluginWindow>()
             .AddSingleton<BannerUtils>()
-
-            // Tweaks
-            .AddSingleton<ITweak, AchievementLinkTooltip>()
-            .AddSingleton<ITweak, AetherCurrentHelper>()
-            .AddSingleton<ITweak, AutoOpenRecipe>()
-            .AddSingleton<ITweak, AutoSorter>()
-            .AddSingleton<ITweak, BackgroundMusicKeybind>()
-            .AddSingleton<ITweak, CastBarAetheryteNames>()
-            .AddSingleton<ITweak, CharacterClassSwitcher>()
-            .AddSingleton<ITweak, Commands>()
-            .AddSingleton<ITweak, CustomChatMessageFormats>()
-            .AddSingleton<ITweak, CustomChatTimestamp>()
-            .AddSingleton<ITweak, DTR>()
-            .AddSingleton<ITweak, EnhancedExpBar>()
-            .AddSingleton<ITweak, EnhancedIsleworksAgenda>()
-            .AddSingleton<ITweak, EnhancedLoginLogout>()
-            .AddSingleton<ITweak, EnhancedMaterialList>()
-            .AddSingleton<ITweak, ExpertDeliveries>()
-            .AddSingleton<ITweak, ForcedCutsceneMusic>()
-            .AddSingleton<ITweak, GearSetGrid>()
-            .AddSingleton<ITweak, GlamourDresserArmoireAlert>()
-            .AddSingleton<ITweak, HideMSQComplete>()
-            .AddSingleton<ITweak, InventoryHighlight>()
-            .AddSingleton<ITweak, KeepScreenAwake>()
-            .AddSingleton<ITweak, LockWindowPosition>()
-            .AddSingleton<ITweak, MarketBoardItemPreview>()
-            .AddSingleton<ITweak, MaterialAllocation>()
-            .AddSingleton<ITweak, MinimapAdjustments>()
-            .AddSingleton<ITweak, PortraitHelper>()
-            .AddSingleton<ITweak, RevealDutyRequirements>()
-            .AddSingleton<ITweak, SaferItemSearch>()
-            .AddSingleton<ITweak, ScrollableTabs>()
-            .AddSingleton<ITweak, SearchTheMarkets>()
-            .AddSingleton<ITweak, SimpleAethernetList>()
+            .AddIServices<ITweak>()
+            .AddSingleton<ConfigGui>()
 
             // AetherCurrentHelper
             .AddSingleton<EObjDataIdCache>()
+            .AddSingleton<LevelObjectCache>()
             .AddSingleton<AetherCurrentHelperWindow>()
 
             // EnhancedIsleworksAgenda
@@ -108,8 +83,7 @@ public sealed class Plugin : IDalamudPlugin
 
         Service.BuildProvider();
 
-        // ---
-
+#if HAS_LOCAL_CS
         FFXIVClientStructs.Interop.Generated.Addresses.Register();
         Addresses.Register();
         Resolver.GetInstance.Setup(
@@ -117,20 +91,36 @@ public sealed class Plugin : IDalamudPlugin
             dataManager.GameData.Repositories["ffxiv"].Version,
             new FileInfo(Path.Join(pluginInterface.ConfigDirectory.FullName, "SigCache.json")));
         Resolver.GetInstance.Resolve();
-
-        // ---
+#endif
 
         // TODO: IHostedService?
         framework.RunOnFrameworkThread(() =>
         {
             Service.Get<TweakManager>().Initialize();
-            Service.Get<PluginWindow>();
+            Service.Get<CommandService>().Register(OnCommand, true);
+            PluginInterface.UiBuilder.OpenMainUi += ToggleWindow;
         });
+    }
+
+    [CommandHandler("/haseltweaks", "HaselTweaks.CommandHandlerHelpMessage")]
+    private void OnCommand(string command, string arguments)
+    {
+        ToggleWindow();
+    }
+
+    private static void ToggleWindow()
+    {
+        Service.Get<PluginWindow>().Toggle();
     }
 
     void IDisposable.Dispose()
     {
+        PluginInterface.UiBuilder.OpenMainUi -= ToggleWindow;
+
         Service.Dispose();
+
+#if HAS_LOCAL_CS
         Addresses.Unregister();
+#endif
     }
 }

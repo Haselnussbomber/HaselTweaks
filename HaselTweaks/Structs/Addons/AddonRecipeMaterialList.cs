@@ -2,15 +2,15 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Structs;
 
-// ctor "40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 45 33 C0 48 89 03 48 8D 8B"
+// ctor "40 53 48 83 EC 20 48 8B D9 E8 ?? ?? ?? ?? 0F 57 C0 48 8D 05 ?? ?? ?? ?? 48 89 03 48 8D 8B ?? ?? ?? ?? 0F 11 83"
 [GenerateInterop]
-[StructLayout(LayoutKind.Explicit, Size = 0x2A0)]
+[StructLayout(LayoutKind.Explicit, Size = 0x2B0)]
 public unsafe partial struct AddonRecipeMaterialList
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x220)] public AtkComponentTreeList* TreeList;
-    [FieldOffset(0x228)] public AtkComponentButton* RefreshButton;
+    [FieldOffset(0x230)] public AtkComponentTreeList* TreeList;
+    [FieldOffset(0x238)] public AtkComponentButton* RefreshButton;
 
     [MemberFunction("E8 ?? ?? ?? ?? BB ?? ?? ?? ?? C7 45 ?? ?? ?? ?? ?? 8B D3 C7 45")]
     public partial void SetWindowLock(bool locked);

@@ -13,8 +13,7 @@ public unsafe partial struct UIModuleHelpers
     [FieldOffset(8)] public BannerModuleHelper* BannerModuleHelper; // no clue, but hosts helper functions
 }
 
-// inlined ctor "48 89 08 33 C9 48 89 48 10 48 89 48 18"
-// TODO: "E8 ?? ?? ?? ?? 84 C0 75 03 40 32 F6" - it copies the current portrait to the BannerModuleHelper?
+// TODO: it copies the current portrait to the BannerModuleHelper?
 // TODO: "83 BE ?? ?? ?? ?? ?? 0F 84 ?? ?? ?? ?? 48 8B 8E ?? ?? ?? ?? 48 89 BC 24 ?? ?? ?? ??" - code for sending Adventurer Plate data
 [GenerateInterop]
 [StructLayout(LayoutKind.Explicit, Size = 0x50)]
@@ -29,10 +28,10 @@ public unsafe partial struct BannerModuleHelper
     [MemberFunction("E8 ?? ?? ?? ?? 48 8B AC 24 ?? ?? ?? ?? 48 8B 4C 24 ?? 48 33 CC E8 ?? ?? ?? ?? 48 83 C4 60")]
     public partial bool SendBannerUpdateData(BannerUpdateData* bannerUpdateData);
 
-    [MemberFunction("E8 ?? ?? ?? ?? 88 44 24 23")]
+    [MemberFunction("E8 ?? ?? ?? ?? 88 44 24 22 40 84 ED")]
     public partial bool IsBannerNotExpired(BannerModuleEntry* bannerModuleEntry, int type);
 
-    [MemberFunction("40 53 48 83 EC 20 4C 8B 1D")]
+    [MemberFunction("E8 ?? ?? ?? ?? 84 C0 74 1D 4C 8D 44 24")]
     public partial bool IsBannerCharacterDataNotExpired(BannerModuleEntry* bannerModuleEntry, int type);
 
     [MemberFunction("41 0F B6 80 ?? ?? ?? ?? 88 42 60")]

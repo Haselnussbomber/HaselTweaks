@@ -8,35 +8,38 @@ namespace HaselTweaks.Tweaks;
 
 public sealed class KeepScreenAwake : ITweak
 {
-    private readonly Timer _timer = new();
-
     public string InternalName => nameof(KeepScreenAwake);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
+    private readonly Timer Timer = new();
+
     public void OnInitialize()
     {
-        _timer.Elapsed += Timer_Elapsed;
-        _timer.Interval = 10000; // every 10 seconds
+        Timer.Elapsed += Timer_Elapsed;
+        Timer.Interval = 10000; // every 10 seconds
     }
 
     public void OnEnable()
     {
-        _timer.Start();
+        Timer.Start();
     }
 
     public void OnDisable()
     {
+        if (Status is not TweakStatus.Enabled)
+            return;
+
         PInvoke.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
-        _timer.Stop();
+        Timer.Stop();
     }
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();
-        _timer.Dispose();
+        Timer.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);

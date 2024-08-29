@@ -4,7 +4,8 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Dalamud.Interface;
-using Dalamud.Interface.Internal;
+using Dalamud.Interface.Textures;
+using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
 using Dalamud.Plugin;
@@ -12,7 +13,6 @@ using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
-using HaselCommon.Textures;
 using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
@@ -38,7 +38,7 @@ public class PresetCard : IDisposable
     private readonly uint ButtonHoveredColor = Colors.White.WithAlpha(0.2f);
 
     private readonly ILogger Logger;
-    private readonly DalamudPluginInterface PluginInterface;
+    private readonly IDalamudPluginInterface PluginInterface;
     private readonly IDataManager DataManager;
     private readonly ITextureProvider TextureProvider;
     private readonly PluginConfig PluginConfig;
@@ -69,7 +69,7 @@ public class PresetCard : IDisposable
     public PresetCard(
         SavedPreset preset,
         ILogger logger,
-        DalamudPluginInterface pluginInterface,
+        IDalamudPluginInterface pluginInterface,
         IDataManager dataManager,
         ITextureProvider textureProvider,
         PluginConfig pluginConfig,
@@ -117,9 +117,9 @@ public class PresetCard : IDisposable
         var cursorPos = ImGui.GetCursorPos();
         var center = cursorPos + PortraitSize * scale / 2f;
 
-        var textureManager = Service.Get<TextureManager>();
+        var TextureService = Service.Get<TextureService>();
 
-        textureManager.GetIcon(190009).Draw(PortraitSize * scale);
+        TextureService.DrawIcon(190009, PortraitSize * scale);
         ImGui.SetCursorPos(cursorPos);
 
         if (IsImageLoading)
@@ -142,19 +142,19 @@ public class PresetCard : IDisposable
         if (BannerFrameImage != 0)
         {
             ImGui.SetCursorPos(cursorPos);
-            textureManager.GetIcon(BannerFrameImage).Draw(PortraitSize * scale);
+            TextureService.DrawIcon(BannerFrameImage, PortraitSize * scale);
         }
 
         if (BannerDecorationImage != 0)
         {
             ImGui.SetCursorPos(cursorPos);
-            textureManager.GetIcon(BannerDecorationImage).Draw(PortraitSize * scale);
+            TextureService.DrawIcon(BannerDecorationImage, PortraitSize * scale);
         }
 
         if (hasErrors)
         {
             ImGui.SetCursorPos(cursorPos + new Vector2(PortraitSize.X - 190, 10) * scale);
-            textureManager.Get("ui/uld/Warning.tex", 2).Draw(160 * scale);
+            TextureService.Draw("ui/uld/Warning_hr1.tex", 160 * scale);
         }
 
         ImGui.SetCursorPos(cursorPos);
@@ -352,8 +352,7 @@ public class PresetCard : IDisposable
 
         if (!flags.HasFlag(CopyImageFlags.NoFrame) && BannerFrameImage != 0)
         {
-            var iconPath = TextureProvider.GetIconPath(BannerFrameImage);
-            if (iconPath != null)
+            if (TextureProvider.TryGetIconPath(BannerFrameImage, out var iconPath))
             {
                 var texture = DataManager.GetFile<TexFile>(iconPath);
                 if (texture != null)
@@ -367,8 +366,7 @@ public class PresetCard : IDisposable
 
         if (!flags.HasFlag(CopyImageFlags.NoDecoration) && BannerDecorationImage != 0)
         {
-            var iconPath = TextureProvider.GetIconPath(BannerDecorationImage);
-            if (iconPath != null)
+            if (TextureProvider.TryGetIconPath(BannerDecorationImage, out var iconPath))
             {
                 var texture = DataManager.GetFile<TexFile>(iconPath);
                 if (texture != null)
@@ -458,7 +456,7 @@ public class PresetCard : IDisposable
                     if (CloseTokenSource.IsCancellationRequested)
                         return;
 
-                    TextureWrap = PluginInterface.UiBuilder.LoadImageRaw(data, scaledImage.Width, scaledImage.Height, 4);
+                    TextureWrap = TextureProvider.CreateFromRaw(RawImageSpecification.Rgba32(scaledImage.Width, scaledImage.Height), data);
                 }
                 catch (Exception ex)
                 {

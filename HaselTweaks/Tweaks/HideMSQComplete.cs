@@ -8,7 +8,7 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed unsafe class HideMSQComplete(IAddonLifecycle AddonLifecycle) : ITweak
+public unsafe class HideMSQComplete(IAddonLifecycle AddonLifecycle) : ITweak
 {
     public string InternalName => nameof(HideMSQComplete);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
@@ -24,12 +24,14 @@ public sealed unsafe class HideMSQComplete(IAddonLifecycle AddonLifecycle) : ITw
     public void OnDisable()
     {
         AddonLifecycle.UnregisterListener(AddonEvent.PostRefresh, "ScenarioTree", ScenarioTree_PostRefresh);
-        UpdateVisibility(true);
+
+        if (Status is TweakStatus.Enabled)
+            UpdateVisibility(true);
     }
 
     void IDisposable.Dispose()
     {
-        if (Status == TweakStatus.Disposed)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
         OnDisable();

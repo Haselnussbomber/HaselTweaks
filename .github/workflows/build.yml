@@ -24,6 +24,7 @@ on:
         options:
           - master
           - stg
+          - apiX
 
 jobs:
   build:
@@ -40,7 +41,6 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 7.0.x
           cache: true
           cache-dependency-path: ${{ env.plugin_name }}/packages.lock.json
 
@@ -51,6 +51,8 @@ jobs:
             echo "branch=${{ github.event.inputs.dalamud_branch }}" >> $GITHUB_OUTPUT
           elif [[ "${{ github.event.ref }}" == "refs/heads/stg" ]] || [[ "${{ github.event.head_commit.message }}" == "[stg]"* ]]; then
             echo "branch=stg" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.ref }}" == "refs/heads/apiX" ]] || [[ "${{ github.event.head_commit.message }}" == "[apiX]"* ]]; then
+            echo "branch=apiX" >> $GITHUB_OUTPUT
           else
             echo "branch=master" >> $GITHUB_OUTPUT
           fi
@@ -60,7 +62,8 @@ jobs:
           DALAMUD_URL: >
             ${{ fromJson('{
               "master": "https://goatcorp.github.io/dalamud-distrib/latest.zip",
-              "stg": "https://goatcorp.github.io/dalamud-distrib/stg/latest.zip"
+              "stg": "https://goatcorp.github.io/dalamud-distrib/stg/latest.zip",
+              "apiX": "https://goatcorp.github.io/dalamud-distrib/apiX/latest.zip"
             }')[steps.branch.outputs.branch] }}
         run: |
           curl -o latest.zip ${{ env.DALAMUD_URL }}

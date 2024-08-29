@@ -14,7 +14,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace HaselTweaks.Utils;
 
-public unsafe class BannerUtils(DalamudPluginInterface PluginInterface, ExcelService ExcelService, TextService TextService)
+public unsafe class BannerUtils(IDalamudPluginInterface PluginInterface, ExcelService ExcelService, TextService TextService)
 {
     public Image<Bgra32>? GetCurrentCharaViewImage()
     {
@@ -120,7 +120,6 @@ public unsafe class BannerUtils(DalamudPluginInterface PluginInterface, ExcelSer
             var bannerTimeline = ExcelService.GetRow<BannerTimeline>(id);
             if (bannerTimeline != null && bannerTimeline.Type != 0)
             {
-                // ref: "48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 41 8B C9 49 8B F8"
                 if (bannerTimeline.Type <= 2)
                 {
                     poseName = TextService.GetActionName(bannerTimeline.AdditionalData);

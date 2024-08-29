@@ -1,6 +1,5 @@
-using System.Collections.Generic;
-using System.Numerics;
 using System.Threading;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Hooking;
@@ -13,97 +12,83 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Services;
+using HaselTweaks.Config;
+using HaselTweaks.Enums;
 using HaselTweaks.Enums.PortraitHelper;
+using HaselTweaks.Interfaces;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows.PortraitHelperWindows;
+using Lumina.Excel.GeneratedSheets;
 using Microsoft.Extensions.Logging;
-using PluginConfig = HaselTweaks.Config.PluginConfig;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed class PortraitHelperConfiguration
-{
-    public List<SavedPreset> Presets = [];
-    public List<SavedPresetTag> PresetTags = [];
-    public bool ShowAlignmentTool = false;
-    public int AlignmentToolVerticalLines = 2;
-    public Vector4 AlignmentToolVerticalColor = new(0, 0, 0, 1f);
-    public int AlignmentToolHorizontalLines = 2;
-    public Vector4 AlignmentToolHorizontalColor = new(0, 0, 0, 1f);
-
-    [BoolConfig]
-    public bool EmbedPresetStringInThumbnails = true;
-
-    [BoolConfig]
-    public bool NotifyGearChecksumMismatch = true;
-
-    [BoolConfig, NetworkWarning]
-    public bool ReequipGearsetOnUpdate = false;
-
-    [BoolConfig, NetworkWarning]
-    public bool AutoUpdatePotraitOnGearUpdate = false;
-}
-
-public sealed unsafe class PortraitHelper(
-    PluginConfig pluginConfig,
-    TextService textService,
+public unsafe partial class PortraitHelper(
+    PluginConfig PluginConfig,
+    ConfigGui ConfigGui,
+    TextService TextService,
+    ExcelService ExcelService,
     ILogger<PortraitHelper> Logger,
     IGameInteropProvider GameInteropProvider,
-    DalamudPluginInterface PluginInterface,
+    IDalamudPluginInterface PluginInterface,
+    ICondition Condition,
     IFramework Framework,
     IClientState ClientState,
     IChatGui ChatGui,
     AddonObserver AddonObserver,
+    PlayerService GameEventService,
     MenuBar MenuBar)
-    : Tweak<PortraitHelperConfiguration>(pluginConfig, textService)
+    : IConfigurableTweak
 {
+    public string InternalName => nameof(PortraitHelper);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
     private CancellationTokenSource? MismatchCheckCTS;
-    private DalamudLinkPayload? _openPortraitEditPayload;
+    private DalamudLinkPayload? OpenPortraitEditPayload;
 
     public static ImportFlags CurrentImportFlags { get; set; } = ImportFlags.All;
     public static PortraitPreset? ClipboardPreset { get; set; }
 
     private Hook<UIClipboard.Delegates.OnClipboardDataChanged>? OnClipboardDataChangedHook;
-    private Hook<RaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
-    private Hook<UIModule.Delegates.HandlePacket>? HandleUIModulePacketHook;
+    private Hook<HaselRaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
+    private bool WasBoundByDuty;
 
-    public override void OnInitialize()
+    public void OnInitialize()
     {
         OnClipboardDataChangedHook = GameInteropProvider.HookFromAddress<UIClipboard.Delegates.OnClipboardDataChanged>(
             UIClipboard.MemberFunctionPointers.OnClipboardDataChanged,
             OnClipboardDataChangedDetour);
 
-        UpdateGearsetHook = GameInteropProvider.HookFromAddress<RaptureGearsetModule.Delegates.UpdateGearset>(
-            RaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
+        UpdateGearsetHook = GameInteropProvider.HookFromAddress<HaselRaptureGearsetModule.Delegates.UpdateGearset>(
+            HaselRaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
             UpdateGearsetDetour);
-
-        HandleUIModulePacketHook = GameInteropProvider.HookFromAddress<UIModule.Delegates.HandlePacket>(
-            UIModule.StaticVirtualTablePointer->HandlePacket,
-            HandleUIModulePacketDetour);
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
-        _openPortraitEditPayload = PluginInterface.AddChatLinkHandler(1000, OpenPortraitEditChatHandler);
+        OpenPortraitEditPayload = PluginInterface.AddChatLinkHandler(1000, OpenPortraitEditChatHandler);
 
         if (IsAddonOpen(AgentId.BannerEditor))
             OnAddonOpen("BannerEditor");
 
         AddonObserver.AddonOpen += OnAddonOpen;
         AddonObserver.AddonClose += OnAddonClose;
+        ClientState.TerritoryChanged += OnTerritoryChanged;
+        GameEventService.ClassJobChange += OnClassJobChange;
 
         OnClipboardDataChangedHook?.Enable();
         UpdateGearsetHook?.Enable();
-        HandleUIModulePacketHook?.Enable();
     }
 
-    public override void OnDisable()
+    public void OnDisable()
     {
         AddonObserver.AddonOpen -= OnAddonOpen;
         AddonObserver.AddonClose -= OnAddonClose;
+        ClientState.TerritoryChanged -= OnTerritoryChanged;
+        GameEventService.ClassJobChange -= OnClassJobChange;
 
         PluginInterface.RemoveChatLinkHandler(1000);
 
@@ -111,7 +96,19 @@ public sealed unsafe class PortraitHelper(
 
         OnClipboardDataChangedHook?.Disable();
         UpdateGearsetHook?.Disable();
-        HandleUIModulePacketHook?.Disable();
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
+            return;
+
+        OnDisable();
+        OnClipboardDataChangedHook?.Dispose();
+        UpdateGearsetHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void OpenPortraitEditChatHandler(uint commandId, SeString message)
@@ -121,7 +118,7 @@ public sealed unsafe class PortraitHelper(
         if (!raptureGearsetModule->IsValidGearset(gearsetId))
             return;
 
-        AgentBannerEditor.Instance()->OpenForGearset(gearsetId);
+        AgentGearSet.Instance()->OpenBannerEditorForGearset(gearsetId);
     }
 
     private void OnAddonOpen(string addonName)
@@ -140,6 +137,22 @@ public sealed unsafe class PortraitHelper(
         MenuBar.Close();
     }
 
+    private void OnTerritoryChanged(ushort territoryTypeId)
+    {
+        if (WasBoundByDuty && !Condition[ConditionFlag.BoundByDuty56])
+        {
+            WasBoundByDuty = false;
+
+            MismatchCheckCTS?.Cancel();
+            MismatchCheckCTS = new();
+
+            Framework.RunOnTick(
+                () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex),
+                CheckDelay,
+                cancellationToken: MismatchCheckCTS.Token);
+        }
+    }
+
     private void OnClipboardDataChangedDetour(UIClipboard* uiClipboard)
     {
         OnClipboardDataChangedHook!.Original(uiClipboard);
@@ -156,9 +169,9 @@ public sealed unsafe class PortraitHelper(
         }
     }
 
-    private void UpdateGearsetDetour(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
+    private int UpdateGearsetDetour(HaselRaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
-        UpdateGearsetHook!.Original(raptureGearsetModule, gearsetId);
+        var ret = UpdateGearsetHook!.Original(raptureGearsetModule, gearsetId);
 
         MismatchCheckCTS?.Cancel();
         MismatchCheckCTS = new();
@@ -167,15 +180,12 @@ public sealed unsafe class PortraitHelper(
             () => CheckForGearChecksumMismatch(gearsetId),
             CheckDelay,
             cancellationToken: MismatchCheckCTS.Token);
+
+        return ret;
     }
 
-    private void HandleUIModulePacketDetour(UIModule* uiModule, UIModulePacketType type, uint uintParam, void* packet)
+    private void OnClassJobChange(uint classJobId)
     {
-        HandleUIModulePacketHook!.Original(uiModule, type, uintParam, packet);
-
-        if (type != UIModulePacketType.ClassJobChange || !ClientState.IsLoggedIn)
-            return;
-
         MismatchCheckCTS?.Cancel();
         MismatchCheckCTS = new();
 
@@ -187,6 +197,25 @@ public sealed unsafe class PortraitHelper(
 
     private void CheckForGearChecksumMismatch(int gearsetId, bool isJobChange = false)
     {
+        if (Condition[ConditionFlag.BoundByDuty56]) // delay when bound by duty
+        {
+            WasBoundByDuty = true;
+            return;
+        }
+
+        if (Condition[ConditionFlag.BetweenAreas]) // requeue when moving
+        {
+            MismatchCheckCTS?.Cancel();
+            MismatchCheckCTS = new();
+
+            Framework.RunOnTick(
+                () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex),
+                CheckDelay,
+                cancellationToken: MismatchCheckCTS.Token);
+
+            return;
+        }
+
         var raptureGearsetModule = RaptureGearsetModule.Instance();
 
         if (!raptureGearsetModule->IsValidGearset(gearsetId))
@@ -194,6 +223,9 @@ public sealed unsafe class PortraitHelper(
 
         var gearset = raptureGearsetModule->GetGearset(gearsetId);
         if (gearset == null)
+            return;
+
+        if (Config.IgnoreDoHDoL && ExcelService.GetRow<ClassJob>(gearset->ClassJob)?.DohDolJobIndex != -1)
             return;
 
         var bannerIndex = gearset->BannerIndex;
@@ -253,7 +285,7 @@ public sealed unsafe class PortraitHelper(
             {
                 Logger.LogInformation("Gear checksum matches now (Portrait: {bannerChecksum:X}, Equipped: {equippedChecksum:X})", banner->Checksum, GetEquippedGearChecksum());
             }
-        }, delay: CheckDelay, cancellationToken: MismatchCheckCTS.Token); // TODO: find out when it's safe to check again instead of randomly picking a delay. ping may vary
+        }, delay: CheckDelay, cancellationToken: MismatchCheckCTS.Token);
     }
 
     private void NotifyMismatch()
@@ -266,9 +298,9 @@ public sealed unsafe class PortraitHelper(
         var raptureGearsetModule = RaptureGearsetModule.Instance();
         if (raptureGearsetModule->IsValidGearset(raptureGearsetModule->CurrentGearsetIndex))
         {
-            if (_openPortraitEditPayload != null)
+            if (OpenPortraitEditPayload != null)
             {
-                sb.Add(_openPortraitEditPayload)
+                sb.Add(OpenPortraitEditPayload)
                   .AddText(text)
                   .Add(RawPayload.LinkTerminator);
             }
@@ -300,9 +332,10 @@ public sealed unsafe class PortraitHelper(
         };
 
         var itemIds = stackalloc uint[14];
-        var stainIds = stackalloc byte[14];
+        var stainIds = stackalloc byte[14 * 2];
+        var glassesIds = stackalloc ushort[2];
 
-        if (!data.LoadEquipmentData(itemIds, stainIds))
+        if (!data.LoadEquipmentData(itemIds, stainIds, glassesIds))
             return 0;
 
         var gearVisibilityFlag = BannerGearVisibilityFlag.None;
@@ -316,7 +349,7 @@ public sealed unsafe class PortraitHelper(
         if (localPlayer->DrawData.IsVisorToggled)
             gearVisibilityFlag |= BannerGearVisibilityFlag.VisorClosed;
 
-        return BannerModuleEntry.GenerateChecksum(itemIds, stainIds, gearVisibilityFlag);
+        return BannerModuleEntry.GenerateChecksum(itemIds, stainIds, glassesIds, gearVisibilityFlag);
     }
 
     private bool SendPortraitUpdate(BannerModuleEntry* banner)
@@ -346,7 +379,7 @@ public sealed unsafe class PortraitHelper(
 
         if (banner->BannerIndex != bannerIndex - 1)
         {
-            Logger.LogWarning($"No Portrait Update: Banner index mismatch (Banner: {banner->BannerIndex}, Gearset Banner Link: {bannerIndex - 1})");
+            Logger.LogWarning("No Portrait Update: Banner index mismatch (Banner: {bannerIndex}, Gearset Banner Link: {gearsetBannerIndex})", banner->BannerIndex, bannerIndex - 1);
             return false;
         }
 

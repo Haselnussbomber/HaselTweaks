@@ -7,8 +7,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Extensions;
 using HaselCommon.Services;
-using HaselCommon.Text;
-using HaselCommon.Text.Expressions;
+using HaselCommon.Services.SeStringEvaluation;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
@@ -16,22 +15,23 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace HaselTweaks.Tweaks;
 
-public sealed unsafe partial class CastBarAetheryteNames(
+public unsafe class CastBarAetheryteNames(
     IGameInteropProvider GameInteropProvider,
     IAddonLifecycle AddonLifecycle,
     IClientState ClientState,
     ExcelService ExcelService,
-    TextService TextService)
-    : ITweak, IDisposable
+    TextService TextService,
+    SeStringEvaluatorService SeStringEvaluator)
+    : ITweak
 {
+    public string InternalName => nameof(CastBarAetheryteNames);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+
     private TeleportInfo? TeleportInfo;
     private bool IsCastingTeleport;
 
     private Hook<HaselActionManager.Delegates.OpenCastBar>? OpenCastBarHook;
     private Hook<Telepo.Delegates.Teleport>? TeleportHook;
-
-    public string InternalName => nameof(CastBarAetheryteNames);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()
     {
@@ -64,11 +64,17 @@ public sealed unsafe partial class CastBarAetheryteNames(
         TeleportHook?.Disable();
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
+            return;
+
         OnDisable();
         OpenCastBarHook?.Dispose();
         TeleportHook?.Dispose();
+
+        Status = TweakStatus.Disposed;
+        GC.SuppressFinalize(this);
     }
 
     private void OnTerritoryChanged(ushort id)
@@ -102,20 +108,20 @@ public sealed unsafe partial class CastBarAetheryteNames(
         var placeName = true switch
         {
             _ when info.IsApartment => TextService.GetAddonText(8518),
-            _ when info.IsSharedHouse => SeString.FromAddon(8519).Resolve([new IntegerExpression(info.Ward), new IntegerExpression(info.Plot)]).ToString(),
+            _ when info.IsSharedHouse => SeStringEvaluator.EvaluateFromAddon(8519, new SeStringContext() { LocalParameters = [(uint)info.Ward, (uint)info.Plot] }).ToString(),
             _ => ExcelService.GetRow<PlaceName>(row.PlaceName.Row)?.Name?.ExtractText() ?? string.Empty,
         };
 
-        AtkStage.Instance()->GetStringArrayData()[20]->SetValue(0, placeName, false, true, false);
+        AtkStage.Instance()->GetStringArrayData(StringArrayType.CastBar)->SetValue(0, placeName, false, true, false);
 
         Clear();
     }
 
-    private void OpenCastBarDetour(HaselActionManager* a1, BattleChara* a2, int type, uint rowId, uint type2, int rowId2, float a7)
+    private void OpenCastBarDetour(HaselActionManager* a1, BattleChara* a2, int type, uint rowId, uint type2, int rowId2, float a7, float a8)
     {
         IsCastingTeleport = type == 1 && rowId == 5 && type2 == 5;
 
-        OpenCastBarHook!.Original(a1, a2, type, rowId, type2, rowId2, a7);
+        OpenCastBarHook!.Original(a1, a2, type, rowId, type2, rowId2, a7, a8);
     }
 
     private bool TeleportDetour(Telepo* telepo, uint aetheryteID, byte subIndex)
