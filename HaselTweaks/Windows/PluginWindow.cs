@@ -22,7 +22,6 @@ public partial class PluginWindow : SimpleWindow
     private const uint SidebarWidth = 250;
 
     private readonly TextService TextService;
-    private readonly TranslationManager TranslationManager;
     private readonly ITextureProvider TextureProvider;
     private readonly TweakManager TweakManager;
     private ITweak[] Tweaks;
@@ -37,14 +36,12 @@ public partial class PluginWindow : SimpleWindow
     public PluginWindow(
         WindowManager windowManager,
         TextService textService,
-        TranslationManager translationManager,
         ITextureProvider textureProvider,
         TweakManager tweakManager,
         IEnumerable<ITweak> tweaks)
         : base(windowManager, "HaselTweaks")
     {
         TextService = textService;
-        TranslationManager = translationManager;
         TextureProvider = textureProvider;
         TweakManager = tweakManager;
         Tweaks = tweaks.ToArray();
@@ -84,12 +81,12 @@ public partial class PluginWindow : SimpleWindow
             MinimumSize = (Vector2)Size,
             MaximumSize = new Vector2(4096, 2160)
         };
-        TranslationManager.LanguageChanged += OnLanguageChanged;
+        TextService.LanguageChanged += OnLanguageChanged;
     }
 
     public override void OnClose()
     {
-        TranslationManager.LanguageChanged -= OnLanguageChanged;
+        TextService.LanguageChanged -= OnLanguageChanged;
         SelectedTweak = null;
 
         foreach (var tweak in Tweaks.Where(tweak => tweak.Status == TweakStatus.Enabled))

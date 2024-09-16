@@ -1,7 +1,5 @@
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.Text;
-using Dalamud.Game.Text.SeStringHandling;
-using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
@@ -11,8 +9,10 @@ using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
+using HaselTweaks.Extensions;
 using HaselTweaks.Interfaces;
 using Lumina.Excel.GeneratedSheets;
+using Lumina.Text;
 using BattleNpcSubKind = Dalamud.Game.ClientState.Objects.Enums.BattleNpcSubKind;
 using DalamudObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 
@@ -22,6 +22,7 @@ public unsafe partial class Commands(
     PluginConfig PluginConfig,
     TextService TextService,
     ExcelService ExcelService,
+    ItemService ItemService,
     CommandService CommandService,
     IChatGui ChatGui,
     ITargetManager TargetManager,
@@ -95,24 +96,29 @@ public unsafe partial class Commands(
             return;
         }
 
-        var item = ExcelService.GetRow<Item>(id);
-        if (item == null)
+        var isEventItem = ItemService.IsEventItem(id);
+        var existsAsEventItem = isEventItem && ExcelService.GetRow<EventItem>(id) != null;
+        var existsAsItem = !isEventItem && ExcelService.GetRow<Item>(ItemService.GetBaseItemId(id)) != null;
+
+        if (!existsAsEventItem && !existsAsItem)
         {
             ChatGui.PrintError(TextService.Translate("Commands.ItemLink.ItemNotFound", id));
             return;
         }
 
         var idStr = new SeStringBuilder()
-            .AddUiForeground(id.ToString(), 1)
-            .Build();
+            .PushColorType(1)
+            .Append(id)
+            .PopColorType()
+            .ToReadOnlySeString();
 
         var sb = new SeStringBuilder()
-            .AddUiForeground("\uE078 ", 32)
-            .Append(TextService.TranslateSe("Commands.ItemLink.Item", idStr, SeString.CreateItemLink(id)));
+            .AppendHaselTweaksPrefix()
+            .Append(TextService.TranslateSeString("Commands.ItemLink.Item", idStr, ItemService.GetItemLink(id)));
 
         ChatGui.Print(new XivChatEntry
         {
-            Message = sb.Build(),
+            Message = sb.ToDalamudString(),
             Type = XivChatType.Echo
         });
     }
@@ -147,11 +153,13 @@ public unsafe partial class Commands(
         }
 
         var sb = new SeStringBuilder()
-            .AddUiForeground("\uE078 ", 32);
+            .AppendHaselTweaksPrefix();
 
         var name = new SeStringBuilder()
-            .AddUiForeground(TextService.GetMountName(mount.RowId), 1)
-            .Build();
+            .PushColorType(1)
+            .Append(TextService.GetMountName(mount.RowId))
+            .PopColorType()
+            .ToReadOnlySeString();
 
         var itemAction = ExcelService.FindRow<ItemAction>(row => row?.Type == 1322 && row.Data[0] == mount.RowId);
         if (itemAction == null || itemAction.RowId == 0)
@@ -159,8 +167,8 @@ public unsafe partial class Commands(
             ChatGui.Print(new XivChatEntry
             {
                 Message = sb
-                    .Append(TextService.TranslateSe("Commands.WhatMount.WithoutItem", name))
-                    .Build(),
+                    .Append(TextService.TranslateSeString("Commands.WhatMount.WithoutItem", name))
+                    .ToDalamudString(),
                 Type = XivChatType.Echo
             });
             return;
@@ -172,18 +180,18 @@ public unsafe partial class Commands(
             ChatGui.Print(new XivChatEntry
             {
                 Message = sb
-                    .Append(TextService.TranslateSe("Commands.WhatMount.WithoutItem", name))
-                    .Build(),
+                    .Append(TextService.TranslateSeString("Commands.WhatMount.WithoutItem", name))
+                    .ToDalamudString(),
                 Type = XivChatType.Echo
             });
             return;
         }
 
-        sb.Append(TextService.TranslateSe("Commands.WhatMount.WithItem", name, SeString.CreateItemLink(item.RowId, false, TextService.GetItemName(item.RowId))));
+        sb.Append(TextService.TranslateSeString("Commands.WhatMount.WithItem", name, ItemService.GetItemLink(item.RowId)));
 
         ChatGui.Print(new XivChatEntry
         {
-            Message = sb.Build(),
+            Message = sb.ToDalamudString(),
             Type = XivChatType.Echo
         });
     }
@@ -223,9 +231,9 @@ public unsafe partial class Commands(
         ChatGui.Print(new XivChatEntry
         {
             Message = new SeStringBuilder()
-                .AddUiForeground("\uE078 ", 32)
-                .Append(TextService.TranslateSe("Commands.Emote", emoteId.ToString(), TextService.GetEmoteName(emoteId)))
-                .Build(),
+                .AppendHaselTweaksPrefix()
+                .Append(TextService.TranslateSeString("Commands.Emote", emoteId.ToString(), TextService.GetEmoteName(emoteId)))
+                .ToDalamudString(),
             Type = XivChatType.Echo
         });
     }
@@ -253,25 +261,27 @@ public unsafe partial class Commands(
 
         var stain = ExcelService.GetRow<Stain>(targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Legs).Stain0)!;
         var name = new SeStringBuilder()
-            .AddUiForeground(targetCharacter->GameObject.NameString, 1)
-            .Build();
+            .PushColorType(1)
+            .Append(targetCharacter->GameObject.NameString)
+            .PopColorType()
+            .ToReadOnlySeString();
 
         var sb = new SeStringBuilder()
-            .AddUiForeground("\uE078 ", 32)
-            .Append(TextService.TranslateSe("Commands.WhatBarding.AppearanceOf", name))
-            .Add(NewLinePayload.Payload)
-            .AddText($"  {TextService.GetAddonText(4987)}: ")
+            .AppendHaselTweaksPrefix()
+            .Append(TextService.TranslateSeString("Commands.WhatBarding.AppearanceOf", name))
+            .AppendNewLine()
+            .Append($"  {TextService.GetAddonText(4987)}: ")
             .Append(stain.Name.ToString().FirstCharToUpper())
-            .Add(NewLinePayload.Payload)
-            .AddText($"  {TextService.GetAddonText(4991)}: {topRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}")
-            .Add(NewLinePayload.Payload)
-            .AddText($"  {TextService.GetAddonText(4992)}: {bodyRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}")
-            .Add(NewLinePayload.Payload)
-            .AddText($"  {TextService.GetAddonText(4993)}: {legsRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}");
+            .AppendNewLine()
+            .Append($"  {TextService.GetAddonText(4991)}: {topRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}")
+            .AppendNewLine()
+            .Append($"  {TextService.GetAddonText(4992)}: {bodyRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}")
+            .AppendNewLine()
+            .Append($"  {TextService.GetAddonText(4993)}: {legsRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}");
 
         ChatGui.Print(new XivChatEntry
         {
-            Message = sb.Build(),
+            Message = sb.ToDalamudString(),
             Type = XivChatType.Echo
         });
     }
