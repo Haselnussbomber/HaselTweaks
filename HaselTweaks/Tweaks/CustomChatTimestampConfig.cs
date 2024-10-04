@@ -2,7 +2,7 @@ using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using HaselCommon.Utils;
+using HaselCommon.Gui;
 using HaselTweaks.Config;
 using ImGuiNET;
 
@@ -43,10 +43,10 @@ public partial class CustomChatTimestamp
                 ReloadChat();
             }
 
-            ImGui.PushStyleColor(ImGuiCol.Text, (uint)Colors.Grey);
+            ImGui.PushStyleColor(ImGuiCol.Text, (uint)Color.Grey);
             TextService.Draw("CustomChatTimestamp.Config.Format.DateTimeLink.Pre");
             ImGuiUtils.SameLineSpace();
-            using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.White))
+            using (ImRaii.PushColor(ImGuiCol.Text, (uint)Color.White))
             {
                 ImGuiUtils.DrawLink("DateTime.ToString()", TextService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Tooltip"), "https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings");
             }
@@ -83,22 +83,22 @@ public partial class CustomChatTimestamp
             using var child = ImRaii.Child("##FormatExample", size, true);
             if (!child) return;
 
-            ImGuiUtils.TextUnformattedColored(Colors.White, formatted);
+            ImGuiUtils.TextUnformattedColored(Color.White, formatted);
             ImGui.SameLine(0, 0);
-            TextService.Draw(HaselColor.From(colorParty), "CustomChatTimestamp.Config.Format.Example.Message");
+            TextService.Draw(Color.From(colorParty), "CustomChatTimestamp.Config.Format.Example.Message");
         }
         catch (FormatException)
         {
             using (ImRaii.PushIndent())
             {
-                TextService.DrawWrapped(Colors.Red, "CustomChatTimestamp.Config.Format.Invalid");
+                TextService.DrawWrapped(Color.Red, "CustomChatTimestamp.Config.Format.Invalid");
             }
         }
         catch (Exception e)
         {
             using (ImRaii.PushIndent())
             {
-                ImGuiHelpers.SafeTextColoredWrapped(Colors.Red, e.Message);
+                ImGuiHelpers.SafeTextColoredWrapped(Color.Red, e.Message);
             }
         }
     }

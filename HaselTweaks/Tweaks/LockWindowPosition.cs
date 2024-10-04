@@ -9,7 +9,7 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Extensions;
+using HaselCommon.Extensions.Dalamud;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;

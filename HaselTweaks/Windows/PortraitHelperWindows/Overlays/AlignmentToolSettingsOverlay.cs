@@ -1,6 +1,6 @@
 using Dalamud.Interface.Utility.Raii;
+using HaselCommon.Gui;
 using HaselCommon.Services;
-using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using ImGuiNET;
@@ -26,8 +26,8 @@ public unsafe class AlignmentToolSettingsOverlay(
 
         ImGuiUtils.DrawSection(
             TextService.Translate("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title.Inner"),
-            PushDown: false,
-            RespectUiTheme: !IsWindow);
+            pushDown: false,
+            respectUiTheme: !IsWindow);
 
         var changed = false;
 

@@ -69,7 +69,7 @@ public unsafe partial class CustomChatMessageFormats(
         if (IsConfigWindowOpen)
         {
             CachedLogKindRows = GenerateLogKindCache();
-            CachedTextColors = GenerateTextColors();
+            CachedTextColor = GenerateTextColor();
         }
     }
 

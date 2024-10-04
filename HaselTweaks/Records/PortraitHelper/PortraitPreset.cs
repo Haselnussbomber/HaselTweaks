@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Common.Math;
-using HaselCommon.Extensions;
+using HaselCommon.Extensions.Math;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Extensions;
 using HaselTweaks.JsonConverters;

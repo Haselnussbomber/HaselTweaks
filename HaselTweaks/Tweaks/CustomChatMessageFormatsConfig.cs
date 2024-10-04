@@ -7,8 +7,8 @@ using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using HaselCommon.Gui;
 using HaselCommon.Services.SeStringEvaluation;
-using HaselCommon.Utils;
 using HaselTweaks.Config;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
@@ -70,7 +70,7 @@ public partial class CustomChatMessageFormats
 
     private bool IsConfigWindowOpen;
     private List<(LogKind LogKind, LogFilter LogFilter, ReadOnlySeString Format)>? CachedLogKindRows = null;
-    private TextColorEntry[]? CachedTextColors = null;
+    private TextColorEntry[]? CachedTextColor = null;
 
     public void OnConfigOpen()
     {
@@ -81,7 +81,7 @@ public partial class CustomChatMessageFormats
     {
         IsConfigWindowOpen = false;
         CachedLogKindRows = null;
-        CachedTextColors = null;
+        CachedTextColor = null;
     }
 
     public void OnConfigChange(string fieldName) { }
@@ -93,7 +93,7 @@ public partial class CustomChatMessageFormats
         ConfigGui.DrawConfigurationHeader();
 
         CachedLogKindRows ??= GenerateLogKindCache();
-        CachedTextColors ??= GenerateTextColors();
+        CachedTextColor ??= GenerateTextColor();
 
         var ItemInnerSpacing = ImGui.GetStyle().ItemInnerSpacing;
 
@@ -142,7 +142,7 @@ public partial class CustomChatMessageFormats
 
                 if (!isValid)
                 {
-                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red))
+                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Color.Red))
                         ImGuiUtils.Icon(FontAwesomeIcon.ExclamationCircle);
 
                     if (ImGui.IsItemHovered())
@@ -442,7 +442,7 @@ public partial class CustomChatMessageFormats
                                 {
                                     using (ImRaii.PushColor(ImGuiCol.Text, SwapRedBlue(eColorVal)))
                                     {
-                                        var textColorEntry = CachedTextColors?.FirstOrDefault(entry => entry.GNumIndex == parameterIndex);
+                                        var textColorEntry = CachedTextColor?.FirstOrDefault(entry => entry.GNumIndex == parameterIndex);
                                         if (textColorEntry != null)
                                             ImGui.TextUnformatted(textColorEntry.Label);
                                         else
@@ -684,9 +684,9 @@ public partial class CustomChatMessageFormats
                     SaveAndReloadChat();
                 }
 
-                if (ImGui.BeginMenu(TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.LogTextColors"))) // GetAddonText(12732)
+                if (ImGui.BeginMenu(TextService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.LogTextColor"))) // GetAddonText(12732)
                 {
-                    foreach (var textColorEntry in CachedTextColors!)
+                    foreach (var textColorEntry in CachedTextColor!)
                     {
                         if (textColorEntry.GNumIndex == 30) // skip Personal Emotes which is the same as Emotes
                             continue;
@@ -727,7 +727,7 @@ public partial class CustomChatMessageFormats
 
     private void DrawExample(ReadOnlySeString format)
     {
-        using var textColors = new ImRaii.Color();
+        using var textColor = new ImRaii.Color();
 
         var resolved = SeStringEvaluator.Evaluate(format, new SeStringContext()
         {
@@ -761,9 +761,9 @@ public partial class CustomChatMessageFormats
                         break;
 
                     if (eColor.TryGetPlaceholderExpression(out var ph) && ph == (int)ExpressionType.StackColor)
-                        textColors.Pop();
+                        textColor.Pop();
                     else if (eColor.TryGetUInt(out var eColorVal)) //if (TryResolveUInt(ref context, eColor, out var eColorVal))
-                        textColors.Push(ImGuiCol.Text, SwapRedBlue(eColorVal | 0xFF000000u));
+                        textColor.Push(ImGuiCol.Text, SwapRedBlue(eColorVal | 0xFF000000u));
 
                     ImGui.Dummy(Vector2.Zero);
                     break;
@@ -841,37 +841,37 @@ public partial class CustomChatMessageFormats
     }
 
     private record TextColorEntry(int GNumIndex, string Label);
-    private TextColorEntry[] GenerateTextColors()
+    private TextColorEntry[] GenerateTextColor()
     {
         return new TextColorEntry[]
         {
-            new(13, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(653)),  // Log Text Colors - Chat 1 - Say
-            new(14, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(645)),  // Log Text Colors - Chat 1 - Shout
-            new(15, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7886)), // Log Text Colors - Chat 1 - Tell
-            new(16, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7887)), // Log Text Colors - Chat 1 - Party
-            new(17, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7888)), // Log Text Colors - Chat 1 - Alliance
-            new(18, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7890)), // Log Text Colors - Chat 2 - LS1
-            new(19, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7891)), // Log Text Colors - Chat 2 - LS2
-            new(20, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7892)), // Log Text Colors - Chat 2 - LS3
-            new(21, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7893)), // Log Text Colors - Chat 2 - LS4
-            new(22, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7894)), // Log Text Colors - Chat 2 - LS5
-            new(23, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7895)), // Log Text Colors - Chat 2 - LS6
-            new(24, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7896)), // Log Text Colors - Chat 2 - LS7
-            new(25, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7897)), // Log Text Colors - Chat 2 - LS8
-            new(26, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7889)), // Log Text Colors - Chat 2 - Free Company
-            new(27, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7899)), // Log Text Colors - Chat 2 - PvP Team
-            new(29, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7898)), // Log Text Colors - Chat 2 - Novice Network
-            new(30, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1911)), // Log Text Colors - Chat 1 - Personal Emotes
-            new(31, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1911)), // Log Text Colors - Chat 1 - Emotes
-            new(32, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1931)), // Log Text Colors - Chat 1 - Yell
-            new(35, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(4397)), // Log Text Colors - Chat 2 - CWLS1
-            new(84, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8390)), // Log Text Colors - Chat 2 - CWLS2
-            new(85, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8391)), // Log Text Colors - Chat 2 - CWLS3
-            new(86, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8392)), // Log Text Colors - Chat 2 - CWLS4
-            new(87, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8393)), // Log Text Colors - Chat 2 - CWLS5
-            new(88, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8394)), // Log Text Colors - Chat 2 - CWLS6
-            new(89, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8395)), // Log Text Colors - Chat 2 - CWLS7
-            new(90, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8396)) // Log Text Colors - Chat 2 - CWLS8
+            new(13, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(653)),  // Log Text Color - Chat 1 - Say
+            new(14, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(645)),  // Log Text Color - Chat 1 - Shout
+            new(15, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7886)), // Log Text Color - Chat 1 - Tell
+            new(16, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7887)), // Log Text Color - Chat 1 - Party
+            new(17, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(7888)), // Log Text Color - Chat 1 - Alliance
+            new(18, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7890)), // Log Text Color - Chat 2 - LS1
+            new(19, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7891)), // Log Text Color - Chat 2 - LS2
+            new(20, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7892)), // Log Text Color - Chat 2 - LS3
+            new(21, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7893)), // Log Text Color - Chat 2 - LS4
+            new(22, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7894)), // Log Text Color - Chat 2 - LS5
+            new(23, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7895)), // Log Text Color - Chat 2 - LS6
+            new(24, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7896)), // Log Text Color - Chat 2 - LS7
+            new(25, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7897)), // Log Text Color - Chat 2 - LS8
+            new(26, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7889)), // Log Text Color - Chat 2 - Free Company
+            new(27, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7899)), // Log Text Color - Chat 2 - PvP Team
+            new(29, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(7898)), // Log Text Color - Chat 2 - Novice Network
+            new(30, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1911)), // Log Text Color - Chat 1 - Personal Emotes
+            new(31, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1911)), // Log Text Color - Chat 1 - Emotes
+            new(32, TextService.GetAddonText(1935) + " - " + TextService.GetAddonText(1931)), // Log Text Color - Chat 1 - Yell
+            new(35, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(4397)), // Log Text Color - Chat 2 - CWLS1
+            new(84, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8390)), // Log Text Color - Chat 2 - CWLS2
+            new(85, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8391)), // Log Text Color - Chat 2 - CWLS3
+            new(86, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8392)), // Log Text Color - Chat 2 - CWLS4
+            new(87, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8393)), // Log Text Color - Chat 2 - CWLS5
+            new(88, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8394)), // Log Text Color - Chat 2 - CWLS6
+            new(89, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8395)), // Log Text Color - Chat 2 - CWLS7
+            new(90, TextService.GetAddonText(1936) + " - " + TextService.GetAddonText(8396)) // Log Text Color - Chat 2 - CWLS8
         }.OrderBy(kv => kv.Label).ToArray();
     }
 

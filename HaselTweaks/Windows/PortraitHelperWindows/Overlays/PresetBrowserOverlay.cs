@@ -7,8 +7,9 @@ using Dalamud.Memory;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using HaselCommon.Extensions;
+using HaselCommon.Extensions.Collections;
+using HaselCommon.Gui;
 using HaselCommon.Services;
-using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Utils;
@@ -222,8 +223,8 @@ public unsafe class PresetBrowserOverlay : Overlay
 
         ImGuiUtils.DrawSection(
             TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Tags.Title"),
-            PushDown: false,
-            RespectUiTheme: !IsWindow);
+            pushDown: false,
+            respectUiTheme: !IsWindow);
 
         using var framePaddingChild = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var tagsChild = ImRaii.Child("PresetBrowser_Content_Tags");
@@ -316,8 +317,8 @@ public unsafe class PresetBrowserOverlay : Overlay
 
         ImGuiUtils.DrawSection(
             TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Presets.Title"),
-            PushDown: false,
-            RespectUiTheme: !IsWindow);
+            pushDown: false,
+            respectUiTheme: !IsWindow);
 
         var style = ImGui.GetStyle();
         ImGuiUtils.PushCursorY(style.ItemSpacing.Y);

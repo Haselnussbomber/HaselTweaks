@@ -2,9 +2,9 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Common.Math;
-using HaselCommon.Extensions;
+using HaselCommon.Extensions.Strings;
+using HaselCommon.Gui;
 using HaselCommon.Services;
-using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Tweaks;
@@ -68,7 +68,7 @@ public unsafe class AdvancedImportOverlay(
             MenuBar.CloseOverlays();
         }
 
-        ImGuiUtils.DrawSection(TextService.GetAddonText(14684) ?? "Design", RespectUiTheme: !IsWindow);
+        ImGuiUtils.DrawSection(TextService.GetAddonText(14684) ?? "Design", respectUiTheme: !IsWindow);
 
         var isBannerBgUnlocked = BannerUtils.IsBannerBgUnlocked(PortraitHelper.ClipboardPreset.BannerBg);
         DrawImportSetting(
@@ -80,7 +80,7 @@ public unsafe class AdvancedImportOverlay(
 
                 if (!isBannerBgUnlocked)
                 {
-                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red))
+                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Color.Red))
                         TextService.Draw("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked");
                 }
             },
@@ -97,7 +97,7 @@ public unsafe class AdvancedImportOverlay(
 
                 if (!isBannerFrameUnlocked)
                 {
-                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red))
+                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Color.Red))
                         TextService.Draw("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked");
                 }
             },
@@ -114,7 +114,7 @@ public unsafe class AdvancedImportOverlay(
 
                 if (!isBannerDecorationUnlocked)
                 {
-                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red))
+                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Color.Red))
                         TextService.Draw("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked");
                 }
             },
@@ -133,7 +133,7 @@ public unsafe class AdvancedImportOverlay(
             () => ImGui.TextUnformatted(PortraitHelper.ClipboardPreset.ImageRotation.ToString())
         );
 
-        ImGuiUtils.DrawSection(TextService.GetAddonText(14685) ?? "Character", RespectUiTheme: !IsWindow);
+        ImGuiUtils.DrawSection(TextService.GetAddonText(14685) ?? "Character", respectUiTheme: !IsWindow);
 
         var isBannerTimelineUnlocked = BannerUtils.IsBannerTimelineUnlocked(PortraitHelper.ClipboardPreset.BannerTimeline);
         DrawImportSetting(
@@ -145,7 +145,7 @@ public unsafe class AdvancedImportOverlay(
 
                 if (!isBannerTimelineUnlocked)
                 {
-                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red))
+                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Color.Red))
                         TextService.Draw("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked");
                 }
             },
@@ -214,7 +214,7 @@ public unsafe class AdvancedImportOverlay(
             () => DrawHalfVector2(PortraitHelper.ClipboardPreset.EyeDirection)
         );
 
-        ImGuiUtils.DrawSection(TextService.GetAddonText(14692) ?? "Ambient Lighting", RespectUiTheme: !IsWindow);
+        ImGuiUtils.DrawSection(TextService.GetAddonText(14692) ?? "Ambient Lighting", respectUiTheme: !IsWindow);
 
         var labelBrightness = TextService.GetAddonText(14694) ?? "Brightness";
         var labelColor = TextService.GetAddonText(7008) ?? "Color";
@@ -235,7 +235,7 @@ public unsafe class AdvancedImportOverlay(
             )
         );
 
-        ImGuiUtils.DrawSection(TextService.GetAddonText(14693) ?? "Directional Lighting", RespectUiTheme: !IsWindow);
+        ImGuiUtils.DrawSection(TextService.GetAddonText(14693) ?? "Directional Lighting", respectUiTheme: !IsWindow);
 
         DrawImportSetting(
             labelBrightness,
@@ -276,7 +276,7 @@ public unsafe class AdvancedImportOverlay(
         ImGui.Columns(2, "##Columns", false);
 
         var isEnabled = isUnlocked && PortraitHelper.CurrentImportFlags.HasFlag(flag);
-        using var _textColor = !isEnabled ? ImRaii.PushColor(ImGuiCol.Text, (uint)HaselColor.From(ImGuiCol.Text).WithAlpha(0.5f)) : null;
+        using var _textColor = !isEnabled ? ImRaii.PushColor(ImGuiCol.Text, (uint)(Color.From(ImGuiCol.Text) with { A = 0.5f })) : null;
         using var _disabled = ImRaii.Disabled(!isUnlocked);
 
         if (ImGui.Checkbox(label + "##Checkbox", ref isEnabled))

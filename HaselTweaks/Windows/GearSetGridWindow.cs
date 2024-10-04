@@ -7,9 +7,10 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using HaselCommon.Extensions;
+using HaselCommon.Extensions.Sheets;
+using HaselCommon.Extensions.Strings;
+using HaselCommon.Gui;
 using HaselCommon.Services;
-using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
@@ -213,7 +214,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
                 var itemLevelText = $"{item.LevelItem.Row}";
                 ImGuiUtils.PushCursorX(IconSize.X * ImGuiHelpers.GlobalScale / 2f - ImGui.CalcTextSize(itemLevelText).X / 2f);
-                ImGuiUtils.TextUnformattedColored(ItemService.GetItemLevelColor(gearset->ClassJob, item, Colors.Red, Colors.Yellow, Colors.Green), itemLevelText);
+                ImGuiUtils.TextUnformattedColored(ItemService.GetItemLevelColor(gearset->ClassJob, item, Color.Red, Color.Yellow, Color.Green), itemLevelText);
 
                 ImGuiUtils.PushCursorY(2f * ImGuiHelpers.GlobalScale);
             }

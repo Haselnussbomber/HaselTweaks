@@ -7,9 +7,8 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Gui;
 using HaselCommon.Services;
-using HaselCommon.Utils;
-using HaselCommon.Windowing;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
@@ -182,7 +181,7 @@ public unsafe class MenuBar : SimpleWindow
         }
         else if (AdvancedImportOverlay != null && AdvancedImportOverlay.IsOpen)
         {
-            using var colors = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
+            using var Color = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
                                      .Push(ImGuiCol.ButtonActive, 0xFFB06C2B)
                                      .Push(ImGuiCol.ButtonHovered, 0xFFCE8231);
 
@@ -203,7 +202,7 @@ public unsafe class MenuBar : SimpleWindow
         ImGui.SameLine();
         if (AdvancedEditOverlay != null && AdvancedEditOverlay.IsOpen)
         {
-            using var colors = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
+            using var Color = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
                                      .Push(ImGuiCol.ButtonActive, 0xFFB06C2B)
                                      .Push(ImGuiCol.ButtonHovered, 0xFFCE8231);
 
@@ -237,7 +236,7 @@ public unsafe class MenuBar : SimpleWindow
         ImGui.SameLine();
         if (PresetBrowserOverlay != null && PresetBrowserOverlay.IsOpen)
         {
-            using var colors = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
+            using var Color = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
                                      .Push(ImGuiCol.ButtonActive, 0xFFB06C2B)
                                      .Push(ImGuiCol.ButtonHovered, 0xFFCE8231);
 
@@ -264,7 +263,7 @@ public unsafe class MenuBar : SimpleWindow
         ImGui.SameLine();
         if (AlignmentToolSettingsOverlay != null && AlignmentToolSettingsOverlay.IsOpen)
         {
-            using var colors = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
+            using var Color = ImRaii.PushColor(ImGuiCol.Button, 0xFFE19942)
                                      .Push(ImGuiCol.ButtonActive, 0xFFB06C2B)
                                      .Push(ImGuiCol.ButtonHovered, 0xFFCE8231);
 

@@ -5,7 +5,7 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Extensions;
+using HaselCommon.Extensions.Strings;
 using HaselCommon.Services;
 using HaselCommon.Services.SeStringEvaluation;
 using HaselTweaks.Enums;

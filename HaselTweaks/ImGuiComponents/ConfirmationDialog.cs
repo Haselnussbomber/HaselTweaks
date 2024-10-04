@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
-using HaselCommon.Utils;
+using HaselCommon.Gui;
 using HaselTweaks.Interfaces;
 using ImGuiNET;
 
@@ -74,7 +74,7 @@ public abstract class ConfirmationDialog(string title) : IDialog
         }
         catch (Exception ex)
         {
-            ImGuiUtils.TextUnformattedColored(Colors.Red, ex.Message);
+            ImGuiUtils.TextUnformattedColored(Color.Red, ex.Message);
         }
 
         ImGui.Spacing();

@@ -2,8 +2,8 @@ using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
+using HaselCommon.Gui;
 using HaselCommon.Services;
-using HaselCommon.Utils;
 using HaselTweaks.Config;
 using ImGuiNET;
 using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
@@ -34,7 +34,7 @@ public partial class DTR
         ConfigGui.DrawConfigurationHeader();
 
         TextService.Draw("DTR.Config.Explanation.Pre");
-        TextService.Draw(HaselColor.From(ImGuiColors.DalamudRed), "DTR.Config.Explanation.DalamudSettings");
+        TextService.Draw(Color.From(ImGuiColors.DalamudRed), "DTR.Config.Explanation.DalamudSettings");
         if (ImGui.IsItemHovered())
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
@@ -78,7 +78,7 @@ public partial class DTR
         }
         catch (FormatException)
         {
-            TextService.Draw(Colors.Red, "DTR.Config.FpsFormat.Invalid");
+            TextService.Draw(Color.Red, "DTR.Config.FpsFormat.Invalid");
         }
     }
 }

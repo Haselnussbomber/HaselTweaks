@@ -1,4 +1,4 @@
-using HaselCommon.Extensions;
+using HaselCommon.Extensions.Math;
 
 namespace HaselTweaks.Extensions;
 

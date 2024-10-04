@@ -6,8 +6,8 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using HaselCommon.Gui;
 using HaselCommon.Services;
-using HaselCommon.Utils;
 using HaselTweaks.Config;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
@@ -80,7 +80,7 @@ public unsafe partial class EnhancedLoginLogout
         {
             if (ActiveContentId != 0 && !Config.PetMirageSettings.ContainsKey(ActiveContentId))
             {
-                TextService.DrawWrapped(Colors.Red, "EnhancedLoginLogout.Config.ShowPets.Error.MissingPetMirageSettings");
+                TextService.DrawWrapped(Color.Red, "EnhancedLoginLogout.Config.ShowPets.Error.MissingPetMirageSettings");
             }
 
             // PetPosition
@@ -109,7 +109,7 @@ public unsafe partial class EnhancedLoginLogout
             using var disabled = ImRaii.Disabled(!Config.EnableCharaSelectEmote);
 
             ImGuiUtils.PushCursorY(-ImGui.GetStyle().ItemInnerSpacing.Y);
-            TextService.DrawWrapped(Colors.Grey, "EnhancedLoginLogout.Config.PlayEmote.Note");
+            TextService.DrawWrapped(Color.Grey, "EnhancedLoginLogout.Config.PlayEmote.Note");
             ImGuiUtils.PushCursorY(3);
 
             if (!Config.EnableCharaSelectEmote || ActiveContentId == 0)
@@ -194,7 +194,7 @@ public unsafe partial class EnhancedLoginLogout
 
             if (_isRecordingEmote)
             {
-                TextService.Draw(Colors.Gold, "EnhancedLoginLogout.Config.PlayEmote.RecordingInfo");
+                TextService.Draw(Color.Gold, "EnhancedLoginLogout.Config.PlayEmote.RecordingInfo");
                 ImGuiUtils.PushCursorY(3);
             }
         });

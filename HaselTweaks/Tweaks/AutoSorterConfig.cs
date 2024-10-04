@@ -3,7 +3,7 @@ using System.Linq;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using HaselCommon.Utils;
+using HaselCommon.Gui;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using ImGuiNET;

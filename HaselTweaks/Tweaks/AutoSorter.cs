@@ -5,7 +5,8 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
-using HaselCommon.Extensions;
+using HaselCommon.Extensions.Strings;
+using HaselCommon.Game;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
@@ -354,7 +355,7 @@ public unsafe partial class AutoSorter(
 
             var cmd = $"/itemsort clear {category}";
             Logger.LogInformation("Executing {cmd}", cmd);
-            ExecuteCommand(cmd);
+            Chat.ExecuteCommand(cmd);
 
             foreach (var rule in group)
             {
@@ -374,12 +375,12 @@ public unsafe partial class AutoSorter(
 
                 cmd = $"/itemsort condition {category} {condition} {order}";
                 Logger.LogInformation("Executing {cmd}", cmd);
-                ExecuteCommand(cmd);
+                Chat.ExecuteCommand(cmd);
             }
 
             cmd = $"/itemsort execute {category}";
             Logger.LogInformation("Executing {cmd}", cmd);
-            ExecuteCommand(cmd);
+            Chat.ExecuteCommand(cmd);
         }
         catch (Exception ex)
         {

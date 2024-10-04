@@ -730,8 +730,8 @@
     "de": "Benutzerdefinierte Farbe",
     "zh": "自定义颜色"
   },
-  "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.LogTextColors": {
-    "en": "Log Text Colors",
+  "CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.LogTextColor": {
+    "en": "Log Text Color",
     "de": "Textfarben",
     "zh": "消息颜色"
   },
@@ -745,7 +745,7 @@
     "zh": "添加消息格式..."
   },
   "CustomChatMessageFormats.Config.OpenConfigLogColorButton.Tooltip": {
-    "en": "Edit Log Text Colors",
+    "en": "Edit Log Text Color",
     "de": "Textfarben bearbeiten",
     "zh": "编辑消息颜色"
   },

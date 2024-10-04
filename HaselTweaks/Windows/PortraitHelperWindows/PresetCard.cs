@@ -12,8 +12,8 @@ using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using HaselCommon.Extensions;
+using HaselCommon.Extensions.Strings;
 using HaselCommon.Services;
-using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Extensions;
@@ -34,8 +34,8 @@ public class PresetCard : IDisposable
 {
     public static readonly Vector2 PortraitSize = new(576, 960); // native texture size
 
-    private readonly uint ButtonActiveColor = Colors.White.WithAlpha(0.3f);
-    private readonly uint ButtonHoveredColor = Colors.White.WithAlpha(0.2f);
+    private readonly uint ButtonActiveColor = Color.White with { A = 0.3f };
+    private readonly uint ButtonHoveredColor = Color.White with { A = 0.2f };
 
     private readonly ILogger Logger;
     private readonly IDalamudPluginInterface PluginInterface;
@@ -129,7 +129,7 @@ public class PresetCard : IDisposable
         else if (!DoesImageFileExist)
         {
             using var font = ImRaii.PushFont(UiBuilder.IconFont);
-            using var color = Colors.Red.Push(ImGuiCol.Text);
+            using var color = Color.Red.Push(ImGuiCol.Text);
             ImGui.SetCursorPos(center - ImGui.CalcTextSize(FontAwesomeIcon.FileImage.ToIconString()) / 2f);
             ImGui.TextUnformatted(FontAwesomeIcon.FileImage.ToIconString());
         }
@@ -160,7 +160,7 @@ public class PresetCard : IDisposable
         ImGui.SetCursorPos(cursorPos);
 
         {
-            using var colors = ImRaii.PushColor(ImGuiCol.Button, 0)
+            using var Color = ImRaii.PushColor(ImGuiCol.Button, 0)
                 .Push(ImGuiCol.ButtonActive, ButtonActiveColor)
                 .Push(ImGuiCol.ButtonHovered, ButtonHoveredColor);
             using var rounding = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0);
@@ -218,7 +218,7 @@ public class PresetCard : IDisposable
                 {
                     ImGui.Separator();
 
-                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Colors.Red))
+                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Color.Red))
                     {
                         TextService.Draw("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.Title");
 

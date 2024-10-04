@@ -8,9 +8,8 @@ using System.Text.RegularExpressions;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin.Services;
+using HaselCommon.Gui;
 using HaselCommon.Services;
-using HaselCommon.Utils;
-using HaselCommon.Windowing;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using ImGuiNET;
@@ -142,9 +141,9 @@ public partial class PluginWindow : SimpleWindow
                 {
                     var color = status switch
                     {
-                        TweakStatus.InitializationFailed or TweakStatus.Outdated => Colors.Red,
-                        TweakStatus.Enabled => Colors.Green,
-                        _ => Colors.Grey3
+                        TweakStatus.InitializationFailed or TweakStatus.Outdated => Color.Red,
+                        TweakStatus.Enabled => Color.Green,
+                        _ => Color.Grey3
                     };
 
                     using var tooltip = ImRaii.Tooltip();
@@ -162,11 +161,11 @@ public partial class PluginWindow : SimpleWindow
 
                 drawList.PathLineTo(pos);
                 drawList.PathLineTo(pos + size);
-                drawList.PathStroke(Colors.Red, ImDrawFlags.None, frameHeight / 5f * 0.5f);
+                drawList.PathStroke(Color.Red, ImDrawFlags.None, frameHeight / 5f * 0.5f);
 
                 drawList.PathLineTo(pos + new Vector2(0, size.Y));
                 drawList.PathLineTo(pos + new Vector2(size.X, 0));
-                drawList.PathStroke(Colors.Red, ImDrawFlags.None, frameHeight / 5f * 0.5f);
+                drawList.PathStroke(Color.Red, ImDrawFlags.None, frameHeight / 5f * 0.5f);
 
                 fixY = true;
             }
@@ -192,11 +191,11 @@ public partial class PluginWindow : SimpleWindow
 
             if (status is TweakStatus.InitializationFailed or TweakStatus.Outdated)
             {
-                ImGui.PushStyleColor(ImGuiCol.Text, (uint)Colors.Red);
+                ImGui.PushStyleColor(ImGuiCol.Text, (uint)Color.Red);
             }
             else if (status is not TweakStatus.Enabled)
             {
-                ImGui.PushStyleColor(ImGuiCol.Text, (uint)Colors.Grey);
+                ImGui.PushStyleColor(ImGuiCol.Text, (uint)Color.Grey);
             }
 
             if (!TextService.TryGetTranslation(tweak.InternalName + ".Tweak.Name", out var name))
@@ -275,14 +274,14 @@ public partial class PluginWindow : SimpleWindow
 
         using var id = ImRaii.PushId(SelectedTweak.InternalName);
 
-        ImGuiUtils.TextUnformattedColored(Colors.Gold, TextService.TryGetTranslation(SelectedTweak.InternalName + ".Tweak.Name", out var name) ? name : SelectedTweak.InternalName);
+        ImGuiUtils.TextUnformattedColored(Color.Gold, TextService.TryGetTranslation(SelectedTweak.InternalName + ".Tweak.Name", out var name) ? name : SelectedTweak.InternalName);
 
         var statusText = TextService.Translate("HaselTweaks.Config.TweakStatus." + Enum.GetName(SelectedTweak.Status));
         var statusColor = SelectedTweak.Status switch
         {
-            TweakStatus.InitializationFailed or TweakStatus.Outdated => Colors.Red,
-            TweakStatus.Enabled => Colors.Green,
-            _ => Colors.Grey3
+            TweakStatus.InitializationFailed or TweakStatus.Outdated => Color.Red,
+            TweakStatus.Enabled => Color.Green,
+            _ => Color.Grey3
         };
 
         var windowX = ImGui.GetContentRegionAvail().X;
@@ -295,7 +294,7 @@ public partial class PluginWindow : SimpleWindow
         {
             ImGuiUtils.DrawPaddedSeparator();
             ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);
-            ImGuiHelpers.SafeTextColoredWrapped(Colors.Grey2, description);
+            ImGuiHelpers.SafeTextColoredWrapped(Color.Grey2, description);
             ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);
         }
 

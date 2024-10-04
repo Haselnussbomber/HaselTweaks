@@ -2,7 +2,7 @@ using System.IO;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using HaselCommon.Extensions;
+using HaselCommon.Extensions.Strings;
 using HaselCommon.Services;
 using HaselTweaks.Structs;
 using Lumina.Excel.GeneratedSheets;

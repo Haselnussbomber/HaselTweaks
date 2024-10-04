@@ -6,8 +6,8 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using HaselCommon.Gui;
 using HaselCommon.Services;
-using HaselCommon.Utils;
 using HaselTweaks.Caches;
 using HaselTweaks.Config;
 using HaselTweaks.Tweaks;
@@ -23,7 +23,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
     private readonly LevelObjectCache LevelObjectCache;
     private bool HideUnlocked = true;
 
-    private static readonly HaselColor TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
+    private static readonly Color TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
     private static readonly string[] CompassHeadings = ["E", "NE", "N", "NW", "W", "SW", "S", "SE"];
     private AetherCurrentHelperConfiguration Config => PluginConfig.Tweaks.AetherCurrentHelper;
 
@@ -295,7 +295,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
                     if (isUnlocked)
                     {
-                        ImGuiUtils.TextUnformattedColored(Colors.Green, text);
+                        ImGuiUtils.TextUnformattedColored(Color.Green, text);
                     }
                     else
                     {
@@ -311,7 +311,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
             {
                 ImGuiUtils.PushCursorX(2);
                 using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
-                ImGuiUtils.TextUnformattedColored(Colors.Grey4, FontAwesomeIcon.Times.ToIconString());
+                ImGuiUtils.TextUnformattedColored(Color.Grey4, FontAwesomeIcon.Times.ToIconString());
             }
         }
     }
@@ -326,7 +326,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
             ImGuiUtils.PushCursorX(ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(icon).X / 2);
         }
 
-        ImGuiUtils.TextUnformattedColored(Colors.Green, icon);
+        ImGuiUtils.TextUnformattedColored(Color.Green, icon);
     }
 
     private string GetHumanReadableCoords(Level level)

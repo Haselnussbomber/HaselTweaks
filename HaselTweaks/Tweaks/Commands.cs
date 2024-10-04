@@ -5,7 +5,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Commands;
-using HaselCommon.Extensions;
+using HaselCommon.Extensions.Strings;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;

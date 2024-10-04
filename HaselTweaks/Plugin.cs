@@ -3,7 +3,7 @@ using Dalamud.Game;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using HaselCommon.Commands;
-using HaselCommon.Extensions;
+using HaselCommon.Extensions.DependencyInjection;
 using HaselCommon.Services;
 using HaselTweaks.Caches;
 using HaselTweaks.Config;
