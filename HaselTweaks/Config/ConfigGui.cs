@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Linq;
 using Dalamud.Interface;
+using Dalamud.Interface.ImGuiSeStringRenderer;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin;
@@ -9,8 +10,11 @@ using HaselCommon.Services;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using ImGuiNET;
+using Lumina.Text.ReadOnly;
 
 namespace HaselTweaks.Config;
+
+#pragma warning disable SeStringRenderer
 
 public class ConfigGui(
     IDalamudPluginInterface PluginInterface,
@@ -74,7 +78,7 @@ public class ConfigGui(
 
                 if (TextService.TryGetTranslation($"{Tweak.InternalName}.Config.{fieldName}.Description", out var description))
                 {
-                    ImGuiHelpers.SafeTextColoredWrapped(Color.Grey, description);
+                    ImGuiHelpers.SeStringWrapped(ReadOnlySeString.FromText(description), new SeStringDrawParams() { Color = Color.Grey });
                 }
 
                 drawAfterDescription?.Invoke();
