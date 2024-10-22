@@ -146,4 +146,5 @@ public class TweakConfigs
     public MinimapAdjustmentsConfiguration MinimapAdjustments { get; init; } = new();
     public PortraitHelperConfiguration PortraitHelper { get; init; } = new();
     public ScrollableTabsConfiguration ScrollableTabs { get; init; } = new();
+    public ShopItemIconsConfiguration ShopItemIcons { get; init; } = new();
 }

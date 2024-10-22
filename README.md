@@ -321,6 +321,10 @@ Supports context menus in the following windows:
 - Recipe Tree
 - Recipes List
 
+### Shop Item Icons
+
+Displays item icons instead of item category icons in shops.
+
 ### Simple Aethernet List
 
 Simplifies the behavior of the Aethernet list: mouseover selects the aetheryte and a click teleports you.

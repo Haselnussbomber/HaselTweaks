@@ -1386,7 +1386,7 @@
     "zh": "预定消耗的材料"
   },
   "MaterialAllocation.Tweak.Description": {
-      "en": "Saves the last selected tab in Islekeep's Index \"Material Allocation\" window between game sessions.",
+    "en": "Saves the last selected tab in Islekeep's Index \"Material Allocation\" window between game sessions.",
     "de": "Speichert den zuletzt ausgewählten Tab des Inselführers INVENTUR-Fensters zwischen Spielsitzungen.",
     "zh": "保持在无人岛菜单“开拓工房预定消耗的材料”窗口中最后选择的标签页。"
   },
@@ -2093,6 +2093,62 @@
     "en": "Adds an entry to item context menus that allows you to quickly search for the item on the market board. Only visible when market board is open!\n\nSupports context menus in the following windows:\n- Chat\n- Crafting Log\n- Ehcatl Nine Delivery Quests (via /timers)\n- Grand Company Delivery Missions (via /timers)\n- Inventory\n- Materials List\n- Recipe Tree\n",
     "de": "Fügt dem Gegenstand-Kontextmenü einen Eintrag hinzu, mit dem man schnell nach dem Gegenstand auf dem Marktbrett suchen kann. Nur sichtbar, wenn die Gegenstandssuche (Marktbrett) geöffnet ist!\n\nUnterstützt Kontextmenüs in den folgenden Fenstern:\n- Chat\n- Handwerker-Notizbuch\n- Ixal-Lieferaufträge (über /timers)\n- Liefereinsätze (über /timers)\n- Inventar\n- Materialliste\n- Rezeptbaum\n",
     "zh": "添加一个能让你在市场布告板上快速搜索物品的条目到物品的次级菜单。仅在市场布告板打开时可见！\n\n添加次级菜单的窗口有：\n- 消息窗口\n- 制作笔记\n- 鸟人族供应任务（通过任务情报窗口打开）\n- 筹备任务（通过任务情报窗口打开）\n- 物品栏\n- 所需材料列表\n- 配方树状图\n"
+  },
+
+  "ShopItemIcons.Tweak.Name": {
+    "en": "Shop Item Icons"
+  },
+  "ShopItemIcons.Tweak.Description": {
+    "en": "Displays item icons instead of item category icons in shops.",
+    "de": "Zeigt in Händlerfenstern Gegenstandsicons statt Icons der Gegenstandskategorie an."
+  },
+  "ShopItemIcons.Config.HandleShop.Label": {
+    "en": "Enable for Shops",
+    "de": "Aktiviere für Händler"
+  },
+  "ShopItemIcons.Config.HandleShop.Description": {
+    "en": "This applies to simple merchants who sell items for Gil.\nNote: The current zone must be reloaded/reentered for a change to this option to take effect.",
+    "de": "Betrifft einfache Händler, die Gegenstände für Gil verkaufen.\nHinweis: Damit eine Änderung dieser Option wirksam wird, muss das aktuelle Gebiet neu geladen/betreten werden."
+  },
+  "ShopItemIcons.Config.HandleShopExchangeItem.Label": {
+    "en": "Enable for Item Exchange",
+    "de": "Aktiviere für Handel mit Gegenständen"
+  },
+  "ShopItemIcons.Config.HandleShopExchangeItem.Description": {
+    "en": "This applies to vendors who trade items for items, such as irregular tomestones or wolf collars.",
+    "de": "Betrifft Händler, die Gegenstände gegen Gegenstände tauschen, wie zum Beispiel Allagische Steine oder Wolfsriemen."
+  },
+  "ShopItemIcons.Config.HandleInclusionShop.Label": {
+    "en": "Enable for Item Exchange (categorized)",
+    "de": "Aktiviere für Handel mit Gegenständen (Kategorisiert)"
+  },
+  "ShopItemIcons.Config.HandleInclusionShop.Description": {
+    "en": "This applies to splendors vendors, the scrip exchange or the wolf mark quartermaster.",
+    "de": "Betrifft Händler, wie die Wunderwaren-Händler, die Scheinewechslerinnen oder dem Wolfsmarken-Ausstattungsoffizier."
+  },
+  "ShopItemIcons.Config.HandleShopExchangeCurrency.Label": {
+    "en": "Enable for Currency Exchange",
+    "de": "Aktiviere für Währungsumtausch"
+  },
+  "ShopItemIcons.Config.HandleShopExchangeCurrency.Description": {
+    "en": "This applies to vendors who sell items for currency, such as all the societies vendors, or the trophy crystal quartermaster.",
+    "de": "Betrifft Händler, die Gegenstände für Währung verkaufen, wie zum Beispiel all die Händler der Freundesvölker, oder dem Kristalltrophäen\u00ADVersorgungsoffizier."
+  },
+  "ShopItemIcons.Config.HandleGrandCompanyExchange.Label": {
+    "en": "Enable for Grand Company Seal Exchange",
+    "de": "Aktiviere für Staatstaler-Eintausch"
+  },
+  "ShopItemIcons.Config.HandleGrandCompanyExchange.Description": {
+    "en": "This applies to grand company quartermasters.",
+    "de": "Betrifft Quartiermeister der staatlichen Gesellschaften."
+  },
+  "ShopItemIcons.Config.HandleFreeShop.Label": {
+    "en": "Enable for Rewards",
+    "de": "Aktiviere für Belohnungen"
+  },
+  "ShopItemIcons.Config.HandleFreeShop.Description": {
+    "en": "This applies to vendors who provide job gear free of charge.",
+    "de": "Betrifft Händler, die Job-Ausrüstung kostenlos zur Verfügung stellen."
   },
 
   "SimpleAethernetList.Tweak.Name": {

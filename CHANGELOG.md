@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Shop Item Icons
+
+Displays item icons instead of item category icons in shops.
+
 ## [26.1.1] (2024-08-28)
 
 ### HaselTweaks
