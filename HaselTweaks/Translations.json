@@ -2107,8 +2107,8 @@
     "de": "Aktiviere für Händler"
   },
   "ShopItemIcons.Config.HandleShop.Description": {
-    "en": "This applies to simple merchants who sell items for Gil.\nNote: The current zone must be reloaded/reentered for a change to this option to take effect.",
-    "de": "Betrifft einfache Händler, die Gegenstände für Gil verkaufen.\nHinweis: Damit eine Änderung dieser Option wirksam wird, muss das aktuelle Gebiet neu geladen/betreten werden."
+    "en": "This applies to simple merchants who sell items for Gil.",
+    "de": "Betrifft einfache Händler, die Gegenstände für Gil verkaufen."
   },
   "ShopItemIcons.Config.HandleShopExchangeItem.Label": {
     "en": "Enable for Item Exchange",
