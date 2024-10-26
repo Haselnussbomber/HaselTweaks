@@ -388,7 +388,7 @@ public unsafe partial class CharacterClassSwitcher(
             selectedGearset = (id + 1, gearset->ItemLevel);
         }
 
-        UIModule.PlaySound(8, 0, 0, 0);
+        UIGlobals.PlaySoundEffect(8);
 
         if (selectedGearset.Id == -1)
         {
