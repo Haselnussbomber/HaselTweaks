@@ -1,6 +1,7 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using FFXIVClientStructs.Interop;
 using HaselCommon.Services;
@@ -68,18 +69,44 @@ public unsafe partial class ShopItemIcons(PluginConfig PluginConfig, ConfigGui C
 
     private void UpdateShopIcons(nint atkValues, uint atkValueCount)
     {
+        var handler = ShopEventHandler.AgentProxy.Instance()->Handler;
+        if (handler == null)
+            return;
+
         var values = new Span<AtkValue>((void*)atkValues, (int)atkValueCount);
+        var tabIndexValue = values.GetPointer(0);
+        if (tabIndexValue->Type != ValueType.UInt)
+            return;
 
-        // ShopEventHandler_ctor
-        for (var i = 0; i < 60; i++)
+        var tabIndex = tabIndexValue->UInt;
+        const int IconIdOffset = 197;
+
+        // Buy
+        if (tabIndex == 0)
         {
-            var itemIdValue = values.GetPointer(441 + i);
-            var iconIdValue = values.GetPointer(197 + i);
+            for (var i = 0; i < handler->VisibleItemsCount; i++)
+            {
+                var iconIdValue = values.GetPointer(IconIdOffset + i);
+                if (iconIdValue->Type != ValueType.UInt)
+                    continue;
 
-            if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.UInt)
-                continue;
+                var itemIndex = handler->VisibleItems.GetPointer(i);
+                var itemId = handler->Items.GetPointer(i)->ItemId;
+                iconIdValue->UInt = ItemService.GetIconId(itemId);
+            }
+        }
+        // Buyback
+        else if (tabIndex == 1)
+        {
+            for (var i = 0; i < handler->BuybackCount; i++)
+            {
+                var iconIdValue = values.GetPointer(IconIdOffset + i);
+                if (iconIdValue->Type != ValueType.UInt)
+                    continue;
 
-            iconIdValue->UInt = ItemService.GetIconId(itemIdValue->UInt);
+                var itemId = handler->Buyback.GetPointer(i)->ItemId;
+                iconIdValue->UInt = ItemService.GetIconId(itemId);
+            }
         }
     }
 
