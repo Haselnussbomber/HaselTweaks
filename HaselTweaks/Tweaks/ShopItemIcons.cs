@@ -92,6 +92,9 @@ public unsafe partial class ShopItemIcons(PluginConfig PluginConfig, ConfigGui C
 
                 var itemIndex = handler->VisibleItems.GetPointer(i);
                 var itemId = handler->Items.GetPointer(i)->ItemId;
+                if (itemId == 0)
+                    continue;
+
                 iconIdValue->UInt = ItemService.GetIconId(itemId);
             }
         }
@@ -105,6 +108,9 @@ public unsafe partial class ShopItemIcons(PluginConfig PluginConfig, ConfigGui C
                     continue;
 
                 var itemId = handler->Buyback.GetPointer(i)->ItemId;
+                if (itemId == 0)
+                    continue;
+
                 iconIdValue->UInt = ItemService.GetIconId(itemId);
             }
         }
@@ -152,7 +158,7 @@ public unsafe partial class ShopItemIcons(PluginConfig PluginConfig, ConfigGui C
             var itemIdValue = values.GetPointer(317 + i);
             var iconIdValue = values.GetPointer(167 + i);
 
-            if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.UInt)
+            if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.UInt || itemIdValue->UInt == 0)
                 continue;
 
             iconIdValue->UInt = ItemService.GetIconId(itemIdValue->UInt);
@@ -172,7 +178,7 @@ public unsafe partial class ShopItemIcons(PluginConfig PluginConfig, ConfigGui C
             var itemIdValue = values.GetPointer(300 + i * 18);
             var iconIdValue = values.GetPointer(300 + i * 18 + 1);
 
-            if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.UInt)
+            if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.UInt || itemIdValue->UInt == 0)
                 continue;
 
             iconIdValue->UInt = ItemService.GetIconId(itemIdValue->UInt);
@@ -191,7 +197,7 @@ public unsafe partial class ShopItemIcons(PluginConfig PluginConfig, ConfigGui C
             var itemIdValue = values.GetPointer(65 + i);
             var iconIdValue = values.GetPointer(126 + i);
 
-            if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.UInt)
+            if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.UInt || itemIdValue->UInt == 0)
                 continue;
 
             iconIdValue->UInt = ItemService.GetIconId(itemIdValue->UInt);
