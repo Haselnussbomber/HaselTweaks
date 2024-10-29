@@ -1,5 +1,11 @@
 # Changelog
 
+## [27.0.3] (2024-10-29)
+
+### Shop Item Icons
+
+- **Fixed: Currencies, like Wolf Marks, were shown without icon, because the item id is 0 in the data that is sent to the shop window (which is also why there is no tooltip). The tweak cannot provide an icon for these items and will ignore them from now on, showing the original category icon.
+
 ## [27.0.2] (2024-10-26)
 
 ### Shop Item Icons
@@ -1761,6 +1767,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[27.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.2...v27.0.3
 [27.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.1...v27.0.2
 [27.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.0...v27.0.1
 [27.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v26.1.1...v27.0.0
