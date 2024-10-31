@@ -4,7 +4,7 @@
 
 ### Shop Item Icons
 
-- **Fixed: Currencies, like Wolf Marks, were shown without icon, because the item id is 0 in the data that is sent to the shop window (which is also why there is no tooltip). The tweak cannot provide an icon for these items and will ignore them from now on, showing the original category icon.
+- **Fixed**: Currencies, like Wolf Marks, were shown without icon, because the item id is 0 in the data that is sent to the shop window (which is also why there is no tooltip). The tweak cannot provide an icon for these items and will ignore them from now on, showing the original category icon.
 
 ## [27.0.2] (2024-10-26)
 
