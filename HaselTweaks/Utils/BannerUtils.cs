@@ -2,15 +2,15 @@ using System.IO;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using HaselCommon.Extensions.Strings;
 using HaselCommon.Services;
 using HaselTweaks.Structs;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using ActionSheet = Lumina.Excel.Sheets.Action;
 
 namespace HaselTweaks.Utils;
 
@@ -65,38 +65,34 @@ public unsafe class BannerUtils(IDalamudPluginInterface PluginInterface, ExcelSe
 
     public bool IsBannerBgUnlocked(uint id)
     {
-        var bannerBg = ExcelService.GetRow<BannerBg>(id);
-        if (bannerBg == null)
+        if (!ExcelService.TryGetRow<BannerBg>(id, out var bannerBg))
             return false;
 
-        return IsBannerConditionUnlocked(bannerBg.UnlockCondition.Row);
+        return IsBannerConditionUnlocked(bannerBg.UnlockCondition.RowId);
     }
 
     public bool IsBannerFrameUnlocked(uint id)
     {
-        var bannerFrame = ExcelService.GetRow<BannerFrame>(id);
-        if (bannerFrame == null)
+        if (!ExcelService.TryGetRow<BannerFrame>(id, out var bannerFrame))
             return false;
 
-        return IsBannerConditionUnlocked(bannerFrame.UnlockCondition.Row);
+        return IsBannerConditionUnlocked(bannerFrame.UnlockCondition.RowId);
     }
 
     public bool IsBannerDecorationUnlocked(uint id)
     {
-        var bannerDecoration = ExcelService.GetRow<BannerDecoration>(id);
-        if (bannerDecoration == null)
+        if (!ExcelService.TryGetRow<BannerDecoration>(id, out var bannerDecoration))
             return false;
 
-        return IsBannerConditionUnlocked(bannerDecoration.UnlockCondition.Row);
+        return IsBannerConditionUnlocked(bannerDecoration.UnlockCondition.RowId);
     }
 
     public bool IsBannerTimelineUnlocked(uint id)
     {
-        var bannerTimeline = ExcelService.GetRow<BannerTimeline>(id);
-        if (bannerTimeline == null)
+        if (!ExcelService.TryGetRow<BannerTimeline>(id, out var bannerTimeline))
             return false;
 
-        return IsBannerConditionUnlocked(bannerTimeline.UnlockCondition.Row);
+        return IsBannerConditionUnlocked(bannerTimeline.UnlockCondition.RowId);
     }
 
     public bool IsBannerConditionUnlocked(uint id)
@@ -113,26 +109,21 @@ public unsafe class BannerUtils(IDalamudPluginInterface PluginInterface, ExcelSe
 
     public string GetBannerTimelineName(uint id)
     {
-        var poseName = ExcelService.GetRow<BannerTimeline>(id)?.Name.ExtractText();
+        if (!ExcelService.TryGetRow<BannerTimeline>(id, out var bannerTimeline))
+            return TextService.GetAddonText(624); // Unknown
 
-        if (string.IsNullOrEmpty(poseName))
+        var poseName = bannerTimeline.Name.ExtractText();
+
+        if (string.IsNullOrEmpty(poseName) && bannerTimeline.Type != 0)
         {
-            var bannerTimeline = ExcelService.GetRow<BannerTimeline>(id);
-            if (bannerTimeline != null && bannerTimeline.Type != 0)
-            {
-                if (bannerTimeline.Type <= 2)
-                {
-                    poseName = TextService.GetActionName(bannerTimeline.AdditionalData);
-                }
-                else if (bannerTimeline.Type - 10 <= 1)
-                {
-                    poseName = TextService.GetEmoteName(bannerTimeline.AdditionalData);
-                }
-            }
+            if (bannerTimeline.AdditionalData.TryGetValue<ActionSheet>(out var actionRow))
+                poseName = actionRow.Name.ExtractText();
+            else if (bannerTimeline.AdditionalData.TryGetValue<Emote>(out var emoteRow))
+                poseName = emoteRow.Name.ExtractText();
         }
 
-        return !string.IsNullOrEmpty(poseName) ?
-            poseName :
-            TextService.GetAddonText(624); // Unknown
+        return !string.IsNullOrEmpty(poseName)
+            ? poseName
+            : TextService.GetAddonText(624);
     }
 }

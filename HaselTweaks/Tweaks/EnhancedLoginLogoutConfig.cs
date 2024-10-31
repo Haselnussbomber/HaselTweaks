@@ -10,7 +10,7 @@ using HaselCommon.Gui;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;
 
@@ -125,7 +125,7 @@ public unsafe partial class EnhancedLoginLogout
             }
             else
             {
-                var defaultIdlePoseEmote = ExcelService.GetRow<Emote>(90)!; // first "Change Pose"
+                ExcelService.TryGetRow<Emote>(90, out var defaultIdlePoseEmote); // first "Change Pose"
                 var changePoseIndex = 1;
 
                 var entry = ExcelService.GetSheet<Emote>()

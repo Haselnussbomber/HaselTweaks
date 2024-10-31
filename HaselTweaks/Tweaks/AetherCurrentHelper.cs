@@ -8,7 +8,7 @@ using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Windows;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
@@ -91,8 +91,7 @@ public unsafe partial class AetherCurrentHelper(
         if (index < 19)
             index = rawIndex;
 
-        var compFlgSet = ExcelService.GetRow<AetherCurrentCompFlgSet>(index + 1);
-        if (compFlgSet == null)
+        if (!ExcelService.TryGetRow<AetherCurrentCompFlgSet>(index + 1, out var compFlgSet))
             return false;
 
         Window.CompFlgSet = compFlgSet;

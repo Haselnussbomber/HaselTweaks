@@ -14,7 +14,7 @@ using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;
 
@@ -90,7 +90,7 @@ public unsafe partial class EnhancedExpBar(
     {
         UpdateExpHook!.Original(thisPtr, expNumberArray, expStringArray, characterStringArray);
 
-        if (!ClientState.IsLoggedIn)
+        if (!ClientState.IsLoggedIn || ClientState.LocalPlayer == null || !ClientState.LocalPlayer.ClassJob.IsValid)
             return;
 
         SetColor(); // reset unless overwritten
@@ -154,15 +154,14 @@ public unsafe partial class EnhancedExpBar(
     {
         var buddy = UIState.Instance()->Buddy.CompanionInfo;
 
-        if (buddy.Rank > ExcelService.GetRowCount<BuddyRank>() - 1)
+        if (!ExcelService.TryGetRow<BuddyRank>(buddy.Rank, out var buddyRank))
             return;
 
-        var currentRank = buddy.Rank;
-        var job = ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation;
+        var job = ClientState.LocalPlayer!.ClassJob.Value.Abbreviation;
         var levelLabel = (TextService.GetAddonText(4968) ?? "Rank").Trim().Replace(":", "");
-        var rank = currentRank > 20 ? 20 : currentRank;
+        var rank = buddy.Rank > 20 ? 20 : buddy.Rank;
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-        var requiredExperience = ExcelService.GetRow<BuddyRank>(currentRank)!.ExpRequired;
+        var requiredExperience = buddyRank.ExpRequired;
         var xpText = requiredExperience == 0 ? "" : $"   {buddy.CurrentXP}/{requiredExperience}";
 
         SetText($"{job}  {levelLabel} {level}{xpText}");
@@ -173,18 +172,18 @@ public unsafe partial class EnhancedExpBar(
     {
         var pvpProfile = PvPProfile.Instance();
 
-        if (pvpProfile == null || pvpProfile->IsLoaded != 0x01 || pvpProfile->SeriesCurrentRank > ExcelService.GetRowCount<PvPSeriesLevel>() - 1)
+        if (pvpProfile == null || pvpProfile->IsLoaded != 0x01 || !ExcelService.TryGetRow<PvPSeriesLevel>(pvpProfile->GetSeriesCurrentRank(), out var pvpSeriesLevel))
             return;
 
         var claimedRank = pvpProfile->GetSeriesClaimedRank();
         var currentRank = pvpProfile->GetSeriesCurrentRank();
 
-        var job = ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation;
+        var job = ClientState.LocalPlayer!.ClassJob.Value.Abbreviation;
         var levelLabel = (TextService.GetAddonText(14860) ?? "Series Level").Trim().Replace(":", "");
         var rank = currentRank > 30 ? 30 : currentRank; // 30 = Series Max Rank, hopefully in the future too
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var star = currentRank > claimedRank ? '*' : ' ';
-        var requiredExperience = ExcelService.GetRow<PvPSeriesLevel>(currentRank)!.Unknown0;
+        var requiredExperience = pvpSeriesLevel.Unknown0;
 
         SetText($"{job}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
         SetExperience(pvpProfile->SeriesExperience, requiredExperience);
@@ -197,13 +196,13 @@ public unsafe partial class EnhancedExpBar(
     {
         var mjiManager = MJIManager.Instance();
 
-        if (mjiManager == null || mjiManager->IslandState.CurrentRank > ExcelService.GetRowCount<MJIRank>() - 1)
+        if (mjiManager == null || !ExcelService.TryGetRow<MJIRank>(mjiManager->IslandState.CurrentRank, out var mjiRank))
             return;
 
-        var job = Config.SanctuaryBarHideJob ? "" : ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation + "  ";
+        var job = Config.SanctuaryBarHideJob ? "" : ClientState.LocalPlayer!.ClassJob.Value.Abbreviation + "  ";
         var levelLabel = (TextService.GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
         var level = mjiManager->IslandState.CurrentRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
-        var requiredExperience = ExcelService.GetRow<MJIRank>(mjiManager->IslandState.CurrentRank)!.ExpToNext;
+        var requiredExperience = mjiRank.ExpToNext;
 
         var expStr = mjiManager->IslandState.CurrentXP.ToString();
         var reqExpStr = requiredExperience.ToString();

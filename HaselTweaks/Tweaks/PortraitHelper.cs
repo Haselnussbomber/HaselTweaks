@@ -5,7 +5,6 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Hooking;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -19,7 +18,7 @@ using HaselTweaks.Interfaces;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows.PortraitHelperWindows;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
@@ -225,7 +224,7 @@ public unsafe partial class PortraitHelper(
         if (gearset == null)
             return;
 
-        if (Config.IgnoreDoHDoL && ExcelService.GetRow<ClassJob>(gearset->ClassJob)?.DohDolJobIndex != -1)
+        if (Config.IgnoreDoHDoL && (!ExcelService.TryGetRow<ClassJob>(gearset->ClassJob, out var classJobRow) || classJobRow.DohDolJobIndex != -1))
             return;
 
         var bannerIndex = gearset->BannerIndex;

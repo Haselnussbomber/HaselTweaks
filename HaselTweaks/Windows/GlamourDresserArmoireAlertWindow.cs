@@ -6,11 +6,12 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using HaselCommon.Extensions.Sheets;
 using HaselCommon.Gui;
 using HaselCommon.Services;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Windows;
 
@@ -59,7 +60,8 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 
         foreach (var (categoryId, categoryItems) in Tweak!.Categories.OrderBy(kv => kv.Key))
         {
-            var category = ExcelService.GetRow<ItemUICategory>(categoryId)!;
+            if (!ExcelService.TryGetRow<ItemUICategory>(categoryId, out var category))
+                continue;
 
             ImGui.TextUnformatted(category.Name.ToDalamudString().ToString());
             ImGuiUtils.PushCursorY(3 * ImGuiHelpers.GlobalScale);
@@ -110,11 +112,11 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
         ImGuiContextMenuService.Draw(popupKey, builder =>
         {
             builder
-                .AddTryOn(item)
+                .AddTryOn(item.AsRef())
                 .AddItemFinder(item.RowId)
                 .AddCopyItemName(item.RowId)
                 .AddOpenOnGarlandTools("item", item.RowId)
-                .AddItemSearch(item);
+                .AddItemSearch(item.AsRef());
         });
     }
 

@@ -5,13 +5,12 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
-using HaselCommon.Extensions.Strings;
 using HaselCommon.Game;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
@@ -106,7 +105,10 @@ public unsafe partial class AutoSorter(
 
     private string GetLocalizedParam(uint rowId, string? fallback = null)
     {
-        var param = ExcelService.GetRow<TextCommandParam>(rowId, ClientState.ClientLanguage)?.Param.ExtractText();
+        if (!ExcelService.TryGetRow<TextCommandParam>(rowId, ClientState.ClientLanguage, out var paramRow))
+            return "";
+
+        var param = paramRow.Param.ExtractText();
         return string.IsNullOrEmpty(param) ? fallback ?? "" : param.ToLower();
     }
 
@@ -116,12 +118,12 @@ public unsafe partial class AutoSorter(
 
         if (!string.IsNullOrEmpty(key) && dict.TryGetValue(key, out var rowId))
         {
-            var param = ExcelService.GetRow<TextCommandParam>(rowId, ClientState.ClientLanguage)?.Param.ExtractText();
+            if (!ExcelService.TryGetRow<TextCommandParam>(rowId, ClientState.ClientLanguage, out var paramRow))
+                return str;
 
+            var param = paramRow.Param.ExtractText();
             if (!string.IsNullOrEmpty(param))
-            {
                 str = param.ToLower();
-            }
         }
 
         return str;

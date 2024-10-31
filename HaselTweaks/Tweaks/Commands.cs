@@ -11,7 +11,7 @@ using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Extensions;
 using HaselTweaks.Interfaces;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Lumina.Text;
 using BattleNpcSubKind = Dalamud.Game.ClientState.Objects.Enums.BattleNpcSubKind;
 using DalamudObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
@@ -97,8 +97,8 @@ public unsafe partial class Commands(
         }
 
         var isEventItem = ItemService.IsEventItem(id);
-        var existsAsEventItem = isEventItem && ExcelService.GetRow<EventItem>(id) != null;
-        var existsAsItem = !isEventItem && ExcelService.GetRow<Item>(ItemService.GetBaseItemId(id)) != null;
+        var existsAsEventItem = isEventItem && ExcelService.GetSheet<EventItem>().HasRow(id);
+        var existsAsItem = !isEventItem && ExcelService.GetSheet<Item>().HasRow(ItemService.GetBaseItemId(id));
 
         if (!existsAsEventItem && !existsAsItem)
         {
@@ -145,8 +145,7 @@ public unsafe partial class Commands(
             return;
         }
 
-        var mount = ExcelService.GetRow<Mount>(target->Mount.MountId);
-        if (mount == null)
+        if (!ExcelService.TryGetRow<Mount>(target->Mount.MountId, out var mount))
         {
             ChatGui.PrintError(TextService.Translate("Commands.WhatMount.MountNotFound"));
             return;
@@ -161,8 +160,7 @@ public unsafe partial class Commands(
             .PopColorType()
             .ToReadOnlySeString();
 
-        var itemAction = ExcelService.FindRow<ItemAction>(row => row?.Type == 1322 && row.Data[0] == mount.RowId);
-        if (itemAction == null || itemAction.RowId == 0)
+        if (!ExcelService.TryFindRow<ItemAction>(row => row.Type == 1322 && row.Data[0] == mount.RowId, out var itemAction) || itemAction.RowId == 0)
         {
             ChatGui.Print(new XivChatEntry
             {
@@ -174,8 +172,7 @@ public unsafe partial class Commands(
             return;
         }
 
-        var item = ExcelService.FindRow<Item>(row => row?.ItemAction.Row == itemAction!.RowId);
-        if (item == null)
+        if (!ExcelService.TryFindRow<Item>(row => row.ItemAction.RowId == itemAction.RowId, out var item))
         {
             ChatGui.Print(new XivChatEntry
             {
@@ -221,8 +218,7 @@ public unsafe partial class Commands(
             return;
         }
 
-        var emote = ExcelService.GetRow<Emote>(emoteId);
-        if (emote == null)
+        if (!ExcelService.TryGetRow<Emote>(emoteId, out var emote))
         {
             ChatGui.PrintError(TextService.Translate("Commands.Emote.NotFound", emoteId.ToString()));
             return;
@@ -255,11 +251,12 @@ public unsafe partial class Commands(
 
         var targetCharacter = (Character*)target.Address;
 
-        var topRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelTop == (int)targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Head).Value);
-        var bodyRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelBody == (int)targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Body).Value);
-        var legsRow = ExcelService.FindRow<BuddyEquip>(row => row?.ModelLegs == (int)targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Feet).Value);
+        var hasTopRow = ExcelService.TryFindRow<BuddyEquip>(row => row.ModelTop == (int)targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Head).Value, out var topRow);
+        var hasBodyRow = ExcelService.TryFindRow<BuddyEquip>(row => row.ModelBody == (int)targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Body).Value, out var bodyRow);
+        var hasLegsRow = ExcelService.TryFindRow<BuddyEquip>(row => row.ModelLegs == (int)targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Feet).Value, out var legsRow);
 
-        var stain = ExcelService.GetRow<Stain>(targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Legs).Stain0)!;
+        ExcelService.TryGetRow<Stain>(targetCharacter->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Legs).Stain0, out var stain);
+
         var name = new SeStringBuilder()
             .PushColorType(1)
             .Append(targetCharacter->GameObject.NameString)
@@ -273,11 +270,11 @@ public unsafe partial class Commands(
             .Append($"  {TextService.GetAddonText(4987)}: ")
             .Append(stain.Name.ToString().FirstCharToUpper())
             .AppendNewLine()
-            .Append($"  {TextService.GetAddonText(4991)}: {topRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}")
+            .Append($"  {TextService.GetAddonText(4991)}: {(hasTopRow ? topRow.Name.ExtractText() : TextService.GetAddonText(4994))}")
             .AppendNewLine()
-            .Append($"  {TextService.GetAddonText(4992)}: {bodyRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}")
+            .Append($"  {TextService.GetAddonText(4992)}: {(hasBodyRow ? bodyRow.Name.ExtractText() : TextService.GetAddonText(4994))}")
             .AppendNewLine()
-            .Append($"  {TextService.GetAddonText(4993)}: {legsRow?.Name.ExtractText() ?? TextService.GetAddonText(4994)}");
+            .Append($"  {TextService.GetAddonText(4993)}: {(hasLegsRow ? legsRow.Name.ExtractText() : TextService.GetAddonText(4994))}");
 
         ChatGui.Print(new XivChatEntry
         {

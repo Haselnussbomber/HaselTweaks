@@ -2,7 +2,6 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Common.Math;
-using HaselCommon.Extensions.Strings;
 using HaselCommon.Gui;
 using HaselCommon.Services;
 using HaselTweaks.Config;
@@ -10,7 +9,7 @@ using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
@@ -76,7 +75,10 @@ public unsafe class AdvancedImportOverlay(
             ImportFlags.BannerBg,
             () =>
             {
-                ImGui.TextUnformatted(ExcelService.GetRow<BannerBg>(PortraitHelper.ClipboardPreset.BannerBg)?.Name.ExtractText() ?? unknown);
+                if (ExcelService.TryGetRow<BannerBg>(PortraitHelper.ClipboardPreset.BannerBg, out var bannerBgRow))
+                    ImGui.TextUnformatted(bannerBgRow.Name.ExtractText());
+                else
+                    ImGui.TextUnformatted(unknown);
 
                 if (!isBannerBgUnlocked)
                 {
@@ -93,7 +95,10 @@ public unsafe class AdvancedImportOverlay(
             ImportFlags.BannerFrame,
             () =>
             {
-                ImGui.TextUnformatted(ExcelService.GetRow<BannerFrame>(PortraitHelper.ClipboardPreset.BannerFrame)?.Name.ExtractText() ?? unknown);
+                if (ExcelService.TryGetRow<BannerFrame>(PortraitHelper.ClipboardPreset.BannerFrame, out var bannerFrameRow))
+                    ImGui.TextUnformatted(bannerFrameRow.Name.ExtractText());
+                else
+                    ImGui.TextUnformatted(unknown);
 
                 if (!isBannerFrameUnlocked)
                 {
@@ -110,7 +115,10 @@ public unsafe class AdvancedImportOverlay(
             ImportFlags.BannerDecoration,
             () =>
             {
-                ImGui.TextUnformatted(ExcelService.GetRow<BannerDecoration>(PortraitHelper.ClipboardPreset.BannerDecoration)?.Name.ExtractText() ?? unknown);
+                if (ExcelService.TryGetRow<BannerDecoration>(PortraitHelper.ClipboardPreset.BannerDecoration, out var bannerDecorationRow))
+                    ImGui.TextUnformatted(bannerDecorationRow.Name.ExtractText());
+                else
+                    ImGui.TextUnformatted(unknown);
 
                 if (!isBannerDecorationUnlocked)
                 {
@@ -169,12 +177,12 @@ public unsafe class AdvancedImportOverlay(
                     for (var i = 0; i < state->Expressions.SortedEntriesCount; i++)
                     {
                         var entry = state->Expressions.SortedEntries[i];
-                        if (entry->RowId == id && entry->SupplementalRow != 0)
+                        if (entry->RowId == id
+                        && entry->SupplementalRow != 0
+                        && ExcelService.TryGetRow<BannerFacial>(entry->RowId, out var bannerFacialRow)
+                        && ExcelService.TryGetRow<Emote>(bannerFacialRow.Emote.RowId, out var emoteRow))
                         {
-                            var bannerFacialRow = ExcelService.GetRow<BannerFacial>(entry->RowId);
-                            var emoteRow = ExcelService.GetRow<Emote>(bannerFacialRow?.Emote.Row ?? 0);
-                            if (emoteRow != null && emoteRow.RowId != 0)
-                                expressionName = emoteRow.Name;
+                            expressionName = emoteRow.Name.ExtractText();
                             break;
                         }
                     }

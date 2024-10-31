@@ -15,7 +15,7 @@ using HaselTweaks.Config;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using GearsetEntry = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetEntry;
 using GearsetFlag = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetFlag;
 using GearsetItem = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetItem;
@@ -204,15 +204,14 @@ public unsafe class GearSetGridWindow : LockableWindow
                     continue;
                 }
 
-                var item = ExcelService.GetRow<Item>(itemId);
-                if (item == null)
+                if (!ExcelService.TryGetRow<Item>(itemId, out var item))
                     continue;
 
                 ImGuiUtils.PushCursorY(2f * ImGuiHelpers.GlobalScale);
 
                 DrawItemIcon(gearset, slotIndex, slot, item, $"GearsetItem_{gearsetIndex}_{slotIndex}");
 
-                var itemLevelText = $"{item.LevelItem.Row}";
+                var itemLevelText = $"{item.LevelItem.RowId}";
                 ImGuiUtils.PushCursorX(IconSize.X * ImGuiHelpers.GlobalScale / 2f - ImGui.CalcTextSize(itemLevelText).X / 2f);
                 ImGuiUtils.TextUnformattedColored(ItemService.GetItemLevelColor(gearset->ClassJob, item, Color.Red, Color.Yellow, Color.Green), itemLevelText);
 
@@ -275,11 +274,11 @@ public unsafe class GearSetGridWindow : LockableWindow
         ImGuiContextMenuService.Draw(popupKey, builder =>
         {
             builder
-                .AddTryOn(item, slot->GlamourId, slot->Stain0Id, slot->Stain1Id)
+                .AddTryOn(item.AsRef(), slot->GlamourId, slot->Stain0Id, slot->Stain1Id)
                 .AddItemFinder(item.RowId)
                 .AddCopyItemName(item.RowId)
                 .AddOpenOnGarlandTools("item", item.RowId)
-                .AddItemSearch(item);
+                .AddItemSearch(item.AsRef());
         });
 
         if (!ImGui.IsItemHovered())
@@ -296,19 +295,18 @@ public unsafe class GearSetGridWindow : LockableWindow
             ImGui.TextUnformatted($"[{item.RowId}]");
         }
 
-        if (item.ItemUICategory.Row != 0)
+        if (item.ItemUICategory.IsValid)
         {
             ImGuiUtils.PushCursorY(-ImGui.GetStyle().ItemSpacing.Y);
-            ImGui.TextUnformatted(ExcelService.GetRow<ItemUICategory>(item.ItemUICategory.Row)?.Name.ExtractText() ?? string.Empty);
+            ImGui.TextUnformatted(item.ItemUICategory.Value.Name.ExtractText() ?? string.Empty);
         }
 
         if (slot->GlamourId != 0 || slot->Stain0Id != 0 || slot->Stain1Id != 0)
             ImGuiUtils.DrawPaddedSeparator();
 
-        if (slot->GlamourId != 0)
+        if (slot->GlamourId != 0 && ExcelService.TryGetRow<Item>(slot->GlamourId, out var glamourItem))
         {
             TextService.Draw("GearSetGridWindow.ItemTooltip.LabelGlamour");
-            var glamourItem = ExcelService.GetRow<Item>(slot->GlamourId)!;
             ImGuiUtils.SameLineSpace();
             ImGuiUtils.TextUnformattedColored(ItemService.GetItemRarityColor(glamourItem), TextService.GetItemName(slot->GlamourId));
 
@@ -319,14 +317,14 @@ public unsafe class GearSetGridWindow : LockableWindow
             }
         }
 
-        if (slot->Stain0Id != 0)
+        if (slot->Stain0Id != 0 && ExcelService.TryGetRow<Stain>(slot->Stain0Id, out var stain0))
         {
             TextService.Draw("GearSetGridWindow.ItemTooltip.LabelDye0");
             ImGuiUtils.SameLineSpace();
-            using (ImRaii.PushColor(ImGuiCol.Text, (uint)ExcelService.GetRow<Stain>(slot->Stain0Id)!.GetColor()))
+            using (ImRaii.PushColor(ImGuiCol.Text, (uint)stain0.GetColor()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
-            ImGui.TextUnformatted(ExcelService.GetRow<Stain>(slot->Stain0Id)!.Name.ExtractText().FirstCharToUpper());
+            ImGui.TextUnformatted(stain0.Name.ExtractText().FirstCharToUpper());
 
             if (holdingShift)
             {
@@ -335,14 +333,14 @@ public unsafe class GearSetGridWindow : LockableWindow
             }
         }
 
-        if (slot->Stain1Id != 0)
+        if (slot->Stain1Id != 0 && ExcelService.TryGetRow<Stain>(slot->Stain1Id, out var stain1))
         {
             TextService.Draw("GearSetGridWindow.ItemTooltip.LabelDye1");
             ImGuiUtils.SameLineSpace();
-            using (ImRaii.PushColor(ImGuiCol.Text, (uint)ExcelService.GetRow<Stain>(slot->Stain1Id)!.GetColor()))
+            using (ImRaii.PushColor(ImGuiCol.Text, (uint)stain1.GetColor()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
-            ImGui.TextUnformatted(ExcelService.GetRow<Stain>(slot->Stain1Id)!.Name.ExtractText().FirstCharToUpper());
+            ImGui.TextUnformatted(stain1.Name.ExtractText().FirstCharToUpper());
 
             if (holdingShift)
             {

@@ -6,7 +6,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
@@ -54,8 +54,7 @@ public sealed unsafe class MarketBoardItemPreview(
         var itemId = *(uint*)((nint)AgentItemSearch.Instance() + itemIndex * 4 + 0xBBC);
         Logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId} @ {addr:X}", itemIndex, itemId, args.Addon + itemIndex * 4 + 0xBBC);
 
-        var item = ExcelService.GetRow<Item>(itemId);
-        if (item == null || !ItemService.CanTryOn(item))
+        if (!ExcelService.TryGetRow<Item>(itemId, out var item) || !ItemService.CanTryOn(item))
             return;
 
         AgentTryon.TryOn(((AtkUnitBase*)args.Addon)->Id, itemId, 0, 0, 0);

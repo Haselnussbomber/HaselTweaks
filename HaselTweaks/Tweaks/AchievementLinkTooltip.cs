@@ -11,7 +11,7 @@ using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using Lumina.Text;
 using Lumina.Text.Payloads;
-using Achievement = Lumina.Excel.GeneratedSheets.Achievement;
+using Achievement = Lumina.Excel.Sheets.Achievement;
 
 namespace HaselTweaks.Tweaks;
 
@@ -69,8 +69,7 @@ public unsafe partial class AchievementLinkTooltip(
         if (linkType is not LinkMacroPayloadType.Achievement)
             return;
 
-        var achievement = ExcelService.GetRow<Achievement>(linkData->Id);
-        if (achievement == null)
+        if (!ExcelService.TryGetRow<Achievement>(linkData->Id, out var achievement))
             return;
 
         using var tooltipText = new Utf8String();
@@ -83,9 +82,9 @@ public unsafe partial class AchievementLinkTooltip(
 
         if (Config.PreventSpoiler)
         {
-            var isHiddenCategory = achievement.AchievementCategory.Value?.HideCategory == true;
-            var isHiddenName = achievement.AchievementHideCondition.Value?.HideName == true;
-            var isHiddenAchievement = achievement.AchievementHideCondition.Value?.HideAchievement == true;
+            var isHiddenCategory = achievement.AchievementCategory.ValueNullable?.HideCategory == true;
+            var isHiddenName = achievement.AchievementHideCondition.ValueNullable?.HideName == true;
+            var isHiddenAchievement = achievement.AchievementHideCondition.ValueNullable?.HideAchievement == true;
 
             canShowName |= !isHiddenName || isComplete;
             canShowDescription |= !(isHiddenCategory || isHiddenAchievement) || isComplete;
@@ -98,7 +97,7 @@ public unsafe partial class AchievementLinkTooltip(
           .EndMacro();
 
         if (canShowName)
-            sb.Append(achievement.Name.AsReadOnly());
+            sb.Append(achievement.Name);
         else
             sb.Append(TextService.GetAddonText(3384)); // "???"
 
@@ -106,7 +105,7 @@ public unsafe partial class AchievementLinkTooltip(
         sb.BeginMacro(MacroCode.NewLine).EndMacro();
 
         if (canShowDescription)
-            sb.Append(achievement.Description.AsReadOnly());
+            sb.Append(achievement.Description);
         else
             sb.Append(TextService.GetAddonText(3385)); // "???"
 

@@ -5,7 +5,8 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Services;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel;
+using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;
 
@@ -19,7 +20,7 @@ public unsafe class SearchTheMarkets(
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private MenuItem? MenuItem;
-    private Item? Item;
+    private RowRef<Item> ItemRef;
 
     public void OnInitialize() { }
 
@@ -32,10 +33,10 @@ public unsafe class SearchTheMarkets(
             PrefixColor = 32,
             OnClicked = (_) =>
             {
-                if (Item != null)
+                if (ItemRef.IsValid)
                 {
-                    ItemService.Search(Item);
-                    Item = null;
+                    ItemService.Search(ItemRef.Value);
+                    ItemRef = default; // TODO: check
                 }
             }
         };
@@ -90,9 +91,9 @@ public unsafe class SearchTheMarkets(
         if (ItemService.IsHighQuality(itemId))
             itemId -= 1_000_000;
 
-        Item = ExcelService.GetRow<Item>(itemId);
+        ItemRef = ExcelService.CreateRef<Item>(itemId);
 
-        if (Item == null || !ItemService.CanSearchForItem(Item))
+        if (!ItemRef.IsValid || !ItemService.CanSearchForItem(ItemRef.Value))
             return;
 
         args.AddMenuItem(MenuItem);

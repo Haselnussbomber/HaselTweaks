@@ -5,14 +5,13 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Extensions;
-using HaselCommon.Extensions.Strings;
 using HaselCommon.Gui;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Structs;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Windows;
 
@@ -101,11 +100,14 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
                 if (item != null && item->UIntValues.LongCount >= 3 && item->UIntValues[0] != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
                 {
                     var rowId = item->UIntValues[2];
-                    var itemId = ExcelService.GetRow<MJICraftworksObject>(rowId)?.Item.Row ?? 0;
-                    if (itemId == 0)
+
+                    if (!ExcelService.TryGetRow<MJICraftworksObject>(rowId, out var mjiCraftworksObject))
                         continue;
 
-                    var itemName = ExcelService.GetSheet<Item>(Config.SearchLanguage)?.GetRow(itemId)?.Name.ExtractText();
+                    if (!ExcelService.TryGetRow<Item>(mjiCraftworksObject.Item.RowId, Config.SearchLanguage, out var itemRow))
+                        continue;
+
+                    var itemName = itemRow.Name.ExtractText();
                     if (string.IsNullOrEmpty(itemName))
                         continue;
 

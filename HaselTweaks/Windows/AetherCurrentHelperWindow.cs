@@ -8,19 +8,16 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Gui;
 using HaselCommon.Services;
-using HaselTweaks.Caches;
 using HaselTweaks.Config;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Windows;
 
 public unsafe class AetherCurrentHelperWindow : LockableWindow
 {
-    private readonly EObjDataIdCache EObjDataIdCache;
-    private readonly LevelObjectCache LevelObjectCache;
     private bool HideUnlocked = true;
 
     private static readonly Color TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
@@ -40,9 +37,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         TextureService textureService,
         ExcelService excelService,
         TextService textService,
-        MapService mapService,
-        EObjDataIdCache eObjDataIdCache,
-        LevelObjectCache levelObjectCache)
+        MapService mapService)
         : base(windowManager, pluginConfig, textService, "[HaselTweaks] Aether Current Helper")
     {
         ClientState = clientState;
@@ -50,8 +45,6 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         ExcelService = excelService;
         TextService = textService;
         MapService = mapService;
-        EObjDataIdCache = eObjDataIdCache;
-        LevelObjectCache = levelObjectCache;
 
         SizeCondition = ImGuiCond.FirstUseEver;
         Size = new Vector2(350);
@@ -65,13 +58,13 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
     public AetherCurrentCompFlgSet? CompFlgSet { get; set; }
 
     public override bool DrawConditions()
-        => CompFlgSet != null && ClientState.IsLoggedIn && !RaptureAtkModule.Instance()->RaptureAtkUnitManager.UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
+        => CompFlgSet.HasValue && ClientState.IsLoggedIn && !RaptureAtkModule.Instance()->RaptureAtkUnitManager.UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
 
     public override unsafe void Draw()
     {
         DrawMainCommandButton();
 
-        var placeName = CompFlgSet!.Territory.Value!.PlaceName.Value!.Name;
+        var placeName = CompFlgSet!.Value.Territory.Value.PlaceName.Value.Name.ExtractText();
 
         var textSize = ImGui.CalcTextSize(placeName);
         var availableSize = ImGui.GetContentRegionAvail();
@@ -103,18 +96,18 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         var type = 0;
         var linesDisplayed = 0;
         var playerState = PlayerState.Instance();
-        foreach (var aetherCurrent in CompFlgSet.AetherCurrent)
+        foreach (var aetherCurrent in CompFlgSet.Value.AetherCurrents)
         {
-            if (aetherCurrent.Row == 0) continue;
+            if (aetherCurrent.RowId == 0) continue;
 
-            var isQuest = aetherCurrent.Value!.Quest.Row > 0;
+            var isQuest = aetherCurrent.Value.Quest.RowId > 0;
             if (!isQuest && type == 0)
             {
                 type = 1;
                 index = 1;
             }
 
-            var isUnlocked = playerState->IsAetherCurrentUnlocked(aetherCurrent.Row);
+            var isUnlocked = playerState->IsAetherCurrentUnlocked(aetherCurrent.RowId);
             if (!HideUnlocked || !isUnlocked)
             {
                 if (type == 0)
@@ -182,7 +175,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
     private void DrawQuest(int index, bool isUnlocked, AetherCurrent aetherCurrent)
     {
-        var questId = aetherCurrent.Quest.Row;
+        var questId = aetherCurrent.Quest.RowId;
 
         // Some AetherCurrents link to the wrong Quest.
         // See https://github.com/Haselnussbomber/HaselTweaks/issues/15
@@ -205,12 +198,10 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         else if (aetherCurrent.RowId == 2818328 && questId == 70030) // Curing What Ails
             questId = 69793; // In Agama's Footsteps
 
-        var quest = ExcelService.GetRow<Quest>(questId);
-        if (questId == 0 || quest == null || quest.IssuerLocation.Row == 0)
+        if (!ExcelService.TryGetRow<Quest>(questId, out var quest) || quest.IssuerLocation.RowId == 0)
             return;
 
-        var issuerLocation = ExcelService.GetRow<Level>(quest.IssuerLocation.Row);
-        if (issuerLocation == null)
+        if (!quest.IssuerLocation.IsValid)
             return;
 
         // Icon
@@ -220,7 +211,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         // Content
         ImGui.TableNextColumn();
         ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetQuestName(quest.RowId)}");
-        ImGui.TextUnformatted($"{GetHumanReadableCoords(issuerLocation)} | {TextService.GetENpcResidentName(quest.IssuerStart)}");
+        ImGui.TextUnformatted($"{GetHumanReadableCoords(quest.IssuerLocation.Value)} | {TextService.GetENpcResidentName(quest.IssuerStart.RowId)}");
 
         // Actions
         ImGui.TableNextColumn();
@@ -228,21 +219,21 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y) * 2));
         if (selected)
         {
-            MapService.OpenMap(issuerLocation);
+            MapService.OpenMap(quest.IssuerLocation.Value);
         }
         ImGui.SameLine();
 
-        DrawUnlockStatus(isUnlocked, issuerLocation);
+        DrawUnlockStatus(isUnlocked, quest.IssuerLocation.Value);
         ImGui.SameLine(); // for padding
         ImGui.Dummy(new Vector2(0, 0));
     }
 
     private void DrawEObject(int index, bool isUnlocked, AetherCurrent aetherCurrent)
     {
-        if (!EObjDataIdCache.TryGetValue(aetherCurrent.RowId, out var eobj))
+        if (!ExcelService.TryFindRow<EObj>(row => row.Data == aetherCurrent.RowId, out var eobj))
             return;
 
-        if (!LevelObjectCache.TryGetValue(eobj.RowId, out var level))
+        if (!ExcelService.TryFindRow<Level>(row => row.Object.RowId == eobj.RowId, out var level))
             return;
 
         // Icon
@@ -271,7 +262,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
     private void DrawUnlockStatus(bool isUnlocked, Level level)
     {
-        var isSameTerritory = level.Territory.Row == ClientState.TerritoryType;
+        var isSameTerritory = level.Territory.RowId == ClientState.TerritoryType;
         ImGuiUtils.PushCursorY(11);
 
         if (isUnlocked && !Config.AlwaysShowDistance)
@@ -347,10 +338,10 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         return TextService.Translate($"AetherCurrentHelperWindow.Compass.{CompassHeadings[octant]}");
     }
 
-    public string GetCompassDirection(Level? level)
+    public string GetCompassDirection(Level level)
     {
         var localPlayer = ClientState.LocalPlayer;
-        return localPlayer == null || level == null
+        return localPlayer == null
             ? string.Empty
             : GetCompassDirection(
                 new Vector2(-localPlayer.Position.X, localPlayer.Position.Z),
