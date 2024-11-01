@@ -1,5 +1,11 @@
 # Changelog
 
+# [Unreleased]
+
+### Removed Tweak: Disable Mount Tilt
+
+No longer needed, because Tilt Configuration was added in Patch 7.1.
+
 ## [27.0.3] (2024-10-29)
 
 ### Shop Item Icons
