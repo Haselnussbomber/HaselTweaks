@@ -2096,59 +2096,73 @@
   },
 
   "ShopItemIcons.Tweak.Name": {
-    "en": "Shop Item Icons"
+    "en": "Shop Item Icons",
+    "zh": "商店物品显示图标"
   },
   "ShopItemIcons.Tweak.Description": {
     "en": "Displays item icons instead of item category icons in shops.",
-    "de": "Zeigt in Händlerfenstern Gegenstandsicons statt Icons der Gegenstandskategorie an."
+    "de": "Zeigt in Händlerfenstern Gegenstandsicons statt Icons der Gegenstandskategorie an.",
+    "zh": "在商店中显示物品图标而不是物品种类图标。"
   },
   "ShopItemIcons.Config.HandleShop.Label": {
     "en": "Enable for Shops",
-    "de": "Aktiviere für Händler"
+    "de": "Aktiviere für Händler",
+    "zh": "为商店启用"
   },
   "ShopItemIcons.Config.HandleShop.Description": {
     "en": "This applies to simple merchants who sell items for Gil.",
-    "de": "Betrifft einfache Händler, die Gegenstände für Gil verkaufen."
+    "de": "Betrifft einfache Händler, die Gegenstände für Gil verkaufen.",
+    "zh": "这项适用于以金币出售道具的简单商人。"
   },
   "ShopItemIcons.Config.HandleShopExchangeItem.Label": {
     "en": "Enable for Item Exchange",
-    "de": "Aktiviere für Handel mit Gegenständen"
+    "de": "Aktiviere für Handel mit Gegenständen",
+    "zh": "为道具交易启用"
   },
   "ShopItemIcons.Config.HandleShopExchangeItem.Description": {
     "en": "This applies to vendors who trade items for items, such as irregular tomestones or wolf collars.",
-    "de": "Betrifft Händler, die Gegenstände gegen Gegenstände tauschen, wie zum Beispiel Allagische Steine oder Wolfsriemen."
+    "de": "Betrifft Händler, die Gegenstände gegen Gegenstände tauschen, wie zum Beispiel Allagische Steine oder Wolfsriemen.",
+    "zh": "这项适用于以道具交易的商人，例如稀少神典石或凶狼项圈。"
   },
   "ShopItemIcons.Config.HandleInclusionShop.Label": {
     "en": "Enable for Item Exchange (categorized)",
-    "de": "Aktiviere für Handel mit Gegenständen (Kategorisiert)"
+    "de": "Aktiviere für Handel mit Gegenständen (Kategorisiert)",
+    "zh": "为道具交易启用（分类的）"
   },
   "ShopItemIcons.Config.HandleInclusionShop.Description": {
     "en": "This applies to splendors vendors, the scrip exchange or the wolf mark quartermaster.",
-    "de": "Betrifft Händler, wie die Wunderwaren-Händler, die Scheinewechslerinnen oder dem Wolfsmarken-Ausstattungsoffizier."
+    "de": "Betrifft Händler, wie die Wunderwaren-Händler, die Scheinewechslerinnen oder dem Wolfsmarken-Ausstattungsoffizier.",
+    "zh": "这项适用于特殊商品兑换员、工票交易员或狼印战绩交易员。"
   },
   "ShopItemIcons.Config.HandleShopExchangeCurrency.Label": {
     "en": "Enable for Currency Exchange",
-    "de": "Aktiviere für Währungsumtausch"
+    "de": "Aktiviere für Währungsumtausch",
+    "zh": "为货币交易启用"
   },
   "ShopItemIcons.Config.HandleShopExchangeCurrency.Description": {
     "en": "This applies to vendors who sell items for currency, such as all the societies vendors, or the trophy crystal quartermaster.",
-    "de": "Betrifft Händler, die Gegenstände für Währung verkaufen, wie zum Beispiel all die Händler der Freundesvölker, oder dem Kristalltrophäen\u00ADVersorgungsoffizier."
+    "de": "Betrifft Händler, die Gegenstände für Währung verkaufen, wie zum Beispiel all die Händler der Freundesvölker, oder dem Kristalltrophäen\u00ADVersorgungsoffizier.",
+    "zh": "这项适用于以货币交易的商人，例如所有友好部族商人或战利水晶交易员。"
   },
   "ShopItemIcons.Config.HandleGrandCompanyExchange.Label": {
     "en": "Enable for Grand Company Seal Exchange",
-    "de": "Aktiviere für Staatstaler-Eintausch"
+    "de": "Aktiviere für Staatstaler-Eintausch",
+    "zh": "为军票交换所启用"
   },
   "ShopItemIcons.Config.HandleGrandCompanyExchange.Description": {
     "en": "This applies to grand company quartermasters.",
-    "de": "Betrifft Quartiermeister der staatlichen Gesellschaften."
+    "de": "Betrifft Quartiermeister der staatlichen Gesellschaften.",
+    "zh": "这项适用于部队补给负责人"
   },
   "ShopItemIcons.Config.HandleFreeShop.Label": {
     "en": "Enable for Rewards",
-    "de": "Aktiviere für Belohnungen"
+    "de": "Aktiviere für Belohnungen",
+    "zh": "为奖励启用"
   },
   "ShopItemIcons.Config.HandleFreeShop.Description": {
     "en": "This applies to vendors who provide job gear free of charge.",
-    "de": "Betrifft Händler, die Job-Ausrüstung kostenlos zur Verfügung stellen."
+    "de": "Betrifft Händler, die Job-Ausrüstung kostenlos zur Verfügung stellen.",
+    "zh": "这项适用于免费提供职业装备的商人。"
   },
 
   "SimpleAethernetList.Tweak.Name": {
