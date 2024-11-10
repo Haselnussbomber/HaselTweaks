@@ -64,12 +64,13 @@ public unsafe partial class AchievementLinkTooltip(
         if (receiveEventArgs.AtkEventType != (byte)AtkEventType.LinkMouseOver)
             return;
 
-        var linkData = *(LinkData**)receiveEventArgs.Data;
-        var linkType = (LinkMacroPayloadType)linkData->Type;
+        var eventData = *(AtkEventData*)receiveEventArgs.Data;
+        var linkData = eventData.LinkData;
+        var linkType = (LinkMacroPayloadType)linkData->LinkType;
         if (linkType is not LinkMacroPayloadType.Achievement)
             return;
 
-        if (!ExcelService.TryGetRow<Achievement>(linkData->Id, out var achievement))
+        if (!ExcelService.TryGetRow<Achievement>(linkData->UIntValue1, out var achievement))
             return;
 
         using var tooltipText = new Utf8String();
@@ -138,13 +139,5 @@ public unsafe partial class AchievementLinkTooltip(
             unitBase->Id,
             *(AtkResNode**)(args.Addon + 0x230),
             tooltipText.StringPtr);
-    }
-
-    [StructLayout(LayoutKind.Explicit)]
-    public struct LinkData
-    {
-        [FieldOffset(0x10)] public byte* Payload;
-        [FieldOffset(0x1B)] public byte Type;
-        [FieldOffset(0x24)] public uint Id;
     }
 }
