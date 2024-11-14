@@ -26,6 +26,6 @@ public unsafe partial struct AddonPvPCharacter
     [VirtualFunction(2)]
     public partial void ReceiveEvent(AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData = 0);
 
-    [MemberFunction("E8 ?? ?? ?? ?? 4C 8B B7 ?? ?? ?? ?? 49 8B 46 20")]
+    [MemberFunction("E8 ?? ?? ?? ?? 4C 8B B7 ?? ?? ?? ?? 49 8B 46 28")]
     public partial void UpdateClasses(NumberArrayData** numberArrayData, StringArrayData** stringArrayData);
 }

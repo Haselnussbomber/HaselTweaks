@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DalamudPackager" Version="2.1.13" />
+    <PackageReference Include="DalamudPackager" Version="11.0.0" />
     <Reference Include="Dalamud" Private="false" />
     <Reference Include="ImGui.NET" Private="false" />
     <Reference Include="ImGuiScene" Private="false" />

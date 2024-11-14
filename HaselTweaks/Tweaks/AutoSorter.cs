@@ -175,7 +175,7 @@ public unsafe partial class AutoSorter(
         Queue.Clear();
     }
 
-    private void OnLogout()
+    private void OnLogout(int type, int code)
     {
         Queue.Clear();
     }

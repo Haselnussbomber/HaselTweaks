@@ -72,7 +72,7 @@ public unsafe partial class ScrollableTabs(
         if (!ClientState.IsLoggedIn)
             return;
 
-        _wheelState = Math.Clamp(UIInputData.Instance()->MouseWheel, -1, 1);
+        _wheelState = Math.Clamp(UIInputData.Instance()->CursorInputs.MouseWheel, -1, 1);
         if (_wheelState == 0)
             return;
 

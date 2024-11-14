@@ -596,9 +596,8 @@ public unsafe partial class EnhancedLoginLogout(
 
         Logger.LogDebug("Preloading territory #{territoryId}: {bg}", territoryTypeId, bg);
 
-        var layoutWorld = LayoutWorld.Instance();
-        layoutWorld->UnloadPrefetchLayout();
-        layoutWorld->LoadPrefetchLayout(
+        LayoutWorld.UnloadPrefetchLayout();
+        LayoutWorld.Instance()->LoadPrefetchLayout(
             2,
             bg,
             /* LayerEntryType.PopRange */ 40,
