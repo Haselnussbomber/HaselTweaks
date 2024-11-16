@@ -52,7 +52,7 @@ public unsafe partial class PortraitHelper(
     public static PortraitPreset? ClipboardPreset { get; set; }
 
     private Hook<UIClipboard.Delegates.OnClipboardDataChanged>? OnClipboardDataChangedHook;
-    //private Hook<HaselRaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
+    private Hook<HaselRaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
     private bool WasBoundByDuty;
 
     public void OnInitialize()
@@ -60,11 +60,10 @@ public unsafe partial class PortraitHelper(
         OnClipboardDataChangedHook = GameInteropProvider.HookFromAddress<UIClipboard.Delegates.OnClipboardDataChanged>(
             UIClipboard.MemberFunctionPointers.OnClipboardDataChanged,
             OnClipboardDataChangedDetour);
-        /*
+        
         UpdateGearsetHook = GameInteropProvider.HookFromAddress<HaselRaptureGearsetModule.Delegates.UpdateGearset>(
             HaselRaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
             UpdateGearsetDetour);
-        */
     }
 
     public void OnEnable()
@@ -76,26 +75,26 @@ public unsafe partial class PortraitHelper(
 
         AddonObserver.AddonOpen += OnAddonOpen;
         AddonObserver.AddonClose += OnAddonClose;
-        //ClientState.TerritoryChanged += OnTerritoryChanged;
-        //GameEventService.ClassJobChange += OnClassJobChange;
+        ClientState.TerritoryChanged += OnTerritoryChanged;
+        GameEventService.ClassJobChange += OnClassJobChange;
 
         OnClipboardDataChangedHook?.Enable();
-        //UpdateGearsetHook?.Enable();
+        UpdateGearsetHook?.Enable();
     }
 
     public void OnDisable()
     {
         AddonObserver.AddonOpen -= OnAddonOpen;
         AddonObserver.AddonClose -= OnAddonClose;
-        //ClientState.TerritoryChanged -= OnTerritoryChanged;
-        //GameEventService.ClassJobChange -= OnClassJobChange;
+        ClientState.TerritoryChanged -= OnTerritoryChanged;
+        GameEventService.ClassJobChange -= OnClassJobChange;
 
         PluginInterface.RemoveChatLinkHandler(1000);
 
         MenuBar.Close();
 
         OnClipboardDataChangedHook?.Disable();
-        //UpdateGearsetHook?.Disable();
+        UpdateGearsetHook?.Disable();
     }
 
     void IDisposable.Dispose()
@@ -105,7 +104,7 @@ public unsafe partial class PortraitHelper(
 
         OnDisable();
         OnClipboardDataChangedHook?.Dispose();
-        //UpdateGearsetHook?.Dispose();
+        UpdateGearsetHook?.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);
@@ -136,7 +135,7 @@ public unsafe partial class PortraitHelper(
 
         MenuBar.Close();
     }
-    /*
+    
     private void OnTerritoryChanged(ushort territoryTypeId)
     {
         if (WasBoundByDuty && !Condition[ConditionFlag.BoundByDuty56])
@@ -152,7 +151,7 @@ public unsafe partial class PortraitHelper(
                 cancellationToken: MismatchCheckCTS.Token);
         }
     }
-    */
+    
     private void OnClipboardDataChangedDetour(UIClipboard* uiClipboard)
     {
         OnClipboardDataChangedHook!.Original(uiClipboard);
@@ -168,7 +167,7 @@ public unsafe partial class PortraitHelper(
             Logger.LogError(ex, "Error reading preset");
         }
     }
-    /*
+    
     private int UpdateGearsetDetour(HaselRaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
         var ret = UpdateGearsetHook!.Original(raptureGearsetModule, gearsetId);
@@ -257,12 +256,12 @@ public unsafe partial class PortraitHelper(
             raptureGearsetModule->EquipGearset(gearset->Id, gearset->GlamourSetLink);
             RecheckGearChecksum(banner);
         }
-        else if (!isJobChange && Config.AutoUpdatePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
-        {
-            Logger.LogInformation("Trying to send portrait update...");
-            if (SendPortraitUpdate(banner))
-                RecheckGearChecksum(banner);
-        }
+        //else if (!isJobChange && Config.AutoUpdatePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
+        //{
+        //    Logger.LogInformation("Trying to send portrait update...");
+        //    if (SendPortraitUpdate(banner))
+        //        RecheckGearChecksum(banner);
+        //}
         else if (Config.NotifyGearChecksumMismatch)
         {
             NotifyMismatch();
@@ -351,7 +350,7 @@ public unsafe partial class PortraitHelper(
 
         return BannerModuleEntry.GenerateChecksum(itemIds, stainIds, glassesIds, gearVisibilityFlag);
     }
-
+    /*
     private bool SendPortraitUpdate(BannerModuleEntry* banner)
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
