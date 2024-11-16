@@ -60,7 +60,7 @@ public unsafe partial class PortraitHelper(
         OnClipboardDataChangedHook = GameInteropProvider.HookFromAddress<UIClipboard.Delegates.OnClipboardDataChanged>(
             UIClipboard.MemberFunctionPointers.OnClipboardDataChanged,
             OnClipboardDataChangedDetour);
-        
+
         UpdateGearsetHook = GameInteropProvider.HookFromAddress<HaselRaptureGearsetModule.Delegates.UpdateGearset>(
             HaselRaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
             UpdateGearsetDetour);
@@ -135,7 +135,7 @@ public unsafe partial class PortraitHelper(
 
         MenuBar.Close();
     }
-    
+
     private void OnTerritoryChanged(ushort territoryTypeId)
     {
         if (WasBoundByDuty && !Condition[ConditionFlag.BoundByDuty56])
@@ -151,7 +151,7 @@ public unsafe partial class PortraitHelper(
                 cancellationToken: MismatchCheckCTS.Token);
         }
     }
-    
+
     private void OnClipboardDataChangedDetour(UIClipboard* uiClipboard)
     {
         OnClipboardDataChangedHook!.Original(uiClipboard);
@@ -167,7 +167,7 @@ public unsafe partial class PortraitHelper(
             Logger.LogError(ex, "Error reading preset");
         }
     }
-    
+
     private int UpdateGearsetDetour(HaselRaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
         var ret = UpdateGearsetHook!.Original(raptureGearsetModule, gearsetId);
@@ -331,11 +331,19 @@ public unsafe partial class PortraitHelper(
         };
 
         var itemIds = stackalloc uint[14];
-        var stainIds = stackalloc byte[14 * 2];
+        var stainIds0 = stackalloc byte[14];
+        var stainIds1 = stackalloc byte[14];
         var glassesIds = stackalloc ushort[2];
 
-        if (!data.LoadEquipmentData(itemIds, stainIds, glassesIds))
+        if (!data.LoadEquipmentData(itemIds, stainIds0, stainIds1, glassesIds))
             return 0;
+
+        var stainIds = stackalloc byte[14 * 2];
+        for (var i = 0; i < 14; i++)
+        {
+            stainIds[i * 2] = stainIds0[i];
+            stainIds[i * 2 + 1] = stainIds1[i];
+        }
 
         var gearVisibilityFlag = BannerGearVisibilityFlag.None;
 
