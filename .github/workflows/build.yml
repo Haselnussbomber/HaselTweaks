@@ -24,7 +24,6 @@ on:
         options:
           - master
           - stg
-          - api11
 
 jobs:
   build:
@@ -51,8 +50,6 @@ jobs:
             echo "branch=${{ github.event.inputs.dalamud_branch }}" >> $GITHUB_OUTPUT
           elif [[ "${{ github.event.ref }}" == "refs/heads/stg" ]] || [[ "${{ github.event.head_commit.message }}" == "[stg]"* ]]; then
             echo "branch=stg" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event.ref }}" == "refs/heads/api11" ]] || [[ "${{ github.event.head_commit.message }}" == "[api11]"* ]]; then
-            echo "branch=api11" >> $GITHUB_OUTPUT
           else
             echo "branch=master" >> $GITHUB_OUTPUT
           fi
@@ -62,8 +59,7 @@ jobs:
           DALAMUD_URL: >
             ${{ fromJson('{
               "master": "https://goatcorp.github.io/dalamud-distrib/latest.zip",
-              "stg": "https://goatcorp.github.io/dalamud-distrib/stg/latest.zip",
-              "api11": "https://goatcorp.github.io/dalamud-distrib/api11/latest.zip"
+              "stg": "https://goatcorp.github.io/dalamud-distrib/stg/latest.zip"
             }')[steps.branch.outputs.branch] }}
         run: |
           curl -o latest.zip ${{ env.DALAMUD_URL }}
