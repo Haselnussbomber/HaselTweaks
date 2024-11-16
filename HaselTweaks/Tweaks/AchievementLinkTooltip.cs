@@ -55,7 +55,7 @@ public unsafe partial class AchievementLinkTooltip(
     {
         var unitBase = (AtkUnitBase*)args.Addon;
 
-        if (!unitBase->IsReady || *(byte*)(args.Addon + 0x399) != 0 || *(byte*)(args.Addon + 0x3D6) != 0)
+        if (!unitBase->IsReady || *(byte*)(args.Addon + 0x3A1) != 0 || *(byte*)(args.Addon + 0x3DE) != 0)
             return;
 
         if (args is not AddonReceiveEventArgs receiveEventArgs)
@@ -137,7 +137,7 @@ public unsafe partial class AchievementLinkTooltip(
         // ShowTooltip call @ AddonChatLog_OnRefresh, case 0x12
         AtkStage.Instance()->TooltipManager.ShowTooltip(
             unitBase->Id,
-            *(AtkResNode**)(args.Addon + 0x230),
+            *(AtkResNode**)(args.Addon + 0x248),
             tooltipText.StringPtr);
     }
 }
