@@ -176,13 +176,13 @@ public unsafe partial class EnhancedMaterialList(
         if (args is not AddonReceiveEventArgs receiveEventArgs)
             return;
 
-        switch (receiveEventArgs.AtkEventType)
+        switch ((AtkEventType)receiveEventArgs.AtkEventType)
         {
-            case (byte)AtkEventType.ButtonClick when receiveEventArgs.EventParam == 1: // refresh button clicked
+            case AtkEventType.ButtonClick when receiveEventArgs.EventParam == 1: // refresh button clicked
                 _canRefreshMaterialList = false;
                 return;
 
-            case (byte)AtkEventType.ListItemToggle:
+            case AtkEventType.ListItemToggle:
                 if (!Config.ClickToOpenMap)
                     return;
 
@@ -210,7 +210,7 @@ public unsafe partial class EnhancedMaterialList(
 
                 return;
 
-            case 61: // gets fired every second unless it's refreshing the material list
+            case AtkEventType.TimerTick: // gets fired every second unless it's refreshing the material list
                 _canRefreshMaterialList = true;
                 return;
         }
@@ -221,13 +221,13 @@ public unsafe partial class EnhancedMaterialList(
         if (args is not AddonReceiveEventArgs receiveEventArgs)
             return;
 
-        switch (receiveEventArgs.AtkEventType)
+        switch ((AtkEventType)receiveEventArgs.AtkEventType)
         {
-            case (byte)AtkEventType.ButtonClick when receiveEventArgs.EventParam == 0: // refresh button clicked
+            case AtkEventType.ButtonClick when receiveEventArgs.EventParam == 0: // refresh button clicked
                 _canRefreshRecipeTree = false;
                 return;
 
-            case 61: // gets fired every second unless it's refreshing the recipe tree
+            case AtkEventType.TimerTick: // gets fired every second unless it's refreshing the recipe tree
                 _canRefreshRecipeTree = true;
                 return;
         }
