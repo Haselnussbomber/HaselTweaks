@@ -52,7 +52,7 @@ public unsafe partial class PortraitHelper(
     public static PortraitPreset? ClipboardPreset { get; set; }
 
     private Hook<UIClipboard.Delegates.OnClipboardDataChanged>? OnClipboardDataChangedHook;
-    private Hook<HaselRaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
+    private Hook<RaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
     private bool WasBoundByDuty;
 
     public void OnInitialize()
@@ -61,8 +61,8 @@ public unsafe partial class PortraitHelper(
             UIClipboard.MemberFunctionPointers.OnClipboardDataChanged,
             OnClipboardDataChangedDetour);
 
-        UpdateGearsetHook = GameInteropProvider.HookFromAddress<HaselRaptureGearsetModule.Delegates.UpdateGearset>(
-            HaselRaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
+        UpdateGearsetHook = GameInteropProvider.HookFromAddress<RaptureGearsetModule.Delegates.UpdateGearset>(
+            RaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
             UpdateGearsetDetour);
     }
 
@@ -168,7 +168,7 @@ public unsafe partial class PortraitHelper(
         }
     }
 
-    private int UpdateGearsetDetour(HaselRaptureGearsetModule* raptureGearsetModule, int gearsetId)
+    private int UpdateGearsetDetour(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
         var ret = UpdateGearsetHook!.Original(raptureGearsetModule, gearsetId);
 

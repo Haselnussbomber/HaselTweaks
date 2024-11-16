@@ -4,14 +4,14 @@ namespace HaselTweaks.Structs;
 
 [GenerateInterop]
 [VirtualTable("48 8D 05 ?? ?? ?? ?? 48 8D 8B ?? ?? ?? ?? 48 89 03 E8 ?? ?? ?? ?? 33 FF 48 89 BB", 3)]
-[StructLayout(LayoutKind.Explicit, Size = 0xD08)]
+[StructLayout(LayoutKind.Explicit, Size = 0xD10)]
 public unsafe partial struct AddonPvPCharacter
 {
     public const int NUM_CLASSES = 21;
 
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x250), FixedSizeArray] internal FixedSizeArray21<ClassEntry> _classEntries;
+    [FieldOffset(0x258), FixedSizeArray] internal FixedSizeArray21<ClassEntry> _classEntries;
 
     [StructLayout(LayoutKind.Explicit, Size = 0x28)]
     public struct ClassEntry
