@@ -1,6 +1,8 @@
 # Changelog
 
-# [Unreleased]
+## [28.0.0] (2024-11-17)
+
+Preliminary update for 7.1 (Dalamud staging).
 
 ### New Tweak: Outfit Glamour Try On
 
@@ -1781,6 +1783,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[28.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.3...v28.0.0
 [27.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.2...v27.0.3
 [27.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.1...v27.0.2
 [27.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.0...v27.0.1
