@@ -1242,6 +1242,14 @@
     "zh": "这些物品可以被存储到收藏柜中！\n点击以重新存储物品。"
   },
 
+  "OutfitGlamourTryOn.Tweak.Name": {
+    "en": "Outfit Glamour Try On"
+  },
+  "OutfitGlamourTryOn.Tweak.Description": {
+    "en": "Adds a context menu entry to the items in the \"Outfit Glamour Creation\" window so you can try them on.",
+    "de": "Fügt einen Kontextmenüeintrag zu den Gegenständen im \"Setprojektion\"-Fenster hinzu, damit du sie anprobieren kannst."
+  },
+
   "HideMSQComplete.Tweak.Name": {
     "en": "Hide MSQ Complete",
     "zh": "隐藏主线向导"

@@ -2,6 +2,10 @@
 
 # [Unreleased]
 
+### New Tweak: Outfit Glamour Try On
+
+I'm bad with names, I know, but this one adds a context menu entry to the items in the "Outfit Glamour Creation" window so you can try them on.
+
 ### Removed Tweak: Disable Mount Tilt
 
 No longer needed, because Tilt Configuration was added in Patch 7.1 (Character Configuration -> Control Settings -> Character tab).
