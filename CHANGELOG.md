@@ -4,7 +4,11 @@
 
 ### Removed Tweak: Disable Mount Tilt
 
-No longer needed, because Tilt Configuration was added in Patch 7.1.
+No longer needed, because Tilt Configuration was added in Patch 7.1 (Character Configuration -> Control Settings -> Character tab).
+
+### Portrait Helper
+
+Disabled the option "Automatically update portrait", because I simply don't have the headroom to reverse-engineer this right now. (This was the option for portraits not linked to gear sets.)
 
 ## [27.0.3] (2024-10-29)
 
