@@ -533,7 +533,7 @@ public unsafe partial class EnhancedLoginLogout(
     {
         OpenLoginWaitDialogHook!.Original(agent, position);
 
-        if (CurrentEntry == null)
+        if (!Config.PreloadTerritory || CurrentEntry == null)
             return;
 
         ushort territoryTypeId = CurrentEntry.TerritoryType switch
