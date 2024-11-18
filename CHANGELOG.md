@@ -1,5 +1,11 @@
 # Changelog
 
+## [28.0.1] (2024-11-18)
+
+### Portrait Helper
+
+- **Fixed:** Animation timeline in the Advanced Edit Mode would always reset when seeking backwards (offset fixes).
+
 ## [28.0.0] (2024-11-17)
 
 Preliminary update for 7.1 (Dalamud staging).
@@ -1783,6 +1789,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[28.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.0...v28.0.1
 [28.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.3...v28.0.0
 [27.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.2...v27.0.3
 [27.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.1...v27.0.2
