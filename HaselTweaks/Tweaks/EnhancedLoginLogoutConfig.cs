@@ -201,7 +201,13 @@ public unsafe partial class EnhancedLoginLogout
 
 
         // PreloadTerritory
-        ConfigGui.DrawBool("PreloadTerritory", ref Config.PreloadTerritory);
+        if (ConfigGui.DrawBool("PreloadTerritory", ref Config.PreloadTerritory))
+        {
+            if (Config.PreloadTerritory)
+                OpenLoginWaitDialogHook?.Enable();
+            else
+                OpenLoginWaitDialogHook?.Disable();
+        }
 
         ConfigGui.DrawConfigurationHeader("EnhancedLoginLogout.Config.LogoutOptions.Title");
 

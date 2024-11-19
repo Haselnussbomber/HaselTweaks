@@ -37,7 +37,6 @@ public unsafe partial class EnhancedLoginLogout(
     IAddonLifecycle AddonLifecycle,
     TextureService TextureService,
     ExcelService ExcelService,
-    PlayerService PlayerService,
     ConfigGui ConfigGui)
     : IConfigurableTweak
 {
@@ -76,7 +75,7 @@ public unsafe partial class EnhancedLoginLogout(
     {
         GameConfig.Changed += OnGameConfigChanged;
         ClientState.Login += OnLogin;
-        PlayerService.LoggingOut += OnLogout;
+        ClientState.Logout += OnLogout;
 
         UpdateCharacterSettings();
         PreloadEmotes();
@@ -86,14 +85,16 @@ public unsafe partial class EnhancedLoginLogout(
         UpdateCharaSelectDisplayHook?.Enable();
         CleanupCharactersHook?.Enable();
         ExecuteEmoteHook?.Enable();
-        OpenLoginWaitDialogHook?.Enable();
+
+        if (Config.PreloadTerritory)
+            OpenLoginWaitDialogHook?.Enable();
     }
 
     public void OnDisable()
     {
         GameConfig.Changed -= OnGameConfigChanged;
         ClientState.Login -= OnLogin;
-        PlayerService.LoggingOut -= OnLogout;
+        ClientState.Logout -= OnLogout;
 
         AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Logo", OnLogoPostSetup);
 
@@ -125,7 +126,7 @@ public unsafe partial class EnhancedLoginLogout(
         UpdateCharacterSettings();
     }
 
-    private void OnLogout()
+    private void OnLogout(int type, int code)
     {
         _isRecordingEmote = false;
 
@@ -361,45 +362,45 @@ public unsafe partial class EnhancedLoginLogout(
             if (!ExcelService.TryGetRow<Emote>(emoteId, out var emote))
                 continue;
 
-            void PreloadActionTimeline(uint actionTimelineId)
-            {
-                if (actionTimelineId == 0 || processedActionTimelineIds.Contains(actionTimelineId))
-                    return;
-
-                var index = 0u;
-                foreach (var row in ExcelService.GetSheet<ActionTimeline>())
-                {
-                    if (row.RowId == actionTimelineId)
-                        break;
-
-                    index++;
-                }
-
-                if (!ExcelService.TryGetRow<ActionTimeline>(actionTimelineId, out var actionTimeline))
-                    return;
-
-                if (actionTimeline.Key.IsEmpty)
-                    return;
-
-                Logger.LogInformation("Preloading tmb {key} (Emote: {emoteId}, ActionTimeline: {actionTimelineId})", actionTimeline.Key.ExtractText(), emoteId, actionTimelineId);
-
-                fixed (byte* keyPtr = actionTimeline.Key.Data.Span.WithNullTerminator())
-                {
-                    var preloadInfo = new ActionTimelineManager.PreloadActionTmbInfo
-                    {
-                        Key = keyPtr,
-                        Index = index
-                    };
-
-                    ActionTimelineManager.Instance()->PreloadActionTmb(&preloadInfo);
-                }
-
-                processedActionTimelineIds.Add(actionTimelineId);
-            }
-
-            PreloadActionTimeline(emote.ActionTimeline[0].RowId); // EmoteTimelineType.Loop
-            PreloadActionTimeline(emote.ActionTimeline[1].RowId); // EmoteTimelineType.Intro
+            PreloadActionTimeline(processedActionTimelineIds, emoteId, emote.ActionTimeline[0].RowId); // EmoteTimelineType.Loop
+            PreloadActionTimeline(processedActionTimelineIds, emoteId, emote.ActionTimeline[1].RowId); // EmoteTimelineType.Intro
         }
+    }
+
+    private void PreloadActionTimeline(HashSet<uint> processedActionTimelineIds, uint emoteId, uint actionTimelineId)
+    {
+        if (actionTimelineId == 0 || processedActionTimelineIds.Contains(actionTimelineId))
+            return;
+
+        var index = 0u;
+        foreach (var row in ExcelService.GetSheet<ActionTimeline>())
+        {
+            if (row.RowId == actionTimelineId)
+                break;
+
+            index++;
+        }
+
+        if (!ExcelService.TryGetRow<ActionTimeline>(actionTimelineId, out var actionTimeline))
+            return;
+
+        if (actionTimeline.Key.IsEmpty)
+            return;
+
+        Logger.LogInformation("Preloading tmb {key} (Emote: {emoteId}, ActionTimeline: {actionTimelineId})", actionTimeline.Key.ExtractText(), emoteId, actionTimelineId);
+
+        fixed (byte* keyPtr = actionTimeline.Key.Data.Span.WithNullTerminator())
+        {
+            var preloadInfo = new ActionTimelineManager.PreloadActionTmbInfo
+            {
+                Key = keyPtr,
+                Index = index
+            };
+
+            ActionTimelineManager.Instance()->PreloadActionTmb(&preloadInfo);
+        }
+
+        processedActionTimelineIds.Add(actionTimelineId);
     }
 
     private void SaveEmote(uint emoteId)
