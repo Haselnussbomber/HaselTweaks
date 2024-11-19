@@ -1,5 +1,13 @@
 # Changelog
 
+## [28.0.3] (2024-11-18)
+
+Updated ClientStructs for some AgentLobby offset fixes.
+
+### Enhanced Login/Logout
+
+- **Changed:** As crash prevention, the tweak now hooks `AgentLobby.OpenLoginWaitDialog` only when "Preload territory when queued" is enabled.
+
 ## [28.0.2] (2024-11-18)
 
 ### Enhanced Login/Logout
@@ -1795,6 +1803,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[28.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.2...v28.0.3
 [28.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.1...v28.0.2
 [28.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.0...v28.0.1
 [28.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.3...v28.0.0
