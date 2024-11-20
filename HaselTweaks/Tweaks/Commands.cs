@@ -118,7 +118,7 @@ public unsafe partial class Commands(
 
         ChatGui.Print(new XivChatEntry
         {
-            Message = sb.ToDalamudString(),
+            MessageBytes = sb.ToArray(),
             Type = XivChatType.Echo
         });
     }
@@ -164,9 +164,9 @@ public unsafe partial class Commands(
         {
             ChatGui.Print(new XivChatEntry
             {
-                Message = sb
+                MessageBytes = sb
                     .Append(TextService.TranslateSeString("Commands.WhatMount.WithoutItem", name))
-                    .ToDalamudString(),
+                    .ToArray(),
                 Type = XivChatType.Echo
             });
             return;
@@ -176,9 +176,9 @@ public unsafe partial class Commands(
         {
             ChatGui.Print(new XivChatEntry
             {
-                Message = sb
+                MessageBytes = sb
                     .Append(TextService.TranslateSeString("Commands.WhatMount.WithoutItem", name))
-                    .ToDalamudString(),
+                    .ToArray(),
                 Type = XivChatType.Echo
             });
             return;
@@ -188,7 +188,7 @@ public unsafe partial class Commands(
 
         ChatGui.Print(new XivChatEntry
         {
-            Message = sb.ToDalamudString(),
+            MessageBytes = sb.ToArray(),
             Type = XivChatType.Echo
         });
     }
@@ -226,10 +226,10 @@ public unsafe partial class Commands(
 
         ChatGui.Print(new XivChatEntry
         {
-            Message = new SeStringBuilder()
+            MessageBytes = new SeStringBuilder()
                 .AppendHaselTweaksPrefix()
                 .Append(TextService.TranslateSeString("Commands.Emote", emoteId.ToString(), TextService.GetEmoteName(emoteId)))
-                .ToDalamudString(),
+                .ToArray(),
             Type = XivChatType.Echo
         });
     }
@@ -278,7 +278,7 @@ public unsafe partial class Commands(
 
         ChatGui.Print(new XivChatEntry
         {
-            Message = sb.ToDalamudString(),
+            MessageBytes = sb.ToArray(),
             Type = XivChatType.Echo
         });
     }

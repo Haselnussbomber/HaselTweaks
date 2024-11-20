@@ -11,7 +11,7 @@ using Dalamud.Memory;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
-using HaselCommon.Extensions;
+using HaselCommon.Extensions.Collections;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;

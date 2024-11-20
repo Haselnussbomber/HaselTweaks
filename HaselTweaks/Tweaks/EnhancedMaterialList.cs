@@ -17,6 +17,7 @@ using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
 using Lumina.Excel.Sheets;
+using Lumina.Extensions;
 using Lumina.Text;
 using Lumina.Text.Payloads;
 using Lumina.Text.ReadOnly;

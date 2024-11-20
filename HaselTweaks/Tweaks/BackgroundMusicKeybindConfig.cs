@@ -6,6 +6,7 @@ using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using ImGuiNET;
+using Lumina.Extensions;
 
 namespace HaselTweaks.Tweaks;
 
@@ -89,7 +90,7 @@ public unsafe partial class BackgroundMusicKeybind
         ImGui.SameLine();
 
         var previewValue = TextService.Translate("BackgroundMusicKeybind.Config.KeyCombo.Preview.None");
-        var hasKey = Config.Keybind.FindFirst(x => x is not (VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT), out var key);
+        var hasKey = Config.Keybind.TryGetFirst(x => x is not (VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT), out var key);
         if (hasKey)
             previewValue = key.GetFancyName();
 
