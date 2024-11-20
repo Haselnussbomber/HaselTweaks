@@ -54,8 +54,14 @@ public sealed unsafe class MarketBoardItemPreview(
         var itemId = *(uint*)((nint)AgentItemSearch.Instance() + itemIndex * 4 + 0xBBC);
         Logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId} @ {addr:X}", itemIndex, itemId, args.Addon + itemIndex * 4 + 0xBBC);
 
-        if (!ExcelService.TryGetRow<Item>(itemId, out var item) || !ItemService.CanTryOn(item))
+        if (!ExcelService.TryGetRow<Item>(itemId, out var item))
             return;
+
+        if (!ItemService.CanTryOn(item))
+        {
+            Logger.LogInformation("Skipping preview of {name}, because it can't be tried on", ItemService.GetItemName(item));
+            return;
+        }
 
         AgentTryon.TryOn(((AtkUnitBase*)args.Addon)->Id, itemId, 0, 0, 0);
     }
