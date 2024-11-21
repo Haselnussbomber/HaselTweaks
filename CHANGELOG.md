@@ -1,5 +1,13 @@
 # Changelog
 
+## [28.0.4] (2024-11-21)
+
+Just some code cleanup and fixes.
+
+### Market Board Item Preview
+
+- **Changed**: Items that cannot be previewed due to race or sex restrictions are now ignored.
+
 ## [28.0.3] (2024-11-18)
 
 Updated ClientStructs for some AgentLobby offset fixes.
@@ -1803,6 +1811,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[28.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.3...v28.0.4
 [28.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.2...v28.0.3
 [28.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.1...v28.0.2
 [28.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.0...v28.0.1
