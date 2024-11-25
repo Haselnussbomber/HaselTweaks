@@ -1,5 +1,12 @@
 # Changelog
 
+## [28.0.5] (2024-11-25)
+
+### Enhanced Experience Bar
+
+- **Fixed:** The actual experience bar would only be a tenth long of what it was supposed to be.
+- **Fixed:** After teleporting out of a PvP area, the bar would remain in PvP bar mode.
+
 ## [28.0.4] (2024-11-21)
 
 Just some code cleanup and fixes.
@@ -1811,6 +1818,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[28.0.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.4...v28.0.5
 [28.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.3...v28.0.4
 [28.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.2...v28.0.3
 [28.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.1...v28.0.2
