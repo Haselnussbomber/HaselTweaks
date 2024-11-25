@@ -226,10 +226,10 @@ public unsafe partial class EnhancedExpBar(
         var numberArray = AtkStage.Instance()->GetNumberArrayData(NumberArrayType.Hud);
 
         numberArray->SetValue(16, experience);
-        numberArray->SetValue(17, maxExperience == 0 ? 0 : (int)MathF.Round(experience / (float)maxExperience * 1000f));
+        numberArray->SetValue(17, maxExperience == 0 ? 0 : (int)MathF.Round(experience * 10000f / maxExperience));
         numberArray->SetValue(18, maxExperience);
         numberArray->SetValue(19, restedExperience);
-        numberArray->SetValue(20, restedExperience == 0 ? 0 : (int)MathF.Round(restedExperience / (float)maxExperience * 1000f));
+        numberArray->SetValue(20, restedExperience == 0 ? 0 : (int)MathF.Round(restedExperience * 10000f / maxExperience));
     }
 
     private void TriggerReset()
