@@ -154,14 +154,14 @@ public unsafe partial class EnhancedLoginLogout(
     private ulong ActiveContentId => CurrentEntry?.ContentId ?? ClientState.LocalContentId;
 
     // called every frame
-    private void UpdateCharaSelectDisplayDetour(AgentLobby* agent, sbyte index, bool a2)
+    private bool UpdateCharaSelectDisplayDetour(AgentLobby* agent, sbyte index, bool a2)
     {
-        UpdateCharaSelectDisplayHook!.Original(agent, index, a2);
+        var retVal = UpdateCharaSelectDisplayHook!.Original(agent, index, a2);
 
         if (index < 0)
         {
             CleanupCharaSelect();
-            return;
+            return retVal;
         }
 
         if (index >= 100)
@@ -171,15 +171,15 @@ public unsafe partial class EnhancedLoginLogout(
         if (entry == null)
         {
             CleanupCharaSelect();
-            return;
+            return retVal;
         }
 
         if (CurrentEntry?.ContentId == entry->ContentId)
-            return;
+            return retVal;
 
         var character = CharaSelectCharacterList.GetCurrentCharacter();
         if (character == null)
-            return;
+            return retVal;
 
         CurrentEntry = new(character, entry);
 
@@ -189,6 +189,8 @@ public unsafe partial class EnhancedLoginLogout(
 
         if (Config.SelectedEmotes.TryGetValue(ActiveContentId, out var emoteId))
             PlayEmote(emoteId);
+
+        return retVal;
     }
 
     private void CleanupCharactersDetour()
