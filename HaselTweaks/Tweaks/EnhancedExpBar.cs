@@ -101,7 +101,7 @@ public unsafe partial class EnhancedExpBar(
             return;
         }
 
-        if (Config.ForcePvPSeriesBar && GameMain.IsInPvPArea())
+        if (Config.ForcePvPSeriesBar && ClientState.IsPvP)
         {
             OverwriteWithPvPBar();
             return;
