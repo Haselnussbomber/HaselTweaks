@@ -1,3 +1,4 @@
+/*
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -76,3 +77,4 @@ public unsafe partial struct BannerUpdateData
     // [MemberFunction("E8 ?? ?? ?? ?? 89 6B 5C")]
     // public partial void Initialize();
 }
+*/

@@ -5,13 +5,12 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Extensions.Strings;
 using HaselCommon.Services;
 using HaselCommon.Services.SeStringEvaluation;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;
 
@@ -98,8 +97,7 @@ public unsafe class CastBarAetheryteNames(
 
         var info = TeleportInfo.Value;
 
-        var row = ExcelService.GetRow<Aetheryte>(info.AetheryteId);
-        if (row == null)
+        if (!ExcelService.TryGetRow<Aetheryte>(info.AetheryteId, out var row))
         {
             Clear();
             return;
@@ -109,7 +107,8 @@ public unsafe class CastBarAetheryteNames(
         {
             _ when info.IsApartment => TextService.GetAddonText(8518),
             _ when info.IsSharedHouse => SeStringEvaluator.EvaluateFromAddon(8519, new SeStringContext() { LocalParameters = [(uint)info.Ward, (uint)info.Plot] }).ToString(),
-            _ => ExcelService.GetRow<PlaceName>(row.PlaceName.Row)?.Name?.ExtractText() ?? string.Empty,
+            _ when row.PlaceName.IsValid => row.PlaceName.Value.Name.ExtractText(),
+            _ => string.Empty
         };
 
         AtkStage.Instance()->GetStringArrayData(StringArrayType.CastBar)->SetValue(0, placeName, false, true, false);

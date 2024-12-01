@@ -72,7 +72,7 @@ public unsafe partial class ScrollableTabs(
         if (!ClientState.IsLoggedIn)
             return;
 
-        _wheelState = Math.Clamp(UIInputData.Instance()->MouseWheel, -1, 1);
+        _wheelState = Math.Clamp(UIInputData.Instance()->CursorInputs.MouseWheel, -1, 1);
         if (_wheelState == 0)
             return;
 
@@ -599,7 +599,7 @@ public unsafe partial class ScrollableTabs(
         var numberArray = atkStage->GetNumberArrayData(NumberArrayType.Currency);
         var currentTab = numberArray->IntArray[0];
 
-        var newTab = GetTabIndex(currentTab, 4);
+        var newTab = GetTabIndex(currentTab, 5);
 
         if (currentTab == newTab)
             return;
@@ -729,5 +729,6 @@ public unsafe partial class ScrollableTabs(
         var data = new AtkEventData();
         data.ListItemData.SelectedIndex = tabIndex; // technically the index of an id array, but it's literally the same value
         addon->AtkUnitBase.ReceiveEvent((AtkEventType)37, 0, &atkEvent, &data);
+
     }
 }

@@ -13,7 +13,7 @@ using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
@@ -37,8 +37,6 @@ public unsafe class AdvancedEditOverlay(
     private float _duration;
     private int _frameCount;
     private bool _isDragging;
-    private UIColor? titleColor;
-    private Color? noteColor;
 
     private AgentBannerEditorState* EditorState => AgentBannerEditor.Instance()->EditorState;
     private CharaViewPortrait* CharaView => EditorState != null ? EditorState->CharaView : null;
@@ -104,7 +102,7 @@ public unsafe class AdvancedEditOverlay(
                 TextService.Translate("PortraitHelperWindows.AdvancedEditOverlay.Title.Inner"),
                 pushDown: false,
                 respectUiTheme: true,
-                titleColor ??= ExcelService.GetRow<UIColor>(2)!);
+                ExcelService.CreateRef<UIColor>(2));
         }
 
         using (var table = ImRaii.Table("##Table", 2))
@@ -123,7 +121,7 @@ public unsafe class AdvancedEditOverlay(
             }
         }
 
-        using (ImRaii.PushColor(ImGuiCol.Text, (uint)(Misc.IsLightTheme && !IsWindow ? (noteColor ??= ExcelService.GetRow<UIColor>(3)!.GetForegroundColor()) : Color.Grey)))
+        using (ImRaii.PushColor(ImGuiCol.Text, (uint)(Misc.IsLightTheme && !IsWindow && ExcelService.TryGetRow<UIColor>(3, out var noteColor) ? noteColor.GetForegroundColor() : Color.Grey)))
         {
             TextService.Draw("PortraitHelperWindows.AdvancedEditOverlay.Note.Label");
             TextService.DrawWrapped("PortraitHelperWindows.AdvancedEditOverlay.Note.Text");

@@ -16,7 +16,8 @@ using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
+using Lumina.Extensions;
 using Lumina.Text;
 using Lumina.Text.Payloads;
 using Lumina.Text.ReadOnly;
@@ -176,13 +177,13 @@ public unsafe partial class EnhancedMaterialList(
         if (args is not AddonReceiveEventArgs receiveEventArgs)
             return;
 
-        switch (receiveEventArgs.AtkEventType)
+        switch ((AtkEventType)receiveEventArgs.AtkEventType)
         {
-            case (byte)AtkEventType.ButtonClick when receiveEventArgs.EventParam == 1: // refresh button clicked
+            case AtkEventType.ButtonClick when receiveEventArgs.EventParam == 1: // refresh button clicked
                 _canRefreshMaterialList = false;
                 return;
 
-            case (byte)AtkEventType.ListItemToggle:
+            case AtkEventType.ListItemToggle:
                 if (!Config.ClickToOpenMap)
                     return;
 
@@ -193,11 +194,11 @@ public unsafe partial class EnhancedMaterialList(
                 var rowData = **(nint**)(data + 0x08);
                 var itemId = *(uint*)(rowData + 0x04);
 
-                var item = ExcelService.GetRow<Item>(itemId);
-                if (item == null)
+                var itemRef = ExcelService.CreateRef<Item>(itemId);
+                if (!itemRef.IsValid)
                     return;
 
-                if (Config.DisableClickToOpenMapForCrystals && item.ItemUICategory.Row == 59)
+                if (Config.DisableClickToOpenMapForCrystals && itemRef.Value.ItemUICategory.RowId == 59)
                     return;
 
                 var tuple = GetPointForItem(itemId);
@@ -206,11 +207,11 @@ public unsafe partial class EnhancedMaterialList(
 
                 var (totalPoints, point, cost, isSameZone, placeName) = tuple.Value;
 
-                MapService.OpenMap(point, item, new SeStringBuilder().Append("HaselTweaks").ToReadOnlySeString());
+                MapService.OpenMap(point, itemRef, new SeStringBuilder().Append("HaselTweaks").ToReadOnlySeString());
 
                 return;
 
-            case 61: // gets fired every second unless it's refreshing the material list
+            case AtkEventType.TimerTick: // gets fired every second unless it's refreshing the material list
                 _canRefreshMaterialList = true;
                 return;
         }
@@ -221,13 +222,13 @@ public unsafe partial class EnhancedMaterialList(
         if (args is not AddonReceiveEventArgs receiveEventArgs)
             return;
 
-        switch (receiveEventArgs.AtkEventType)
+        switch ((AtkEventType)receiveEventArgs.AtkEventType)
         {
-            case (byte)AtkEventType.ButtonClick when receiveEventArgs.EventParam == 0: // refresh button clicked
+            case AtkEventType.ButtonClick when receiveEventArgs.EventParam == 0: // refresh button clicked
                 _canRefreshRecipeTree = false;
                 return;
 
-            case 61: // gets fired every second unless it's refreshing the recipe tree
+            case AtkEventType.TimerTick: // gets fired every second unless it's refreshing the recipe tree
                 _canRefreshRecipeTree = true;
                 return;
         }
@@ -302,12 +303,11 @@ public unsafe partial class EnhancedMaterialList(
 
         // TODO: only for missing items?
 
-        var item = ExcelService.GetRow<Item>(itemId);
-        if (item == null)
+        if (!ExcelService.TryGetRow<Item>(itemId, out var item))
             return;
 
         // Exclude Crystals
-        if (Config.DisableZoneNameForCrystals && item.ItemUICategory.Row == 59)
+        if (Config.DisableZoneNameForCrystals && item.ItemUICategory.RowId == 59)
             return;
 
         var tuple = GetPointForItem(itemId);
@@ -386,31 +386,37 @@ public unsafe partial class EnhancedMaterialList(
 
     private (int, GatheringPoint, uint, bool, ReadOnlySeString)? GetPointForItem(uint itemId)
     {
-        var gatheringItem = ItemService.GetGatheringItems(itemId).FirstOrNull();
-        if (gatheringItem == null)
+        var gatheringItems = ItemService.GetGatheringItems(itemId);
+        if (!gatheringItems.Any())
             return null;
 
+        // TODO: rethink this
         var gatheringPointSheet = ExcelService.GetSheet<GatheringPoint>();
         var gatheringPoints = ExcelService.GetSheet<GatheringPointBase>()
-            .Where(row => row.Item.Any(item => item == gatheringItem.RowId))
-            .Select(row => gatheringPointSheet.FirstOrDefault(gprow => gprow?.GatheringPointBase.Row == row.RowId && gprow.TerritoryType.Row > 1, null))
-            .Where(row => row != null)
+            .Where(row => row.Item.Any(item => item.RowId == gatheringItems.First().RowId))
+            .Select(row =>
+            {
+                var hasValue = gatheringPointSheet.TryGetFirst(gprow => gprow.GatheringPointBase.RowId == row.RowId && gprow.TerritoryType.RowId > 1, out var value);
+                return (HasValue: hasValue, Value: value);
+            })
+            .Where(row => row.HasValue)
+            .Select(row => row.Value)
             .ToList();
 
         if (gatheringPoints.Count == 0)
             return null;
 
         var currentTerritoryTypeId = GameMain.Instance()->CurrentTerritoryTypeId;
-        var point = gatheringPoints.FirstOrDefault(row => row?.TerritoryType.Row == currentTerritoryTypeId, null);
-        var isSameZone = point != null;
+        var point = gatheringPoints.FirstOrDefault(row => row.TerritoryType.RowId == currentTerritoryTypeId);
+        var isSameZone = point.RowId != 0;
         var cost = 0u;
-        if (point == null)
+        if (point.RowId == 0)
         {
             foreach (var p in gatheringPoints)
             {
                 foreach (var aetheryte in AetheryteList)
                 {
-                    if (aetheryte.AetheryteId == p!.TerritoryType.Value!.Aetheryte.Row && (cost == 0 || aetheryte.GilCost < cost))
+                    if (aetheryte.AetheryteId == p!.TerritoryType.Value!.Aetheryte.RowId && (cost == 0 || aetheryte.GilCost < cost))
                     {
                         cost = aetheryte.GilCost;
                         point = p;
@@ -420,10 +426,10 @@ public unsafe partial class EnhancedMaterialList(
             }
         }
 
-        if (point == null)
+        if (point.RowId == 0)
             return null;
 
-        var placeName = point.TerritoryType.Value?.PlaceName.Value?.Name;
-        return placeName == null ? null : (gatheringPoints.Count, point, cost, isSameZone, placeName);
+        var placeName = point.TerritoryType.ValueNullable?.PlaceName.ValueNullable?.Name;
+        return placeName == null ? null : (gatheringPoints.Count, point, cost, isSameZone, (ReadOnlySeString)placeName);
     }
 }

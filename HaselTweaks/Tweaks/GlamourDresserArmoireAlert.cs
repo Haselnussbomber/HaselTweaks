@@ -7,7 +7,7 @@ using HaselCommon.Services;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Windows;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
@@ -117,16 +117,14 @@ public unsafe class GlamourDresserArmoireAlert(
             var isHq = itemId is > 1000000 and < 1500000;
             itemId %= 1000000;
 
-            var item = ExcelService.GetRow<Item>(itemId);
-            if (item == null)
+            if (!ExcelService.TryGetRow<Item>(itemId, out var item))
                 continue;
 
-            var cabinet = ExcelService.FindRow<Cabinet>(row => row?.Item.Row == itemId);
-            if (cabinet == null)
+            if (!ExcelService.TryFindRow<Cabinet>(row => row.Item.RowId == itemId, out var cabinet))
                 continue;
 
-            if (!Categories.TryGetValue(item.ItemUICategory.Row, out var categoryItems))
-                Categories.TryAdd(item.ItemUICategory.Row, categoryItems = []);
+            if (!Categories.TryGetValue(item.ItemUICategory.RowId, out var categoryItems))
+                Categories.TryAdd(item.ItemUICategory.RowId, categoryItems = []);
 
             if (!categoryItems.ContainsKey(i))
                 categoryItems.Add(i, (item, isHq));

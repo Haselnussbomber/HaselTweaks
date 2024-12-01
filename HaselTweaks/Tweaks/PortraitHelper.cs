@@ -5,7 +5,6 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Hooking;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -19,7 +18,7 @@ using HaselTweaks.Interfaces;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Structs;
 using HaselTweaks.Windows.PortraitHelperWindows;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
@@ -53,7 +52,7 @@ public unsafe partial class PortraitHelper(
     public static PortraitPreset? ClipboardPreset { get; set; }
 
     private Hook<UIClipboard.Delegates.OnClipboardDataChanged>? OnClipboardDataChangedHook;
-    private Hook<HaselRaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
+    private Hook<RaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
     private bool WasBoundByDuty;
 
     public void OnInitialize()
@@ -62,8 +61,8 @@ public unsafe partial class PortraitHelper(
             UIClipboard.MemberFunctionPointers.OnClipboardDataChanged,
             OnClipboardDataChangedDetour);
 
-        UpdateGearsetHook = GameInteropProvider.HookFromAddress<HaselRaptureGearsetModule.Delegates.UpdateGearset>(
-            HaselRaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
+        UpdateGearsetHook = GameInteropProvider.HookFromAddress<RaptureGearsetModule.Delegates.UpdateGearset>(
+            RaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
             UpdateGearsetDetour);
     }
 
@@ -169,7 +168,7 @@ public unsafe partial class PortraitHelper(
         }
     }
 
-    private int UpdateGearsetDetour(HaselRaptureGearsetModule* raptureGearsetModule, int gearsetId)
+    private int UpdateGearsetDetour(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
         var ret = UpdateGearsetHook!.Original(raptureGearsetModule, gearsetId);
 
@@ -225,7 +224,7 @@ public unsafe partial class PortraitHelper(
         if (gearset == null)
             return;
 
-        if (Config.IgnoreDoHDoL && ExcelService.GetRow<ClassJob>(gearset->ClassJob)?.DohDolJobIndex != -1)
+        if (Config.IgnoreDoHDoL && (!ExcelService.TryGetRow<ClassJob>(gearset->ClassJob, out var classJobRow) || classJobRow.DohDolJobIndex != -1))
             return;
 
         var bannerIndex = gearset->BannerIndex;
@@ -257,12 +256,12 @@ public unsafe partial class PortraitHelper(
             raptureGearsetModule->EquipGearset(gearset->Id, gearset->GlamourSetLink);
             RecheckGearChecksum(banner);
         }
-        else if (!isJobChange && Config.AutoUpdatePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
-        {
-            Logger.LogInformation("Trying to send portrait update...");
-            if (SendPortraitUpdate(banner))
-                RecheckGearChecksum(banner);
-        }
+        //else if (!isJobChange && Config.AutoUpdatePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
+        //{
+        //    Logger.LogInformation("Trying to send portrait update...");
+        //    if (SendPortraitUpdate(banner))
+        //        RecheckGearChecksum(banner);
+        //}
         else if (Config.NotifyGearChecksumMismatch)
         {
             NotifyMismatch();
@@ -332,11 +331,19 @@ public unsafe partial class PortraitHelper(
         };
 
         var itemIds = stackalloc uint[14];
-        var stainIds = stackalloc byte[14 * 2];
+        var stainIds0 = stackalloc byte[14];
+        var stainIds1 = stackalloc byte[14];
         var glassesIds = stackalloc ushort[2];
 
-        if (!data.LoadEquipmentData(itemIds, stainIds, glassesIds))
+        if (!data.LoadEquipmentData(itemIds, stainIds0, stainIds1, glassesIds))
             return 0;
+
+        var stainIds = stackalloc byte[14 * 2];
+        for (var i = 0; i < 14; i++)
+        {
+            stainIds[i * 2] = stainIds0[i];
+            stainIds[i * 2 + 1] = stainIds1[i];
+        }
 
         var gearVisibilityFlag = BannerGearVisibilityFlag.None;
 
@@ -351,7 +358,7 @@ public unsafe partial class PortraitHelper(
 
         return BannerModuleEntry.GenerateChecksum(itemIds, stainIds, glassesIds, gearVisibilityFlag);
     }
-
+    /*
     private bool SendPortraitUpdate(BannerModuleEntry* banner)
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
@@ -446,4 +453,5 @@ public unsafe partial class PortraitHelper(
 
         return result;
     }
+    */
 }

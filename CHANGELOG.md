@@ -1,5 +1,56 @@
 # Changelog
 
+## [28.0.5] (2024-11-25)
+
+### Enhanced Experience Bar
+
+- **Fixed:** The actual experience bar would only be a tenth long of what it was supposed to be.
+- **Fixed:** After teleporting out of a PvP area, the bar would remain in PvP bar mode.
+
+## [28.0.4] (2024-11-21)
+
+Just some code cleanup and fixes.
+
+### Market Board Item Preview
+
+- **Changed**: Items that cannot be previewed due to race or sex restrictions are now ignored.
+
+## [28.0.3] (2024-11-18)
+
+Updated ClientStructs for some AgentLobby offset fixes.
+
+### Enhanced Login/Logout
+
+- **Changed:** As crash prevention, the tweak now hooks `AgentLobby.OpenLoginWaitDialog` only when "Preload territory when queued" is enabled.
+
+## [28.0.2] (2024-11-18)
+
+### Enhanced Login/Logout
+
+- **Fixed:** The tweak never actually checked if "Preload territory when queued" was enabled or not and would always preload the territory in queue.
+
+## [28.0.1] (2024-11-18)
+
+### Portrait Helper
+
+- **Fixed:** Animation timeline in the Advanced Edit Mode would always reset when seeking backwards (offset fixes).
+
+## [28.0.0] (2024-11-17)
+
+Preliminary update for 7.1 (Dalamud staging).
+
+### New Tweak: Outfit Glamour Try On
+
+I'm bad with names, I know, but this one adds a context menu entry to the items in the "Outfit Glamour Creation" window so you can try them on.
+
+### Removed Tweak: Disable Mount Tilt
+
+No longer needed, because Tilt Configuration was added in Patch 7.1 (Character Configuration -> Control Settings -> Character tab).
+
+### Portrait Helper
+
+Disabled the option "Automatically update portrait", because I simply don't have the headroom to reverse-engineer this right now. (This was the option for portraits not linked to gear sets.)
+
 ## [27.0.3] (2024-10-29)
 
 ### Shop Item Icons
@@ -1767,6 +1818,12 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[28.0.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.4...v28.0.5
+[28.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.3...v28.0.4
+[28.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.2...v28.0.3
+[28.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.1...v28.0.2
+[28.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.0...v28.0.1
+[28.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.3...v28.0.0
 [27.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.2...v27.0.3
 [27.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.1...v27.0.2
 [27.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v27.0.0...v27.0.1

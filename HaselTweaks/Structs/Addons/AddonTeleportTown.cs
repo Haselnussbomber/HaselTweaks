@@ -9,7 +9,7 @@ public unsafe partial struct AddonTeleportTown
 {
     [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    [FieldOffset(0x230)] public AtkComponentTreeList* List;
+    [FieldOffset(0x238)] public AtkComponentTreeList* List;
 
     [VirtualFunction(2)]
     public partial void ReceiveEvent(AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData = null);

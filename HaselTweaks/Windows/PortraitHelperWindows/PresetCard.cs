@@ -11,8 +11,7 @@ using Dalamud.Memory;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
-using HaselCommon.Extensions;
-using HaselCommon.Extensions.Strings;
+using HaselCommon.Extensions.Collections;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
@@ -22,7 +21,7 @@ using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using ImGuiNET;
 using Lumina.Data.Files;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -87,8 +86,11 @@ public class PresetCard : IDisposable
         ExcelService = excelService;
         BannerUtils = bannerUtils;
 
-        BannerFrameImage = (uint)(excelService.GetRow<BannerFrame>(Preset.Preset!.BannerFrame)?.Image ?? 0);
-        BannerDecorationImage = (uint)(excelService.GetRow<BannerDecoration>(Preset.Preset.BannerDecoration)?.Image ?? 0);
+        if (excelService.TryGetRow<BannerFrame>(Preset.Preset!.BannerFrame, out var bannerFrameRow))
+            BannerFrameImage = (uint)bannerFrameRow.Image;
+
+        if (excelService.TryGetRow<BannerDecoration>(Preset.Preset.BannerDecoration, out var bannerDecorationImageRow))
+            BannerDecorationImage = (uint)bannerDecorationImageRow.Image;
 
         IsBannerTimelineUnlocked = bannerUtils.IsBannerTimelineUnlocked(Preset.Preset.BannerTimeline);
         IsBannerBgUnlocked = bannerUtils.IsBannerBgUnlocked(Preset.Preset.BannerBg);
@@ -232,25 +234,25 @@ public class PresetCard : IDisposable
                                 TextService.Draw("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.PoseNotUnlocked", BannerUtils.GetBannerTimelineName(Preset.Preset!.BannerTimeline));
                             }
 
-                            if (!IsBannerBgUnlocked)
+                            if (!IsBannerBgUnlocked && ExcelService.TryGetRow<BannerBg>(Preset.Preset!.BannerBg, out var bannerBgRow))
                             {
                                 ImGui.TextUnformatted("•");
                                 ImGui.SameLine(0, 5);
-                                TextService.Draw("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.BackgroundNotUnlocked", ExcelService.GetRow<BannerBg>(Preset.Preset!.BannerBg)?.Name.ExtractText());
+                                TextService.Draw("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.BackgroundNotUnlocked", bannerBgRow.Name.ExtractText());
                             }
 
-                            if (!IsBannerFrameUnlocked)
+                            if (!IsBannerFrameUnlocked && ExcelService.TryGetRow<BannerFrame>(Preset.Preset!.BannerFrame, out var bannerFrameRow))
                             {
                                 ImGui.TextUnformatted("•");
                                 ImGui.SameLine(0, 5);
-                                TextService.Draw("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.FrameNotUnlocked", ExcelService.GetRow<BannerFrame>(Preset.Preset!.BannerFrame)?.Name.ExtractText());
+                                TextService.Draw("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.FrameNotUnlocked", bannerFrameRow.Name.ExtractText());
                             }
 
-                            if (!IsBannerDecorationUnlocked)
+                            if (!IsBannerDecorationUnlocked && ExcelService.TryGetRow<BannerDecoration>(Preset.Preset!.BannerDecoration, out var bannerDecorationRow))
                             {
                                 ImGui.TextUnformatted("•");
                                 ImGui.SameLine(0, 5);
-                                TextService.Draw("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.DecorationNotUnlocked", ExcelService.GetRow<BannerDecoration>(Preset.Preset!.BannerDecoration)?.Name.ExtractText());
+                                TextService.Draw("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.DecorationNotUnlocked", bannerDecorationRow.Name.ExtractText());
                             }
                         }
                     }

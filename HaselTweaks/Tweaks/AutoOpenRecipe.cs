@@ -7,11 +7,12 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using HaselCommon.Extensions;
+using HaselCommon.Extensions.Collections;
 using HaselCommon.Services;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
+using Lumina.Extensions;
 using Microsoft.Extensions.Logging;
 using AgentRecipeNote = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentRecipeNote;
 
@@ -92,24 +93,39 @@ public unsafe class AutoOpenRecipe(
     {
         var localPlayer = Control.GetLocalPlayer();
         if (localPlayer == null)
+        {
+            Logger.LogDebug("Skipping: LocalPlayer is null");
             return false;
+        }
 
         var questManager = QuestManager.Instance();
         foreach (ref var questWork in questManager->NormalQuests)
         {
             if (questWork.QuestId == 0)
+            {
+                Logger.LogDebug("Skipping: Quest #{questId}", questWork.QuestId);
                 continue;
+            }
 
-            var quest = ExcelService.GetRow<Quest>((uint)questWork.QuestId | 0x10000);
-            if (quest == null || !(questManager->GetDailyQuestById(questWork.QuestId) != null || quest.BeastTribe.Row != 0)) // check if daily or tribal quest
+            if (!ExcelService.TryGetRow<Quest>((uint)questWork.QuestId | 0x10000, out var quest))
+            {
+                Logger.LogDebug("Skipping: Quest #{questId} not found", questWork.QuestId | 0x10000);
                 continue;
+            }
+
+            if (!(questManager->GetDailyQuestById(questWork.QuestId) != null || quest.BeastTribe.RowId != 0)) // check if daily or tribal quest
+            {
+                Logger.LogDebug("Skipping: Quest #{questId} is not a daily or tribal quest", questWork.QuestId | 0x10000);
+                continue;
+            }
 
             Logger.LogDebug("Checking Quest #{questId} ({questName}) (Sequence {questSequence})", questWork.QuestId, TextService.GetQuestName((uint)questWork.QuestId | 0x10000), questWork.Sequence);
 
-            var todoOffset = (byte)quest!.ToDoCompleteSeq.IndexOf(questWork.Sequence);
-            if (todoOffset < 0 || todoOffset >= quest.ToDoQty.Length)
+            // TODO: check if this still works
+            var sequence = questWork.Sequence;
+            if (!quest.TodoParams.TryGetFirst(param => param.ToDoCompleteSeq == sequence, out var todoParams, out var todoOffset))
             {
-                Logger.LogDebug("Skipping: todoOffset = {todoOffset}, quest.ToDoQty.Length = {length}", todoOffset, quest.ToDoQty.Length);
+                Logger.LogDebug("Skipping: ToDoCompleteSeq {sequence} not found", sequence);
                 continue;
             }
 
@@ -122,14 +138,11 @@ public unsafe class AutoOpenRecipe(
 
             uint GetScriptArg(string scriptArgName = "RITEM1")
             {
-                var scriptArgIndex = quest.ScriptInstruction
-                    .IndexOf(entry => entry.RawString == scriptArgName);
-
-                return quest.ScriptArg.ElementAtOrDefault(scriptArgIndex);
+                return quest.QuestParams.TryGetFirst(p => p.ScriptInstruction == scriptArgName, out var param) ? param.ScriptArg : 0;
             }
 
-            var todoCount = quest.ToDoQty[todoOffset];
-            for (var todoIndex = todoOffset; todoIndex < todoOffset + todoCount; todoIndex++)
+            var todoCount = todoParams.ToDoQty;
+            for (var todoIndex = (byte)todoOffset; todoIndex < todoOffset + todoCount; todoIndex++)
             {
                 uint numHave, numNeeded, resultItemId;
                 questEventHandler->GetTodoArgs(localPlayer, todoIndex, &numHave, &numNeeded, &resultItemId);
@@ -257,15 +270,14 @@ public unsafe class AutoOpenRecipe(
     private bool TryOpenRecipe(uint materialItemId, uint resultItemId, uint amount)
     {
         var craftType = GetCurrentCraftType();
-        var recipe = ExcelService.FindRow<Recipe>(row => row?.ItemResult.Row == resultItemId && row.CraftType.Row == craftType)
-                  ?? ExcelService.FindRow<Recipe>(row => row?.ItemResult.Row == resultItemId);
-        if (recipe == null)
+        if (!ExcelService.TryFindRow<Recipe>(row => row.ItemResult.RowId == resultItemId && row.CraftType.RowId == craftType, out var recipe) &&
+            !ExcelService.TryFindRow(row => row.ItemResult.RowId == resultItemId, out recipe))
         {
             Logger.LogDebug("Not opening Recipe for Item {resultItemId}: Recipe not found", resultItemId);
             return false;
         }
 
-        if (!recipe.UnkData5.Any(item => item.ItemIngredient == materialItemId))
+        if (!recipe.Ingredient.Any(item => item.RowId == materialItemId))
         {
             Logger.LogDebug("Not opening Recipe for Item {resultItemId}: Required ingredient {materialItemId} not needed", resultItemId, materialItemId);
             return false;
@@ -283,7 +295,7 @@ public unsafe class AutoOpenRecipe(
 
         agentRecipeNote->AgentInterface.Hide();
 
-        if (recipe.CraftType.Row == craftType)
+        if (recipe.CraftType.RowId == craftType)
             agentRecipeNote->OpenRecipeByRecipeIdInternal(recipe.RowId);
         else
             agentRecipeNote->OpenRecipeByItemId(resultItemId);
@@ -297,23 +309,23 @@ public unsafe class AutoOpenRecipe(
         if (inventoryManager == null)
             return false;
 
-        foreach (var ingredient in recipe.UnkData5)
+        for (var i = 0; i < recipe.Ingredient.Count; i++)
         {
-            if (ingredient.ItemIngredient == 0 || ingredient.AmountIngredient == 0)
+            var ingredientItem = recipe.Ingredient[i];
+            var ingredientAmount = recipe.AmountIngredient[i];
+
+            if (ingredientAmount == 0 || !ingredientItem.IsValid)
                 continue;
 
-            var itemId = (uint)ingredient.ItemIngredient;
-
-            var item = ExcelService.GetRow<Item>(itemId);
-            if (item == null || item.ItemUICategory.Row == 59) // ignore Crystals
+            if (ingredientItem.Value.ItemUICategory.RowId == 59) // ignore Crystals
                 continue;
 
-            var numHave = inventoryManager->GetInventoryItemCount(itemId, false, false, false); // Normal
-            numHave += inventoryManager->GetInventoryItemCount(itemId, true, false, false); // HQ
+            var numHave = inventoryManager->GetInventoryItemCount(ingredientItem.RowId, false, false, false); // Normal
+            numHave += inventoryManager->GetInventoryItemCount(ingredientItem.RowId, true, false, false); // HQ
 
-            var numNeeded = ingredient.AmountIngredient * amount;
+            var numNeeded = ingredientAmount * amount;
 
-            Logger.LogDebug("Checking Ingredient #{itemIngredient}: need {numNeeded}, have {numHave}", ingredient.ItemIngredient, numNeeded, numHave);
+            Logger.LogDebug("Checking Ingredient #{itemIngredient}: need {numNeeded}, have {numHave}", ingredientItem.RowId, numNeeded, numHave);
 
             if (numHave < numNeeded)
                 return false;

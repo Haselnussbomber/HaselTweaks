@@ -1,4 +1,3 @@
-using System.Text;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text;
 using Dalamud.Plugin;
@@ -9,8 +8,9 @@ using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Lumina.Text;
+using Lumina.Text.ReadOnly;
 using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 
 namespace HaselTweaks.Tweaks;
@@ -54,14 +54,14 @@ public unsafe partial class DTR(
         DtrBusy.Shown = false;
 
         Framework.Update += OnFrameworkUpdate;
-        ClientState.Logout += ResetCache;
+        ClientState.Logout += OnLogout;
         TextService.LanguageChanged += OnLanguageChanged;
     }
 
     public void OnDisable()
     {
         Framework.Update -= OnFrameworkUpdate;
-        ClientState.Logout -= ResetCache;
+        ClientState.Logout -= OnLogout;
         TextService.LanguageChanged -= OnLanguageChanged;
 
         DtrInstance?.Remove();
@@ -95,6 +95,11 @@ public unsafe partial class DTR(
         UpdateBusy();
     }
 
+    private void OnLogout(int type, int code)
+    {
+        ResetCache();
+    }
+
     private void ResetCache()
     {
         LastFrameRate = 0;
@@ -114,7 +119,7 @@ public unsafe partial class DTR(
         DtrBusy.Text = new SeStringBuilder()
             .PushColorType(1)
             .PushEdgeColorType(16)
-            .Append(ExcelService.GetRow<OnlineStatus>(12)?.Name.RawData.ToArray() ?? Encoding.UTF8.GetBytes("Busy"))
+            .Append(ExcelService.TryGetRow<OnlineStatus>(12, out var busyStatus) ? busyStatus.Name : ReadOnlySeString.FromText("Busy"))
             .PopEdgeColorType()
             .PopColorType()
             .ToSeString()
@@ -153,7 +158,7 @@ public unsafe partial class DTR(
         if (DtrBusy == null)
             return;
 
-        DtrBusy.Shown = ClientState.IsLoggedIn && ClientState.LocalPlayer?.OnlineStatus.Id == 12;
+        DtrBusy.Shown = ClientState.IsLoggedIn && ClientState.LocalPlayer?.OnlineStatus.RowId == 12;
     }
 
     private void UpdateFPS()

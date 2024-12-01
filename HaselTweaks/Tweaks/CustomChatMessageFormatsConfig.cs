@@ -11,7 +11,7 @@ using HaselCommon.Gui;
 using HaselCommon.Services.SeStringEvaluation;
 using HaselTweaks.Config;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Lumina.Text;
 using Lumina.Text.Expressions;
 using Lumina.Text.Payloads;
@@ -781,10 +781,10 @@ public partial class CustomChatMessageFormats
 
         void Add(uint logKindId, uint logFilterId)
         {
-            var logKindRow = ExcelService.GetRow<LogKind>(logKindId)!;
-            var logFilterRow = ExcelService.GetRow<LogFilter>(logFilterId)!;
-            if (logKindRow != null && logFilterRow != null && logKindRow.Format.RawData.Length > 0)
-                list.Add((logKindRow, logFilterRow, new(logKindRow.Format.RawData.ToArray())));
+            ExcelService.TryGetRow<LogKind>(logKindId, out var logKindRow);
+            ExcelService.TryGetRow<LogFilter>(logFilterId, out var logFilterRow);
+            if (logKindRow.Format.ByteLength > 0)
+                list.Add((logKindRow, logFilterRow, logKindRow.Format));
             else
                 Logger.LogWarning("GenerateLogKindCache(): Skipped ({logKindId}, {logFilterId})", logKindId, logFilterId);
         }
@@ -834,7 +834,7 @@ public partial class CustomChatMessageFormats
         foreach (var row in CachedLogKindRows)
         {
             if (row.LogKind.RowId == logKindId)
-                return row.LogFilter.Name;
+                return row.LogFilter.Name.ExtractText();
         }
 
         return $"LogKind #{logKindId}";

@@ -13,7 +13,7 @@ using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Tweaks;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
@@ -101,9 +101,9 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
                 WindowPadding.Push(ImGuiStyleVar.WindowPadding, Vector2.Zero);
             }
 
-            if (Misc.IsLightTheme)
+            if (Misc.IsLightTheme && ExcelService.TryGetRow<UIColor>(2, out var uiColor))
             {
-                WindowText.Push(ImGuiCol.Text, (uint)ExcelService.GetRow<UIColor>(2)!.GetForegroundColor());
+                WindowText.Push(ImGuiCol.Text, (uint)uiColor.GetForegroundColor());
             }
 
             WindowBg.Push(ImGuiCol.WindowBg, 0);

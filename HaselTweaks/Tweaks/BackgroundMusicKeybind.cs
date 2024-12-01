@@ -7,6 +7,7 @@ using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
+using Lumina.Extensions;
 
 namespace HaselTweaks.Tweaks;
 
@@ -75,7 +76,7 @@ public unsafe partial class BackgroundMusicKeybind(
         if (numKeysPressed == Config.Keybind.Length)
         {
             // prevents the game from handling the key press
-            if (Config.Keybind.FindFirst(x => x is not (VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT), out var key))
+            if (Config.Keybind.TryGetFirst(x => x is not (VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT), out var key))
             {
                 KeyState[key] = false;
             }

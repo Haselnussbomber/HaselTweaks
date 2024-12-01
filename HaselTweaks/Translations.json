@@ -1242,6 +1242,14 @@
     "zh": "这些物品可以被存储到收藏柜中！\n点击以重新存储物品。"
   },
 
+  "OutfitGlamourTryOn.Tweak.Name": {
+    "en": "Outfit Glamour Try On"
+  },
+  "OutfitGlamourTryOn.Tweak.Description": {
+    "en": "Adds a context menu entry to the items in the \"Outfit Glamour Creation\" window so you can try them on.",
+    "de": "Fügt einen Kontextmenüeintrag zu den Gegenständen im \"Setprojektion\"-Fenster hinzu, damit du sie anprobieren kannst."
+  },
+
   "HideMSQComplete.Tweak.Name": {
     "en": "Hide MSQ Complete",
     "zh": "隐藏主线向导"
@@ -1459,16 +1467,6 @@
     "en": "Visible on hover",
     "de": "Sichtbar beim Mausüberfahren",
     "zh": "鼠标悬停时可见"
-  },
-
-  "MountTiltControl.Tweak.Name": {
-    "en": "Disable Mount Tilt",
-    "zh": "禁用坐骑倾斜"
-  },
-  "MountTiltControl.Tweak.Description": {
-    "en": "Disables leaning into turns during riding or flying.",
-    "de": "Deaktiviert die Neigung in Kurven während des Reitens oder Fliegens.",
-    "zh": "禁用骑乘或飞行时转弯的倾斜。"
   },
 
   "PortraitHelper.Tweak.Name": {

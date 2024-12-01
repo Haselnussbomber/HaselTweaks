@@ -11,7 +11,7 @@ using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using Lumina.Text;
 using Lumina.Text.Payloads;
-using Achievement = Lumina.Excel.GeneratedSheets.Achievement;
+using Achievement = Lumina.Excel.Sheets.Achievement;
 
 namespace HaselTweaks.Tweaks;
 
@@ -55,7 +55,7 @@ public unsafe partial class AchievementLinkTooltip(
     {
         var unitBase = (AtkUnitBase*)args.Addon;
 
-        if (!unitBase->IsReady || *(byte*)(args.Addon + 0x399) != 0 || *(byte*)(args.Addon + 0x3D6) != 0)
+        if (!unitBase->IsReady || *(byte*)(args.Addon + 0x3A1) != 0 || *(byte*)(args.Addon + 0x3DE) != 0)
             return;
 
         if (args is not AddonReceiveEventArgs receiveEventArgs)
@@ -64,13 +64,13 @@ public unsafe partial class AchievementLinkTooltip(
         if (receiveEventArgs.AtkEventType != (byte)AtkEventType.LinkMouseOver)
             return;
 
-        var linkData = *(LinkData**)receiveEventArgs.Data;
-        var linkType = (LinkMacroPayloadType)linkData->Type;
+        var eventData = *(AtkEventData*)receiveEventArgs.Data;
+        var linkData = eventData.LinkData;
+        var linkType = (LinkMacroPayloadType)linkData->LinkType;
         if (linkType is not LinkMacroPayloadType.Achievement)
             return;
 
-        var achievement = ExcelService.GetRow<Achievement>(linkData->Id);
-        if (achievement == null)
+        if (!ExcelService.TryGetRow<Achievement>(linkData->UIntValue1, out var achievement))
             return;
 
         using var tooltipText = new Utf8String();
@@ -83,9 +83,9 @@ public unsafe partial class AchievementLinkTooltip(
 
         if (Config.PreventSpoiler)
         {
-            var isHiddenCategory = achievement.AchievementCategory.Value?.HideCategory == true;
-            var isHiddenName = achievement.AchievementHideCondition.Value?.HideName == true;
-            var isHiddenAchievement = achievement.AchievementHideCondition.Value?.HideAchievement == true;
+            var isHiddenCategory = achievement.AchievementCategory.ValueNullable?.HideCategory == true;
+            var isHiddenName = achievement.AchievementHideCondition.ValueNullable?.HideName == true;
+            var isHiddenAchievement = achievement.AchievementHideCondition.ValueNullable?.HideAchievement == true;
 
             canShowName |= !isHiddenName || isComplete;
             canShowDescription |= !(isHiddenCategory || isHiddenAchievement) || isComplete;
@@ -98,7 +98,7 @@ public unsafe partial class AchievementLinkTooltip(
           .EndMacro();
 
         if (canShowName)
-            sb.Append(achievement.Name.AsReadOnly());
+            sb.Append(achievement.Name);
         else
             sb.Append(TextService.GetAddonText(3384)); // "???"
 
@@ -106,7 +106,7 @@ public unsafe partial class AchievementLinkTooltip(
         sb.BeginMacro(MacroCode.NewLine).EndMacro();
 
         if (canShowDescription)
-            sb.Append(achievement.Description.AsReadOnly());
+            sb.Append(achievement.Description);
         else
             sb.Append(TextService.GetAddonText(3385)); // "???"
 
@@ -137,15 +137,7 @@ public unsafe partial class AchievementLinkTooltip(
         // ShowTooltip call @ AddonChatLog_OnRefresh, case 0x12
         AtkStage.Instance()->TooltipManager.ShowTooltip(
             unitBase->Id,
-            *(AtkResNode**)(args.Addon + 0x230),
+            *(AtkResNode**)(args.Addon + 0x248),
             tooltipText.StringPtr);
-    }
-
-    [StructLayout(LayoutKind.Explicit)]
-    public struct LinkData
-    {
-        [FieldOffset(0x10)] public byte* Payload;
-        [FieldOffset(0x1B)] public byte Type;
-        [FieldOffset(0x24)] public uint Id;
     }
 }

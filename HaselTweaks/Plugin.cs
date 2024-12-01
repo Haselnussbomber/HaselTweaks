@@ -5,7 +5,6 @@ using Dalamud.Plugin.Services;
 using HaselCommon.Commands;
 using HaselCommon.Extensions.DependencyInjection;
 using HaselCommon.Services;
-using HaselTweaks.Caches;
 using HaselTweaks.Config;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Utils;
@@ -45,8 +44,6 @@ public sealed class Plugin : IDalamudPlugin
             .AddSingleton<ConfigGui>()
 
             // AetherCurrentHelper
-            .AddSingleton<EObjDataIdCache>()
-            .AddSingleton<LevelObjectCache>()
             .AddSingleton<AetherCurrentHelperWindow>()
 
             // EnhancedIsleworksAgenda

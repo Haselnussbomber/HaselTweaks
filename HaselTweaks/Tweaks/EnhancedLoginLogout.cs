@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Config;
@@ -15,13 +14,14 @@ using FFXIVClientStructs.FFXIV.Client.System.Scheduler;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Extensions.Memory;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Records;
 using HaselTweaks.Structs;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using Microsoft.Extensions.Logging;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
@@ -37,7 +37,6 @@ public unsafe partial class EnhancedLoginLogout(
     IAddonLifecycle AddonLifecycle,
     TextureService TextureService,
     ExcelService ExcelService,
-    PlayerService PlayerService,
     ConfigGui ConfigGui)
     : IConfigurableTweak
 {
@@ -76,7 +75,7 @@ public unsafe partial class EnhancedLoginLogout(
     {
         GameConfig.Changed += OnGameConfigChanged;
         ClientState.Login += OnLogin;
-        PlayerService.LoggingOut += OnLogout;
+        ClientState.Logout += OnLogout;
 
         UpdateCharacterSettings();
         PreloadEmotes();
@@ -86,14 +85,16 @@ public unsafe partial class EnhancedLoginLogout(
         UpdateCharaSelectDisplayHook?.Enable();
         CleanupCharactersHook?.Enable();
         ExecuteEmoteHook?.Enable();
-        OpenLoginWaitDialogHook?.Enable();
+
+        if (Config.PreloadTerritory)
+            OpenLoginWaitDialogHook?.Enable();
     }
 
     public void OnDisable()
     {
         GameConfig.Changed -= OnGameConfigChanged;
         ClientState.Login -= OnLogin;
-        PlayerService.LoggingOut -= OnLogout;
+        ClientState.Logout -= OnLogout;
 
         AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Logo", OnLogoPostSetup);
 
@@ -125,7 +126,7 @@ public unsafe partial class EnhancedLoginLogout(
         UpdateCharacterSettings();
     }
 
-    private void OnLogout()
+    private void OnLogout(int type, int code)
     {
         _isRecordingEmote = false;
 
@@ -153,14 +154,14 @@ public unsafe partial class EnhancedLoginLogout(
     private ulong ActiveContentId => CurrentEntry?.ContentId ?? ClientState.LocalContentId;
 
     // called every frame
-    private void UpdateCharaSelectDisplayDetour(AgentLobby* agent, sbyte index, bool a2)
+    private bool UpdateCharaSelectDisplayDetour(AgentLobby* agent, sbyte index, bool a2)
     {
-        UpdateCharaSelectDisplayHook!.Original(agent, index, a2);
+        var retVal = UpdateCharaSelectDisplayHook!.Original(agent, index, a2);
 
         if (index < 0)
         {
             CleanupCharaSelect();
-            return;
+            return retVal;
         }
 
         if (index >= 100)
@@ -170,15 +171,15 @@ public unsafe partial class EnhancedLoginLogout(
         if (entry == null)
         {
             CleanupCharaSelect();
-            return;
+            return retVal;
         }
 
         if (CurrentEntry?.ContentId == entry->ContentId)
-            return;
+            return retVal;
 
         var character = CharaSelectCharacterList.GetCurrentCharacter();
         if (character == null)
-            return;
+            return retVal;
 
         CurrentEntry = new(character, entry);
 
@@ -188,6 +189,8 @@ public unsafe partial class EnhancedLoginLogout(
 
         if (Config.SelectedEmotes.TryGetValue(ActiveContentId, out var emoteId))
             PlayEmote(emoteId);
+
+        return retVal;
     }
 
     private void CleanupCharactersDetour()
@@ -358,52 +361,53 @@ public unsafe partial class EnhancedLoginLogout(
 
         foreach (var emoteId in Config.SelectedEmotes.Values.ToHashSet())
         {
-            var emote = ExcelService.GetRow<Emote>(emoteId);
-            if (emote == null)
+            if (!ExcelService.TryGetRow<Emote>(emoteId, out var emote))
                 continue;
 
-            void PreloadActionTimeline(uint actionTimelineId)
-            {
-                if (actionTimelineId == 0 || processedActionTimelineIds.Contains(actionTimelineId))
-                    return;
-
-                var index = 0u;
-                foreach (var row in ExcelService.GetSheet<ActionTimeline>())
-                {
-                    if (row.RowId == actionTimelineId)
-                        break;
-
-                    index++;
-                }
-
-                var key = ExcelService.GetRow<ActionTimeline>(actionTimelineId)?.Key.RawString;
-                if (string.IsNullOrEmpty(key))
-                    return;
-
-                Logger.LogInformation("Preloading tmb {key} (Emote: {emoteId}, ActionTimeline: {actionTimelineId})", key, emoteId, actionTimelineId);
-
-                fixed (byte* keyPtr = Encoding.UTF8.GetBytes(key + "\0"))
-                {
-                    var preloadInfo = new ActionTimelineManager.PreloadActionTmbInfo
-                    {
-                        Key = keyPtr,
-                        Index = index
-                    };
-
-                    ActionTimelineManager.Instance()->PreloadActionTmb(&preloadInfo);
-                }
-
-                processedActionTimelineIds.Add(actionTimelineId);
-            }
-
-            PreloadActionTimeline(emote.ActionTimeline[0].Row); // EmoteTimelineType.Loop
-            PreloadActionTimeline(emote.ActionTimeline[1].Row); // EmoteTimelineType.Intro
+            PreloadActionTimeline(processedActionTimelineIds, emoteId, emote.ActionTimeline[0].RowId); // EmoteTimelineType.Loop
+            PreloadActionTimeline(processedActionTimelineIds, emoteId, emote.ActionTimeline[1].RowId); // EmoteTimelineType.Intro
         }
+    }
+
+    private void PreloadActionTimeline(HashSet<uint> processedActionTimelineIds, uint emoteId, uint actionTimelineId)
+    {
+        if (actionTimelineId == 0 || processedActionTimelineIds.Contains(actionTimelineId))
+            return;
+
+        var index = 0u;
+        foreach (var row in ExcelService.GetSheet<ActionTimeline>())
+        {
+            if (row.RowId == actionTimelineId)
+                break;
+
+            index++;
+        }
+
+        if (!ExcelService.TryGetRow<ActionTimeline>(actionTimelineId, out var actionTimeline))
+            return;
+
+        if (actionTimeline.Key.IsEmpty)
+            return;
+
+        Logger.LogInformation("Preloading tmb {key} (Emote: {emoteId}, ActionTimeline: {actionTimelineId})", actionTimeline.Key.ExtractText(), emoteId, actionTimelineId);
+
+        fixed (byte* keyPtr = actionTimeline.Key.Data.Span.WithNullTerminator())
+        {
+            var preloadInfo = new ActionTimelineManager.PreloadActionTmbInfo
+            {
+                Key = keyPtr,
+                Index = index
+            };
+
+            ActionTimelineManager.Instance()->PreloadActionTmb(&preloadInfo);
+        }
+
+        processedActionTimelineIds.Add(actionTimelineId);
     }
 
     private void SaveEmote(uint emoteId)
     {
-        Logger.LogInformation("Saving Emote #{emoteId} => {name}", emoteId, ExcelService.GetRow<Emote>(emoteId)?.Name ?? "");
+        Logger.LogInformation("Saving Emote #{emoteId} => {name}", emoteId, ExcelService.TryGetRow<Emote>(emoteId, out var emote) ? emote.Name : "");
 
         if (!Config.SelectedEmotes.TryAdd(ActiveContentId, emoteId))
             Config.SelectedEmotes[ActiveContentId] = emoteId;
@@ -425,22 +429,21 @@ public unsafe partial class EnhancedLoginLogout(
             return;
         }
 
-        var emote = ExcelService.GetRow<Emote>(emoteId);
-        if (emote == null)
+        if (!ExcelService.TryGetRow<Emote>(emoteId, out var emote))
         {
             ResetEmoteMode();
             return;
         }
 
-        var intro = (ushort)emote.ActionTimeline[1].Row; // EmoteTimelineType.Intro
-        var loop = (ushort)emote.ActionTimeline[0].Row; // EmoteTimelineType.Loop
+        var intro = (ushort)emote.ActionTimeline[1].RowId; // EmoteTimelineType.Intro
+        var loop = (ushort)emote.ActionTimeline[0].RowId; // EmoteTimelineType.Loop
 
         Logger.LogDebug("Playing Emote {emoteId}: intro {intro}, loop {loop}", emoteId, intro, loop);
 
-        if (emote.EmoteMode.Row != 0)
+        if (emote.EmoteMode.RowId != 0)
         {
-            Logger.LogDebug("EmoteMode: {rowId}", emote.EmoteMode.Row);
-            CurrentEntry.Character->SetMode((CharacterModes)emote.EmoteMode.Value!.ConditionMode, (byte)emote.EmoteMode.Row);
+            Logger.LogDebug("EmoteMode: {rowId}", emote.EmoteMode.RowId);
+            CurrentEntry.Character->SetMode((CharacterModes)emote.EmoteMode.Value!.ConditionMode, (byte)emote.EmoteMode.RowId);
         }
         else
         {
@@ -491,7 +494,7 @@ public unsafe partial class EnhancedLoginLogout(
                 if (emote.RowId == 90) // allow Change Pose
                     continue;
 
-                if (emote.RowId != 0 && emote.Icon != 0 && !(emote.ActionTimeline[0].Row == 0 && emote.ActionTimeline[1].Row == 0))
+                if (emote.RowId != 0 && emote.Icon != 0 && !(emote.ActionTimeline[0].RowId == 0 && emote.ActionTimeline[1].RowId == 0))
                     continue;
 
                 _excludedEmotes.Add(emote.RowId);
@@ -533,7 +536,7 @@ public unsafe partial class EnhancedLoginLogout(
     {
         OpenLoginWaitDialogHook!.Original(agent, position);
 
-        if (CurrentEntry == null)
+        if (!Config.PreloadTerritory || CurrentEntry == null)
             return;
 
         ushort territoryTypeId = CurrentEntry.TerritoryType switch
@@ -589,17 +592,17 @@ public unsafe partial class EnhancedLoginLogout(
         if (territoryTypeId <= 0)
             return;
 
-        var territoryType = ExcelService.GetRow<TerritoryType>(territoryTypeId);
-        if (territoryType == null)
+        if (!ExcelService.TryGetRow<TerritoryType>(territoryTypeId, out var territoryType))
             return;
 
-        Logger.LogDebug("Preloading territory #{territoryId}: {bg}", territoryTypeId, territoryType.Bg.RawString);
+        var bg = territoryType.Bg.ExtractText();
 
-        var layoutWorld = LayoutWorld.Instance();
-        layoutWorld->UnloadPrefetchLayout();
-        layoutWorld->LoadPrefetchLayout(
+        Logger.LogDebug("Preloading territory #{territoryId}: {bg}", territoryTypeId, bg);
+
+        LayoutWorld.UnloadPrefetchLayout();
+        LayoutWorld.Instance()->LoadPrefetchLayout(
             2,
-            territoryType.Bg.RawData,
+            bg,
             /* LayerEntryType.PopRange */ 40,
             0,
             territoryTypeId,
