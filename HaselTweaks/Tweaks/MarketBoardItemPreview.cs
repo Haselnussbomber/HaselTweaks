@@ -51,7 +51,7 @@ public sealed unsafe class MarketBoardItemPreview(
 
         var eventData = (AtkEventData*)addonReceiveEventArgs.Data;
         var itemIndex = eventData->ListItemData.SelectedIndex;
-        var itemId = *(uint*)((nint)AgentItemSearch.Instance() + itemIndex * 4 + 0xBBC);
+        var itemId = AgentItemSearch.Instance()->ListingPageItemIds[itemIndex];
         Logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId} @ {addr:X}", itemIndex, itemId, args.Addon + itemIndex * 4 + 0xBBC);
 
         if (!ExcelService.TryGetRow<Item>(itemId, out var item))
