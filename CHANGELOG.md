@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Reduced Mouse Click Throttle
+
+Reduces the throttling for the MouseClick event of the UI from 300ms to 100ms.
+
 ## [28.0.5] (2024-11-25)
 
 ### Enhanced Experience Bar

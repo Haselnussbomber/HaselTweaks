@@ -1379,6 +1379,14 @@
     "zh": "开关所有"
   },
 
+  "ReducedMouseClickThrottle.Tweak.Name": {
+    "en": "Reduced Mouse Click Throttle"
+  },
+  "ReducedMouseClickThrottle.Tweak.Description": {
+    "en": "Reduces the throttling for the MouseClick event of the UI from 300ms to 100ms.",
+    "de": "Verringert die Drosselung für das MouseClick-Event des UIs von 300ms auf 100ms."
+  },
+
   "MarketBoardItemPreview.Tweak.Name": {
     "en": "Market Board Item Preview",
     "zh": "市场布告板物品预览"
