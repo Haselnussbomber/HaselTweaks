@@ -16,15 +16,11 @@ public abstract class ConfirmationDialog(string title) : IDialog
     private readonly List<ConfirmationButton> _buttons = [];
     private bool _shouldDraw;
     private bool _openCalled = true;
-    private Vector2? _position;
-    private int _initialPositionFrame;
 
     public void Show()
     {
         _shouldDraw = true;
         _openCalled = false;
-        _position = null;
-        _initialPositionFrame = 0;
     }
 
     public void Hide()
@@ -48,21 +44,13 @@ public abstract class ConfirmationDialog(string title) : IDialog
 
         PreDraw();
 
-        if (_initialPositionFrame == 3 && _position != null)
-        {
-            ImGui.SetNextWindowPos(_position.Value);
-            _initialPositionFrame++;
-        }
-        else if (_initialPositionFrame < 3)
-        {
-            _initialPositionFrame++;
-        }
-
         if (!_openCalled)
         {
             ImGui.OpenPopup(WindowName);
             _openCalled = true;
         }
+
+        ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
 
         using var windowPadding = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, new Vector2(14, 10));
         if (!ImGui.BeginPopupModal(WindowName, ref _shouldDraw, ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar))
@@ -99,11 +87,6 @@ public abstract class ConfirmationDialog(string title) : IDialog
             {
                 ImGui.SameLine();
             }
-        }
-
-        if (_initialPositionFrame == 2 && _position == null)
-        {
-            _position = ImGui.GetMainViewport().GetCenter() - ImGui.GetWindowSize() / 2f;
         }
 
         ImGui.EndPopup();
