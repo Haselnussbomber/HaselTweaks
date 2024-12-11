@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Shop Item Icons
+
+- **Fixed**: Wrong icons were displayed when the shop contained locked/hidden items (for example, on Allied Society vendors).
+
 ## [29.0.0] (2024-12-09)
 
 ### New Tweak: Reduced Mouse Click Throttle
