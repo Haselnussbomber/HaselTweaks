@@ -90,8 +90,11 @@ public unsafe partial class ShopItemIcons(PluginConfig PluginConfig, ConfigGui C
                 if (iconIdValue->Type != ValueType.UInt)
                     continue;
 
-                var itemIndex = handler->VisibleItems.GetPointer(i);
-                var itemId = handler->Items.GetPointer(i)->ItemId;
+                var itemIndex = handler->VisibleItems[i];
+                if (itemIndex < 0 || itemIndex > handler->ItemsCount)
+                    continue;
+
+                var itemId = handler->Items.GetPointer(itemIndex)->ItemId;
                 if (itemId == 0)
                     continue;
 
