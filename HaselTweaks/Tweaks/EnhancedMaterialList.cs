@@ -10,7 +10,6 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
@@ -354,10 +353,10 @@ public unsafe partial class EnhancedMaterialList(
         nameNode->SetText(str);
     }
 
-    private void AddItemContextMenuEntriesDetour(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
+    private void AddItemContextMenuEntriesDetour(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName, byte a5, byte a6)
     {
         UpdateContextMenuFlag(itemId, ref flags);
-        AddItemContextMenuEntriesHook!.Original(agent, itemId, flags, itemName);
+        AddItemContextMenuEntriesHook!.Original(agent, itemId, flags, itemName, a5, a6);
     }
 
     private void UpdateContextMenuFlag(uint itemId, ref byte flags)
