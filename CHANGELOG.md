@@ -1,5 +1,14 @@
 # Changelog
 
+## [30.0.1] (2024-12-18)
+
+### Forced Cutscene Sounds
+
+- **Changed:** The default setting of "Unmute Sound Effects" is now on. I don't know why I thought of Chat sound effects, which are handled in System Sounds...
+- **Fixed:** The default setting of "Unmute System Sounds" should've been off, but was on...
+
+Not my day. Sorry.
+
 ## [30.0.0] (2024-12-18)
 
 ### Renamed Tweak: Forced Cutscene Music -> Forced Cutscene Sounds
@@ -1856,6 +1865,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[30.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v30.0.0...v30.0.1
 [30.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v29.0.2...v30.0.0
 [29.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v29.0.1...v29.0.2
 [29.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v29.0.0...v29.0.1
