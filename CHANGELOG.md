@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Tweak removed: Reduced Mouse Click Throttle
+
+This had the unfortunate side effect of preventing double-clicks, for example in the Gear Set List window.
+
 ## [29.0.2] (2024-12-17)
 
 Preliminary update for Patch 7.15.

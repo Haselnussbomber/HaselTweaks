@@ -270,10 +270,6 @@ Configuration options:
 - "Automatically update portrait"  
   Only works for gear sets that are not linked with a glamour plate.
 
-### Reduced Mouse Click Throttle
-
-Reduces the throttling for the MouseClick event of the UI from 300ms to 100ms.
-
 ### Reveal Duty Requirements
 
 Reveals duty names in duty finder, which were shown as "???" to prevent spoilers. Useful for unlocking Mentor roulette.
