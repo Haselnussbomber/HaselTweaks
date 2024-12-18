@@ -2,9 +2,21 @@
 
 ## [Unreleased]
 
+### Renamed Tweak: Forced Cutscene Music -> Forced Cutscene Sounds
+
+New configuration options allow you to unmute specific audio channels:
+
+- Master Volume (default on)
+- BGM (default on)
+- Sound Effects (default off)
+- Voice (default on)
+- Ambient Sounds (default on)
+- System Sounds (default off)
+- Performance (default off)
+
 ### Tweak removed: Reduced Mouse Click Throttle
 
-This had the unfortunate side effect of preventing double-clicks, for example in the Gear Set List window.
+This tweak had the unfortunate side effect of preventing double-clicks, for example when selecting a gear set in the Gear Set List window.
 
 ## [29.0.2] (2024-12-17)
 

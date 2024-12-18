@@ -1138,13 +1138,39 @@
   },
 
   "ForcedCutsceneMusic.Tweak.Name": {
-    "en": "Forced Cutscene Music",
-    "zh": "在过场动画中强制播放音乐"
+    "en": "Forced Cutscene Sounds"
   },
   "ForcedCutsceneMusic.Tweak.Description": {
-    "en": "Automatically unmutes background music in cutscenes.",
-    "de": "Schaltet die Hintergrundmusik in Zwischensequenzen automatisch an.",
-    "zh": "在大多数过场动画中自动解除背景音乐静音。"
+    "en": "Automatically unmutes selected sound channels in cutscenes.",
+    "de": "Hebt automatisch die Stummschaltung von ausgewählten Audiokanälen in Zwischensequenzen auf."
+  },
+  "ForcedCutsceneMusic.Config.HandleMaster.Label": {
+    "en": "Unmute Master Volume",
+    "de": "Stummschaltung von Hauptlautstärke aufheben"
+  },
+  "ForcedCutsceneMusic.Config.HandleBgm.Label": {
+    "en": "Unmute BGM",
+    "de": "Stummschaltung von Hintergrundmusik aufheben"
+  },
+  "ForcedCutsceneMusic.Config.HandleSe.Label": {
+    "en": "Unmute Sound Effects",
+    "de": "Stummschaltung von Soundeffekte aufheben"
+  },
+  "ForcedCutsceneMusic.Config.HandleVoice.Label": {
+    "en": "Unmute Voice",
+    "de": "Stummschaltung von Stimmen aufheben"
+  },
+  "ForcedCutsceneMusic.Config.HandleEnv.Label": {
+    "en": "Unmute Ambient Sounds",
+    "de": "Stummschaltung von Umgebungsgeräusche aufheben"
+  },
+  "ForcedCutsceneMusic.Config.HandleSystem.Label": {
+    "en": "Unmute System Sounds",
+    "de": "Stummschaltung von Systemtöne aufheben"
+  },
+  "ForcedCutsceneMusic.Config.HandlePerform.Label": {
+    "en": "Unmute Performance",
+    "de": "Stummschaltung von Bardenkompositionen aufheben"
   },
   "ForcedCutsceneMusic.Config.Restore.Label": {
     "en": "Restore mute state after cutscene",

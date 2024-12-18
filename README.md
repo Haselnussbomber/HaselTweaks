@@ -174,9 +174,20 @@ Available options include:
 
 Always opens the "Grand Company Delivery Missions" window on the "Expert Delivery" tab.
 
-### Forced Cutscene Music
+### Forced Cutscene Sounds
 
-Automatically unmutes background music in cutscenes.
+Automatically unmutes selected sound channels in cutscenes.
+
+Configuration options:
+
+- Unmute Master Volume (default on)
+- Unmute BGM (default on)
+- Unmute Sound Effects (default off)
+- Unmute Voice (default on)
+- Unmute Ambient Sounds (default on)
+- Unmute System Sounds (default off)
+- Unmute Performance (default off)
+- Restore mute state after cutscene
 
 ### Gear Set Grid
 
