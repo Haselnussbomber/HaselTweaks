@@ -53,8 +53,8 @@
       },
       "Haselnussbomber.YogaSharp": {
         "type": "Transitive",
-        "resolved": "1.1.1",
-        "contentHash": "33KB5VNuyTEAa/AMELxKL6gM1miKJPObSLTTXCpH9s6ZqEVsOv2Qj3JkgJCxfMBdlaDw4dwcC5TqZ9a8qVZ1Eg=="
+        "resolved": "1.1.2",
+        "contentHash": "VYWSWeaG4a2cjLsM9UU9l0R0CBKEJwk0uT+v0rH5bxGX0wXXd5Rkwe+hsCV1X4fy5s5NNYqoI+nLq7FjB/C07g=="
       },
       "JetBrains.Annotations": {
         "type": "Transitive",
@@ -137,7 +137,7 @@
         "type": "Project",
         "dependencies": {
           "FFXIVClientStructs": "[1.0.0, )",
-          "Haselnussbomber.YogaSharp": "[1.1.1, )",
+          "Haselnussbomber.YogaSharp": "[1.1.2, )",
           "Microsoft.Extensions.DependencyInjection": "[9.0.0, )",
           "Microsoft.Extensions.Logging": "[9.0.0, )"
         }

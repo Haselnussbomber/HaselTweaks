@@ -29,6 +29,16 @@ public sealed class Plugin : IDalamudPlugin
     {
         PluginInterface = pluginInterface;
 
+#if HAS_LOCAL_CS
+        FFXIVClientStructs.Interop.Generated.Addresses.Register();
+        Addresses.Register();
+        Resolver.GetInstance.Setup(
+            sigScanner.SearchBase,
+            dataManager.GameData.Repositories["ffxiv"].Version,
+            new FileInfo(Path.Join(pluginInterface.ConfigDirectory.FullName, "SigCache.json")));
+        Resolver.GetInstance.Resolve();
+#endif
+
         Service
             // Dalamud & HaselCommon
             .Initialize(pluginInterface, pluginLog)
@@ -69,16 +79,6 @@ public sealed class Plugin : IDalamudPlugin
             .AddScoped<PresetBrowserOverlay>();
 
         Service.BuildProvider();
-
-#if HAS_LOCAL_CS
-        FFXIVClientStructs.Interop.Generated.Addresses.Register();
-        Addresses.Register();
-        Resolver.GetInstance.Setup(
-            sigScanner.SearchBase,
-            dataManager.GameData.Repositories["ffxiv"].Version,
-            new FileInfo(Path.Join(pluginInterface.ConfigDirectory.FullName, "SigCache.json")));
-        Resolver.GetInstance.Resolve();
-#endif
 
         // TODO: IHostedService?
         framework.RunOnFrameworkThread(() =>
