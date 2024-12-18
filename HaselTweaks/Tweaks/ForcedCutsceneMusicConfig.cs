@@ -7,10 +7,10 @@ public class ForcedCutsceneMusicConfiguration
     public bool Restore = true;
     public bool HandleMaster = true;
     public bool HandleBgm = true;
-    public bool HandleSe = false;
+    public bool HandleSe = true;
     public bool HandleVoice = true;
     public bool HandleEnv = true;
-    public bool HandleSystem = true;
+    public bool HandleSystem = false;
     public bool HandlePerform = false;
 }
 
