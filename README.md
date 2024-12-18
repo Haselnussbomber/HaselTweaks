@@ -182,7 +182,7 @@ Configuration options:
 
 - Unmute Master Volume (default on)
 - Unmute BGM (default on)
-- Unmute Sound Effects (default off)
+- Unmute Sound Effects (default on)
 - Unmute Voice (default on)
 - Unmute Ambient Sounds (default on)
 - Unmute System Sounds (default off)
