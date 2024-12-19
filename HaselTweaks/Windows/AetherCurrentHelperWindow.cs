@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
 using Dalamud.Interface;
@@ -29,6 +30,9 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
     private readonly ExcelService ExcelService;
     private readonly TextService TextService;
     private readonly MapService MapService;
+
+    private readonly Dictionary<uint, EObj> AetherCurrentEObjCache = [];
+    private readonly Dictionary<uint, Level> EObjLevelCache = [];
 
     public AetherCurrentHelperWindow(
         WindowManager windowManager,
@@ -230,11 +234,21 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
     private void DrawEObject(int index, bool isUnlocked, AetherCurrent aetherCurrent)
     {
-        if (!ExcelService.TryFindRow<EObj>(row => row.Data == aetherCurrent.RowId, out var eobj))
-            return;
+        if (!AetherCurrentEObjCache.TryGetValue(aetherCurrent.RowId, out var eobj))
+        {
+            if (!ExcelService.TryFindRow(row => row.Data == aetherCurrent.RowId, out eobj))
+                return;
 
-        if (!ExcelService.TryFindRow<Level>(row => row.Object.RowId == eobj.RowId, out var level))
-            return;
+            AetherCurrentEObjCache.Add(aetherCurrent.RowId, eobj);
+        }
+
+        if (!EObjLevelCache.TryGetValue(eobj.RowId, out var level))
+        {
+            if (!ExcelService.TryFindRow(row => row.Object.RowId == eobj.RowId, out level))
+                return;
+
+            EObjLevelCache.Add(eobj.RowId, level);
+        }
 
         // Icon
         ImGui.TableNextColumn();
