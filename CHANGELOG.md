@@ -1,5 +1,11 @@
 # Changelog
 
+## [30.0.2] (2024-12-19)
+
+### Aether Current Helper
+
+- **Fixed:** Improved performance by caching excel lookups.
+
 ## [30.0.1] (2024-12-18)
 
 ### Forced Cutscene Sounds
@@ -1865,6 +1871,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[30.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v30.0.1...v30.0.2
 [30.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v30.0.0...v30.0.1
 [30.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v29.0.2...v30.0.0
 [29.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v29.0.1...v29.0.2
