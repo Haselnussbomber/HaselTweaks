@@ -205,7 +205,7 @@ public unsafe partial class EnhancedMaterialList(
 
                 var (totalPoints, point, cost, isSameZone, placeName) = tuple.Value;
 
-                MapService.OpenMap(point, itemRef, new SeStringBuilder().Append("HaselTweaks").ToReadOnlySeString());
+                MapService.OpenMap(point, itemRef, "HaselTweaks"u8);
 
                 return;
 
@@ -346,7 +346,7 @@ public unsafe partial class EnhancedMaterialList(
             .Append(placeName)
             .PopEdgeColorType()
             .PopColorType()
-            .ToArray();
+            .GetViewAsSpan();
 
         nameNode->SetText(str);
     }

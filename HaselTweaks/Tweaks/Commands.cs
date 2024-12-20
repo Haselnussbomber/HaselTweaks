@@ -268,7 +268,7 @@ public unsafe partial class Commands(
             .Append(TextService.TranslateSeString("Commands.WhatBarding.AppearanceOf", name))
             .AppendNewLine()
             .Append($"  {TextService.GetAddonText(4987)}: ")
-            .Append(stain.Name.ToString().FirstCharToUpper())
+            .Append(stain.Name.ExtractText().FirstCharToUpper())
             .AppendNewLine()
             .Append($"  {TextService.GetAddonText(4991)}: {(hasTopRow ? topRow.Name.ExtractText() : TextService.GetAddonText(4994))}")
             .AppendNewLine()
