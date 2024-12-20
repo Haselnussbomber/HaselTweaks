@@ -4,7 +4,6 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Hooking;
-using Dalamud.Memory;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
@@ -347,8 +346,7 @@ public unsafe partial class EnhancedMaterialList(
             .Append(placeName)
             .PopEdgeColorType()
             .PopColorType()
-            .ToArray()
-            .NullTerminate();
+            .ToArray();
 
         nameNode->SetText(str);
     }
