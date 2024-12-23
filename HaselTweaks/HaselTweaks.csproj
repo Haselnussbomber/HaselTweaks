@@ -43,5 +43,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HaselCommon\HaselCommon\HaselCommon.csproj" />
+    <ProjectReference Include="..\OtterGui\OtterGui.csproj" />
   </ItemGroup>
 </Project>

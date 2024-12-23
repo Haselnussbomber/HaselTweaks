@@ -14,6 +14,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FFXIVClientStructs", "FFXIV
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FFXIVClientStructs.Generators", "FFXIVClientStructs\FFXIVClientStructs.Generators\FFXIVClientStructs.Generators.csproj", "{4A4E42E1-D93C-4356-93CB-801166EF94DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtterGui", "OtterGui\OtterGui.csproj", "{3598B24C-7B92-4BEE-9CB5-18221D21CFA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtterGuiInternal", "OtterGui\OtterGuiInternal\OtterGuiInternal.csproj", "{9CFB8C03-EF4A-4FAD-A1C2-71D066BBB8D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +74,22 @@ Global
 		{4A4E42E1-D93C-4356-93CB-801166EF94DC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4A4E42E1-D93C-4356-93CB-801166EF94DC}.Release|x64.ActiveCfg = Release|Any CPU
 		{4A4E42E1-D93C-4356-93CB-801166EF94DC}.Release|x64.Build.0 = Release|Any CPU
+		{3598B24C-7B92-4BEE-9CB5-18221D21CFA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3598B24C-7B92-4BEE-9CB5-18221D21CFA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3598B24C-7B92-4BEE-9CB5-18221D21CFA1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3598B24C-7B92-4BEE-9CB5-18221D21CFA1}.Debug|x64.Build.0 = Debug|Any CPU
+		{3598B24C-7B92-4BEE-9CB5-18221D21CFA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3598B24C-7B92-4BEE-9CB5-18221D21CFA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3598B24C-7B92-4BEE-9CB5-18221D21CFA1}.Release|x64.ActiveCfg = Release|Any CPU
+		{3598B24C-7B92-4BEE-9CB5-18221D21CFA1}.Release|x64.Build.0 = Release|Any CPU
+		{9CFB8C03-EF4A-4FAD-A1C2-71D066BBB8D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CFB8C03-EF4A-4FAD-A1C2-71D066BBB8D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CFB8C03-EF4A-4FAD-A1C2-71D066BBB8D3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9CFB8C03-EF4A-4FAD-A1C2-71D066BBB8D3}.Debug|x64.Build.0 = Debug|Any CPU
+		{9CFB8C03-EF4A-4FAD-A1C2-71D066BBB8D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CFB8C03-EF4A-4FAD-A1C2-71D066BBB8D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CFB8C03-EF4A-4FAD-A1C2-71D066BBB8D3}.Release|x64.ActiveCfg = Release|Any CPU
+		{9CFB8C03-EF4A-4FAD-A1C2-71D066BBB8D3}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
