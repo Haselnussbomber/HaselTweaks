@@ -24,7 +24,7 @@ public unsafe class BiggerItemDyeingPreview(IAddonLifecycle AddonLifecycle) : IT
         AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "ColorantColoring", OnPostSetup);
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;

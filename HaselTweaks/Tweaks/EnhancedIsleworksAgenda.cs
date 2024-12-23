@@ -51,7 +51,7 @@ public unsafe partial class EnhancedIsleworksAgenda(
         Window.Close();
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;

@@ -57,7 +57,7 @@ public unsafe partial class ScrollableTabs(
         Framework.Update -= OnFrameworkUpdate;
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;

@@ -105,7 +105,7 @@ public unsafe partial class EnhancedMaterialList(
             addon->Close(true);
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;

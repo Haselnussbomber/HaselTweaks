@@ -68,7 +68,7 @@ public unsafe partial class EnhancedExpBar(
             TriggerReset();
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;

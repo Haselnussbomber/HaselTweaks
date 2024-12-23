@@ -46,7 +46,7 @@ public unsafe class AutoOpenRecipe(
         GameInventory.ItemAddedExplicit -= GameInventory_ItemAddedExplicit;
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
