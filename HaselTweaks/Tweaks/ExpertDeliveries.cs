@@ -44,7 +44,7 @@ public sealed unsafe class ExpertDeliveries(ILogger<ExpertDeliveries> Logger, Ad
             return;
 
         // prevent item selection for controller users to reset to the first entry
-        if (*(short*)&AgentGrandCompanySupply.Instance()->SelectedTab == 2)
+        if (AgentGrandCompanySupply.Instance()->SelectedTab == 2)
             return;
 
         Logger.LogDebug("Changing tab...");
