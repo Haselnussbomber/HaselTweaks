@@ -1,12 +1,12 @@
 using Dalamud.Interface;
-using HaselCommon.Gui;
+using HaselCommon.Gui.Yoga;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using ImGuiNET;
 
 namespace HaselTweaks.Utils;
 
-public abstract class LockableWindow : SimpleWindow
+public abstract class LockableWindow : YogaWindow
 {
     private static readonly ImGuiWindowFlags LockedWindowFlags = ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize;
     private readonly TitleBarButton LockButton;

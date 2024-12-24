@@ -8,19 +8,23 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Gui;
+using HaselCommon.Gui.Yoga;
+using HaselCommon.Gui.Yoga.Components;
+using HaselCommon.Gui.Yoga.Components.Events;
+using HaselCommon.Gui.Yoga.Events;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Tweaks;
 using HaselTweaks.Utils;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
+using Microsoft.Extensions.Logging;
+using YogaSharp;
 
 namespace HaselTweaks.Windows;
 
 public unsafe class AetherCurrentHelperWindow : LockableWindow
 {
-    private bool HideUnlocked = true;
-
     private static readonly Color TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
     private static readonly string[] CompassHeadings = ["E", "NE", "N", "NW", "W", "SW", "S", "SE"];
     private AetherCurrentHelperConfiguration Config => PluginConfig.Tweaks.AetherCurrentHelper;
@@ -30,9 +34,20 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
     private readonly ExcelService ExcelService;
     private readonly TextService TextService;
     private readonly MapService MapService;
+    private readonly AddonObserver AddonObserver;
+    private readonly UnlocksObserver UnlocksObserver;
 
     private readonly Dictionary<uint, EObj> AetherCurrentEObjCache = [];
     private readonly Dictionary<uint, Level> EObjLevelCache = [];
+
+    private readonly Checkbox _hideUnlockedCheckbox;
+    private readonly TextNode _placeNameTextNode;
+    private readonly IconNode _aetherCurrentIcon;
+    private readonly Node _headerNode;
+    private readonly Node _listNode;
+    private readonly Node _allAttunedWrapper;
+    private readonly TextNode _allAttunedTextNode;
+    private AetherCurrentCompFlgSet? _compFlgSet;
 
     public AetherCurrentHelperWindow(
         WindowManager windowManager,
@@ -41,7 +56,10 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         TextureService textureService,
         ExcelService excelService,
         TextService textService,
-        MapService mapService)
+        MapService mapService,
+        AddonObserver addonObserver,
+        UnlocksObserver unlocksObserver,
+        ILogger<AetherCurrentHelperWindow> logger)
         : base(windowManager, pluginConfig, textService, "[HaselTweaks] Aether Current Helper")
     {
         ClientState = clientState;
@@ -49,6 +67,8 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         ExcelService = excelService;
         TextService = textService;
         MapService = mapService;
+        AddonObserver = addonObserver;
+        UnlocksObserver = unlocksObserver;
 
         SizeCondition = ImGuiCond.FirstUseEver;
         Size = new Vector2(350);
@@ -57,44 +77,151 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
             MinimumSize = new Vector2(300, 200),
             MaximumSize = new Vector2(4096),
         };
+
+        // TODO: move everything to a Setup() function that's only called once
+
+        var style = ImGui.GetStyle();
+
+        // -- Nodes --
+
+        _hideUnlockedCheckbox = new Checkbox();
+        _placeNameTextNode = new TextNode();
+        _aetherCurrentIcon = new IconNode()
+        {
+            Icon = IsAddonOpen(AgentId.AetherCurrent) ? 0 : 64,
+            Width = ImGui.GetFrameHeight(),
+            Height = ImGui.GetFrameHeight()
+        };
+
+        _headerNode = new Node
+        {
+            FlexDirection = YGFlexDirection.Row,
+            AlignItems = YGAlign.Center,
+            JustifyContent = YGJustify.SpaceBetween,
+            ColumnGap = style.ItemInnerSpacing.X,
+            Children = [
+                _hideUnlockedCheckbox,
+                _placeNameTextNode,
+                _aetherCurrentIcon
+            ]
+        };
+
+        _listNode = new Node()
+        {
+            Display = YGDisplay.None,
+            RowGap = style.ItemSpacing.Y,
+        };
+
+        _allAttunedWrapper = new Node()
+        {
+            Display = YGDisplay.None,
+            FlexGrow = 1,
+            JustifyContent = YGJustify.Center,
+            AlignItems = YGAlign.Center,
+        };
+
+        _allAttunedTextNode = new TextNode();
+
+        _allAttunedWrapper.Add(_allAttunedTextNode);
+
+        // -- RootNode --
+
+        RootNode.ColumnGap = style.ItemSpacing.X;
+        RootNode.RowGap = style.ItemSpacing.Y;
+        RootNode.Add(_headerNode);
+        RootNode.Add(_listNode);
+        RootNode.Add(_allAttunedWrapper);
+
+        // -- Events --
+
+        _hideUnlockedCheckbox.AddEventListener<MouseEvent>((node, evt) =>
+        {
+            if (evt.EventType == MouseEventType.MouseHover)
+            {
+                using var tooltip = ImRaii.Tooltip();
+                TextService.Draw("AetherCurrentHelperWindow.HideUnlockedTooltip");
+            }
+        });
+
+        _hideUnlockedCheckbox.AddEventListener<CheckboxStateChangeEvent>((node, evt) =>
+        {
+            UpdateList();
+        });
+
+        _aetherCurrentIcon.AddEventListener<MouseEvent>((node, evt) =>
+        {
+            switch (evt.EventType)
+            {
+                case MouseEventType.MouseHover:
+                    ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+                    break;
+
+                case MouseEventType.MouseClick when evt.Button == ImGuiMouseButton.Left:
+                    AgentAetherCurrent.Instance()->Show();
+                    break;
+            }
+        });
+
+        UpdateTexts();
+
+        TextService.LanguageChanged += OnLanguageChanged;
+        AddonObserver.AddonOpen += OnAddonOpen;
+        AddonObserver.AddonClose += OnAddonClose;
+        UnlocksObserver.Update += OnUnlocksUpdate;
     }
 
-    public AetherCurrentCompFlgSet? CompFlgSet { get; set; }
-
-    public override bool DrawConditions()
-        => CompFlgSet.HasValue && ClientState.IsLoggedIn && !RaptureAtkModule.Instance()->RaptureAtkUnitManager.UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
-
-    public override unsafe void Draw()
+    public override void Dispose()
     {
-        DrawMainCommandButton();
+        TextService.LanguageChanged -= OnLanguageChanged;
+        AddonObserver.AddonOpen -= OnAddonOpen;
+        AddonObserver.AddonClose -= OnAddonClose;
+        base.Dispose();
+    }
 
-        var placeName = CompFlgSet!.Value.Territory.Value.PlaceName.Value.Name.ExtractText();
-
-        var textSize = ImGui.CalcTextSize(placeName);
-        var availableSize = ImGui.GetContentRegionAvail();
-        var style = ImGui.GetStyle();
-        var startPos = ImGui.GetCursorPos();
-
-        ImGui.Checkbox("##HideUnlocked", ref HideUnlocked);
-        if (ImGui.IsItemHovered())
+    public AetherCurrentCompFlgSet? CompFlgSet
+    {
+        get => _compFlgSet;
+        set
         {
-            ImGui.BeginTooltip();
-            TextService.Draw("AetherCurrentHelperWindow.HideUnlockedTooltip");
-            ImGui.EndTooltip();
+            _compFlgSet = value;
+            UpdateList();
+            UpdateTexts();
         }
+    }
 
-        ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
-        ImGui.TextUnformatted(placeName);
-        ImGui.SetCursorPos(startPos + new Vector2(0, textSize.Y + style.ItemSpacing.Y * 4));
+    private void OnLanguageChanged(string langCode)
+    {
+        UpdateTexts();
+    }
 
-        using var cellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(4));
-        using var table = ImRaii.Table($"##Table", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.NoPadOuterX);
-        if (!table.Success)
+    private void OnAddonOpen(string addonName)
+    {
+        if (addonName == "AetherCurrent")
+        {
+            _aetherCurrentIcon.Icon = 0; // nice hack, huh?
+        }
+    }
+
+    private void OnAddonClose(string addonName)
+    {
+        if (addonName == "AetherCurrent")
+        {
+            _aetherCurrentIcon.Icon = 64;
+        }
+    }
+
+    // TODO: check if this is triggered on loggin/relogging
+    private void OnUnlocksUpdate()
+    {
+        UpdateList();
+    }
+
+    private void UpdateList()
+    {
+        _listNode.Clear();
+
+        if (CompFlgSet == null)
             return;
-
-        ImGui.TableSetupColumn("Icon", ImGuiTableColumnFlags.WidthFixed);
-        ImGui.TableSetupColumn("Content", ImGuiTableColumnFlags.WidthStretch);
-        ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthFixed);
 
         var index = 1;
         var type = 0;
@@ -102,7 +229,8 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         var playerState = PlayerState.Instance();
         foreach (var aetherCurrent in CompFlgSet.Value.AetherCurrents)
         {
-            if (aetherCurrent.RowId == 0) continue;
+            if (aetherCurrent.RowId == 0)
+                continue;
 
             var isQuest = aetherCurrent.Value.Quest.RowId > 0;
             if (!isQuest && type == 0)
@@ -112,15 +240,15 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
             }
 
             var isUnlocked = playerState->IsAetherCurrentUnlocked(aetherCurrent.RowId);
-            if (!HideUnlocked || !isUnlocked)
+            if (!_hideUnlockedCheckbox.IsChecked || !isUnlocked)
             {
                 if (type == 0)
                 {
-                    DrawQuest(index, isUnlocked, aetherCurrent.Value);
+                    AddQuestNode(index, isUnlocked, aetherCurrent.Value);
                 }
                 else if (type == 1)
                 {
-                    DrawEObject(index, isUnlocked, aetherCurrent.Value);
+                    AddEObjNode(index, isUnlocked, aetherCurrent.Value);
                 }
 
                 linesDisplayed++;
@@ -129,6 +257,10 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
             index++;
         }
 
+        _listNode.Display = linesDisplayed == 0 ? YGDisplay.None : YGDisplay.Flex;
+        _allAttunedWrapper.Display = linesDisplayed == 0 ? YGDisplay.Flex : YGDisplay.None;
+
+        /*
         if (linesDisplayed == 0)
         {
             // hacky, but it looks the best
@@ -141,40 +273,89 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
             ImGui.TextUnformatted(text);
             ImGui.TableNextColumn();
         }
-
-        if (!Flags.HasFlag(ImGuiWindowFlags.NoFocusOnAppearing))
-            Flags |= ImGuiWindowFlags.NoFocusOnAppearing;
+        */
     }
 
-    private unsafe bool DrawMainCommandButton()
+    private void AddQuestNode(int index, bool isUnlocked, AetherCurrent aetherCurrent)
     {
-        if (IsAddonOpen(AgentId.AetherCurrent))
-            return false;
+        var questId = aetherCurrent.Quest.RowId;
 
-        var startPos = ImGui.GetCursorPos();
-        var windowSize = ImGui.GetContentRegionAvail();
-        var style = ImGui.GetStyle();
-        var iconSize = ImGui.GetFrameHeight();
+        // Some AetherCurrents link to the wrong Quest.
+        // See https://github.com/Haselnussbomber/HaselTweaks/issues/15
 
-        ImGui.SetCursorPosX(windowSize.X + style.WindowPadding.X - iconSize - 1);
+        // The Dravanian Forelands (CompFlgSet#2)
+        if (aetherCurrent.RowId == 2818065 && questId == 67328) // Natural Repellent
+            questId = 67326; // Stolen Munitions
+        else if (aetherCurrent.RowId == 2818066 && questId == 67334) // Chocobo's Last Stand
+            questId = 67333; // The Hunter Becomes the Kweh
 
-        TextureService.DrawIcon(64, iconSize);
+        // The Churning Mists (CompFlgSet#4)
+        else if (aetherCurrent.RowId == 2818096 && questId == 67365) // The Unceasing Gardener
+            questId = 67364; // Hide Your Moogles
 
-        if (ImGui.IsItemHovered())
+        // The Sea of Clouds (CompFlgSet#5)
+        else if (aetherCurrent.RowId == 2818110 && questId == 67437) // Search and Rescue
+            questId = 67410; // Honoring the Past
+
+        // Thavnair (CompFlgSet#21)
+        else if (aetherCurrent.RowId == 2818328 && questId == 70030) // Curing What Ails
+            questId = 69793; // In Agama's Footsteps
+
+        if (!ExcelService.TryGetRow<Quest>(questId, out var quest) || quest.IssuerLocation.RowId == 0)
+            return;
+
+        if (!quest.IssuerLocation.IsValid)
+            return;
+
+        _listNode.Add(new QuestNode(TextService, index, isUnlocked, quest));
+    }
+
+    private void AddEObjNode(int index, bool isUnlocked, AetherCurrent aetherCurrent)
+    {
+        if (!AetherCurrentEObjCache.TryGetValue(aetherCurrent.RowId, out var eobj))
         {
-            ImGui.BeginTooltip();
-            TextService.Draw("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip");
-            ImGui.EndTooltip();
+            if (!ExcelService.TryFindRow(row => row.Data == aetherCurrent.RowId, out eobj))
+                return;
+
+            AetherCurrentEObjCache.Add(aetherCurrent.RowId, eobj);
         }
 
-        if (ImGui.IsItemClicked())
+        if (!EObjLevelCache.TryGetValue(eobj.RowId, out var level))
         {
-            AgentAetherCurrent.Instance()->Show();
+            if (!ExcelService.TryFindRow(row => row.Object.RowId == eobj.RowId, out level))
+                return;
+
+            EObjLevelCache.Add(eobj.RowId, level);
         }
 
-        ImGui.SetCursorPos(startPos);
+        _listNode.Add(new EObjNode(TextService, index, isUnlocked, eobj, level));
+    }
 
-        return true;
+    private void UpdateTexts()
+    {
+        _placeNameTextNode.Text = CompFlgSet != null && ExcelService.TryGetRow<PlaceName>(CompFlgSet.Value.Territory.Value.PlaceName.RowId, out var placeName)
+            ? placeName.Name.ExtractText()
+            : ""u8;
+
+        _allAttunedTextNode.Text = TextService.Translate("AetherCurrentHelperWindow.AllAetherCurrentsAttuned");
+
+        RootNode.Traverse(node =>
+        {
+            if (node is AetherCurrentEntryNode entryNode)
+            {
+                entryNode.UpdateText();
+            }
+        });
+    }
+
+    public override bool DrawConditions()
+        => CompFlgSet.HasValue && ClientState.IsLoggedIn && !RaptureAtkModule.Instance()->RaptureAtkUnitManager.UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
+
+    public unsafe void Draw2()
+    {
+        // TODO: ?????
+        if (!Flags.HasFlag(ImGuiWindowFlags.NoFocusOnAppearing))
+            Flags |= ImGuiWindowFlags.NoFocusOnAppearing;
     }
 
     private void DrawQuest(int index, bool isUnlocked, AetherCurrent aetherCurrent)
@@ -361,5 +542,93 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
                 new Vector2(-localPlayer.Position.X, localPlayer.Position.Z),
                 new Vector2(-level.X, level.Z)
             );
+    }
+
+    public abstract class AetherCurrentEntryNode : Node
+    {
+        protected readonly TextService _textService;
+        protected readonly IconNode _iconNode;
+        protected readonly Node _contentNode;
+        protected readonly TextNode _titleNode;
+        protected readonly TextNode _coordsNode;
+
+        public AetherCurrentEntryNode(TextService textService, int index, bool isUnlocked)
+        {
+            _textService = textService;
+
+            FlexDirection = YGFlexDirection.Row;
+            ColumnGap = ImGui.GetStyle().ItemSpacing.X;
+
+            Add(_iconNode = new IconNode()
+            {
+                Icon = 0,
+                Width = 40,
+                Height = 40,
+            });
+
+            // TODO: SelectableNode??
+            Add(_contentNode = new Node()
+            {
+                FlexGrow = 1,
+                JustifyContent = YGJustify.Center,
+            });
+
+            _contentNode.Add(_titleNode = new TextNode() { TextColor = TitleColor });
+            _contentNode.Add(_coordsNode = new TextNode());
+
+            AddEventListener<MouseEvent>((node, evt) =>
+            {
+                Service.Get<IPluginLog>().Debug($"{evt.EventType}");
+            });
+        }
+
+        public abstract void UpdateText();
+
+        protected string GetHumanReadableCoords(Level level)
+        {
+            var coords = MapService.GetCoords(level);
+            var x = coords.X.ToString("0.0", CultureInfo.InvariantCulture);
+            var y = coords.Y.ToString("0.0", CultureInfo.InvariantCulture);
+            return _textService.Translate("AetherCurrentHelperWindow.Coords", x, y);
+        }
+    }
+
+    public class QuestNode(TextService textService, int index, bool isUnlocked, Quest quest) : AetherCurrentEntryNode(textService, index, isUnlocked)
+    {
+        private readonly int _index = index;
+        private readonly bool _isUnlocked = isUnlocked;
+        private readonly Quest _quest = quest;
+
+        public override void UpdateContent()
+        {
+            UpdateText();
+        }
+
+        public override void UpdateText()
+        {
+            _iconNode.Icon = _quest.EventIconType.Value!.MapIconAvailable + 1;
+            _titleNode.Text = $"[#{_index}] {_textService.GetQuestName(_quest.RowId)}";
+            _coordsNode.Text = $"{GetHumanReadableCoords(_quest.IssuerLocation.Value)} | {_textService.GetENpcResidentName(_quest.IssuerStart.RowId)}";
+        }
+    }
+
+    public class EObjNode(TextService textService, int index, bool isUnlocked, EObj eObj, Level level) : AetherCurrentEntryNode(textService, index, isUnlocked)
+    {
+        private readonly int _index = index;
+        private readonly bool _isUnlocked = isUnlocked;
+        private readonly EObj _eObj = eObj;
+        private readonly Level _level = level;
+
+        public override void UpdateContent()
+        {
+            UpdateText();
+        }
+
+        public override void UpdateText()
+        {
+            _iconNode.Icon = 60033;
+            _titleNode.Text = $"[#{_index}] {_textService.GetEObjName(_eObj.RowId)}";
+            _coordsNode.Text = GetHumanReadableCoords(_level);
+        }
     }
 }

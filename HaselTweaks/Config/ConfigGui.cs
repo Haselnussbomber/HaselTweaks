@@ -14,8 +14,6 @@ using Lumina.Text.ReadOnly;
 
 namespace HaselTweaks.Config;
 
-#pragma warning disable SeStringRenderer
-
 public class ConfigGui(
     IDalamudPluginInterface PluginInterface,
     PluginConfig PluginConfig,

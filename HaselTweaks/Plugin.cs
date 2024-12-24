@@ -12,6 +12,7 @@ using HaselTweaks.Windows;
 using HaselTweaks.Windows.PortraitHelperWindows;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
+using Lumina.Excel.Sheets;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HaselTweaks;
@@ -86,6 +87,9 @@ public sealed class Plugin : IDalamudPlugin
             Service.Get<TweakManager>().Initialize();
             Service.Get<CommandService>().Register(OnCommand, true);
             PluginInterface.UiBuilder.OpenMainUi += ToggleWindow;
+            var achw = Service.Get<AetherCurrentHelperWindow>();
+            achw.CompFlgSet = Service.Get<ExcelService>().GetSheet<AetherCurrentCompFlgSet>().GetRow(31);
+            achw.Toggle();
         });
     }
 
