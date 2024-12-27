@@ -78,6 +78,8 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
             MaximumSize = new Vector2(4096),
         };
 
+        ShowNodeInspector = true;
+
         // TODO: move everything to a Setup() function that's only called once
 
         var style = ImGui.GetStyle();
@@ -108,6 +110,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
         _listNode = new Node()
         {
+            FlexShrink = 1,
             Display = YGDisplay.None,
             RowGap = style.ItemSpacing.Y,
         };
@@ -128,11 +131,29 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
         RootNode.ColumnGap = style.ItemSpacing.X;
         RootNode.RowGap = style.ItemSpacing.Y;
+        RootNode.MaxHeight = YGValue.Percent(100);
+        RootNode.Overflow = YGOverflow.Hidden;
         RootNode.Add(_headerNode);
+        RootNode.Add(new Separator());
         RootNode.Add(_listNode);
         RootNode.Add(_allAttunedWrapper);
 
-        // -- Events --
+        RegisterEvents();
+        UpdateTexts();
+
+        TextService.LanguageChanged += OnLanguageChanged;
+        AddonObserver.AddonOpen += OnAddonOpen;
+        AddonObserver.AddonClose += OnAddonClose;
+        UnlocksObserver.Update += OnUnlocksUpdate;
+    }
+
+    private void RegisterEvents()
+    {
+        RootNode.AddEventListener<MouseEvent>((node, evt) =>
+        {
+            if (evt is MouseEvent mouseEvent && mouseEvent.EventType is not (MouseEventType.MouseHover or MouseEventType.MouseMove))
+                Service.Get<IPluginLog>().Debug($"[{((Node?)node)?.Guid}] {evt.EventType}");
+        });
 
         _hideUnlockedCheckbox.AddEventListener<MouseEvent>((node, evt) =>
         {
@@ -161,13 +182,6 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
                     break;
             }
         });
-
-        UpdateTexts();
-
-        TextService.LanguageChanged += OnLanguageChanged;
-        AddonObserver.AddonOpen += OnAddonOpen;
-        AddonObserver.AddonClose += OnAddonClose;
-        UnlocksObserver.Update += OnUnlocksUpdate;
     }
 
     public override void Dispose()
@@ -198,7 +212,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
     {
         if (addonName == "AetherCurrent")
         {
-            _aetherCurrentIcon.Icon = 0; // nice hack, huh?
+            _aetherCurrentIcon.Icon = 0;
         }
     }
 
@@ -358,192 +372,6 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
             Flags |= ImGuiWindowFlags.NoFocusOnAppearing;
     }
 
-    private void DrawQuest(int index, bool isUnlocked, AetherCurrent aetherCurrent)
-    {
-        var questId = aetherCurrent.Quest.RowId;
-
-        // Some AetherCurrents link to the wrong Quest.
-        // See https://github.com/Haselnussbomber/HaselTweaks/issues/15
-
-        // The Dravanian Forelands (CompFlgSet#2)
-        if (aetherCurrent.RowId == 2818065 && questId == 67328) // Natural Repellent
-            questId = 67326; // Stolen Munitions
-        else if (aetherCurrent.RowId == 2818066 && questId == 67334) // Chocobo's Last Stand
-            questId = 67333; // The Hunter Becomes the Kweh
-
-        // The Churning Mists (CompFlgSet#4)
-        else if (aetherCurrent.RowId == 2818096 && questId == 67365) // The Unceasing Gardener
-            questId = 67364; // Hide Your Moogles
-
-        // The Sea of Clouds (CompFlgSet#5)
-        else if (aetherCurrent.RowId == 2818110 && questId == 67437) // Search and Rescue
-            questId = 67410; // Honoring the Past
-
-        // Thavnair (CompFlgSet#21)
-        else if (aetherCurrent.RowId == 2818328 && questId == 70030) // Curing What Ails
-            questId = 69793; // In Agama's Footsteps
-
-        if (!ExcelService.TryGetRow<Quest>(questId, out var quest) || quest.IssuerLocation.RowId == 0)
-            return;
-
-        if (!quest.IssuerLocation.IsValid)
-            return;
-
-        // Icon
-        ImGui.TableNextColumn();
-        TextureService.DrawIcon(quest.EventIconType.Value!.MapIconAvailable + 1, 40);
-
-        // Content
-        ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetQuestName(quest.RowId)}");
-        ImGui.TextUnformatted($"{GetHumanReadableCoords(quest.IssuerLocation.Value)} | {TextService.GetENpcResidentName(quest.IssuerStart.RowId)}");
-
-        // Actions
-        ImGui.TableNextColumn();
-        var selected = false;
-        ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y) * 2));
-        if (selected)
-        {
-            MapService.OpenMap(quest.IssuerLocation.Value);
-        }
-        ImGui.SameLine();
-
-        DrawUnlockStatus(isUnlocked, quest.IssuerLocation.Value);
-        ImGui.SameLine(); // for padding
-        ImGui.Dummy(new Vector2(0, 0));
-    }
-
-    private void DrawEObject(int index, bool isUnlocked, AetherCurrent aetherCurrent)
-    {
-        if (!AetherCurrentEObjCache.TryGetValue(aetherCurrent.RowId, out var eobj))
-        {
-            if (!ExcelService.TryFindRow(row => row.Data == aetherCurrent.RowId, out eobj))
-                return;
-
-            AetherCurrentEObjCache.Add(aetherCurrent.RowId, eobj);
-        }
-
-        if (!EObjLevelCache.TryGetValue(eobj.RowId, out var level))
-        {
-            if (!ExcelService.TryFindRow(row => row.Object.RowId == eobj.RowId, out level))
-                return;
-
-            EObjLevelCache.Add(eobj.RowId, level);
-        }
-
-        // Icon
-        ImGui.TableNextColumn();
-        TextureService.DrawIcon(60033, 40);
-
-        // Content
-        ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetEObjName(eobj.RowId)}");
-        ImGui.TextUnformatted(GetHumanReadableCoords(level));
-
-        // Actions
-        ImGui.TableNextColumn();
-        var selected = false;
-        ImGui.Selectable($"##AetherCurrent_{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y) * 2));
-        if (selected)
-        {
-            MapService.OpenMap(level);
-        }
-        ImGui.SameLine();
-
-        DrawUnlockStatus(isUnlocked, level);
-        ImGui.SameLine(); // for padding
-        ImGui.Dummy(new Vector2(0, 0));
-    }
-
-    private void DrawUnlockStatus(bool isUnlocked, Level level)
-    {
-        var isSameTerritory = level.Territory.RowId == ClientState.TerritoryType;
-        ImGuiUtils.PushCursorY(11);
-
-        if (isUnlocked && !Config.AlwaysShowDistance)
-        {
-            DrawCheckmark(isSameTerritory);
-        }
-        else
-        {
-            if (isSameTerritory)
-            {
-                var distance = MapService.GetDistanceFromPlayer(level);
-                if (distance < float.MaxValue)
-                {
-                    var direction = distance > 1 ? GetCompassDirection(level) : string.Empty;
-                    var text = $"{distance:0}y {direction}";
-
-                    if (Config.CenterDistance)
-                    {
-                        ImGuiUtils.PushCursorX(ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
-                    }
-
-                    if (isUnlocked)
-                    {
-                        ImGuiUtils.TextUnformattedColored(Color.Green, text);
-                    }
-                    else
-                    {
-                        ImGui.TextUnformatted(text);
-                    }
-                }
-            }
-            else if (isUnlocked)
-            {
-                DrawCheckmark(isSameTerritory);
-            }
-            else
-            {
-                ImGuiUtils.PushCursorX(2);
-                using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
-                ImGuiUtils.TextUnformattedColored(Color.Grey4, FontAwesomeIcon.Times.ToIconString());
-            }
-        }
-    }
-
-    private void DrawCheckmark(bool isSameTerritory)
-    {
-        using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
-        var icon = FontAwesomeIcon.Check.ToIconString();
-
-        if (isSameTerritory && Config.CenterDistance)
-        {
-            ImGuiUtils.PushCursorX(ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(icon).X / 2);
-        }
-
-        ImGuiUtils.TextUnformattedColored(Color.Green, icon);
-    }
-
-    private string GetHumanReadableCoords(Level level)
-    {
-        var coords = MapService.GetCoords(level);
-        var x = coords.X.ToString("0.0", CultureInfo.InvariantCulture);
-        var y = coords.Y.ToString("0.0", CultureInfo.InvariantCulture);
-        return TextService.Translate("AetherCurrentHelperWindow.Coords", x, y);
-    }
-
-    //! https://gamedev.stackexchange.com/a/49300
-    public string GetCompassDirection(Vector2 a, Vector2 b)
-    {
-        var vector = a - b;
-        var angle = Math.Atan2(vector.Y, vector.X);
-        var octant = (int)Math.Round(8 * angle / (2 * Math.PI) + 8) % 8;
-
-        return TextService.Translate($"AetherCurrentHelperWindow.Compass.{CompassHeadings[octant]}");
-    }
-
-    public string GetCompassDirection(Level level)
-    {
-        var localPlayer = ClientState.LocalPlayer;
-        return localPlayer == null
-            ? string.Empty
-            : GetCompassDirection(
-                new Vector2(-localPlayer.Position.X, localPlayer.Position.Z),
-                new Vector2(-level.X, level.Z)
-            );
-    }
-
     public abstract class AetherCurrentEntryNode : Node
     {
         protected readonly TextService _textService;
@@ -575,11 +403,6 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
             _contentNode.Add(_titleNode = new TextNode() { TextColor = TitleColor });
             _contentNode.Add(_coordsNode = new TextNode());
-
-            AddEventListener<MouseEvent>((node, evt) =>
-            {
-                Service.Get<IPluginLog>().Debug($"{evt.EventType}");
-            });
         }
 
         public abstract void UpdateText();
@@ -590,6 +413,17 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
             var x = coords.X.ToString("0.0", CultureInfo.InvariantCulture);
             var y = coords.Y.ToString("0.0", CultureInfo.InvariantCulture);
             return _textService.Translate("AetherCurrentHelperWindow.Coords", x, y);
+        }
+
+        public override void DrawContent()
+        {
+            ImGui.InvisibleButton("##Background", ComputedSize);
+            if (!ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenOverlapped))
+                return;
+
+            var pos = ImGui.GetWindowPos();
+            var size = pos + ComputedSize;
+            ImGui.GetWindowDrawList().AddRectFilled(pos, size, Color.From(ImGuiCol.FrameBgHovered));
         }
     }
 
@@ -629,6 +463,22 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
             _iconNode.Icon = 60033;
             _titleNode.Text = $"[#{_index}] {_textService.GetEObjName(_eObj.RowId)}";
             _coordsNode.Text = GetHumanReadableCoords(_level);
+        }
+    }
+
+    public class Separator : Node
+    {
+        public Separator()
+        {
+            Height = 1;
+            MarginTop = 5;
+            MarginBottom = 4;
+            Width = YGValue.Percent(100);
+        }
+
+        public override void DrawContent()
+        {
+            ImGui.Separator();
         }
     }
 }
