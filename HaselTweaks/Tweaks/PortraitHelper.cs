@@ -36,7 +36,6 @@ public unsafe partial class PortraitHelper(
     IClientState ClientState,
     IChatGui ChatGui,
     AddonObserver AddonObserver,
-    PlayerService GameEventService,
     MenuBar MenuBar)
     : IConfigurableTweak
 {
@@ -76,7 +75,7 @@ public unsafe partial class PortraitHelper(
         AddonObserver.AddonOpen += OnAddonOpen;
         AddonObserver.AddonClose += OnAddonClose;
         ClientState.TerritoryChanged += OnTerritoryChanged;
-        GameEventService.ClassJobChange += OnClassJobChange;
+        ClientState.ClassJobChanged += OnClassJobChange;
 
         OnClipboardDataChangedHook?.Enable();
         UpdateGearsetHook?.Enable();
@@ -87,7 +86,7 @@ public unsafe partial class PortraitHelper(
         AddonObserver.AddonOpen -= OnAddonOpen;
         AddonObserver.AddonClose -= OnAddonClose;
         ClientState.TerritoryChanged -= OnTerritoryChanged;
-        GameEventService.ClassJobChange -= OnClassJobChange;
+        ClientState.ClassJobChanged -= OnClassJobChange;
 
         PluginInterface.RemoveChatLinkHandler(1000);
 
