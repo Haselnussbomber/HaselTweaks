@@ -1,5 +1,18 @@
 # Changelog
 
+## [31.0.0] (2025-01-02)
+
+Happy New Year! 🥳
+
+### New Tweak: Fast Mouse Click Fix
+
+I'm going to try a different method this time, as alternative to the Reduced Mouse Click Throttle tweak I had.
+
+The problem is that the game doesn't fire events for single mouse clicks whenever a double click is detected.  
+So instead of reducing the delay between clicks used for double click detection (which breaks them unless you're a really really fast clicker), this time the tweak will make the game always trigger the normal mouse click in addition to the double click.
+
+Hopefully nothing breaks this time. 😅
+
 ## [30.0.2] (2024-12-19)
 
 ### Aether Current Helper
@@ -1871,6 +1884,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[31.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v30.0.2...v31.0.0
 [30.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v30.0.1...v30.0.2
 [30.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v30.0.0...v30.0.1
 [30.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v29.0.2...v30.0.0
