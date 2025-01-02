@@ -17,7 +17,7 @@ namespace HaselTweaks.Config;
 public partial class PluginConfig : IPluginConfiguration
 {
     [JsonIgnore]
-    public const int CURRENT_CONFIG_VERSION = 7;
+    public const int CURRENT_CONFIG_VERSION = 8;
 
     [JsonIgnore]
     public int LastSavedConfigHash { get; set; }
@@ -67,7 +67,8 @@ public partial class PluginConfig : IPluginConfiguration
             new Version2(),
             new Version5(),
             new Version6(pluginInterface, pluginLog),
-            new Version7()
+            new Version7(),
+            new Version8()
         ];
 
         foreach (var migration in migrations)
@@ -83,7 +84,7 @@ public partial class PluginConfig : IPluginConfiguration
             }
         }
 
-        var obj = JsonSerializer.Deserialize<PluginConfig>(node, SerializerOptions) ?? new();
+        var obj = JsonSerializer.Deserialize<PluginConfig>(config, SerializerOptions) ?? new();
 
         if (migrated)
         {

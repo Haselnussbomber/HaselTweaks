@@ -174,6 +174,13 @@ Available options include:
 
 Always opens the "Grand Company Delivery Missions" window on the "Expert Delivery" tab.
 
+### Fast Mouse Click Fix
+
+The game does not fire UI events for single mouse clicks whenever a double click is detected.  
+This tweak fixes it by always triggering the normal mouse click in addition to the double click.
+
+Try it out in the crafting window by clicking the recipe category tabs or the arrow buttons next to the dropdown menu.
+
 ### Forced Cutscene Sounds
 
 Automatically unmutes selected sound channels in cutscenes.
