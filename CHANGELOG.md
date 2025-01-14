@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [32.0.0] (2025-01-14)
 
 ### New Tweak: Fix Inventory Open Tab
 
@@ -1890,6 +1890,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[32.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v31.0.0...v32.0.0
 [31.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v30.0.2...v31.0.0
 [30.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v30.0.1...v30.0.2
 [30.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v30.0.0...v30.0.1
