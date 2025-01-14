@@ -18,6 +18,7 @@ using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
+[RegisterScoped]
 public unsafe class AdvancedEditOverlay(
     TextService TextService,
     WindowManager windowManager,

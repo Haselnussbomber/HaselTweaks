@@ -6,6 +6,7 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
+[RegisterScoped]
 public class RenameTagDialog : ConfirmationDialog
 {
     private readonly PluginConfig PluginConfig;

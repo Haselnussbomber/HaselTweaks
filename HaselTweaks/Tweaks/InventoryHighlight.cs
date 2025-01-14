@@ -17,6 +17,7 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class InventoryHighlight(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,

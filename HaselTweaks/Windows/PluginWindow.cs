@@ -16,10 +16,11 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows;
 
+[RegisterSingleton]
 public partial class PluginWindow : SimpleWindow
 {
     private const uint SidebarWidth = 250;
-
+    private readonly LanguageProvider LanguageProvider;
     private readonly TextService TextService;
     private readonly ITextureProvider TextureProvider;
     private readonly TweakManager TweakManager;
@@ -34,12 +35,14 @@ public partial class PluginWindow : SimpleWindow
 
     public PluginWindow(
         WindowManager windowManager,
+        LanguageProvider languageProvider,
         TextService textService,
         ITextureProvider textureProvider,
         TweakManager tweakManager,
         IEnumerable<ITweak> tweaks)
         : base(windowManager, "HaselTweaks")
     {
+        LanguageProvider = languageProvider;
         TextService = textService;
         TextureProvider = textureProvider;
         TweakManager = tweakManager;
@@ -80,12 +83,12 @@ public partial class PluginWindow : SimpleWindow
             MinimumSize = (Vector2)Size,
             MaximumSize = new Vector2(4096, 2160)
         };
-        TextService.LanguageChanged += OnLanguageChanged;
+        LanguageProvider.LanguageChanged += OnLanguageChanged;
     }
 
     public override void OnClose()
     {
-        TextService.LanguageChanged -= OnLanguageChanged;
+        LanguageProvider.LanguageChanged -= OnLanguageChanged;
         SelectedTweak = null;
 
         foreach (var tweak in Tweaks.Where(tweak => tweak.Status == TweakStatus.Enabled))

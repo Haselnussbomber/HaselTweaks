@@ -16,6 +16,7 @@ namespace HaselTweaks.Config;
 
 #pragma warning disable SeStringRenderer
 
+[RegisterSingleton]
 public class ConfigGui(
     IDalamudPluginInterface PluginInterface,
     PluginConfig PluginConfig,

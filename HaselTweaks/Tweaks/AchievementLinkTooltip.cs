@@ -15,6 +15,7 @@ using Achievement = Lumina.Excel.Sheets.Achievement;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class AchievementLinkTooltip(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,

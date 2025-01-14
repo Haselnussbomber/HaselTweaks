@@ -14,6 +14,7 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe class CastBarAetheryteNames(
     IGameInteropProvider GameInteropProvider,
     IAddonLifecycle AddonLifecycle,

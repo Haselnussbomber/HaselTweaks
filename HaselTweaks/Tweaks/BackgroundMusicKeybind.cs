@@ -11,6 +11,7 @@ using Lumina.Extensions;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class BackgroundMusicKeybind(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,

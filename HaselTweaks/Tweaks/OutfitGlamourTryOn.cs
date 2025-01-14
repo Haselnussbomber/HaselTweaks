@@ -9,6 +9,7 @@ using HaselTweaks.Structs.Agents;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe class OutfitGlamourTryOn(IContextMenu ContextMenu, ItemService ItemService, TextService TextService) : ITweak
 {
     public string InternalName => nameof(OutfitGlamourTryOn);

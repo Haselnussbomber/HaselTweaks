@@ -6,6 +6,7 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public class RevealDutyRequirements(IGameInteropProvider GameInteropProvider) : ITweak
 {
     public string InternalName => nameof(RevealDutyRequirements);

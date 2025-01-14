@@ -18,6 +18,7 @@ using DalamudObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class Commands(
     PluginConfig PluginConfig,
     TextService TextService,

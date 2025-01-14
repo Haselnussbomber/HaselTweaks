@@ -13,9 +13,11 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class CustomChatMessageFormats(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,
+    LanguageProvider LanguageProvider,
     TextService TextService,
     ILogger<CustomChatMessageFormats> Logger,
     IGameInteropProvider GameInteropProvider,
@@ -39,13 +41,13 @@ public unsafe partial class CustomChatMessageFormats(
     public void OnEnable()
     {
         ReloadChat();
-        TextService.LanguageChanged += OnLanguageChange;
+        LanguageProvider.LanguageChanged += OnLanguageChange;
         FormatLogMessageHook?.Enable();
     }
 
     public void OnDisable()
     {
-        TextService.LanguageChanged -= OnLanguageChange;
+        LanguageProvider.LanguageChanged -= OnLanguageChange;
         FormatLogMessageHook?.Disable();
 
         if (Status is TweakStatus.Enabled)

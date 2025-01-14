@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
+[RegisterScoped]
 public unsafe class PresetBrowserOverlay : Overlay
 {
     private const int SidebarWidth = 170;

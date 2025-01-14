@@ -17,6 +17,7 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Windows;
 
+[RegisterSingleton]
 public unsafe class AetherCurrentHelperWindow : LockableWindow
 {
     private bool HideUnlocked = true;

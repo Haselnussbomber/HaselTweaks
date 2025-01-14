@@ -10,8 +10,10 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe class SearchTheMarkets(
     IContextMenu ContextMenu,
+    LanguageProvider LanguageProvider,
     TextService TextService,
     ExcelService ExcelService,
     ItemService ItemService) : ITweak
@@ -42,13 +44,13 @@ public unsafe class SearchTheMarkets(
         };
 
         ContextMenu.OnMenuOpened += ContextMenu_OnMenuOpened;
-        TextService.LanguageChanged += OnLanguageChange;
+        LanguageProvider.LanguageChanged += OnLanguageChange;
     }
 
     public void OnDisable()
     {
         ContextMenu.OnMenuOpened -= ContextMenu_OnMenuOpened;
-        TextService.LanguageChanged -= OnLanguageChange;
+        LanguageProvider.LanguageChanged -= OnLanguageChange;
     }
 
     void IDisposable.Dispose()

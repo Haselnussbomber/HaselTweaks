@@ -8,6 +8,7 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
+[RegisterScoped]
 public class DeleteTagDialog : ConfirmationDialog
 {
     private readonly PluginConfig PluginConfig;

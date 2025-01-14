@@ -10,6 +10,7 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe class FixInventoryOpenTab(ILogger<FixInventoryOpenTab> Logger, IAddonLifecycle AddonLifecycle) : ITweak
 {
     public string InternalName => nameof(FixInventoryOpenTab);

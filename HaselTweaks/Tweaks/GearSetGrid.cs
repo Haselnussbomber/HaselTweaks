@@ -7,6 +7,7 @@ using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public partial class GearSetGrid(
     PluginConfig pluginConfig,
     ConfigGui ConfigGui,

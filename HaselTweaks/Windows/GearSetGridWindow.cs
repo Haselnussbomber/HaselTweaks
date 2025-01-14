@@ -22,6 +22,7 @@ using GearsetItem = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule
 
 namespace HaselTweaks.Windows;
 
+[RegisterSingleton]
 public unsafe class GearSetGridWindow : LockableWindow
 {
     private static readonly Vector2 IconSize = new(34);

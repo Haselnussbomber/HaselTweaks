@@ -18,6 +18,7 @@ using AgentRecipeNote = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentRecipeNote
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe class AutoOpenRecipe(
     ILogger<AutoOpenRecipe> Logger,
     ExcelService ExcelService,

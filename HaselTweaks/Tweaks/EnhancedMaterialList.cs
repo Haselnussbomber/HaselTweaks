@@ -24,6 +24,7 @@ using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class EnhancedMaterialList(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,

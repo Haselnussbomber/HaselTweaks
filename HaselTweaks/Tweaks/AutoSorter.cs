@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class AutoSorter(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,

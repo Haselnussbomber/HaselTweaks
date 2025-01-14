@@ -2,6 +2,7 @@ global using System;
 global using System.Runtime.InteropServices;
 global using InteropGenerator.Runtime;
 global using InteropGenerator.Runtime.Attributes;
+global using Injectio.Attributes;
 global using static FFXIVClientStructs.Interop.SpanExtensions;
 global using static HaselCommon.Globals.Addon;
 global using static HaselCommon.Globals.Atk;

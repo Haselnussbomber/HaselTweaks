@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public sealed unsafe class MarketBoardItemPreview(
     ILogger<MarketBoardItemPreview> Logger,
     IAddonLifecycle AddonLifecycle,

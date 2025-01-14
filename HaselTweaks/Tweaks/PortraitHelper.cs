@@ -23,6 +23,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class PortraitHelper(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,

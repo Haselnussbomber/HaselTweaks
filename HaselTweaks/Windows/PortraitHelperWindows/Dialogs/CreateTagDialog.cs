@@ -5,6 +5,7 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
+[RegisterScoped]
 public class CreateTagDialog : ConfirmationDialog
 {
     private readonly PluginConfig PluginConfig;

@@ -11,6 +11,7 @@ using HaselTweaks.Config.Migrations;
 using HaselTweaks.Interfaces;
 using HaselTweaks.JsonConverters;
 using HaselTweaks.Tweaks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HaselTweaks.Config;
 
@@ -31,12 +32,10 @@ public partial class PluginConfig : IPluginConfiguration
     [JsonIgnore]
     private static IPluginLog? PluginLog;
 
-    public static PluginConfig Load(
-        IDalamudPluginInterface pluginInterface,
-        IPluginLog pluginLog)
+    public static PluginConfig Load(IServiceProvider serviceProvider)
     {
-        PluginInterface = pluginInterface;
-        PluginLog = pluginLog;
+        PluginInterface = serviceProvider.GetRequiredService<IDalamudPluginInterface>();
+        PluginLog = serviceProvider.GetRequiredService<IPluginLog>();
 
         SerializerOptions = new JsonSerializerOptions()
         {
@@ -45,7 +44,7 @@ public partial class PluginConfig : IPluginConfiguration
         };
         SerializerOptions.Converters.Add(new ReadOnlySeStringConverter());
 
-        var fileInfo = pluginInterface.ConfigFile;
+        var fileInfo = PluginInterface.ConfigFile;
         if (!fileInfo.Exists || fileInfo.Length < 2)
             return new();
 
@@ -66,7 +65,7 @@ public partial class PluginConfig : IPluginConfiguration
         IConfigMigration[] migrations = [
             new Version2(),
             new Version5(),
-            new Version6(pluginInterface, pluginLog),
+            new Version6(PluginInterface, PluginLog),
             new Version7(),
             new Version8()
         ];
@@ -75,7 +74,7 @@ public partial class PluginConfig : IPluginConfiguration
         {
             if (version < migration.Version)
             {
-                pluginLog.Information("Migrating from version {version} to {migrationVersion}...", version, migration.Version);
+                PluginLog.Information("Migrating from version {version} to {migrationVersion}...", version, migration.Version);
 
                 migration.Migrate(ref config);
                 version = migration.Version;
@@ -88,7 +87,7 @@ public partial class PluginConfig : IPluginConfiguration
 
         if (migrated)
         {
-            pluginLog.Information("Configuration migrated successfully.");
+            PluginLog.Information("Configuration migrated successfully.");
             obj.Save();
         }
 

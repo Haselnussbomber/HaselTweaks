@@ -15,6 +15,7 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Windows;
 
+[RegisterSingleton]
 public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 {
     private static readonly Vector2 IconSize = new(34);

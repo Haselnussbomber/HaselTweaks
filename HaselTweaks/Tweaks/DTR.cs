@@ -15,9 +15,11 @@ using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class DTR(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,
+    LanguageProvider LanguageProvider,
     TextService TextService,
     ExcelService ExcelService,
     IDtrBar DtrBar,
@@ -55,14 +57,14 @@ public unsafe partial class DTR(
 
         Framework.Update += OnFrameworkUpdate;
         ClientState.Logout += OnLogout;
-        TextService.LanguageChanged += OnLanguageChanged;
+        LanguageProvider.LanguageChanged += OnLanguageChanged;
     }
 
     public void OnDisable()
     {
         Framework.Update -= OnFrameworkUpdate;
         ClientState.Logout -= OnLogout;
-        TextService.LanguageChanged -= OnLanguageChanged;
+        LanguageProvider.LanguageChanged -= OnLanguageChanged;
 
         DtrInstance?.Remove();
         DtrInstance = null;

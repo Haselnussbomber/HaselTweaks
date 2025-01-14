@@ -14,6 +14,15 @@
         "resolved": "1.2.25",
         "contentHash": "xCXiw7BCxHJ8pF6wPepRUddlh2dlQlbr81gXA72hdk4FLHkKXas7EH/n+fk5UCA/YfMqG1Z6XaPiUjDbUNBUzg=="
       },
+      "Injectio": {
+        "type": "Direct",
+        "requested": "[4.0.0, )",
+        "resolved": "4.0.0",
+        "contentHash": "XJ+b4OcXgp+5df8mu/b2RKUvhcy7wkhvTjGfdY8qT1OUf5/XpIXppf1hk3+ADK2HcYqRnKhEkY1muBDRtW76Ag==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection": "9.0.0"
+        }
+      },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Direct",
         "requested": "[9.0.0, )",

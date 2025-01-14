@@ -24,6 +24,7 @@ public unsafe struct NaviMap
     public AtkResNode* CardinalDirections => GetNode(8);
 }
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class MinimapAdjustments(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,

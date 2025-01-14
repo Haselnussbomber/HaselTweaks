@@ -22,6 +22,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
+[RegisterSingleton]
 public unsafe class MenuBar : SimpleWindow
 {
     private PortraitHelperConfiguration Config => PluginConfig.Tweaks.PortraitHelper;

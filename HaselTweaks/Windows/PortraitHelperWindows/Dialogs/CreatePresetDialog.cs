@@ -18,6 +18,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
+[RegisterScoped]
 public class CreatePresetDialog : ConfirmationDialog
 {
     private readonly IDalamudPluginInterface PluginInterface;

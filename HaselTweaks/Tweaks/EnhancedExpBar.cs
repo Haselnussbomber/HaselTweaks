@@ -18,6 +18,7 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class EnhancedExpBar(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,

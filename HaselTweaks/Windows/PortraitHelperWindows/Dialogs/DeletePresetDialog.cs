@@ -10,6 +10,7 @@ using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
+[RegisterScoped]
 public class DeletePresetDialog : ConfirmationDialog
 {
     private readonly IDalamudPluginInterface PluginInterface;

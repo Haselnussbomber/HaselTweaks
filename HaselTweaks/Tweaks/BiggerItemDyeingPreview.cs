@@ -7,6 +7,7 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe class BiggerItemDyeingPreview(IAddonLifecycle AddonLifecycle) : ITweak
 {
     public string InternalName => nameof(BiggerItemDyeingPreview);

@@ -15,6 +15,7 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Windows;
 
+[RegisterSingleton]
 public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
 {
     private static AddonMJICraftScheduleSetting* Addon => GetAddon<AddonMJICraftScheduleSetting>("MJICraftScheduleSetting");

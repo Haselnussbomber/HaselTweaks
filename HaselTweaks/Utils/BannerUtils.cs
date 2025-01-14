@@ -14,6 +14,7 @@ using ActionSheet = Lumina.Excel.Sheets.Action;
 
 namespace HaselTweaks.Utils;
 
+[RegisterSingleton]
 public unsafe class BannerUtils(IDalamudPluginInterface PluginInterface, ExcelService ExcelService, TextService TextService)
 {
     public Image<Bgra32>? GetCurrentCharaViewImage()

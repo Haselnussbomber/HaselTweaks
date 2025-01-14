@@ -7,6 +7,7 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
+[RegisterScoped]
 public unsafe class AlignmentToolSettingsOverlay(
     TextService TextService,
     WindowManager windowManager,

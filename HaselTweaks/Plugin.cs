@@ -2,16 +2,11 @@ using System.IO;
 using Dalamud.Game;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using HaselCommon;
 using HaselCommon.Commands;
-using HaselCommon.Extensions.DependencyInjection;
 using HaselCommon.Services;
 using HaselTweaks.Config;
-using HaselTweaks.Interfaces;
-using HaselTweaks.Utils;
 using HaselTweaks.Windows;
-using HaselTweaks.Windows.PortraitHelperWindows;
-using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
-using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HaselTweaks;
@@ -39,44 +34,11 @@ public sealed class Plugin : IDalamudPlugin
         Resolver.GetInstance.Resolve();
 #endif
 
-        Service
-            // Dalamud & HaselCommon
-            .Initialize(pluginInterface, pluginLog)
-
-            // Config
-            .AddSingleton(PluginConfig.Load(pluginInterface, pluginLog))
-
-            // HaselTweaks
-            .AddSingleton<TweakManager>()
-            .AddSingleton<PluginWindow>()
-            .AddSingleton<BannerUtils>()
-            .AddIServices<ITweak>()
-            .AddSingleton<ConfigGui>()
-
-            // AetherCurrentHelper
-            .AddSingleton<AetherCurrentHelperWindow>()
-
-            // EnhancedIsleworksAgenda
-            .AddSingleton<MJICraftScheduleSettingSearchBar>()
-
-            // GearSetGrid
-            .AddSingleton<GearSetGridWindow>()
-
-            // GlamourDresserArmoireAlert
-            .AddSingleton<GlamourDresserArmoireAlertWindow>()
-
-            // PresetHelper
-            .AddSingleton<MenuBar>()
-            .AddScoped<CreatePresetDialog>()
-            .AddScoped<CreateTagDialog>()
-            .AddScoped<RenameTagDialog>()
-            .AddScoped<DeleteTagDialog>()
-            .AddScoped<DeletePresetDialog>()
-            .AddScoped<EditPresetDialog>()
-            .AddScoped<AdvancedEditOverlay>()
-            .AddScoped<AdvancedImportOverlay>()
-            .AddScoped<AlignmentToolSettingsOverlay>()
-            .AddScoped<PresetBrowserOverlay>();
+        Service.Collection
+            .AddDalamud(pluginInterface)
+            .AddSingleton(PluginConfig.Load)
+            .AddHaselCommon()
+            .AddHaselTweaks();
 
         Service.BuildProvider();
 

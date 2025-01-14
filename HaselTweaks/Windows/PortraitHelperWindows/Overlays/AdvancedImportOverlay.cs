@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
+[RegisterScoped]
 public unsafe class AdvancedImportOverlay(
     ILogger<AdvancedImportOverlay> Logger,
     TextService TextService,
