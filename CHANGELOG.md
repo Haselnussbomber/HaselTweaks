@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Fix Inventory Open Tab
+
+Automatically resets the inventory to the first tab when opened.
+
 ## [31.0.0] (2025-01-02)
 
 Happy New Year! 🥳

@@ -181,6 +181,10 @@ This tweak fixes it by always triggering the normal mouse click in addition to t
 
 Try it out in the crafting window by clicking the recipe category tabs or the arrow buttons next to the dropdown menu.
 
+### Fix Inventory Open Tab
+
+Automatically resets the inventory to the first tab when opened.
+
 ### Forced Cutscene Sounds
 
 Automatically unmutes selected sound channels in cutscenes.

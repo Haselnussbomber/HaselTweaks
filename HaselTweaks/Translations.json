@@ -1137,6 +1137,22 @@
     "zh": "始终打开“筹备任务”窗口的“筹备稀有品”标签页。"
   },
 
+  "FastMouseClickFix.Tweak.Name": {
+    "en": "Fast Mouse Click Fix"
+  },
+  "FastMouseClickFix.Tweak.Description": {
+    "en": "The game does not fire UI events for single mouse clicks whenever a double click is detected. This tweak fixes it by always triggering the normal mouse click in addition to the double click.",
+    "de": "Das Spiel löst keine UI-Events für einzelne Mausklicks aus, wenn ein Doppelklick erkannt wird. Dieser Tweak behebt dies, indem er zusätzlich zum Doppelklick immer den normalen Mausklick auslöst."
+  },
+
+  "FixInventoryOpenTab.Tweak.Name": {
+    "en": "Fix Inventory Open Tab"
+  },
+  "FixInventoryOpenTab.Tweak.Description": {
+    "en": "Automatically resets the inventory to the first tab when opened.",
+    "de": "Setzt das Inventar beim Öffnen automatisch auf den ersten Tab zurück."
+  },
+
   "ForcedCutsceneMusic.Tweak.Name": {
     "en": "Forced Cutscene Sounds"
   },
@@ -1403,14 +1419,6 @@
     "en": "Toggle All",
     "de": "Alle umschalten",
     "zh": "开关所有"
-  },
-
-  "FastMouseClickFix.Tweak.Name": {
-    "en": "Fast Mouse Click Fix"
-  },
-  "FastMouseClickFix.Tweak.Description": {
-    "en": "The game does not fire UI events for single mouse clicks whenever a double click is detected. This tweak fixes it by always triggering the normal mouse click in addition to the double click.",
-    "de": "Das Spiel löst keine UI-Events für einzelne Mausklicks aus, wenn ein Doppelklick erkannt wird. Dieser Tweak behebt dies, indem er zusätzlich zum Doppelklick immer den normalen Mausklick auslöst."
   },
 
   "MarketBoardItemPreview.Tweak.Name": {
