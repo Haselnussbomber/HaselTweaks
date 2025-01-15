@@ -607,7 +607,7 @@ public unsafe partial class EnhancedLoginLogout(
             /* LayerEntryType.PopRange */ 40,
             0,
             territoryTypeId,
-            GameMain.Instance(),
+            GameMain.Instance()->ActiveFestivals.GetPointer(0),
             0);
     }
 
