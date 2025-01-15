@@ -1,5 +1,12 @@
 # Changelog
 
+## [32.0.1] (2025-01-15)
+
+## HaselTweaks
+
+- **Fixed:** An exception "Scene is not yet ready" could've been thrown when the plugin loads.  
+  Explanation: To handle font scale changes, the plugin registered an event on the default Dalamud font, but because the plugin is loaded before ImGui might be ready the exception could be thrown. To resolve this the plugin now waits for the UI to be ready before registering the event.
+
 ## [32.0.0] (2025-01-14)
 
 ### New Tweak: Fix Inventory Open Tab
@@ -1890,6 +1897,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[32.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.0.0...v32.0.1
 [32.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v31.0.0...v32.0.0
 [31.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v30.0.2...v31.0.0
 [30.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v30.0.1...v30.0.2
