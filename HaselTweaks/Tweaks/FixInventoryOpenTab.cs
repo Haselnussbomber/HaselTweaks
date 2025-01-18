@@ -55,8 +55,8 @@ public unsafe class FixInventoryOpenTab(ILogger<FixInventoryOpenTab> Logger, IAd
         if (values[0].Type != ValueType.Int)
             return; // Skipping: value[0] is not int (invalid)
 
-        if (values[0].Int != 0)
-            return; // Skipping: value[0] is not 0 (means it requested to open another tab)
+        if (values[0].Int == 6)
+            return; // Skipping: value[0] is 6 (means it requested to open key items)
 
         ResetTabIndex(addon);
     }
