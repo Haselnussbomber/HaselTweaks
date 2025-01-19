@@ -7,6 +7,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Commands;
 using HaselCommon.Extensions.Strings;
 using HaselCommon.Services;
+using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Extensions;
@@ -86,7 +87,7 @@ public unsafe partial class Commands(
     [CommandHandler("/itemlink", "Commands.Config.EnableItemLinkCommand.Description")]
     private void OnItemLinkCommand(string command, string arguments)
     {
-        uint id;
+        ItemId id;
         try
         {
             id = Convert.ToUInt32(arguments.Trim());
@@ -97,9 +98,9 @@ public unsafe partial class Commands(
             return;
         }
 
-        var isEventItem = ItemService.IsEventItem(id);
+        var isEventItem = id.IsEventItem;
         var existsAsEventItem = isEventItem && ExcelService.GetSheet<EventItem>().HasRow(id);
-        var existsAsItem = !isEventItem && ExcelService.GetSheet<Item>().HasRow(ItemService.GetBaseItemId(id));
+        var existsAsItem = !isEventItem && ExcelService.GetSheet<Item>().HasRow(id.BaseItemId);
 
         if (!existsAsEventItem && !existsAsItem)
         {

@@ -16,6 +16,7 @@ public sealed unsafe class MarketBoardItemPreview(
     ILogger<MarketBoardItemPreview> Logger,
     IAddonLifecycle AddonLifecycle,
     ExcelService ExcelService,
+    TextService TextService,
     ItemService ItemService)
     : ITweak
 {
@@ -60,7 +61,7 @@ public sealed unsafe class MarketBoardItemPreview(
 
         if (!ItemService.CanTryOn(item))
         {
-            Logger.LogInformation("Skipping preview of {name}, because it can't be tried on", ItemService.GetItemName(item));
+            Logger.LogInformation("Skipping preview of {name}, because it can't be tried on", TextService.GetItemName(item));
             return;
         }
 

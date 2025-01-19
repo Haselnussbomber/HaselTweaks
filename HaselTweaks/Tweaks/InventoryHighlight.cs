@@ -11,6 +11,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using FFXIVClientStructs.Interop;
 using HaselCommon.Services;
+using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
@@ -475,11 +476,8 @@ public unsafe partial class InventoryHighlight(
         return container->GetInventorySlot(item->Slot);
     }
 
-    private uint NormalizeItemId(uint itemId)
-    {
-        if (Config.IgnoreQuality && ItemService.IsHighQuality(itemId))
-            itemId -= 1_000_000;
-
-        return itemId;
-    }
+    private uint NormalizeItemId(ItemId itemId)
+        => Config.IgnoreQuality && itemId.IsHighQuality
+            ? itemId - 1_000_000
+            : itemId;
 }

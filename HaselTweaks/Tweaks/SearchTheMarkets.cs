@@ -3,6 +3,7 @@ using Dalamud.Game.Text;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Services;
+using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using Lumina.Excel;
@@ -75,7 +76,7 @@ public unsafe class SearchTheMarkets(
         if (MenuItem == null)
             return;
 
-        var itemId = args.AddonName switch
+        ItemId itemId = args.AddonName switch
         {
             _ when args.Target is MenuTargetInventory inv => inv.TargetItem?.ItemId ?? 0,
             "GatheringNote" => AgentGatheringNote.Instance()->ContextMenuItemId,
@@ -90,7 +91,7 @@ public unsafe class SearchTheMarkets(
         if (itemId == 0)
             return;
 
-        if (ItemService.IsHighQuality(itemId))
+        if (itemId.IsHighQuality)
             itemId -= 1_000_000;
 
         ItemRef = ExcelService.CreateRef<Item>(itemId);
