@@ -289,8 +289,6 @@ Configuration options:
   - You are in a place where glamour plates are allowed to be applied.
   - The glamour plate covers the slot(s) that caused the mismatch.
   - The mismatch was not caused by mainhand/headgear visibility or visor state.
-- "Automatically update portrait"  
-  Only works for gear sets that are not linked with a glamour plate.
 
 ### Reveal Duty Requirements
 
