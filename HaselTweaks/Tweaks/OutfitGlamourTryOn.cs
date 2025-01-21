@@ -43,7 +43,7 @@ public unsafe class OutfitGlamourTryOn(IContextMenu ContextMenu, ItemService Ite
         if (args.AddonName != "MiragePrismPrismSetConvert")
             return;
 
-        var agent = (AgentMiragePrismPrismSetConvert*)AgentModule.Instance()->GetAgentByInternalId(AgentId.MiragePrismPrismSetConvert);
+        var agent = (HaselAgentMiragePrismPrismSetConvert*)AgentModule.Instance()->GetAgentByInternalId(AgentId.MiragePrismPrismSetConvert);
         if (agent == null || agent->Data == null)
             return;
 

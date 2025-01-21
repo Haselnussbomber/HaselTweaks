@@ -5,7 +5,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 namespace HaselTweaks.Structs.Agents;
 
 [StructLayout(LayoutKind.Explicit, Size = 0x30)]
-public unsafe struct AgentMiragePrismPrismSetConvert {
+public unsafe struct HaselAgentMiragePrismPrismSetConvert {
     [FieldOffset(0x00)] public AgentInterface AgentInterface;
     [FieldOffset(0x28)] public AgentMiragePrismPrismSetConvertData* Data;
 }
@@ -22,8 +22,8 @@ public partial struct AgentMiragePrismPrismSetConvertData {
     [FieldOffset(0x30), FixedSizeArray] internal FixedSizeArray5<ItemSet> _itemSets;
     [FieldOffset(0x288)] public uint NumItemsInSet;
     [FieldOffset(0x28C), FixedSizeArray] internal FixedSizeArray5<ItemSetItem> _items;
-    [FieldOffset(0x380)] public Utf8String N0005AE1A;
-    [FieldOffset(0x3F8)] public Utf8String N0005AE57;
+    // [FieldOffset(0x380)] public Utf8String N0005AE1A;
+    // [FieldOffset(0x3F8)] public Utf8String N0005AE57;
     // ...
 }
 
