@@ -6,7 +6,6 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
-using HaselCommon.Extensions.Sheets;
 using HaselCommon.Gui;
 using HaselCommon.Services;
 using HaselTweaks.Tweaks;
@@ -113,11 +112,11 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
         ImGuiContextMenuService.Draw(popupKey, builder =>
         {
             builder
-                .AddTryOn(item.AsRef())
+                .AddTryOn(item)
                 .AddItemFinder(item.RowId)
                 .AddCopyItemName(item.RowId)
                 .AddOpenOnGarlandTools("item", item.RowId)
-                .AddItemSearch(item.AsRef());
+                .AddItemSearch(item);
         });
     }
 

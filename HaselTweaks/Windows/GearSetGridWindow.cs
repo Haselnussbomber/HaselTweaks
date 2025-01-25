@@ -275,11 +275,11 @@ public unsafe class GearSetGridWindow : LockableWindow
         ImGuiContextMenuService.Draw(popupKey, builder =>
         {
             builder
-                .AddTryOn(item.AsRef(), slot->GlamourId, slot->Stain0Id, slot->Stain1Id)
+                .AddTryOn(item, slot->GlamourId, slot->Stain0Id, slot->Stain1Id)
                 .AddItemFinder(item.RowId)
                 .AddCopyItemName(item.RowId)
                 .AddOpenOnGarlandTools("item", item.RowId)
-                .AddItemSearch(item.AsRef());
+                .AddItemSearch(item);
         });
 
         if (!ImGui.IsItemHovered())
