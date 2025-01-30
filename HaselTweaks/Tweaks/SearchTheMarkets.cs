@@ -15,7 +15,6 @@ public unsafe class SearchTheMarkets(
     IContextMenu ContextMenu,
     LanguageProvider LanguageProvider,
     TextService TextService,
-    ExcelService ExcelService,
     ItemService ItemService) : ITweak
 {
     public string InternalName => nameof(SearchTheMarkets);

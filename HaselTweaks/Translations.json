@@ -219,49 +219,6 @@
     "de": "Windätherquellen-Fenster öffnen",
     "zh": "打开风脉泉窗口"
   },
-  "AetherCurrentHelperWindow.Coords": {
-    "en": "X: {0}, Y: {1}"
-  },
-  "AetherCurrentHelperWindow.Compass.E": {
-    "en": "E",
-    "de": "O",
-    "zh": "东"
-  },
-  "AetherCurrentHelperWindow.Compass.NE": {
-    "en": "NE",
-    "de": "NO",
-    "zh": "东北"
-  },
-  "AetherCurrentHelperWindow.Compass.N": {
-    "en": "N",
-    "de": "N",
-    "zh": "北"
-  },
-  "AetherCurrentHelperWindow.Compass.NW": {
-    "en": "NW",
-    "de": "NW",
-    "zh": "西北"
-  },
-  "AetherCurrentHelperWindow.Compass.W": {
-    "en": "W",
-    "de": "W",
-    "zh": "西"
-  },
-  "AetherCurrentHelperWindow.Compass.SW": {
-    "en": "SW",
-    "de": "SW",
-    "zh": "西南"
-  },
-  "AetherCurrentHelperWindow.Compass.S": {
-    "en": "S",
-    "de": "S",
-    "zh": "南"
-  },
-  "AetherCurrentHelperWindow.Compass.SE": {
-    "en": "SE",
-    "de": "SO",
-    "zh": "东南"
-  },
 
   "AutoOpenRecipe.Tweak.Name": {
     "en": "Auto-open Recipe",

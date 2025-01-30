@@ -56,11 +56,6 @@
         "resolved": "3.1.6",
         "contentHash": "dHQ5jugF9v+5/LCVHCWVzaaIL6WOehqJy6eju/0VFYFPEj2WtqkGPoEV9EVQP83dHsdoqYaTuWpZdwAd37UwfA=="
       },
-      "Haselnussbomber.YogaSharp": {
-        "type": "Transitive",
-        "resolved": "1.1.3",
-        "contentHash": "Sz0emN5J9uuiwqbHbxrkvziufa+OBrKaEjoem80wYOm+OBJ+5WaEcTEe2OKFHKrfmqPnP3Ao05r5BFOfOIO/aA=="
-      },
       "JetBrains.Annotations": {
         "type": "Transitive",
         "resolved": "2021.2.0",
@@ -132,7 +127,6 @@
         "type": "Project",
         "dependencies": {
           "FFXIVClientStructs": "[1.0.0, )",
-          "Haselnussbomber.YogaSharp": "[1.1.3, )",
           "Microsoft.Extensions.DependencyInjection": "[9.0.0, )",
           "Microsoft.Extensions.Logging": "[9.0.0, )"
         }

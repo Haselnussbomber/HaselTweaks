@@ -5,14 +5,16 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 namespace HaselTweaks.Structs.Agents;
 
 [StructLayout(LayoutKind.Explicit, Size = 0x30)]
-public unsafe struct HaselAgentMiragePrismPrismSetConvert {
+public unsafe struct HaselAgentMiragePrismPrismSetConvert
+{
     [FieldOffset(0x00)] public AgentInterface AgentInterface;
     [FieldOffset(0x28)] public AgentMiragePrismPrismSetConvertData* Data;
 }
 
 [GenerateInterop]
 [StructLayout(LayoutKind.Explicit, Size = 0x590)] // not sure
-public partial struct AgentMiragePrismPrismSetConvertData {
+public partial struct AgentMiragePrismPrismSetConvertData
+{
     //[FieldOffset(0x0C)] public uint NeededPrisms?;
     [FieldOffset(0x14)] public int ContextMenuItemIndex;
     [FieldOffset(0x18)] public uint SomethingItemSelect;

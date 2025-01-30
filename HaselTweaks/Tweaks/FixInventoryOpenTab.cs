@@ -20,7 +20,7 @@ public unsafe class FixInventoryOpenTab(ILogger<FixInventoryOpenTab> Logger, IAd
 
     public void OnEnable()
     {
-        AddonLifecycle.RegisterListener(AddonEvent.PreRefresh, [ "Inventory", "InventoryLarge", "InventoryExpansion" ], OnPreRefresh);
+        AddonLifecycle.RegisterListener(AddonEvent.PreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"], OnPreRefresh);
     }
 
     public void OnDisable()

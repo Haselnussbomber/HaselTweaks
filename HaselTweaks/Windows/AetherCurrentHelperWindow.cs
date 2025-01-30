@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Globalization;
 using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
@@ -216,7 +215,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         // Content
         ImGui.TableNextColumn();
         ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetQuestName(quest.RowId)}");
-        ImGui.TextUnformatted($"{GetHumanReadableCoords(quest.IssuerLocation.Value)} | {TextService.GetENpcResidentName(quest.IssuerStart.RowId)}");
+        ImGui.TextUnformatted($"{MapService.GetHumanReadableCoords(quest.IssuerLocation.Value)} | {TextService.GetENpcResidentName(quest.IssuerStart.RowId)}");
 
         // Actions
         ImGui.TableNextColumn();
@@ -258,7 +257,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         // Content
         ImGui.TableNextColumn();
         ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetEObjName(eobj.RowId)}");
-        ImGui.TextUnformatted(GetHumanReadableCoords(level));
+        ImGui.TextUnformatted(MapService.GetHumanReadableCoords(level));
 
         // Actions
         ImGui.TableNextColumn();
@@ -291,7 +290,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
                 var distance = MapService.GetDistanceFromPlayer(level);
                 if (distance < float.MaxValue)
                 {
-                    var direction = distance > 1 ? GetCompassDirection(level) : string.Empty;
+                    var direction = distance > 1 ? MapService.GetCompassDirection(level) : string.Empty;
                     var text = $"{distance:0}y {direction}";
 
                     if (Config.CenterDistance)
@@ -333,34 +332,5 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         }
 
         ImGuiUtils.TextUnformattedColored(Color.Green, icon);
-    }
-
-    private string GetHumanReadableCoords(Level level)
-    {
-        var coords = MapService.GetCoords(level);
-        var x = coords.X.ToString("0.0", CultureInfo.InvariantCulture);
-        var y = coords.Y.ToString("0.0", CultureInfo.InvariantCulture);
-        return TextService.Translate("AetherCurrentHelperWindow.Coords", x, y);
-    }
-
-    //! https://gamedev.stackexchange.com/a/49300
-    public string GetCompassDirection(Vector2 a, Vector2 b)
-    {
-        var vector = a - b;
-        var angle = Math.Atan2(vector.Y, vector.X);
-        var octant = (int)Math.Round(8 * angle / (2 * Math.PI) + 8) % 8;
-
-        return TextService.Translate($"AetherCurrentHelperWindow.Compass.{CompassHeadings[octant]}");
-    }
-
-    public string GetCompassDirection(Level level)
-    {
-        var localPlayer = ClientState.LocalPlayer;
-        return localPlayer == null
-            ? string.Empty
-            : GetCompassDirection(
-                new Vector2(-localPlayer.Position.X, localPlayer.Position.Z),
-                new Vector2(-level.X, level.Z)
-            );
     }
 }
