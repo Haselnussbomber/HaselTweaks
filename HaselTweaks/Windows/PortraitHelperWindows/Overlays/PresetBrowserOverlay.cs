@@ -49,15 +49,16 @@ public unsafe class PresetBrowserOverlay : Overlay
         ITextureProvider textureProvider,
         BannerUtils bannerUtils,
         WindowManager windowManager,
+        TextService textService,
+        LanguageProvider languageProvider,
         PluginConfig pluginConfig,
         ExcelService excelService,
-        TextService textService,
         CreateTagDialog createTagDialog,
         RenameTagDialog renameTagDialog,
         DeleteTagDialog deleteTagDialog,
         DeletePresetDialog deletePresetDialog,
         EditPresetDialog editPresetDialog)
-        : base(windowManager, pluginConfig, excelService, textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Title"))
+        : base(windowManager, textService, languageProvider, pluginConfig, excelService)
     {
         TextService = textService;
         Logger = logger;
@@ -127,7 +128,7 @@ public unsafe class PresetBrowserOverlay : Overlay
             (tag.Id == SelectedTagId ? ImGuiTreeNodeFlags.Selected : ImGuiTreeNodeFlags.None);
 
         using var treeNode = ImRaii.TreeNode($"{tag.Name} ({count})##PresetBrowser_SideBar_Tag{tag.Id}", treeNodeFlags);
-        if (!treeNode.Success)
+        if (!treeNode)
             return;
 
         if (ImGui.IsItemClicked())
@@ -137,10 +138,10 @@ public unsafe class PresetBrowserOverlay : Overlay
 
         using (var source = ImRaii.DragDropSource())
         {
-            if (source.Success)
+            if (source)
             {
                 using (ImRaii.PushColor(ImGuiCol.Text, DefaultImGuiTextColor))
-                    TextService.Draw("PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip", tag.Name);
+                    ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip", tag.Name));
 
                 var bytes = tag.Id.ToByteArray();
                 fixed (byte* ptr = bytes)
@@ -152,7 +153,7 @@ public unsafe class PresetBrowserOverlay : Overlay
 
         using (var target = ImRaii.DragDropTarget())
         {
-            if (target.Success)
+            if (target)
             {
                 var payload = ImGui.AcceptDragDropPayload("MoveTag");
                 if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
@@ -179,7 +180,7 @@ public unsafe class PresetBrowserOverlay : Overlay
         using (ImRaii.PushColor(ImGuiCol.Text, DefaultImGuiTextColor))
         {
             using var popup = ImRaii.ContextPopupItem($"##PresetBrowser_SideBar_Tag{tag.Id}Popup");
-            if (popup.Success)
+            if (popup)
             {
                 if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label")))
                 {
@@ -216,7 +217,7 @@ public unsafe class PresetBrowserOverlay : Overlay
     {
         using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var child = ImRaii.Child("PresetBrowser_SideBar", new Vector2(SidebarWidth - ImGui.GetStyle().ItemSpacing.X, -1));
-        if (!child.Success) return;
+        if (!child) return;
         framePadding?.Dispose();
 
         var removeUnusedTags = false;
@@ -228,7 +229,7 @@ public unsafe class PresetBrowserOverlay : Overlay
 
         using var framePaddingChild = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var tagsChild = ImRaii.Child("PresetBrowser_Content_Tags");
-        if (!tagsChild.Success) return;
+        if (!tagsChild) return;
         framePaddingChild?.Dispose();
 
         DrawAllTag(ref removeUnusedTags);
@@ -260,7 +261,7 @@ public unsafe class PresetBrowserOverlay : Overlay
             (SelectedTagId == null ? ImGuiTreeNodeFlags.Selected : ImGuiTreeNodeFlags.None);
 
         using var allTreeNode = ImRaii.TreeNode(TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.AllTags.Title", Config.Presets.Count.ToString()) + $"##PresetBrowser_SideBar_All", treeNodeFlags);
-        if (!allTreeNode.Success)
+        if (!allTreeNode)
             return;
 
         if (ImGui.IsItemClicked())
@@ -269,7 +270,7 @@ public unsafe class PresetBrowserOverlay : Overlay
         using (ImRaii.PushColor(ImGuiCol.Text, DefaultImGuiTextColor))
         {
             using var popup = ImRaii.ContextPopupItem("##PresetBrowser_SideBar_AllPopup");
-            if (popup.Success)
+            if (popup)
             {
                 if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label")))
                     CreateTagDialog.Open();
@@ -312,7 +313,7 @@ public unsafe class PresetBrowserOverlay : Overlay
     {
         using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var child = ImRaii.Child("PresetBrowser_Content");
-        if (!child.Success) return;
+        if (!child) return;
         framePadding?.Dispose();
 
         ImGuiUtils.DrawSection(
@@ -325,7 +326,7 @@ public unsafe class PresetBrowserOverlay : Overlay
 
         using var framePaddingChild = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var presetCardsChild = ImRaii.Child("PresetBrowser_Content_PresetCards");
-        if (!presetCardsChild.Success) return;
+        if (!presetCardsChild) return;
         framePaddingChild?.Dispose();
 
         using var indentSpacing = ImRaii.PushStyle(ImGuiStyleVar.IndentSpacing, style.ItemSpacing.X);

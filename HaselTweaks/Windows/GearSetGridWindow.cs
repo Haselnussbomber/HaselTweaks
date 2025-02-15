@@ -40,14 +40,15 @@ public unsafe class GearSetGridWindow : LockableWindow
 
     public GearSetGridWindow(
         WindowManager windowManager,
+        TextService textService,
+        LanguageProvider languageProvider,
         PluginConfig pluginConfig,
         IClientState clientState,
         TextureService textureService,
         ExcelService excelService,
-        TextService textService,
         ImGuiContextMenuService imGuiContextMenuService,
         ItemService itemService)
-        : base(windowManager, pluginConfig, textService, textService.Translate("GearSetGridWindow.Title"))
+        : base(windowManager, textService, languageProvider, pluginConfig)
     {
         ClientState = clientState;
         TextureService = textureService;
@@ -307,7 +308,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
         if (slot->GlamourId != 0 && ExcelService.TryGetRow<Item>(slot->GlamourId, out var glamourItem))
         {
-            TextService.Draw("GearSetGridWindow.ItemTooltip.LabelGlamour");
+            ImGui.TextUnformatted(TextService.Translate("GearSetGridWindow.ItemTooltip.LabelGlamour"));
             ImGuiUtils.SameLineSpace();
             ImGuiUtils.TextUnformattedColored(ItemService.GetItemRarityColor(glamourItem), TextService.GetItemName(slot->GlamourId));
 
@@ -320,7 +321,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
         if (slot->Stain0Id != 0 && ExcelService.TryGetRow<Stain>(slot->Stain0Id, out var stain0))
         {
-            TextService.Draw("GearSetGridWindow.ItemTooltip.LabelDye0");
+            ImGui.TextUnformatted(TextService.Translate("GearSetGridWindow.ItemTooltip.LabelDye0"));
             ImGuiUtils.SameLineSpace();
             using (ImRaii.PushColor(ImGuiCol.Text, (uint)stain0.GetColor()))
                 ImGui.Bullet();
@@ -336,7 +337,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
         if (slot->Stain1Id != 0 && ExcelService.TryGetRow<Stain>(slot->Stain1Id, out var stain1))
         {
-            TextService.Draw("GearSetGridWindow.ItemTooltip.LabelDye1");
+            ImGui.TextUnformatted(TextService.Translate("GearSetGridWindow.ItemTooltip.LabelDye1"));
             ImGuiUtils.SameLineSpace();
             using (ImRaii.PushColor(ImGuiCol.Text, (uint)stain1.GetColor()))
                 ImGui.Bullet();
@@ -354,7 +355,7 @@ public unsafe class GearSetGridWindow : LockableWindow
         if (usedInGearsets.Count > 1)
         {
             ImGuiUtils.DrawPaddedSeparator();
-            TextService.Draw("GearSetGridWindow.ItemTooltip.AlsoUsedInTheseGearsets");
+            ImGui.TextUnformatted(TextService.Translate("GearSetGridWindow.ItemTooltip.AlsoUsedInTheseGearsets"));
             using (ImRaii.PushIndent(ImGui.GetStyle().ItemSpacing.X))
             {
                 foreach (var entry in usedInGearsets)

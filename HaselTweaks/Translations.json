@@ -2,6 +2,9 @@
   "Plugin.DisplayName": {
     "en": "HaselTweaks"
   },
+  "PluginWindow.Title": {
+    "en": "HaselTweaks"
+  },
   "HaselTweaks.CommandHandlerHelpMessage": {
     "en": "Opens the HaselTweaks configuration window",
     "de": "Öffnet das HaselTweaks-Konfigurationsfenster",
@@ -201,6 +204,9 @@
     "en": "Disable this if you have problems with the window endlessly expanding to the right.",
     "de": "Deaktiviere diese Option, wenn das Problem auftritt, dass sich das Fenster endlos nach rechts ausdehnt.",
     "zh": "如果你的窗口无限制地向右拓展，禁用此项。"
+  },
+  "AetherCurrentHelperWindow.Title": {
+    "en": "[HaselTweaks] Aether Current Helper"
   },
   "AetherCurrentHelperWindow.AllAetherCurrentsAttuned": {
     "en": "All aether currents attuned!",
@@ -1612,7 +1618,7 @@
     "de": "Neuer Name für den Tag \"{0}\":",
     "zh": "为标签“{0}”输入一个新名称："
   },
-  "PortraitHelperWindows.AdvancedEditOverlay.Title": {
+  "AdvancedEditOverlay.Title": {
     "en": "[HaselTweaks] Portrait Helper: Advanced Edit",
     "de": "[HaselTweaks] Portrait Helper: Erweiterte Bearbeitung",
     "zh": "[HaselTweaks] 肖像助手：高级编辑"
@@ -1685,7 +1691,7 @@
     "de": "Das Spiel kann die Werte beim Einstellen und/oder Speichern des Porträts überprüfen. Wenn möglich, wird es sie automatisch anpassen, so dass sie in einem gültigen Bereich liegen. Wenn nicht, gibt es eine Fehlermeldung aus und du musst die Werte selbst korrigieren. Wie auch immer, wenn das Spiel die Werte anpasst, werden die angepassten Werte hier nicht angezeigt bis das Fenster neu geöffnet wird.",
     "zh": "游戏可能会在保存肖像或设置这些值时验证它们。如果可能，将自动调整它们，使它们处于有效范围内。如果不能，它将抛出一个错误，你必须自己调整这些值。不论何时，如果游戏调整了值，调整后的值不会在这里显示，除非你重新打开窗口。"
   },
-  "PortraitHelperWindows.AdvancedImportOverlay.Title": {
+  "AdvancedImportOverlay.Title": {
     "en": "[HaselTweaks] Portrait Helper: Advanced Import",
     "de": "[HaselTweaks] Portrait Helper: Erweiterter Import",
     "zh": "[HaselTweaks] 肖像助手：高级导入"
@@ -1727,7 +1733,7 @@
   "PortraitHelperWindows.AdvancedImportOverlay.VectorInput.ValueFormat": {
     "en": "{0:0.000}"
   },
-  "PortraitHelperWindows.AlignmentToolSettingsOverlay.Title": {
+  "AlignmentToolSettingsOverlay.Title": {
     "en": "[HaselTweaks] Portrait Helper: Alignment Tool Settings",
     "de": "[HaselTweaks] Portrait Helper: Einstellungen des Ausrichtungswerkzeugs",
     "zh": "[HaselTweaks] 肖像助手：辅助线设置"
@@ -1752,7 +1758,7 @@
     "de": "Waagerechte Linien",
     "zh": "水平线"
   },
-  "PortraitHelperWindows.PresetBrowserOverlay.Title": {
+  "PresetBrowserOverlay.Title": {
     "en": "[HaselTweaks] Portrait Helper: Preset Browser",
     "de": "[HaselTweaks] Portrait Helper: Vorlagen-Browser",
     "zh": "[HaselTweaks] 肖像助手：预设浏览器"

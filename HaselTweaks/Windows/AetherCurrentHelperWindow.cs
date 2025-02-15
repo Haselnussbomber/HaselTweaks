@@ -36,13 +36,14 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
     public AetherCurrentHelperWindow(
         WindowManager windowManager,
+        TextService textService,
+        LanguageProvider languageProvider,
         PluginConfig pluginConfig,
         IClientState clientState,
         TextureService textureService,
         ExcelService excelService,
-        TextService textService,
         MapService mapService)
-        : base(windowManager, pluginConfig, textService, "[HaselTweaks] Aether Current Helper")
+        : base(windowManager, textService, languageProvider, pluginConfig)
     {
         ClientState = clientState;
         TextureService = textureService;
@@ -79,7 +80,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            TextService.Draw("AetherCurrentHelperWindow.HideUnlockedTooltip");
+            ImGui.TextUnformatted(TextService.Translate("AetherCurrentHelperWindow.HideUnlockedTooltip"));
             ImGui.EndTooltip();
         }
 
@@ -89,7 +90,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
         using var cellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(4));
         using var table = ImRaii.Table($"##Table", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.NoPadOuterX);
-        if (!table.Success)
+        if (!table)
             return;
 
         ImGui.TableSetupColumn("Icon", ImGuiTableColumnFlags.WidthFixed);
@@ -163,7 +164,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            TextService.Draw("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip");
+            ImGui.TextUnformatted(TextService.Translate("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip"));
             ImGui.EndTooltip();
         }
 

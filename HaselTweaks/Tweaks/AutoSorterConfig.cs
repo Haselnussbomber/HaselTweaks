@@ -42,7 +42,7 @@ public partial class AutoSorter
         ImGuiUtils.DrawPaddedSeparator();
 
         using var table = ImRaii.Table("##Table", 5, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX);
-        if (!table.Success)
+        if (!table)
             return;
 
         var ItemInnerSpacing = ImGui.GetStyle().ItemInnerSpacing;
@@ -83,9 +83,9 @@ public partial class AutoSorter
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
-                TextService.Draw(entry.Enabled
+                ImGui.TextUnformatted(TextService.Translate(entry.Enabled
                     ? "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsEnabled"
-                    : "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsDisabled");
+                    : "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsDisabled"));
                 ImGui.EndTooltip();
             }
             if (ImGui.IsItemClicked())
@@ -306,7 +306,7 @@ public partial class AutoSorter
                 if (ImGui.IsItemHovered())
                 {
                     ImGui.BeginTooltip();
-                    TextService.Draw("AutoSorter.SortingInProgress");
+                    ImGui.TextUnformatted(TextService.Translate("AutoSorter.SortingInProgress"));
                     ImGui.EndTooltip();
                 }
             }

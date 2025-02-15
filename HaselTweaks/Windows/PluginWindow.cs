@@ -35,12 +35,12 @@ public partial class PluginWindow : SimpleWindow
 
     public PluginWindow(
         WindowManager windowManager,
-        LanguageProvider languageProvider,
         TextService textService,
+        LanguageProvider languageProvider,
         ITextureProvider textureProvider,
         TweakManager tweakManager,
         IEnumerable<ITweak> tweaks)
-        : base(windowManager, "HaselTweaks")
+        : base(windowManager, textService, languageProvider)
     {
         LanguageProvider = languageProvider;
         TextService = textService;
@@ -111,11 +111,11 @@ public partial class PluginWindow : SimpleWindow
     {
         var scale = ImGuiHelpers.GlobalScale;
         using var child = ImRaii.Child("##Sidebar", new Vector2(SidebarWidth * scale, -1), true);
-        if (!child.Success)
+        if (!child)
             return;
 
         using var table = ImRaii.Table("##SidebarTable", 2, ImGuiTableFlags.NoSavedSettings);
-        if (!table.Success)
+        if (!table)
             return;
 
         ImGui.TableSetupColumn("Checkbox", ImGuiTableColumnFlags.WidthFixed);
@@ -150,9 +150,10 @@ public partial class PluginWindow : SimpleWindow
                     };
 
                     using var tooltip = ImRaii.Tooltip();
-                    if (tooltip.Success)
+                    if (tooltip)
                     {
-                        TextService.Draw(color, $"HaselTweaks.Config.TweakStatus.{Enum.GetName(status)}");
+                        using (color.Push(ImGuiCol.Text))
+                            ImGui.TextUnformatted(TextService.Translate($"HaselTweaks.Config.TweakStatus.{Enum.GetName(status)}"));
                     }
                 }
 
@@ -232,7 +233,7 @@ public partial class PluginWindow : SimpleWindow
     private void DrawConfig()
     {
         using var child = ImRaii.Child("##Config", new Vector2(-1), true);
-        if (!child.Success)
+        if (!child)
             return;
 
         if (SelectedTweak == null)

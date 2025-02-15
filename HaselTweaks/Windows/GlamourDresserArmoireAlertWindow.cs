@@ -27,11 +27,12 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 
     public GlamourDresserArmoireAlertWindow(
         WindowManager windowManager,
+        LanguageProvider languageProvider,
+        TextService textService,
         TextureService textureService,
         ExcelService excelService,
-        TextService textService,
         ImGuiContextMenuService imGuiContextMenuService)
-        : base(windowManager, textService.Translate("GlamourDresserArmoireAlertWindow.Title"))
+        : base(windowManager, textService, languageProvider)
     {
         TextureService = textureService;
         ExcelService = excelService;
@@ -56,7 +57,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 
     public override void Draw()
     {
-        TextService.DrawWrapped("GlamourDresserArmoireAlertWindow.Info");
+        ImGuiHelpers.SafeTextWrapped(TextService.Translate("GlamourDresserArmoireAlertWindow.Info"));
 
         foreach (var (categoryId, categoryItems) in Tweak!.Categories.OrderBy(kv => kv.Key))
         {

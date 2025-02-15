@@ -13,8 +13,8 @@ public abstract class LockableWindow : SimpleWindow
 
     public readonly PluginConfig PluginConfig;
 
-    public LockableWindow(WindowManager windowManager, PluginConfig pluginConfig, TextService textService, string name)
-        : base(windowManager, name)
+    public LockableWindow(WindowManager windowManager, TextService textService, LanguageProvider languageProvider, PluginConfig pluginConfig)
+        : base(windowManager, textService, languageProvider)
     {
         PluginConfig = pluginConfig;
 
@@ -30,10 +30,9 @@ public abstract class LockableWindow : SimpleWindow
             ShowTooltip = () =>
             {
                 ImGui.BeginTooltip();
-                textService.Draw(
-                    WindowLocked
+                ImGui.TextUnformatted(textService.Translate(WindowLocked
                     ? "ImGuiWindow.WindowLocked"
-                    : "ImGuiWindow.WindowUnlocked");
+                    : "ImGuiWindow.WindowUnlocked"));
                 ImGui.EndTooltip();
             },
             Click = (button) =>

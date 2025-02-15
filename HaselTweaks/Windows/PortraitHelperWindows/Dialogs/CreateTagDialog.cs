@@ -40,7 +40,7 @@ public class CreateTagDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        TextService.Draw("PortraitHelperWindows.CreateTagDialog.Name.Label");
+        ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.CreateTagDialog.Name.Label"));
 
         ImGui.Spacing();
 

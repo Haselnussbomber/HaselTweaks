@@ -46,13 +46,14 @@ public unsafe class MenuBar : SimpleWindow
 
     public MenuBar(
         ILogger<MenuBar> logger,
+        TextService textService,
+        LanguageProvider languageProvider,
         IServiceProvider serviceProvider,
         IDalamudPluginInterface pluginInterface,
         WindowManager windowManager,
         PluginConfig pluginConfig,
-        TextService textService,
         BannerUtils bannerUtils)
-        : base(windowManager, "Portrait Helper MenuBar")
+        : base(windowManager, textService, languageProvider)
     {
         ServiceProvider = serviceProvider;
         Logger = logger;
@@ -136,7 +137,7 @@ public unsafe class MenuBar : SimpleWindow
         if (InitialPreset == null)
         {
             ImGui.SetCursorPosY(ImGui.GetCursorPos().Y + 2);
-            TextService.Draw("PortraitHelperWindows.MenuBar.Initializing");
+            ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.MenuBar.Initializing"));
             UpdatePosition();
             return;
         }

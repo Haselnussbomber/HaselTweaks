@@ -45,7 +45,7 @@ public class RenameTagDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        TextService.Draw("PortraitHelperWindows.RenameTagDialog.Name.Label", Tag!.Name);
+        ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.RenameTagDialog.Name.Label", Tag!.Name));
 
         ImGui.Spacing();
 

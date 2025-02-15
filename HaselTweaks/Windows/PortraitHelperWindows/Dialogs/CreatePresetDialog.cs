@@ -73,7 +73,7 @@ public class CreatePresetDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        TextService.Draw("PortraitHelperWindows.CreatePresetDialog.Name.Label");
+        ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.CreatePresetDialog.Name.Label"));
         ImGui.Spacing();
         ImGui.InputText("##PresetName", ref Name, 100);
 
@@ -86,7 +86,7 @@ public class CreatePresetDialog : ConfirmationDialog
         if (Config.PresetTags.Count != 0)
         {
             ImGui.Spacing();
-            TextService.Draw("PortraitHelperWindows.CreatePresetDialog.Tags.Label");
+            ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.CreatePresetDialog.Tags.Label"));
 
             var tagNames = Tags!
                 .Select(id => Config.PresetTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
@@ -96,7 +96,7 @@ public class CreatePresetDialog : ConfirmationDialog
 
             ImGui.Spacing();
             using var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge);
-            if (tagsCombo.Success)
+            if (tagsCombo)
             {
                 foreach (var tag in Config.PresetTags)
                 {

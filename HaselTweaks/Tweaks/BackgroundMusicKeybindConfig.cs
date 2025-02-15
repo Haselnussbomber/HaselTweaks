@@ -95,7 +95,7 @@ public unsafe partial class BackgroundMusicKeybind
 
         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
         using var combo = ImRaii.Combo("##Key", previewValue);
-        if (!combo.Success)
+        if (!combo)
             return;
 
         foreach (var _key in KeyState.GetValidVirtualKeys())
