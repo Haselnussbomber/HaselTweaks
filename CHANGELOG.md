@@ -1,5 +1,19 @@
 # Changelog
 
+## [32.1.0] (2025-02-15)
+
+### HaselTweaks
+
+- Mostly internal changes.
+- Positions of ImGui windows of this plugin will be reset. Sorry about that.
+- Fixed a possible deadlock caused by a hook when the plugin loaded.
+- No longer ships with the yoga layout engine, because isn't needed right now.
+
+### Portrait Helper
+
+Re-enabled the option "Automatically update portrait".  
+To make this work, the tweak will attempt to update the portrait after saving a gearset. If that didn't work it will show the Portrait Update Preview window as the game intended to do.
+
 ## [32.0.4] (2025-01-21)
 
 Preliminary update for Patch 7.16.
@@ -14,7 +28,7 @@ Forgot to update the version of the plugin again, so it wouldn't update. Sorry a
 
 ## [32.0.1] (2025-01-15)
 
-## HaselTweaks
+### HaselTweaks
 
 - **Fixed:** An exception "Scene is not yet ready" could've been thrown when the plugin loads.  
   Explanation: To handle font scale changes, the plugin registered an event on the default Dalamud font, but because the plugin is loaded before ImGui might be ready the exception could be thrown. To resolve this the plugin now waits for the UI to be ready before registering the event.
@@ -1909,6 +1923,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[32.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.0.4...v32.1.0
 [32.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.0.3...v32.0.4
 [32.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.0.2...v32.0.3
 [32.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.0.1...v32.0.2
