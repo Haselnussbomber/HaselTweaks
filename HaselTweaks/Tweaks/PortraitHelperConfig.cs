@@ -42,6 +42,6 @@ public unsafe partial class PortraitHelper
             ConfigGui.DrawBool("IgnoreDoHDoL", ref Config.IgnoreDoHDoL);
         });
         ConfigGui.DrawBool("ReequipGearsetOnUpdate", ref Config.ReequipGearsetOnUpdate, drawAfterLabel: ConfigGui.DrawNetworkWarning);
-        //ConfigGui.DrawBool("AutoUpdatePotraitOnGearUpdate", ref Config.AutoUpdatePotraitOnGearUpdate, drawAfterLabel: ConfigGui.DrawNetworkWarning);
+        ConfigGui.DrawBool("AutoUpdatePotraitOnGearUpdate", ref Config.AutoUpdatePotraitOnGearUpdate, drawAfterLabel: ConfigGui.DrawNetworkWarning);
     }
 }

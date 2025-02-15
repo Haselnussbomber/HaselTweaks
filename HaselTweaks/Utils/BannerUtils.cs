@@ -2,6 +2,7 @@ using System.IO;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Component.Exd;
 using HaselCommon.Services;
 using HaselTweaks.Structs;
 using Lumina.Excel.Sheets;
@@ -101,11 +102,11 @@ public unsafe class BannerUtils(IDalamudPluginInterface PluginInterface, ExcelSe
         if (id == 0)
             return true;
 
-        var bannerCondition = BannerConditionRow.GetByRowId(id);
+        var bannerCondition = HaselExdModule.GetBannerConditionByIndex(id);
         if (bannerCondition == null)
             return false;
 
-        return bannerCondition->GetUnlockState() == 0;
+        return ExdModule.GetBannerConditionUnlockState(bannerCondition) == 0;
     }
 
     public string GetBannerTimelineName(uint id)

@@ -7,6 +7,7 @@ using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -53,7 +54,9 @@ public unsafe partial class PortraitHelper(
 
     private Hook<UIClipboard.Delegates.OnClipboardDataChanged>? OnClipboardDataChangedHook;
     private Hook<RaptureGearsetModule.Delegates.UpdateGearset>? UpdateGearsetHook;
+    private Hook<AgentBannerPreview.Delegates.Show>? AgentBannerPreviewShowHook;
     private bool WasBoundByDuty;
+    private bool BlockBannerPreview;
 
     public void OnInitialize()
     {
@@ -64,6 +67,10 @@ public unsafe partial class PortraitHelper(
         UpdateGearsetHook = GameInteropProvider.HookFromAddress<RaptureGearsetModule.Delegates.UpdateGearset>(
             RaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
             UpdateGearsetDetour);
+
+        AgentBannerPreviewShowHook = GameInteropProvider.HookFromAddress<AgentBannerPreview.Delegates.Show>(
+            AgentBannerPreview.Instance()->VirtualTable->Show,
+            AgentBannerPreviewShowDetour);
     }
 
     public void OnEnable()
@@ -80,6 +87,7 @@ public unsafe partial class PortraitHelper(
 
         OnClipboardDataChangedHook?.Enable();
         UpdateGearsetHook?.Enable();
+        AgentBannerPreviewShowHook?.Enable();
     }
 
     public void OnDisable()
@@ -95,6 +103,7 @@ public unsafe partial class PortraitHelper(
 
         OnClipboardDataChangedHook?.Disable();
         UpdateGearsetHook?.Disable();
+        AgentBannerPreviewShowHook?.Disable();
     }
 
     void IDisposable.Dispose()
@@ -105,6 +114,7 @@ public unsafe partial class PortraitHelper(
         OnDisable();
         OnClipboardDataChangedHook?.Dispose();
         UpdateGearsetHook?.Dispose();
+        AgentBannerPreviewShowHook?.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);
@@ -170,7 +180,12 @@ public unsafe partial class PortraitHelper(
 
     private int UpdateGearsetDetour(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
+        if (Config.AutoUpdatePotraitOnGearUpdate)
+            BlockBannerPreview = true;
+
         var ret = UpdateGearsetHook!.Original(raptureGearsetModule, gearsetId);
+
+        BlockBannerPreview = false;
 
         MismatchCheckCTS?.Cancel();
         MismatchCheckCTS = new();
@@ -181,6 +196,23 @@ public unsafe partial class PortraitHelper(
             cancellationToken: MismatchCheckCTS.Token);
 
         return ret;
+    }
+
+    private void AgentBannerPreviewShowDetour(AgentBannerPreview* thisPtr)
+    {
+        if (!Config.AutoUpdatePotraitOnGearUpdate)
+        {
+            AgentBannerPreviewShowHook!.Original(thisPtr);
+            return;
+        }
+
+        if (BlockBannerPreview)
+        {
+            BlockBannerPreview = false;
+            return;
+        }
+
+        AgentBannerPreviewShowHook!.Original(thisPtr);
     }
 
     private void OnClassJobChange(uint classJobId)
@@ -240,7 +272,7 @@ public unsafe partial class PortraitHelper(
         if (banner == null) // banner not found
             return;
 
-        var checksum = GetEquippedGearChecksum();
+        var checksum = HaselUIGlobals.GenerateEquippedItemsChecksum();
 
         if (banner->Checksum == checksum)
         {
@@ -256,12 +288,19 @@ public unsafe partial class PortraitHelper(
             raptureGearsetModule->EquipGearset(gearset->Id, gearset->GlamourSetLink);
             RecheckGearChecksum(banner);
         }
-        //else if (!isJobChange && Config.AutoUpdatePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
-        //{
-        //    Logger.LogInformation("Trying to send portrait update...");
-        //    if (SendPortraitUpdate(banner))
-        //        RecheckGearChecksum(banner);
-        //}
+        else if (!isJobChange && Config.AutoUpdatePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
+        {
+            Logger.LogInformation("Trying to send portrait update...");
+
+            if (SendPortraitUpdate(banner))
+            {
+                RecheckGearChecksum(banner);
+            }
+            else
+            {
+                AgentBannerPreviewShowHook?.Original(AgentBannerPreview.Instance());
+            }
+        }
         else if (Config.NotifyGearChecksumMismatch)
         {
             NotifyMismatch();
@@ -275,14 +314,16 @@ public unsafe partial class PortraitHelper(
 
         Framework.RunOnTick(() =>
         {
-            if (banner->Checksum != GetEquippedGearChecksum())
+            var checksum = HaselUIGlobals.GenerateEquippedItemsChecksum();
+
+            if (banner->Checksum != checksum)
             {
-                Logger.LogInformation("Gear checksum still mismatching (Portrait: {bannerChecksum:X}, Equipped: {equippedChecksum:X})", banner->Checksum, GetEquippedGearChecksum());
+                Logger.LogInformation("Gear checksum still mismatching (Portrait: {bannerChecksum:X}, Equipped: {equippedChecksum:X})", banner->Checksum, checksum);
                 NotifyMismatch();
             }
             else
             {
-                Logger.LogInformation("Gear checksum matches now (Portrait: {bannerChecksum:X}, Equipped: {equippedChecksum:X})", banner->Checksum, GetEquippedGearChecksum());
+                Logger.LogInformation("Gear checksum matches now (Portrait: {bannerChecksum:X}, Equipped: {equippedChecksum:X})", banner->Checksum, checksum);
             }
         }, delay: CheckDelay, cancellationToken: MismatchCheckCTS.Token);
     }
@@ -318,47 +359,6 @@ public unsafe partial class PortraitHelper(
         ChatGui.PrintError(sb.Build());
     }
 
-    private uint GetEquippedGearChecksum()
-    {
-        var localPlayer = (Character*)Control.GetLocalPlayer();
-        if (localPlayer == null)
-            return 0;
-
-        // not the real struct... just enough to be able to call LoadEquipmentData
-        var data = new FakeAgentBannerListData
-        {
-            UIModule = UIModule.Instance()
-        };
-
-        var itemIds = stackalloc uint[14];
-        var stainIds0 = stackalloc byte[14];
-        var stainIds1 = stackalloc byte[14];
-        var glassesIds = stackalloc ushort[2];
-
-        if (!data.LoadEquipmentData(itemIds, stainIds0, stainIds1, glassesIds))
-            return 0;
-
-        var stainIds = stackalloc byte[14 * 2];
-        for (var i = 0; i < 14; i++)
-        {
-            stainIds[i * 2] = stainIds0[i];
-            stainIds[i * 2 + 1] = stainIds1[i];
-        }
-
-        var gearVisibilityFlag = BannerGearVisibilityFlag.None;
-
-        if (localPlayer->DrawData.IsHatHidden)
-            gearVisibilityFlag |= BannerGearVisibilityFlag.HeadgearHidden;
-
-        if (localPlayer->DrawData.IsWeaponHidden)
-            gearVisibilityFlag |= BannerGearVisibilityFlag.WeaponHidden;
-
-        if (localPlayer->DrawData.IsVisorToggled)
-            gearVisibilityFlag |= BannerGearVisibilityFlag.VisorClosed;
-
-        return BannerModuleEntry.GenerateChecksum(itemIds, stainIds, glassesIds, gearVisibilityFlag);
-    }
-    /*
     private bool SendPortraitUpdate(BannerModuleEntry* banner)
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
@@ -390,7 +390,7 @@ public unsafe partial class PortraitHelper(
             return false;
         }
 
-        var currentChecksum = GetEquippedGearChecksum();
+        var currentChecksum = HaselUIGlobals.GenerateEquippedItemsChecksum();
         if (banner->Checksum == currentChecksum)
         {
             Logger.LogInformation("No Portrait Update: Checksum still matches");
@@ -404,44 +404,28 @@ public unsafe partial class PortraitHelper(
             return false;
         }
 
-        var helper = Structs.UIModuleHelpers.Instance()->BannerModuleHelper;
-
-        // TODO: check E8 ?? ?? ?? ?? 84 C0 74 4A 48 8D 4C 24
-
-        if (!helper->IsBannerNotExpired(banner, 1))
+        var helper = UIModule.Instance()->GetUIModuleHelpers()->BannerHelper;
+        if (!helper->BannerModuleEntry_IsCurrentCharaCardBannerOutdated(banner, true))
         {
             Logger.LogWarning("No Portrait Update: Banner expired");
             return false;
         }
 
-        if (!helper->IsBannerCharacterDataNotExpired(banner, 1))
+        if (!helper->BannerModuleEntry_IsCharacterDataOutdated(banner, true))
         {
             Logger.LogWarning("No Portrait Update: Banner character data expired");
-            return false;
-        }
-
-        var bannerUpdateData = new BannerUpdateData();
-
-        if (!helper->InitializeBannerUpdateData(&bannerUpdateData))
-        {
-            Logger.LogWarning("No Portrait Update: InitializeBannerUpdateData failed");
             return false;
         }
 
         // update Banner
         banner->LastUpdated = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         banner->Checksum = currentChecksum;
-        helper->CopyRaceGenderHeightTribe(banner, localPlayer);
+        helper->BannerModuleEntry_ApplyRaceGenderHeightTribe(banner, localPlayer);
         BannerModule.Instance()->UserFileEvent.HasChanges = true;
 
-        if (!helper->CopyBannerEntryToBannerUpdateData(&bannerUpdateData, banner))
-        {
-            Logger.LogWarning("No Portrait Update: CopyBannerEntryToBannerUpdateData failed");
-            return false;
-        }
-
-        var result = helper->SendBannerUpdateData(&bannerUpdateData);
-
+        var bannerData = new BannerData();
+        helper->BannerData_ApplyBannerModuleEntry(&bannerData, banner);
+        var result = helper->SendBannerData(&bannerData);
         if (result)
         {
             Logger.LogInformation("Portrait Update sent");
@@ -453,5 +437,4 @@ public unsafe partial class PortraitHelper(
 
         return result;
     }
-    */
 }
