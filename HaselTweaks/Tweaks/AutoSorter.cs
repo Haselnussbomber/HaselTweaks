@@ -224,7 +224,7 @@ public unsafe partial class AutoSorter(
 
     private void OnOpenInventory()
     {
-        if (Conditions.IsInBetweenAreas || Conditions.IsOccupiedInQuestEvent || Conditions.IsOccupiedInCutSceneEvent)
+        if (Conditions.Instance()->BetweenAreas || Conditions.Instance()->OccupiedInQuestEvent || Conditions.Instance()->OccupiedInCutSceneEvent)
             return;
 
         var groups = Config.Settings
