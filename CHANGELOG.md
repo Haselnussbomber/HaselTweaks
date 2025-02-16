@@ -1,5 +1,11 @@
 # Changelog
 
+## [32.1.1] (2025-02-16)
+
+### HaselTweaks
+
+- **Fixed:** ImGui window positions of this plugin should no longer reset every game session. Noob mistake to think C# would work correctly. Sorry about that.
+
 ## [32.1.0] (2025-02-15)
 
 ### HaselTweaks
@@ -1923,6 +1929,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[32.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.1.0...v32.1.1
 [32.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.0.4...v32.1.0
 [32.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.0.3...v32.0.4
 [32.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.0.2...v32.0.3
