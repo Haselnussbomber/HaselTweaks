@@ -107,7 +107,7 @@ public unsafe class CastBarAetheryteNames(
         var placeName = true switch
         {
             _ when info.IsApartment => TextService.GetAddonText(8518),
-            _ when info.IsSharedHouse => SeStringEvaluator.EvaluateFromAddon(8519, new SeStringContext() { LocalParameters = [(uint)info.Ward, (uint)info.Plot] }).ToString(),
+            _ when info.IsSharedHouse => SeStringEvaluator.EvaluateFromAddon(8519, [(uint)info.Ward, (uint)info.Plot]).ToString(),
             _ when row.PlaceName.IsValid => row.PlaceName.Value.Name.ExtractText(),
             _ => string.Empty
         };

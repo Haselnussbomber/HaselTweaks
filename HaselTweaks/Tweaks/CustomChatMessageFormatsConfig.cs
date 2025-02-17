@@ -6,7 +6,10 @@ using System.Text.Json.Serialization;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using FFXIVClientStructs.FFXIV.Component.Text;
 using HaselCommon.Gui;
 using HaselCommon.Services.SeStringEvaluation;
 using HaselTweaks.Config;
@@ -438,7 +441,7 @@ public partial class CustomChatMessageFormats
                                 if (eColor.TryGetParameterExpression(out var eColorExprType, out var operand)
                                     && (ExpressionType)eColorExprType == ExpressionType.GlobalNumber
                                     && operand.TryGetUInt(out var parameterIndex)
-                                    && SeStringEvaluator.TryGetGNumDefault(parameterIndex - 1, out var eColorVal))
+                                    && TryGetGNumDefault(parameterIndex - 1, out var eColorVal))
                                 {
                                     using (ImRaii.PushColor(ImGuiCol.Text, SwapRedBlue(eColorVal)))
                                     {
@@ -693,7 +696,7 @@ public partial class CustomChatMessageFormats
 
                         var gNumIndex = textColorEntry.GNumIndex;
 
-                        if (!SeStringEvaluator.TryGetGNumDefault((uint)gNumIndex - 1, out var value))
+                        if (!TryGetGNumDefault((uint)gNumIndex - 1, out var value))
                             continue;
 
                         using (ImRaii.PushColor(ImGuiCol.Text, SwapRedBlue(value | 0xFF000000u)))
@@ -729,13 +732,10 @@ public partial class CustomChatMessageFormats
     {
         using var textColor = new ImRaii.Color();
 
-        var resolved = SeStringEvaluator.Evaluate(format, new SeStringContext()
-        {
-            LocalParameters = [
-                TextService.Translate("CustomChatMessageFormats.Config.LStr1.Label"), // "Player Name"
-                TextService.Translate("CustomChatMessageFormats.Config.LStr2.Label"), // "Message"
-            ]
-        });
+        var resolved = SeStringEvaluator.Evaluate(format, [
+            TextService.Translate("CustomChatMessageFormats.Config.LStr1.Label"), // "Player Name"
+            TextService.Translate("CustomChatMessageFormats.Config.LStr2.Label"), // "Message"
+        ]);
 
         foreach (var payload in resolved)
         {
@@ -877,4 +877,27 @@ public partial class CustomChatMessageFormats
 
     private static uint SwapRedBlue(uint value)
         => 0xFF000000 | ((value & 0x000000FF) << 16) | (value & 0x0000FF00) | ((value & 0x00FF0000) >> 16);
+
+    private unsafe bool TryGetGNumDefault(uint parameterIndex, out uint value)
+    {
+        value = 0u;
+
+        var rtm = RaptureTextModule.Instance();
+        if (rtm is null)
+            return false;
+
+        if (!ThreadSafety.IsMainThread)
+            return false;
+
+        ref var gp = ref rtm->TextModule.MacroDecoder.GlobalParameters;
+        if (parameterIndex >= gp.MySize)
+            return false;
+
+        var p = rtm->TextModule.MacroDecoder.GlobalParameters[parameterIndex];
+        if (p.Type != TextParameterType.Integer)
+            return false;
+
+        value = (uint)p.IntValue;
+        return true;
+    }
 }
