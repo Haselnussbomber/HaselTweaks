@@ -1,6 +1,6 @@
 using Dalamud.Plugin.Services;
 using Dalamud.Utility.Signatures;
-using HaselCommon.Memory;
+using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 

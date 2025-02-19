@@ -31,7 +31,7 @@ public class ConfigGui(
 
         var disabled = ImRaii.Disabled(tweak.Status == TweakStatus.Outdated);
 
-        return new ImGuiUtils.EndUnconditionally(() =>
+        return new EndUnconditionally(() =>
         {
             Tweak = null;
             disabled.Dispose();
