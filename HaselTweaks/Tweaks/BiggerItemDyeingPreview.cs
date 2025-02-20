@@ -7,6 +7,7 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe class BiggerItemDyeingPreview(IAddonLifecycle AddonLifecycle) : ITweak
 {
     public string InternalName => nameof(BiggerItemDyeingPreview);
@@ -24,7 +25,7 @@ public unsafe class BiggerItemDyeingPreview(IAddonLifecycle AddonLifecycle) : IT
         AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "ColorantColoring", OnPostSetup);
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;

@@ -7,6 +7,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Commands;
 using HaselCommon.Extensions.Strings;
 using HaselCommon.Services;
+using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Extensions;
@@ -18,6 +19,7 @@ using DalamudObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class Commands(
     PluginConfig PluginConfig,
     TextService TextService,
@@ -57,7 +59,7 @@ public unsafe partial class Commands(
         UpdateCommands(false);
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
@@ -85,7 +87,7 @@ public unsafe partial class Commands(
     [CommandHandler("/itemlink", "Commands.Config.EnableItemLinkCommand.Description")]
     private void OnItemLinkCommand(string command, string arguments)
     {
-        uint id;
+        ExcelRowId<Item> id;
         try
         {
             id = Convert.ToUInt32(arguments.Trim());
@@ -96,9 +98,9 @@ public unsafe partial class Commands(
             return;
         }
 
-        var isEventItem = ItemService.IsEventItem(id);
+        var isEventItem = id.IsEventItem();
         var existsAsEventItem = isEventItem && ExcelService.GetSheet<EventItem>().HasRow(id);
-        var existsAsItem = !isEventItem && ExcelService.GetSheet<Item>().HasRow(ItemService.GetBaseItemId(id));
+        var existsAsItem = !isEventItem && ExcelService.GetSheet<Item>().HasRow(id.GetBaseId());
 
         if (!existsAsEventItem && !existsAsItem)
         {
@@ -268,7 +270,7 @@ public unsafe partial class Commands(
             .Append(TextService.TranslateSeString("Commands.WhatBarding.AppearanceOf", name))
             .AppendNewLine()
             .Append($"  {TextService.GetAddonText(4987)}: ")
-            .Append(stain.Name.ToString().FirstCharToUpper())
+            .Append(stain.Name.ExtractText().FirstCharToUpper())
             .AppendNewLine()
             .Append($"  {TextService.GetAddonText(4991)}: {(hasTopRow ? topRow.Name.ExtractText() : TextService.GetAddonText(4994))}")
             .AppendNewLine()

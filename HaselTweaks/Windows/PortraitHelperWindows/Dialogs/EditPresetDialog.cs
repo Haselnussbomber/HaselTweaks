@@ -10,6 +10,7 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
+[RegisterScoped]
 public class EditPresetDialog : ConfirmationDialog
 {
     private readonly PluginConfig PluginConfig;
@@ -54,7 +55,7 @@ public class EditPresetDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        TextService.Draw("PortraitHelperWindows.EditPresetDialog.Name.Label");
+        ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.EditPresetDialog.Name.Label"));
 
         ImGui.Spacing();
 
@@ -69,7 +70,7 @@ public class EditPresetDialog : ConfirmationDialog
         if (Config.PresetTags.Count != 0)
         {
             ImGui.Spacing();
-            TextService.Draw("PortraitHelperWindows.EditPresetDialog.Tags.Label");
+            ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.EditPresetDialog.Tags.Label"));
 
             var tagNames = Tags!
                 .Select(id => Config.PresetTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
@@ -79,7 +80,7 @@ public class EditPresetDialog : ConfirmationDialog
 
             ImGui.Spacing();
             using var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge);
-            if (tagsCombo.Success)
+            if (tagsCombo)
             {
                 foreach (var tag in Config.PresetTags)
                 {

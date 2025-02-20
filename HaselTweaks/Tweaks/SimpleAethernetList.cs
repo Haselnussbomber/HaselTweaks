@@ -8,6 +8,7 @@ using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider) : ITweak
 {
     public string InternalName => nameof(SimpleAethernetList);

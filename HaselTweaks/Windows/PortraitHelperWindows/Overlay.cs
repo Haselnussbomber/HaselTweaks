@@ -35,10 +35,11 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
 
     public Overlay(
         WindowManager windowManager,
+        TextService textService,
+        LanguageProvider languageProvider,
         PluginConfig pluginConfig,
-        ExcelService excelService,
-        string name)
-        : base(windowManager, name)
+        ExcelService excelService)
+        : base(windowManager, textService, languageProvider)
     {
         PluginConfig = pluginConfig;
         ExcelService = excelService;

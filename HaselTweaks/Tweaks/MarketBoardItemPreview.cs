@@ -11,10 +11,12 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public sealed unsafe class MarketBoardItemPreview(
     ILogger<MarketBoardItemPreview> Logger,
     IAddonLifecycle AddonLifecycle,
     ExcelService ExcelService,
+    TextService TextService,
     ItemService ItemService)
     : ITweak
 {
@@ -51,7 +53,7 @@ public sealed unsafe class MarketBoardItemPreview(
 
         var eventData = (AtkEventData*)addonReceiveEventArgs.Data;
         var itemIndex = eventData->ListItemData.SelectedIndex;
-        var itemId = *(uint*)((nint)AgentItemSearch.Instance() + itemIndex * 4 + 0xBBC);
+        var itemId = AgentItemSearch.Instance()->ListingPageItemIds[itemIndex];
         Logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId} @ {addr:X}", itemIndex, itemId, args.Addon + itemIndex * 4 + 0xBBC);
 
         if (!ExcelService.TryGetRow<Item>(itemId, out var item))
@@ -59,7 +61,7 @@ public sealed unsafe class MarketBoardItemPreview(
 
         if (!ItemService.CanTryOn(item))
         {
-            Logger.LogInformation("Skipping preview of {name}, because it can't be tried on", ItemService.GetItemName(item));
+            Logger.LogInformation("Skipping preview of {name}, because it can't be tried on", TextService.GetItemName(item));
             return;
         }
 

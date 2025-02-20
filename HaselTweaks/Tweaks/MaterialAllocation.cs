@@ -9,6 +9,7 @@ using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class MaterialAllocation(
     PluginConfig PluginConfig,
     IAddonLifecycle AddonLifecycle)

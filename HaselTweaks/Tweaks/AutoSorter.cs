@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class AutoSorter(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,
@@ -23,8 +24,7 @@ public unsafe partial class AutoSorter(
     ExcelService ExcelService,
     IClientState ClientState,
     IFramework Framework,
-    AddonObserver AddonObserver,
-    PlayerService GameEventService)
+    AddonObserver AddonObserver)
     : IConfigurableTweak
 {
     public string InternalName => nameof(AutoSorter);
@@ -145,7 +145,7 @@ public unsafe partial class AutoSorter(
         ClientState.Logout += OnLogout;
         Framework.Update += OnFrameworkUpdate;
         AddonObserver.AddonOpen += OnAddonOpen;
-        GameEventService.ClassJobChange += OnClassJobChange;
+        ClientState.ClassJobChanged += OnClassJobChange;
     }
 
     public void OnDisable()
@@ -154,7 +154,7 @@ public unsafe partial class AutoSorter(
         ClientState.Logout -= OnLogout;
         Framework.Update -= OnFrameworkUpdate;
         AddonObserver.AddonOpen -= OnAddonOpen;
-        GameEventService.ClassJobChange -= OnClassJobChange;
+        ClientState.ClassJobChanged -= OnClassJobChange;
 
         Queue.Clear();
     }
@@ -224,7 +224,7 @@ public unsafe partial class AutoSorter(
 
     private void OnOpenInventory()
     {
-        if (Conditions.IsInBetweenAreas || Conditions.IsOccupiedInQuestEvent || Conditions.IsOccupiedInCutSceneEvent)
+        if (Conditions.Instance()->BetweenAreas || Conditions.Instance()->OccupiedInQuestEvent || Conditions.Instance()->OccupiedInCutSceneEvent)
             return;
 
         var groups = Config.Settings

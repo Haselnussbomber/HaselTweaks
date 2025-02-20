@@ -27,6 +27,7 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class EnhancedLoginLogout(
     PluginConfig PluginConfig,
     TextService TextService,
@@ -49,7 +50,7 @@ public unsafe partial class EnhancedLoginLogout(
 
     private Hook<AgentLobby.Delegates.UpdateCharaSelectDisplay>? UpdateCharaSelectDisplayHook;
     private Hook<CharaSelectCharacterList.Delegates.CleanupCharacters>? CleanupCharactersHook;
-    private Hook<EmoteManager.Delegates.ExecuteEmote>? ExecuteEmoteHook;
+    private Hook<HaselEmoteManager.Delegates.ExecuteEmote>? ExecuteEmoteHook;
     private Hook<AgentLobby.Delegates.OpenLoginWaitDialog>? OpenLoginWaitDialogHook;
 
     public void OnInitialize()
@@ -62,8 +63,8 @@ public unsafe partial class EnhancedLoginLogout(
             CharaSelectCharacterList.MemberFunctionPointers.CleanupCharacters,
             CleanupCharactersDetour);
 
-        ExecuteEmoteHook = GameInteropProvider.HookFromAddress<EmoteManager.Delegates.ExecuteEmote>(
-            EmoteManager.MemberFunctionPointers.ExecuteEmote,
+        ExecuteEmoteHook = GameInteropProvider.HookFromAddress<HaselEmoteManager.Delegates.ExecuteEmote>(
+            HaselEmoteManager.MemberFunctionPointers.ExecuteEmote,
             ExecuteEmoteDetour);
 
         OpenLoginWaitDialogHook = GameInteropProvider.HookFromAddress<AgentLobby.Delegates.OpenLoginWaitDialog>(
@@ -480,7 +481,7 @@ public unsafe partial class EnhancedLoginLogout(
         CurrentEntry.Character->SetMode(CharacterModes.Normal, 0);
     }
 
-    private bool ExecuteEmoteDetour(EmoteManager* handler, ushort emoteId, nint targetData)
+    private bool ExecuteEmoteDetour(HaselEmoteManager* handler, ushort emoteId, nint targetData)
     {
         var changePoseIndexBefore = PlayerState.Instance()->SelectedPoses[0];
         var success = ExecuteEmoteHook!.Original(handler, emoteId, targetData);
@@ -606,7 +607,7 @@ public unsafe partial class EnhancedLoginLogout(
             /* LayerEntryType.PopRange */ 40,
             0,
             territoryTypeId,
-            GameMain.Instance(),
+            GameMain.Instance()->ActiveFestivals.GetPointer(0),
             0);
     }
 

@@ -27,7 +27,7 @@ public partial class CustomChatTimestamp
 
         ConfigGui.DrawConfigurationHeader();
 
-        TextService.Draw("CustomChatTimestamp.Config.Format.Label");
+        ImGui.TextUnformatted(TextService.Translate("CustomChatTimestamp.Config.Format.Label"));
         using (ImGuiUtils.ConfigIndent())
         {
             if (ImGui.InputText("##Format", ref Config.Format, 50))
@@ -44,14 +44,14 @@ public partial class CustomChatTimestamp
             }
 
             ImGui.PushStyleColor(ImGuiCol.Text, (uint)Color.Grey);
-            TextService.Draw("CustomChatTimestamp.Config.Format.DateTimeLink.Pre");
+            ImGui.TextUnformatted(TextService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Pre"));
             ImGuiUtils.SameLineSpace();
             using (ImRaii.PushColor(ImGuiCol.Text, (uint)Color.White))
             {
                 ImGuiUtils.DrawLink("DateTime.ToString()", TextService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Tooltip"), "https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings");
             }
             ImGuiUtils.SameLineSpace();
-            TextService.Draw("CustomChatTimestamp.Config.Format.DateTimeLink.Post");
+            ImGui.TextUnformatted(TextService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Post"));
             ImGui.PopStyleColor();
         }
 
@@ -63,7 +63,7 @@ public partial class CustomChatTimestamp
             var formatted = DateTime.Now.ToString(Config.Format);
 
             ImGui.Spacing();
-            TextService.Draw("CustomChatTimestamp.Config.Format.Example.Label");
+            ImGui.TextUnformatted(TextService.Translate("CustomChatTimestamp.Config.Format.Example.Label"));
 
             if (!GameConfig.UiConfig.TryGet("ColorParty", out uint colorParty))
             {
@@ -85,21 +85,17 @@ public partial class CustomChatTimestamp
 
             ImGuiUtils.TextUnformattedColored(Color.White, formatted);
             ImGui.SameLine(0, 0);
-            TextService.Draw(Color.From(colorParty), "CustomChatTimestamp.Config.Format.Example.Message");
+            ImGuiHelpers.SafeTextColoredWrapped(Color.From(colorParty), TextService.Translate("CustomChatTimestamp.Config.Format.Example.Message"));
         }
         catch (FormatException)
         {
-            using (ImRaii.PushIndent())
-            {
-                TextService.DrawWrapped(Color.Red, "CustomChatTimestamp.Config.Format.Invalid");
-            }
+            using var indent = ImRaii.PushIndent();
+            ImGuiHelpers.SafeTextColoredWrapped(Color.Red, TextService.Translate("CustomChatTimestamp.Config.Format.Invalid"));
         }
         catch (Exception e)
         {
-            using (ImRaii.PushIndent())
-            {
-                ImGuiHelpers.SafeTextColoredWrapped(Color.Red, e.Message);
-            }
+            using var indent = ImRaii.PushIndent();
+            ImGuiHelpers.SafeTextColoredWrapped(Color.Red, e.Message);
         }
     }
 }

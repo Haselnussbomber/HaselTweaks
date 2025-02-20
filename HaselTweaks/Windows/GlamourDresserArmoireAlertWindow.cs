@@ -6,7 +6,6 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
-using HaselCommon.Extensions.Sheets;
 using HaselCommon.Gui;
 using HaselCommon.Services;
 using HaselTweaks.Tweaks;
@@ -15,6 +14,7 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Windows;
 
+[RegisterSingleton]
 public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 {
     private static readonly Vector2 IconSize = new(34);
@@ -27,11 +27,12 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 
     public GlamourDresserArmoireAlertWindow(
         WindowManager windowManager,
+        LanguageProvider languageProvider,
+        TextService textService,
         TextureService textureService,
         ExcelService excelService,
-        TextService textService,
         ImGuiContextMenuService imGuiContextMenuService)
-        : base(windowManager, textService.Translate("GlamourDresserArmoireAlertWindow.Title"))
+        : base(windowManager, textService, languageProvider)
     {
         TextureService = textureService;
         ExcelService = excelService;
@@ -56,7 +57,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 
     public override void Draw()
     {
-        TextService.DrawWrapped("GlamourDresserArmoireAlertWindow.Info");
+        ImGuiHelpers.SafeTextWrapped(TextService.Translate("GlamourDresserArmoireAlertWindow.Info"));
 
         foreach (var (categoryId, categoryItems) in Tweak!.Categories.OrderBy(kv => kv.Key))
         {
@@ -112,11 +113,11 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
         ImGuiContextMenuService.Draw(popupKey, builder =>
         {
             builder
-                .AddTryOn(item.AsRef())
+                .AddTryOn(item)
                 .AddItemFinder(item.RowId)
                 .AddCopyItemName(item.RowId)
                 .AddOpenOnGarlandTools("item", item.RowId)
-                .AddItemSearch(item.AsRef());
+                .AddItemSearch(item);
         });
     }
 

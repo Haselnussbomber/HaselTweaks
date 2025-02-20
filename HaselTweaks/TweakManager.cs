@@ -6,6 +6,7 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks;
 
+[RegisterSingleton]
 public sealed class TweakManager(IPluginLog PluginLog, PluginConfig PluginConfig, IEnumerable<ITweak> Tweaks)
 {
     public void Initialize()

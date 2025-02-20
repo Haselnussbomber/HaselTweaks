@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text.Json.Nodes;
 using HaselTweaks.Interfaces;
 
@@ -17,9 +18,10 @@ public class Version2 : IConfigMigration
 
         void RenameTweak(string oldName, string newName)
         {
-            if (enabledTweaks.Contains(oldName))
+            var nodeToRemove = enabledTweaks.FirstOrDefault(node => node?.ToString() == oldName);
+            if (nodeToRemove != null)
             {
-                enabledTweaks.Remove(oldName);
+                enabledTweaks.Remove(nodeToRemove);
                 enabledTweaks.Add(newName);
             }
 

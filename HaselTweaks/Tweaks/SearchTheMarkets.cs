@@ -3,24 +3,25 @@ using Dalamud.Game.Text;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Services;
+using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using Lumina.Excel;
 using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe class SearchTheMarkets(
     IContextMenu ContextMenu,
+    LanguageProvider LanguageProvider,
     TextService TextService,
-    ExcelService ExcelService,
     ItemService ItemService) : ITweak
 {
     public string InternalName => nameof(SearchTheMarkets);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private MenuItem? MenuItem;
-    private RowRef<Item> ItemRef;
+    private ExcelRowId<Item> ItemId;
 
     public void OnInitialize() { }
 
@@ -33,22 +34,22 @@ public unsafe class SearchTheMarkets(
             PrefixColor = 32,
             OnClicked = (_) =>
             {
-                if (ItemRef.IsValid)
+                if (ItemId != 0)
                 {
-                    ItemService.Search(ItemRef.Value);
-                    ItemRef = default; // TODO: check
+                    ItemService.Search(ItemId);
+                    ItemId = 0;
                 }
             }
         };
 
         ContextMenu.OnMenuOpened += ContextMenu_OnMenuOpened;
-        TextService.LanguageChanged += OnLanguageChange;
+        LanguageProvider.LanguageChanged += OnLanguageChange;
     }
 
     public void OnDisable()
     {
         ContextMenu.OnMenuOpened -= ContextMenu_OnMenuOpened;
-        TextService.LanguageChanged -= OnLanguageChange;
+        LanguageProvider.LanguageChanged -= OnLanguageChange;
     }
 
     void IDisposable.Dispose()
@@ -73,7 +74,7 @@ public unsafe class SearchTheMarkets(
         if (MenuItem == null)
             return;
 
-        var itemId = args.AddonName switch
+        ExcelRowId<Item> itemId = args.AddonName switch
         {
             _ when args.Target is MenuTargetInventory inv => inv.TargetItem?.ItemId ?? 0,
             "GatheringNote" => AgentGatheringNote.Instance()->ContextMenuItemId,
@@ -88,12 +89,14 @@ public unsafe class SearchTheMarkets(
         if (itemId == 0)
             return;
 
-        if (ItemService.IsHighQuality(itemId))
-            itemId -= 1_000_000;
+        itemId = itemId.GetBaseId();
 
-        ItemRef = ExcelService.CreateRef<Item>(itemId);
+        if (itemId.IsEventItem())
+            return;
 
-        if (!ItemRef.IsValid || !ItemService.CanSearchForItem(ItemRef.Value))
+        ItemId = itemId;
+
+        if (ItemId == 0 || !ItemService.CanSearchForItem(itemId))
             return;
 
         args.AddMenuItem(MenuItem);

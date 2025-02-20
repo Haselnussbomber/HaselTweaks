@@ -6,6 +6,7 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
+[RegisterScoped]
 public class RenameTagDialog : ConfirmationDialog
 {
     private readonly PluginConfig PluginConfig;
@@ -44,7 +45,7 @@ public class RenameTagDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        TextService.Draw("PortraitHelperWindows.RenameTagDialog.Name.Label", Tag!.Name);
+        ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.RenameTagDialog.Name.Label", Tag!.Name));
 
         ImGui.Spacing();
 

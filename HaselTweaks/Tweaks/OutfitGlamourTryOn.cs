@@ -9,6 +9,7 @@ using HaselTweaks.Structs.Agents;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe class OutfitGlamourTryOn(IContextMenu ContextMenu, ItemService ItemService, TextService TextService) : ITweak
 {
     public string InternalName => nameof(OutfitGlamourTryOn);
@@ -42,7 +43,7 @@ public unsafe class OutfitGlamourTryOn(IContextMenu ContextMenu, ItemService Ite
         if (args.AddonName != "MiragePrismPrismSetConvert")
             return;
 
-        var agent = (AgentMiragePrismPrismSetConvert*)AgentModule.Instance()->GetAgentByInternalId(AgentId.MiragePrismPrismSetConvert);
+        var agent = (HaselAgentMiragePrismPrismSetConvert*)AgentModule.Instance()->GetAgentByInternalId(AgentId.MiragePrismPrismSetConvert);
         if (agent == null || agent->Data == null)
             return;
 

@@ -174,9 +174,31 @@ Available options include:
 
 Always opens the "Grand Company Delivery Missions" window on the "Expert Delivery" tab.
 
-### Forced Cutscene Music
+### Fast Mouse Click Fix
 
-Automatically unmutes background music in cutscenes.
+The game does not fire UI events for single mouse clicks whenever a double click is detected.  
+This tweak fixes it by always triggering the normal mouse click in addition to the double click.
+
+Try it out in the crafting window by clicking the recipe category tabs or the arrow buttons next to the dropdown menu.
+
+### Fix Inventory Open Tab
+
+Automatically resets the inventory to the first tab when opened.
+
+### Forced Cutscene Sounds
+
+Automatically unmutes selected sound channels in cutscenes.
+
+Configuration options:
+
+- Unmute Master Volume (default on)
+- Unmute BGM (default on)
+- Unmute Sound Effects (default on)
+- Unmute Voice (default on)
+- Unmute Ambient Sounds (default on)
+- Unmute System Sounds (default off)
+- Unmute Performance (default off)
+- Restore mute state after cutscene
 
 ### Gear Set Grid
 
@@ -267,8 +289,6 @@ Configuration options:
   - You are in a place where glamour plates are allowed to be applied.
   - The glamour plate covers the slot(s) that caused the mismatch.
   - The mismatch was not caused by mainhand/headgear visibility or visor state.
-- "Automatically update portrait"  
-  Only works for gear sets that are not linked with a glamour plate.
 
 ### Reveal Duty Requirements
 

@@ -1,5 +1,116 @@
 # Changelog
 
+## [32.1.1] (2025-02-16)
+
+### HaselTweaks
+
+- **Fixed:** ImGui window positions of this plugin should no longer reset every game session. Noob mistake to think C# would work correctly. Sorry about that.
+
+## [32.1.0] (2025-02-15)
+
+### HaselTweaks
+
+- Mostly internal changes.
+- Positions of ImGui windows of this plugin will be reset. Sorry about that.
+- Fixed a possible deadlock caused by a hook when the plugin loaded.
+- No longer ships with the yoga layout engine, because isn't needed right now.
+
+### Portrait Helper
+
+Re-enabled the option "Automatically update portrait".  
+To make this work, the tweak will attempt to update the portrait after saving a gearset. If that didn't work it will show the Portrait Update Preview window as the game intended to do.
+
+## [32.0.4] (2025-01-21)
+
+Preliminary update for Patch 7.16.
+
+## [32.0.3] (2025-01-18)
+
+Okay, the fix in 32.0.1 didn't work. Now I changed my approach, so this should work once again.
+
+## [32.0.2] (2025-01-18)
+
+Forgot to update the version of the plugin again, so it wouldn't update. Sorry about that.
+
+## [32.0.1] (2025-01-15)
+
+### HaselTweaks
+
+- **Fixed:** An exception "Scene is not yet ready" could've been thrown when the plugin loads.  
+  Explanation: To handle font scale changes, the plugin registered an event on the default Dalamud font, but because the plugin is loaded before ImGui might be ready the exception could be thrown. To resolve this the plugin now waits for the UI to be ready before registering the event.
+
+## [32.0.0] (2025-01-14)
+
+### New Tweak: Fix Inventory Open Tab
+
+Automatically resets the inventory to the first tab when opened.
+
+## [31.0.0] (2025-01-02)
+
+Happy New Year! 🥳
+
+### New Tweak: Fast Mouse Click Fix
+
+I'm going to try a different method this time, as alternative to the Reduced Mouse Click Throttle tweak I had.
+
+The problem is that the game doesn't fire events for single mouse clicks whenever a double click is detected.  
+So instead of reducing the delay between clicks used for double click detection (which breaks them unless you're a really really fast clicker), this time the tweak will make the game always trigger the normal mouse click in addition to the double click.
+
+Hopefully nothing breaks this time. 😅
+
+## [30.0.2] (2024-12-19)
+
+### Aether Current Helper
+
+- **Fixed:** Improved performance by caching excel lookups.
+
+## [30.0.1] (2024-12-18)
+
+### Forced Cutscene Sounds
+
+- **Changed:** The default setting of "Unmute Sound Effects" is now on. I don't know why I thought of Chat sound effects, which are handled in System Sounds...
+- **Fixed:** The default setting of "Unmute System Sounds" should've been off, but was on...
+
+Not my day. Sorry.
+
+## [30.0.0] (2024-12-18)
+
+### Renamed Tweak: Forced Cutscene Music -> Forced Cutscene Sounds
+
+New configuration options allow you to unmute specific audio channels:
+
+- Master Volume (default on)
+- BGM (default on)
+- Sound Effects (default off)
+- Voice (default on)
+- Ambient Sounds (default on)
+- System Sounds (default off)
+- Performance (default off)
+
+### Tweak removed: Reduced Mouse Click Throttle
+
+This tweak had the unfortunate side effect of preventing double-clicks, for example when selecting a gear set in the Gear Set List window.
+
+## [29.0.2] (2024-12-17)
+
+Preliminary update for Patch 7.15.
+
+### Scrollable Tabs
+
+- **Fixed:** It should no longer be possible to scroll into disabled tabs in the Currency window.
+
+## [29.0.1] (2024-12-11)
+
+### Shop Item Icons
+
+- **Fixed**: Wrong icons were displayed when the shop contained locked/hidden items (for example, on Allied Society vendors).
+
+## [29.0.0] (2024-12-09)
+
+### New Tweak: Reduced Mouse Click Throttle
+
+Reduces the throttling for the MouseClick event of the UI from 300ms to 100ms.
+
 ## [28.0.5] (2024-11-25)
 
 ### Enhanced Experience Bar
@@ -1818,6 +1929,20 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[32.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.1.0...v32.1.1
+[32.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.0.4...v32.1.0
+[32.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.0.3...v32.0.4
+[32.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.0.2...v32.0.3
+[32.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.0.1...v32.0.2
+[32.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.0.0...v32.0.1
+[32.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v31.0.0...v32.0.0
+[31.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v30.0.2...v31.0.0
+[30.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v30.0.1...v30.0.2
+[30.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v30.0.0...v30.0.1
+[30.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v29.0.2...v30.0.0
+[29.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v29.0.1...v29.0.2
+[29.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v29.0.0...v29.0.1
+[29.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.5...v29.0.0
 [28.0.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.4...v28.0.5
 [28.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.3...v28.0.4
 [28.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v28.0.2...v28.0.3

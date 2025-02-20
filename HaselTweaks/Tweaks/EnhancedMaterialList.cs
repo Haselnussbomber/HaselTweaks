@@ -4,13 +4,11 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Hooking;
-using Dalamud.Memory;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
@@ -26,6 +24,7 @@ using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class EnhancedMaterialList(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,
@@ -107,7 +106,7 @@ public unsafe partial class EnhancedMaterialList(
             addon->Close(true);
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
@@ -207,7 +206,7 @@ public unsafe partial class EnhancedMaterialList(
 
                 var (totalPoints, point, cost, isSameZone, placeName) = tuple.Value;
 
-                MapService.OpenMap(point, itemRef, new SeStringBuilder().Append("HaselTweaks").ToReadOnlySeString());
+                MapService.OpenMap(point, itemRef, "HaselTweaks"u8);
 
                 return;
 
@@ -348,16 +347,15 @@ public unsafe partial class EnhancedMaterialList(
             .Append(placeName)
             .PopEdgeColorType()
             .PopColorType()
-            .ToArray()
-            .NullTerminate();
+            .GetViewAsSpan();
 
         nameNode->SetText(str);
     }
 
-    private void AddItemContextMenuEntriesDetour(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName)
+    private void AddItemContextMenuEntriesDetour(AgentRecipeItemContext* agent, uint itemId, byte flags, byte* itemName, byte a5, byte a6)
     {
         UpdateContextMenuFlag(itemId, ref flags);
-        AddItemContextMenuEntriesHook!.Original(agent, itemId, flags, itemName);
+        AddItemContextMenuEntriesHook!.Original(agent, itemId, flags, itemName, a5, a6);
     }
 
     private void UpdateContextMenuFlag(uint itemId, ref byte flags)

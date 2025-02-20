@@ -1,4 +1,4 @@
-using System.Globalization;
+using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
@@ -16,6 +16,7 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Windows;
 
+[RegisterSingleton]
 public unsafe class AetherCurrentHelperWindow : LockableWindow
 {
     private bool HideUnlocked = true;
@@ -30,15 +31,19 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
     private readonly TextService TextService;
     private readonly MapService MapService;
 
+    private readonly Dictionary<uint, EObj> AetherCurrentEObjCache = [];
+    private readonly Dictionary<uint, Level> EObjLevelCache = [];
+
     public AetherCurrentHelperWindow(
         WindowManager windowManager,
+        TextService textService,
+        LanguageProvider languageProvider,
         PluginConfig pluginConfig,
         IClientState clientState,
         TextureService textureService,
         ExcelService excelService,
-        TextService textService,
         MapService mapService)
-        : base(windowManager, pluginConfig, textService, "[HaselTweaks] Aether Current Helper")
+        : base(windowManager, textService, languageProvider, pluginConfig)
     {
         ClientState = clientState;
         TextureService = textureService;
@@ -75,7 +80,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            TextService.Draw("AetherCurrentHelperWindow.HideUnlockedTooltip");
+            ImGui.TextUnformatted(TextService.Translate("AetherCurrentHelperWindow.HideUnlockedTooltip"));
             ImGui.EndTooltip();
         }
 
@@ -85,7 +90,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
         using var cellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(4));
         using var table = ImRaii.Table($"##Table", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.NoPadOuterX);
-        if (!table.Success)
+        if (!table)
             return;
 
         ImGui.TableSetupColumn("Icon", ImGuiTableColumnFlags.WidthFixed);
@@ -159,7 +164,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            TextService.Draw("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip");
+            ImGui.TextUnformatted(TextService.Translate("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip"));
             ImGui.EndTooltip();
         }
 
@@ -211,7 +216,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         // Content
         ImGui.TableNextColumn();
         ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetQuestName(quest.RowId)}");
-        ImGui.TextUnformatted($"{GetHumanReadableCoords(quest.IssuerLocation.Value)} | {TextService.GetENpcResidentName(quest.IssuerStart.RowId)}");
+        ImGui.TextUnformatted($"{MapService.GetHumanReadableCoords(quest.IssuerLocation.Value)} | {TextService.GetENpcResidentName(quest.IssuerStart.RowId)}");
 
         // Actions
         ImGui.TableNextColumn();
@@ -230,11 +235,21 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
     private void DrawEObject(int index, bool isUnlocked, AetherCurrent aetherCurrent)
     {
-        if (!ExcelService.TryFindRow<EObj>(row => row.Data == aetherCurrent.RowId, out var eobj))
-            return;
+        if (!AetherCurrentEObjCache.TryGetValue(aetherCurrent.RowId, out var eobj))
+        {
+            if (!ExcelService.TryFindRow(row => row.Data == aetherCurrent.RowId, out eobj))
+                return;
 
-        if (!ExcelService.TryFindRow<Level>(row => row.Object.RowId == eobj.RowId, out var level))
-            return;
+            AetherCurrentEObjCache.Add(aetherCurrent.RowId, eobj);
+        }
+
+        if (!EObjLevelCache.TryGetValue(eobj.RowId, out var level))
+        {
+            if (!ExcelService.TryFindRow(row => row.Object.RowId == eobj.RowId, out level))
+                return;
+
+            EObjLevelCache.Add(eobj.RowId, level);
+        }
 
         // Icon
         ImGui.TableNextColumn();
@@ -243,7 +258,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         // Content
         ImGui.TableNextColumn();
         ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetEObjName(eobj.RowId)}");
-        ImGui.TextUnformatted(GetHumanReadableCoords(level));
+        ImGui.TextUnformatted(MapService.GetHumanReadableCoords(level));
 
         // Actions
         ImGui.TableNextColumn();
@@ -276,7 +291,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
                 var distance = MapService.GetDistanceFromPlayer(level);
                 if (distance < float.MaxValue)
                 {
-                    var direction = distance > 1 ? GetCompassDirection(level) : string.Empty;
+                    var direction = distance > 1 ? MapService.GetCompassDirection(level) : string.Empty;
                     var text = $"{distance:0}y {direction}";
 
                     if (Config.CenterDistance)
@@ -318,34 +333,5 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         }
 
         ImGuiUtils.TextUnformattedColored(Color.Green, icon);
-    }
-
-    private string GetHumanReadableCoords(Level level)
-    {
-        var coords = MapService.GetCoords(level);
-        var x = coords.X.ToString("0.0", CultureInfo.InvariantCulture);
-        var y = coords.Y.ToString("0.0", CultureInfo.InvariantCulture);
-        return TextService.Translate("AetherCurrentHelperWindow.Coords", x, y);
-    }
-
-    //! https://gamedev.stackexchange.com/a/49300
-    public string GetCompassDirection(Vector2 a, Vector2 b)
-    {
-        var vector = a - b;
-        var angle = Math.Atan2(vector.Y, vector.X);
-        var octant = (int)Math.Round(8 * angle / (2 * Math.PI) + 8) % 8;
-
-        return TextService.Translate($"AetherCurrentHelperWindow.Compass.{CompassHeadings[octant]}");
-    }
-
-    public string GetCompassDirection(Level level)
-    {
-        var localPlayer = ClientState.LocalPlayer;
-        return localPlayer == null
-            ? string.Empty
-            : GetCompassDirection(
-                new Vector2(-localPlayer.Position.X, localPlayer.Position.Z),
-                new Vector2(-level.X, level.Z)
-            );
     }
 }

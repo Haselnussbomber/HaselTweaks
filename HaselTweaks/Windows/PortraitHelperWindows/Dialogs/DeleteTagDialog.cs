@@ -8,6 +8,7 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
+[RegisterScoped]
 public class DeleteTagDialog : ConfirmationDialog
 {
     private readonly PluginConfig PluginConfig;
@@ -47,7 +48,7 @@ public class DeleteTagDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        TextService.Draw("PortraitHelperWindows.DeleteTagDialog.Prompt", Tag!.Name);
+        ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.DeleteTagDialog.Prompt", Tag!.Name));
         ImGui.Spacing();
         ImGui.Checkbox(TextService.Translate("PortraitHelperWindows.DeleteTagDialog.DeletePortraitsToo.Label"), ref DeletePortraits);
     }

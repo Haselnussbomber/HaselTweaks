@@ -1,7 +1,7 @@
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Math;
+using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
@@ -24,6 +24,7 @@ public unsafe struct NaviMap
     public AtkResNode* CardinalDirections => GetNode(8);
 }
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class MinimapAdjustments(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,

@@ -10,13 +10,15 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using FFXIVClientStructs.Interop;
-using HaselCommon.Services;
+using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
+using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class InventoryHighlight(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,
@@ -25,8 +27,7 @@ public unsafe partial class InventoryHighlight(
     IGameConfig GameConfig,
     IGameGui GameGui,
     IKeyState KeyState,
-    IAddonLifecycle AddonLifecycle,
-    ItemService ItemService)
+    IAddonLifecycle AddonLifecycle)
     : IConfigurableTweak
 {
     public string InternalName => nameof(InventoryHighlight);
@@ -474,11 +475,8 @@ public unsafe partial class InventoryHighlight(
         return container->GetInventorySlot(item->Slot);
     }
 
-    private uint NormalizeItemId(uint itemId)
-    {
-        if (Config.IgnoreQuality && ItemService.IsHighQuality(itemId))
-            itemId -= 1_000_000;
-
-        return itemId;
-    }
+    private uint NormalizeItemId(ExcelRowId<Item> itemId)
+        => Config.IgnoreQuality
+            ? itemId.GetBaseId()
+            : itemId;
 }

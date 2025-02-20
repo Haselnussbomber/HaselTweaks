@@ -80,7 +80,7 @@ public unsafe partial class EnhancedLoginLogout
         {
             if (ActiveContentId != 0 && !Config.PetMirageSettings.ContainsKey(ActiveContentId))
             {
-                TextService.DrawWrapped(Color.Red, "EnhancedLoginLogout.Config.ShowPets.Error.MissingPetMirageSettings");
+                ImGuiHelpers.SafeTextColoredWrapped(Color.Red, TextService.Translate("EnhancedLoginLogout.Config.ShowPets.Error.MissingPetMirageSettings"));
             }
 
             // PetPosition
@@ -109,19 +109,19 @@ public unsafe partial class EnhancedLoginLogout
             using var disabled = ImRaii.Disabled(!Config.EnableCharaSelectEmote);
 
             ImGuiUtils.PushCursorY(-ImGui.GetStyle().ItemInnerSpacing.Y);
-            TextService.DrawWrapped(Color.Grey, "EnhancedLoginLogout.Config.PlayEmote.Note");
+            ImGuiHelpers.SafeTextColoredWrapped(Color.Grey, TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.Note"));
             ImGuiUtils.PushCursorY(3);
 
             if (!Config.EnableCharaSelectEmote || ActiveContentId == 0)
                 return;
 
             ImGuiUtils.PushCursorY(3);
-            TextService.Draw("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote");
+            ImGui.TextUnformatted(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote"));
             ImGui.SameLine();
 
             if (!Config.SelectedEmotes.TryGetValue(ActiveContentId, out var selectedEmoteId) || selectedEmoteId == 0)
             {
-                TextService.Draw("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.None");
+                ImGui.TextUnformatted(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.None"));
             }
             else
             {
@@ -146,13 +146,13 @@ public unsafe partial class EnhancedLoginLogout
                 }
                 else
                 {
-                    TextService.Draw("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.Unknown");
+                    ImGui.TextUnformatted(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.Unknown"));
                 }
             }
 
             if (!ClientState.IsLoggedIn)
             {
-                TextService.Draw("EnhancedLoginLogout.Config.PlayEmote.NotLoggedIn");
+                ImGui.TextUnformatted(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.NotLoggedIn"));
                 return;
             }
 
@@ -194,7 +194,8 @@ public unsafe partial class EnhancedLoginLogout
 
             if (_isRecordingEmote)
             {
-                TextService.Draw(Color.Gold, "EnhancedLoginLogout.Config.PlayEmote.RecordingInfo");
+                using (Color.Gold.Push(ImGuiCol.Text))
+                    ImGui.TextUnformatted(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.RecordingInfo"));
                 ImGuiUtils.PushCursorY(3);
             }
         });

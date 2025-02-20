@@ -10,6 +10,7 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe class SaferItemSearch(IAddonLifecycle AddonLifecycle, MarketBoardService MarketBoardService) : ITweak
 {
     public string InternalName => nameof(SaferItemSearch);

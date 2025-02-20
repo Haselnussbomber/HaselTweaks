@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.System.Scheduler;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class ForcedCutsceneMusic(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,
@@ -21,9 +23,19 @@ public unsafe partial class ForcedCutsceneMusic(
     public string InternalName => nameof(ForcedCutsceneMusic);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private bool WasBgmMuted;
+    private readonly string[] ConfigOptions = [
+        "IsSndMaster",
+        "IsSndBgm",
+        "IsSndSe",
+        "IsSndVoice",
+        "IsSndEnv",
+        "IsSndSystem",
+        "IsSndPerform",
+    ];
 
-    private delegate void CutSceneControllerDtorDelegate(FixedCutSceneController* self, byte freeFlags);
+    private readonly Dictionary<string, bool> WasMuted = [];
+
+    private delegate void CutSceneControllerDtorDelegate(CutSceneController* self, byte freeFlags);
 
     private Hook<ScheduleManagement.Delegates.CreateCutSceneController>? CreateCutSceneControllerHook;
     private Hook<CutSceneControllerDtorDelegate>? CutSceneControllerDtorHook;
@@ -64,52 +76,65 @@ public unsafe partial class ForcedCutsceneMusic(
         GC.SuppressFinalize(this);
     }
 
-    private bool IsBgmMuted
-    {
-        get => GameConfig.System.TryGet("IsSndBgm", out bool value) && value;
-        set => GameConfig.System.Set("IsSndBgm", value);
-    }
-
-    private bool ShouldHandleCutScene(uint id)
-    {
-        return id != 0; // ignore title screen cutscene
-    }
-
     private CutSceneController* CreateCutSceneControllerDetour(ScheduleManagement* self, byte* path, uint id, byte a4)
     {
         var ret = CreateCutSceneControllerHook!.Original(self, path, id, a4);
 
         Logger.LogInformation("Cutscene {id} started (Controller @ {address:X})", id, (nint)ret);
 
-        if (!ShouldHandleCutScene(id))
+        if (id == 0) // ignore title screen cutscene
             return ret;
 
-        var isBgmMuted = IsBgmMuted;
+        foreach (var optionName in ConfigOptions)
+        {
+            var isMuted = GameConfig.System.TryGet(optionName, out bool value) && value;
 
-        WasBgmMuted = isBgmMuted;
+            WasMuted[optionName] = isMuted;
 
-        if (isBgmMuted)
-            IsBgmMuted = false;
+            if (ShouldHandle(optionName) && isMuted)
+            {
+                Logger.LogInformation("Setting {optionName} to false", optionName);
+                GameConfig.System.Set(optionName, false);
+            }
+        }
 
         return ret;
     }
 
-    private void CutSceneControllerDtorDetour(FixedCutSceneController* self, byte freeFlags)
+    private void CutSceneControllerDtorDetour(CutSceneController* self, byte freeFlags)
     {
         Logger.LogInformation("Cutscene {id} ended", self->CutsceneId);
 
         CutSceneControllerDtorHook!.Original(self, freeFlags);
 
-        if (!ShouldHandleCutScene(self->CutsceneId))
+        if (!Config.Restore)
             return;
 
-        if (WasBgmMuted && Config.Restore)
-            IsBgmMuted = true;
+        if (self->CutsceneId == 0) // ignore title screen cutscene
+            return;
+
+        foreach (var optionName in ConfigOptions)
+        {
+            if (ShouldHandle(optionName) && WasMuted.TryGetValue(optionName, out var value) && value)
+            {
+                Logger.LogInformation("Restoring {optionName} to {value}", optionName, value);
+                GameConfig.System.Set(optionName, value);
+            }
+        }
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 0x210)]
-    public unsafe partial struct FixedCutSceneController
+    private bool ShouldHandle(string optionName)
     {
-        [FieldOffset(0x168)] public uint CutsceneId;
+        return optionName switch
+        {
+            "IsSndMaster" => Config.HandleMaster,
+            "IsSndBgm" => Config.HandleBgm,
+            "IsSndSe" => Config.HandleSe,
+            "IsSndVoice" => Config.HandleVoice,
+            "IsSndEnv" => Config.HandleEnv,
+            "IsSndSystem" => Config.HandleSystem,
+            "IsSndPerform" => Config.HandlePerform,
+            _ => false
+        };
     }
 }

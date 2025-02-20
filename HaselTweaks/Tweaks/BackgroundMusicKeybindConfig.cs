@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Interface.Utility.Raii;
-using HaselCommon.Extensions;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using ImGuiNET;
@@ -96,7 +95,7 @@ public unsafe partial class BackgroundMusicKeybind
 
         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
         using var combo = ImRaii.Combo("##Key", previewValue);
-        if (!combo.Success)
+        if (!combo)
             return;
 
         foreach (var _key in KeyState.GetValidVirtualKeys())

@@ -42,6 +42,7 @@ jobs:
         with:
           cache: true
           cache-dependency-path: ${{ env.plugin_name }}/packages.lock.json
+          dotnet-version: 8.0.x
 
       - name: Determine Dalamud Branch
         id: branch
@@ -63,7 +64,8 @@ jobs:
             }')[steps.branch.outputs.branch] }}
         run: |
           curl -o latest.zip ${{ env.DALAMUD_URL }}
-          unzip latest.zip -d ~/dalamud/
+          mkdir -p ~/.xlcore/dalamud/Hooks/dev/
+          unzip latest.zip -d ~/.xlcore/dalamud/Hooks/dev/
 
       - name: Restore dependencies
         run: dotnet restore --locked-mode

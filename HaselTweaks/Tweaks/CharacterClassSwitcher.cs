@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class CharacterClassSwitcher(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,

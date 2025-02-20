@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class CustomChatTimestamp(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,
@@ -45,7 +46,7 @@ public unsafe partial class CustomChatTimestamp(
             ReloadChat();
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;

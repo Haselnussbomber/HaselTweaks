@@ -19,6 +19,7 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe partial class LockWindowPosition(
     PluginConfig PluginConfig,
     ConfigGui ConfigGui,

@@ -1,36 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Dalamud.NET.Sdk/11.2.0">
   <PropertyGroup>
-    <DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
-    <DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('Linux'))">$(HOME)/.xlcore/dalamud/Hooks/dev/</DalamudLibPath>
-    <DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('OSX'))">$(HOME)/Library/Application Support/XIV on Mac/dalamud/Hooks/dev/</DalamudLibPath>
-    <DalamudLibPath Condition="'$(GITHUB_ACTIONS)' == 'true'">$(HOME)/dalamud/</DalamudLibPath>
-    <DalamudLibPath Condition="$(DALAMUD_HOME) != ''">$(DALAMUD_HOME)/</DalamudLibPath>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <Version>28.0.5</Version>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Platforms>x64</Platforms>
-    <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <AssemblySearchPaths>$(AssemblySearchPaths);$(DalamudLibPath)</AssemblySearchPaths>
+    <Version>32.1.1</Version>
     <OutputPath>..\bin\</OutputPath>
-    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DalamudPackager" Version="11.0.0" />
-    <Reference Include="Dalamud" Private="false" />
-    <Reference Include="ImGui.NET" Private="false" />
-    <Reference Include="ImGuiScene" Private="false" />
-    <Reference Include="Lumina" Private="false" />
-    <Reference Include="Lumina.Excel" Private="false" />
     <Reference Include="SharpDX" Private="false" />
     <Reference Include="SharpDX.Direct3D11" Private="false" />
     <Reference Include="SharpDX.DXGI" Private="false" />
@@ -42,6 +17,7 @@
   </ItemGroup>
 
   <PropertyGroup Condition="Exists('$(ProjectDir)..\FFXIVClientStructs')">
+    <Use_Dalamud_FFXIVClientStructs>false</Use_Dalamud_FFXIVClientStructs>
     <InteropGenerator_InteropNamespace>HaselTweaks</InteropGenerator_InteropNamespace>
     <DefineConstants>HAS_LOCAL_CS</DefineConstants>
   </PropertyGroup>
@@ -53,28 +29,17 @@
     <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" Private="True" />
   </ItemGroup>
 
-  <Target Name="Message" BeforeTargets="BeforeBuild">
-    <Message Text="Dalamud.Plugin: root at $(DalamudLibPath)" Importance="high" />
-  </Target>
-
-  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-    <Deterministic>true</Deterministic>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedAllSources>true</EmbedAllSources>
-  </PropertyGroup>
-
   <ItemGroup>
     <EmbeddedResource Include="Assets\Logo.png" />
     <EmbeddedResource Include="Translations.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.2" />
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183" PrivateAssets="All" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
+    <PackageReference Include="Injectio" Version="4.1.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

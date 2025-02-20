@@ -6,6 +6,7 @@ using Windows.Win32.System.Power;
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public sealed class KeepScreenAwake : ITweak
 {
     public string InternalName => nameof(KeepScreenAwake);

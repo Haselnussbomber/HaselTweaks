@@ -18,6 +18,7 @@ using AgentRecipeNote = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentRecipeNote
 
 namespace HaselTweaks.Tweaks;
 
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public unsafe class AutoOpenRecipe(
     ILogger<AutoOpenRecipe> Logger,
     ExcelService ExcelService,
@@ -46,7 +47,7 @@ public unsafe class AutoOpenRecipe(
         GameInventory.ItemAddedExplicit -= GameInventory_ItemAddedExplicit;
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
@@ -65,7 +66,7 @@ public unsafe class AutoOpenRecipe(
         if (data.Item.ContainerType is not (GameInventoryType.Inventory1 or GameInventoryType.Inventory2 or GameInventoryType.Inventory3 or GameInventoryType.Inventory4 or GameInventoryType.KeyItems)) // only handle inventory
             return;
 
-        if (Conditions.IsCrafting || Conditions.IsCrafting40 || AgentRecipeNote.Instance()->ActiveCraftRecipeId != 0) // skip if crafting
+        if (Conditions.Instance()->Crafting || Conditions.Instance()->Crafting40 || AgentRecipeNote.Instance()->ActiveCraftRecipeId != 0) // skip if crafting
             return;
 
         if (DateTime.UtcNow - LastTimeRecipeOpened < TimeSpan.FromSeconds(3))
