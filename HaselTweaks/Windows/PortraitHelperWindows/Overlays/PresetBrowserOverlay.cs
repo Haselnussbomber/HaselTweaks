@@ -4,30 +4,29 @@ using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Memory;
-using Dalamud.Plugin;
-using Dalamud.Plugin.Services;
 using HaselCommon.Extensions.Collections;
 using HaselCommon.Gui;
 using HaselCommon.Services;
-using HaselTweaks.Config;
 using HaselTweaks.Records.PortraitHelper;
-using HaselTweaks.Utils;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using ImGuiNET;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
-[RegisterScoped]
-public unsafe class PresetBrowserOverlay : Overlay
+[RegisterScoped, AutoConstruct]
+public unsafe partial class PresetBrowserOverlay : Overlay
 {
     private const int SidebarWidth = 170;
-    private readonly TextService TextService;
-    private readonly ILogger Logger;
-    private readonly IDalamudPluginInterface PluginInterface;
-    private readonly IDataManager DataManager;
-    private readonly ITextureProvider TextureProvider;
-    private readonly BannerUtils BannerUtils;
+
+    private readonly TextService _textService;
+    private readonly ILogger<PresetBrowserOverlay> _logger;
+    private readonly IServiceProvider _serviceProvider;
+
+    private int _reorderTagOldIndex = -1;
+    private int _reorderTagNewIndex = -1;
+    private IServiceScope? _serviceScope;
 
     public Guid? SelectedTagId { get; set; }
     public Dictionary<Guid, PresetCard> PresetCards { get; init; } = [];
@@ -39,40 +38,9 @@ public unsafe class PresetBrowserOverlay : Overlay
     public DeletePresetDialog DeletePresetDialog { get; init; }
     public EditPresetDialog EditPresetDialog { get; init; }
 
-    private int _reorderTagOldIndex = -1;
-    private int _reorderTagNewIndex = -1;
-
-    public PresetBrowserOverlay(
-        ILogger<PresetBrowserOverlay> logger,
-        IDalamudPluginInterface pluginInterface,
-        IDataManager dataManager,
-        ITextureProvider textureProvider,
-        BannerUtils bannerUtils,
-        WindowManager windowManager,
-        TextService textService,
-        LanguageProvider languageProvider,
-        PluginConfig pluginConfig,
-        ExcelService excelService,
-        CreateTagDialog createTagDialog,
-        RenameTagDialog renameTagDialog,
-        DeleteTagDialog deleteTagDialog,
-        DeletePresetDialog deletePresetDialog,
-        EditPresetDialog editPresetDialog)
-        : base(windowManager, textService, languageProvider, pluginConfig, excelService)
+    [AutoPostConstruct]
+    private void Initialize()
     {
-        TextService = textService;
-        Logger = logger;
-        PluginInterface = pluginInterface;
-        DataManager = dataManager;
-        TextureProvider = textureProvider;
-        BannerUtils = bannerUtils;
-
-        CreateTagDialog = createTagDialog;
-        RenameTagDialog = renameTagDialog;
-        DeleteTagDialog = deleteTagDialog;
-        DeletePresetDialog = deletePresetDialog;
-        EditPresetDialog = editPresetDialog;
-
         SizeConstraints = new WindowSizeConstraints
         {
             MinimumSize = new Vector2(600, 500),
@@ -86,14 +54,25 @@ public unsafe class PresetBrowserOverlay : Overlay
         Open();
     }
 
+    public override void OnOpen()
+    {
+        _serviceScope = _serviceProvider.CreateScope();
+        base.OnOpen();
+    }
+
     public override void OnClose()
     {
-        PresetCards.Dispose();
+        PresetCards.Clear();
+        _serviceScope?.Dispose();
+        _serviceScope = null;
         base.OnClose();
     }
 
     public override void Draw()
     {
+        if (_serviceScope == null)
+            return;
+
         base.Draw();
 
         DrawPresetBrowserSidebar();
@@ -141,7 +120,7 @@ public unsafe class PresetBrowserOverlay : Overlay
             if (source)
             {
                 using (ImRaii.PushColor(ImGuiCol.Text, DefaultImGuiTextColor))
-                    ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip", tag.Name));
+                    ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip", tag.Name));
 
                 var bytes = tag.Id.ToByteArray();
                 fixed (byte* ptr = bytes)
@@ -182,22 +161,22 @@ public unsafe class PresetBrowserOverlay : Overlay
             using var popup = ImRaii.ContextPopupItem($"##PresetBrowser_SideBar_Tag{tag.Id}Popup");
             if (popup)
             {
-                if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label")))
+                if (ImGui.MenuItem(_textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label")))
                 {
                     CreateTagDialog.Open();
                 }
 
-                if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RenameTag.Label")))
+                if (ImGui.MenuItem(_textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RenameTag.Label")))
                 {
                     RenameTagDialog.Open(tag);
                 }
 
-                if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveTag.Label")))
+                if (ImGui.MenuItem(_textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveTag.Label")))
                 {
                     DeleteTagDialog.Open(this, tag);
                 }
 
-                if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label")))
+                if (ImGui.MenuItem(_textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label")))
                 {
                     removeUnusedTags = true;
                 }
@@ -223,7 +202,7 @@ public unsafe class PresetBrowserOverlay : Overlay
         var removeUnusedTags = false;
 
         ImGuiUtils.DrawSection(
-            TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Tags.Title"),
+            _textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Tags.Title"),
             pushDown: false,
             respectUiTheme: !IsWindow);
 
@@ -260,7 +239,7 @@ public unsafe class PresetBrowserOverlay : Overlay
             ImGuiTreeNodeFlags.Leaf |
             (SelectedTagId == null ? ImGuiTreeNodeFlags.Selected : ImGuiTreeNodeFlags.None);
 
-        using var allTreeNode = ImRaii.TreeNode(TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.AllTags.Title", Config.Presets.Count.ToString()) + $"##PresetBrowser_SideBar_All", treeNodeFlags);
+        using var allTreeNode = ImRaii.TreeNode(_textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.AllTags.Title", Config.Presets.Count.ToString()) + $"##PresetBrowser_SideBar_All", treeNodeFlags);
         if (!allTreeNode)
             return;
 
@@ -272,10 +251,10 @@ public unsafe class PresetBrowserOverlay : Overlay
             using var popup = ImRaii.ContextPopupItem("##PresetBrowser_SideBar_AllPopup");
             if (popup)
             {
-                if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label")))
+                if (ImGui.MenuItem(_textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.CreateTag.Label")))
                     CreateTagDialog.Open();
 
-                if (ImGui.MenuItem(TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label")))
+                if (ImGui.MenuItem(_textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.ContextMenu.RemoveUnusedTags.Label")))
                     removeUnusedTags = true;
             }
         }
@@ -317,7 +296,7 @@ public unsafe class PresetBrowserOverlay : Overlay
         framePadding?.Dispose();
 
         ImGuiUtils.DrawSection(
-            TextService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Presets.Title"),
+            _textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Presets.Title"),
             pushDown: false,
             respectUiTheme: !IsWindow);
 
@@ -338,16 +317,9 @@ public unsafe class PresetBrowserOverlay : Overlay
             {
                 if (!PresetCards.TryGetValue(preset.Id, out var card))
                 {
-                    PresetCards.Add(preset.Id, new(
-                        preset,
-                        Logger,
-                        PluginInterface,
-                        DataManager,
-                        TextureProvider,
-                        PluginConfig,
-                        TextService,
-                        ExcelService,
-                        BannerUtils));
+                    var presetCard = _serviceScope!.ServiceProvider.GetRequiredService<PresetCard>();
+                    presetCard.SetSavedPreset(preset);
+                    PresetCards.Add(preset.Id, presetCard);
                 }
 
                 return card;
