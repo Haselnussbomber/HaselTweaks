@@ -71,7 +71,7 @@ public partial class GearSetGrid : IConfigurableTweak
             _window.Close();
     }
 
-    [CommandHandler("/gsg", "GearSetGrid.CommandHandlerHelpMessage")]
+    [CommandHandler("/gsg", "GearSetGrid.CommandHandlerHelpMessage", DisplayOrder: 2)]
     private void OnGsgCommand(string command, string arguments)
     {
         if (_window.IsOpen)

@@ -84,7 +84,7 @@ public unsafe partial class Commands : IConfigurableTweak
         _glamourPlateCommandCommandHandler?.SetEnabled(enable && Config.EnableGlamourPlateCommand);
     }
 
-    [CommandHandler("/itemlink", "Commands.Config.EnableItemLinkCommand.Description")]
+    [CommandHandler("/itemlink", "Commands.Config.EnableItemLinkCommand.Description", DisplayOrder: 2)]
     private void OnItemLinkCommand(string command, string arguments)
     {
         ExcelRowId<Item> id;
@@ -125,7 +125,7 @@ public unsafe partial class Commands : IConfigurableTweak
         });
     }
 
-    [CommandHandler("/whatmount", "Commands.Config.EnableWhatMountCommand.Description")]
+    [CommandHandler("/whatmount", "Commands.Config.EnableWhatMountCommand.Description", DisplayOrder: 2)]
     private void OnWhatMountCommand(string command, string arguments)
     {
         var target = (Character*)(_targetManager.Target?.Address ?? 0);
@@ -195,7 +195,7 @@ public unsafe partial class Commands : IConfigurableTweak
         });
     }
 
-    [CommandHandler("/whatemote", "Commands.Config.EnableWhatEmoteCommand.Description")]
+    [CommandHandler("/whatemote", "Commands.Config.EnableWhatEmoteCommand.Description", DisplayOrder: 2)]
     private void OnWhatEmoteCommand(string command, string arguments)
     {
         var target = _targetManager.Target;
@@ -235,7 +235,7 @@ public unsafe partial class Commands : IConfigurableTweak
             Type = XivChatType.Echo
         });
     }
-    [CommandHandler("/whatbarding", "Commands.Config.EnableWhatBardingCommand.Description")]
+    [CommandHandler("/whatbarding", "Commands.Config.EnableWhatBardingCommand.Description", DisplayOrder: 2)]
     private void OnWhatBardingCommand(string command, string arguments)
     {
         var target = _targetManager.Target;
@@ -285,7 +285,7 @@ public unsafe partial class Commands : IConfigurableTweak
         });
     }
 
-    [CommandHandler("/glamourplate", "Commands.Config.EnableGlamourPlateCommand.Description")]
+    [CommandHandler("/glamourplate", "Commands.Config.EnableGlamourPlateCommand.Description", DisplayOrder: 2)]
     private void OnGlamourPlateCommand(string command, string arguments)
     {
         if (!byte.TryParse(arguments, out var glamourPlateId) || glamourPlateId == 0 || glamourPlateId > 20)

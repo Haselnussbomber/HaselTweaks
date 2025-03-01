@@ -14,7 +14,7 @@ public partial class CommandManager : IDisposable
     [AutoPostConstruct]
     private void Initialize()
     {
-        _commandService.Register("/haseltweaks", "HaselTweaks.CommandHandlerHelpMessage", HandleCommand, autoEnable: true);
+        _commandService.Register("/haseltweaks", "HaselTweaks.CommandHandlerHelpMessage", HandleCommand, autoEnable: true, displayOrder: 1);
 
         _pluginInterface.UiBuilder.OpenConfigUi += TogglePluginWindow;
     }
