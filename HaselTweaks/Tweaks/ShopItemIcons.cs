@@ -12,33 +12,37 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class ShopItemIcons(PluginConfig PluginConfig, ConfigGui ConfigGui, ItemService ItemService, IAddonLifecycle AddonLifecycle) : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class ShopItemIcons : IConfigurableTweak
 {
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly ItemService _itemService;
+    private readonly IAddonLifecycle _addonLifecycle;
+
     public string InternalName => nameof(ShopItemIcons);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-    private ShopItemIconsConfiguration Config => PluginConfig.Tweaks.ShopItemIcons;
 
     public void OnInitialize() { }
 
     public void OnEnable()
     {
-        AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "Shop", OnShopPreSetup);
-        AddonLifecycle.RegisterListener(AddonEvent.PreRefresh, "Shop", OnShopPreRefresh);
-        AddonLifecycle.RegisterListener(AddonEvent.PreRefresh, ["ShopExchangeItem", "ShopExchangeCurrency"], OnShopExchangePreRefresh);
-        AddonLifecycle.RegisterListener(AddonEvent.PreRefresh, "GrandCompanyExchange", OnGrandCompanyExchangePreRefresh);
-        AddonLifecycle.RegisterListener(AddonEvent.PreRefresh, "InclusionShop", OnInclusionShopPreRefresh);
-        AddonLifecycle.RegisterListener(AddonEvent.PreRefresh, "FreeShop", OnFreeShopPreRefresh);
+        _addonLifecycle.RegisterListener(AddonEvent.PreSetup, "Shop", OnShopPreSetup);
+        _addonLifecycle.RegisterListener(AddonEvent.PreRefresh, "Shop", OnShopPreRefresh);
+        _addonLifecycle.RegisterListener(AddonEvent.PreRefresh, ["ShopExchangeItem", "ShopExchangeCurrency"], OnShopExchangePreRefresh);
+        _addonLifecycle.RegisterListener(AddonEvent.PreRefresh, "GrandCompanyExchange", OnGrandCompanyExchangePreRefresh);
+        _addonLifecycle.RegisterListener(AddonEvent.PreRefresh, "InclusionShop", OnInclusionShopPreRefresh);
+        _addonLifecycle.RegisterListener(AddonEvent.PreRefresh, "FreeShop", OnFreeShopPreRefresh);
     }
 
     public void OnDisable()
     {
-        AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, "Shop", OnShopPreSetup);
-        AddonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "Shop", OnShopPreRefresh);
-        AddonLifecycle.UnregisterListener(AddonEvent.PreRefresh, ["ShopExchangeItem", "ShopExchangeCurrency"], OnShopExchangePreRefresh);
-        AddonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "GrandCompanyExchange", OnGrandCompanyExchangePreRefresh);
-        AddonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "InclusionShop", OnInclusionShopPreRefresh);
-        AddonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "FreeShop", OnFreeShopPreRefresh);
+        _addonLifecycle.UnregisterListener(AddonEvent.PreSetup, "Shop", OnShopPreSetup);
+        _addonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "Shop", OnShopPreRefresh);
+        _addonLifecycle.UnregisterListener(AddonEvent.PreRefresh, ["ShopExchangeItem", "ShopExchangeCurrency"], OnShopExchangePreRefresh);
+        _addonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "GrandCompanyExchange", OnGrandCompanyExchangePreRefresh);
+        _addonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "InclusionShop", OnInclusionShopPreRefresh);
+        _addonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "FreeShop", OnFreeShopPreRefresh);
     }
 
     void IDisposable.Dispose()
@@ -99,7 +103,7 @@ public unsafe partial class ShopItemIcons(PluginConfig PluginConfig, ConfigGui C
                 if (itemId == 0)
                     continue;
 
-                iconIdValue->UInt = ItemService.GetIconId(itemId);
+                iconIdValue->UInt = _itemService.GetIconId(itemId);
             }
         }
         // Buyback
@@ -115,7 +119,7 @@ public unsafe partial class ShopItemIcons(PluginConfig PluginConfig, ConfigGui C
                 if (itemId == 0)
                     continue;
 
-                iconIdValue->UInt = ItemService.GetIconId(itemId);
+                iconIdValue->UInt = _itemService.GetIconId(itemId);
             }
         }
     }
@@ -141,7 +145,7 @@ public unsafe partial class ShopItemIcons(PluginConfig PluginConfig, ConfigGui C
             if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.Int || itemIdValue->UInt == 0)
                 continue;
 
-            iconIdValue->UInt = ItemService.GetIconId(itemIdValue->UInt);
+            iconIdValue->UInt = _itemService.GetIconId(itemIdValue->UInt);
         }
     }
 
@@ -165,7 +169,7 @@ public unsafe partial class ShopItemIcons(PluginConfig PluginConfig, ConfigGui C
             if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.UInt || itemIdValue->UInt == 0)
                 continue;
 
-            iconIdValue->UInt = ItemService.GetIconId(itemIdValue->UInt);
+            iconIdValue->UInt = _itemService.GetIconId(itemIdValue->UInt);
         }
     }
 
@@ -185,7 +189,7 @@ public unsafe partial class ShopItemIcons(PluginConfig PluginConfig, ConfigGui C
             if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.UInt || itemIdValue->UInt == 0)
                 continue;
 
-            iconIdValue->UInt = ItemService.GetIconId(itemIdValue->UInt);
+            iconIdValue->UInt = _itemService.GetIconId(itemIdValue->UInt);
         }
     }
 
@@ -204,7 +208,7 @@ public unsafe partial class ShopItemIcons(PluginConfig PluginConfig, ConfigGui C
             if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.UInt || itemIdValue->UInt == 0)
                 continue;
 
-            iconIdValue->UInt = ItemService.GetIconId(itemIdValue->UInt);
+            iconIdValue->UInt = _itemService.GetIconId(itemIdValue->UInt);
         }
     }
 }

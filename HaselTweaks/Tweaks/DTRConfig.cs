@@ -3,8 +3,6 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
 using HaselCommon.Gui;
-using HaselCommon.Services;
-using HaselTweaks.Config;
 using ImGuiNET;
 using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
 
@@ -17,7 +15,7 @@ public class DTRConfiguration
 
 public partial class DTR
 {
-    private DTRConfiguration Config => PluginConfig.Tweaks.DTR;
+    private DTRConfiguration Config => _pluginConfig.Tweaks.DTR;
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
@@ -29,13 +27,13 @@ public partial class DTR
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawConfigurationHeader();
+        _configGui.DrawConfigurationHeader();
 
-        ImGui.TextUnformatted(TextService.Translate("DTR.Config.Explanation.Pre"));
+        ImGui.TextUnformatted(_textService.Translate("DTR.Config.Explanation.Pre"));
         using (Color.From(ImGuiColors.DalamudRed).Push(ImGuiCol.Text))
-            ImGui.TextUnformatted(TextService.Translate("DTR.Config.Explanation.DalamudSettings"));
+            ImGui.TextUnformatted(_textService.Translate("DTR.Config.Explanation.DalamudSettings"));
         if (ImGui.IsItemHovered())
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
@@ -46,25 +44,25 @@ public partial class DTR
             {
                 if (ImGui.IsMouseDown(ImGuiMouseButton.Left))
                 {
-                    Framework.RunOnTick(OpenSettings, delayTicks: 2);
+                    _framework.RunOnTick(OpenSettings, delayTicks: 2);
                     return;
                 }
 
-                DalamudPluginInterface.OpenDalamudSettingsTo(SettingsOpenKind.ServerInfoBar);
+                _dalamudPluginInterface.OpenDalamudSettingsTo(SettingsOpenKind.ServerInfoBar);
             }
-            Framework.RunOnTick(OpenSettings, delayTicks: 2);
+            _framework.RunOnTick(OpenSettings, delayTicks: 2);
         }
         ImGuiUtils.SameLineSpace();
-        ImGui.TextUnformatted(TextService.Translate("DTR.Config.Explanation.Post"));
+        ImGui.TextUnformatted(_textService.Translate("DTR.Config.Explanation.Post"));
 
         ImGui.Spacing();
         ImGui.Separator();
         ImGui.Spacing();
 
-        ConfigGui.DrawString("FpsFormat", ref Config.FpsFormat, "{0} fps");
+        _configGui.DrawString("FpsFormat", ref Config.FpsFormat, "{0} fps");
 
         ImGui.Spacing();
-        ImGui.TextUnformatted(TextService.Translate("DTR.Config.Format.Example.Label"));
+        ImGui.TextUnformatted(_textService.Translate("DTR.Config.Format.Example.Label"));
 
         var size = new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetStyle().WindowPadding.Y * 2 + ImGui.GetTextLineHeight() + 2);
         using var child = ImRaii.Child("##FormatExample", size, true);
@@ -80,7 +78,7 @@ public partial class DTR
         catch (FormatException)
         {
             using (Color.Red.Push(ImGuiCol.Text))
-                ImGui.TextUnformatted(TextService.Translate("DTR.Config.FpsFormat.Invalid"));
+                ImGui.TextUnformatted(_textService.Translate("DTR.Config.FpsFormat.Invalid"));
         }
     }
 }

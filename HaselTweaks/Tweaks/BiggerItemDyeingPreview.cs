@@ -7,9 +7,11 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe class BiggerItemDyeingPreview(IAddonLifecycle AddonLifecycle) : ITweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class BiggerItemDyeingPreview : ITweak
 {
+    private readonly IAddonLifecycle _addonLifecycle;
+
     public string InternalName => nameof(BiggerItemDyeingPreview);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
@@ -17,12 +19,12 @@ public unsafe class BiggerItemDyeingPreview(IAddonLifecycle AddonLifecycle) : IT
 
     public void OnEnable()
     {
-        AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "ColorantColoring", OnPostSetup);
+        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "ColorantColoring", OnPostSetup);
     }
 
     public void OnDisable()
     {
-        AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "ColorantColoring", OnPostSetup);
+        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "ColorantColoring", OnPostSetup);
     }
 
     void IDisposable.Dispose()

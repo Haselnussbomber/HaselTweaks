@@ -7,11 +7,11 @@ using ImGuiNET;
 
 namespace HaselTweaks.ImGuiComponents;
 
-public abstract class ConfirmationDialog(string title) : IDialog
+public abstract class ConfirmationDialog : IDialog
 {
     public delegate void InnerDrawDelegate();
 
-    public string WindowName { get; init; } = title;
+    public string WindowName { get; set; } = string.Empty;
 
     private readonly List<ConfirmationButton> _buttons = [];
     private bool _shouldDraw;

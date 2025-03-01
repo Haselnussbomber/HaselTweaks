@@ -9,9 +9,13 @@ using HaselTweaks.Structs.Agents;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe class OutfitGlamourTryOn(IContextMenu ContextMenu, ItemService ItemService, TextService TextService) : ITweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class OutfitGlamourTryOn : ITweak
 {
+    private readonly IContextMenu _contextMenu;
+    private readonly ItemService _itemService;
+    private readonly TextService _textService;
+
     public string InternalName => nameof(OutfitGlamourTryOn);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
@@ -19,12 +23,12 @@ public unsafe class OutfitGlamourTryOn(IContextMenu ContextMenu, ItemService Ite
 
     public void OnEnable()
     {
-        ContextMenu.OnMenuOpened += ContextMenu_OnMenuOpened;
+        _contextMenu.OnMenuOpened += ContextMenu_OnMenuOpened;
     }
 
     public void OnDisable()
     {
-        ContextMenu.OnMenuOpened -= ContextMenu_OnMenuOpened;
+        _contextMenu.OnMenuOpened -= ContextMenu_OnMenuOpened;
     }
 
     void IDisposable.Dispose()
@@ -57,8 +61,8 @@ public unsafe class OutfitGlamourTryOn(IContextMenu ContextMenu, ItemService Ite
         {
             Prefix = SeIconChar.BoxedLetterH,
             PrefixColor = 32,
-            Name = TextService.GetAddonText(2426),
-            IsEnabled = ItemService.CanTryOn(itemId),
+            Name = _textService.GetAddonText(2426),
+            IsEnabled = _itemService.CanTryOn(itemId),
             OnClicked = (args) => AgentTryon.TryOn(agent->AgentInterface.AddonId, itemId)
         });
     }

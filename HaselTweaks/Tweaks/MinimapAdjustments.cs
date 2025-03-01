@@ -8,47 +8,31 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-public unsafe struct NaviMap
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class MinimapAdjustments : IConfigurableTweak
 {
-    public AtkResNode* GetNode(uint nodeId)
-    {
-        fixed (NaviMap* ptr = &this)
-            return GetNode<AtkResNode>((AtkUnitBase*)ptr, nodeId);
-    }
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly IFramework _framework;
+    private readonly IClientState _clientState;
 
-    public AtkResNode* Collision => GetNode(19);
-    public AtkResNode* Mask => GetNode(17);
-    public AtkResNode* Coords => GetNode(5);
-    public AtkResNode* Weather => GetNode(14);
-    public AtkResNode* Sun => GetNode(16);
-    public AtkResNode* CardinalDirections => GetNode(8);
-}
+    private float _targetAlpha;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class MinimapAdjustments(
-    PluginConfig PluginConfig,
-    ConfigGui ConfigGui,
-    IFramework Framework,
-    IClientState ClientState)
-    : IConfigurableTweak
-{
     public string InternalName => nameof(MinimapAdjustments);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    private float TargetAlpha;
 
     public void OnInitialize() { }
 
     public void OnEnable()
     {
-        TargetAlpha = Config.DefaultOpacity;
+        _targetAlpha = Config.DefaultOpacity;
 
-        Framework.Update += OnFrameworkUpdate;
+        _framework.Update += OnFrameworkUpdate;
     }
 
     public void OnDisable()
     {
-        Framework.Update -= OnFrameworkUpdate;
+        _framework.Update -= OnFrameworkUpdate;
 
         if (Status is not TweakStatus.Enabled)
             return;
@@ -82,7 +66,7 @@ public unsafe partial class MinimapAdjustments(
 
     private void OnFrameworkUpdate(IFramework framework)
     {
-        if (!ClientState.IsLoggedIn)
+        if (!_clientState.IsLoggedIn)
             return;
 
         if (!TryGetAddon<NaviMap>("_NaviMap", out var naviMap))
@@ -91,7 +75,7 @@ public unsafe partial class MinimapAdjustments(
         UpdateAlpha(naviMap);
 
         var isHovered = RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingAddon == naviMap;
-        TargetAlpha = isHovered ? Config.HoverOpacity : Config.DefaultOpacity;
+        _targetAlpha = isHovered ? Config.HoverOpacity : Config.DefaultOpacity;
 
         UpdateVisibility(naviMap, isHovered);
         UpdateCollision(naviMap, Config.Square);
@@ -100,7 +84,7 @@ public unsafe partial class MinimapAdjustments(
     private void UpdateAlpha(NaviMap* naviMap)
     {
         var maskNode = naviMap->Mask;
-        var targetAlphaByte = TargetAlpha * 255;
+        var targetAlphaByte = _targetAlpha * 255;
 
         if (maskNode->Color.A == targetAlphaByte)
             return;
@@ -136,4 +120,20 @@ public unsafe partial class MinimapAdjustments(
         else if (!square && !hasCircularCollisionFlag)
             collisionNode->DrawFlags |= 1 << 23; // add circular collision flag
     }
+}
+
+public unsafe struct NaviMap
+{
+    public AtkResNode* GetNode(uint nodeId)
+    {
+        fixed (NaviMap* ptr = &this)
+            return GetNode<AtkResNode>((AtkUnitBase*)ptr, nodeId);
+    }
+
+    public AtkResNode* Collision => GetNode(19);
+    public AtkResNode* Mask => GetNode(17);
+    public AtkResNode* Coords => GetNode(5);
+    public AtkResNode* Weather => GetNode(14);
+    public AtkResNode* Sun => GetNode(16);
+    public AtkResNode* CardinalDirections => GetNode(8);
 }

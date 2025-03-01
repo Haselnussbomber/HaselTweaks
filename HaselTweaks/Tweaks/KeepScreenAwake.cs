@@ -9,20 +9,20 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
 public sealed class KeepScreenAwake : ITweak
 {
+    private readonly Timer _timer = new();
+
     public string InternalName => nameof(KeepScreenAwake);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private readonly Timer Timer = new();
-
     public void OnInitialize()
     {
-        Timer.Elapsed += Timer_Elapsed;
-        Timer.Interval = 10000; // every 10 seconds
+        _timer.Elapsed += Timer_Elapsed;
+        _timer.Interval = 10000; // every 10 seconds
     }
 
     public void OnEnable()
     {
-        Timer.Start();
+        _timer.Start();
     }
 
     public void OnDisable()
@@ -31,7 +31,7 @@ public sealed class KeepScreenAwake : ITweak
             return;
 
         PInvoke.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
-        Timer.Stop();
+        _timer.Stop();
     }
 
     void IDisposable.Dispose()
@@ -40,7 +40,7 @@ public sealed class KeepScreenAwake : ITweak
             return;
 
         OnDisable();
-        Timer.Dispose();
+        _timer.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);

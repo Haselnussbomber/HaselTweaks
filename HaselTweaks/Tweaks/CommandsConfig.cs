@@ -1,4 +1,3 @@
-using HaselTweaks.Config;
 using HaselTweaks.Enums;
 
 namespace HaselTweaks.Tweaks;
@@ -14,7 +13,7 @@ public class CommandsConfiguration
 
 public unsafe partial class Commands
 {
-    private CommandsConfiguration Config => PluginConfig.Tweaks.Commands;
+    private CommandsConfiguration Config => _pluginConfig.Tweaks.Commands;
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
@@ -26,13 +25,13 @@ public unsafe partial class Commands
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawConfigurationHeader();
-        ConfigGui.DrawBool("EnableItemLinkCommand", ref Config.EnableItemLinkCommand);
-        ConfigGui.DrawBool("EnableWhatMountCommand", ref Config.EnableWhatMountCommand);
-        ConfigGui.DrawBool("EnableWhatEmoteCommand", ref Config.EnableWhatEmoteCommand);
-        ConfigGui.DrawBool("EnableWhatBardingCommand", ref Config.EnableWhatBardingCommand);
-        ConfigGui.DrawBool("EnableGlamourPlateCommand", ref Config.EnableGlamourPlateCommand, noFixSpaceAfter: true);
+        _configGui.DrawConfigurationHeader();
+        _configGui.DrawBool("EnableItemLinkCommand", ref Config.EnableItemLinkCommand);
+        _configGui.DrawBool("EnableWhatMountCommand", ref Config.EnableWhatMountCommand);
+        _configGui.DrawBool("EnableWhatEmoteCommand", ref Config.EnableWhatEmoteCommand);
+        _configGui.DrawBool("EnableWhatBardingCommand", ref Config.EnableWhatBardingCommand);
+        _configGui.DrawBool("EnableGlamourPlateCommand", ref Config.EnableGlamourPlateCommand, noFixSpaceAfter: true);
     }
 }

@@ -20,7 +20,7 @@ public enum MaxLevelOverrideType
 
 public unsafe partial class EnhancedExpBar
 {
-    private EnhancedExpBarConfiguration Config => PluginConfig.Tweaks.EnhancedExpBar;
+    private EnhancedExpBarConfiguration Config => _pluginConfig.Tweaks.EnhancedExpBar;
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
@@ -32,17 +32,17 @@ public unsafe partial class EnhancedExpBar
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawIncompatibilityWarnings([("SimpleTweaksPlugin", ["ShowExperiencePercentage"])]);
+        _configGui.DrawIncompatibilityWarnings([("SimpleTweaksPlugin", ["ShowExperiencePercentage"])]);
 
-        ConfigGui.DrawConfigurationHeader();
+        _configGui.DrawConfigurationHeader();
 
-        ConfigGui.DrawBool("ForcePvPSeriesBar", ref Config.ForcePvPSeriesBar);
-        ConfigGui.DrawBool("ForceSanctuaryBar", ref Config.ForceSanctuaryBar);
-        ConfigGui.DrawBool("ForceCompanionBar", ref Config.ForceCompanionBar);
-        ConfigGui.DrawBool("SanctuaryBarHideJob", ref Config.SanctuaryBarHideJob);
-        ConfigGui.DrawEnum("MaxLevelOverride", ref Config.MaxLevelOverride);
-        ConfigGui.DrawBool("DisableColorChanges", ref Config.DisableColorChanges);
+        _configGui.DrawBool("ForcePvPSeriesBar", ref Config.ForcePvPSeriesBar);
+        _configGui.DrawBool("ForceSanctuaryBar", ref Config.ForceSanctuaryBar);
+        _configGui.DrawBool("ForceCompanionBar", ref Config.ForceCompanionBar);
+        _configGui.DrawBool("SanctuaryBarHideJob", ref Config.SanctuaryBarHideJob);
+        _configGui.DrawEnum("MaxLevelOverride", ref Config.MaxLevelOverride);
+        _configGui.DrawBool("DisableColorChanges", ref Config.DisableColorChanges);
     }
 }

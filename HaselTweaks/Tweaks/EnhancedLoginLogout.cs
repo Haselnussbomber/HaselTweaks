@@ -7,6 +7,7 @@ using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.LayoutEngine;
@@ -27,84 +28,87 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class EnhancedLoginLogout(
-    PluginConfig PluginConfig,
-    TextService TextService,
-    ILogger<EnhancedLoginLogout> Logger,
-    IGameInteropProvider GameInteropProvider,
-    IGameConfig GameConfig,
-    IClientState ClientState,
-    IAddonLifecycle AddonLifecycle,
-    TextureService TextureService,
-    ExcelService ExcelService,
-    ConfigGui ConfigGui)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class EnhancedLoginLogout : IConfigurableTweak
 {
+    private readonly PluginConfig _pluginConfig;
+    private readonly TextService _textService;
+    private readonly ILogger<EnhancedLoginLogout> _logger;
+    private readonly IGameInteropProvider _gameInteropProvider;
+    private readonly IGameConfig _gameConfig;
+    private readonly IClientState _clientState;
+    private readonly IAddonLifecycle _addonLifecycle;
+    private readonly TextureService _textureService;
+    private readonly ExcelService _excelService;
+    private readonly ConfigGui _configGui;
+
+    private Hook<AgentLobby.Delegates.UpdateCharaSelectDisplay>? _updateCharaSelectDisplayHook;
+    private Hook<CharaSelectCharacterList.Delegates.CleanupCharacters>? _cleanupCharactersHook;
+    private Hook<EmoteManager.Delegates.ExecuteEmote>? _executeEmoteHook;
+    private Hook<AgentLobby.Delegates.OpenLoginWaitDialog>? _openLoginWaitDialogHook;
+
+    private CharaSelectCharacter? _currentEntry = null;
+
+    private BattleChara* _pet = null;
+    private ushort _petIndex = 0xFFFF;
+
     public string InternalName => nameof(EnhancedLoginLogout);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private CharaSelectCharacter? CurrentEntry = null;
-
     #region Core
-
-    private Hook<AgentLobby.Delegates.UpdateCharaSelectDisplay>? UpdateCharaSelectDisplayHook;
-    private Hook<CharaSelectCharacterList.Delegates.CleanupCharacters>? CleanupCharactersHook;
-    private Hook<HaselEmoteManager.Delegates.ExecuteEmote>? ExecuteEmoteHook;
-    private Hook<AgentLobby.Delegates.OpenLoginWaitDialog>? OpenLoginWaitDialogHook;
 
     public void OnInitialize()
     {
-        UpdateCharaSelectDisplayHook = GameInteropProvider.HookFromAddress<AgentLobby.Delegates.UpdateCharaSelectDisplay>(
+        _updateCharaSelectDisplayHook = _gameInteropProvider.HookFromAddress<AgentLobby.Delegates.UpdateCharaSelectDisplay>(
             AgentLobby.MemberFunctionPointers.UpdateCharaSelectDisplay,
             UpdateCharaSelectDisplayDetour);
 
-        CleanupCharactersHook = GameInteropProvider.HookFromAddress<CharaSelectCharacterList.Delegates.CleanupCharacters>(
+        _cleanupCharactersHook = _gameInteropProvider.HookFromAddress<CharaSelectCharacterList.Delegates.CleanupCharacters>(
             CharaSelectCharacterList.MemberFunctionPointers.CleanupCharacters,
             CleanupCharactersDetour);
 
-        ExecuteEmoteHook = GameInteropProvider.HookFromAddress<HaselEmoteManager.Delegates.ExecuteEmote>(
-            HaselEmoteManager.MemberFunctionPointers.ExecuteEmote,
+        _executeEmoteHook = _gameInteropProvider.HookFromAddress<EmoteManager.Delegates.ExecuteEmote>(
+            EmoteManager.MemberFunctionPointers.ExecuteEmote,
             ExecuteEmoteDetour);
 
-        OpenLoginWaitDialogHook = GameInteropProvider.HookFromAddress<AgentLobby.Delegates.OpenLoginWaitDialog>(
+        _openLoginWaitDialogHook = _gameInteropProvider.HookFromAddress<AgentLobby.Delegates.OpenLoginWaitDialog>(
             AgentLobby.MemberFunctionPointers.OpenLoginWaitDialog,
             OpenLoginWaitDialogDetour);
     }
 
     public void OnEnable()
     {
-        GameConfig.Changed += OnGameConfigChanged;
-        ClientState.Login += OnLogin;
-        ClientState.Logout += OnLogout;
+        _gameConfig.Changed += OnGameConfigChanged;
+        _clientState.Login += OnLogin;
+        _clientState.Logout += OnLogout;
 
         UpdateCharacterSettings();
         PreloadEmotes();
 
-        AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "Logo", OnLogoPostSetup);
+        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "Logo", OnLogoPostSetup);
 
-        UpdateCharaSelectDisplayHook?.Enable();
-        CleanupCharactersHook?.Enable();
-        ExecuteEmoteHook?.Enable();
+        _updateCharaSelectDisplayHook?.Enable();
+        _cleanupCharactersHook?.Enable();
+        _executeEmoteHook?.Enable();
 
         if (Config.PreloadTerritory)
-            OpenLoginWaitDialogHook?.Enable();
+            _openLoginWaitDialogHook?.Enable();
     }
 
     public void OnDisable()
     {
-        GameConfig.Changed -= OnGameConfigChanged;
-        ClientState.Login -= OnLogin;
-        ClientState.Logout -= OnLogout;
+        _gameConfig.Changed -= OnGameConfigChanged;
+        _clientState.Login -= OnLogin;
+        _clientState.Logout -= OnLogout;
 
-        AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Logo", OnLogoPostSetup);
+        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Logo", OnLogoPostSetup);
 
         CleanupCharaSelect();
 
-        UpdateCharaSelectDisplayHook?.Disable();
-        CleanupCharactersHook?.Disable();
-        ExecuteEmoteHook?.Disable();
-        OpenLoginWaitDialogHook?.Disable();
+        _updateCharaSelectDisplayHook?.Disable();
+        _cleanupCharactersHook?.Disable();
+        _executeEmoteHook?.Disable();
+        _openLoginWaitDialogHook?.Disable();
     }
 
     void IDisposable.Dispose()
@@ -113,10 +117,10 @@ public unsafe partial class EnhancedLoginLogout(
             return;
 
         OnDisable();
-        UpdateCharaSelectDisplayHook?.Dispose();
-        CleanupCharactersHook?.Dispose();
-        ExecuteEmoteHook?.Dispose();
-        OpenLoginWaitDialogHook?.Dispose();
+        _updateCharaSelectDisplayHook?.Dispose();
+        _cleanupCharactersHook?.Dispose();
+        _executeEmoteHook?.Dispose();
+        _openLoginWaitDialogHook?.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);
@@ -149,15 +153,15 @@ public unsafe partial class EnhancedLoginLogout(
     private void CleanupCharaSelect()
     {
         DespawnPet();
-        CurrentEntry = null;
+        _currentEntry = null;
     }
 
-    private ulong ActiveContentId => CurrentEntry?.ContentId ?? ClientState.LocalContentId;
+    private ulong ActiveContentId => _currentEntry?.ContentId ?? _clientState.LocalContentId;
 
     // called every frame
     private bool UpdateCharaSelectDisplayDetour(AgentLobby* agent, sbyte index, bool a2)
     {
-        var retVal = UpdateCharaSelectDisplayHook!.Original(agent, index, a2);
+        var retVal = _updateCharaSelectDisplayHook!.Original(agent, index, a2);
 
         if (index < 0)
         {
@@ -175,14 +179,14 @@ public unsafe partial class EnhancedLoginLogout(
             return retVal;
         }
 
-        if (CurrentEntry?.ContentId == entry->ContentId)
+        if (_currentEntry?.ContentId == entry->ContentId)
             return retVal;
 
         var character = CharaSelectCharacterList.GetCurrentCharacter();
         if (character == null)
             return retVal;
 
-        CurrentEntry = new(character, entry);
+        _currentEntry = new(character, entry);
 
         character->Vfx.VoiceId = entry->ClientSelectData.VoiceId;
 
@@ -197,7 +201,7 @@ public unsafe partial class EnhancedLoginLogout(
     private void CleanupCharactersDetour()
     {
         CleanupCharaSelect();
-        CleanupCharactersHook!.Original();
+        _cleanupCharactersHook!.Original();
     }
 
     #endregion
@@ -214,7 +218,7 @@ public unsafe partial class EnhancedLoginLogout(
                 Type = ValueType.Int,
                 Int = 0
             };
-            Logger.LogInformation("Sending change stage to title screen event...");
+            _logger.LogInformation("Sending change stage to title screen event...");
             addon->FireCallback(1, &value, true);
             addon->Hide(false, false, 1);
         }
@@ -223,9 +227,6 @@ public unsafe partial class EnhancedLoginLogout(
     #endregion
 
     #region Login: Show pets in character selection
-
-    private BattleChara* _pet = null;
-    private ushort _petIndex = 0xFFFF;
 
     private void UpdatePetMirageSettings()
     {
@@ -242,31 +243,31 @@ public unsafe partial class EnhancedLoginLogout(
 
         try
         {
-            GameConfig.TryGet(UiConfigOption.PetMirageTypeCarbuncleSupport, out petMirageSettings.CarbuncleType);
+            _gameConfig.TryGet(UiConfigOption.PetMirageTypeCarbuncleSupport, out petMirageSettings.CarbuncleType);
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Error reading pet glamours");
+            _logger.LogError(e, "Error reading pet glamours");
         }
 
         try
         {
-            GameConfig.TryGet(UiConfigOption.PetMirageTypeFairy, out petMirageSettings.FairyType);
+            _gameConfig.TryGet(UiConfigOption.PetMirageTypeFairy, out petMirageSettings.FairyType);
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Error reading pet glamours");
+            _logger.LogError(e, "Error reading pet glamours");
         }
 
-        Logger.LogDebug("Updated PetMirageSettings: CarbuncleType {carbuncleType}, FairyType {fairyType}", petMirageSettings.CarbuncleType, petMirageSettings.FairyType);
+        _logger.LogDebug("Updated PetMirageSettings: CarbuncleType {carbuncleType}, FairyType {fairyType}", petMirageSettings.CarbuncleType, petMirageSettings.FairyType);
     }
 
     private void SpawnPet()
     {
-        if (!Config.ShowPets || CurrentEntry == null)
+        if (!Config.ShowPets || _currentEntry == null)
             return;
 
-        if (!(CurrentEntry.ClassJobId is 26 or 27 or 28)) // Arcanist, Summoner, Scholar (Machinist: 31)
+        if (!(_currentEntry.ClassJobId is 26 or 27 or 28)) // Arcanist, Summoner, Scholar (Machinist: 31)
         {
             DespawnPet();
             return;
@@ -278,7 +279,7 @@ public unsafe partial class EnhancedLoginLogout(
         if (!Config.PetMirageSettings.TryGetValue(ActiveContentId, out var petMirageSettings))
             return;
 
-        var bNpcId = CurrentEntry.ClassJobId switch
+        var bNpcId = _currentEntry.ClassJobId switch
         {
             // Arcanist or Summoner
             26 or 27 when petMirageSettings.CarbuncleType is 0 => 13498u, // Carbuncle
@@ -314,7 +315,7 @@ public unsafe partial class EnhancedLoginLogout(
 
             _pet = (BattleChara*)clientObjectManager->GetObjectByIndex(_petIndex);
 
-            Logger.LogDebug("Pet with index {_petIndex} spanwed ({petAddr:X})", _petIndex, (nint)_pet);
+            _logger.LogDebug("Pet with index {_petIndex} spanwed ({petAddr:X})", _petIndex, (nint)_pet);
         }
 
         if (_pet == null)
@@ -339,7 +340,7 @@ public unsafe partial class EnhancedLoginLogout(
         if (clientObjectManager != null && clientObjectManager->GetObjectByIndex(_petIndex) != null)
             clientObjectManager->DeleteObjectByIndex(_petIndex, 0);
 
-        Logger.LogDebug("Pet with index {_petIndex} despawned", _petIndex);
+        _logger.LogDebug("Pet with index {_petIndex} despawned", _petIndex);
         _petIndex = 0xFFFF;
         _pet = null;
     }
@@ -362,7 +363,7 @@ public unsafe partial class EnhancedLoginLogout(
 
         foreach (var emoteId in Config.SelectedEmotes.Values.ToHashSet())
         {
-            if (!ExcelService.TryGetRow<Emote>(emoteId, out var emote))
+            if (!_excelService.TryGetRow<Emote>(emoteId, out var emote))
                 continue;
 
             PreloadActionTimeline(processedActionTimelineIds, emoteId, emote.ActionTimeline[0].RowId); // EmoteTimelineType.Loop
@@ -376,7 +377,7 @@ public unsafe partial class EnhancedLoginLogout(
             return;
 
         var index = 0u;
-        foreach (var row in ExcelService.GetSheet<ActionTimeline>())
+        foreach (var row in _excelService.GetSheet<ActionTimeline>())
         {
             if (row.RowId == actionTimelineId)
                 break;
@@ -384,13 +385,13 @@ public unsafe partial class EnhancedLoginLogout(
             index++;
         }
 
-        if (!ExcelService.TryGetRow<ActionTimeline>(actionTimelineId, out var actionTimeline))
+        if (!_excelService.TryGetRow<ActionTimeline>(actionTimelineId, out var actionTimeline))
             return;
 
         if (actionTimeline.Key.IsEmpty)
             return;
 
-        Logger.LogInformation("Preloading tmb {key} (Emote: {emoteId}, ActionTimeline: {actionTimelineId})", actionTimeline.Key.ExtractText(), emoteId, actionTimelineId);
+        _logger.LogInformation("Preloading tmb {key} (Emote: {emoteId}, ActionTimeline: {actionTimelineId})", actionTimeline.Key.ExtractText(), emoteId, actionTimelineId);
 
         fixed (byte* keyPtr = actionTimeline.Key.Data.Span.WithNullTerminator())
         {
@@ -408,12 +409,12 @@ public unsafe partial class EnhancedLoginLogout(
 
     private void SaveEmote(uint emoteId)
     {
-        Logger.LogInformation("Saving Emote #{emoteId} => {name}", emoteId, ExcelService.TryGetRow<Emote>(emoteId, out var emote) ? emote.Name : "");
+        _logger.LogInformation("Saving Emote #{emoteId} => {name}", emoteId, _excelService.TryGetRow<Emote>(emoteId, out var emote) ? emote.Name : "");
 
         if (!Config.SelectedEmotes.TryAdd(ActiveContentId, emoteId))
             Config.SelectedEmotes[ActiveContentId] = emoteId;
 
-        PluginConfig.Save();
+        _pluginConfig.Save();
     }
 
     private void PlayEmote(uint emoteId)
@@ -421,7 +422,7 @@ public unsafe partial class EnhancedLoginLogout(
         if (!Config.EnableCharaSelectEmote)
             return;
 
-        if (CurrentEntry == null || CurrentEntry.Character == null)
+        if (_currentEntry == null || _currentEntry.Character == null)
             return;
 
         if (emoteId == 0)
@@ -430,7 +431,7 @@ public unsafe partial class EnhancedLoginLogout(
             return;
         }
 
-        if (!ExcelService.TryGetRow<Emote>(emoteId, out var emote))
+        if (!_excelService.TryGetRow<Emote>(emoteId, out var emote))
         {
             ResetEmoteMode();
             return;
@@ -439,12 +440,12 @@ public unsafe partial class EnhancedLoginLogout(
         var intro = (ushort)emote.ActionTimeline[1].RowId; // EmoteTimelineType.Intro
         var loop = (ushort)emote.ActionTimeline[0].RowId; // EmoteTimelineType.Loop
 
-        Logger.LogDebug("Playing Emote {emoteId}: intro {intro}, loop {loop}", emoteId, intro, loop);
+        _logger.LogDebug("Playing Emote {emoteId}: intro {intro}, loop {loop}", emoteId, intro, loop);
 
         if (emote.EmoteMode.RowId != 0)
         {
-            Logger.LogDebug("EmoteMode: {rowId}", emote.EmoteMode.RowId);
-            CurrentEntry.Character->SetMode((CharacterModes)emote.EmoteMode.Value!.ConditionMode, (byte)emote.EmoteMode.RowId);
+            _logger.LogDebug("EmoteMode: {rowId}", emote.EmoteMode.RowId);
+            _currentEntry.Character->SetMode((CharacterModes)emote.EmoteMode.Value!.ConditionMode, (byte)emote.EmoteMode.RowId);
         }
         else
         {
@@ -455,42 +456,42 @@ public unsafe partial class EnhancedLoginLogout(
 
         if (intro != 0 && loop != 0)
         {
-            ((HaselTimelineContainer*)(nint)(&CurrentEntry.Character->Timeline))->PlayActionTimeline(intro, loop);
+            ((HaselTimelineContainer*)(nint)(&_currentEntry.Character->Timeline))->PlayActionTimeline(intro, loop);
         }
         else if (loop != 0)
         {
-            CurrentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(loop);
+            _currentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(loop);
         }
         else if (intro != 0)
         {
-            CurrentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(intro);
+            _currentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(intro);
         }
         else
         {
-            Logger.LogDebug("No intro or loop, resetting to idle pose (timeline 3)");
-            CurrentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(3);
+            _logger.LogDebug("No intro or loop, resetting to idle pose (timeline 3)");
+            _currentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(3);
         }
     }
 
     private void ResetEmoteMode()
     {
-        if (CurrentEntry == null || CurrentEntry.Character == null)
+        if (_currentEntry == null || _currentEntry.Character == null)
             return;
 
-        Logger.LogDebug("Resetting Character Mode");
-        CurrentEntry.Character->SetMode(CharacterModes.Normal, 0);
+        _logger.LogDebug("Resetting Character Mode");
+        _currentEntry.Character->SetMode(CharacterModes.Normal, 0);
     }
 
-    private bool ExecuteEmoteDetour(HaselEmoteManager* handler, ushort emoteId, nint targetData)
+    private bool ExecuteEmoteDetour(EmoteManager* handler, ushort emoteId, EmoteController.PlayEmoteOption* playEmoteOption)
     {
         var changePoseIndexBefore = PlayerState.Instance()->SelectedPoses[0];
-        var success = ExecuteEmoteHook!.Original(handler, emoteId, targetData);
+        var success = _executeEmoteHook!.Original(handler, emoteId, playEmoteOption);
 
         if (_excludedEmotes == null)
         {
             _excludedEmotes = [/* Sit */ 50];
 
-            foreach (var emote in ExcelService.GetSheet<Emote>())
+            foreach (var emote in _excelService.GetSheet<Emote>())
             {
                 if (emote.RowId == 90) // allow Change Pose
                     continue;
@@ -502,7 +503,7 @@ public unsafe partial class EnhancedLoginLogout(
             }
         }
 
-        if (_isRecordingEmote && success && ClientState.IsLoggedIn && !_excludedEmotes.Contains(emoteId))
+        if (_isRecordingEmote && success && _clientState.IsLoggedIn && !_excludedEmotes.Contains(emoteId))
         {
             // special case for Change Pose
             if (emoteId == 90)
@@ -535,12 +536,12 @@ public unsafe partial class EnhancedLoginLogout(
 
     private void OpenLoginWaitDialogDetour(AgentLobby* agent, int position)
     {
-        OpenLoginWaitDialogHook!.Original(agent, position);
+        _openLoginWaitDialogHook!.Original(agent, position);
 
-        if (!Config.PreloadTerritory || CurrentEntry == null)
+        if (!Config.PreloadTerritory || _currentEntry == null)
             return;
 
-        ushort territoryTypeId = CurrentEntry.TerritoryType switch
+        ushort territoryTypeId = _currentEntry.TerritoryType switch
         {
             282  // Private Cottage - Mist
          or 283  // Private House - Mist
@@ -587,18 +588,18 @@ public unsafe partial class EnhancedLoginLogout(
          or 999  // Ingleside Apartment
          => 979, // Empyreum
 
-            _ => CurrentEntry.TerritoryType
+            _ => _currentEntry.TerritoryType
         };
 
         if (territoryTypeId <= 0)
             return;
 
-        if (!ExcelService.TryGetRow<TerritoryType>(territoryTypeId, out var territoryType))
+        if (!_excelService.TryGetRow<TerritoryType>(territoryTypeId, out var territoryType))
             return;
 
         var bg = territoryType.Bg.ExtractText();
 
-        Logger.LogDebug("Preloading territory #{territoryId}: {bg}", territoryTypeId, bg);
+        _logger.LogDebug("Preloading territory #{territoryId}: {bg}", territoryTypeId, bg);
 
         LayoutWorld.UnloadPrefetchLayout();
         LayoutWorld.Instance()->LoadPrefetchLayout(

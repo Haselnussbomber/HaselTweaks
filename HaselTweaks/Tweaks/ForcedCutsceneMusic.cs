@@ -11,19 +11,10 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class ForcedCutsceneMusic(
-    PluginConfig PluginConfig,
-    ConfigGui ConfigGui,
-    ILogger<ForcedCutsceneMusic> Logger,
-    IGameInteropProvider GameInteropProvider,
-    IGameConfig GameConfig)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class ForcedCutsceneMusic : IConfigurableTweak
 {
-    public string InternalName => nameof(ForcedCutsceneMusic);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    private readonly string[] ConfigOptions = [
+    private static readonly string[] ConfigOptions = [
         "IsSndMaster",
         "IsSndBgm",
         "IsSndSe",
@@ -33,34 +24,43 @@ public unsafe partial class ForcedCutsceneMusic(
         "IsSndPerform",
     ];
 
-    private readonly Dictionary<string, bool> WasMuted = [];
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly ILogger<ForcedCutsceneMusic> _logger;
+    private readonly IGameInteropProvider _gameInteropProvider;
+    private readonly IGameConfig _gameConfig;
+
+    private Hook<ScheduleManagement.Delegates.CreateCutSceneController>? _createCutSceneControllerHook;
+    private Hook<CutSceneControllerDtorDelegate>? _cutSceneControllerDtorHook;
+
+    private readonly Dictionary<string, bool> _wasMuted = [];
 
     private delegate void CutSceneControllerDtorDelegate(CutSceneController* self, byte freeFlags);
 
-    private Hook<ScheduleManagement.Delegates.CreateCutSceneController>? CreateCutSceneControllerHook;
-    private Hook<CutSceneControllerDtorDelegate>? CutSceneControllerDtorHook;
+    public string InternalName => nameof(ForcedCutsceneMusic);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()
     {
-        CreateCutSceneControllerHook = GameInteropProvider.HookFromAddress<ScheduleManagement.Delegates.CreateCutSceneController>(
+        _createCutSceneControllerHook = _gameInteropProvider.HookFromAddress<ScheduleManagement.Delegates.CreateCutSceneController>(
             ScheduleManagement.MemberFunctionPointers.CreateCutSceneController,
             CreateCutSceneControllerDetour);
 
-        CutSceneControllerDtorHook = GameInteropProvider.HookFromVTable<CutSceneControllerDtorDelegate>(
+        _cutSceneControllerDtorHook = _gameInteropProvider.HookFromVTable<CutSceneControllerDtorDelegate>(
             CutSceneController.StaticVirtualTablePointer, 0,
             CutSceneControllerDtorDetour);
     }
 
     public void OnEnable()
     {
-        CreateCutSceneControllerHook?.Enable();
-        CutSceneControllerDtorHook?.Enable();
+        _createCutSceneControllerHook?.Enable();
+        _cutSceneControllerDtorHook?.Enable();
     }
 
     public void OnDisable()
     {
-        CreateCutSceneControllerHook?.Disable();
-        CutSceneControllerDtorHook?.Disable();
+        _createCutSceneControllerHook?.Disable();
+        _cutSceneControllerDtorHook?.Disable();
     }
 
     void IDisposable.Dispose()
@@ -69,8 +69,8 @@ public unsafe partial class ForcedCutsceneMusic(
             return;
 
         OnDisable();
-        CreateCutSceneControllerHook?.Dispose();
-        CutSceneControllerDtorHook?.Dispose();
+        _createCutSceneControllerHook?.Dispose();
+        _cutSceneControllerDtorHook?.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);
@@ -78,23 +78,23 @@ public unsafe partial class ForcedCutsceneMusic(
 
     private CutSceneController* CreateCutSceneControllerDetour(ScheduleManagement* self, byte* path, uint id, byte a4)
     {
-        var ret = CreateCutSceneControllerHook!.Original(self, path, id, a4);
+        var ret = _createCutSceneControllerHook!.Original(self, path, id, a4);
 
-        Logger.LogInformation("Cutscene {id} started (Controller @ {address:X})", id, (nint)ret);
+        _logger.LogInformation("Cutscene {id} started (Controller @ {address:X})", id, (nint)ret);
 
         if (id == 0) // ignore title screen cutscene
             return ret;
 
         foreach (var optionName in ConfigOptions)
         {
-            var isMuted = GameConfig.System.TryGet(optionName, out bool value) && value;
+            var isMuted = _gameConfig.System.TryGet(optionName, out bool value) && value;
 
-            WasMuted[optionName] = isMuted;
+            _wasMuted[optionName] = isMuted;
 
             if (ShouldHandle(optionName) && isMuted)
             {
-                Logger.LogInformation("Setting {optionName} to false", optionName);
-                GameConfig.System.Set(optionName, false);
+                _logger.LogInformation("Setting {optionName} to false", optionName);
+                _gameConfig.System.Set(optionName, false);
             }
         }
 
@@ -103,9 +103,9 @@ public unsafe partial class ForcedCutsceneMusic(
 
     private void CutSceneControllerDtorDetour(CutSceneController* self, byte freeFlags)
     {
-        Logger.LogInformation("Cutscene {id} ended", self->CutsceneId);
+        _logger.LogInformation("Cutscene {id} ended", self->CutsceneId);
 
-        CutSceneControllerDtorHook!.Original(self, freeFlags);
+        _cutSceneControllerDtorHook!.Original(self, freeFlags);
 
         if (!Config.Restore)
             return;
@@ -115,10 +115,10 @@ public unsafe partial class ForcedCutsceneMusic(
 
         foreach (var optionName in ConfigOptions)
         {
-            if (ShouldHandle(optionName) && WasMuted.TryGetValue(optionName, out var value) && value)
+            if (ShouldHandle(optionName) && _wasMuted.TryGetValue(optionName, out var value) && value)
             {
-                Logger.LogInformation("Restoring {optionName} to {value}", optionName, value);
-                GameConfig.System.Set(optionName, value);
+                _logger.LogInformation("Restoring {optionName} to {value}", optionName, value);
+                _gameConfig.System.Set(optionName, value);
             }
         }
     }

@@ -14,31 +14,22 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Windows;
 
-[RegisterSingleton]
-public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
+[RegisterSingleton, AutoConstruct]
+public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
 {
     private static readonly Vector2 IconSize = new(34);
-    private readonly TextureService TextureService;
-    private readonly ExcelService ExcelService;
-    private readonly TextService TextService;
-    private readonly ImGuiContextMenuService ImGuiContextMenuService;
+
+    private readonly TextureService _textureService;
+    private readonly ExcelService _excelService;
+    private readonly TextService _textService;
+    private readonly ImGuiContextMenuService _imGuiContextMenuService;
+    private readonly GlamourDresserArmoireAlert? _tweak;
 
     private static AddonMiragePrismPrismBox* Addon => GetAddon<AddonMiragePrismPrismBox>("MiragePrismPrismBox");
 
-    public GlamourDresserArmoireAlertWindow(
-        WindowManager windowManager,
-        LanguageProvider languageProvider,
-        TextService textService,
-        TextureService textureService,
-        ExcelService excelService,
-        ImGuiContextMenuService imGuiContextMenuService)
-        : base(windowManager, textService, languageProvider)
+    [AutoPostConstruct]
+    private void Initialize()
     {
-        TextureService = textureService;
-        ExcelService = excelService;
-        TextService = textService;
-        ImGuiContextMenuService = imGuiContextMenuService;
-
         DisableWindowSounds = true;
         RespectCloseHotkey = false;
 
@@ -50,18 +41,16 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
         Size = new(360, 428);
     }
 
-    public GlamourDresserArmoireAlert? Tweak { get; set; }
-
     public override bool DrawConditions()
-        => Tweak != null && Addon != null && Addon->AtkUnitBase.IsVisible && Tweak!.Categories.Count != 0;
+        => _tweak != null && Addon != null && Addon->AtkUnitBase.IsVisible && _tweak!.Categories.Count != 0;
 
     public override void Draw()
     {
-        ImGuiHelpers.SafeTextWrapped(TextService.Translate("GlamourDresserArmoireAlertWindow.Info"));
+        ImGuiHelpers.SafeTextWrapped(_textService.Translate("GlamourDresserArmoireAlertWindow.Info"));
 
-        foreach (var (categoryId, categoryItems) in Tweak!.Categories.OrderBy(kv => kv.Key))
+        foreach (var (categoryId, categoryItems) in _tweak!.Categories.OrderBy(kv => kv.Key))
         {
-            if (!ExcelService.TryGetRow<ItemUICategory>(categoryId, out var category))
+            if (!_excelService.TryGetRow<ItemUICategory>(categoryId, out var category))
                 continue;
 
             ImGui.TextUnformatted(category.Name.ToDalamudString().ToString());
@@ -87,7 +76,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 
         using (var group = ImRaii.Group())
         {
-            TextureService.DrawIcon(new GameIconLookup(item.Icon, isHq), IconSize * ImGuiHelpers.GlobalScale);
+            _textureService.DrawIcon(new GameIconLookup(item.Icon, isHq), IconSize * ImGuiHelpers.GlobalScale);
 
             ImGui.SameLine();
 
@@ -95,7 +84,7 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
             if (ImGui.Selectable(
                 "##Selectable",
                 false,
-                Tweak!.UpdatePending
+                _tweak!.UpdatePending
                     ? ImGuiSelectableFlags.Disabled
                     : ImGuiSelectableFlags.None,
                 ImGuiHelpers.ScaledVector2(ImGui.GetContentRegionAvail().X, IconSize.Y)))
@@ -107,10 +96,10 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
                 ImGui.GetStyle().ItemInnerSpacing.X,
                 IconSize.Y * ImGuiHelpers.GlobalScale / 2f - ImGui.GetTextLineHeight() / 2f - 1));
 
-            ImGui.TextUnformatted(TextService.GetItemName(item.RowId));
+            ImGui.TextUnformatted(_textService.GetItemName(item.RowId));
         }
 
-        ImGuiContextMenuService.Draw(popupKey, builder =>
+        _imGuiContextMenuService.Draw(popupKey, builder =>
         {
             builder
                 .AddTryOn(item)
@@ -123,6 +112,6 @@ public unsafe class GlamourDresserArmoireAlertWindow : SimpleWindow
 
     private void RestoreItem(uint itemIndex)
     {
-        Tweak!.UpdatePending = MirageManager.Instance()->RestorePrismBoxItem(itemIndex);
+        _tweak!.UpdatePending = MirageManager.Instance()->RestorePrismBoxItem(itemIndex);
     }
 }

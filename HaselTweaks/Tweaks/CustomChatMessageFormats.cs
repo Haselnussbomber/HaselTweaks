@@ -3,7 +3,6 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Services;
-using HaselCommon.Services.SeStringEvaluation;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
@@ -13,27 +12,27 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class CustomChatMessageFormats(
-    PluginConfig PluginConfig,
-    ConfigGui ConfigGui,
-    LanguageProvider LanguageProvider,
-    TextService TextService,
-    ILogger<CustomChatMessageFormats> Logger,
-    IGameInteropProvider GameInteropProvider,
-    ExcelService ExcelService,
-    TextureService TextureService,
-    SeStringEvaluatorService SeStringEvaluator)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class CustomChatMessageFormats : IConfigurableTweak
 {
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly LanguageProvider _languageProvider;
+    private readonly TextService _textService;
+    private readonly ILogger<CustomChatMessageFormats> _logger;
+    private readonly IGameInteropProvider _gameInteropProvider;
+    private readonly ExcelService _excelService;
+    private readonly TextureService _textureService;
+    private readonly SeStringEvaluatorService _seStringEvaluator;
+
+    private Hook<HaselRaptureLogModule.Delegates.FormatLogMessage>? _formatLogMessageHook;
+
     public string InternalName => nameof(CustomChatMessageFormats);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private Hook<HaselRaptureLogModule.Delegates.FormatLogMessage>? FormatLogMessageHook;
-
     public void OnInitialize()
     {
-        FormatLogMessageHook = GameInteropProvider.HookFromAddress<HaselRaptureLogModule.Delegates.FormatLogMessage>(
+        _formatLogMessageHook = _gameInteropProvider.HookFromAddress<HaselRaptureLogModule.Delegates.FormatLogMessage>(
             HaselRaptureLogModule.MemberFunctionPointers.FormatLogMessage,
             FormatLogMessageDetour);
     }
@@ -41,14 +40,14 @@ public unsafe partial class CustomChatMessageFormats(
     public void OnEnable()
     {
         ReloadChat();
-        LanguageProvider.LanguageChanged += OnLanguageChange;
-        FormatLogMessageHook?.Enable();
+        _languageProvider.LanguageChanged += OnLanguageChange;
+        _formatLogMessageHook?.Enable();
     }
 
     public void OnDisable()
     {
-        LanguageProvider.LanguageChanged -= OnLanguageChange;
-        FormatLogMessageHook?.Disable();
+        _languageProvider.LanguageChanged -= OnLanguageChange;
+        _formatLogMessageHook?.Disable();
 
         if (Status is TweakStatus.Enabled)
             ReloadChat();
@@ -60,7 +59,7 @@ public unsafe partial class CustomChatMessageFormats(
             return;
 
         OnDisable();
-        FormatLogMessageHook?.Dispose();
+        _formatLogMessageHook?.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);
@@ -89,7 +88,7 @@ public unsafe partial class CustomChatMessageFormats(
             return 0;
 
         if (!Config.FormatOverrides.TryGetValue(logKindId, out var logKindOverride) || !logKindOverride.Enabled || !logKindOverride.IsValid())
-            return FormatLogMessageHook!.Original(haselRaptureLogModule, logKindId, sender, message, timestamp, a6, a7, chatTabIndex);
+            return _formatLogMessageHook!.Original(haselRaptureLogModule, logKindId, sender, message, timestamp, a6, a7, chatTabIndex);
 
         var tempParseMessage1 = raptureLogModule->TempParseMessage.GetPointer(1);
         tempParseMessage1->Clear();
@@ -102,7 +101,7 @@ public unsafe partial class CustomChatMessageFormats(
 
         var tempParseMessage0 = raptureLogModule->TempParseMessage.GetPointer(0);
         tempParseMessage0->Clear();
-        tempParseMessage0->SetString(SeStringEvaluator.Evaluate(logKindOverride.Format, [senderStr, messageStr]));
+        tempParseMessage0->SetString(_seStringEvaluator.Evaluate(logKindOverride.Format, [senderStr, messageStr]));
 
         if (raptureLogModule->ChatTabShouldDisplayTime[chatTabIndex] && timestamp != null)
         {

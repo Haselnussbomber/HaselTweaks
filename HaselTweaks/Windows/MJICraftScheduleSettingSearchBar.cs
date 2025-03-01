@@ -15,32 +15,23 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Windows;
 
-[RegisterSingleton]
-public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
+[RegisterSingleton, AutoConstruct]
+public unsafe partial class MJICraftScheduleSettingSearchBar : SimpleWindow
 {
-    private static AddonMJICraftScheduleSetting* Addon => GetAddon<AddonMJICraftScheduleSetting>("MJICraftScheduleSetting");
-    private EnhancedIsleworksAgendaConfiguration Config => PluginConfig.Tweaks.EnhancedIsleworksAgenda;
-
     private const int LanguageSelectorWidth = 90;
 
-    private readonly PluginConfig PluginConfig;
-    private readonly ExcelService ExcelService;
-    private readonly TextService TextService;
-    private bool InputFocused;
-    private string Query = string.Empty;
+    private readonly PluginConfig _pluginConfig;
+    private readonly ExcelService _excelService;
+    private readonly TextService _textService;
+    private bool _inputFocused;
+    private string _query = string.Empty;
 
-    public MJICraftScheduleSettingSearchBar(
-        WindowManager windowManager,
-        TextService textService,
-        LanguageProvider languageProvider,
-        PluginConfig pluginConfig,
-        ExcelService excelService)
-        : base(windowManager, textService, languageProvider)
+    private static AddonMJICraftScheduleSetting* Addon => GetAddon<AddonMJICraftScheduleSetting>("MJICraftScheduleSetting");
+    private EnhancedIsleworksAgendaConfiguration Config => _pluginConfig.Tweaks.EnhancedIsleworksAgenda;
+
+    [AutoPostConstruct]
+    private void Initialize()
     {
-        PluginConfig = pluginConfig;
-        ExcelService = excelService;
-        TextService = textService;
-
         Flags |= ImGuiWindowFlags.NoSavedSettings;
         Flags |= ImGuiWindowFlags.NoDecoration;
         Flags |= ImGuiWindowFlags.NoMove;
@@ -54,23 +45,23 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
 
     public override void OnOpen()
     {
-        InputFocused = false;
-        Query = string.Empty;
+        _inputFocused = false;
+        _query = string.Empty;
     }
 
     public override void Draw()
     {
-        if (!InputFocused)
+        if (!_inputFocused)
         {
             ImGui.SetKeyboardFocusHere(0);
-            InputFocused = true;
+            _inputFocused = true;
         }
 
-        var lastQuery = Query;
+        var lastQuery = _query;
         var contentRegionAvail = ImGui.GetContentRegionAvail();
 
         ImGui.SetNextItemWidth(contentRegionAvail.X - LanguageSelectorWidth * ImGuiHelpers.GlobalScale - ImGui.GetStyle().ItemSpacing.X);
-        if (ImGui.InputTextWithHint("##Query", TextService.Translate("EnhancedIsleworksAgenda.MJICraftScheduleSettingSearchBar.QueryHint"), ref Query, 255, ImGuiInputTextFlags.EnterReturnsTrue))
+        if (ImGui.InputTextWithHint("##Query", _textService.Translate("EnhancedIsleworksAgenda.MJICraftScheduleSettingSearchBar.QueryHint"), ref _query, 255, ImGuiInputTextFlags.EnterReturnsTrue))
         {
             var evt = new AtkEvent();
             Addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 6, &evt);
@@ -87,13 +78,13 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
                     if (ImGui.Selectable(Enum.GetName(value), value == Config.SearchLanguage))
                     {
                         Config.SearchLanguage = value;
-                        PluginConfig.Save();
+                        _pluginConfig.Save();
                     }
                 }
             }
         }
 
-        if (lastQuery != Query)
+        if (lastQuery != _query)
         {
             var entries = new List<(int Index, string ItemName)>();
             for (var i = 0; i < Addon->TreeList->Items.LongCount; i++)
@@ -103,10 +94,10 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
                 {
                     var rowId = item->UIntValues[2];
 
-                    if (!ExcelService.TryGetRow<MJICraftworksObject>(rowId, out var mjiCraftworksObject))
+                    if (!_excelService.TryGetRow<MJICraftworksObject>(rowId, out var mjiCraftworksObject))
                         continue;
 
-                    if (!ExcelService.TryGetRow<Item>(mjiCraftworksObject.Item.RowId, Config.SearchLanguage, out var itemRow))
+                    if (!_excelService.TryGetRow<Item>(mjiCraftworksObject.Item.RowId, Config.SearchLanguage, out var itemRow))
                         continue;
 
                     var itemName = itemRow.Name.ExtractText();
@@ -117,7 +108,7 @@ public unsafe class MJICraftScheduleSettingSearchBar : SimpleWindow
                 }
             }
 
-            var result = entries.FuzzyMatch(Query.ToLower().Trim(), value => value.ItemName).FirstOrDefault();
+            var result = entries.FuzzyMatch(_query.ToLower().Trim(), value => value.ItemName).FirstOrDefault();
             if (result != default)
             {
                 var index = result.Value.Index;

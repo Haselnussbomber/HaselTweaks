@@ -6,7 +6,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
-using HaselCommon.Services.SeStringEvaluation;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
@@ -14,54 +13,54 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe class CastBarAetheryteNames(
-    IGameInteropProvider GameInteropProvider,
-    IAddonLifecycle AddonLifecycle,
-    IClientState ClientState,
-    ExcelService ExcelService,
-    TextService TextService,
-    SeStringEvaluatorService SeStringEvaluator)
-    : ITweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class CastBarAetheryteNames : ITweak
 {
+    private readonly IGameInteropProvider _gameInteropProvider;
+    private readonly IAddonLifecycle _addonLifecycle;
+    private readonly IClientState _clientState;
+    private readonly ExcelService _excelService;
+    private readonly TextService _textService;
+    private readonly SeStringEvaluatorService _seStringEvaluator;
+
+    private Hook<HaselActionManager.Delegates.OpenCastBar>? _openCastBarHook;
+    private Hook<Telepo.Delegates.Teleport>? _teleportHook;
+
+    private TeleportInfo? _teleportInfo;
+    private bool _isCastingTeleport;
+
     public string InternalName => nameof(CastBarAetheryteNames);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private TeleportInfo? TeleportInfo;
-    private bool IsCastingTeleport;
-
-    private Hook<HaselActionManager.Delegates.OpenCastBar>? OpenCastBarHook;
-    private Hook<Telepo.Delegates.Teleport>? TeleportHook;
-
     public void OnInitialize()
     {
-        OpenCastBarHook = GameInteropProvider.HookFromAddress<HaselActionManager.Delegates.OpenCastBar>(
+        _openCastBarHook = _gameInteropProvider.HookFromAddress<HaselActionManager.Delegates.OpenCastBar>(
             HaselActionManager.MemberFunctionPointers.OpenCastBar,
             OpenCastBarDetour);
 
-        TeleportHook = GameInteropProvider.HookFromAddress<Telepo.Delegates.Teleport>(
+        _teleportHook = _gameInteropProvider.HookFromAddress<Telepo.Delegates.Teleport>(
             Telepo.MemberFunctionPointers.Teleport,
             TeleportDetour);
     }
 
     public void OnEnable()
     {
-        ClientState.TerritoryChanged += OnTerritoryChanged;
+        _clientState.TerritoryChanged += OnTerritoryChanged;
 
-        AddonLifecycle.RegisterListener(AddonEvent.PreRefresh, "_CastBar", OnCastBarPreRefresh);
+        _addonLifecycle.RegisterListener(AddonEvent.PreRefresh, "_CastBar", OnCastBarPreRefresh);
 
-        OpenCastBarHook?.Enable();
-        TeleportHook?.Enable();
+        _openCastBarHook?.Enable();
+        _teleportHook?.Enable();
     }
 
     public void OnDisable()
     {
-        ClientState.TerritoryChanged -= OnTerritoryChanged;
+        _clientState.TerritoryChanged -= OnTerritoryChanged;
 
-        AddonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "_CastBar", OnCastBarPreRefresh);
+        _addonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "_CastBar", OnCastBarPreRefresh);
 
-        OpenCastBarHook?.Disable();
-        TeleportHook?.Disable();
+        _openCastBarHook?.Disable();
+        _teleportHook?.Disable();
     }
 
     void IDisposable.Dispose()
@@ -70,8 +69,8 @@ public unsafe class CastBarAetheryteNames(
             return;
 
         OnDisable();
-        OpenCastBarHook?.Dispose();
-        TeleportHook?.Dispose();
+        _openCastBarHook?.Dispose();
+        _teleportHook?.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);
@@ -84,21 +83,21 @@ public unsafe class CastBarAetheryteNames(
 
     private void Clear()
     {
-        IsCastingTeleport = false;
-        TeleportInfo = null;
+        _isCastingTeleport = false;
+        _teleportInfo = null;
     }
 
     private void OnCastBarPreRefresh(AddonEvent type, AddonArgs args)
     {
-        if (!IsCastingTeleport || TeleportInfo == null)
+        if (!_isCastingTeleport || _teleportInfo == null)
         {
             Clear();
             return;
         }
 
-        var info = TeleportInfo.Value;
+        var info = _teleportInfo.Value;
 
-        if (!ExcelService.TryGetRow<Aetheryte>(info.AetheryteId, out var row))
+        if (!_excelService.TryGetRow<Aetheryte>(info.AetheryteId, out var row))
         {
             Clear();
             return;
@@ -106,8 +105,8 @@ public unsafe class CastBarAetheryteNames(
 
         var placeName = true switch
         {
-            _ when info.IsApartment => TextService.GetAddonText(8518),
-            _ when info.IsSharedHouse => SeStringEvaluator.EvaluateFromAddon(8519, [(uint)info.Ward, (uint)info.Plot]).ToString(),
+            _ when info.IsApartment => _textService.GetAddonText(8518),
+            _ when info.IsSharedHouse => _seStringEvaluator.EvaluateFromAddon(8519, [(uint)info.Ward, (uint)info.Plot]).ToString(),
             _ when row.PlaceName.IsValid => row.PlaceName.Value.Name.ExtractText(),
             _ => string.Empty
         };
@@ -119,24 +118,24 @@ public unsafe class CastBarAetheryteNames(
 
     private void OpenCastBarDetour(HaselActionManager* a1, BattleChara* a2, int type, uint rowId, uint type2, int rowId2, float a7, float a8)
     {
-        IsCastingTeleport = type == 1 && rowId == 5 && type2 == 5;
+        _isCastingTeleport = type == 1 && rowId == 5 && type2 == 5;
 
-        OpenCastBarHook!.Original(a1, a2, type, rowId, type2, rowId2, a7, a8);
+        _openCastBarHook!.Original(a1, a2, type, rowId, type2, rowId2, a7, a8);
     }
 
     private bool TeleportDetour(Telepo* telepo, uint aetheryteID, byte subIndex)
     {
-        TeleportInfo = null;
+        _teleportInfo = null;
 
         foreach (var teleportInfo in telepo->TeleportList)
         {
             if (teleportInfo.AetheryteId == aetheryteID && teleportInfo.SubIndex == subIndex)
             {
-                TeleportInfo = teleportInfo;
+                _teleportInfo = teleportInfo;
                 break;
             }
         }
 
-        return TeleportHook!.Original(telepo, aetheryteID, subIndex);
+        return _teleportHook!.Original(telepo, aetheryteID, subIndex);
     }
 }

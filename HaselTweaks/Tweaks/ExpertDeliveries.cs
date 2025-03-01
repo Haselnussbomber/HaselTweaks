@@ -7,9 +7,12 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public sealed unsafe class ExpertDeliveries(ILogger<ExpertDeliveries> Logger, AddonObserver AddonObserver) : ITweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class ExpertDeliveries : ITweak
 {
+    private readonly ILogger<ExpertDeliveries> _logger;
+    private readonly AddonObserver _addonObserver;
+
     public string InternalName => nameof(ExpertDeliveries);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
@@ -17,12 +20,12 @@ public sealed unsafe class ExpertDeliveries(ILogger<ExpertDeliveries> Logger, Ad
 
     public void OnEnable()
     {
-        AddonObserver.AddonOpen += OnAddonOpen;
+        _addonObserver.AddonOpen += OnAddonOpen;
     }
 
     public void OnDisable()
     {
-        AddonObserver.AddonOpen -= OnAddonOpen;
+        _addonObserver.AddonOpen -= OnAddonOpen;
     }
 
     void IDisposable.Dispose()
@@ -48,7 +51,7 @@ public sealed unsafe class ExpertDeliveries(ILogger<ExpertDeliveries> Logger, Ad
         if (AgentGrandCompanySupply.Instance()->SelectedTab == 2)
             return;
 
-        Logger.LogDebug("Changing tab...");
+        _logger.LogDebug("Changing tab...");
 
         var atkEvent = new AtkEvent();
         addon->ReceiveEvent(AtkEventType.ButtonClick, 4, &atkEvent);

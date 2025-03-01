@@ -1,5 +1,4 @@
 using Dalamud.Interface.Utility.Raii;
-using HaselTweaks.Config;
 
 namespace HaselTweaks.Tweaks;
 
@@ -14,7 +13,7 @@ public class GearSetGridConfiguration
 
 public partial class GearSetGrid
 {
-    private GearSetGridConfiguration Config => pluginConfig.Tweaks.GearSetGrid;
+    private GearSetGridConfiguration Config => _pluginConfig.Tweaks.GearSetGrid;
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
@@ -23,23 +22,23 @@ public partial class GearSetGrid
     {
         if (fieldName == "RegisterCommand")
         {
-            GsgCommand?.SetEnabled(Config.RegisterCommand);
+            _gsgCommand?.SetEnabled(Config.RegisterCommand);
         }
     }
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawConfigurationHeader();
-        ConfigGui.DrawBool("AutoOpenWithGearSetList", ref Config.AutoOpenWithGearSetList);
-        ConfigGui.DrawBool("RegisterCommand", ref Config.RegisterCommand);
-        ConfigGui.DrawBool("ConvertSeparators", ref Config.ConvertSeparators, drawAfterDescription: () =>
+        _configGui.DrawConfigurationHeader();
+        _configGui.DrawBool("AutoOpenWithGearSetList", ref Config.AutoOpenWithGearSetList);
+        _configGui.DrawBool("RegisterCommand", ref Config.RegisterCommand);
+        _configGui.DrawBool("ConvertSeparators", ref Config.ConvertSeparators, drawAfterDescription: () =>
         {
             using var disabled = ImRaii.Disabled(!Config.ConvertSeparators);
 
-            ConfigGui.DrawString("SeparatorFilter", ref Config.SeparatorFilter, defaultValue: "===========");
-            ConfigGui.DrawBool("DisableSeparatorSpacing", ref Config.DisableSeparatorSpacing);
+            _configGui.DrawString("SeparatorFilter", ref Config.SeparatorFilter, defaultValue: "===========");
+            _configGui.DrawBool("DisableSeparatorSpacing", ref Config.DisableSeparatorSpacing);
         });
     }
 }

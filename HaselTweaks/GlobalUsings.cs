@@ -1,5 +1,6 @@
 global using System;
 global using System.Runtime.InteropServices;
+global using AutoCtor;
 global using Injectio.Attributes;
 global using InteropGenerator.Runtime;
 global using InteropGenerator.Runtime.Attributes;

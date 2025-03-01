@@ -15,63 +15,63 @@ using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class DTR(
-    PluginConfig PluginConfig,
-    ConfigGui ConfigGui,
-    LanguageProvider LanguageProvider,
-    TextService TextService,
-    ExcelService ExcelService,
-    IDtrBar DtrBar,
-    IFramework Framework,
-    IClientState ClientState,
-    IDalamudPluginInterface DalamudPluginInterface)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class DTR : IConfigurableTweak
 {
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly LanguageProvider _languageProvider;
+    private readonly TextService _textService;
+    private readonly ExcelService _excelService;
+    private readonly IDtrBar _dtrBar;
+    private readonly IFramework _framework;
+    private readonly IClientState _clientState;
+    private readonly IDalamudPluginInterface _dalamudPluginInterface;
+
+    private IDtrBarEntry? _dtrInstance;
+    private IDtrBarEntry? _dtrFPS;
+    private IDtrBarEntry? _dtrBusy;
+    private int _lastFrameRate;
+    private uint _lastInstanceId;
+
     public string InternalName => nameof(DTR);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    private IDtrBarEntry? DtrInstance;
-    private IDtrBarEntry? DtrFPS;
-    private IDtrBarEntry? DtrBusy;
-    private int LastFrameRate;
-    private uint LastInstanceId;
 
     public void OnInitialize() { }
 
     public void OnEnable()
     {
-        DtrInstance = DtrBar.Get("[HaselTweaks] Instance");
-        DtrInstance.Tooltip = "HaselTweaks";
+        _dtrInstance = _dtrBar.Get("[HaselTweaks] Instance");
+        _dtrInstance.Tooltip = "HaselTweaks";
 
-        DtrFPS = DtrBar.Get("[HaselTweaks] FPS");
-        DtrFPS.Tooltip = "HaselTweaks";
+        _dtrFPS = _dtrBar.Get("[HaselTweaks] FPS");
+        _dtrFPS.Tooltip = "HaselTweaks";
 
-        DtrBusy = DtrBar.Get("[HaselTweaks] Busy");
-        DtrBusy.Tooltip = "HaselTweaks";
+        _dtrBusy = _dtrBar.Get("[HaselTweaks] Busy");
+        _dtrBusy.Tooltip = "HaselTweaks";
         UpdateBusyText();
 
-        DtrInstance.Shown = false;
-        DtrFPS.Shown = false;
-        DtrBusy.Shown = false;
+        _dtrInstance.Shown = false;
+        _dtrFPS.Shown = false;
+        _dtrBusy.Shown = false;
 
-        Framework.Update += OnFrameworkUpdate;
-        ClientState.Logout += OnLogout;
-        LanguageProvider.LanguageChanged += OnLanguageChanged;
+        _framework.Update += OnFrameworkUpdate;
+        _clientState.Logout += OnLogout;
+        _languageProvider.LanguageChanged += OnLanguageChanged;
     }
 
     public void OnDisable()
     {
-        Framework.Update -= OnFrameworkUpdate;
-        ClientState.Logout -= OnLogout;
-        LanguageProvider.LanguageChanged -= OnLanguageChanged;
+        _framework.Update -= OnFrameworkUpdate;
+        _clientState.Logout -= OnLogout;
+        _languageProvider.LanguageChanged -= OnLanguageChanged;
 
-        DtrInstance?.Remove();
-        DtrInstance = null;
-        DtrFPS?.Remove();
-        DtrFPS = null;
-        DtrBusy?.Remove();
-        DtrBusy = null;
+        _dtrInstance?.Remove();
+        _dtrInstance = null;
+        _dtrFPS?.Remove();
+        _dtrFPS = null;
+        _dtrBusy?.Remove();
+        _dtrBusy = null;
 
         ResetCache();
     }
@@ -89,7 +89,7 @@ public unsafe partial class DTR(
 
     private void OnFrameworkUpdate(IFramework framework)
     {
-        if (!ClientState.IsLoggedIn)
+        if (!_clientState.IsLoggedIn)
             return;
 
         UpdateInstance();
@@ -104,8 +104,8 @@ public unsafe partial class DTR(
 
     private void ResetCache()
     {
-        LastFrameRate = 0;
-        LastInstanceId = 0;
+        _lastFrameRate = 0;
+        _lastInstanceId = 0;
     }
 
     private void OnLanguageChanged(string langCode)
@@ -115,13 +115,13 @@ public unsafe partial class DTR(
 
     private void UpdateBusyText()
     {
-        if (DtrBusy == null)
+        if (_dtrBusy == null)
             return;
 
-        DtrBusy.Text = new SeStringBuilder()
+        _dtrBusy.Text = new SeStringBuilder()
             .PushColorType(1)
             .PushEdgeColorType(16)
-            .Append(ExcelService.TryGetRow<OnlineStatus>(12, out var busyStatus) ? busyStatus.Name : ReadOnlySeString.FromText("Busy"))
+            .Append(_excelService.TryGetRow<OnlineStatus>(12, out var busyStatus) ? busyStatus.Name : ReadOnlySeString.FromText("Busy"))
             .PopEdgeColorType()
             .PopColorType()
             .ToSeString()
@@ -130,60 +130,60 @@ public unsafe partial class DTR(
 
     private void UpdateInstance()
     {
-        if (DtrInstance == null)
+        if (_dtrInstance == null)
             return;
 
         var instanceId = UIState.Instance()->PublicInstance.InstanceId;
         if (instanceId == 0 || instanceId >= 10)
         {
-            if (DtrInstance.Shown)
-                DtrInstance.Shown = false;
+            if (_dtrInstance.Shown)
+                _dtrInstance.Shown = false;
 
-            if (LastInstanceId != 0)
-                LastInstanceId = 0;
+            if (_lastInstanceId != 0)
+                _lastInstanceId = 0;
             return;
         }
 
-        if (LastInstanceId == instanceId)
+        if (_lastInstanceId == instanceId)
             return;
 
-        DtrInstance.Text = ((char)(SeIconChar.Instance1 + (byte)(instanceId - 1))).ToString();
+        _dtrInstance.Text = ((char)(SeIconChar.Instance1 + (byte)(instanceId - 1))).ToString();
 
-        if (!DtrInstance.Shown)
-            DtrInstance.Shown = true;
+        if (!_dtrInstance.Shown)
+            _dtrInstance.Shown = true;
 
-        LastInstanceId = instanceId;
+        _lastInstanceId = instanceId;
     }
 
     private void UpdateBusy()
     {
-        if (DtrBusy == null)
+        if (_dtrBusy == null)
             return;
 
-        DtrBusy.Shown = ClientState.IsLoggedIn && ClientState.LocalPlayer?.OnlineStatus.RowId == 12;
+        _dtrBusy.Shown = _clientState.IsLoggedIn && _clientState.LocalPlayer?.OnlineStatus.RowId == 12;
     }
 
     private void UpdateFPS()
     {
-        if (DtrFPS == null)
+        if (_dtrFPS == null)
             return;
 
         var frameRate = (int)(GameFramework.Instance()->FrameRate + 0.5f);
-        if (LastFrameRate == frameRate)
+        if (_lastFrameRate == frameRate)
             return;
 
         try
         {
-            DtrFPS.Text = string.Format(Config.FpsFormat, frameRate);
+            _dtrFPS.Text = string.Format(Config.FpsFormat, frameRate);
         }
         catch (FormatException)
         {
-            DtrFPS.Text = TextService.Translate("DTR.FpsFormat.Invalid");
+            _dtrFPS.Text = _textService.Translate("DTR.FpsFormat.Invalid");
         }
 
-        if (!DtrFPS.Shown)
-            DtrFPS.Shown = true;
+        if (!_dtrFPS.Shown)
+            _dtrFPS.Shown = true;
 
-        LastFrameRate = frameRate;
+        _lastFrameRate = frameRate;
     }
 }

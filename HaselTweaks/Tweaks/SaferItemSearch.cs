@@ -10,32 +10,35 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe class SaferItemSearch(IAddonLifecycle AddonLifecycle, MarketBoardService MarketBoardService) : ITweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class SaferItemSearch : ITweak
 {
+    private readonly IAddonLifecycle _addonLifecycle;
+    private readonly MarketBoardService _marketBoardService;
+
+    private bool _isSearching;
+
     public string InternalName => nameof(SaferItemSearch);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    private bool IsSearching;
 
     public void OnInitialize() { }
 
     public void OnEnable()
     {
-        AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "ItemSearch", ItemSearch_PostRequestedUpdate);
-        AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerSell", RetainerSell_PostSetup);
+        _addonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "ItemSearch", ItemSearch_PostRequestedUpdate);
+        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerSell", RetainerSell_PostSetup);
 
-        MarketBoardService.ListingsStart += OnListingsStart;
-        MarketBoardService.ListingsEnd += OnListingsEnd;
+        _marketBoardService.ListingsStart += OnListingsStart;
+        _marketBoardService.ListingsEnd += OnListingsEnd;
     }
 
     public void OnDisable()
     {
-        AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemSearch", ItemSearch_PostRequestedUpdate);
-        AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "RetainerSell", RetainerSell_PostSetup);
+        _addonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemSearch", ItemSearch_PostRequestedUpdate);
+        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "RetainerSell", RetainerSell_PostSetup);
 
-        MarketBoardService.ListingsStart -= OnListingsStart;
-        MarketBoardService.ListingsEnd -= OnListingsEnd;
+        _marketBoardService.ListingsStart -= OnListingsStart;
+        _marketBoardService.ListingsEnd -= OnListingsEnd;
     }
 
     void IDisposable.Dispose()
@@ -57,7 +60,7 @@ public unsafe class SaferItemSearch(IAddonLifecycle AddonLifecycle, MarketBoardS
 
         for (var i = 0; i < addon->ResultsList->GetItemCount(); i++)
         {
-            addon->ResultsList->SetItemDisabledState(i, IsSearching);
+            addon->ResultsList->SetItemDisabledState(i, _isSearching);
         }
     }
 
@@ -74,18 +77,18 @@ public unsafe class SaferItemSearch(IAddonLifecycle AddonLifecycle, MarketBoardS
         if (addon == null)
             return;
 
-        addon->ComparePrices->AtkComponentBase.SetEnabledState(!IsSearching);
+        addon->ComparePrices->AtkComponentBase.SetEnabledState(!_isSearching);
     }
 
     private void OnListingsStart()
     {
-        IsSearching = true;
+        _isSearching = true;
         UpdateRetainerSellButton();
     }
 
     private void OnListingsEnd(IReadOnlyList<IMarketBoardItemListing> listings)
     {
-        IsSearching = false;
+        _isSearching = false;
         UpdateRetainerSellButton();
     }
 }

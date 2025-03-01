@@ -15,9 +15,13 @@ using ActionSheet = Lumina.Excel.Sheets.Action;
 
 namespace HaselTweaks.Utils;
 
-[RegisterSingleton]
-public unsafe class BannerUtils(IDalamudPluginInterface PluginInterface, ExcelService ExcelService, TextService TextService)
+[RegisterSingleton, AutoConstruct]
+public unsafe partial class BannerUtils
 {
+    private readonly IDalamudPluginInterface _pluginInterface;
+    private readonly ExcelService _excelService;
+    private readonly TextService _textService;
+
     public Image<Bgra32>? GetCurrentCharaViewImage()
     {
         var agent = AgentBannerEditor.Instance();
@@ -28,7 +32,7 @@ public unsafe class BannerUtils(IDalamudPluginInterface PluginInterface, ExcelSe
         if (charaViewTexture == null || charaViewTexture->D3D11Texture2D == null)
             return null;
 
-        var device = PluginInterface.UiBuilder.Device;
+        var device = _pluginInterface.UiBuilder.Device;
         var texture = CppObject.FromPointer<Texture2D>((nint)charaViewTexture->D3D11Texture2D);
 
         // thanks to ChatGPT
@@ -67,7 +71,7 @@ public unsafe class BannerUtils(IDalamudPluginInterface PluginInterface, ExcelSe
 
     public bool IsBannerBgUnlocked(uint id)
     {
-        if (!ExcelService.TryGetRow<BannerBg>(id, out var bannerBg))
+        if (!_excelService.TryGetRow<BannerBg>(id, out var bannerBg))
             return false;
 
         return IsBannerConditionUnlocked(bannerBg.UnlockCondition.RowId);
@@ -75,7 +79,7 @@ public unsafe class BannerUtils(IDalamudPluginInterface PluginInterface, ExcelSe
 
     public bool IsBannerFrameUnlocked(uint id)
     {
-        if (!ExcelService.TryGetRow<BannerFrame>(id, out var bannerFrame))
+        if (!_excelService.TryGetRow<BannerFrame>(id, out var bannerFrame))
             return false;
 
         return IsBannerConditionUnlocked(bannerFrame.UnlockCondition.RowId);
@@ -83,7 +87,7 @@ public unsafe class BannerUtils(IDalamudPluginInterface PluginInterface, ExcelSe
 
     public bool IsBannerDecorationUnlocked(uint id)
     {
-        if (!ExcelService.TryGetRow<BannerDecoration>(id, out var bannerDecoration))
+        if (!_excelService.TryGetRow<BannerDecoration>(id, out var bannerDecoration))
             return false;
 
         return IsBannerConditionUnlocked(bannerDecoration.UnlockCondition.RowId);
@@ -91,7 +95,7 @@ public unsafe class BannerUtils(IDalamudPluginInterface PluginInterface, ExcelSe
 
     public bool IsBannerTimelineUnlocked(uint id)
     {
-        if (!ExcelService.TryGetRow<BannerTimeline>(id, out var bannerTimeline))
+        if (!_excelService.TryGetRow<BannerTimeline>(id, out var bannerTimeline))
             return false;
 
         return IsBannerConditionUnlocked(bannerTimeline.UnlockCondition.RowId);
@@ -111,8 +115,8 @@ public unsafe class BannerUtils(IDalamudPluginInterface PluginInterface, ExcelSe
 
     public string GetBannerTimelineName(uint id)
     {
-        if (!ExcelService.TryGetRow<BannerTimeline>(id, out var bannerTimeline))
-            return TextService.GetAddonText(624); // Unknown
+        if (!_excelService.TryGetRow<BannerTimeline>(id, out var bannerTimeline))
+            return _textService.GetAddonText(624); // Unknown
 
         var poseName = bannerTimeline.Name.ExtractText();
 
@@ -126,6 +130,6 @@ public unsafe class BannerUtils(IDalamudPluginInterface PluginInterface, ExcelSe
 
         return !string.IsNullOrEmpty(poseName)
             ? poseName
-            : TextService.GetAddonText(624);
+            : _textService.GetAddonText(624);
     }
 }

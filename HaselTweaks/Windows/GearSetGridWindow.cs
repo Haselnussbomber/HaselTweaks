@@ -22,41 +22,25 @@ using GearsetItem = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule
 
 namespace HaselTweaks.Windows;
 
-[RegisterSingleton]
-public unsafe class GearSetGridWindow : LockableWindow
+[RegisterSingleton, AutoConstruct]
+public unsafe partial class GearSetGridWindow : LockableWindow
 {
     private static readonly Vector2 IconSize = new(34);
     private static readonly Vector2 IconInset = IconSize * 0.08333f;
     private static readonly float ItemCellWidth = IconSize.X;
-    private readonly IClientState ClientState;
-    private readonly TextureService TextureService;
-    private readonly ExcelService ExcelService;
-    private readonly TextService TextService;
-    private readonly ImGuiContextMenuService ImGuiContextMenuService;
-    private readonly ItemService ItemService;
+    private readonly IClientState _clientState;
+    private readonly TextureService _textureService;
+    private readonly ExcelService _excelService;
+    private readonly TextService _textService;
+    private readonly ImGuiContextMenuService _imGuiContextMenuService;
+    private readonly ItemService _itemService;
     private bool _resetScrollPosition;
 
     public GearSetGridConfiguration Config => PluginConfig.Tweaks.GearSetGrid;
 
-    public GearSetGridWindow(
-        WindowManager windowManager,
-        TextService textService,
-        LanguageProvider languageProvider,
-        PluginConfig pluginConfig,
-        IClientState clientState,
-        TextureService textureService,
-        ExcelService excelService,
-        ImGuiContextMenuService imGuiContextMenuService,
-        ItemService itemService)
-        : base(windowManager, textService, languageProvider, pluginConfig)
+    [AutoPostConstruct]
+    private void Initialize()
     {
-        ClientState = clientState;
-        TextureService = textureService;
-        ExcelService = excelService;
-        TextService = textService;
-        ImGuiContextMenuService = imGuiContextMenuService;
-        ItemService = itemService;
-
         DisableWindowSounds = Config.AutoOpenWithGearSetList;
 
         Flags |= ImGuiWindowFlags.NoCollapse;
@@ -77,7 +61,7 @@ public unsafe class GearSetGridWindow : LockableWindow
     }
 
     public override bool DrawConditions()
-        => ClientState.IsLoggedIn;
+        => _clientState.IsLoggedIn;
 
     public override void Draw()
     {
@@ -149,11 +133,11 @@ public unsafe class GearSetGridWindow : LockableWindow
 
                     if (gearset->GlamourSetLink != 0)
                     {
-                        ImGui.TextUnformatted($"{TextService.GetAddonText(3185)}: {gearset->GlamourSetLink}"); // "Glamour Plate: {link}"
+                        ImGui.TextUnformatted($"{_textService.GetAddonText(3185)}: {gearset->GlamourSetLink}"); // "Glamour Plate: {link}"
                     }
                 }
 
-                ImGuiContextMenuService.Draw("##GearsetContext", builder =>
+                _imGuiContextMenuService.Draw("##GearsetContext", builder =>
                 {
                     builder
                         .AddGearsetLinkGlamour(gearset)
@@ -167,7 +151,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
                 // class icon
                 ImGui.SetCursorPos(itemStartPos);
-                TextureService.DrawIcon(62100 + gearset->ClassJob, iconSize);
+                _textureService.DrawIcon(62100 + gearset->ClassJob, iconSize);
 
                 // gearset number
                 var text = $"{gearsetIndex + 1}";
@@ -193,7 +177,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
                     // icon background
                     ImGui.SetCursorPos(cursorPos);
-                    TextureService.DrawPart("Character", 8, 0, IconSize * ImGuiHelpers.GlobalScale);
+                    _textureService.DrawPart("Character", 8, 0, IconSize * ImGuiHelpers.GlobalScale);
 
                     ImGui.SetCursorPos(cursorPos + IconInset * ImGuiHelpers.GlobalScale);
                     var iconIndex = slotIndex switch
@@ -201,12 +185,12 @@ public unsafe class GearSetGridWindow : LockableWindow
                         12 => 11u, // left ring
                         _ => slotIndex,
                     };
-                    TextureService.DrawPart("Character", 12, 17 + iconIndex, (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
+                    _textureService.DrawPart("Character", 12, 17 + iconIndex, (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
                     continue;
                 }
 
-                if (!ExcelService.TryGetRow<Item>(itemId, out var item))
+                if (!_excelService.TryGetRow<Item>(itemId, out var item))
                     continue;
 
                 ImGuiUtils.PushCursorY(2f * ImGuiHelpers.GlobalScale);
@@ -215,7 +199,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
                 var itemLevelText = $"{item.LevelItem.RowId}";
                 ImGuiUtils.PushCursorX(IconSize.X * ImGuiHelpers.GlobalScale / 2f - ImGui.CalcTextSize(itemLevelText).X / 2f);
-                ImGuiUtils.TextUnformattedColored(ItemService.GetItemLevelColor(gearset->ClassJob, item, Color.Red, Color.Yellow, Color.Green), itemLevelText);
+                ImGuiUtils.TextUnformattedColored(_itemService.GetItemLevelColor(gearset->ClassJob, item, Color.Red, Color.Yellow, Color.Green), itemLevelText);
 
                 ImGuiUtils.PushCursorY(2f * ImGuiHelpers.GlobalScale);
             }
@@ -254,26 +238,26 @@ public unsafe class GearSetGridWindow : LockableWindow
 
         // icon background
         ImGui.SetCursorPos(startPos);
-        TextureService.DrawPart("Character", 7, 4, IconSize * ImGuiHelpers.GlobalScale);
+        _textureService.DrawPart("Character", 7, 4, IconSize * ImGuiHelpers.GlobalScale);
 
         // icon
         ImGui.SetCursorPos(startPos + IconInset * ImGuiHelpers.GlobalScale);
-        TextureService.DrawIcon(new GameIconLookup(item.Icon, isHq), (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
+        _textureService.DrawIcon(new GameIconLookup(item.Icon, isHq), (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
         // icon overlay
         ImGui.SetCursorPos(startPos);
-        TextureService.DrawPart("Character", 7, 0, IconSize * ImGuiHelpers.GlobalScale);
+        _textureService.DrawPart("Character", 7, 0, IconSize * ImGuiHelpers.GlobalScale);
 
         // icon hover effect
         if (ImGui.IsItemHovered() || ImGui.IsPopupOpen(popupKey))
         {
             ImGui.SetCursorPos(startPos);
-            TextureService.DrawPart("Character", 7, 5, IconSize * ImGuiHelpers.GlobalScale);
+            _textureService.DrawPart("Character", 7, 5, IconSize * ImGuiHelpers.GlobalScale);
         }
 
         ImGui.SetCursorPos(startPos + new Vector2(0, (IconSize.Y - 3) * ImGuiHelpers.GlobalScale));
 
-        ImGuiContextMenuService.Draw(popupKey, builder =>
+        _imGuiContextMenuService.Draw(popupKey, builder =>
         {
             builder
                 .AddTryOn(item, slot->GlamourId, slot->Stain0Id, slot->Stain1Id)
@@ -288,7 +272,7 @@ public unsafe class GearSetGridWindow : LockableWindow
 
         using var _ = ImRaii.Tooltip();
 
-        ImGuiUtils.TextUnformattedColored(ItemService.GetItemRarityColor(item), TextService.GetItemName(item.RowId));
+        ImGuiUtils.TextUnformattedColored(_itemService.GetItemRarityColor(item), _textService.GetItemName(item.RowId));
 
         var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         if (holdingShift)
@@ -306,11 +290,11 @@ public unsafe class GearSetGridWindow : LockableWindow
         if (slot->GlamourId != 0 || slot->Stain0Id != 0 || slot->Stain1Id != 0)
             ImGuiUtils.DrawPaddedSeparator();
 
-        if (slot->GlamourId != 0 && ExcelService.TryGetRow<Item>(slot->GlamourId, out var glamourItem))
+        if (slot->GlamourId != 0 && _excelService.TryGetRow<Item>(slot->GlamourId, out var glamourItem))
         {
-            ImGui.TextUnformatted(TextService.Translate("GearSetGridWindow.ItemTooltip.LabelGlamour"));
+            ImGui.TextUnformatted(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelGlamour"));
             ImGuiUtils.SameLineSpace();
-            ImGuiUtils.TextUnformattedColored(ItemService.GetItemRarityColor(glamourItem), TextService.GetItemName(slot->GlamourId));
+            ImGuiUtils.TextUnformattedColored(_itemService.GetItemRarityColor(glamourItem), _textService.GetItemName(slot->GlamourId));
 
             if (holdingShift)
             {
@@ -319,9 +303,9 @@ public unsafe class GearSetGridWindow : LockableWindow
             }
         }
 
-        if (slot->Stain0Id != 0 && ExcelService.TryGetRow<Stain>(slot->Stain0Id, out var stain0))
+        if (slot->Stain0Id != 0 && _excelService.TryGetRow<Stain>(slot->Stain0Id, out var stain0))
         {
-            ImGui.TextUnformatted(TextService.Translate("GearSetGridWindow.ItemTooltip.LabelDye0"));
+            ImGui.TextUnformatted(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelDye0"));
             ImGuiUtils.SameLineSpace();
             using (ImRaii.PushColor(ImGuiCol.Text, (uint)stain0.GetColor()))
                 ImGui.Bullet();
@@ -335,9 +319,9 @@ public unsafe class GearSetGridWindow : LockableWindow
             }
         }
 
-        if (slot->Stain1Id != 0 && ExcelService.TryGetRow<Stain>(slot->Stain1Id, out var stain1))
+        if (slot->Stain1Id != 0 && _excelService.TryGetRow<Stain>(slot->Stain1Id, out var stain1))
         {
-            ImGui.TextUnformatted(TextService.Translate("GearSetGridWindow.ItemTooltip.LabelDye1"));
+            ImGui.TextUnformatted(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelDye1"));
             ImGuiUtils.SameLineSpace();
             using (ImRaii.PushColor(ImGuiCol.Text, (uint)stain1.GetColor()))
                 ImGui.Bullet();
@@ -355,7 +339,7 @@ public unsafe class GearSetGridWindow : LockableWindow
         if (usedInGearsets.Count > 1)
         {
             ImGuiUtils.DrawPaddedSeparator();
-            ImGui.TextUnformatted(TextService.Translate("GearSetGridWindow.ItemTooltip.AlsoUsedInTheseGearsets"));
+            ImGui.TextUnformatted(_textService.Translate("GearSetGridWindow.ItemTooltip.AlsoUsedInTheseGearsets"));
             using (ImRaii.PushIndent(ImGui.GetStyle().ItemSpacing.X))
             {
                 foreach (var entry in usedInGearsets)

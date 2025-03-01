@@ -4,8 +4,6 @@ using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using HaselCommon.Gui;
-using HaselCommon.Services;
-using HaselTweaks.Config;
 using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
@@ -25,7 +23,7 @@ public class LockWindowPositionConfiguration
 
 public partial class LockWindowPosition
 {
-    private LockWindowPositionConfiguration Config => PluginConfig.Tweaks.LockWindowPosition;
+    private LockWindowPositionConfiguration Config => _pluginConfig.Tweaks.LockWindowPosition;
 
     public void OnConfigOpen() { }
 
@@ -41,20 +39,20 @@ public partial class LockWindowPosition
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawConfigurationHeader();
+        _configGui.DrawConfigurationHeader();
 
-        ImGui.Checkbox(TextService.Translate("LockWindowPosition.Config.Inverted.Label"), ref Config.Inverted);
+        ImGui.Checkbox(_textService.Translate("LockWindowPosition.Config.Inverted.Label"), ref Config.Inverted);
         if (ImGui.IsItemClicked())
         {
-            PluginConfig.Save();
+            _pluginConfig.Save();
         }
 
-        ImGui.Checkbox(TextService.Translate("LockWindowPosition.Config.AddLockUnlockContextMenuEntries.Label"), ref Config.AddLockUnlockContextMenuEntries);
+        ImGui.Checkbox(_textService.Translate("LockWindowPosition.Config.AddLockUnlockContextMenuEntries.Label"), ref Config.AddLockUnlockContextMenuEntries);
         if (ImGui.IsItemClicked())
         {
-            PluginConfig.Save();
+            _pluginConfig.Save();
         }
 
         var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
@@ -62,7 +60,7 @@ public partial class LockWindowPosition
         ImGuiUtils.DrawPaddedSeparator();
         if (Config.LockedWindows.Count != 0)
         {
-            ImGui.TextUnformatted(TextService.Translate("LockWindowPosition.Config.Windows.Title"));
+            ImGui.TextUnformatted(_textService.Translate("LockWindowPosition.Config.Windows.Title"));
 
             if (!ImGui.BeginTable("##Table", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX))
             {
@@ -91,14 +89,14 @@ public partial class LockWindowPosition
                         isLocked = !isLocked;
 
                     ImGui.BeginTooltip();
-                    ImGui.TextUnformatted(TextService.Translate(isLocked
+                    ImGui.TextUnformatted(_textService.Translate(isLocked
                         ? "LockWindowPosition.Config.EnableCheckmark.Tooltip.Locked"
                         : "LockWindowPosition.Config.EnableCheckmark.Tooltip.Unlocked"));
                     ImGui.EndTooltip();
                 }
                 if (ImGui.IsItemClicked())
                 {
-                    PluginConfig.Save();
+                    _pluginConfig.Save();
                 }
 
                 ImGui.TableNextColumn();
@@ -107,7 +105,7 @@ public partial class LockWindowPosition
                 ImGui.TableNextColumn();
                 if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
                 {
-                    if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, TextService.Translate("LockWindowPosition.Config.DeleteButton.Tooltip")))
+                    if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, _textService.Translate("LockWindowPosition.Config.DeleteButton.Tooltip")))
                     {
                         entryToRemove = i;
                     }
@@ -117,7 +115,7 @@ public partial class LockWindowPosition
                     ImGuiUtils.IconButton(
                         key + "_Delete",
                         FontAwesomeIcon.Trash,
-                        TextService.Translate(isWindowFocused
+                        _textService.Translate(isWindowFocused
                             ? "LockWindowPosition.Config.DeleteButton.Tooltip.NotHoldingShift"
                             : "LockWindowPosition.Config.DeleteButton.Tooltip.WindowNotFocused"),
                         disabled: true);
@@ -131,26 +129,26 @@ public partial class LockWindowPosition
             if (entryToRemove != -1)
             {
                 Config.LockedWindows.RemoveAt(entryToRemove);
-                PluginConfig.Save();
+                _pluginConfig.Save();
             }
         }
         else
         {
             using (ImRaii.Disabled())
-                ImGui.TextUnformatted(TextService.Translate("LockWindowPosition.Config.NoWindowsAddedYet"));
+                ImGui.TextUnformatted(_textService.Translate("LockWindowPosition.Config.NoWindowsAddedYet"));
             ImGuiUtils.PushCursorY(4);
         }
 
         if (_showPicker)
         {
-            if (ImGui.Button(TextService.Translate("LockWindowPosition.Config.Picker.CancelButton.Label")))
+            if (ImGui.Button(_textService.Translate("LockWindowPosition.Config.Picker.CancelButton.Label")))
             {
                 _showPicker = false;
             }
         }
         else
         {
-            if (ImGui.Button(TextService.Translate("LockWindowPosition.Config.Picker.PickWindowButton.Label")))
+            if (ImGui.Button(_textService.Translate("LockWindowPosition.Config.Picker.PickWindowButton.Label")))
             {
                 _hoveredWindowName = "";
                 _hoveredWindowPos = default;
@@ -163,13 +161,13 @@ public partial class LockWindowPosition
         {
             ImGui.SameLine();
 
-            if (ImGui.Button(TextService.Translate("LockWindowPosition.Config.Picker.ToggleAllButton.Label")))
+            if (ImGui.Button(_textService.Translate("LockWindowPosition.Config.Picker.ToggleAllButton.Label")))
             {
                 foreach (var entry in Config.LockedWindows)
                 {
                     entry.Enabled = !entry.Enabled;
                 }
-                PluginConfig.Save();
+                _pluginConfig.Save();
             }
         }
 
@@ -201,7 +199,7 @@ public partial class LockWindowPosition
                         {
                             Name = _hoveredWindowName
                         });
-                        PluginConfig.Save();
+                        _pluginConfig.Save();
                     }
                 }
 

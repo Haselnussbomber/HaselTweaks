@@ -8,29 +8,31 @@ using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider) : ITweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class SimpleAethernetList : ITweak
 {
+    private readonly IGameInteropProvider _gameInteropProvider;
+
+    private Hook<AddonTeleportTown.Delegates.ReceiveEvent>? _receiveEventHook;
+
     public string InternalName => nameof(SimpleAethernetList);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private Hook<AddonTeleportTown.Delegates.ReceiveEvent>? ReceiveEventHook;
-
     public void OnInitialize()
     {
-        ReceiveEventHook = GameInteropProvider.HookFromAddress<AddonTeleportTown.Delegates.ReceiveEvent>(
+        _receiveEventHook = _gameInteropProvider.HookFromAddress<AddonTeleportTown.Delegates.ReceiveEvent>(
             AddonTeleportTown.StaticVirtualTablePointer->ReceiveEvent,
             ReceiveEventDetour);
     }
 
     public void OnEnable()
     {
-        ReceiveEventHook?.Enable();
+        _receiveEventHook?.Enable();
     }
 
     public void OnDisable()
     {
-        ReceiveEventHook?.Disable();
+        _receiveEventHook?.Disable();
     }
 
     void IDisposable.Dispose()
@@ -38,7 +40,7 @@ public unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
-        ReceiveEventHook?.Dispose();
+        _receiveEventHook?.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);
@@ -62,6 +64,6 @@ public unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider
             }
         }
 
-        ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
+        _receiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 }

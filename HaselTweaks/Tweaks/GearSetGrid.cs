@@ -7,44 +7,44 @@ using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public partial class GearSetGrid(
-    PluginConfig pluginConfig,
-    ConfigGui ConfigGui,
-    CommandService CommandService,
-    AddonObserver AddonObserver,
-    GearSetGridWindow Window)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public partial class GearSetGrid : IConfigurableTweak
 {
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly CommandService _commandService;
+    private readonly AddonObserver _addonObserver;
+    private readonly GearSetGridWindow _window;
+
+    private CommandHandler? _gsgCommand;
+
     public string InternalName => nameof(GearSetGrid);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private CommandHandler? GsgCommand;
-
     public void OnInitialize()
     {
-        GsgCommand = CommandService.Register(OnGsgCommand);
+        _gsgCommand = _commandService.Register(OnGsgCommand);
     }
 
     public void OnEnable()
     {
-        AddonObserver.AddonOpen += OnAddonOpen;
-        AddonObserver.AddonClose += OnAddonClose;
+        _addonObserver.AddonOpen += OnAddonOpen;
+        _addonObserver.AddonClose += OnAddonClose;
 
-        GsgCommand?.SetEnabled(Config.RegisterCommand);
+        _gsgCommand?.SetEnabled(Config.RegisterCommand);
 
         if (Config.AutoOpenWithGearSetList && IsAddonOpen("GearSetList"))
-            Window.Open();
+            _window.Open();
     }
 
     public void OnDisable()
     {
-        AddonObserver.AddonOpen -= OnAddonOpen;
-        AddonObserver.AddonClose -= OnAddonClose;
+        _addonObserver.AddonOpen -= OnAddonOpen;
+        _addonObserver.AddonClose -= OnAddonClose;
 
-        GsgCommand?.SetEnabled(false);
+        _gsgCommand?.SetEnabled(false);
 
-        Window.Close();
+        _window.Close();
     }
 
     void IDisposable.Dispose()
@@ -53,7 +53,7 @@ public partial class GearSetGrid(
             return;
 
         OnDisable();
-        GsgCommand?.Dispose();
+        _gsgCommand?.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);
@@ -62,21 +62,21 @@ public partial class GearSetGrid(
     private void OnAddonOpen(string addonName)
     {
         if (Config.AutoOpenWithGearSetList && addonName == "GearSetList")
-            Window.Open();
+            _window.Open();
     }
 
     private void OnAddonClose(string addonName)
     {
         if (Config.AutoOpenWithGearSetList && addonName == "GearSetList")
-            Window.Close();
+            _window.Close();
     }
 
     [CommandHandler("/gsg", "GearSetGrid.CommandHandlerHelpMessage")]
     private void OnGsgCommand(string command, string arguments)
     {
-        if (Window.IsOpen)
-            Window.Close();
+        if (_window.IsOpen)
+            _window.Close();
         else
-            Window.Open();
+            _window.Open();
     }
 }

@@ -15,30 +15,30 @@ using Achievement = Lumina.Excel.Sheets.Achievement;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class AchievementLinkTooltip(
-    PluginConfig PluginConfig,
-    ConfigGui ConfigGui,
-    TextService TextService,
-    IAddonLifecycle AddonLifecycle,
-    ExcelService ExcelService)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class AchievementLinkTooltip : IConfigurableTweak
 {
+    private static readonly string[] ChatPanels = ["ChatLogPanel_0", "ChatLogPanel_1", "ChatLogPanel_2", "ChatLogPanel_3"];
+
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly TextService _textService;
+    private readonly IAddonLifecycle _addonLifecycle;
+    private readonly ExcelService _excelService;
+
     public string InternalName => nameof(AchievementLinkTooltip);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    private readonly string[] ChatPanels = ["ChatLogPanel_0", "ChatLogPanel_1", "ChatLogPanel_2", "ChatLogPanel_3"];
 
     public void OnInitialize() { }
 
     public void OnEnable()
     {
-        AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, ChatPanels, OnChatLogPanelPostReceiveEvent);
+        _addonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, ChatPanels, OnChatLogPanelPostReceiveEvent);
     }
 
     public void OnDisable()
     {
-        AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, ChatPanels, OnChatLogPanelPostReceiveEvent);
+        _addonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, ChatPanels, OnChatLogPanelPostReceiveEvent);
     }
 
     void IDisposable.Dispose()
@@ -71,7 +71,7 @@ public unsafe partial class AchievementLinkTooltip(
         if (linkType is not LinkMacroPayloadType.Achievement)
             return;
 
-        if (!ExcelService.TryGetRow<Achievement>(linkData->UIntValue1, out var achievement))
+        if (!_excelService.TryGetRow<Achievement>(linkData->UIntValue1, out var achievement))
             return;
 
         using var tooltipText = new Utf8String();
@@ -101,7 +101,7 @@ public unsafe partial class AchievementLinkTooltip(
         if (canShowName)
             sb.Append(achievement.Name);
         else
-            sb.Append(TextService.GetAddonText(3384)); // "???"
+            sb.Append(_textService.GetAddonText(3384)); // "???"
 
         sb.PopColor();
         sb.BeginMacro(MacroCode.NewLine).EndMacro();
@@ -109,7 +109,7 @@ public unsafe partial class AchievementLinkTooltip(
         if (canShowDescription)
             sb.Append(achievement.Description);
         else
-            sb.Append(TextService.GetAddonText(3385)); // "???"
+            sb.Append(_textService.GetAddonText(3385)); // "???"
 
         if (Config.ShowCompletionStatus)
         {
@@ -119,7 +119,7 @@ public unsafe partial class AchievementLinkTooltip(
             {
                 sb.PushColorType(isComplete ? 43u : 518);
 
-                sb.Append(TextService.Translate(isComplete
+                sb.Append(_textService.Translate(isComplete
                     ? "AchievementLinkTooltip.AchievementComplete"
                     : "AchievementLinkTooltip.AchievementUnfinished"));
 
@@ -128,7 +128,7 @@ public unsafe partial class AchievementLinkTooltip(
             else
             {
                 sb.PushColorType(3);
-                sb.Append(TextService.Translate("AchievementLinkTooltip.AchievementsNotLoaded"));
+                sb.Append(_textService.Translate("AchievementLinkTooltip.AchievementsNotLoaded"));
                 sb.PopColorType();
             }
         }

@@ -7,7 +7,7 @@ public class InventoryHighlightConfiguration
 
 public partial class InventoryHighlight
 {
-    private InventoryHighlightConfiguration Config => PluginConfig.Tweaks.InventoryHighlight;
+    private InventoryHighlightConfiguration Config => _pluginConfig.Tweaks.InventoryHighlight;
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
@@ -15,9 +15,9 @@ public partial class InventoryHighlight
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawConfigurationHeader();
-        ConfigGui.DrawBool("IgnoreQuality", ref Config.IgnoreQuality);
+        _configGui.DrawConfigurationHeader();
+        _configGui.DrawBool("IgnoreQuality", ref Config.IgnoreQuality);
     }
 }

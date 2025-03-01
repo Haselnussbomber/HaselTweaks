@@ -1,5 +1,3 @@
-using HaselTweaks.Config;
-
 namespace HaselTweaks.Tweaks;
 
 public class AetherCurrentHelperConfiguration
@@ -10,7 +8,7 @@ public class AetherCurrentHelperConfiguration
 
 public partial class AetherCurrentHelper
 {
-    private AetherCurrentHelperConfiguration Config => PluginConfig.Tweaks.AetherCurrentHelper;
+    private AetherCurrentHelperConfiguration Config => _pluginConfig.Tweaks.AetherCurrentHelper;
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
@@ -18,10 +16,10 @@ public partial class AetherCurrentHelper
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawConfigurationHeader();
-        ConfigGui.DrawBool("AlwaysShowDistance", ref Config.AlwaysShowDistance);
-        ConfigGui.DrawBool("CenterDistance", ref Config.CenterDistance, noFixSpaceAfter: true);
+        _configGui.DrawConfigurationHeader();
+        _configGui.DrawBool("AlwaysShowDistance", ref Config.AlwaysShowDistance);
+        _configGui.DrawBool("CenterDistance", ref Config.CenterDistance, noFixSpaceAfter: true);
     }
 }

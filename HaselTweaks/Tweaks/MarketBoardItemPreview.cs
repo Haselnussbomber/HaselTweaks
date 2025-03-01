@@ -11,15 +11,15 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public sealed unsafe class MarketBoardItemPreview(
-    ILogger<MarketBoardItemPreview> Logger,
-    IAddonLifecycle AddonLifecycle,
-    ExcelService ExcelService,
-    TextService TextService,
-    ItemService ItemService)
-    : ITweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class MarketBoardItemPreview : ITweak
 {
+    private readonly ILogger<MarketBoardItemPreview> _logger;
+    private readonly IAddonLifecycle _addonLifecycle;
+    private readonly ExcelService _excelService;
+    private readonly TextService _textService;
+    private readonly ItemService _itemService;
+
     public string InternalName => nameof(MarketBoardItemPreview);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
@@ -27,12 +27,12 @@ public sealed unsafe class MarketBoardItemPreview(
 
     public void OnEnable()
     {
-        AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "ItemSearch", ItemSearch_PostReceiveEvent);
+        _addonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "ItemSearch", ItemSearch_PostReceiveEvent);
     }
 
     public void OnDisable()
     {
-        AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "ItemSearch", ItemSearch_PostReceiveEvent);
+        _addonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "ItemSearch", ItemSearch_PostReceiveEvent);
     }
 
     void IDisposable.Dispose()
@@ -54,14 +54,14 @@ public sealed unsafe class MarketBoardItemPreview(
         var eventData = (AtkEventData*)addonReceiveEventArgs.Data;
         var itemIndex = eventData->ListItemData.SelectedIndex;
         var itemId = AgentItemSearch.Instance()->ListingPageItemIds[itemIndex];
-        Logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId} @ {addr:X}", itemIndex, itemId, args.Addon + itemIndex * 4 + 0xBBC);
+        _logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId} @ {addr:X}", itemIndex, itemId, args.Addon + itemIndex * 4 + 0xBBC);
 
-        if (!ExcelService.TryGetRow<Item>(itemId, out var item))
+        if (!_excelService.TryGetRow<Item>(itemId, out var item))
             return;
 
-        if (!ItemService.CanTryOn(item))
+        if (!_itemService.CanTryOn(item))
         {
-            Logger.LogInformation("Skipping preview of {name}, because it can't be tried on", TextService.GetItemName(item));
+            _logger.LogInformation("Skipping preview of {name}, because it can't be tried on", _textService.GetItemName(item));
             return;
         }
 

@@ -11,67 +11,60 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
-[RegisterScoped]
-public class DeletePresetDialog : ConfirmationDialog
+[RegisterScoped, AutoConstruct]
+public partial class DeletePresetDialog : ConfirmationDialog
 {
-    private readonly IDalamudPluginInterface PluginInterface;
-    private readonly INotificationManager NotificationManager;
-    private readonly PluginConfig PluginConfig;
-    private readonly TextService TextService;
+    private readonly IDalamudPluginInterface _pluginInterface;
+    private readonly INotificationManager _notificationManager;
+    private readonly PluginConfig _pluginConfig;
+    private readonly TextService _textService;
 
-    private PresetBrowserOverlay? PresetBrowserOverlay;
-    private SavedPreset? Preset;
+    private PresetBrowserOverlay? _presetBrowserOverlay;
+    private SavedPreset? _preset;
 
-    public DeletePresetDialog(
-        IDalamudPluginInterface pluginInterface,
-        INotificationManager notificationManager,
-        PluginConfig pluginConfig,
-        TextService textService)
-        : base(textService.Translate("PortraitHelperWindows.DeletePresetDialog.Title"))
+    [AutoPostConstruct]
+    private void Initialize()
     {
-        PluginInterface = pluginInterface;
-        NotificationManager = notificationManager;
-        PluginConfig = pluginConfig;
-        TextService = textService;
+        WindowName = _textService.Translate("PortraitHelperWindows.DeletePresetDialog.Title");
 
-        AddButton(new ConfirmationButton(textService.Translate("ConfirmationButtonWindow.Delete"), OnDelete));
-        AddButton(new ConfirmationButton(textService.Translate("ConfirmationButtonWindow.Cancel"), Close));
+        AddButton(new ConfirmationButton(_textService.Translate("ConfirmationButtonWindow.Delete"), OnDelete));
+        AddButton(new ConfirmationButton(_textService.Translate("ConfirmationButtonWindow.Cancel"), Close));
     }
 
     public void Open(PresetBrowserOverlay presetBrowserOverlay, SavedPreset? preset)
     {
-        PresetBrowserOverlay = presetBrowserOverlay;
-        Preset = preset;
+        _presetBrowserOverlay = presetBrowserOverlay;
+        _preset = preset;
         Show();
     }
 
     public void Close()
     {
         Hide();
-        Preset = null;
+        _preset = null;
     }
 
     public override bool DrawCondition()
-        => base.DrawCondition() && PresetBrowserOverlay != null && Preset != null;
+        => base.DrawCondition() && _presetBrowserOverlay != null && _preset != null;
 
     public override void InnerDraw()
-        => ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.DeletePresetDialog.Prompt", Preset!.Name));
+        => ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.DeletePresetDialog.Prompt", _preset!.Name));
 
     private void OnDelete()
     {
-        if (Preset == null)
+        if (_preset == null)
         {
             Close();
             return;
         }
 
-        if (PresetBrowserOverlay!.PresetCards.TryGetValue(Preset.Id, out var card))
+        if (_presetBrowserOverlay!.PresetCards.TryGetValue(_preset.Id, out var card))
         {
-            PresetBrowserOverlay.PresetCards.Remove(Preset.Id);
+            _presetBrowserOverlay.PresetCards.Remove(_preset.Id);
             card.Dispose();
         }
 
-        var thumbPath = PluginInterface.GetPortraitThumbnailPath(Preset.Id);
+        var thumbPath = _pluginInterface.GetPortraitThumbnailPath(_preset.Id);
         if (File.Exists(thumbPath))
         {
             try
@@ -80,7 +73,7 @@ public class DeletePresetDialog : ConfirmationDialog
             }
             catch (Exception ex)
             {
-                NotificationManager.AddNotification(new()
+                _notificationManager.AddNotification(new()
                 {
                     Title = "Could not delete preset",
                     Content = ex.Message,
@@ -88,8 +81,8 @@ public class DeletePresetDialog : ConfirmationDialog
             }
         }
 
-        PluginConfig.Tweaks.PortraitHelper.Presets.Remove(Preset);
-        PluginConfig.Save();
+        _pluginConfig.Tweaks.PortraitHelper.Presets.Remove(_preset);
+        _pluginConfig.Save();
 
         Close();
     }

@@ -6,9 +6,13 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public class RevealDutyRequirements(IGameInteropProvider GameInteropProvider) : ITweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public partial class RevealDutyRequirements : ITweak
 {
+    private readonly IGameInteropProvider _gameInteropProvider;
+
+    private MemoryReplacement? _patch;
+
     public string InternalName => nameof(RevealDutyRequirements);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
@@ -22,25 +26,23 @@ public class RevealDutyRequirements(IGameInteropProvider GameInteropProvider) : 
 
         that way the code doesn't jump to the else {...} which sets the duty name to "???" (Addon#102598)
      */
-    [Signature("48 8B C8 48 8B D8 48 8B 10 FF 52 70 84 C0 74 1B")]
+    [Signature("48 8B C8 48 8B D8 48 8B 10 FF 52 70 84 C0 74 1B"), AutoConstructIgnore]
     private nint Address { get; init; }
-
-    private MemoryReplacement? Patch;
 
     public void OnInitialize()
     {
-        GameInteropProvider.InitializeFromAttributes(this);
-        Patch = new(Address + 14, [0x90, 0x90]);
+        _gameInteropProvider.InitializeFromAttributes(this);
+        _patch = new(Address + 14, [0x90, 0x90]);
     }
 
     public void OnEnable()
     {
-        Patch?.Enable();
+        _patch?.Enable();
     }
 
     public void OnDisable()
     {
-        Patch?.Disable();
+        _patch?.Disable();
     }
 
     void IDisposable.Dispose()
@@ -48,7 +50,7 @@ public class RevealDutyRequirements(IGameInteropProvider GameInteropProvider) : 
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
-        Patch?.Dispose();
+        _patch?.Dispose();
 
         Status = TweakStatus.Disposed;
         GC.SuppressFinalize(this);

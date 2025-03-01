@@ -5,22 +5,21 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
-[RegisterScoped]
-public class CreateTagDialog : ConfirmationDialog
+[RegisterScoped, AutoConstruct]
+public partial class CreateTagDialog : ConfirmationDialog
 {
-    private readonly PluginConfig PluginConfig;
-    private readonly TextService TextService;
-    private readonly ConfirmationButton _saveButton;
+    private readonly PluginConfig _pluginConfig;
+    private readonly TextService _textService;
+    private ConfirmationButton _saveButton;
     private string? _name;
 
-    public CreateTagDialog(PluginConfig pluginConfig, TextService textService)
-        : base(textService.Translate("PortraitHelperWindows.CreateTagDialog.Title"))
+    [AutoPostConstruct]
+    private void Initialize()
     {
-        PluginConfig = pluginConfig;
-        TextService = textService;
+        WindowName = _textService.Translate("PortraitHelperWindows.CreateTagDialog.Title");
 
-        AddButton(_saveButton = new ConfirmationButton(textService.Translate("ConfirmationButtonWindow.Save"), OnSave));
-        AddButton(new ConfirmationButton(textService.Translate("ConfirmationButtonWindow.Cancel"), Close));
+        AddButton(_saveButton = new ConfirmationButton(_textService.Translate("ConfirmationButtonWindow.Save"), OnSave));
+        AddButton(new ConfirmationButton(_textService.Translate("ConfirmationButtonWindow.Cancel"), Close));
     }
 
     public void Open()
@@ -40,7 +39,7 @@ public class CreateTagDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.CreateTagDialog.Name.Label"));
+        ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.CreateTagDialog.Name.Label"));
 
         ImGui.Spacing();
 
@@ -64,8 +63,8 @@ public class CreateTagDialog : ConfirmationDialog
             return;
         }
 
-        PluginConfig.Tweaks.PortraitHelper.PresetTags.Add(new(_name.Trim()));
-        PluginConfig.Save();
+        _pluginConfig.Tweaks.PortraitHelper.PresetTags.Add(new(_name.Trim()));
+        _pluginConfig.Save();
 
         Close();
     }

@@ -18,45 +18,45 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class InventoryHighlight(
-    PluginConfig PluginConfig,
-    ConfigGui ConfigGui,
-    IFramework Framework,
-    IClientState ClientState,
-    IGameConfig GameConfig,
-    IGameGui GameGui,
-    IKeyState KeyState,
-    IAddonLifecycle AddonLifecycle)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class InventoryHighlight : IConfigurableTweak
 {
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly IFramework _framework;
+    private readonly IClientState _clientState;
+    private readonly IGameConfig _gameConfig;
+    private readonly IGameGui _gameGui;
+    private readonly IKeyState _keyState;
+    private readonly IAddonLifecycle _addonLifecycle;
+
+    private uint _itemInventryWindowSizeType = 0;
+    private uint _itemInventryRetainerWindowSizeType = 0;
+    private uint _hoveredItemId;
+    private bool _wasHighlighting;
+
     public string InternalName => nameof(InventoryHighlight);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    private uint ItemInventryWindowSizeType = 0;
-    private uint ItemInventryRetainerWindowSizeType = 0;
-    private uint HoveredItemId;
-    private bool WasHighlighting;
 
     public void OnInitialize() { }
 
     public void OnEnable()
     {
-        Framework.Update += OnFrameworkUpdate;
-        ClientState.Login += UpdateItemInventryWindowSizeTypes;
-        GameConfig.UiConfigChanged += GameConfig_UiConfigChanged;
+        _framework.Update += OnFrameworkUpdate;
+        _clientState.Login += UpdateItemInventryWindowSizeTypes;
+        _gameConfig.UiConfigChanged += GameConfig_UiConfigChanged;
 
-        AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "ItemDetail", OnItemDetailPostRequestedUpdate);
+        _addonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "ItemDetail", OnItemDetailPostRequestedUpdate);
         UpdateItemInventryWindowSizeTypes();
     }
 
     public void OnDisable()
     {
-        Framework.Update -= OnFrameworkUpdate;
-        ClientState.Login -= UpdateItemInventryWindowSizeTypes;
-        GameConfig.UiConfigChanged -= GameConfig_UiConfigChanged;
+        _framework.Update -= OnFrameworkUpdate;
+        _clientState.Login -= UpdateItemInventryWindowSizeTypes;
+        _gameConfig.UiConfigChanged -= GameConfig_UiConfigChanged;
 
-        AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemDetail", OnItemDetailPostRequestedUpdate);
+        _addonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemDetail", OnItemDetailPostRequestedUpdate);
 
         if (Status is TweakStatus.Enabled)
             ResetGrids();
@@ -84,8 +84,8 @@ public unsafe partial class InventoryHighlight(
 
     private void UpdateItemInventryWindowSizeTypes()
     {
-        GameConfig.TryGet(UiConfigOption.ItemInventryWindowSizeType, out ItemInventryWindowSizeType);
-        GameConfig.TryGet(UiConfigOption.ItemInventryRetainerWindowSizeType, out ItemInventryRetainerWindowSizeType);
+        _gameConfig.TryGet(UiConfigOption.ItemInventryWindowSizeType, out _itemInventryWindowSizeType);
+        _gameConfig.TryGet(UiConfigOption.ItemInventryRetainerWindowSizeType, out _itemInventryRetainerWindowSizeType);
     }
 
     private void OnItemDetailPostRequestedUpdate(AddonEvent type, AddonArgs args)
@@ -100,7 +100,7 @@ public unsafe partial class InventoryHighlight(
 
     private void OnFrameworkUpdate(IFramework framework)
     {
-        HoveredItemId = NormalizeItemId((uint)GameGui.HoveredItem);
+        _hoveredItemId = NormalizeItemId((uint)_gameGui.HoveredItem);
 
         if (IsHighlightActive())
         {
@@ -115,17 +115,17 @@ public unsafe partial class InventoryHighlight(
             HighlightInInventoryBuddy(duplicateItemIds);
             HighlightInRetainerInventory(duplicateItemIds);
 
-            if (!WasHighlighting)
-                WasHighlighting = true;
+            if (!_wasHighlighting)
+                _wasHighlighting = true;
         }
-        else if (WasHighlighting)
+        else if (_wasHighlighting)
         {
             if (TryGetAddon<AtkUnitBase>("ItemDetail", out var addonItemDetail))
                 addonItemDetail->IsVisible = true;
 
             ResetGrids();
 
-            WasHighlighting = false;
+            _wasHighlighting = false;
         }
     }
 
@@ -185,7 +185,7 @@ public unsafe partial class InventoryHighlight(
 
     private bool IsHighlightActive()
     {
-        if (!KeyState[VirtualKey.SHIFT])
+        if (!_keyState[VirtualKey.SHIFT])
             return false;
 
         if (IsAddonOpen("Inventory"))
@@ -230,7 +230,7 @@ public unsafe partial class InventoryHighlight(
 
             var itemId = NormalizeItemId(inventorySlot->GetItemId());
 
-            if (itemId == 0 || itemId == HoveredItemId)
+            if (itemId == 0 || itemId == _hoveredItemId)
             {
                 HighlightInventoryItem(item, 100);
             }
@@ -247,7 +247,7 @@ public unsafe partial class InventoryHighlight(
 
     private void HighlightInventoryItem(ItemOrderModuleSorterItemEntry* item, byte brightness)
     {
-        if (!TryGetAddon<AddonInventoryGrid>("InventoryGrid" + item->Page.ToString() + (ItemInventryWindowSizeType == 2 ? "E" : ""), out var addon))
+        if (!TryGetAddon<AddonInventoryGrid>("InventoryGrid" + item->Page.ToString() + (_itemInventryWindowSizeType == 2 ? "E" : ""), out var addon))
             return;
 
         if (addon->Slots.Length <= item->Slot)
@@ -291,7 +291,7 @@ public unsafe partial class InventoryHighlight(
 
             var itemId = NormalizeItemId(inventorySlot->GetItemId());
 
-            if (itemId == 0 || itemId == HoveredItemId)
+            if (itemId == 0 || itemId == _hoveredItemId)
             {
                 HighlightComponentDragDrop(slotComponent, 100);
             }
@@ -338,7 +338,7 @@ public unsafe partial class InventoryHighlight(
 
             var itemId = NormalizeItemId(inventorySlot->GetItemId());
 
-            if (itemId == 0 || itemId == HoveredItemId)
+            if (itemId == 0 || itemId == _hoveredItemId)
             {
                 HighlightRetainerInventoryItem(sorter, item, 100);
             }
@@ -360,10 +360,10 @@ public unsafe partial class InventoryHighlight(
         var adjustedPage = slotIndex / adjustedItemsPerPage;
         var adjustedSlotIndex = slotIndex % adjustedItemsPerPage;
 
-        if (ItemInventryRetainerWindowSizeType == 0 && TryGetAddon<AddonInventoryRetainer>("InventoryRetainer", out var addonInventoryRetainer) && addonInventoryRetainer->TabIndex != adjustedPage)
+        if (_itemInventryRetainerWindowSizeType == 0 && TryGetAddon<AddonInventoryRetainer>("InventoryRetainer", out var addonInventoryRetainer) && addonInventoryRetainer->TabIndex != adjustedPage)
             return;
 
-        if (!TryGetAddon<AddonInventoryGrid>("RetainerGrid" + (ItemInventryRetainerWindowSizeType == 0 ? "" : adjustedPage.ToString()), out var addon))
+        if (!TryGetAddon<AddonInventoryGrid>("RetainerGrid" + (_itemInventryRetainerWindowSizeType == 0 ? "" : adjustedPage.ToString()), out var addon))
             return;
 
         if (addon->Slots.Length <= adjustedSlotIndex)
@@ -386,7 +386,7 @@ public unsafe partial class InventoryHighlight(
 
     private void ResetGrids()
     {
-        switch (ItemInventryWindowSizeType)
+        switch (_itemInventryWindowSizeType)
         {
             case 0: // Inventory
             case 1: // InventoryLarge
@@ -407,7 +407,7 @@ public unsafe partial class InventoryHighlight(
         if (TryGetAddon<AddonInventoryBuddy>("InventoryBuddy", out var addonInventoryBuddy))
             ResetSlots(addonInventoryBuddy->Slots);
 
-        switch (ItemInventryRetainerWindowSizeType)
+        switch (_itemInventryRetainerWindowSizeType)
         {
             case 0: // InventoryRetainer
                 ResetInventoryGrid("RetainerGrid");

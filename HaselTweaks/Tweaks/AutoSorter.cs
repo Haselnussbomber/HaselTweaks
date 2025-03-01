@@ -15,21 +15,9 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class AutoSorter(
-    PluginConfig PluginConfig,
-    ConfigGui ConfigGui,
-    TextService TextService,
-    ILogger<AutoSorter> Logger,
-    ExcelService ExcelService,
-    IClientState ClientState,
-    IFramework Framework,
-    AddonObserver AddonObserver)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class AutoSorter : IConfigurableTweak
 {
-    public string InternalName => nameof(AutoSorter);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
     private static readonly Dictionary<string, uint> CategorySet = new()
     {
         ["inventory"] = 257,
@@ -87,7 +75,7 @@ public unsafe partial class AutoSorter(
         ["des"] = 283
     };
 
-    internal static readonly List<string> ArmourySubcategories =
+    private static readonly List<string> ArmourySubcategories =
     [
         "mh",
         "oh",
@@ -103,60 +91,46 @@ public unsafe partial class AutoSorter(
         "soul"
     ];
 
-    private string GetLocalizedParam(uint rowId, string? fallback = null)
-    {
-        if (!ExcelService.TryGetRow<TextCommandParam>(rowId, ClientState.ClientLanguage, out var paramRow))
-            return "";
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly TextService _textService;
+    private readonly ILogger<AutoSorter> _logger;
+    private readonly ExcelService _excelService;
+    private readonly IClientState _clientState;
+    private readonly IFramework _framework;
+    private readonly AddonObserver _addonObserver;
 
-        var param = paramRow.Param.ExtractText();
-        return string.IsNullOrEmpty(param) ? fallback ?? "" : param.ToLower();
-    }
+    private readonly Queue<IGrouping<string, AutoSorterConfiguration.SortingRule>> _queue = new();
+    private bool _isBusy = false;
 
-    private string? GetLocalizedParam(Dictionary<string, uint> dict, string? key, string? fallback = null)
-    {
-        var str = fallback ?? key;
+    public string InternalName => nameof(AutoSorter);
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-        if (!string.IsNullOrEmpty(key) && dict.TryGetValue(key, out var rowId))
-        {
-            if (!ExcelService.TryGetRow<TextCommandParam>(rowId, ClientState.ClientLanguage, out var paramRow))
-                return str;
-
-            var param = paramRow.Param.ExtractText();
-            if (!string.IsNullOrEmpty(param))
-                str = param.ToLower();
-        }
-
-        return str;
-    }
-
-    private readonly Queue<IGrouping<string, AutoSorterConfiguration.SortingRule>> Queue = new();
-    private bool IsBusy = false;
-
-    private bool IsRetainerInventoryOpen => AddonObserver.IsAddonVisible("InventoryRetainer") || AddonObserver.IsAddonVisible("InventoryRetainerLarge");
-    private bool IsInventoryBuddyOpen => AddonObserver.IsAddonVisible("InventoryBuddy");
+    private bool IsRetainerInventoryOpen => _addonObserver.IsAddonVisible("InventoryRetainer") || _addonObserver.IsAddonVisible("InventoryRetainerLarge");
+    private bool IsInventoryBuddyOpen => _addonObserver.IsAddonVisible("InventoryBuddy");
 
     public void OnInitialize() { }
 
     public void OnEnable()
     {
-        Queue.Clear();
+        _queue.Clear();
 
-        ClientState.Login += OnLogin;
-        ClientState.Logout += OnLogout;
-        Framework.Update += OnFrameworkUpdate;
-        AddonObserver.AddonOpen += OnAddonOpen;
-        ClientState.ClassJobChanged += OnClassJobChange;
+        _clientState.Login += OnLogin;
+        _clientState.Logout += OnLogout;
+        _framework.Update += OnFrameworkUpdate;
+        _addonObserver.AddonOpen += OnAddonOpen;
+        _clientState.ClassJobChanged += OnClassJobChange;
     }
 
     public void OnDisable()
     {
-        ClientState.Login -= OnLogin;
-        ClientState.Logout -= OnLogout;
-        Framework.Update -= OnFrameworkUpdate;
-        AddonObserver.AddonOpen -= OnAddonOpen;
-        ClientState.ClassJobChanged -= OnClassJobChange;
+        _clientState.Login -= OnLogin;
+        _clientState.Logout -= OnLogout;
+        _framework.Update -= OnFrameworkUpdate;
+        _addonObserver.AddonOpen -= OnAddonOpen;
+        _clientState.ClassJobChanged -= OnClassJobChange;
 
-        Queue.Clear();
+        _queue.Clear();
     }
 
     void IDisposable.Dispose()
@@ -172,12 +146,12 @@ public unsafe partial class AutoSorter(
 
     private void OnLogin()
     {
-        Queue.Clear();
+        _queue.Clear();
     }
 
     private void OnLogout(int type, int code)
     {
-        Queue.Clear();
+        _queue.Clear();
     }
 
     private void OnAddonOpen(string addonName)
@@ -204,7 +178,7 @@ public unsafe partial class AutoSorter(
 
     private void OnClassJobChange(uint classJobId)
     {
-        if (Config.SortArmouryOnJobChange && AddonObserver.IsAddonVisible("ArmouryBoard"))
+        if (Config.SortArmouryOnJobChange && _addonObserver.IsAddonVisible("ArmouryBoard"))
         {
             OnOpenArmoury();
         }
@@ -218,7 +192,7 @@ public unsafe partial class AutoSorter(
 
         foreach (var group in groups)
         {
-            Queue.Enqueue(group);
+            _queue.Enqueue(group);
         }
     }
 
@@ -233,7 +207,7 @@ public unsafe partial class AutoSorter(
 
         foreach (var group in groups)
         {
-            Queue.Enqueue(group);
+            _queue.Enqueue(group);
         }
     }
 
@@ -245,7 +219,7 @@ public unsafe partial class AutoSorter(
 
         foreach (var group in groups)
         {
-            Queue.Enqueue(group);
+            _queue.Enqueue(group);
         }
     }
 
@@ -257,16 +231,16 @@ public unsafe partial class AutoSorter(
 
         foreach (var group in groups)
         {
-            Queue.Enqueue(group);
+            _queue.Enqueue(group);
         }
     }
 
     private void OnFrameworkUpdate(IFramework framework)
     {
-        if (!ClientState.IsLoggedIn || IsBusy || Queue.Count == 0)
+        if (!_clientState.IsLoggedIn || _isBusy || _queue.Count == 0)
             return;
 
-        var nextGroup = Queue.Peek();
+        var nextGroup = _queue.Peek();
         if (nextGroup == null)
             return;
 
@@ -279,7 +253,7 @@ public unsafe partial class AutoSorter(
             // check if ItemOrderModule is busy
             if (itemOrderModule == null || itemOrderModule->UserFileEvent.IsSavePending)
             {
-                Logger.LogDebug("ItemOrderModule is busy, waiting.");
+                _logger.LogDebug("ItemOrderModule is busy, waiting.");
                 return;
             }
 
@@ -288,17 +262,17 @@ public unsafe partial class AutoSorter(
                 var sorter = itemOrderModule->ArmourySorter.GetPointer(i)->Value;
                 if (sorter != null && sorter->SortFunctionIndex != -1)
                 {
-                    Logger.LogDebug("ItemOrderModule: Sorter #{i} ({type}) is busy, waiting.", i, sorter->InventoryType.ToString());
+                    _logger.LogDebug("ItemOrderModule: Sorter #{i} ({type}) is busy, waiting.", i, sorter->InventoryType.ToString());
                     return;
                 }
             }
         }
 
-        IsBusy = true;
+        _isBusy = true;
 
         try
         {
-            var group = Queue.Dequeue();
+            var group = _queue.Dequeue();
 
             if (!group.Any())
                 return;
@@ -308,55 +282,55 @@ public unsafe partial class AutoSorter(
             if (string.IsNullOrEmpty(key))
                 return;
 
-            Logger.LogInformation("Sorting Category: {key}", key);
+            _logger.LogInformation("Sorting Category: {key}", key);
 
             var category = GetLocalizedParam(CategorySet, key);
             if (string.IsNullOrEmpty(category))
             {
-                Logger.LogError("Can not localize category: GetLocalizedParam returned \"{category}\".", category);
+                _logger.LogError("Can not localize category: GetLocalizedParam returned \"{category}\".", category);
                 return;
             }
 
             var raptureShellModule = RaptureShellModule.Instance();
             if (raptureShellModule == null)
             {
-                Logger.LogWarning("Could not resolve RaptureShellModule");
+                _logger.LogWarning("Could not resolve RaptureShellModule");
                 return;
             }
 
             if (raptureShellModule->IsTextCommandUnavailable)
             {
-                Logger.LogWarning("Text commands are unavailable, skipping.");
+                _logger.LogWarning("Text commands are unavailable, skipping.");
                 return;
             }
 
             if ((key is "saddlebag" or "rightsaddlebag") && !IsInventoryBuddyOpen)
             {
-                Logger.LogWarning("Sorting for saddlebag/rightsaddlebag only works when the window is open, skipping.");
+                _logger.LogWarning("Sorting for saddlebag/rightsaddlebag only works when the window is open, skipping.");
                 return;
             }
 
             var playerState = PlayerState.Instance();
             if (playerState == null)
             {
-                Logger.LogWarning("Could not resolve PlayerState");
+                _logger.LogWarning("Could not resolve PlayerState");
                 return;
             }
 
             if (key is "rightsaddlebag" && !playerState->HasPremiumSaddlebag)
             {
-                Logger.LogWarning("Not subscribed to the Companion Premium Service, skipping.");
+                _logger.LogWarning("Not subscribed to the Companion Premium Service, skipping.");
                 return;
             }
 
             if (key is "retainer" && !IsRetainerInventoryOpen)
             {
-                Logger.LogWarning("Sorting for retainer only works when the window is open, skipping.");
+                _logger.LogWarning("Sorting for retainer only works when the window is open, skipping.");
                 return;
             }
 
             var cmd = $"/itemsort clear {category}";
-            Logger.LogInformation("Executing {cmd}", cmd);
+            _logger.LogInformation("Executing {cmd}", cmd);
             Chat.ExecuteCommand(cmd);
 
             foreach (var rule in group)
@@ -364,33 +338,59 @@ public unsafe partial class AutoSorter(
                 var condition = GetLocalizedParam(ConditionSet, rule.Condition);
                 if (string.IsNullOrEmpty(condition))
                 {
-                    Logger.LogError("Can not localize condition \"{ruleCondition}\", skipping. (GetLocalizedParam returned \"{condition}\")", rule.Condition, condition);
+                    _logger.LogError("Can not localize condition \"{ruleCondition}\", skipping. (GetLocalizedParam returned \"{condition}\")", rule.Condition, condition);
                     continue;
                 }
 
                 var order = GetLocalizedParam(OrderSet, rule.Order);
                 if (string.IsNullOrEmpty(order))
                 {
-                    Logger.LogError("Can not localize order \"{ruleOrder}\", skipping. (GetLocalizedParam returned \"{order}\")", rule.Order, order);
+                    _logger.LogError("Can not localize order \"{ruleOrder}\", skipping. (GetLocalizedParam returned \"{order}\")", rule.Order, order);
                     continue;
                 }
 
                 cmd = $"/itemsort condition {category} {condition} {order}";
-                Logger.LogInformation("Executing {cmd}", cmd);
+                _logger.LogInformation("Executing {cmd}", cmd);
                 Chat.ExecuteCommand(cmd);
             }
 
             cmd = $"/itemsort execute {category}";
-            Logger.LogInformation("Executing {cmd}", cmd);
+            _logger.LogInformation("Executing {cmd}", cmd);
             Chat.ExecuteCommand(cmd);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Unexpected error during sorting");
+            _logger.LogError(ex, "Unexpected error during sorting");
         }
         finally
         {
-            IsBusy = false;
+            _isBusy = false;
         }
+    }
+
+    private string GetLocalizedParam(uint rowId, string? fallback = null)
+    {
+        if (!_excelService.TryGetRow<TextCommandParam>(rowId, _clientState.ClientLanguage, out var paramRow))
+            return "";
+
+        var param = paramRow.Param.ExtractText();
+        return string.IsNullOrEmpty(param) ? fallback ?? "" : param.ToLower();
+    }
+
+    private string? GetLocalizedParam(Dictionary<string, uint> dict, string? key, string? fallback = null)
+    {
+        var str = fallback ?? key;
+
+        if (!string.IsNullOrEmpty(key) && dict.TryGetValue(key, out var rowId))
+        {
+            if (!_excelService.TryGetRow<TextCommandParam>(rowId, _clientState.ClientLanguage, out var paramRow))
+                return str;
+
+            var param = paramRow.Param.ExtractText();
+            if (!string.IsNullOrEmpty(param))
+                str = param.ToLower();
+        }
+
+        return str;
     }
 }

@@ -10,46 +10,47 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe class SearchTheMarkets(
-    IContextMenu ContextMenu,
-    LanguageProvider LanguageProvider,
-    TextService TextService,
-    ItemService ItemService) : ITweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class SearchTheMarkets : ITweak
 {
+    private readonly IContextMenu _contextMenu;
+    private readonly LanguageProvider _languageProvider;
+    private readonly TextService _textService;
+    private readonly ItemService _itemService;
+
+    private MenuItem? _menuItem;
+    private ExcelRowId<Item> _itemId;
+
     public string InternalName => nameof(SearchTheMarkets);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    private MenuItem? MenuItem;
-    private ExcelRowId<Item> ItemId;
 
     public void OnInitialize() { }
 
     public void OnEnable()
     {
-        MenuItem ??= new()
+        _menuItem ??= new()
         {
-            Name = TextService.Translate("ItemContextMenu.SearchTheMarkets"),
+            Name = _textService.Translate("ItemContextMenu.SearchTheMarkets"),
             Prefix = SeIconChar.BoxedLetterH,
             PrefixColor = 32,
             OnClicked = (_) =>
             {
-                if (ItemId != 0)
+                if (_itemId != 0)
                 {
-                    ItemService.Search(ItemId);
-                    ItemId = 0;
+                    _itemService.Search(_itemId);
+                    _itemId = 0;
                 }
             }
         };
 
-        ContextMenu.OnMenuOpened += ContextMenu_OnMenuOpened;
-        LanguageProvider.LanguageChanged += OnLanguageChange;
+        _contextMenu.OnMenuOpened += ContextMenu_OnMenuOpened;
+        _languageProvider.LanguageChanged += OnLanguageChange;
     }
 
     public void OnDisable()
     {
-        ContextMenu.OnMenuOpened -= ContextMenu_OnMenuOpened;
-        LanguageProvider.LanguageChanged -= OnLanguageChange;
+        _contextMenu.OnMenuOpened -= ContextMenu_OnMenuOpened;
+        _languageProvider.LanguageChanged -= OnLanguageChange;
     }
 
     void IDisposable.Dispose()
@@ -65,13 +66,13 @@ public unsafe class SearchTheMarkets(
 
     private void OnLanguageChange(string langCode)
     {
-        if (MenuItem != null)
-            MenuItem.Name = TextService.Translate("ItemContextMenu.SearchTheMarkets");
+        if (_menuItem != null)
+            _menuItem.Name = _textService.Translate("ItemContextMenu.SearchTheMarkets");
     }
 
     private void ContextMenu_OnMenuOpened(IMenuOpenedArgs args)
     {
-        if (MenuItem == null)
+        if (_menuItem == null)
             return;
 
         ExcelRowId<Item> itemId = args.AddonName switch
@@ -94,11 +95,11 @@ public unsafe class SearchTheMarkets(
         if (itemId.IsEventItem())
             return;
 
-        ItemId = itemId;
+        _itemId = itemId;
 
-        if (ItemId == 0 || !ItemService.CanSearchForItem(itemId))
+        if (_itemId == 0 || !_itemService.CanSearchForItem(itemId))
             return;
 
-        args.AddMenuItem(MenuItem);
+        args.AddMenuItem(_menuItem);
     }
 }

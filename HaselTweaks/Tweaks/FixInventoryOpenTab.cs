@@ -10,9 +10,12 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe class FixInventoryOpenTab(ILogger<FixInventoryOpenTab> Logger, IAddonLifecycle AddonLifecycle) : ITweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class FixInventoryOpenTab : ITweak
 {
+    private readonly ILogger<FixInventoryOpenTab> _logger;
+    private readonly IAddonLifecycle _addonLifecycle;
+
     public string InternalName => nameof(FixInventoryOpenTab);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
@@ -20,12 +23,12 @@ public unsafe class FixInventoryOpenTab(ILogger<FixInventoryOpenTab> Logger, IAd
 
     public void OnEnable()
     {
-        AddonLifecycle.RegisterListener(AddonEvent.PreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"], OnPreRefresh);
+        _addonLifecycle.RegisterListener(AddonEvent.PreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"], OnPreRefresh);
     }
 
     public void OnDisable()
     {
-        AddonLifecycle.UnregisterListener(AddonEvent.PreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"], OnPreRefresh);
+        _addonLifecycle.UnregisterListener(AddonEvent.PreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"], OnPreRefresh);
     }
 
     void IDisposable.Dispose()
@@ -74,7 +77,7 @@ public unsafe class FixInventoryOpenTab(ILogger<FixInventoryOpenTab> Logger, IAd
 
     private void ResetTabIndex(AtkUnitBase* addon)
     {
-        Logger.LogTrace("[{addonName}] [PreRefresh] Resetting tab to 0", addon->NameString);
+        _logger.LogTrace("[{addonName}] [PreRefresh] Resetting tab to 0", addon->NameString);
 
         switch (addon->NameString)
         {
