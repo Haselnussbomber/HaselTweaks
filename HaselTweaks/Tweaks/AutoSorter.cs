@@ -141,7 +141,6 @@ public unsafe partial class AutoSorter : IConfigurableTweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnLogin()

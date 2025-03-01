@@ -78,7 +78,6 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
         _updateExpHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnLeavePvP()

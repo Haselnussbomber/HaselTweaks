@@ -70,7 +70,6 @@ public unsafe partial class InventoryHighlight : IConfigurableTweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void GameConfig_UiConfigChanged(object? sender, ConfigChangeEvent evt)

@@ -39,7 +39,6 @@ public unsafe partial class FixInventoryOpenTab : ITweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnPreRefresh(AddonEvent type, AddonArgs args)

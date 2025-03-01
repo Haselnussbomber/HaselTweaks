@@ -36,7 +36,6 @@ public unsafe partial class ExpertDeliveries : ITweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     public void OnAddonOpen(string addonName)

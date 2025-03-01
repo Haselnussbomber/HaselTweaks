@@ -73,7 +73,6 @@ public unsafe partial class ForcedCutsceneMusic : IConfigurableTweak
         _cutSceneControllerDtorHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private CutSceneController* CreateCutSceneControllerDetour(ScheduleManagement* self, byte* path, uint id, byte a4)

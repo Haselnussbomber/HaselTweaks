@@ -73,7 +73,6 @@ public unsafe partial class CastBarAetheryteNames : ITweak
         _teleportHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnTerritoryChanged(ushort id)

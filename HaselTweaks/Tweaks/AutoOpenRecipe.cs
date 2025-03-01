@@ -55,7 +55,6 @@ public unsafe partial class AutoOpenRecipe : ITweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void GameInventory_ItemAddedExplicit(InventoryItemAddedArgs data)

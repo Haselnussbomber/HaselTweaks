@@ -61,7 +61,6 @@ public unsafe partial class EnhancedIsleworksAgenda : IConfigurableTweak
         _receiveEventHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnAddonOpen(string addonName)

@@ -117,7 +117,6 @@ public unsafe partial class LockWindowPosition : IConfigurableTweak
         _windowContextMenuHandlerReceiveEventHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     // block GearSetList from moving when opened by Character

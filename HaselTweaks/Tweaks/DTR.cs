@@ -84,7 +84,6 @@ public unsafe partial class DTR : IConfigurableTweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnFrameworkUpdate(IFramework framework)

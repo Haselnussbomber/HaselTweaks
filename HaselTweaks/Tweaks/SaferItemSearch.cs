@@ -49,7 +49,6 @@ public unsafe partial class SaferItemSearch : ITweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void ItemSearch_PostRequestedUpdate(AddonEvent type, AddonArgs args)

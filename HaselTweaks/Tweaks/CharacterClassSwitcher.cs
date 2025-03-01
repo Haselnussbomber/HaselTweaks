@@ -116,7 +116,6 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
         _agentStatusShowHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private static bool IsCrafter(int id)

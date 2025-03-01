@@ -43,7 +43,6 @@ public unsafe partial class MarketBoardItemPreview : ITweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void ItemSearch_PostReceiveEvent(AddonEvent type, AddonArgs args)

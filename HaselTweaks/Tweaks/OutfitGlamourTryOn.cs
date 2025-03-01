@@ -39,7 +39,6 @@ public unsafe partial class OutfitGlamourTryOn : ITweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void ContextMenu_OnMenuOpened(IMenuOpenedArgs args)

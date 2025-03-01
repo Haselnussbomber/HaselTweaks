@@ -56,7 +56,6 @@ public partial class GearSetGrid : IConfigurableTweak
         _gsgCommand?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnAddonOpen(string addonName)

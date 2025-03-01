@@ -117,7 +117,6 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
         _addItemContextMenuEntriesHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnAddonOpen(string addonName)

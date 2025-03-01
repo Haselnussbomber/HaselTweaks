@@ -60,7 +60,6 @@ public unsafe partial class GlamourDresserArmoireAlert : ITweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnAddonOpen(string addonName)

@@ -51,7 +51,6 @@ public unsafe partial class BackgroundMusicKeybind : IConfigurableTweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnFrameworkUpdate(IFramework framework)

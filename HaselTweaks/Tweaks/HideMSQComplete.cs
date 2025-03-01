@@ -40,7 +40,6 @@ public unsafe partial class HideMSQComplete : ITweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void ScenarioTree_PostRefresh(AddonEvent type, AddonArgs args)

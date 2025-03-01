@@ -64,7 +64,6 @@ public unsafe partial class ScrollableTabs : IConfigurableTweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnFrameworkUpdate(IFramework framework)

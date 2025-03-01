@@ -61,7 +61,6 @@ public unsafe partial class SearchTheMarkets : ITweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnLanguageChange(string langCode)

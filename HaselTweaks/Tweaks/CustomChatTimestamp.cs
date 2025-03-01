@@ -55,7 +55,6 @@ public unsafe partial class CustomChatTimestamp : IConfigurableTweak
         _formatAddonText2IntHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private byte* FormatAddonText2IntDetour(HaselRaptureTextModule* self, uint addonRowId, int value)

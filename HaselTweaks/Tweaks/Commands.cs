@@ -72,7 +72,6 @@ public unsafe partial class Commands : IConfigurableTweak
         _glamourPlateCommandCommandHandler?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void UpdateCommands(bool enable)

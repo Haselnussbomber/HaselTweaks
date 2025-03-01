@@ -62,7 +62,6 @@ public unsafe partial class CustomChatMessageFormats : IConfigurableTweak
         _formatLogMessageHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnLanguageChange(string langCode)

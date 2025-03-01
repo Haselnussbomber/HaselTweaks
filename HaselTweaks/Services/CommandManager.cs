@@ -22,8 +22,6 @@ public partial class CommandManager : IDisposable
     public void Dispose()
     {
         _pluginInterface.UiBuilder.OpenConfigUi -= TogglePluginWindow;
-
-        GC.SuppressFinalize(this);
     }
 
     private void HandleCommand(string command, string arguments)

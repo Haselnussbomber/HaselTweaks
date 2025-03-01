@@ -104,7 +104,6 @@ public class PresetCard : IDisposable
         CloseTokenSource?.Dispose();
         Image?.Dispose();
         TextureWrap?.Dispose();
-        GC.SuppressFinalize(this);
     }
 
     public void Draw(PresetBrowserOverlay overlay, float scale, uint defaultImGuiTextColor)

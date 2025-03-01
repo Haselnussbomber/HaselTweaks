@@ -53,6 +53,5 @@ public partial class RevealDutyRequirements : ITweak
         _patch?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 }

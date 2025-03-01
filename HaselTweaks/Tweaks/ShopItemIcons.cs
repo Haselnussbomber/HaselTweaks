@@ -53,7 +53,6 @@ public unsafe partial class ShopItemIcons : IConfigurableTweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnShopPreSetup(AddonEvent type, AddonArgs args)

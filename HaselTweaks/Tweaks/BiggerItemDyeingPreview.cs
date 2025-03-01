@@ -35,7 +35,6 @@ public unsafe partial class BiggerItemDyeingPreview : ITweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnPostSetup(AddonEvent type, AddonArgs args)

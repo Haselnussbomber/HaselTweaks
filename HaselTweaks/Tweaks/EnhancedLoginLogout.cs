@@ -123,7 +123,6 @@ public unsafe partial class EnhancedLoginLogout : IConfigurableTweak
         _openLoginWaitDialogHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnLogin()

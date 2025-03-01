@@ -17,7 +17,6 @@ using HaselTweaks.Enums;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Records.PortraitHelper;
-using HaselTweaks.Structs;
 using HaselTweaks.Windows.PortraitHelperWindows;
 using Lumina.Excel.Sheets;
 using Microsoft.Extensions.Logging;
@@ -117,7 +116,6 @@ public unsafe partial class PortraitHelper : IConfigurableTweak
         _agentBannerPreviewShowHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OpenPortraitEditChatHandler(uint commandId, SeString message)
