@@ -45,9 +45,5 @@ public sealed class Plugin : IDalamudPlugin
     void IDisposable.Dispose()
     {
         Service.Dispose();
-
-#if HAS_LOCAL_CS
-        Addresses.Unregister();
-#endif
     }
 }

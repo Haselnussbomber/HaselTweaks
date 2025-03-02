@@ -1,12 +1,14 @@
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/96642047/220611506-da811a05-6c84-41da-89b3-498f5450db84.svg" width="580px" alt="HaselTweaks">
-</p>
+<img align="left" src="HaselTweaks/Assets/Icon.png" height="60px" alt="HaselTweaks"/>
 
-**HaselTweaks** is an all-in-one plugin for all my tweaks and helpers (well, with the exception of [LeveHelper](https://github.com/Haselnussbomber/LeveHelper), [MogMogCheck](https://github.com/Haselnussbomber/MogMogCheck) and [YokaiCheck](https://github.com/Haselnussbomber/YokaiCheck) 😜).
+**HaselTweaks** is an all-in-one plugin for all my tweaks and helpers.<br/>
+<br/>
+<hr>
 
 You will not find this plugin in the official plugin repository.  
 However, you're free to add my custom repository to get updates whenever I release a new version:  
 https://raw.githubusercontent.com/Haselnussbomber/MyDalamudPlugins/main/repo.json
+
+<hr>
 
 To get started, open the configuration with `/haseltweaks` and enable the tweaks you like.
 

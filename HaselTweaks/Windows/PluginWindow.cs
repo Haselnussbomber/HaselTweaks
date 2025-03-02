@@ -230,12 +230,9 @@ public partial class PluginWindow : SimpleWindow
 
             if (_textureProvider.GetFromManifestResource(Assembly.GetExecutingAssembly(), "HaselTweaks.Assets.Logo.png").TryGetWrap(out var logo, out var _))
             {
-                var maxWidth = SidebarWidth * 2 * 0.85f * ImGuiHelpers.GlobalScale;
-                var ratio = maxWidth / 425;
-                var scaledLogoSize = new Vector2(425, 132) * ratio;
-
-                ImGui.SetCursorPos(contentAvail / 2 - scaledLogoSize / 2 + new Vector2(ImGui.GetStyle().ItemSpacing.X, 0));
-                ImGui.Image(logo.ImGuiHandle, scaledLogoSize);
+                var logoSize = ImGuiHelpers.ScaledVector2(256, 128);
+                ImGui.SetCursorPos(contentAvail / 2 - logoSize / 2 + new Vector2(ImGui.GetStyle().ItemSpacing.X, 0));
+                ImGui.Image(logo.ImGuiHandle, logoSize);
             }
 
             // links, bottom left
