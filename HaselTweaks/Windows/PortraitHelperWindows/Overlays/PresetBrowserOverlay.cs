@@ -10,7 +10,6 @@ using HaselCommon.Services;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using ImGuiNET;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
@@ -20,13 +19,11 @@ public unsafe partial class PresetBrowserOverlay : Overlay
 {
     private const int SidebarWidth = 170;
 
-    private readonly TextService _textService;
     private readonly ILogger<PresetBrowserOverlay> _logger;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly TextService _textService;
 
     private int _reorderTagOldIndex = -1;
     private int _reorderTagNewIndex = -1;
-    private IServiceScope? _serviceScope;
 
     public Guid? SelectedTagId { get; set; }
     public Dictionary<Guid, PresetCard> PresetCards { get; init; } = [];
@@ -48,31 +45,20 @@ public unsafe partial class PresetBrowserOverlay : Overlay
         };
     }
 
+    public override void OnClose()
+    {
+        PresetCards.Dispose();
+        base.OnClose();
+    }
+
     public void Open(MenuBar menuBar)
     {
         MenuBar = menuBar;
         Open();
     }
 
-    public override void OnOpen()
-    {
-        _serviceScope = _serviceProvider.CreateScope();
-        base.OnOpen();
-    }
-
-    public override void OnClose()
-    {
-        PresetCards.Clear();
-        _serviceScope?.Dispose();
-        _serviceScope = null;
-        base.OnClose();
-    }
-
     public override void Draw()
     {
-        if (_serviceScope == null)
-            return;
-
         base.Draw();
 
         DrawPresetBrowserSidebar();
@@ -317,8 +303,7 @@ public unsafe partial class PresetBrowserOverlay : Overlay
             {
                 if (!PresetCards.TryGetValue(preset.Id, out var card))
                 {
-                    var presetCard = _serviceScope!.ServiceProvider.GetRequiredService<PresetCard>();
-                    presetCard.SetSavedPreset(preset);
+                    var presetCard = new PresetCard(preset);
                     PresetCards.Add(preset.Id, presetCard);
                 }
 

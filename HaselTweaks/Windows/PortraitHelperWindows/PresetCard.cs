@@ -29,7 +29,7 @@ using SixLabors.ImageSharp.Processing;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
-[RegisterTransient, AutoConstruct]
+[RegisterTransient]
 public partial class PresetCard : IDisposable
 {
     public static readonly Vector2 PortraitSize = new(576, 960); // native texture size
@@ -46,20 +46,20 @@ public partial class PresetCard : IDisposable
     private readonly ExcelService _excelService;
     private readonly BannerUtils _bannerUtils;
 
-    private SavedPreset? _preset;
-    private uint _bannerFrameImage;
-    private uint _bannerDecorationImage;
-    private bool _isBannerTimelineUnlocked;
-    private bool _isBannerBgUnlocked;
-    private bool _isBannerFrameUnlocked;
-    private bool _isBannerDecorationUnlocked;
+    private readonly SavedPreset _preset;
+    private readonly uint _bannerFrameImage;
+    private readonly uint _bannerDecorationImage;
+    private readonly bool _isBannerTimelineUnlocked;
+    private readonly bool _isBannerBgUnlocked;
+    private readonly bool _isBannerFrameUnlocked;
+    private readonly bool _isBannerDecorationUnlocked;
 
     private CancellationTokenSource? _closeTokenSource;
 
+    private bool _isDisposed;
     private bool _isImageLoading;
     private bool _doesImageFileExist;
     private bool _isImageUpdatePending;
-
     private Guid? _textureGuid;
     private Image<Rgba32>? _image;
     private IDalamudTextureWrap? _textureWrap;
@@ -67,20 +67,17 @@ public partial class PresetCard : IDisposable
 
     private float _lastScale;
 
-    public void Dispose()
+    public PresetCard(SavedPreset preset)
     {
-        _closeTokenSource?.Cancel();
-        _closeTokenSource?.Dispose();
-        _closeTokenSource = null;
-        _image?.Dispose();
-        _image = null;
-        _textureWrap?.Dispose();
-        _textureWrap = null;
-        _preset = null;
-    }
+        _logger = Service.Get<ILogger<PresetCard>>();
+        _pluginInterface = Service.Get<IDalamudPluginInterface>();
+        _dataManager = Service.Get<IDataManager>();
+        _textureProvider = Service.Get<ITextureProvider>();
+        _pluginConfig = Service.Get<PluginConfig>();
+        _textService = Service.Get<TextService>();
+        _excelService = Service.Get<ExcelService>();
+        _bannerUtils = Service.Get<BannerUtils>();
 
-    public void SetSavedPreset(SavedPreset preset)
-    {
         _preset = preset;
 
         if (_excelService.TryGetRow<BannerFrame>(_preset.Preset!.BannerFrame, out var bannerFrameRow))
@@ -95,9 +92,21 @@ public partial class PresetCard : IDisposable
         _isBannerDecorationUnlocked = _bannerUtils.IsBannerDecorationUnlocked(_preset.Preset.BannerDecoration);
     }
 
+    public void Dispose()
+    {
+        _closeTokenSource?.Cancel();
+        _closeTokenSource?.Dispose();
+        _closeTokenSource = null;
+        _image?.Dispose();
+        _image = null;
+        _textureWrap?.Dispose();
+        _textureWrap = null;
+        _isDisposed = true;
+    }
+
     public void Draw(PresetBrowserOverlay overlay, float scale, uint defaultImGuiTextColor)
     {
-        if (_preset == null)
+        if (_isDisposed)
             return;
 
         Update(scale);
