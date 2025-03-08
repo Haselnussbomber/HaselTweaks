@@ -24,6 +24,8 @@ public partial class CustomChatTimestamp
     {
         using var _ = _configGui.PushContext(this);
 
+        _configGui.DrawIncompatibilityWarnings([("SimpleTweaksPlugin", ["CustomTimestampFormat"])]);
+
         _configGui.DrawConfigurationHeader();
 
         ImGui.TextUnformatted(_textService.Translate("CustomChatTimestamp.Config.Format.Label"));
