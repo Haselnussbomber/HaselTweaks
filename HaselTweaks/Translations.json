@@ -1114,6 +1114,14 @@
     "en": "The tooltip shows the name of the fashion accessory.",
     "de": "Der Tooltip zeigt den Namen des Modeaccessoires an."
   },
+  "EnhancedTargetInfo.Config.RemoveLeadingZeroInHPPercentage.Label": {
+    "en": "Remove leading zero in HP under 10%",
+    "de": "Führende Null bei HP unter 10 % ausblenden"
+  },
+  "EnhancedTargetInfo.Config.RemoveLeadingZeroInHPPercentage.Description": {
+    "en": "For example, instead of 06.7%, 6.7% will be displayed. The format depends on the client language, not on the language set in Dalamud.",
+    "de": "Als Beispiel, statt 06,7 % wird 6,7 % angezeigt. Das Format hängt von der Sprache des Spielclients ab, nicht von der in Dalamud eingestellen Sprache."
+  },
 
   "ExpertDeliveries.Tweak.Name": {
     "en": "Expert Deliveries",

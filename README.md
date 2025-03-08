@@ -177,7 +177,8 @@ Configuration options:
 Configuration options:
 
 - Display Mounted status (default off): The tooltip shows the name of the mount.
-- Display Fashion Accessory status (default off): The tooltip shows the name of the fashion accessoryt.
+- Display Fashion Accessory status (default off): The tooltip shows the name of the fashion accessory.
+- Remove leading zero in HP under 10% (default off): For example, instead of 06.7%, 6.7% will be displayed. The format depends on the client language, not on the language set in Dalamud.
 
 ### Expert Deliveries
 

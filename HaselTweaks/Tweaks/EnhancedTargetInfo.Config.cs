@@ -4,6 +4,7 @@ public class EnhancedTargetInfoConfiguration
 {
     public bool DisplayMountStatus = false;
     public bool DisplayOrnamentStatus = false;
+    public bool RemoveLeadingZeroInHPPercentage = false;
 }
 
 public unsafe partial class EnhancedTargetInfo
@@ -23,5 +24,6 @@ public unsafe partial class EnhancedTargetInfo
 
         _configGui.DrawBool("DisplayMountStatus", ref Config.DisplayMountStatus);
         _configGui.DrawBool("DisplayOrnamentStatus", ref Config.DisplayOrnamentStatus);
+        _configGui.DrawBool("RemoveLeadingZeroInHPPercentage", ref Config.RemoveLeadingZeroInHPPercentage);
     }
 }
