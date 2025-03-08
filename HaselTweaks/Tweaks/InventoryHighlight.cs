@@ -136,7 +136,7 @@ public unsafe partial class InventoryHighlight : IConfigurableTweak
         void ProcessInventoryType(InventoryType type)
         {
             var container = InventoryManager.Instance()->GetInventoryContainer(type);
-            if (container->Loaded == 0)
+            if (!container->IsLoaded)
                 return;
 
             for (var i = 0; i < container->Size; i++)
@@ -428,9 +428,9 @@ public unsafe partial class InventoryHighlight : IConfigurableTweak
             ResetSlots(addon->Slots);
     }
 
-    private void ResetSlots(Span<Pointer<AtkComponentDragDrop>> SlotsSpan)
+    private void ResetSlots(Span<Pointer<AtkComponentDragDrop>> slotsSpan)
     {
-        foreach (AtkComponentDragDrop* component in SlotsSpan)
+        foreach (AtkComponentDragDrop* component in slotsSpan)
         {
             if (component == null)
                 continue;

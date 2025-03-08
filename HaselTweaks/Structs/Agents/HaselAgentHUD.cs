@@ -1,10 +1,10 @@
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
-namespace HaselTweaks.Structs;
+namespace HaselTweaks.Structs.Agents;
 
 [GenerateInterop]
-[StructLayout(LayoutKind.Explicit, Size = 0)]
+[StructLayout(LayoutKind.Explicit, Size = AgentHUD.StructSize)]
 public unsafe partial struct HaselAgentHUD
 {
     public static HaselAgentHUD* Instance() => (HaselAgentHUD*)AgentHUD.Instance();

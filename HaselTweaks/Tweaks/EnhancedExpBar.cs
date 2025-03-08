@@ -13,7 +13,7 @@ using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using HaselTweaks.Structs;
+using HaselTweaks.Structs.Agents;
 using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;

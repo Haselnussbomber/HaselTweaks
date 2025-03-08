@@ -1,9 +1,10 @@
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 
 namespace HaselTweaks.Structs;
 
 [GenerateInterop]
-[StructLayout(LayoutKind.Explicit, Size = 0)]
+[StructLayout(LayoutKind.Explicit, Size = ActionManager.StructSize)]
 public unsafe partial struct HaselActionManager
 {
     [MemberFunction("E8 ?? ?? ?? ?? 41 83 FF 04 0F 84")]
