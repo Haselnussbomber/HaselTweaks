@@ -1122,6 +1122,14 @@
     "en": "For example, instead of 06.7%, 6.7% will be displayed. The format depends on the client language, not on the language set in Dalamud.",
     "de": "Als Beispiel, statt 06,7 % wird 6,7 % angezeigt. Das Format hängt von der Sprache des Spielclients ab, nicht von der in Dalamud eingestellen Sprache."
   },
+  "EnhancedTargetInfo.Unlocked": {
+    "en": "\u2713 Unlocked",
+    "de": "\u2713 Freigeschaltet"
+  },
+  "EnhancedTargetInfo.NotUnlocked": {
+    "en": "\u2573 Not unlocked",
+    "de": "\u2573 Nicht freigeschaltet"
+  },
 
   "ExpertDeliveries.Tweak.Name": {
     "en": "Expert Deliveries",
