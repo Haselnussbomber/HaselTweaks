@@ -18,7 +18,7 @@ To get started, open the configuration with `/haseltweaks` and enable the tweaks
 
 Hovering the mouse over an achievement link in the chat will display a small tooltip with the name and description of the achievement so that you don't have to click on the link.
 
-Options:
+Configuration options:
 
 - Show completion status: Will show whether the achievement has been completed or not. This requires the achievement data to be loaded, so you have to open the window once.
 - Prevent spoiler: If the Achievement is not unlocked and would not be displayed in the game, the name and/or description will also be displayed as ???.
@@ -33,9 +33,9 @@ Sorts items inside various containers when they are opened. Rules can be configu
 
 Uses the games `/itemsort` command for sorting.
 
-Options:
+Configuration options:
 
-- Sort armoury on job change
+- Sort armoury on job change (default on)
 
 ### Auto-open Recipe
 
@@ -108,7 +108,7 @@ Shows Instance number (only if the current zone is instanced), FPS and Busy stat
 
 To enable/disable elements or to change the order go into Dalamud Settings > Server Info Bar.
 
-Options:
+Configuration options:
 
 - FPS unit text (default: " fps")
 
@@ -120,7 +120,7 @@ Depending on the settings, the experience bar can be transformed into one of the
 - The Sanctuary Bar displays your sanctuary level and island experience.
 - The Companion Bar displays your chocobos rank and experience.
 
-Available options include:
+Configuration options:
 
 - Always show PvP Series Bar in PvP Areas
 - Always show Sanctuary Bar on the Island
@@ -136,7 +136,7 @@ Available options include:
 
 Slightly improves the Isleworks "Set Agenda" window.
 
-Options:
+Configuration options:
 
 - Enable Search Bar: The search bar is automatically shown and focused when the \"Set Agenda\" window opens. Based on the entered item name, the fuzzy search (lowercase only) selects the item on the right side of the window. Pressing the Enter key confirms the selected item, just like by pressing the \"Schedule\" button.
 - Disable item tooltips in the list
@@ -162,7 +162,7 @@ Logout options:
 
 ### Enhanced Material List
 
-Available options include:
+Configuration options:
 
 - Enable Zone Names: Displays a zone name underneath the item name indicating where it can be gathered. Only the zone with the lowest teleportation cost is displayed. If the name is green it means it's the current zone. Since space is limited it has to shorten the item and zone name.
   - An option is available to disable this for Crystals.
@@ -171,6 +171,13 @@ Available options include:
 - Auto-refresh Material List/Recipe Tree: Refreshes the material list and/or recipe tree when the inventory has changed.
 - Restore Material List on Login: The material list will reopen with the same recipe and quantity each time you log in as long as the window is locked.
 - Add "Search for Item by Crafting Method" context menu entry: No more need to open the recipe tree first.
+
+### Enhanced Target Info
+
+Configuration options:
+
+- Display Mounted status (default off): The tooltip shows the name of the mount.
+- Display Fashion Accessory status (default off): The tooltip shows the name of the fashion accessoryt.
 
 ### Expert Deliveries
 

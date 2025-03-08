@@ -1,10 +1,21 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Enhanced Target Info
+
+You guessed it, it enhances the target info.
+
+Current options:
+
+- Display Mounted status (default off): The tooltip shows the name of the mount.
+- Display Fashion Accessory status (default off): The tooltip shows the name of the fashion accessoryt.
+
 ## [32.1.1] (2025-02-16)
 
 ### HaselTweaks
 
-- **Fixed:** ImGui window positions of this plugin should no longer reset every game session. Noob mistake to think C# would work correctly. Sorry about that.
+- **Fixed:** ImGui window positions of this plugin should no longer reset every game session. Sorry about that.
 
 ## [32.1.0] (2025-02-15)
 

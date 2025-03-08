@@ -1091,6 +1091,30 @@
     "zh": "对于目标物品。不再需要先打开配方树。"
   },
 
+  "EnhancedTargetInfo.Tweak.Name": {
+    "en": "Enhanced Target Info"
+  },
+  "EnhancedTargetInfo.Tweak.Description": {
+    "en": "Enhances the Target Info.",
+    "de": "Verbessert die Zielinfo."
+  },
+  "EnhancedTargetInfo.Config.DisplayMountStatus.Label": {
+    "en": "Display Mounted status",
+    "de": "Zeige Beritten-Status an"
+  },
+  "EnhancedTargetInfo.Config.DisplayMountStatus.Description": {
+    "en": "The tooltip shows the name of the mount.",
+    "de": "Der Tooltip zeigt den Namen des Mounts an."
+  },
+  "EnhancedTargetInfo.Config.DisplayOrnamentStatus.Label": {
+    "en": "Display Fashion Accessory status",
+    "de": "Zeige Modeaccessoire-Status an"
+  },
+  "EnhancedTargetInfo.Config.DisplayOrnamentStatus.Description": {
+    "en": "The tooltip shows the name of the fashion accessory.",
+    "de": "Der Tooltip zeigt den Namen des Modeaccessoires an."
+  },
+
   "ExpertDeliveries.Tweak.Name": {
     "en": "Expert Deliveries",
     "zh": "筹备稀有品"
