@@ -28,7 +28,7 @@ public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
     private readonly IClientState _clientState;
     private readonly TextService _textService;
     private readonly ExcelService _excelService;
-    private readonly SeStringEvaluatorService _seStringEvaluator;
+    private readonly SeStringEvaluator _seStringEvaluator;
 
     private Hook<HaselAgentHUD.Delegates.UpdateTargetInfo> _updateTargetInfoHook;
     private Hook<HaselRaptureTextModule.Delegates.FormatAddonText2IntIntUInt> _formatAddonText2IntIntUIntHook;

@@ -23,7 +23,7 @@ public unsafe partial class CustomChatMessageFormats : IConfigurableTweak
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly ExcelService _excelService;
     private readonly TextureService _textureService;
-    private readonly SeStringEvaluatorService _seStringEvaluator;
+    private readonly SeStringEvaluator _seStringEvaluator;
 
     private Hook<HaselRaptureLogModule.Delegates.FormatLogMessage>? _formatLogMessageHook;
 
