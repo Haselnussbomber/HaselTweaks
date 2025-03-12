@@ -92,7 +92,7 @@ public unsafe partial class CustomChatMessageFormats : IConfigurableTweak
         var tempParseMessage1 = raptureLogModule->TempParseMessage.GetPointer(1);
         tempParseMessage1->Clear();
 
-        if (!raptureLogModule->RaptureTextModule->TextModule.FormatString(message->StringPtr, null, tempParseMessage1))
+        if (!raptureLogModule->RaptureTextModule->TextModule.FormatString(message->StringPtr.Value, null, tempParseMessage1))
             return 0;
 
         var senderStr = new ReadOnlySeStringSpan(sender->AsSpan());

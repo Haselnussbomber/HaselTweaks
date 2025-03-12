@@ -138,6 +138,6 @@ public unsafe partial class AchievementLinkTooltip : IConfigurableTweak
         AtkStage.Instance()->TooltipManager.ShowTooltip(
             unitBase->Id,
             *(AtkResNode**)(args.Addon + 0x248),
-            tooltipText.StringPtr);
+            tooltipText.StringPtr.Value);
     }
 }
