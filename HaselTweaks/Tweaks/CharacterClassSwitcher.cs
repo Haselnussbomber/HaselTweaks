@@ -7,6 +7,7 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Game;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
@@ -28,7 +29,6 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly IKeyState _keyState;
-    private readonly IChatGui _chatGui;
     private readonly GamepadService _gamepadService;
 
     private Hook<AtkTooltipManager.Delegates.ShowTooltip>? _atkTooltipManagerShowTooltipHook;
@@ -392,7 +392,7 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
 
         if (selectedGearset.Id == -1)
         {
-            _chatGui.PrintError(_textService.Translate("CharacterClassSwitcher.NoSuitableGearsetFound"));
+            Chat.PrintError(_textService.Translate("CharacterClassSwitcher.NoSuitableGearsetFound"));
             return;
         }
 

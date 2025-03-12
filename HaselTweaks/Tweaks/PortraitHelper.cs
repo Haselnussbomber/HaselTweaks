@@ -1,25 +1,30 @@
 using System.Threading;
-using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Hooking;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using HaselCommon.Game;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Enums.PortraitHelper;
+using HaselTweaks.Extensions;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Windows.PortraitHelperWindows;
 using Lumina.Excel.Sheets;
+using Lumina.Text.ReadOnly;
 using Microsoft.Extensions.Logging;
+
+using DSeString = Dalamud.Game.Text.SeStringHandling.SeString;
+using LSeStringBuilder = Lumina.Text.SeStringBuilder;
 
 namespace HaselTweaks.Tweaks;
 
@@ -38,10 +43,8 @@ public unsafe partial class PortraitHelper : IConfigurableTweak
     private readonly ILogger<PortraitHelper> _logger;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IDalamudPluginInterface _pluginInterface;
-    private readonly ICondition _condition;
     private readonly IFramework _framework;
     private readonly IClientState _clientState;
-    private readonly IChatGui _chatGui;
     private readonly AddonObserver _addonObserver;
     private readonly MenuBar _menuBar;
 
@@ -118,7 +121,7 @@ public unsafe partial class PortraitHelper : IConfigurableTweak
         Status = TweakStatus.Disposed;
     }
 
-    private void OpenPortraitEditChatHandler(uint commandId, SeString message)
+    private void OpenPortraitEditChatHandler(uint commandId, DSeString message)
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
         var gearsetId = raptureGearsetModule->CurrentGearsetIndex;
@@ -146,7 +149,7 @@ public unsafe partial class PortraitHelper : IConfigurableTweak
 
     private void OnTerritoryChanged(ushort territoryTypeId)
     {
-        if (_wasBoundByDuty && !_condition[ConditionFlag.BoundByDuty56])
+        if (_wasBoundByDuty && !Conditions.Instance()->BoundByDuty56)
         {
             _wasBoundByDuty = false;
 
@@ -226,13 +229,13 @@ public unsafe partial class PortraitHelper : IConfigurableTweak
 
     private void CheckForGearChecksumMismatch(int gearsetId, bool isJobChange = false)
     {
-        if (_condition[ConditionFlag.BoundByDuty56]) // delay when bound by duty
+        if (Conditions.Instance()->BoundByDuty56) // delay when bound by duty
         {
             _wasBoundByDuty = true;
             return;
         }
 
-        if (_condition[ConditionFlag.BetweenAreas]) // requeue when moving
+        if (Conditions.Instance()->BetweenAreas) // requeue when moving
         {
             _mismatchCheckCTS?.Cancel();
             _mismatchCheckCTS = new();
@@ -330,31 +333,31 @@ public unsafe partial class PortraitHelper : IConfigurableTweak
     {
         var text = _textService.Translate("PortraitHelper.GearChecksumMismatch"); // based on LogMessage#5876
 
-        var sb = new SeStringBuilder()
-            .AddUiForeground("\uE078 ", 32);
+        var sb = new LSeStringBuilder()
+            .AppendHaselTweaksPrefix();
 
         var raptureGearsetModule = RaptureGearsetModule.Instance();
         if (raptureGearsetModule->IsValidGearset(raptureGearsetModule->CurrentGearsetIndex))
         {
             if (_openPortraitEditPayload != null)
             {
-                sb.Add(_openPortraitEditPayload)
-                  .AddText(text)
-                  .Add(RawPayload.LinkTerminator);
+                sb.Append((ReadOnlySeStringSpan)_openPortraitEditPayload.Encode())
+                  .Append(text)
+                  .PopLink();
             }
             else
             {
-                sb.AddText(text);
+                sb.Append(text);
             }
         }
         else
         {
-            sb.AddText(text);
+            sb.Append(text);
         }
 
         UIModule.Instance()->ShowErrorText(text, false);
 
-        _chatGui.PrintError(sb.Build());
+        Chat.PrintError(sb.GetViewAsSpan());
     }
 
     private bool SendPortraitUpdate(BannerModuleEntry* banner)
