@@ -29,7 +29,6 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly IKeyState _keyState;
-    private readonly GamepadService _gamepadService;
 
     private Hook<AtkTooltipManager.Delegates.ShowTooltip>? _atkTooltipManagerShowTooltipHook;
     private Hook<AddonCharacterClass.Delegates.OnSetup>? _addonCharacterClassOnSetupHook;
@@ -210,13 +209,13 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
 
     private void AddonCharacterClassReceiveEventDetour(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData)
     {
-        if (HandleAddonCharacterClassEvent(addon, eventType, eventParam))
+        if (HandleAddonCharacterClassEvent(addon, eventType, eventParam, atkEventData))
             return;
 
         _addonCharacterClassReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 
-    private bool HandleAddonCharacterClassEvent(AddonCharacterClass* addon, AtkEventType eventType, int eventParam)
+    private bool HandleAddonCharacterClassEvent(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEventData* atkEventData)
     {
         // skip events for tabs
         if (eventParam < 2)
@@ -240,7 +239,7 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
         {
             var isClick =
                 eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick ||
-                (eventType == AtkEventType.InputReceived && _gamepadService.IsPressed(GamepadBinding.Accept));
+                (eventType == AtkEventType.InputReceived && atkEventData->InputData.InputId == 1);
 
             if (isClick && !_keyState[VirtualKey.SHIFT])
             {
@@ -249,7 +248,7 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
             }
         }
 
-        return ProcessEvents(node->AtkComponentBase.OwnerNode, imageNode, eventType);
+        return ProcessEvents(node->AtkComponentBase.OwnerNode, imageNode, eventType, atkEventData);
     }
 
     private void PvPCharacterOnSetup(AddonEvent type, AddonArgs args)
@@ -291,15 +290,15 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
         }
     }
 
-    private void AddonPvPCharacterReceiveEventDetour(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)
+    private void AddonPvPCharacterReceiveEventDetour(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData)
     {
-        if (HandleAddonPvPCharacterEvent(addon, eventType, eventParam))
+        if (HandleAddonPvPCharacterEvent(addon, eventType, eventParam, atkEventData))
             return;
 
         _addonPvPCharacterReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 
-    private bool HandleAddonPvPCharacterEvent(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam)
+    private bool HandleAddonPvPCharacterEvent(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEventData* atkEventData)
     {
         if ((eventParam & 0xFFFF0000) != 0x10000)
             return false;
@@ -317,15 +316,15 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
         if (!isUnlocked)
             return false;
 
-        return ProcessEvents(entry->Base->OwnerNode, entry->Icon, eventType);
+        return ProcessEvents(entry->Base->OwnerNode, entry->Icon, eventType, atkEventData);
     }
 
     /// <returns>Boolean whether original code should be skipped (true) or not (false)</returns>
-    private bool ProcessEvents(AtkComponentNode* componentNode, AtkImageNode* imageNode, AtkEventType eventType)
+    private bool ProcessEvents(AtkComponentNode* componentNode, AtkImageNode* imageNode, AtkEventType eventType, AtkEventData* atkEventData)
     {
         var isClick =
             eventType == AtkEventType.MouseClick ||
-            (eventType == AtkEventType.InputReceived && _gamepadService.IsPressed(GamepadBinding.Accept));
+            (eventType == AtkEventType.InputReceived && atkEventData->InputData.InputId == 1);
 
         if (isClick)
         {
