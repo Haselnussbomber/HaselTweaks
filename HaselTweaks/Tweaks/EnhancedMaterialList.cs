@@ -7,6 +7,7 @@ using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
@@ -35,7 +36,6 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
     private readonly IFramework _framework;
     private readonly IClientState _clientState;
     private readonly IGameInventory _gameInventory;
-    private readonly IAetheryteList _aetheryteList;
     private readonly AddonObserver _addonObserver;
     private readonly ExcelService _excelService;
     private readonly MapService _mapService;
@@ -411,11 +411,11 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
         {
             foreach (var p in gatheringPoints)
             {
-                foreach (var aetheryte in _aetheryteList)
+                foreach (var teleportInfo in Telepo.Instance()->TeleportList)
                 {
-                    if (aetheryte.AetheryteId == p!.TerritoryType.Value!.Aetheryte.RowId && (cost == 0 || aetheryte.GilCost < cost))
+                    if (teleportInfo.AetheryteId == p!.TerritoryType.Value!.Aetheryte.RowId && (cost == 0 || teleportInfo.GilCost < cost))
                     {
-                        cost = aetheryte.GilCost;
+                        cost = teleportInfo.GilCost;
                         point = p;
                         break;
                     }

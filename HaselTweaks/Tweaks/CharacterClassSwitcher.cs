@@ -1,6 +1,5 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Game.ClientState.Keys;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -28,7 +27,6 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
     private readonly ILogger<CharacterClassSwitcher> _logger;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IAddonLifecycle _addonLifecycle;
-    private readonly IKeyState _keyState;
 
     private Hook<AtkTooltipManager.Delegates.ShowTooltip>? _atkTooltipManagerShowTooltipHook;
     private Hook<AddonCharacterClass.Delegates.OnSetup>? _addonCharacterClassOnSetupHook;
@@ -240,8 +238,8 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
             var isClick =
                 eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick ||
                 (eventType == AtkEventType.InputReceived && atkEventData->InputData.InputId == 1);
-
-            if (isClick && !_keyState[VirtualKey.SHIFT])
+             
+            if (isClick && !UIInputData.Instance()->IsKeyDown(SeVirtualKey.SHIFT))
             {
                 SwitchClassJob(8 + (uint)eventParam - 24);
                 return true;

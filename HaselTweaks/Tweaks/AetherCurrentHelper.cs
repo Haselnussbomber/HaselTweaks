@@ -1,6 +1,6 @@
-using Dalamud.Game.ClientState.Keys;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
@@ -18,7 +18,6 @@ public unsafe partial class AetherCurrentHelper : IConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly IGameInteropProvider _gameInteropProvider;
-    private readonly IKeyState _keyState;
     private readonly ExcelService _excelService;
     private readonly AetherCurrentHelperWindow _window;
     private readonly ConfigGui _configGui;
@@ -72,7 +71,7 @@ public unsafe partial class AetherCurrentHelper : IConfigurableTweak
 
     public bool OpenWindow(AgentAetherCurrent* agent, AtkValue* atkValue)
     {
-        if (_keyState[VirtualKey.SHIFT])
+        if (UIInputData.Instance()->IsKeyDown(SeVirtualKey.SHIFT))
             return false;
 
         if (atkValue == null)
