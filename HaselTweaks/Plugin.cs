@@ -13,7 +13,6 @@ public sealed class Plugin : IDalamudPlugin
 {
     public Plugin(
         IDalamudPluginInterface pluginInterface,
-        IFramework framework,
         ISigScanner sigScanner,
         IDataManager dataManager)
     {
@@ -33,9 +32,7 @@ public sealed class Plugin : IDalamudPlugin
             .AddHaselCommon()
             .AddHaselTweaks();
 
-        Service.BuildProvider();
-
-        framework.RunOnFrameworkThread(() =>
+        Service.Initialize(() =>
         {
             Service.Get<TweakManager>();
             Service.Get<CommandManager>();
