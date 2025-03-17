@@ -8,13 +8,13 @@ using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using HaselTweaks.Structs;
 using Lumina.Excel.Sheets;
 using Lumina.Extensions;
 using Lumina.Text;
@@ -41,8 +41,10 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
     private readonly MapService _mapService;
     private readonly ItemService _itemService;
 
+    private delegate void AddonRecipeMaterialList_SetupRowDelegates(AddonRecipeMaterialList* thisPtr, nint a2, nint a3);
+
     private Hook<AgentRecipeMaterialList.Delegates.ReceiveEvent>? _agentRecipeMaterialListReceiveEventHook;
-    private Hook<AddonRecipeMaterialList.Delegates.SetupRow>? _addonRecipeMaterialListSetupRowHook;
+    private Hook<AddonRecipeMaterialList_SetupRowDelegates>? _addonRecipeMaterialListSetupRowHook;
     private Hook<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>? _addItemContextMenuEntriesHook;
 
     private bool _canRefreshMaterialList;
@@ -64,8 +66,8 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
             AgentRecipeMaterialList.StaticVirtualTablePointer->ReceiveEvent,
             AgentRecipeMaterialListReceiveEventDetour);
 
-        _addonRecipeMaterialListSetupRowHook = _gameInteropProvider.HookFromAddress<AddonRecipeMaterialList.Delegates.SetupRow>(
-            AddonRecipeMaterialList.MemberFunctionPointers.SetupRow,
+        _addonRecipeMaterialListSetupRowHook = _gameInteropProvider.HookFromSignature<AddonRecipeMaterialList_SetupRowDelegates>(
+            "48 89 5C 24 ?? 48 89 54 24 ?? 48 89 4C 24 ?? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 50 49 8B 08",
             AddonRecipeMaterialListSetupRowDetour);
 
         _addItemContextMenuEntriesHook = _gameInteropProvider.HookFromAddress<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>(
@@ -181,7 +183,7 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
                 _canRefreshMaterialList = false;
                 return;
 
-            case AtkEventType.ListItemToggle:
+            case AtkEventType.ListItemClick:
                 if (!Config.ClickToOpenMap)
                     return;
 

@@ -11,7 +11,6 @@ using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using HaselTweaks.Structs;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
@@ -19,7 +18,8 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
 {
-    private const int NumClasses = 33;
+    private const int NumClasses = 33; // includes blue mage, crafters and gatherers
+    private const int NumPvPClasses = 21;
 
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;
@@ -253,7 +253,7 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
     {
         var addon = (AddonPvPCharacter*)args.Addon;
 
-        for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
+        for (var i = 0; i < NumPvPClasses; i++)
         {
             var entry = addon->ClassEntries.GetPointer(i);
             if (entry->Base == null) continue;
@@ -270,7 +270,7 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
     {
         _addonPvPCharacterUpdateClassesHook!.Original(addon, numberArrayData, stringArrayData);
 
-        for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
+        for (var i = 0; i < NumPvPClasses; i++)
         {
             var entry = addon->ClassEntries.GetPointer(i);
             if (entry->Base == null || entry->Icon == null) continue;
@@ -302,7 +302,7 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
             return false;
 
         var entryId = eventParam & 0x0000FFFF;
-        if (entryId is < 0 or > AddonPvPCharacter.NUM_CLASSES)
+        if (entryId is < 0 or > NumPvPClasses)
             return false;
 
         var entry = addon->ClassEntries.GetPointer(entryId);

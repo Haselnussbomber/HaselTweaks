@@ -4,13 +4,13 @@ using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Structs;
-using HaselTweaks.Structs.Agents;
 using HaselTweaks.Utils;
 using Lumina.Excel.Sheets;
 using Lumina.Text;
@@ -30,7 +30,7 @@ public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
     private readonly ExcelService _excelService;
     private readonly SeStringEvaluator _seStringEvaluator;
 
-    private Hook<HaselAgentHUD.Delegates.UpdateTargetInfo> _updateTargetInfoHook;
+    private Hook<AgentHUD.Delegates.UpdateTargetInfo> _updateTargetInfoHook;
     private Hook<HaselRaptureTextModule.Delegates.FormatAddonText2IntIntUInt> _formatAddonText2IntIntUIntHook;
 
     private ReadOnlySeString _rewrittenHealthPercentageText;
@@ -40,8 +40,8 @@ public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
 
     public void OnInitialize()
     {
-        _updateTargetInfoHook = _gameInteropProvider.HookFromAddress<HaselAgentHUD.Delegates.UpdateTargetInfo>(
-            HaselAgentHUD.MemberFunctionPointers.UpdateTargetInfo,
+        _updateTargetInfoHook = _gameInteropProvider.HookFromAddress<AgentHUD.Delegates.UpdateTargetInfo>(
+            AgentHUD.MemberFunctionPointers.UpdateTargetInfo,
             UpdateTargetInfoDetour);
 
         _formatAddonText2IntIntUIntHook = _gameInteropProvider.HookFromAddress<HaselRaptureTextModule.Delegates.FormatAddonText2IntIntUInt>(
@@ -92,7 +92,7 @@ public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
         Status = TweakStatus.Disposed;
     }
 
-    private void UpdateTargetInfoDetour(HaselAgentHUD* thisPtr)
+    private void UpdateTargetInfoDetour(AgentHUD* thisPtr)
     {
         _updateTargetInfoHook.Original(thisPtr);
 

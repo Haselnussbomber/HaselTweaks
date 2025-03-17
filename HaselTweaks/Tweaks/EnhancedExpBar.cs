@@ -13,7 +13,6 @@ using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using HaselTweaks.Structs.Agents;
 using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;
@@ -29,7 +28,7 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly ExcelService _excelService;
 
-    private Hook<HaselAgentHUD.Delegates.UpdateExp>? _updateExpHook;
+    private Hook<AgentHUD.Delegates.UpdateExp>? _updateExpHook;
     private byte _colorMultiplyRed = 100;
     private byte _colorMultiplyGreen = 100;
     private byte _colorMultiplyBlue = 100;
@@ -39,8 +38,8 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
 
     public void OnInitialize()
     {
-        _updateExpHook = _gameInteropProvider.HookFromAddress<HaselAgentHUD.Delegates.UpdateExp>(
-            HaselAgentHUD.MemberFunctionPointers.UpdateExp,
+        _updateExpHook = _gameInteropProvider.HookFromAddress<AgentHUD.Delegates.UpdateExp>(
+            AgentHUD.MemberFunctionPointers.UpdateExp,
             UpdateExpDetour);
     }
 
@@ -86,7 +85,7 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
     private void OnTerritoryChanged(ushort territoryType)
         => TriggerReset();
 
-    private void UpdateExpDetour(HaselAgentHUD* thisPtr, NumberArrayData* expNumberArray, StringArrayData* expStringArray, StringArrayData* characterStringArray)
+    private void UpdateExpDetour(AgentHUD* thisPtr, NumberArrayData* expNumberArray, StringArrayData* expStringArray, StringArrayData* characterStringArray)
     {
         _updateExpHook!.Original(thisPtr, expNumberArray, expStringArray, characterStringArray);
 

@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Structs.Agents;
 using Lumina.Text.ReadOnly;
 
 namespace HaselTweaks.Utils;
@@ -64,6 +64,6 @@ public static unsafe class TargetStatusUtils
 
     public static void ClearTimeRemainingCache()
     {
-        Unsafe.InitBlock(HaselAgentHUD.Instance()->TargetInfoTimeRemainingCache.GetPointer(0), 0, (8 + 4) * 30);
+        Unsafe.InitBlock(AgentHUD.Instance()->TargetInfoBuffTimeRemainingCache.GetPointer(0), 0, (8 + 4) * 30);
     }
 }

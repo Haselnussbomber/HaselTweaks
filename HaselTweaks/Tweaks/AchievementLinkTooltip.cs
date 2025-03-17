@@ -3,6 +3,7 @@ using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.String;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
@@ -53,9 +54,9 @@ public unsafe partial class AchievementLinkTooltip : IConfigurableTweak
 
     private void OnChatLogPanelPostReceiveEvent(AddonEvent type, AddonArgs args)
     {
-        var unitBase = (AtkUnitBase*)args.Addon;
+        var addon = (AddonChatLogPanel*)args.Addon;
 
-        if (!unitBase->IsReady || *(byte*)(args.Addon + 0x3A1) != 0 || *(byte*)(args.Addon + 0x3DE) != 0)
+        if (!addon->IsReady || addon->LogViewer.IsSelectingText || addon->IsResizing)
             return;
 
         if (args is not AddonReceiveEventArgs receiveEventArgs)
@@ -136,8 +137,8 @@ public unsafe partial class AchievementLinkTooltip : IConfigurableTweak
 
         // ShowTooltip call @ AddonChatLog_OnRefresh, case 0x12
         AtkStage.Instance()->TooltipManager.ShowTooltip(
-            unitBase->Id,
-            *(AtkResNode**)(args.Addon + 0x248),
+            addon->Id,
+            (AtkResNode*)addon->PanelCollisionNode,
             tooltipText.StringPtr.Value);
     }
 }
