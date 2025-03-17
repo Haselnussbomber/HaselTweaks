@@ -1,5 +1,11 @@
 # Changelog
 
+## [33.0.2] (2025-03-17)
+
+### Glamour Dresser Armoire Alert
+
+- **Fixed:** It was only possible to withdraw the first item due to an ImGui id conflict.
+
 ## [33.0.1] (2025-03-17)
 
 ### Glamour Dresser Armoire Alert
@@ -1947,6 +1953,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[33.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v33.0.1...v33.0.2
 [33.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v33.0.0...v33.0.1
 [33.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.1.1...v33.0.0
 [32.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.1.0...v32.1.1
