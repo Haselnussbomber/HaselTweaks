@@ -26,11 +26,15 @@ public unsafe partial class AchievementLinkTooltip : IConfigurableTweak
     private readonly TextService _textService;
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly ExcelService _excelService;
+    private Utf8String* _tooltipText;
 
     public string InternalName => nameof(AchievementLinkTooltip);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    public void OnInitialize() { }
+    public void OnInitialize()
+    {
+        _tooltipText = Utf8String.CreateEmpty();
+    }
 
     public void OnEnable()
     {
@@ -48,6 +52,12 @@ public unsafe partial class AchievementLinkTooltip : IConfigurableTweak
             return;
 
         OnDisable();
+
+        if (_tooltipText != null)
+        {
+            _tooltipText->Dtor(true);
+            _tooltipText = null;
+        }
 
         Status = TweakStatus.Disposed;
     }
@@ -73,8 +83,6 @@ public unsafe partial class AchievementLinkTooltip : IConfigurableTweak
 
         if (!_excelService.TryGetRow<Achievement>(linkData->UIntValue1, out var achievement))
             return;
-
-        using var tooltipText = new Utf8String();
 
         ref var achievements = ref UIState.Instance()->Achievement;
         var isComplete = achievements.IsComplete((int)achievement.RowId);
@@ -133,12 +141,12 @@ public unsafe partial class AchievementLinkTooltip : IConfigurableTweak
             }
         }
 
-        tooltipText.SetString(sb.ToArray());
+        _tooltipText->SetString(sb.ToArray());
 
         // ShowTooltip call @ AddonChatLog_OnRefresh, case 0x12
         AtkStage.Instance()->TooltipManager.ShowTooltip(
             addon->Id,
             (AtkResNode*)addon->PanelCollisionNode,
-            tooltipText.StringPtr.Value);
+            _tooltipText->StringPtr.Value);
     }
 }
