@@ -72,7 +72,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
 
     public void DrawItem(uint itemIndex, Item item, bool isHq)
     {
-        var popupKey = $"##ItemContextMenu_{item.RowId}_Tooltip";
+        using var id = ImRaii.PushId($"Item{item.RowId}");
 
         using (var group = ImRaii.Group())
         {
@@ -99,7 +99,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
             ImGui.TextUnformatted(_textService.GetItemName(item.RowId));
         }
 
-        _imGuiContextMenuService.Draw(popupKey, builder =>
+        _imGuiContextMenuService.Draw("ItemContextMenu", builder =>
         {
             builder
                 .AddTryOn(item)
