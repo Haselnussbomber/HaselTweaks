@@ -29,7 +29,6 @@ public unsafe partial class CastBarAetheryteNames : ITweak
     private TeleportInfo? _teleportInfo;
     private bool _isCastingTeleport;
 
-    public string InternalName => nameof(CastBarAetheryteNames);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

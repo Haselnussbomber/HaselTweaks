@@ -13,7 +13,6 @@ public unsafe partial class ExpertDeliveries : ITweak
     private readonly ILogger<ExpertDeliveries> _logger;
     private readonly AddonObserver _addonObserver;
 
-    public string InternalName => nameof(ExpertDeliveries);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }

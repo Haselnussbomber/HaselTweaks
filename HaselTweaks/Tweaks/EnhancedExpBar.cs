@@ -33,7 +33,6 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
     private byte _colorMultiplyGreen = 100;
     private byte _colorMultiplyBlue = 100;
 
-    public string InternalName => nameof(EnhancedExpBar);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

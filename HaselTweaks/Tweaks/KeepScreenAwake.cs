@@ -11,7 +11,6 @@ public sealed class KeepScreenAwake : ITweak
 {
     private readonly Timer _timer = new();
 
-    public string InternalName => nameof(KeepScreenAwake);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

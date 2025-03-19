@@ -30,7 +30,6 @@ public unsafe partial class AutoOpenRecipe : ITweak
     private CancellationTokenSource? _checkCTS;
     private DateTime _lastTimeRecipeOpened = DateTime.MinValue;
 
-    public string InternalName => nameof(AutoOpenRecipe);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }

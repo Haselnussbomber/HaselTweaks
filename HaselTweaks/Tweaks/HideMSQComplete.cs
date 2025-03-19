@@ -13,7 +13,6 @@ public unsafe partial class HideMSQComplete : ITweak
 {
     private readonly IAddonLifecycle _addonLifecycle;
 
-    public string InternalName => nameof(HideMSQComplete);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }

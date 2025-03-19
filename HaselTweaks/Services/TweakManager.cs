@@ -1,15 +1,16 @@
 using System.Collections.Generic;
-using Dalamud.Plugin.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
+using HaselTweaks.Extensions;
 using HaselTweaks.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Services;
 
 [RegisterSingleton, AutoConstruct]
 public partial class TweakManager
 {
-    private readonly IPluginLog _pluginLog;
+    private readonly ILogger<TweakManager> _logger;
     private readonly PluginConfig _pluginConfig;
     private readonly IEnumerable<ITweak> _tweaks;
 
@@ -21,31 +22,33 @@ public partial class TweakManager
             if (tweak.Status == TweakStatus.Outdated)
                 continue;
 
+            var tweakName = tweak.GetInternalName();
+
             try
             {
-                _pluginLog.Verbose($"Initializing {tweak.InternalName}");
+                _logger.LogTrace("Initializing {tweakName}", tweakName);
                 tweak.OnInitialize();
                 tweak.Status = TweakStatus.Disabled;
             }
             catch (Exception ex)
             {
                 tweak.Status = TweakStatus.InitializationFailed;
-                _pluginLog.Error(ex, $"[{tweak.InternalName}] Error while initializing tweak");
+                _logger.LogError(ex, "[{tweakName}] Error while initializing tweak", tweakName);
                 continue;
             }
 
-            if (!_pluginConfig.EnabledTweaks.Contains(tweak.InternalName))
+            if (!_pluginConfig.EnabledTweaks.Contains(tweakName))
                 continue;
 
             try
             {
-                _pluginLog.Verbose($"Enabling {tweak.InternalName}");
+                _logger.LogTrace("Enabling {tweakName}", tweakName);
                 tweak.OnEnable();
                 tweak.Status = TweakStatus.Enabled;
             }
             catch (Exception ex)
             {
-                _pluginLog.Error(ex, $"[{tweak.InternalName}] Error while enabling tweak");
+                _logger.LogError(ex, "[{tweakName}] Error while enabling tweak", tweakName);
             }
         }
     }
@@ -55,9 +58,11 @@ public partial class TweakManager
         tweak.OnEnable();
         tweak.Status = TweakStatus.Enabled;
 
-        if (!_pluginConfig.EnabledTweaks.Contains(tweak.InternalName))
+        var tweakName = tweak.GetInternalName();
+
+        if (!_pluginConfig.EnabledTweaks.Contains(tweakName))
         {
-            _pluginConfig.EnabledTweaks.Add(tweak.InternalName);
+            _pluginConfig.EnabledTweaks.Add(tweakName);
             _pluginConfig.Save();
         }
     }
@@ -67,9 +72,11 @@ public partial class TweakManager
         tweak.OnDisable();
         tweak.Status = TweakStatus.Disabled;
 
-        if (_pluginConfig.EnabledTweaks.Contains(tweak.InternalName))
+        var tweakName = tweak.GetInternalName();
+
+        if (_pluginConfig.EnabledTweaks.Contains(tweakName))
         {
-            _pluginConfig.EnabledTweaks.Remove(tweak.InternalName);
+            _pluginConfig.EnabledTweaks.Remove(tweakName);
             _pluginConfig.Save();
         }
     }

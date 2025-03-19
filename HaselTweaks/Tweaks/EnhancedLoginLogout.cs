@@ -52,7 +52,6 @@ public unsafe partial class EnhancedLoginLogout : IConfigurableTweak
     private BattleChara* _pet = null;
     private ushort _petIndex = 0xFFFF;
 
-    public string InternalName => nameof(EnhancedLoginLogout);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     #region Core

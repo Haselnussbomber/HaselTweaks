@@ -21,7 +21,6 @@ public unsafe partial class EnhancedIsleworksAgenda : IConfigurableTweak
 
     private Hook<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>? _receiveEventHook;
 
-    public string InternalName => nameof(EnhancedIsleworksAgenda);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

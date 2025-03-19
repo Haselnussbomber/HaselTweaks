@@ -33,7 +33,6 @@ public unsafe partial class InventoryHighlight : IConfigurableTweak
     private uint _hoveredItemId;
     private bool _wasHighlighting;
 
-    public string InternalName => nameof(InventoryHighlight);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }

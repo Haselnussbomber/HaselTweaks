@@ -13,7 +13,6 @@ public partial class RevealDutyRequirements : ITweak
 
     private MemoryReplacement? _patch;
 
-    public string InternalName => nameof(RevealDutyRequirements);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     /*

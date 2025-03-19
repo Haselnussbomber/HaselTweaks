@@ -32,7 +32,6 @@ public unsafe partial class Commands : IConfigurableTweak
     private CommandHandler? _whatBardingCommandCommandHandler;
     private CommandHandler? _glamourPlateCommandCommandHandler;
 
-    public string InternalName => nameof(Commands);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

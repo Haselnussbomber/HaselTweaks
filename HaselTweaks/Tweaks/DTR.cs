@@ -34,7 +34,6 @@ public unsafe partial class DTR : IConfigurableTweak
     private int _lastFrameRate;
     private uint _lastInstanceId;
 
-    public string InternalName => nameof(DTR);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }

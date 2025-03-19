@@ -22,7 +22,6 @@ public unsafe partial class CustomChatTimestamp : IConfigurableTweak
 
     private Hook<HaselRaptureTextModule.Delegates.FormatAddonText2Int>? _formatAddonText2IntHook;
 
-    public string InternalName => nameof(CustomChatTimestamp);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

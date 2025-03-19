@@ -13,7 +13,6 @@ public unsafe partial class FastMouseClickFix : ITweak
 
     private MemoryReplacement? _patch;
 
-    public string InternalName => nameof(FastMouseClickFix);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     [Signature("EB 3F B8 ?? ?? ?? ?? 48 8B D7"), AutoConstructIgnore]

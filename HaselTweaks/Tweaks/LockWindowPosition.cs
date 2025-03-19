@@ -49,7 +49,6 @@ public unsafe partial class LockWindowPosition : IConfigurableTweak
 
     private delegate bool RaptureAtkUnitManagerVf6Delegate(RaptureAtkUnitManager* self, nint a2);
 
-    public string InternalName => nameof(LockWindowPosition);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

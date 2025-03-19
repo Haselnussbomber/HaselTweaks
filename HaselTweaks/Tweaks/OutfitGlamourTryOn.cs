@@ -15,7 +15,6 @@ public unsafe partial class OutfitGlamourTryOn : ITweak
     private readonly ItemService _itemService;
     private readonly TextService _textService;
 
-    public string InternalName => nameof(OutfitGlamourTryOn);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }

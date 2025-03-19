@@ -18,7 +18,6 @@ public unsafe partial class SaferItemSearch : ITweak
 
     private bool _isSearching;
 
-    public string InternalName => nameof(SaferItemSearch);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }

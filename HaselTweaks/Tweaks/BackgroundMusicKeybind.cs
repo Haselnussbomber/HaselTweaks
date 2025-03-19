@@ -22,7 +22,6 @@ public unsafe partial class BackgroundMusicKeybind : IConfigurableTweak
 
     private bool _isPressingKeybind;
 
-    public string InternalName => nameof(BackgroundMusicKeybind);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private bool IsBgmMuted

@@ -103,7 +103,6 @@ public unsafe partial class AutoSorter : IConfigurableTweak
     private readonly Queue<IGrouping<string, AutoSorterConfiguration.SortingRule>> _queue = new();
     private bool _isBusy = false;
 
-    public string InternalName => nameof(AutoSorter);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private bool IsRetainerInventoryOpen => _addonObserver.IsAddonVisible("InventoryRetainer") || _addonObserver.IsAddonVisible("InventoryRetainerLarge");

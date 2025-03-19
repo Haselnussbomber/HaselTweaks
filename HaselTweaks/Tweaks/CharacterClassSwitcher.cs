@@ -36,7 +36,6 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
     private Hook<AddonPvPCharacter.Delegates.ReceiveEvent>? _addonPvPCharacterReceiveEventHook;
     private Hook<AgentStatus.Delegates.Show>? _agentStatusShowHook;
 
-    public string InternalName => nameof(CharacterClassSwitcher);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

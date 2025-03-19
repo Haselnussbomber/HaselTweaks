@@ -57,7 +57,6 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
     private DateTime _timeOfRecipeTreeRefresh;
     private bool _handleRecipeResultItemContextMenu;
 
-    public string InternalName => nameof(EnhancedMaterialList);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

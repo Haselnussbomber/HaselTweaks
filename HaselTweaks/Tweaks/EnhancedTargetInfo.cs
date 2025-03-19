@@ -35,7 +35,6 @@ public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
 
     private ReadOnlySeString _rewrittenHealthPercentageText;
 
-    public string InternalName => nameof(EnhancedTargetInfo);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

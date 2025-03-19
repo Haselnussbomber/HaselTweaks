@@ -11,6 +11,7 @@ using Dalamud.Plugin.Services;
 using HaselCommon.Gui;
 using HaselCommon.Services;
 using HaselTweaks.Enums;
+using HaselTweaks.Extensions;
 using HaselTweaks.Interfaces;
 using HaselTweaks.Services;
 using ImGuiNET;
@@ -61,7 +62,7 @@ public partial class PluginWindow : SimpleWindow
 
     private void SortTweaksbyName()
     {
-        _orderedTweaks = [.. _tweaks.OrderBy(tweak => _textService.TryGetTranslation(tweak.InternalName + ".Tweak.Name", out var name) ? name : tweak.InternalName)];
+        _orderedTweaks = [.. _tweaks.OrderBy(tweak => _textService.TryGetTranslation(tweak.GetInternalName() + ".Tweak.Name", out var name) ? name : tweak.GetInternalName())];
     }
 
     public override void OnOpen()
@@ -110,6 +111,8 @@ public partial class PluginWindow : SimpleWindow
 
         foreach (var tweak in _orderedTweaks)
         {
+            var tweakName = tweak.GetInternalName();
+
             ImGui.TableNextRow();
             ImGui.TableNextColumn();
 
@@ -163,7 +166,7 @@ public partial class PluginWindow : SimpleWindow
             else
             {
                 var enabled = status == TweakStatus.Enabled;
-                if (ImGui.Checkbox($"##Enabled_{tweak.InternalName}", ref enabled))
+                if (ImGui.Checkbox($"##Enabled_{tweakName}", ref enabled))
                 {
                     // TODO: catch errors and display them
                     if (!enabled)
@@ -189,17 +192,19 @@ public partial class PluginWindow : SimpleWindow
                 ImGui.PushStyleColor(ImGuiCol.Text, (uint)Color.Grey);
             }
 
-            if (!_textService.TryGetTranslation(tweak.InternalName + ".Tweak.Name", out var name))
-                name = tweak.InternalName;
+            if (!_textService.TryGetTranslation(tweakName + ".Tweak.Name", out var name))
+                name = tweakName;
 
-            if (ImGui.Selectable(name + "##Selectable_" + tweak.InternalName, _selectedTweak != null && _selectedTweak.InternalName == tweak.InternalName))
+            var selectedTweakName = _selectedTweak?.GetInternalName();
+
+            if (ImGui.Selectable(name + "##Selectable_" + tweakName, _selectedTweak != null && selectedTweakName == tweakName))
             {
                 if (_selectedTweak is IConfigurableTweak configurableTweak)
                     configurableTweak.OnConfigClose();
 
-                if (_selectedTweak == null || _selectedTweak.InternalName != tweak.InternalName)
+                if (_selectedTweak == null || selectedTweakName != tweakName)
                 {
-                    _selectedTweak = _orderedTweaks.FirstOrDefault(t => t.InternalName == tweak.InternalName);
+                    _selectedTweak = _orderedTweaks.FirstOrDefault(t => t.GetInternalName() == tweakName);
 
                     if (_selectedTweak is IConfigurableTweak configurableTweak2)
                         configurableTweak2.OnConfigOpen();
@@ -260,9 +265,11 @@ public partial class PluginWindow : SimpleWindow
             return;
         }
 
-        using var id = ImRaii.PushId(_selectedTweak.InternalName);
+        var selectedTweakName = _selectedTweak.GetInternalName();
 
-        ImGuiUtils.TextUnformattedColored(Color.Gold, _textService.TryGetTranslation(_selectedTweak.InternalName + ".Tweak.Name", out var name) ? name : _selectedTweak.InternalName);
+        using var id = ImRaii.PushId(selectedTweakName);
+
+        ImGuiUtils.TextUnformattedColored(Color.Gold, _textService.TryGetTranslation(selectedTweakName + ".Tweak.Name", out var name) ? name : selectedTweakName);
 
         var statusText = _textService.Translate("HaselTweaks.Config.TweakStatus." + Enum.GetName(_selectedTweak.Status));
         var statusColor = _selectedTweak.Status switch
@@ -278,7 +285,7 @@ public partial class PluginWindow : SimpleWindow
 
         ImGuiUtils.TextUnformattedColored(statusColor, statusText);
 
-        if (_textService.TryGetTranslation(_selectedTweak.InternalName + ".Tweak.Description", out var description))
+        if (_textService.TryGetTranslation(selectedTweakName + ".Tweak.Description", out var description))
         {
             ImGuiUtils.DrawPaddedSeparator();
             ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);

@@ -28,7 +28,6 @@ public unsafe partial class GlamourDresserArmoireAlert : ITweak
     private bool _isPrismBoxOpen;
     private uint[]? _lastItemIds = null;
 
-    public string InternalName => nameof(GlamourDresserArmoireAlert);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public Dictionary<uint, Dictionary<uint, (Item Item, bool IsHq)>> Categories { get; } = [];

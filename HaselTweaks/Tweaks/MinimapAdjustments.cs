@@ -18,7 +18,6 @@ public unsafe partial class MinimapAdjustments : IConfigurableTweak
 
     private float _targetAlpha;
 
-    public string InternalName => nameof(MinimapAdjustments);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }

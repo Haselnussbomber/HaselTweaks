@@ -15,7 +15,6 @@ public unsafe partial class SimpleAethernetList : ITweak
 
     private Hook<AddonTeleportTown.Delegates.ReceiveEvent>? _receiveEventHook;
 
-    public string InternalName => nameof(SimpleAethernetList);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

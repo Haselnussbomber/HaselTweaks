@@ -21,7 +21,6 @@ public unsafe partial class SearchTheMarkets : ITweak
     private MenuItem? _menuItem;
     private ExcelRowId<Item> _itemId;
 
-    public string InternalName => nameof(SearchTheMarkets);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }

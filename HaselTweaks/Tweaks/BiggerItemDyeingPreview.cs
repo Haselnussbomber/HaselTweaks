@@ -12,7 +12,6 @@ public unsafe partial class BiggerItemDyeingPreview : ITweak
 {
     private readonly IAddonLifecycle _addonLifecycle;
 
-    public string InternalName => nameof(BiggerItemDyeingPreview);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }

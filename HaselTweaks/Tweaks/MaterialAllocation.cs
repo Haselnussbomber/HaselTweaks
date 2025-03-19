@@ -15,7 +15,6 @@ public unsafe partial class MaterialAllocation : IConfigurableTweak
     private readonly PluginConfig _pluginConfig;
     private readonly IAddonLifecycle _addonLifecycle;
 
-    public string InternalName => nameof(MaterialAllocation);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private MaterialAllocationConfiguration Config => _pluginConfig.Tweaks.MaterialAllocation;

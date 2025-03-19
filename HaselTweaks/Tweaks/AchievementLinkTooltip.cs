@@ -28,7 +28,6 @@ public unsafe partial class AchievementLinkTooltip : IConfigurableTweak
     private readonly ExcelService _excelService;
     private Utf8String* _tooltipText;
 
-    public string InternalName => nameof(AchievementLinkTooltip);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

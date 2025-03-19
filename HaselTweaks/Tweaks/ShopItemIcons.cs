@@ -20,7 +20,6 @@ public unsafe partial class ShopItemIcons : IConfigurableTweak
     private readonly ItemService _itemService;
     private readonly IAddonLifecycle _addonLifecycle;
 
-    public string InternalName => nameof(ShopItemIcons);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }

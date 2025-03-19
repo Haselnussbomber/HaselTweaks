@@ -16,7 +16,6 @@ public unsafe partial class FixInventoryOpenTab : ITweak
     private readonly ILogger<FixInventoryOpenTab> _logger;
     private readonly IAddonLifecycle _addonLifecycle;
 
-    public string InternalName => nameof(FixInventoryOpenTab);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }

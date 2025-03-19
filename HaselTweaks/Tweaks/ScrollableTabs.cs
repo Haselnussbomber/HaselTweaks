@@ -32,7 +32,6 @@ public unsafe partial class ScrollableTabs : IConfigurableTweak
 
     private int _wheelState;
 
-    public string InternalName => nameof(ScrollableTabs);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private AtkCollisionNode* IntersectingCollisionNode

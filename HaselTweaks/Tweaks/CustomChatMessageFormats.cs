@@ -27,7 +27,6 @@ public unsafe partial class CustomChatMessageFormats : IConfigurableTweak
 
     private Hook<HaselRaptureLogModule.Delegates.FormatLogMessage>? _formatLogMessageHook;
 
-    public string InternalName => nameof(CustomChatMessageFormats);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

@@ -24,7 +24,6 @@ public unsafe partial class AetherCurrentHelper : IConfigurableTweak
 
     private Hook<AgentAetherCurrent.Delegates.ReceiveEvent>? _receiveEventHook;
 
-    public string InternalName => nameof(AetherCurrentHelper);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

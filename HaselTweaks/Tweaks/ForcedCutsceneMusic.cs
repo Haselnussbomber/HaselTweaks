@@ -37,7 +37,6 @@ public unsafe partial class ForcedCutsceneMusic : IConfigurableTweak
 
     private delegate void CutSceneControllerDtorDelegate(CutSceneController* self, byte freeFlags);
 
-    public string InternalName => nameof(ForcedCutsceneMusic);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

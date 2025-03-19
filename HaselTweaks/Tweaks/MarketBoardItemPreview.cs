@@ -20,7 +20,6 @@ public unsafe partial class MarketBoardItemPreview : ITweak
     private readonly TextService _textService;
     private readonly ItemService _itemService;
 
-    public string InternalName => nameof(MarketBoardItemPreview);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }

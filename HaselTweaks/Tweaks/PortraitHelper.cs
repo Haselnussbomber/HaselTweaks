@@ -57,7 +57,6 @@ public unsafe partial class PortraitHelper : IConfigurableTweak
     private bool _wasBoundByDuty;
     private bool _blockBannerPreview;
 
-    public string InternalName => nameof(PortraitHelper);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()

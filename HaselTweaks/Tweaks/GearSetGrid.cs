@@ -18,7 +18,6 @@ public partial class GearSetGrid : IConfigurableTweak
 
     private CommandHandler? _gsgCommand;
 
-    public string InternalName => nameof(GearSetGrid);
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()
