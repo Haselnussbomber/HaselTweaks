@@ -102,11 +102,11 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
         _imGuiContextMenuService.Draw("ItemContextMenu", builder =>
         {
             builder
-                .AddTryOn(item)
+                .AddTryOn(item.RowId)
                 .AddItemFinder(item.RowId)
                 .AddCopyItemName(item.RowId)
                 .AddOpenOnGarlandTools("item", item.RowId)
-                .AddItemSearch(item);
+                .AddItemSearch(item.RowId);
         });
     }
 

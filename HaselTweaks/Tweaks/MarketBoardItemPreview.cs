@@ -6,7 +6,6 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using Lumina.Excel.Sheets;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
@@ -54,12 +53,9 @@ public unsafe partial class MarketBoardItemPreview : ITweak
         var itemId = AgentItemSearch.Instance()->ListingPageItemIds[itemIndex];
         _logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId} @ {addr:X}", itemIndex, itemId, args.Addon + itemIndex * 4 + 0xBBC);
 
-        if (!_excelService.TryGetRow<Item>(itemId, out var item))
-            return;
-
-        if (!_itemService.CanTryOn(item))
+        if (!_itemService.CanTryOn(itemId))
         {
-            _logger.LogInformation("Skipping preview of {name}, because it can't be tried on", _textService.GetItemName(item));
+            _logger.LogInformation("Skipping preview of {name}, because it can't be tried on", _textService.GetItemName(itemId));
             return;
         }
 

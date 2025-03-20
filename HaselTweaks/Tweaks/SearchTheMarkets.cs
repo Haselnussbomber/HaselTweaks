@@ -3,7 +3,6 @@ using Dalamud.Game.Text;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Services;
-using HaselCommon.Utils;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using Lumina.Excel.Sheets;
@@ -19,7 +18,7 @@ public unsafe partial class SearchTheMarkets : ITweak
     private readonly ItemService _itemService;
 
     private MenuItem? _menuItem;
-    private ExcelRowId<Item> _itemId;
+    private uint _itemId;
 
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
@@ -73,7 +72,7 @@ public unsafe partial class SearchTheMarkets : ITweak
         if (_menuItem == null)
             return;
 
-        ExcelRowId<Item> itemId = args.AddonName switch
+        var itemId = args.AddonName switch
         {
             _ when args.Target is MenuTargetInventory inv => inv.TargetItem?.ItemId ?? 0,
             "GatheringNote" => AgentGatheringNote.Instance()->ContextMenuItemId,
@@ -88,9 +87,9 @@ public unsafe partial class SearchTheMarkets : ITweak
         if (itemId == 0)
             return;
 
-        itemId = itemId.GetBaseId();
+        itemId = GetBaseItemId(itemId);
 
-        if (itemId.IsEventItem())
+        if (IsEventItem(itemId))
             return;
 
         _itemId = itemId;

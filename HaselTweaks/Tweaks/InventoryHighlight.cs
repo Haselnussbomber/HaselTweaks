@@ -471,8 +471,8 @@ public unsafe partial class InventoryHighlight : IConfigurableTweak
         return container->GetInventorySlot(item->Slot);
     }
 
-    private uint NormalizeItemId(ExcelRowId<Item> itemId)
+    private uint NormalizeItemId(uint itemId)
         => Config.IgnoreQuality
-            ? itemId.GetBaseId()
+            ? GetBaseItemId(itemId)
             : itemId;
 }

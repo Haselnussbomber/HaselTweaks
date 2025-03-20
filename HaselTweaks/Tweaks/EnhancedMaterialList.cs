@@ -193,11 +193,7 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
                 var rowData = **(nint**)(data + 0x08);
                 var itemId = *(uint*)(rowData + 0x04);
 
-                var itemRef = _excelService.CreateRef<Item>(itemId);
-                if (!itemRef.IsValid)
-                    return;
-
-                if (Config.DisableClickToOpenMapForCrystals && itemRef.Value.ItemUICategory.RowId == 59)
+                if (Config.DisableClickToOpenMapForCrystals && (!_excelService.TryGetRow<Item>(itemId, out var item) || item.ItemUICategory.RowId == 59))
                     return;
 
                 var tuple = GetPointForItem(itemId);
@@ -206,7 +202,7 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
 
                 var (totalPoints, point, cost, isSameZone, placeName) = tuple.Value;
 
-                _mapService.OpenMap(point, itemRef, "HaselTweaks"u8);
+                _mapService.OpenMap(point, itemId, "HaselTweaks"u8);
 
                 return;
 

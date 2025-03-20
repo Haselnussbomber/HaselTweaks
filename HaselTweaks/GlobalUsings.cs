@@ -7,5 +7,6 @@ global using InteropGenerator.Runtime.Attributes;
 global using static FFXIVClientStructs.Interop.SpanExtensions;
 global using static HaselCommon.Globals.Addon;
 global using static HaselCommon.Globals.Atk;
+global using static HaselCommon.Globals.ItemHelpers;
 global using Color = HaselCommon.Graphics.Color;
 global using Service = HaselCommon.Service;
