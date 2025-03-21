@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Companion Color Preview
+
+Shows a small drop-down menu above the "Companion" window to select the color of your own chocobo. This is just to preview the colors and will not be saved!
+
 ## [33.0.2] (2025-03-17)
 
 ### Glamour Dresser Armoire Alert

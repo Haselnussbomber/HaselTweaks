@@ -90,6 +90,10 @@ Available Commands:
 - `/glamourplate <id>`  
   This shortcut command executes the "/gearset change" command with the current gear set id and the given glamour plate id (1-20).
 
+### Companion Color Preview
+
+Shows a small drop-down menu above the "Companion" window to select the color of your own chocobo. This is just to preview the colors and will not be saved!
+
 ### Custom Chat Message Formats
 
 Lets you customize message formats for various chat channels.

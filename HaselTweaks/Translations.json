@@ -392,6 +392,17 @@
     "zh": "增加“染色”窗口中角色预览部分的大小。"
   },
 
+  "CompanionColorPreview.Tweak.Name": {
+    "en": "Companion Color Preview"
+  },
+  "CompanionColorPreview.Tweak.Description": {
+    "en": "Shows a small drop-down menu above the \"Companion\" window to select the color of your own chocobo. This is just to preview the colors and will not be saved!",
+    "de": "Zeigt ein kleines Dropdown-Menü über dem \"MITSTREITER\"-Fenster an, um die Farbe des eigenen Chocobos auszuwählen. Dies dient nur zur Vorschau der Farben und wird nicht gespeichert!"
+  },
+  "CompanionColorPreviewWindow.Title": {
+    "en": "Companion Color Preview"
+  },
+
   "CastBarAetheryteNames.Tweak.Name": {
     "en": "Cast Bar Aetheryte Names",
     "zh": "咏唱以太之光之名"
