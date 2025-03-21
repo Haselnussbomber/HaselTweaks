@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Dalamud.NET.Sdk/11.2.0">
   <PropertyGroup>
-    <Version>33.0.2</Version>
+    <Version>34.0.0</Version>
     <OutputPath>..\bin\</OutputPath>
   </PropertyGroup>
 

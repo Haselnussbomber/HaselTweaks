@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [34.0.0] (2025-03-17)
 
 ### New Tweak: Companion Color Preview
 
@@ -1959,6 +1959,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[34.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v33.0.2...v34.0.0
 [33.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v33.0.1...v33.0.2
 [33.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v33.0.0...v33.0.1
 [33.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v32.1.1...v33.0.0
