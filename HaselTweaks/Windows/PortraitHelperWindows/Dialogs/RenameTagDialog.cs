@@ -6,54 +6,53 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
-[RegisterScoped]
-public class RenameTagDialog : ConfirmationDialog
+[RegisterScoped, AutoConstruct]
+public partial class RenameTagDialog : ConfirmationDialog
 {
-    private readonly PluginConfig PluginConfig;
-    private readonly TextService TextService;
+    private readonly PluginConfig _pluginConfig;
+    private readonly TextService _textService;
 
-    private readonly ConfirmationButton SaveButton;
-    private SavedPresetTag? Tag = null;
-    private string? Name;
+    private ConfirmationButton _saveButton;
+    private SavedPresetTag? _tag = null;
+    private string? _name;
 
-    public RenameTagDialog(PluginConfig pluginConfig, TextService textService)
-        : base(textService.Translate("PortraitHelperWindows.RenameTagDialog.Title"))
+    [AutoPostConstruct]
+    public void Initialize()
     {
-        PluginConfig = pluginConfig;
-        TextService = textService;
+        WindowName = _textService.Translate("PortraitHelperWindows.RenameTagDialog.Title");
 
-        AddButton(SaveButton = new ConfirmationButton(textService.Translate("ConfirmationButtonWindow.Save"), OnSave));
-        AddButton(new ConfirmationButton(textService.Translate("ConfirmationButtonWindow.Cancel"), Close));
+        AddButton(_saveButton = new ConfirmationButton(_textService.Translate("ConfirmationButtonWindow.Save"), OnSave));
+        AddButton(new ConfirmationButton(_textService.Translate("ConfirmationButtonWindow.Cancel"), Close));
     }
 
     public void Open(SavedPresetTag tag)
     {
-        Tag = tag;
-        Name = tag.Name;
+        _tag = tag;
+        _name = tag.Name;
         Show();
     }
 
     public void Close()
     {
         Hide();
-        Tag = null;
-        Name = null;
+        _tag = null;
+        _name = null;
     }
 
     public override bool DrawCondition()
-        => base.DrawCondition() && Tag != null && Name != null;
+        => base.DrawCondition() && _tag != null && _name != null;
 
     public override void InnerDraw()
     {
-        ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.RenameTagDialog.Name.Label", Tag!.Name));
+        ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.RenameTagDialog.Name.Label", _tag!.Name));
 
         ImGui.Spacing();
 
-        ImGui.InputText("##TagName", ref Name, 30);
+        ImGui.InputText("##TagName", ref _name, 30);
 
-        var disabled = string.IsNullOrEmpty(Name.Trim()) && Name.Trim() != Tag!.Name.Trim();
+        var disabled = string.IsNullOrEmpty(_name.Trim()) && _name.Trim() != _tag!.Name.Trim();
 
-        SaveButton.Disabled = disabled;
+        _saveButton.Disabled = disabled;
 
         if (!disabled && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter)))
         {
@@ -63,14 +62,14 @@ public class RenameTagDialog : ConfirmationDialog
 
     private void OnSave()
     {
-        if (Tag == null || string.IsNullOrEmpty(Name?.Trim()))
+        if (_tag == null || string.IsNullOrEmpty(_name?.Trim()))
         {
             Close();
             return;
         }
 
-        Tag.Name = Name.Trim();
-        PluginConfig.Save();
+        _tag.Name = _name.Trim();
+        _pluginConfig.Save();
 
         Close();
     }

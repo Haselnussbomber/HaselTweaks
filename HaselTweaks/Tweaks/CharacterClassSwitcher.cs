@@ -1,104 +1,100 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Game.ClientState.Keys;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Game;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using HaselTweaks.Structs;
 using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class CharacterClassSwitcher(
-    PluginConfig PluginConfig,
-    ConfigGui ConfigGui,
-    TextService TextService,
-    ILogger<CharacterClassSwitcher> Logger,
-    IGameInteropProvider GameInteropProvider,
-    IAddonLifecycle AddonLifecycle,
-    IKeyState KeyState,
-    IChatGui ChatGui,
-    GamepadService GamepadService)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
 {
-    public string InternalName => nameof(CharacterClassSwitcher);
+    private const int NumClasses = 33; // includes blue mage, crafters and gatherers
+    private const int NumPvPClasses = 21;
+
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly TextService _textService;
+    private readonly ILogger<CharacterClassSwitcher> _logger;
+    private readonly IGameInteropProvider _gameInteropProvider;
+    private readonly IAddonLifecycle _addonLifecycle;
+
+    private Hook<AtkTooltipManager.Delegates.ShowTooltip>? _atkTooltipManagerShowTooltipHook;
+    private Hook<AddonCharacterClass.Delegates.OnSetup>? _addonCharacterClassOnSetupHook;
+    private Hook<AddonCharacterClass.Delegates.OnRequestedUpdate>? _addonCharacterClassOnRequestedUpdateHook;
+    private Hook<AddonCharacterClass.Delegates.ReceiveEvent>? _addonCharacterClassReceiveEventHook;
+    private Hook<AddonPvPCharacter.Delegates.UpdateClasses>? _addonPvPCharacterUpdateClassesHook;
+    private Hook<AddonPvPCharacter.Delegates.ReceiveEvent>? _addonPvPCharacterReceiveEventHook;
+    private Hook<AgentStatus.Delegates.Show>? _agentStatusShowHook;
+
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    private const int NumClasses = 33;
-
-    private Hook<AtkTooltipManager.Delegates.ShowTooltip>? AtkTooltipManagerShowTooltipHook;
-    private Hook<AddonCharacterClass.Delegates.OnSetup>? AddonCharacterClassOnSetupHook;
-    private Hook<AddonCharacterClass.Delegates.OnRequestedUpdate>? AddonCharacterClassOnRequestedUpdateHook;
-    private Hook<AddonCharacterClass.Delegates.ReceiveEvent>? AddonCharacterClassReceiveEventHook;
-    private Hook<AddonPvPCharacter.Delegates.UpdateClasses>? AddonPvPCharacterUpdateClassesHook;
-    private Hook<AddonPvPCharacter.Delegates.ReceiveEvent>? AddonPvPCharacterReceiveEventHook;
-    private Hook<AgentStatus.Delegates.Show>? AgentStatusShowHook;
 
     public void OnInitialize()
     {
-        GameInteropProvider.InitializeFromAttributes(this);
+        _gameInteropProvider.InitializeFromAttributes(this);
 
-        AtkTooltipManagerShowTooltipHook = GameInteropProvider.HookFromAddress<AtkTooltipManager.Delegates.ShowTooltip>(
+        _atkTooltipManagerShowTooltipHook = _gameInteropProvider.HookFromAddress<AtkTooltipManager.Delegates.ShowTooltip>(
             AtkTooltipManager.Addresses.ShowTooltip.Value,
             AtkTooltipManagerShowTooltipDetour);
 
-        AddonCharacterClassOnSetupHook = GameInteropProvider.HookFromAddress<AddonCharacterClass.Delegates.OnSetup>(
+        _addonCharacterClassOnSetupHook = _gameInteropProvider.HookFromAddress<AddonCharacterClass.Delegates.OnSetup>(
             AddonCharacterClass.StaticVirtualTablePointer->OnSetup,
             AddonCharacterClassOnSetupDetour);
 
-        AddonCharacterClassOnRequestedUpdateHook = GameInteropProvider.HookFromAddress<AddonCharacterClass.Delegates.OnRequestedUpdate>(
+        _addonCharacterClassOnRequestedUpdateHook = _gameInteropProvider.HookFromAddress<AddonCharacterClass.Delegates.OnRequestedUpdate>(
             AddonCharacterClass.StaticVirtualTablePointer->OnRequestedUpdate,
             AddonCharacterClassOnRequestedUpdateDetour);
 
-        AddonCharacterClassReceiveEventHook = GameInteropProvider.HookFromAddress<AddonCharacterClass.Delegates.ReceiveEvent>(
+        _addonCharacterClassReceiveEventHook = _gameInteropProvider.HookFromAddress<AddonCharacterClass.Delegates.ReceiveEvent>(
             AddonCharacterClass.StaticVirtualTablePointer->ReceiveEvent,
             AddonCharacterClassReceiveEventDetour);
 
-        AddonPvPCharacterUpdateClassesHook = GameInteropProvider.HookFromAddress<AddonPvPCharacter.Delegates.UpdateClasses>(
+        _addonPvPCharacterUpdateClassesHook = _gameInteropProvider.HookFromAddress<AddonPvPCharacter.Delegates.UpdateClasses>(
             AddonPvPCharacter.MemberFunctionPointers.UpdateClasses,
             AddonPvPCharacterUpdateClassesDetour);
 
-        AddonPvPCharacterReceiveEventHook = GameInteropProvider.HookFromAddress<AddonPvPCharacter.Delegates.ReceiveEvent>(
+        _addonPvPCharacterReceiveEventHook = _gameInteropProvider.HookFromAddress<AddonPvPCharacter.Delegates.ReceiveEvent>(
             AddonPvPCharacter.StaticVirtualTablePointer->ReceiveEvent,
             AddonPvPCharacterReceiveEventDetour);
 
-        AgentStatusShowHook = GameInteropProvider.HookFromAddress<AgentStatus.Delegates.Show>(
+        _agentStatusShowHook = _gameInteropProvider.HookFromAddress<AgentStatus.Delegates.Show>(
             AgentStatus.Instance()->VirtualTable->Show,
             AgentStatusShowDetour);
     }
 
     public void OnEnable()
     {
-        AtkTooltipManagerShowTooltipHook?.Enable();
-        AddonCharacterClassOnSetupHook?.Enable();
-        AddonCharacterClassOnRequestedUpdateHook?.Enable();
-        AddonCharacterClassReceiveEventHook?.Enable();
-        AddonPvPCharacterUpdateClassesHook?.Enable();
-        AddonPvPCharacterReceiveEventHook?.Enable();
-        AgentStatusShowHook?.Enable();
+        _atkTooltipManagerShowTooltipHook?.Enable();
+        _addonCharacterClassOnSetupHook?.Enable();
+        _addonCharacterClassOnRequestedUpdateHook?.Enable();
+        _addonCharacterClassReceiveEventHook?.Enable();
+        _addonPvPCharacterUpdateClassesHook?.Enable();
+        _addonPvPCharacterReceiveEventHook?.Enable();
+        _agentStatusShowHook?.Enable();
 
-        AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "PvPCharacter", PvPCharacterOnSetup);
+        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "PvPCharacter", PvPCharacterOnSetup);
     }
 
     public void OnDisable()
     {
-        AtkTooltipManagerShowTooltipHook?.Disable();
-        AddonCharacterClassOnSetupHook?.Disable();
-        AddonCharacterClassOnRequestedUpdateHook?.Disable();
-        AddonCharacterClassReceiveEventHook?.Disable();
-        AddonPvPCharacterUpdateClassesHook?.Disable();
-        AddonPvPCharacterReceiveEventHook?.Disable();
-        AgentStatusShowHook?.Disable();
+        _atkTooltipManagerShowTooltipHook?.Disable();
+        _addonCharacterClassOnSetupHook?.Disable();
+        _addonCharacterClassOnRequestedUpdateHook?.Disable();
+        _addonCharacterClassReceiveEventHook?.Disable();
+        _addonPvPCharacterUpdateClassesHook?.Disable();
+        _addonPvPCharacterReceiveEventHook?.Disable();
+        _agentStatusShowHook?.Disable();
 
-        AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "PvPCharacter", PvPCharacterOnSetup);
+        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "PvPCharacter", PvPCharacterOnSetup);
     }
 
     void IDisposable.Dispose()
@@ -107,16 +103,15 @@ public unsafe partial class CharacterClassSwitcher(
             return;
 
         OnDisable();
-        AtkTooltipManagerShowTooltipHook?.Dispose();
-        AddonCharacterClassOnSetupHook?.Dispose();
-        AddonCharacterClassOnRequestedUpdateHook?.Dispose();
-        AddonCharacterClassReceiveEventHook?.Dispose();
-        AddonPvPCharacterUpdateClassesHook?.Dispose();
-        AddonPvPCharacterReceiveEventHook?.Dispose();
-        AgentStatusShowHook?.Dispose();
+        _atkTooltipManagerShowTooltipHook?.Dispose();
+        _addonCharacterClassOnSetupHook?.Dispose();
+        _addonCharacterClassOnRequestedUpdateHook?.Dispose();
+        _addonCharacterClassReceiveEventHook?.Dispose();
+        _addonPvPCharacterUpdateClassesHook?.Dispose();
+        _addonPvPCharacterReceiveEventHook?.Dispose();
+        _agentStatusShowHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private static bool IsCrafter(int id)
@@ -141,12 +136,12 @@ public unsafe partial class CharacterClassSwitcher(
             return;
         }
 
-        AtkTooltipManagerShowTooltipHook!.Original(thisPtr, type, parentId, targetNode, tooltipArgs, unkDelegate, unk7, unk8);
+        _atkTooltipManagerShowTooltipHook!.Original(thisPtr, type, parentId, targetNode, tooltipArgs, unkDelegate, unk7, unk8);
     }
 
     private void AddonCharacterClassOnSetupDetour(AddonCharacterClass* addon, uint numAtkValues, AtkValue* atkValues)
     {
-        AddonCharacterClassOnSetupHook!.Original(addon, numAtkValues, atkValues);
+        _addonCharacterClassOnSetupHook!.Original(addon, numAtkValues, atkValues);
 
         for (var i = 0; i < NumClasses; i++)
         {
@@ -176,7 +171,7 @@ public unsafe partial class CharacterClassSwitcher(
 
     private void AddonCharacterClassOnRequestedUpdateDetour(AddonCharacterClass* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        AddonCharacterClassOnRequestedUpdateHook!.Original(addon, numberArrayData, stringArrayData);
+        _addonCharacterClassOnRequestedUpdateHook!.Original(addon, numberArrayData, stringArrayData);
 
         for (var i = 0; i < NumClasses; i++)
         {
@@ -211,13 +206,13 @@ public unsafe partial class CharacterClassSwitcher(
 
     private void AddonCharacterClassReceiveEventDetour(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData)
     {
-        if (HandleAddonCharacterClassEvent(addon, eventType, eventParam))
+        if (HandleAddonCharacterClassEvent(addon, eventType, eventParam, atkEventData))
             return;
 
-        AddonCharacterClassReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
+        _addonCharacterClassReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 
-    private bool HandleAddonCharacterClassEvent(AddonCharacterClass* addon, AtkEventType eventType, int eventParam)
+    private bool HandleAddonCharacterClassEvent(AddonCharacterClass* addon, AtkEventType eventType, int eventParam, AtkEventData* atkEventData)
     {
         // skip events for tabs
         if (eventParam < 2)
@@ -241,23 +236,23 @@ public unsafe partial class CharacterClassSwitcher(
         {
             var isClick =
                 eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick ||
-                (eventType == AtkEventType.InputReceived && GamepadService.IsPressed(GamepadBinding.Accept));
-
-            if (isClick && !KeyState[VirtualKey.SHIFT])
+                (eventType == AtkEventType.InputReceived && atkEventData->InputData.InputId == 1);
+             
+            if (isClick && !UIInputData.Instance()->IsKeyDown(SeVirtualKey.SHIFT))
             {
                 SwitchClassJob(8 + (uint)eventParam - 24);
                 return true;
             }
         }
 
-        return ProcessEvents(node->AtkComponentBase.OwnerNode, imageNode, eventType);
+        return ProcessEvents(node->AtkComponentBase.OwnerNode, imageNode, eventType, atkEventData);
     }
 
     private void PvPCharacterOnSetup(AddonEvent type, AddonArgs args)
     {
         var addon = (AddonPvPCharacter*)args.Addon;
 
-        for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
+        for (var i = 0; i < NumPvPClasses; i++)
         {
             var entry = addon->ClassEntries.GetPointer(i);
             if (entry->Base == null) continue;
@@ -272,9 +267,9 @@ public unsafe partial class CharacterClassSwitcher(
 
     private void AddonPvPCharacterUpdateClassesDetour(AddonPvPCharacter* addon, NumberArrayData** numberArrayData, StringArrayData** stringArrayData)
     {
-        AddonPvPCharacterUpdateClassesHook!.Original(addon, numberArrayData, stringArrayData);
+        _addonPvPCharacterUpdateClassesHook!.Original(addon, numberArrayData, stringArrayData);
 
-        for (var i = 0; i < AddonPvPCharacter.NUM_CLASSES; i++)
+        for (var i = 0; i < NumPvPClasses; i++)
         {
             var entry = addon->ClassEntries.GetPointer(i);
             if (entry->Base == null || entry->Icon == null) continue;
@@ -292,21 +287,21 @@ public unsafe partial class CharacterClassSwitcher(
         }
     }
 
-    private void AddonPvPCharacterReceiveEventDetour(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, nint atkEventData)
+    private void AddonPvPCharacterReceiveEventDetour(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData)
     {
-        if (HandleAddonPvPCharacterEvent(addon, eventType, eventParam))
+        if (HandleAddonPvPCharacterEvent(addon, eventType, eventParam, atkEventData))
             return;
 
-        AddonPvPCharacterReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
+        _addonPvPCharacterReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 
-    private bool HandleAddonPvPCharacterEvent(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam)
+    private bool HandleAddonPvPCharacterEvent(AddonPvPCharacter* addon, AtkEventType eventType, int eventParam, AtkEventData* atkEventData)
     {
         if ((eventParam & 0xFFFF0000) != 0x10000)
             return false;
 
         var entryId = eventParam & 0x0000FFFF;
-        if (entryId is < 0 or > AddonPvPCharacter.NUM_CLASSES)
+        if (entryId is < 0 or > NumPvPClasses)
             return false;
 
         var entry = addon->ClassEntries.GetPointer(entryId);
@@ -318,15 +313,15 @@ public unsafe partial class CharacterClassSwitcher(
         if (!isUnlocked)
             return false;
 
-        return ProcessEvents(entry->Base->OwnerNode, entry->Icon, eventType);
+        return ProcessEvents(entry->Base->OwnerNode, entry->Icon, eventType, atkEventData);
     }
 
     /// <returns>Boolean whether original code should be skipped (true) or not (false)</returns>
-    private bool ProcessEvents(AtkComponentNode* componentNode, AtkImageNode* imageNode, AtkEventType eventType)
+    private bool ProcessEvents(AtkComponentNode* componentNode, AtkImageNode* imageNode, AtkEventType eventType, AtkEventData* atkEventData)
     {
         var isClick =
             eventType == AtkEventType.MouseClick ||
-            (eventType == AtkEventType.InputReceived && GamepadService.IsPressed(GamepadBinding.Accept));
+            (eventType == AtkEventType.InputReceived && atkEventData->InputData.InputId == 1);
 
         if (isClick)
         {
@@ -393,11 +388,11 @@ public unsafe partial class CharacterClassSwitcher(
 
         if (selectedGearset.Id == -1)
         {
-            ChatGui.PrintError(TextService.Translate("CharacterClassSwitcher.NoSuitableGearsetFound"));
+            Chat.PrintError(_textService.Translate("CharacterClassSwitcher.NoSuitableGearsetFound"));
             return;
         }
 
-        Logger.LogInformation("Equipping gearset #{selectedGearsetId}", selectedGearset.Id);
+        _logger.LogInformation("Equipping gearset #{selectedGearsetId}", selectedGearset.Id);
         gearsetModule->EquipGearset(selectedGearset.Id - 1);
     }
 
@@ -408,6 +403,6 @@ public unsafe partial class CharacterClassSwitcher(
             agent->TabIndex = 2;
         }
 
-        AgentStatusShowHook!.Original(agent);
+        _agentStatusShowHook!.Original(agent);
     }
 }

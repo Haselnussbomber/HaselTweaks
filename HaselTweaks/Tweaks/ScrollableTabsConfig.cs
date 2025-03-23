@@ -30,38 +30,40 @@ public class ScrollableTabsConfiguration
 
 public unsafe partial class ScrollableTabs
 {
+    private ScrollableTabsConfiguration Config => _pluginConfig.Tweaks.ScrollableTabs;
+
     public void OnConfigOpen() { }
     public void OnConfigChange(string fieldName) { }
     public void OnConfigClose() { }
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawConfigurationHeader();
-        ConfigGui.DrawBool("Invert", ref Config.Invert);
-        ConfigGui.DrawBool("HandleAetherCurrent", ref Config.HandleAetherCurrent);
-        ConfigGui.DrawBool("HandleArmouryBoard", ref Config.HandleArmouryBoard);
-        ConfigGui.DrawBool("HandleAOZNotebook", ref Config.HandleAOZNotebook);
-        ConfigGui.DrawBool("HandleCharacter", ref Config.HandleCharacter);
-        ConfigGui.DrawBool("HandleCharacterClass", ref Config.HandleCharacterClass);
-        ConfigGui.DrawBool("HandleCharacterRepute", ref Config.HandleCharacterRepute);
-        ConfigGui.DrawBool("HandleInventoryBuddy", ref Config.HandleInventoryBuddy);
-        ConfigGui.DrawBool("HandleBuddy", ref Config.HandleBuddy);
-        ConfigGui.DrawBool("HandleCurrency", ref Config.HandleCurrency);
-        ConfigGui.DrawBool("HandleOrnamentNoteBook", ref Config.HandleOrnamentNoteBook);
-        ConfigGui.DrawBool("HandleFieldRecord", ref Config.HandleFieldRecord);
-        ConfigGui.DrawBool("HandleFishGuide", ref Config.HandleFishGuide);
-        ConfigGui.DrawBool("HandleMiragePrismPrismBox", ref Config.HandleMiragePrismPrismBox);
-        ConfigGui.DrawBool("HandleGoldSaucerCardList", ref Config.HandleGoldSaucerCardList);
-        ConfigGui.DrawBool("HandleGoldSaucerCardDeckEdit", ref Config.HandleGoldSaucerCardDeckEdit);
-        ConfigGui.DrawBool("HandleLovmPaletteEdit", ref Config.HandleLovmPaletteEdit);
-        ConfigGui.DrawBool("HandleInventory", ref Config.HandleInventory);
-        ConfigGui.DrawBool("HandleMJIMinionNoteBook", ref Config.HandleMJIMinionNoteBook);
-        ConfigGui.DrawBool("HandleMinionNoteBook", ref Config.HandleMinionNoteBook);
-        ConfigGui.DrawBool("HandleMountNoteBook", ref Config.HandleMountNoteBook);
-        ConfigGui.DrawBool("HandleRetainer", ref Config.HandleRetainer);
-        ConfigGui.DrawBool("HandleFateProgress", ref Config.HandleFateProgress);
-        ConfigGui.DrawBool("HandleAdventureNoteBook", ref Config.HandleAdventureNoteBook);
+        _configGui.DrawConfigurationHeader();
+        _configGui.DrawBool("Invert", ref Config.Invert);
+        _configGui.DrawBool("HandleAetherCurrent", ref Config.HandleAetherCurrent);
+        _configGui.DrawBool("HandleArmouryBoard", ref Config.HandleArmouryBoard);
+        _configGui.DrawBool("HandleAOZNotebook", ref Config.HandleAOZNotebook);
+        _configGui.DrawBool("HandleCharacter", ref Config.HandleCharacter);
+        _configGui.DrawBool("HandleCharacterClass", ref Config.HandleCharacterClass);
+        _configGui.DrawBool("HandleCharacterRepute", ref Config.HandleCharacterRepute);
+        _configGui.DrawBool("HandleInventoryBuddy", ref Config.HandleInventoryBuddy);
+        _configGui.DrawBool("HandleBuddy", ref Config.HandleBuddy);
+        _configGui.DrawBool("HandleCurrency", ref Config.HandleCurrency);
+        _configGui.DrawBool("HandleOrnamentNoteBook", ref Config.HandleOrnamentNoteBook);
+        _configGui.DrawBool("HandleFieldRecord", ref Config.HandleFieldRecord);
+        _configGui.DrawBool("HandleFishGuide", ref Config.HandleFishGuide);
+        _configGui.DrawBool("HandleMiragePrismPrismBox", ref Config.HandleMiragePrismPrismBox);
+        _configGui.DrawBool("HandleGoldSaucerCardList", ref Config.HandleGoldSaucerCardList);
+        _configGui.DrawBool("HandleGoldSaucerCardDeckEdit", ref Config.HandleGoldSaucerCardDeckEdit);
+        _configGui.DrawBool("HandleLovmPaletteEdit", ref Config.HandleLovmPaletteEdit);
+        _configGui.DrawBool("HandleInventory", ref Config.HandleInventory);
+        _configGui.DrawBool("HandleMJIMinionNoteBook", ref Config.HandleMJIMinionNoteBook);
+        _configGui.DrawBool("HandleMinionNoteBook", ref Config.HandleMinionNoteBook);
+        _configGui.DrawBool("HandleMountNoteBook", ref Config.HandleMountNoteBook);
+        _configGui.DrawBool("HandleRetainer", ref Config.HandleRetainer);
+        _configGui.DrawBool("HandleFateProgress", ref Config.HandleFateProgress);
+        _configGui.DrawBool("HandleAdventureNoteBook", ref Config.HandleAdventureNoteBook);
     }
 }

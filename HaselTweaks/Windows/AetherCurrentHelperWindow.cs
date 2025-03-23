@@ -16,41 +16,30 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Windows;
 
-[RegisterSingleton]
-public unsafe class AetherCurrentHelperWindow : LockableWindow
+[RegisterSingleton, AutoConstruct]
+public unsafe partial class AetherCurrentHelperWindow : LockableWindow
 {
-    private bool HideUnlocked = true;
-
     private static readonly Color TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
     private static readonly string[] CompassHeadings = ["E", "NE", "N", "NW", "W", "SW", "S", "SE"];
+
+    private readonly IClientState _clientState;
+    private readonly TextureService _textureService;
+    private readonly ExcelService _excelService;
+    private readonly TextService _textService;
+    private readonly MapService _mapService;
+
+    private readonly Dictionary<uint, EObj> _aetherCurrentEObjCache = [];
+    private readonly Dictionary<uint, Level> _eObjLevelCache = [];
+
+    private bool _hideUnlocked = true;
+
     private AetherCurrentHelperConfiguration Config => PluginConfig.Tweaks.AetherCurrentHelper;
 
-    private readonly IClientState ClientState;
-    private readonly TextureService TextureService;
-    private readonly ExcelService ExcelService;
-    private readonly TextService TextService;
-    private readonly MapService MapService;
+    public AetherCurrentCompFlgSet? CompFlgSet { get; set; }
 
-    private readonly Dictionary<uint, EObj> AetherCurrentEObjCache = [];
-    private readonly Dictionary<uint, Level> EObjLevelCache = [];
-
-    public AetherCurrentHelperWindow(
-        WindowManager windowManager,
-        TextService textService,
-        LanguageProvider languageProvider,
-        PluginConfig pluginConfig,
-        IClientState clientState,
-        TextureService textureService,
-        ExcelService excelService,
-        MapService mapService)
-        : base(windowManager, textService, languageProvider, pluginConfig)
+    [AutoPostConstruct]
+    private void Initialize()
     {
-        ClientState = clientState;
-        TextureService = textureService;
-        ExcelService = excelService;
-        TextService = textService;
-        MapService = mapService;
-
         SizeCondition = ImGuiCond.FirstUseEver;
         Size = new Vector2(350);
         SizeConstraints = new WindowSizeConstraints
@@ -60,10 +49,8 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         };
     }
 
-    public AetherCurrentCompFlgSet? CompFlgSet { get; set; }
-
     public override bool DrawConditions()
-        => CompFlgSet.HasValue && ClientState.IsLoggedIn && !RaptureAtkModule.Instance()->RaptureAtkUnitManager.UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
+        => CompFlgSet.HasValue && _clientState.IsLoggedIn && !RaptureAtkModule.Instance()->RaptureAtkUnitManager.UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
 
     public override unsafe void Draw()
     {
@@ -76,11 +63,11 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         var style = ImGui.GetStyle();
         var startPos = ImGui.GetCursorPos();
 
-        ImGui.Checkbox("##HideUnlocked", ref HideUnlocked);
+        ImGui.Checkbox("##HideUnlocked", ref _hideUnlocked);
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            ImGui.TextUnformatted(TextService.Translate("AetherCurrentHelperWindow.HideUnlockedTooltip"));
+            ImGui.TextUnformatted(_textService.Translate("AetherCurrentHelperWindow.HideUnlockedTooltip"));
             ImGui.EndTooltip();
         }
 
@@ -113,7 +100,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
             }
 
             var isUnlocked = playerState->IsAetherCurrentUnlocked(aetherCurrent.RowId);
-            if (!HideUnlocked || !isUnlocked)
+            if (!_hideUnlocked || !isUnlocked)
             {
                 if (type == 0)
                 {
@@ -136,7 +123,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
             ImGui.TableNextColumn();
             ImGui.TableNextColumn();
             startPos = ImGui.GetCursorPos() + new Vector2(-startPos.X - 4, 0);
-            var text = TextService.Translate("AetherCurrentHelperWindow.AllAetherCurrentsAttuned");
+            var text = _textService.Translate("AetherCurrentHelperWindow.AllAetherCurrentsAttuned");
             textSize = ImGui.CalcTextSize(text);
             ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
             ImGui.TextUnformatted(text);
@@ -159,12 +146,12 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
         ImGui.SetCursorPosX(windowSize.X + style.WindowPadding.X - iconSize - 1);
 
-        TextureService.DrawIcon(64, iconSize);
+        _textureService.DrawIcon(64, iconSize);
 
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            ImGui.TextUnformatted(TextService.Translate("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip"));
+            ImGui.TextUnformatted(_textService.Translate("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip"));
             ImGui.EndTooltip();
         }
 
@@ -203,7 +190,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         else if (aetherCurrent.RowId == 2818328 && questId == 70030) // Curing What Ails
             questId = 69793; // In Agama's Footsteps
 
-        if (!ExcelService.TryGetRow<Quest>(questId, out var quest) || quest.IssuerLocation.RowId == 0)
+        if (!_excelService.TryGetRow<Quest>(questId, out var quest) || quest.IssuerLocation.RowId == 0)
             return;
 
         if (!quest.IssuerLocation.IsValid)
@@ -211,12 +198,12 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
         // Icon
         ImGui.TableNextColumn();
-        TextureService.DrawIcon(quest.EventIconType.Value!.MapIconAvailable + 1, 40);
+        _textureService.DrawIcon(quest.EventIconType.Value!.MapIconAvailable + 1, 40);
 
         // Content
         ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetQuestName(quest.RowId)}");
-        ImGui.TextUnformatted($"{MapService.GetHumanReadableCoords(quest.IssuerLocation.Value)} | {TextService.GetENpcResidentName(quest.IssuerStart.RowId)}");
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {_textService.GetQuestName(quest.RowId)}");
+        ImGui.TextUnformatted($"{_mapService.GetHumanReadableCoords(quest.IssuerLocation.Value)} | {_textService.GetENpcResidentName(quest.IssuerStart.RowId)}");
 
         // Actions
         ImGui.TableNextColumn();
@@ -224,7 +211,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y) * 2));
         if (selected)
         {
-            MapService.OpenMap(quest.IssuerLocation.Value);
+            _mapService.OpenMap(quest.IssuerLocation.Value);
         }
         ImGui.SameLine();
 
@@ -235,30 +222,30 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
     private void DrawEObject(int index, bool isUnlocked, AetherCurrent aetherCurrent)
     {
-        if (!AetherCurrentEObjCache.TryGetValue(aetherCurrent.RowId, out var eobj))
+        if (!_aetherCurrentEObjCache.TryGetValue(aetherCurrent.RowId, out var eobj))
         {
-            if (!ExcelService.TryFindRow(row => row.Data == aetherCurrent.RowId, out eobj))
+            if (!_excelService.TryFindRow(row => row.Data == aetherCurrent.RowId, out eobj))
                 return;
 
-            AetherCurrentEObjCache.Add(aetherCurrent.RowId, eobj);
+            _aetherCurrentEObjCache.Add(aetherCurrent.RowId, eobj);
         }
 
-        if (!EObjLevelCache.TryGetValue(eobj.RowId, out var level))
+        if (!_eObjLevelCache.TryGetValue(eobj.RowId, out var level))
         {
-            if (!ExcelService.TryFindRow(row => row.Object.RowId == eobj.RowId, out level))
+            if (!_excelService.TryFindRow(row => row.Object.RowId == eobj.RowId, out level))
                 return;
 
-            EObjLevelCache.Add(eobj.RowId, level);
+            _eObjLevelCache.Add(eobj.RowId, level);
         }
 
         // Icon
         ImGui.TableNextColumn();
-        TextureService.DrawIcon(60033, 40);
+        _textureService.DrawIcon(60033, 40);
 
         // Content
         ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {TextService.GetEObjName(eobj.RowId)}");
-        ImGui.TextUnformatted(MapService.GetHumanReadableCoords(level));
+        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {_textService.GetEObjName(eobj.RowId)}");
+        ImGui.TextUnformatted(_mapService.GetHumanReadableCoords(level));
 
         // Actions
         ImGui.TableNextColumn();
@@ -266,7 +253,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         ImGui.Selectable($"##AetherCurrent_{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y) * 2));
         if (selected)
         {
-            MapService.OpenMap(level);
+            _mapService.OpenMap(level);
         }
         ImGui.SameLine();
 
@@ -277,7 +264,7 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
 
     private void DrawUnlockStatus(bool isUnlocked, Level level)
     {
-        var isSameTerritory = level.Territory.RowId == ClientState.TerritoryType;
+        var isSameTerritory = level.Territory.RowId == _clientState.TerritoryType;
         ImGuiUtils.PushCursorY(11);
 
         if (isUnlocked && !Config.AlwaysShowDistance)
@@ -288,10 +275,10 @@ public unsafe class AetherCurrentHelperWindow : LockableWindow
         {
             if (isSameTerritory)
             {
-                var distance = MapService.GetDistanceFromPlayer(level);
+                var distance = _mapService.GetDistanceFromPlayer(level);
                 if (distance < float.MaxValue)
                 {
-                    var direction = distance > 1 ? MapService.GetCompassDirection(level) : string.Empty;
+                    var direction = distance > 1 ? _mapService.GetCompassDirection(level) : string.Empty;
                     var text = $"{distance:0}y {direction}";
 
                     if (Config.CenterDistance)

@@ -4,7 +4,6 @@ using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselCommon.Gui;
-using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using ImGuiNET;
 
@@ -26,7 +25,7 @@ public class AutoSorterConfiguration
 
 public partial class AutoSorter
 {
-    private AutoSorterConfiguration Config => PluginConfig.Tweaks.AutoSorter;
+    private AutoSorterConfiguration Config => _pluginConfig.Tweaks.AutoSorter;
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
@@ -34,10 +33,10 @@ public partial class AutoSorter
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawConfigurationHeader();
-        ConfigGui.DrawBool("SortArmouryOnJobChange", ref Config.SortArmouryOnJobChange);
+        _configGui.DrawConfigurationHeader();
+        _configGui.DrawBool("SortArmouryOnJobChange", ref Config.SortArmouryOnJobChange);
 
         ImGuiUtils.DrawPaddedSeparator();
 
@@ -83,20 +82,20 @@ public partial class AutoSorter
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
-                ImGui.TextUnformatted(TextService.Translate(entry.Enabled
+                ImGui.TextUnformatted(_textService.Translate(entry.Enabled
                     ? "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsEnabled"
                     : "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsDisabled"));
                 ImGui.EndTooltip();
             }
             if (ImGui.IsItemClicked())
             {
-                PluginConfig.Save();
+                _pluginConfig.Save();
             }
 
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
-            preview = GetLocalizedParam(CategorySet, entry.Category) ?? TextService.Translate("AutoSorter.Config.CategoryCombo.Placeholder");
+            preview = GetLocalizedParam(CategorySet, entry.Category) ?? _textService.Translate("AutoSorter.Config.CategoryCombo.Placeholder");
 
             if (ImGui.BeginCombo(key + "Category", preview))
             {
@@ -105,7 +104,7 @@ public partial class AutoSorter
                     if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Category == kv.Key))
                     {
                         entry.Category = kv.Key;
-                        PluginConfig.Save();
+                        _pluginConfig.Save();
                     }
 
                     if (entry.Category == kv.Key)
@@ -118,7 +117,7 @@ public partial class AutoSorter
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
-            preview = GetLocalizedParam(ConditionSet, entry.Condition) ?? TextService.Translate("AutoSorter.Config.ConditionCombo.Placeholder");
+            preview = GetLocalizedParam(ConditionSet, entry.Condition) ?? _textService.Translate("AutoSorter.Config.ConditionCombo.Placeholder");
 
             if (ImGui.BeginCombo(key + "Condition", preview))
             {
@@ -127,7 +126,7 @@ public partial class AutoSorter
                     if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Condition == kv.Key))
                     {
                         entry.Condition = kv.Key;
-                        PluginConfig.Save();
+                        _pluginConfig.Save();
                     }
 
                     if (entry.Condition == kv.Key)
@@ -140,7 +139,7 @@ public partial class AutoSorter
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
 
-            preview = GetLocalizedParam(OrderSet, entry.Order) ?? TextService.Translate("AutoSorter.Config.OrderCombo.Placeholder");
+            preview = GetLocalizedParam(OrderSet, entry.Order) ?? _textService.Translate("AutoSorter.Config.OrderCombo.Placeholder");
 
             if (ImGui.BeginCombo(key + "Order", preview))
             {
@@ -149,7 +148,7 @@ public partial class AutoSorter
                     if (ImGui.Selectable(GetLocalizedParam(kv.Value), entry.Order == kv.Key))
                     {
                         entry.Order = kv.Key;
-                        PluginConfig.Save();
+                        _pluginConfig.Save();
                     }
 
                     if (entry.Order == kv.Key)
@@ -162,7 +161,7 @@ public partial class AutoSorter
             ImGui.TableNextColumn();
             if (i > 0)
             {
-                if (ImGuiUtils.IconButton(key + "_Up", FontAwesomeIcon.ArrowUp, TextService.Translate("AutoSorter.Config.MoveRuleUpButton.Tooltip")))
+                if (ImGuiUtils.IconButton(key + "_Up", FontAwesomeIcon.ArrowUp, _textService.Translate("AutoSorter.Config.MoveRuleUpButton.Tooltip")))
                 {
                     entryToMoveUp = i;
                 }
@@ -176,7 +175,7 @@ public partial class AutoSorter
 
             if (i < Config.Settings.Count - 1)
             {
-                if (ImGuiUtils.IconButton(key + "_Down", FontAwesomeIcon.ArrowDown, TextService.Translate("AutoSorter.Config.MoveRuleDownButton.Tooltip")))
+                if (ImGuiUtils.IconButton(key + "_Down", FontAwesomeIcon.ArrowDown, _textService.Translate("AutoSorter.Config.MoveRuleDownButton.Tooltip")))
                 {
                     entryToMoveDown = i;
                 }
@@ -190,7 +189,7 @@ public partial class AutoSorter
 
             if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
             {
-                if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, TextService.Translate("AutoSorter.Config.DeleteRuleButton.Tooltip.HoldingShift")))
+                if (ImGuiUtils.IconButton(key + "_Delete", FontAwesomeIcon.Trash, _textService.Translate("AutoSorter.Config.DeleteRuleButton.Tooltip.HoldingShift")))
                 {
                     entryToRemove = i;
                 }
@@ -200,7 +199,7 @@ public partial class AutoSorter
                 ImGuiUtils.IconButton(
                     key + "_Delete",
                     FontAwesomeIcon.Trash,
-                    TextService.Translate(isWindowFocused
+                    _textService.Translate(isWindowFocused
                         ? "AutoSorter.Config.DeleteRuleButton.Tooltip.NotHoldingShift"
                         : "AutoSorter.Config.DeleteRuleButton.Tooltip.WindowNotFocused"),
                     disabled: true);
@@ -210,10 +209,10 @@ public partial class AutoSorter
 
             if (Status == TweakStatus.Enabled)
             {
-                if (IsBusy || Queue.Count != 0)
+                if (_isBusy || _queue.Count != 0)
                 {
                     ImGui.SameLine();
-                    ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, TextService.Translate("AutoSorter.SortingInProgress"), disabled: true);
+                    ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, _textService.Translate("AutoSorter.SortingInProgress"), disabled: true);
                 }
                 else
                 {
@@ -222,13 +221,13 @@ public partial class AutoSorter
                     if (entry.Category is "saddlebag" or "rightsaddlebag" && !IsInventoryBuddyOpen)
                     {
                         disabledReasons ??= [];
-                        disabledReasons.Add(TextService.Translate("AutoSorter.Config.ExecuteButton.Tooltip.SaddlebagNotOpen"));
+                        disabledReasons.Add(_textService.Translate("AutoSorter.Config.ExecuteButton.Tooltip.SaddlebagNotOpen"));
                     }
 
                     if (entry.Category is "retainer" && !IsRetainerInventoryOpen)
                     {
                         disabledReasons ??= [];
-                        disabledReasons.Add(TextService.Translate("AutoSorter.Config.ExecuteButton.Tooltip.RetainerNotOpen"));
+                        disabledReasons.Add(_textService.Translate("AutoSorter.Config.ExecuteButton.Tooltip.RetainerNotOpen"));
                     }
 
                     ImGui.SameLine(0, ItemInnerSpacing.X);
@@ -258,7 +257,7 @@ public partial class AutoSorter
                                         : errors.First());
                             }
                         }
-                        else if (ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, TextService.Translate("AutoSorter.Config.ExecuteButton.Tooltip.Ready")))
+                        else if (ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, _textService.Translate("AutoSorter.Config.ExecuteButton.Tooltip.Ready")))
                         {
                             entryToExecute = i;
                         }
@@ -274,19 +273,19 @@ public partial class AutoSorter
 
         table?.Dispose();
 
-        if (ImGui.Button(TextService.Translate("AutoSorter.Config.AddButton.Label")))
+        if (ImGui.Button(_textService.Translate("AutoSorter.Config.AddButton.Label")))
         {
             Config.Settings.Add(new());
-            PluginConfig.Save();
+            _pluginConfig.Save();
         }
 
         if (Status == TweakStatus.Enabled)
         {
             ImGui.SameLine();
 
-            if (!IsBusy && Queue.Count == 0)
+            if (!_isBusy && _queue.Count == 0)
             {
-                if (ImGui.Button(TextService.Translate("AutoSorter.Config.RunAllButton.Label")))
+                if (ImGui.Button(_textService.Translate("AutoSorter.Config.RunAllButton.Label")))
                 {
                     var groups = Config.Settings
                         .FindAll(entry => !string.IsNullOrEmpty(entry.Category))
@@ -294,19 +293,19 @@ public partial class AutoSorter
 
                     foreach (var group in groups)
                     {
-                        Queue.Enqueue(group);
+                        _queue.Enqueue(group);
                     }
                 }
             }
             else
             {
                 using (ImRaii.Disabled())
-                    ImGui.Button(TextService.Translate("AutoSorter.Config.RunAllButton.Label"));
+                    ImGui.Button(_textService.Translate("AutoSorter.Config.RunAllButton.Label"));
 
                 if (ImGui.IsItemHovered())
                 {
                     ImGui.BeginTooltip();
-                    ImGui.TextUnformatted(TextService.Translate("AutoSorter.SortingInProgress"));
+                    ImGui.TextUnformatted(_textService.Translate("AutoSorter.SortingInProgress"));
                     ImGui.EndTooltip();
                 }
             }
@@ -317,7 +316,7 @@ public partial class AutoSorter
             var removedItem = Config.Settings[entryToMoveUp];
             Config.Settings.RemoveAt(entryToMoveUp);
             Config.Settings.Insert(entryToMoveUp - 1, removedItem);
-            PluginConfig.Save();
+            _pluginConfig.Save();
         }
 
         if (entryToMoveDown != -1)
@@ -325,19 +324,19 @@ public partial class AutoSorter
             var removedItem = Config.Settings[entryToMoveDown];
             Config.Settings.RemoveAt(entryToMoveDown);
             Config.Settings.Insert(entryToMoveDown + 1, removedItem);
-            PluginConfig.Save();
+            _pluginConfig.Save();
         }
 
         if (entryToRemove != -1)
         {
             Config.Settings.RemoveAt(entryToRemove);
-            PluginConfig.Save();
+            _pluginConfig.Save();
         }
 
         if (entryToExecute != -1)
         {
             var entry = Config.Settings[entryToExecute];
-            Queue.Enqueue(new[] { entry }.GroupBy(entry => entry.Category!).First());
+            _queue.Enqueue(new[] { entry }.GroupBy(entry => entry.Category!).First());
         }
     }
 
@@ -348,25 +347,25 @@ public partial class AutoSorter
         if (string.IsNullOrEmpty(rule.Category))
         {
             errors ??= [];
-            errors.Add(TextService.Translate("AutoSorter.SortingRule.Error.CategoryNotSet"));
+            errors.Add(_textService.Translate("AutoSorter.SortingRule.Error.CategoryNotSet"));
         }
 
         if (string.IsNullOrEmpty(rule.Condition))
         {
             errors ??= [];
-            errors.Add(TextService.Translate("AutoSorter.SortingRule.Error.ConditionNotSet"));
+            errors.Add(_textService.Translate("AutoSorter.SortingRule.Error.ConditionNotSet"));
         }
 
         if (string.IsNullOrEmpty(rule.Order))
         {
             errors ??= [];
-            errors.Add(TextService.Translate("AutoSorter.SortingRule.Error.OrderNotSet"));
+            errors.Add(_textService.Translate("AutoSorter.SortingRule.Error.OrderNotSet"));
         }
 
         if (rule.Category == "armoury" && usedCategories != null && ArmourySubcategories.Any(usedCategories.Contains))
         {
             errors ??= [];
-            errors.Add(TextService.Translate("AutoSorter.SortingRule.Error.OverridesArmouryRule"));
+            errors.Add(_textService.Translate("AutoSorter.SortingRule.Error.OverridesArmouryRule"));
         }
 
         unsafe
@@ -374,7 +373,7 @@ public partial class AutoSorter
             if (rule.Category is "rightsaddlebag" && !PlayerState.Instance()->HasPremiumSaddlebag)
             {
                 errors ??= [];
-                errors.Add(TextService.Translate("AutoSorter.SortingRule.Error.PremiumSaddlebagNotSubscribed"));
+                errors.Add(_textService.Translate("AutoSorter.SortingRule.Error.PremiumSaddlebagNotSubscribed"));
             }
         }
 

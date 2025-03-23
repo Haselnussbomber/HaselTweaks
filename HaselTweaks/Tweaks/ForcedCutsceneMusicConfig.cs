@@ -16,7 +16,7 @@ public class ForcedCutsceneMusicConfiguration
 
 public unsafe partial class ForcedCutsceneMusic
 {
-    private ForcedCutsceneMusicConfiguration Config => PluginConfig.Tweaks.ForcedCutsceneMusic;
+    private ForcedCutsceneMusicConfiguration Config => _pluginConfig.Tweaks.ForcedCutsceneMusic;
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
@@ -24,17 +24,17 @@ public unsafe partial class ForcedCutsceneMusic
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawConfigurationHeader();
-        ConfigGui.DrawBool("Restore", ref Config.Restore);
+        _configGui.DrawConfigurationHeader();
+        _configGui.DrawBool("Restore", ref Config.Restore);
         ImGuiUtils.DrawPaddedSeparator();
-        ConfigGui.DrawBool("HandleMaster", ref Config.HandleMaster);
-        ConfigGui.DrawBool("HandleBgm", ref Config.HandleBgm);
-        ConfigGui.DrawBool("HandleSe", ref Config.HandleSe);
-        ConfigGui.DrawBool("HandleVoice", ref Config.HandleVoice);
-        ConfigGui.DrawBool("HandleEnv", ref Config.HandleEnv);
-        ConfigGui.DrawBool("HandleSystem", ref Config.HandleSystem);
-        ConfigGui.DrawBool("HandlePerform", ref Config.HandlePerform);
+        _configGui.DrawBool("HandleMaster", ref Config.HandleMaster);
+        _configGui.DrawBool("HandleBgm", ref Config.HandleBgm);
+        _configGui.DrawBool("HandleSe", ref Config.HandleSe);
+        _configGui.DrawBool("HandleVoice", ref Config.HandleVoice);
+        _configGui.DrawBool("HandleEnv", ref Config.HandleEnv);
+        _configGui.DrawBool("HandleSystem", ref Config.HandleSystem);
+        _configGui.DrawBool("HandlePerform", ref Config.HandlePerform);
     }
 }

@@ -3,27 +3,19 @@ using Dalamud.Game;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using HaselCommon;
-using HaselCommon.Commands;
-using HaselCommon.Services;
 using HaselTweaks.Config;
-using HaselTweaks.Windows;
+using HaselTweaks.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HaselTweaks;
 
 public sealed class Plugin : IDalamudPlugin
 {
-    private readonly IDalamudPluginInterface PluginInterface;
-
     public Plugin(
         IDalamudPluginInterface pluginInterface,
-        IFramework framework,
-        IPluginLog pluginLog,
         ISigScanner sigScanner,
         IDataManager dataManager)
     {
-        PluginInterface = pluginInterface;
-
 #if HAS_LOCAL_CS
         FFXIVClientStructs.Interop.Generated.Addresses.Register();
         Addresses.Register();
@@ -40,36 +32,15 @@ public sealed class Plugin : IDalamudPlugin
             .AddHaselCommon()
             .AddHaselTweaks();
 
-        Service.BuildProvider();
-
-        // TODO: IHostedService?
-        framework.RunOnFrameworkThread(() =>
+        Service.Initialize(() =>
         {
-            Service.Get<TweakManager>().Initialize();
-            Service.Get<CommandService>().Register(OnCommand, true);
-            PluginInterface.UiBuilder.OpenMainUi += ToggleWindow;
+            Service.Get<TweakManager>();
+            Service.Get<CommandManager>();
         });
-    }
-
-    [CommandHandler("/haseltweaks", "HaselTweaks.CommandHandlerHelpMessage")]
-    private void OnCommand(string command, string arguments)
-    {
-        ToggleWindow();
-    }
-
-    private static void ToggleWindow()
-    {
-        Service.Get<PluginWindow>().Toggle();
     }
 
     void IDisposable.Dispose()
     {
-        PluginInterface.UiBuilder.OpenMainUi -= ToggleWindow;
-
         Service.Dispose();
-
-#if HAS_LOCAL_CS
-        Addresses.Unregister();
-#endif
     }
 }

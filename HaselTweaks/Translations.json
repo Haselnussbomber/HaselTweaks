@@ -84,12 +84,13 @@
     "en": "Simple Tweaks"
   },
   "HaselTweaks.Config.IncompatibilityWarning.Plugin.SimpleTweaksPlugin.Config.CharacterWindowJobSwitcher": {
-    "en": "Character Window Job Switcher",
-    "zh": "角色窗口职业切换器"
+    "en": "Character Window Job Switcher"
+  },
+  "HaselTweaks.Config.IncompatibilityWarning.Plugin.SimpleTweaksPlugin.Config.CustomTimestampFormat": {
+    "en": "Custom Timestamp Format"
   },
   "HaselTweaks.Config.IncompatibilityWarning.Plugin.SimpleTweaksPlugin.Config.ShowExperiencePercentage": {
-    "en": "Show Experience Percentage",
-    "zh": "显示经验值百分比"
+    "en": "Show Experience Percentage"
   },
   "HaselTweaks.Config.TweakStatus.Outdated": {
     "en": "Outdated",
@@ -389,6 +390,17 @@
     "en": "Increases the size of the character preview in the \"Item Dyeing\" window.",
     "de": "Vergrößert die Charaktervorschau im \"GEGENSTÄNDE FÄRBEN\"-Fenster.",
     "zh": "增加“染色”窗口中角色预览部分的大小。"
+  },
+
+  "CompanionColorPreview.Tweak.Name": {
+    "en": "Companion Color Preview"
+  },
+  "CompanionColorPreview.Tweak.Description": {
+    "en": "Shows a small drop-down menu above the \"Companion\" window to select the color of your own chocobo. This is just to preview the colors and will not be saved!",
+    "de": "Zeigt ein kleines Dropdown-Menü über dem \"MITSTREITER\"-Fenster an, um die Farbe des eigenen Chocobos auszuwählen. Dies dient nur zur Vorschau der Farben und wird nicht gespeichert!"
+  },
+  "CompanionColorPreviewWindow.Title": {
+    "en": "Companion Color Preview"
   },
 
   "CastBarAetheryteNames.Tweak.Name": {
@@ -1088,6 +1100,46 @@
     "en": "For the result item. No more need to open the recipe tree first.",
     "de": "Für den Resultatgegenstand. Es ist nicht mehr notwendig, zuerst den Rezeptbaum zu öffnen.",
     "zh": "对于目标物品。不再需要先打开配方树。"
+  },
+
+  "EnhancedTargetInfo.Tweak.Name": {
+    "en": "Enhanced Target Info"
+  },
+  "EnhancedTargetInfo.Tweak.Description": {
+    "en": "Enhances the Target Info.",
+    "de": "Verbessert die Zielinfo."
+  },
+  "EnhancedTargetInfo.Config.DisplayMountStatus.Label": {
+    "en": "Display Mounted status",
+    "de": "Zeige Beritten-Status an"
+  },
+  "EnhancedTargetInfo.Config.DisplayMountStatus.Description": {
+    "en": "The tooltip shows the name of the mount.",
+    "de": "Der Tooltip zeigt den Namen des Mounts an."
+  },
+  "EnhancedTargetInfo.Config.DisplayOrnamentStatus.Label": {
+    "en": "Display Fashion Accessory status",
+    "de": "Zeige Modeaccessoire-Status an"
+  },
+  "EnhancedTargetInfo.Config.DisplayOrnamentStatus.Description": {
+    "en": "The tooltip shows the name of the fashion accessory.",
+    "de": "Der Tooltip zeigt den Namen des Modeaccessoires an."
+  },
+  "EnhancedTargetInfo.Config.RemoveLeadingZeroInHPPercentage.Label": {
+    "en": "Remove leading zero in HP under 10%",
+    "de": "Führende Null bei HP unter 10 % ausblenden"
+  },
+  "EnhancedTargetInfo.Config.RemoveLeadingZeroInHPPercentage.Description": {
+    "en": "For example, instead of 06.7%, 6.7% will be displayed. The format depends on the client language, not on the language set in Dalamud.",
+    "de": "Als Beispiel, statt 06,7 % wird 6,7 % angezeigt. Das Format hängt von der Sprache des Spielclients ab, nicht von der in Dalamud eingestellen Sprache."
+  },
+  "EnhancedTargetInfo.Unlocked": {
+    "en": "\u2713 Unlocked",
+    "de": "\u2713 Freigeschaltet"
+  },
+  "EnhancedTargetInfo.NotUnlocked": {
+    "en": "\u2573 Not unlocked",
+    "de": "\u2573 Nicht freigeschaltet"
   },
 
   "ExpertDeliveries.Tweak.Name": {

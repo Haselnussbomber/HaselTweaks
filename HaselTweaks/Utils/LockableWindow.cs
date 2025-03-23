@@ -9,7 +9,7 @@ namespace HaselTweaks.Utils;
 public abstract class LockableWindow : SimpleWindow
 {
     private static readonly ImGuiWindowFlags LockedWindowFlags = ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize;
-    private readonly TitleBarButton LockButton;
+    private readonly TitleBarButton _lockButton;
 
     public readonly PluginConfig PluginConfig;
 
@@ -21,7 +21,7 @@ public abstract class LockableWindow : SimpleWindow
         if (pluginConfig.LockedImGuiWindows.Contains(WindowName))
             Flags |= LockedWindowFlags;
 
-        LockButton = new TitleBarButton()
+        _lockButton = new TitleBarButton()
         {
             Icon = WindowLocked
                 ? FontAwesomeIcon.Lock
@@ -38,13 +38,13 @@ public abstract class LockableWindow : SimpleWindow
             Click = (button) =>
             {
                 WindowLocked = !WindowLocked;
-                LockButton!.Icon = WindowLocked
+                _lockButton!.Icon = WindowLocked
                     ? FontAwesomeIcon.Lock
                     : FontAwesomeIcon.LockOpen;
             }
         };
 
-        TitleBarButtons.Add(LockButton);
+        TitleBarButtons.Add(_lockButton);
     }
 
     protected bool WindowLocked

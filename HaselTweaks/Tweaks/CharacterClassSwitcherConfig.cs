@@ -1,5 +1,4 @@
 using Dalamud.Interface.Utility.Raii;
-using HaselTweaks.Config;
 using HaselTweaks.Enums;
 
 namespace HaselTweaks.Tweaks;
@@ -13,7 +12,7 @@ public class CharacterClassSwitcherConfiguration
 
 public partial class CharacterClassSwitcher
 {
-    private CharacterClassSwitcherConfiguration Config => PluginConfig.Tweaks.CharacterClassSwitcher;
+    private CharacterClassSwitcherConfiguration Config => _pluginConfig.Tweaks.CharacterClassSwitcher;
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
@@ -21,16 +20,16 @@ public partial class CharacterClassSwitcher
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawIncompatibilityWarnings([("SimpleTweaksPlugin", ["CharacterWindowJobSwitcher"])]);
+        _configGui.DrawIncompatibilityWarnings([("SimpleTweaksPlugin", ["CharacterWindowJobSwitcher"])]);
 
-        ConfigGui.DrawConfigurationHeader();
-        ConfigGui.DrawBool("DisableTooltips", ref Config.DisableTooltips);
-        ConfigGui.DrawBool("AlwaysOpenOnClassesJobsTab", ref Config.AlwaysOpenOnClassesJobsTab, drawAfterDescription: () =>
+        _configGui.DrawConfigurationHeader();
+        _configGui.DrawBool("DisableTooltips", ref Config.DisableTooltips);
+        _configGui.DrawBool("AlwaysOpenOnClassesJobsTab", ref Config.AlwaysOpenOnClassesJobsTab, drawAfterDescription: () =>
         {
             using (ImRaii.Disabled(!Config.AlwaysOpenOnClassesJobsTab))
-                ConfigGui.DrawEnum("ForceClassesJobsSubTab", ref Config.ForceClassesJobsSubTab);
+                _configGui.DrawEnum("ForceClassesJobsSubTab", ref Config.ForceClassesJobsSubTab);
         });
     }
 }

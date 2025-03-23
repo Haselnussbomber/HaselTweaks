@@ -2,5 +2,6 @@ name: HaselTweaks
 author: Haselnussbomber
 punchline: A collection of quality of life tweaks.
 repo_url: https://github.com/Haselnussbomber/HaselTweaks
+icon_url: https://raw.githubusercontent.com/Haselnussbomber/HaselTweaks/refs/heads/dev/HaselTweaks/Assets/Icon.png
 description: Keep on tweaking.
 load_required_state: 1

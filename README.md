@@ -1,12 +1,14 @@
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/96642047/220611506-da811a05-6c84-41da-89b3-498f5450db84.svg" width="580px" alt="HaselTweaks">
-</p>
+<img align="left" src="HaselTweaks/Assets/Icon.png" height="60px" alt="HaselTweaks"/>
 
-**HaselTweaks** is an all-in-one plugin for all my tweaks and helpers (well, with the exception of [LeveHelper](https://github.com/Haselnussbomber/LeveHelper), [MogMogCheck](https://github.com/Haselnussbomber/MogMogCheck) and [YokaiCheck](https://github.com/Haselnussbomber/YokaiCheck) 😜).
+**HaselTweaks** is an all-in-one plugin for all my tweaks and helpers.<br/>
+<br/>
+<hr>
 
 You will not find this plugin in the official plugin repository.  
 However, you're free to add my custom repository to get updates whenever I release a new version:  
 https://raw.githubusercontent.com/Haselnussbomber/MyDalamudPlugins/main/repo.json
+
+<hr>
 
 To get started, open the configuration with `/haseltweaks` and enable the tweaks you like.
 
@@ -16,7 +18,7 @@ To get started, open the configuration with `/haseltweaks` and enable the tweaks
 
 Hovering the mouse over an achievement link in the chat will display a small tooltip with the name and description of the achievement so that you don't have to click on the link.
 
-Options:
+Configuration options:
 
 - Show completion status: Will show whether the achievement has been completed or not. This requires the achievement data to be loaded, so you have to open the window once.
 - Prevent spoiler: If the Achievement is not unlocked and would not be displayed in the game, the name and/or description will also be displayed as ???.
@@ -31,9 +33,9 @@ Sorts items inside various containers when they are opened. Rules can be configu
 
 Uses the games `/itemsort` command for sorting.
 
-Options:
+Configuration options:
 
-- Sort armoury on job change
+- Sort armoury on job change (default on)
 
 ### Auto-open Recipe
 
@@ -88,6 +90,10 @@ Available Commands:
 - `/glamourplate <id>`  
   This shortcut command executes the "/gearset change" command with the current gear set id and the given glamour plate id (1-20).
 
+### Companion Color Preview
+
+Shows a small drop-down menu above the "Companion" window to select the color of your own chocobo. This is just to preview the colors and will not be saved!
+
 ### Custom Chat Message Formats
 
 Lets you customize message formats for various chat channels.
@@ -106,7 +112,7 @@ Shows Instance number (only if the current zone is instanced), FPS and Busy stat
 
 To enable/disable elements or to change the order go into Dalamud Settings > Server Info Bar.
 
-Options:
+Configuration options:
 
 - FPS unit text (default: " fps")
 
@@ -118,7 +124,7 @@ Depending on the settings, the experience bar can be transformed into one of the
 - The Sanctuary Bar displays your sanctuary level and island experience.
 - The Companion Bar displays your chocobos rank and experience.
 
-Available options include:
+Configuration options:
 
 - Always show PvP Series Bar in PvP Areas
 - Always show Sanctuary Bar on the Island
@@ -134,7 +140,7 @@ Available options include:
 
 Slightly improves the Isleworks "Set Agenda" window.
 
-Options:
+Configuration options:
 
 - Enable Search Bar: The search bar is automatically shown and focused when the \"Set Agenda\" window opens. Based on the entered item name, the fuzzy search (lowercase only) selects the item on the right side of the window. Pressing the Enter key confirms the selected item, just like by pressing the \"Schedule\" button.
 - Disable item tooltips in the list
@@ -160,7 +166,7 @@ Logout options:
 
 ### Enhanced Material List
 
-Available options include:
+Configuration options:
 
 - Enable Zone Names: Displays a zone name underneath the item name indicating where it can be gathered. Only the zone with the lowest teleportation cost is displayed. If the name is green it means it's the current zone. Since space is limited it has to shorten the item and zone name.
   - An option is available to disable this for Crystals.
@@ -169,6 +175,14 @@ Available options include:
 - Auto-refresh Material List/Recipe Tree: Refreshes the material list and/or recipe tree when the inventory has changed.
 - Restore Material List on Login: The material list will reopen with the same recipe and quantity each time you log in as long as the window is locked.
 - Add "Search for Item by Crafting Method" context menu entry: No more need to open the recipe tree first.
+
+### Enhanced Target Info
+
+Configuration options:
+
+- Display Mounted status (default off): The tooltip shows the name of the mount and the unlock status.
+- Display Fashion Accessory status (default off): The tooltip shows the name of the fashion accessory and the unlock status.
+- Remove leading zero in HP under 10% (default off): For example, instead of 06.7%, 6.7% will be displayed. The format depends on the client language, not on the language set in Dalamud.
 
 ### Expert Deliveries
 

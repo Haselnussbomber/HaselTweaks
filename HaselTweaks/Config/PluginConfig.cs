@@ -138,6 +138,7 @@ public class TweakConfigs
     public EnhancedIsleworksAgendaConfiguration EnhancedIsleworksAgenda { get; init; } = new();
     public EnhancedLoginLogoutConfiguration EnhancedLoginLogout { get; init; } = new();
     public EnhancedMaterialListConfiguration EnhancedMaterialList { get; init; } = new();
+    public EnhancedTargetInfoConfiguration EnhancedTargetInfo { get; init; } = new();
     public ForcedCutsceneMusicConfiguration ForcedCutsceneMusic { get; init; } = new();
     public GearSetGridConfiguration GearSetGrid { get; init; } = new();
     public InventoryHighlightConfiguration InventoryHighlight { get; init; } = new();

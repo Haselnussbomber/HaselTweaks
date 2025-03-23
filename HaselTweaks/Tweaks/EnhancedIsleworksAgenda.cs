@@ -1,32 +1,31 @@
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using HaselTweaks.Structs;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class EnhancedIsleworksAgenda(
-    PluginConfig PluginConfig,
-    ConfigGui ConfigGui,
-    IGameInteropProvider GameInteropProvider,
-    AddonObserver AddonObserver,
-    MJICraftScheduleSettingSearchBar Window)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class EnhancedIsleworksAgenda : IConfigurableTweak
 {
-    public string InternalName => nameof(EnhancedIsleworksAgenda);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly IGameInteropProvider _gameInteropProvider;
+    private readonly AddonObserver _addonObserver;
+    private readonly MJICraftScheduleSettingSearchBar _window;
 
-    private Hook<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>? ReceiveEventHook;
+    private Hook<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>? _receiveEventHook;
+
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()
     {
-        ReceiveEventHook = GameInteropProvider.HookFromAddress<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>(
+        _receiveEventHook = _gameInteropProvider.HookFromAddress<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>(
             AddonMJICraftScheduleSetting.StaticVirtualTablePointer->ReceiveEvent,
             ReceiveEventDetour);
     }
@@ -34,22 +33,22 @@ public unsafe partial class EnhancedIsleworksAgenda(
     public void OnEnable()
     {
         if (Config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"))
-            Window.Open();
+            _window.Open();
 
-        AddonObserver.AddonOpen += OnAddonOpen;
-        AddonObserver.AddonClose += OnAddonClose;
+        _addonObserver.AddonOpen += OnAddonOpen;
+        _addonObserver.AddonClose += OnAddonClose;
 
-        ReceiveEventHook?.Enable();
+        _receiveEventHook?.Enable();
     }
 
     public void OnDisable()
     {
-        AddonObserver.AddonOpen -= OnAddonOpen;
-        AddonObserver.AddonClose -= OnAddonClose;
+        _addonObserver.AddonOpen -= OnAddonOpen;
+        _addonObserver.AddonClose -= OnAddonClose;
 
-        ReceiveEventHook?.Disable();
+        _receiveEventHook?.Disable();
 
-        Window.Close();
+        _window.Close();
     }
 
     void IDisposable.Dispose()
@@ -58,22 +57,21 @@ public unsafe partial class EnhancedIsleworksAgenda(
             return;
 
         OnDisable();
-        ReceiveEventHook?.Dispose();
+        _receiveEventHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnAddonOpen(string addonName)
     {
         if (Config.EnableSearchBar && addonName == "MJICraftScheduleSetting")
-            Window.Open();
+            _window.Open();
     }
 
     private void OnAddonClose(string addonName)
     {
         if (addonName == "MJICraftScheduleSetting")
-            Window.Close();
+            _window.Close();
     }
 
     private void ReceiveEventDetour(AddonMJICraftScheduleSetting* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData)
@@ -92,6 +90,6 @@ public unsafe partial class EnhancedIsleworksAgenda(
             }
         }
 
-        ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
+        _receiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 }

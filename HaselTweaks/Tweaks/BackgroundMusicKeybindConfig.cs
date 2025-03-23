@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Interface.Utility.Raii;
-using HaselCommon.Services;
-using HaselTweaks.Config;
 using ImGuiNET;
 using Lumina.Extensions;
 
@@ -16,7 +14,7 @@ public class BackgroundMusicKeybindConfiguration
 
 public unsafe partial class BackgroundMusicKeybind
 {
-    private BackgroundMusicKeybindConfiguration Config => PluginConfig.Tweaks.BackgroundMusicKeybind;
+    private BackgroundMusicKeybindConfiguration Config => _pluginConfig.Tweaks.BackgroundMusicKeybind;
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
@@ -24,12 +22,12 @@ public unsafe partial class BackgroundMusicKeybind
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawConfigurationHeader();
+        _configGui.DrawConfigurationHeader();
 
         var shift = Config.Keybind.Contains(VirtualKey.SHIFT);
-        if (ImGui.Checkbox(TextService.Translate("BackgroundMusicKeybind.Config.ShiftKeyCheckbox.Label"), ref shift))
+        if (ImGui.Checkbox(_textService.Translate("BackgroundMusicKeybind.Config.ShiftKeyCheckbox.Label"), ref shift))
         {
             var set = new HashSet<VirtualKey>(Config.Keybind);
 
@@ -43,13 +41,13 @@ public unsafe partial class BackgroundMusicKeybind
             }
 
             Config.Keybind = [.. set.Order()];
-            PluginConfig.Save();
+            _pluginConfig.Save();
         }
 
         ImGui.SameLine();
 
         var ctrl = Config.Keybind.Contains(VirtualKey.CONTROL);
-        if (ImGui.Checkbox(TextService.Translate("BackgroundMusicKeybind.Config.ControlKeyCheckbox.Label"), ref ctrl))
+        if (ImGui.Checkbox(_textService.Translate("BackgroundMusicKeybind.Config.ControlKeyCheckbox.Label"), ref ctrl))
         {
             var set = new HashSet<VirtualKey>(Config.Keybind);
 
@@ -63,13 +61,13 @@ public unsafe partial class BackgroundMusicKeybind
             }
 
             Config.Keybind = [.. set.Order()];
-            PluginConfig.Save();
+            _pluginConfig.Save();
         }
 
         ImGui.SameLine();
 
         var alt = Config.Keybind.Contains(VirtualKey.MENU);
-        if (ImGui.Checkbox(TextService.Translate("BackgroundMusicKeybind.Config.AltKeyCheckbox.Label"), ref alt))
+        if (ImGui.Checkbox(_textService.Translate("BackgroundMusicKeybind.Config.AltKeyCheckbox.Label"), ref alt))
         {
             var set = new HashSet<VirtualKey>(Config.Keybind);
 
@@ -83,12 +81,12 @@ public unsafe partial class BackgroundMusicKeybind
             }
 
             Config.Keybind = [.. set.Order()];
-            PluginConfig.Save();
+            _pluginConfig.Save();
         }
 
         ImGui.SameLine();
 
-        var previewValue = TextService.Translate("BackgroundMusicKeybind.Config.KeyCombo.Preview.None");
+        var previewValue = _textService.Translate("BackgroundMusicKeybind.Config.KeyCombo.Preview.None");
         var hasKey = Config.Keybind.TryGetFirst(x => x is not (VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT), out var key);
         if (hasKey)
             previewValue = key.GetFancyName();
@@ -98,7 +96,7 @@ public unsafe partial class BackgroundMusicKeybind
         if (!combo)
             return;
 
-        foreach (var _key in KeyState.GetValidVirtualKeys())
+        foreach (var _key in _keyState.GetValidVirtualKeys())
         {
             if (_key is VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT)
                 continue;
@@ -120,7 +118,7 @@ public unsafe partial class BackgroundMusicKeybind
                 }
 
                 Config.Keybind = [.. set.Order()];
-                PluginConfig.Save();
+                _pluginConfig.Save();
             }
         }
     }

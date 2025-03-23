@@ -8,23 +8,24 @@ using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe class HideMSQComplete(IAddonLifecycle AddonLifecycle) : ITweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class HideMSQComplete : ITweak
 {
-    public string InternalName => nameof(HideMSQComplete);
+    private readonly IAddonLifecycle _addonLifecycle;
+
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }
 
     public void OnEnable()
     {
-        AddonLifecycle.RegisterListener(AddonEvent.PostRefresh, "ScenarioTree", ScenarioTree_PostRefresh);
+        _addonLifecycle.RegisterListener(AddonEvent.PostRefresh, "ScenarioTree", ScenarioTree_PostRefresh);
         Update();
     }
 
     public void OnDisable()
     {
-        AddonLifecycle.UnregisterListener(AddonEvent.PostRefresh, "ScenarioTree", ScenarioTree_PostRefresh);
+        _addonLifecycle.UnregisterListener(AddonEvent.PostRefresh, "ScenarioTree", ScenarioTree_PostRefresh);
 
         if (Status is TweakStatus.Enabled)
             UpdateVisibility(true);
@@ -38,7 +39,6 @@ public unsafe class HideMSQComplete(IAddonLifecycle AddonLifecycle) : ITweak
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void ScenarioTree_PostRefresh(AddonEvent type, AddonArgs args)

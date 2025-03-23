@@ -1,6 +1,6 @@
-using Dalamud.Game.ClientState.Keys;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services;
@@ -13,37 +13,35 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class AetherCurrentHelper(
-    PluginConfig PluginConfig,
-    IGameInteropProvider GameInteropProvider,
-    IKeyState KeyState,
-    ExcelService ExcelService,
-    AetherCurrentHelperWindow Window,
-    ConfigGui ConfigGui)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class AetherCurrentHelper : IConfigurableTweak
 {
-    public string InternalName => nameof(AetherCurrentHelper);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized; // needs updated agent
+    private readonly PluginConfig _pluginConfig;
+    private readonly IGameInteropProvider _gameInteropProvider;
+    private readonly ExcelService _excelService;
+    private readonly AetherCurrentHelperWindow _window;
+    private readonly ConfigGui _configGui;
 
-    private Hook<AgentAetherCurrent.Delegates.ReceiveEvent>? ReceiveEventHook;
+    private Hook<AgentAetherCurrent.Delegates.ReceiveEvent>? _receiveEventHook;
+
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()
     {
-        ReceiveEventHook = GameInteropProvider.HookFromAddress<AgentAetherCurrent.Delegates.ReceiveEvent>(
+        _receiveEventHook = _gameInteropProvider.HookFromAddress<AgentAetherCurrent.Delegates.ReceiveEvent>(
             AgentAetherCurrent.StaticVirtualTablePointer->ReceiveEvent,
             ReceiveEventDetour);
     }
 
     public void OnEnable()
     {
-        ReceiveEventHook?.Enable();
+        _receiveEventHook?.Enable();
     }
 
     public void OnDisable()
     {
-        ReceiveEventHook?.Disable();
-        Window.Close();
+        _receiveEventHook?.Disable();
+        _window.Close();
     }
 
     void IDisposable.Dispose()
@@ -52,10 +50,9 @@ public unsafe partial class AetherCurrentHelper(
             return;
 
         OnDisable();
-        ReceiveEventHook?.Dispose();
+        _receiveEventHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private AtkValue* ReceiveEventDetour(AgentAetherCurrent* agent, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
@@ -68,12 +65,12 @@ public unsafe partial class AetherCurrentHelper(
             return returnValue;
         }
 
-        return ReceiveEventHook!.Original(agent, returnValue, values, valueCount, eventKind);
+        return _receiveEventHook!.Original(agent, returnValue, values, valueCount, eventKind);
     }
 
     public bool OpenWindow(AgentAetherCurrent* agent, AtkValue* atkValue)
     {
-        if (KeyState[VirtualKey.SHIFT])
+        if (UIInputData.Instance()->IsKeyDown(SeVirtualKey.SHIFT))
             return false;
 
         if (atkValue == null)
@@ -92,11 +89,11 @@ public unsafe partial class AetherCurrentHelper(
         if (index < 19)
             index = rawIndex;
 
-        if (!ExcelService.TryGetRow<AetherCurrentCompFlgSet>(index + 1, out var compFlgSet))
+        if (!_excelService.TryGetRow<AetherCurrentCompFlgSet>(index + 1, out var compFlgSet))
             return false;
 
-        Window.CompFlgSet = compFlgSet;
-        Window.Open();
+        _window.CompFlgSet = compFlgSet;
+        _window.Open();
 
         return true;
     }

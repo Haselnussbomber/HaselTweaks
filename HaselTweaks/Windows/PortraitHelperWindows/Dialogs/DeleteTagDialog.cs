@@ -8,74 +8,73 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
-[RegisterScoped]
-public class DeleteTagDialog : ConfirmationDialog
+[RegisterScoped, AutoConstruct]
+public partial class DeleteTagDialog : ConfirmationDialog
 {
-    private readonly PluginConfig PluginConfig;
-    private readonly TextService TextService;
+    private readonly PluginConfig _pluginConfig;
+    private readonly TextService _textService;
 
-    private PresetBrowserOverlay? PresetBrowserOverlay;
+    private PresetBrowserOverlay? _presetBrowserOverlay;
 
-    private SavedPresetTag? Tag;
-    private bool DeletePortraits;
+    private SavedPresetTag? _tag;
+    private bool _deletePortraits;
 
-    public DeleteTagDialog(PluginConfig pluginConfig, TextService textService)
-        : base(textService.Translate("PortraitHelperWindows.DeleteTagDialog.Title"))
+    [AutoPostConstruct]
+    private void Initialize()
     {
-        PluginConfig = pluginConfig;
-        TextService = textService;
+        WindowName = _textService.Translate("PortraitHelperWindows.DeleteTagDialog.Title");
 
-        AddButton(new ConfirmationButton(textService.Translate("ConfirmationButtonWindow.Delete"), OnDelete));
-        AddButton(new ConfirmationButton(textService.Translate("ConfirmationButtonWindow.Cancel"), Close));
+        AddButton(new ConfirmationButton(_textService.Translate("ConfirmationButtonWindow.Delete"), OnDelete));
+        AddButton(new ConfirmationButton(_textService.Translate("ConfirmationButtonWindow.Cancel"), Close));
     }
 
     public void Open(PresetBrowserOverlay presetBrowserOverlay, SavedPresetTag tag)
     {
-        PresetBrowserOverlay = presetBrowserOverlay;
-        Tag = tag;
-        DeletePortraits = false;
+        _presetBrowserOverlay = presetBrowserOverlay;
+        _tag = tag;
+        _deletePortraits = false;
         Show();
     }
 
     public void Close()
     {
         Hide();
-        Tag = null;
+        _tag = null;
     }
 
     public override bool DrawCondition()
-        => base.DrawCondition() && Tag != null;
+        => base.DrawCondition() && _tag != null;
 
     public override void InnerDraw()
     {
-        ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.DeleteTagDialog.Prompt", Tag!.Name));
+        ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.DeleteTagDialog.Prompt", _tag!.Name));
         ImGui.Spacing();
-        ImGui.Checkbox(TextService.Translate("PortraitHelperWindows.DeleteTagDialog.DeletePortraitsToo.Label"), ref DeletePortraits);
+        ImGui.Checkbox(_textService.Translate("PortraitHelperWindows.DeleteTagDialog.DeletePortraitsToo.Label"), ref _deletePortraits);
     }
 
     private void OnDelete()
     {
-        if (Tag == null)
+        if (_tag == null)
         {
             Close();
             return;
         }
 
-        var config = PluginConfig.Tweaks.PortraitHelper;
+        var config = _pluginConfig.Tweaks.PortraitHelper;
 
         var presets = config.Presets
-            .Where((preset) => preset.Tags.Any((t) => t == Tag.Id))
+            .Where((preset) => preset.Tags.Any((t) => t == _tag.Id))
             .ToArray();
 
-        if (DeletePortraits)
+        if (_deletePortraits)
         {
             // remove presets with tag
             foreach (var preset in presets)
             {
-                if (PresetBrowserOverlay!.PresetCards.TryGetValue(preset.Id, out var card))
+                if (_presetBrowserOverlay!.PresetCards.TryGetValue(preset.Id, out var card))
                 {
                     card.Dispose();
-                    PresetBrowserOverlay.PresetCards.Remove(preset.Id);
+                    _presetBrowserOverlay.PresetCards.Remove(preset.Id);
                 }
 
                 config.Presets.Remove(preset);
@@ -86,15 +85,15 @@ public class DeleteTagDialog : ConfirmationDialog
             // remove tag from presets
             foreach (var preset in presets)
             {
-                preset.Tags.Remove(Tag.Id);
+                preset.Tags.Remove(_tag.Id);
             }
         }
 
-        config.PresetTags.Remove(Tag);
-        PluginConfig.Save();
+        config.PresetTags.Remove(_tag);
+        _pluginConfig.Save();
 
-        if (PresetBrowserOverlay!.SelectedTagId == Tag.Id)
-            PresetBrowserOverlay.SelectedTagId = null;
+        if (_presetBrowserOverlay!.SelectedTagId == _tag.Id)
+            _presetBrowserOverlay.SelectedTagId = null;
 
         Close();
     }

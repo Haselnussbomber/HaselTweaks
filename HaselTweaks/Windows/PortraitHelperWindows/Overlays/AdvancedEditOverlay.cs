@@ -80,7 +80,7 @@ public unsafe class AdvancedEditOverlay(
             return;
 
         var baseTimeline = Character->Timeline.TimelineSequencer.GetSchedulerTimeline(0);
-        if (baseTimeline == null || (baseTimeline->ActionTimelineKey != null && Marshal.PtrToStringUTF8((nint)baseTimeline->ActionTimelineKey) == "normal/idle"))
+        if (baseTimeline == null || baseTimeline->ActionTimelineKey.ToString() == "normal/idle")
             return;
 
         _duration = animation->Duration - 0.5f;

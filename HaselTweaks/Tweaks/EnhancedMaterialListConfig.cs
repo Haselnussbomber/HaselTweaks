@@ -19,7 +19,7 @@ public class EnhancedMaterialListConfiguration
 
 public unsafe partial class EnhancedMaterialList
 {
-    private EnhancedMaterialListConfiguration Config => PluginConfig.Tweaks.EnhancedMaterialList;
+    private EnhancedMaterialListConfiguration Config => _pluginConfig.Tweaks.EnhancedMaterialList;
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
@@ -42,25 +42,25 @@ public unsafe partial class EnhancedMaterialList
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawConfigurationHeader();
+        _configGui.DrawConfigurationHeader();
 
-        ConfigGui.DrawBool("EnableZoneNames", ref Config.EnableZoneNames, drawAfterDescription: () =>
+        _configGui.DrawBool("EnableZoneNames", ref Config.EnableZoneNames, drawAfterDescription: () =>
         {
             using (ImRaii.Disabled(!Config.EnableZoneNames))
-                ConfigGui.DrawBool("DisableZoneNameForCrystals", ref Config.DisableZoneNameForCrystals, noFixSpaceAfter: true);
+                _configGui.DrawBool("DisableZoneNameForCrystals", ref Config.DisableZoneNameForCrystals, noFixSpaceAfter: true);
         });
 
-        ConfigGui.DrawBool("ClickToOpenMap", ref Config.ClickToOpenMap, drawAfterDescription: () =>
+        _configGui.DrawBool("ClickToOpenMap", ref Config.ClickToOpenMap, drawAfterDescription: () =>
         {
             using (ImRaii.Disabled(!Config.ClickToOpenMap))
-                ConfigGui.DrawBool("DisableClickToOpenMapForCrystals", ref Config.DisableClickToOpenMapForCrystals, noFixSpaceAfter: true);
+                _configGui.DrawBool("DisableClickToOpenMapForCrystals", ref Config.DisableClickToOpenMapForCrystals, noFixSpaceAfter: true);
         });
 
-        ConfigGui.DrawBool("AutoRefreshMaterialList", ref Config.AutoRefreshMaterialList);
-        ConfigGui.DrawBool("AutoRefreshRecipeTree", ref Config.AutoRefreshRecipeTree);
-        ConfigGui.DrawBool("RestoreMaterialList", ref Config.RestoreMaterialList);
-        ConfigGui.DrawBool("AddSearchForItemByCraftingMethodContextMenuEntry", ref Config.AddSearchForItemByCraftingMethodContextMenuEntry, noFixSpaceAfter: true);
+        _configGui.DrawBool("AutoRefreshMaterialList", ref Config.AutoRefreshMaterialList);
+        _configGui.DrawBool("AutoRefreshRecipeTree", ref Config.AutoRefreshRecipeTree);
+        _configGui.DrawBool("RestoreMaterialList", ref Config.RestoreMaterialList);
+        _configGui.DrawBool("AddSearchForItemByCraftingMethodContextMenuEntry", ref Config.AddSearchForItemByCraftingMethodContextMenuEntry, noFixSpaceAfter: true);
     }
 }

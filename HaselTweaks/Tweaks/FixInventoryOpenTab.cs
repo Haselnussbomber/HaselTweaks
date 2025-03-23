@@ -10,22 +10,24 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe class FixInventoryOpenTab(ILogger<FixInventoryOpenTab> Logger, IAddonLifecycle AddonLifecycle) : ITweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class FixInventoryOpenTab : ITweak
 {
-    public string InternalName => nameof(FixInventoryOpenTab);
+    private readonly ILogger<FixInventoryOpenTab> _logger;
+    private readonly IAddonLifecycle _addonLifecycle;
+
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize() { }
 
     public void OnEnable()
     {
-        AddonLifecycle.RegisterListener(AddonEvent.PreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"], OnPreRefresh);
+        _addonLifecycle.RegisterListener(AddonEvent.PreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"], OnPreRefresh);
     }
 
     public void OnDisable()
     {
-        AddonLifecycle.UnregisterListener(AddonEvent.PreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"], OnPreRefresh);
+        _addonLifecycle.UnregisterListener(AddonEvent.PreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"], OnPreRefresh);
     }
 
     void IDisposable.Dispose()
@@ -36,7 +38,6 @@ public unsafe class FixInventoryOpenTab(ILogger<FixInventoryOpenTab> Logger, IAd
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnPreRefresh(AddonEvent type, AddonArgs args)
@@ -74,7 +75,7 @@ public unsafe class FixInventoryOpenTab(ILogger<FixInventoryOpenTab> Logger, IAd
 
     private void ResetTabIndex(AtkUnitBase* addon)
     {
-        Logger.LogTrace("[{addonName}] [PreRefresh] Resetting tab to 0", addon->NameString);
+        _logger.LogTrace("[{addonName}] [PreRefresh] Resetting tab to 0", addon->NameString);
 
         switch (addon->NameString)
         {

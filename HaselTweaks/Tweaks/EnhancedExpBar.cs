@@ -13,57 +13,55 @@ using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using HaselTweaks.Structs;
 using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class EnhancedExpBar(
-    PluginConfig PluginConfig,
-    ConfigGui ConfigGui,
-    TextService TextService,
-    IClientState ClientState,
-    IAddonLifecycle AddonLifecycle,
-    IGameInteropProvider GameInteropProvider,
-    ExcelService ExcelService)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class EnhancedExpBar : IConfigurableTweak
 {
-    public string InternalName => nameof(EnhancedExpBar);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly TextService _textService;
+    private readonly IClientState _clientState;
+    private readonly IAddonLifecycle _addonLifecycle;
+    private readonly IGameInteropProvider _gameInteropProvider;
+    private readonly ExcelService _excelService;
 
-    private Hook<HaselAgentHUD.Delegates.UpdateExp>? UpdateExpHook;
-    private byte ColorMultiplyRed = 100;
-    private byte ColorMultiplyGreen = 100;
-    private byte ColorMultiplyBlue = 100;
+    private Hook<AgentHUD.Delegates.UpdateExp>? _updateExpHook;
+    private byte _colorMultiplyRed = 100;
+    private byte _colorMultiplyGreen = 100;
+    private byte _colorMultiplyBlue = 100;
+
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()
     {
-        UpdateExpHook = GameInteropProvider.HookFromAddress<HaselAgentHUD.Delegates.UpdateExp>(
-            HaselAgentHUD.MemberFunctionPointers.UpdateExp,
+        _updateExpHook = _gameInteropProvider.HookFromAddress<AgentHUD.Delegates.UpdateExp>(
+            AgentHUD.MemberFunctionPointers.UpdateExp,
             UpdateExpDetour);
     }
 
     public void OnEnable()
     {
-        ClientState.LeavePvP += OnLeavePvP;
-        ClientState.TerritoryChanged += OnTerritoryChanged;
+        _clientState.LeavePvP += OnLeavePvP;
+        _clientState.TerritoryChanged += OnTerritoryChanged;
 
-        AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_Exp", OnAddonExpPostRequestedUpdate);
+        _addonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_Exp", OnAddonExpPostRequestedUpdate);
 
-        UpdateExpHook?.Enable();
+        _updateExpHook?.Enable();
 
         TriggerReset();
     }
 
     public void OnDisable()
     {
-        ClientState.LeavePvP -= OnLeavePvP;
-        ClientState.TerritoryChanged -= OnTerritoryChanged;
+        _clientState.LeavePvP -= OnLeavePvP;
+        _clientState.TerritoryChanged -= OnTerritoryChanged;
 
-        AddonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "_Exp", OnAddonExpPostRequestedUpdate);
+        _addonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "_Exp", OnAddonExpPostRequestedUpdate);
 
-        UpdateExpHook?.Disable();
+        _updateExpHook?.Disable();
 
         if (Status is TweakStatus.Enabled)
             TriggerReset();
@@ -75,10 +73,9 @@ public unsafe partial class EnhancedExpBar(
             return;
 
         OnDisable();
-        UpdateExpHook?.Dispose();
+        _updateExpHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnLeavePvP()
@@ -87,11 +84,11 @@ public unsafe partial class EnhancedExpBar(
     private void OnTerritoryChanged(ushort territoryType)
         => TriggerReset();
 
-    private void UpdateExpDetour(HaselAgentHUD* thisPtr, NumberArrayData* expNumberArray, StringArrayData* expStringArray, StringArrayData* characterStringArray)
+    private void UpdateExpDetour(AgentHUD* thisPtr, NumberArrayData* expNumberArray, StringArrayData* expStringArray, StringArrayData* characterStringArray)
     {
-        UpdateExpHook!.Original(thisPtr, expNumberArray, expStringArray, characterStringArray);
+        _updateExpHook!.Original(thisPtr, expNumberArray, expStringArray, characterStringArray);
 
-        if (!ClientState.IsLoggedIn || ClientState.LocalPlayer == null || !ClientState.LocalPlayer.ClassJob.IsValid)
+        if (!_clientState.IsLoggedIn || _clientState.LocalPlayer == null || !_clientState.LocalPlayer.ClassJob.IsValid)
             return;
 
         SetColor(); // reset unless overwritten
@@ -102,7 +99,7 @@ public unsafe partial class EnhancedExpBar(
             return;
         }
 
-        if (Config.ForcePvPSeriesBar && ClientState.IsPvP)
+        if (Config.ForcePvPSeriesBar && _clientState.IsPvP)
         {
             OverwriteWithPvPBar();
             return;
@@ -141,25 +138,25 @@ public unsafe partial class EnhancedExpBar(
         if (nineGridNode == null)
             return;
 
-        if (nineGridNode->AtkResNode.MultiplyRed != ColorMultiplyRed)
-            nineGridNode->AtkResNode.MultiplyRed = ColorMultiplyRed;
+        if (nineGridNode->AtkResNode.MultiplyRed != _colorMultiplyRed)
+            nineGridNode->AtkResNode.MultiplyRed = _colorMultiplyRed;
 
-        if (nineGridNode->AtkResNode.MultiplyGreen != ColorMultiplyGreen)
-            nineGridNode->AtkResNode.MultiplyGreen = ColorMultiplyGreen;
+        if (nineGridNode->AtkResNode.MultiplyGreen != _colorMultiplyGreen)
+            nineGridNode->AtkResNode.MultiplyGreen = _colorMultiplyGreen;
 
-        if (nineGridNode->AtkResNode.MultiplyBlue != ColorMultiplyBlue)
-            nineGridNode->AtkResNode.MultiplyBlue = ColorMultiplyBlue;
+        if (nineGridNode->AtkResNode.MultiplyBlue != _colorMultiplyBlue)
+            nineGridNode->AtkResNode.MultiplyBlue = _colorMultiplyBlue;
     }
 
     private void OverwriteWithCompanionBar()
     {
         var buddy = UIState.Instance()->Buddy.CompanionInfo;
 
-        if (!ExcelService.TryGetRow<BuddyRank>(buddy.Rank, out var buddyRank))
+        if (!_excelService.TryGetRow<BuddyRank>(buddy.Rank, out var buddyRank))
             return;
 
-        var job = ClientState.LocalPlayer!.ClassJob.Value.Abbreviation;
-        var levelLabel = (TextService.GetAddonText(4968) ?? "Rank").Trim().Replace(":", "");
+        var job = _clientState.LocalPlayer!.ClassJob.Value.Abbreviation;
+        var levelLabel = (_textService.GetAddonText(4968) ?? "Rank").Trim().Replace(":", "");
         var rank = buddy.Rank > 20 ? 20 : buddy.Rank;
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var requiredExperience = buddyRank.ExpRequired;
@@ -173,14 +170,14 @@ public unsafe partial class EnhancedExpBar(
     {
         var pvpProfile = PvPProfile.Instance();
 
-        if (pvpProfile == null || pvpProfile->IsLoaded != 0x01 || !ExcelService.TryGetRow<PvPSeriesLevel>(pvpProfile->GetSeriesCurrentRank(), out var pvpSeriesLevel))
+        if (pvpProfile == null || pvpProfile->IsLoaded != 0x01 || !_excelService.TryGetRow<PvPSeriesLevel>(pvpProfile->GetSeriesCurrentRank(), out var pvpSeriesLevel))
             return;
 
         var claimedRank = pvpProfile->GetSeriesClaimedRank();
         var currentRank = pvpProfile->GetSeriesCurrentRank();
 
-        var job = ClientState.LocalPlayer!.ClassJob.Value.Abbreviation;
-        var levelLabel = (TextService.GetAddonText(14860) ?? "Series Level").Trim().Replace(":", "");
+        var job = _clientState.LocalPlayer!.ClassJob.Value.Abbreviation;
+        var levelLabel = (_textService.GetAddonText(14860) ?? "Series Level").Trim().Replace(":", "");
         var rank = currentRank > 30 ? 30 : currentRank; // 30 = Series Max Rank, hopefully in the future too
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var star = currentRank > claimedRank ? '*' : ' ';
@@ -197,11 +194,11 @@ public unsafe partial class EnhancedExpBar(
     {
         var mjiManager = MJIManager.Instance();
 
-        if (mjiManager == null || !ExcelService.TryGetRow<MJIRank>(mjiManager->IslandState.CurrentRank, out var mjiRank))
+        if (mjiManager == null || !_excelService.TryGetRow<MJIRank>(mjiManager->IslandState.CurrentRank, out var mjiRank))
             return;
 
-        var job = Config.SanctuaryBarHideJob ? "" : ClientState.LocalPlayer!.ClassJob.Value.Abbreviation + "  ";
-        var levelLabel = (TextService.GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
+        var job = Config.SanctuaryBarHideJob ? "" : _clientState.LocalPlayer!.ClassJob.Value.Abbreviation + "  ";
+        var levelLabel = (_textService.GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
         var level = mjiManager->IslandState.CurrentRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var requiredExperience = mjiRank.ExpToNext;
 
@@ -255,13 +252,13 @@ public unsafe partial class EnhancedExpBar(
 
     private void SetColor(byte red = 100, byte green = 100, byte blue = 100)
     {
-        if (ColorMultiplyRed != red)
-            ColorMultiplyRed = red;
+        if (_colorMultiplyRed != red)
+            _colorMultiplyRed = red;
 
-        if (ColorMultiplyGreen != green)
-            ColorMultiplyGreen = green;
+        if (_colorMultiplyGreen != green)
+            _colorMultiplyGreen = green;
 
-        if (ColorMultiplyBlue != blue)
-            ColorMultiplyBlue = blue;
+        if (_colorMultiplyBlue != blue)
+            _colorMultiplyBlue = blue;
     }
 }

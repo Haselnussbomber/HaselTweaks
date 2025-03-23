@@ -22,9 +22,9 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
     protected readonly PluginConfig PluginConfig;
     protected readonly ExcelService ExcelService;
 
-    private readonly ImRaii.Style WindowPadding = new();
-    private readonly ImRaii.Color WindowBg = new();
-    private readonly ImRaii.Color WindowText = new();
+    private readonly ImRaii.Style _windowPadding = new();
+    private readonly ImRaii.Color _windowBg = new();
+    private readonly ImRaii.Color _windowText = new();
 
     protected uint DefaultImGuiTextColor { get; set; }
 
@@ -52,9 +52,9 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
 
     public override void OnClose()
     {
-        WindowPadding.Dispose();
-        WindowBg.Dispose();
-        WindowText.Dispose();
+        _windowPadding.Dispose();
+        _windowBg.Dispose();
+        _windowText.Dispose();
 
         ToggleUiVisibility(true);
 
@@ -99,27 +99,27 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
         {
             if (Type == OverlayType.LeftPane)
             {
-                WindowPadding.Push(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+                _windowPadding.Push(ImGuiStyleVar.WindowPadding, Vector2.Zero);
             }
 
             if (Misc.IsLightTheme && ExcelService.TryGetRow<UIColor>(2, out var uiColor))
             {
-                WindowText.Push(ImGuiCol.Text, (uint)uiColor.GetForegroundColor());
+                _windowText.Push(ImGuiCol.Text, (uint)uiColor.GetForegroundColor());
             }
 
-            WindowBg.Push(ImGuiCol.WindowBg, 0);
+            _windowBg.Push(ImGuiCol.WindowBg, 0);
         }
     }
 
     public override void Draw()
     {
-        WindowPadding.Dispose();
-        WindowBg.Dispose();
+        _windowPadding.Dispose();
+        _windowBg.Dispose();
     }
 
     public override void PostDraw()
     {
-        WindowText.Dispose();
+        _windowText.Dispose();
 
         UpdateWindow();
     }

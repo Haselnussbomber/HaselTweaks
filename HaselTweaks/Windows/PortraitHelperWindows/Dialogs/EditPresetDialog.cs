@@ -10,58 +10,57 @@ using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
-[RegisterScoped]
-public class EditPresetDialog : ConfirmationDialog
+[RegisterScoped, AutoConstruct]
+public partial class EditPresetDialog : ConfirmationDialog
 {
-    private readonly PluginConfig PluginConfig;
-    private readonly TextService TextService;
+    private readonly PluginConfig _pluginConfig;
+    private readonly TextService _textService;
 
-    private readonly ConfirmationButton SaveButton;
-    private string? Name;
-    private SavedPreset? Preset;
-    public readonly List<Guid> Tags = [];
+    private ConfirmationButton _saveButton;
+    private string? _name;
+    private SavedPreset? _preset;
+    private readonly List<Guid> _tags = [];
 
-    private PortraitHelperConfiguration Config => PluginConfig.Tweaks.PortraitHelper;
+    private PortraitHelperConfiguration Config => _pluginConfig.Tweaks.PortraitHelper;
 
-    public EditPresetDialog(PluginConfig pluginConfig, TextService textService)
-        : base(textService.Translate("PortraitHelperWindows.EditPresetDialog.Title"))
+    [AutoPostConstruct]
+    private void Initialize()
     {
-        PluginConfig = pluginConfig;
-        TextService = textService;
+        WindowName = _textService.Translate("PortraitHelperWindows.EditPresetDialog.Title");
 
-        AddButton(SaveButton = new ConfirmationButton(textService.Translate("ConfirmationButtonWindow.Save"), OnSave));
-        AddButton(new ConfirmationButton(textService.Translate("ConfirmationButtonWindow.Cancel"), Close));
+        AddButton(_saveButton = new ConfirmationButton(_textService.Translate("ConfirmationButtonWindow.Save"), OnSave));
+        AddButton(new ConfirmationButton(_textService.Translate("ConfirmationButtonWindow.Cancel"), Close));
     }
 
     public void Open(SavedPreset preset)
     {
-        Preset = preset;
-        Name = preset.Name;
-        Tags.Clear();
-        Tags.AddRange(preset.Tags);
+        _preset = preset;
+        _name = preset.Name;
+        _tags.Clear();
+        _tags.AddRange(preset.Tags);
         Show();
     }
 
     public void Close()
     {
         Hide();
-        Name = null;
-        Preset = null;
-        Tags.Clear();
+        _name = null;
+        _preset = null;
+        _tags.Clear();
     }
 
     public override bool DrawCondition()
-        => base.DrawCondition() && Name != null && Preset != null;
+        => base.DrawCondition() && _name != null && _preset != null;
 
     public override void InnerDraw()
     {
-        ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.EditPresetDialog.Name.Label"));
+        ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.EditPresetDialog.Name.Label"));
 
         ImGui.Spacing();
 
-        ImGui.InputText("##PresetName", ref Name, 30);
+        ImGui.InputText("##PresetName", ref _name, 30);
 
-        var disabled = string.IsNullOrEmpty(Name.Trim());
+        var disabled = string.IsNullOrEmpty(_name.Trim());
         if (!disabled && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter)))
         {
             OnSave();
@@ -70,13 +69,13 @@ public class EditPresetDialog : ConfirmationDialog
         if (Config.PresetTags.Count != 0)
         {
             ImGui.Spacing();
-            ImGui.TextUnformatted(TextService.Translate("PortraitHelperWindows.EditPresetDialog.Tags.Label"));
+            ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.EditPresetDialog.Tags.Label"));
 
-            var tagNames = Tags!
+            var tagNames = _tags!
                 .Select(id => Config.PresetTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
                 .Where(name => !string.IsNullOrEmpty(name));
 
-            var preview = tagNames.Any() ? string.Join(", ", tagNames) : TextService.Translate("PortraitHelperWindows.EditPresetDialog.Tags.None");
+            var preview = tagNames.Any() ? string.Join(", ", tagNames) : _textService.Translate("PortraitHelperWindows.EditPresetDialog.Tags.None");
 
             ImGui.Spacing();
             using var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge);
@@ -84,41 +83,41 @@ public class EditPresetDialog : ConfirmationDialog
             {
                 foreach (var tag in Config.PresetTags)
                 {
-                    var isSelected = Tags!.Contains(tag.Id);
+                    var isSelected = _tags!.Contains(tag.Id);
 
                     if (ImGui.Selectable($"{tag.Name}##PresetTag{tag.Id}", isSelected))
                     {
                         if (isSelected)
                         {
-                            Tags.Remove(tag.Id);
+                            _tags.Remove(tag.Id);
                         }
                         else
                         {
-                            Tags.Add(tag.Id);
+                            _tags.Add(tag.Id);
                         }
                     }
                 }
             }
         }
 
-        SaveButton.Disabled = disabled;
+        _saveButton.Disabled = disabled;
     }
 
     private void OnSave()
     {
-        if (Preset == null || string.IsNullOrEmpty(Name?.Trim()))
+        if (_preset == null || string.IsNullOrEmpty(_name?.Trim()))
         {
             Close();
             return;
         }
 
-        Preset.Name = Name.Trim();
-        Preset.Tags.Clear();
+        _preset.Name = _name.Trim();
+        _preset.Tags.Clear();
 
-        foreach (var tag in Tags)
-            Preset.Tags.Add(tag);
+        foreach (var tag in _tags)
+            _preset.Tags.Add(tag);
 
-        PluginConfig.Save();
+        _pluginConfig.Save();
 
         Close();
     }

@@ -1,7 +1,9 @@
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+
 namespace HaselTweaks.Structs;
 
 [GenerateInterop]
-[StructLayout(LayoutKind.Explicit, Size = 0xE60)]
+[StructLayout(LayoutKind.Explicit, Size = RaptureTextModule.StructSize)]
 public unsafe partial struct HaselRaptureTextModule
 {
     [MemberFunction("E8 ?? ?? ?? ?? 41 8D 55 0B")]

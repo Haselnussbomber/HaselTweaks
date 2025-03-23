@@ -65,25 +65,44 @@ dotnet_style_prefer_conditional_expression_over_return = false
 # Naming Conventions          #
 ###############################
 
-# Style Definitions
+# Define styles
+dotnet_naming_style.camel_case_style.capitalization = camel_case
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 
-# Use PascalCase for constant fields
-dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = warning
-dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols = constant_fields
-dotnet_naming_rule.constant_fields_should_be_pascal_case.style = pascal_case_style
-dotnet_naming_symbols.constant_fields.applicable_kinds = field
-dotnet_naming_symbols.constant_fields.applicable_accessibilities = *
-dotnet_naming_symbols.constant_fields.required_modifiers = const
+dotnet_naming_style.lower_camel_case_style.required_prefix = _
+dotnet_naming_style.lower_camel_case_style.capitalization = camel_case
 
-# Define the 'private_fields' symbol group:
-dotnet_naming_symbols.private_fields.applicable_kinds = field
-dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+# Define symbols
+dotnet_naming_symbols.constant_fields_symbol.applicable_kinds = field
+dotnet_naming_symbols.constant_fields_symbol.applicable_accessibilities = *
+dotnet_naming_symbols.constant_fields_symbol.required_modifiers = const
 
-# Define the 'private_static_fields' symbol group
-dotnet_naming_symbols.private_static_fields.applicable_kinds = field
-dotnet_naming_symbols.private_static_fields.applicable_accessibilities = private
-dotnet_naming_symbols.private_static_fields.required_modifiers = static
+dotnet_naming_symbols.private_fields_symbol.applicable_kinds = field
+dotnet_naming_symbols.private_fields_symbol.applicable_accessibilities = private
+
+dotnet_naming_symbols.private_static_fields_symbol.applicable_kinds = field
+dotnet_naming_symbols.private_static_fields_symbol.applicable_accessibilities = private
+dotnet_naming_symbols.private_static_fields_symbol.required_modifiers = static
+
+dotnet_naming_symbols.parameter_symbol.applicable_kinds = parameter
+dotnet_naming_symbols.parameter_symbol.applicable_accessibilities = *
+
+# Define rules
+dotnet_naming_rule.constant_fields_rule.severity = warning
+dotnet_naming_rule.constant_fields_rule.symbols = constant_fields_symbol
+dotnet_naming_rule.constant_fields_rule.style = pascal_case_style
+
+dotnet_naming_rule.private_fields_rule.severity = warning
+dotnet_naming_rule.private_fields_rule.symbols = private_fields_symbol
+dotnet_naming_rule.private_fields_rule.style = lower_camel_case_style
+
+dotnet_naming_rule.private_static_fields_rule.severity = warning
+dotnet_naming_rule.private_static_fields_rule.symbols = private_static_fields_symbol
+dotnet_naming_rule.private_static_fields_rule.style = pascal_case_style
+
+dotnet_naming_rule.parameters_rule.severity = warning
+dotnet_naming_rule.parameters_rule.symbols = parameter_symbol
+dotnet_naming_rule.parameters_rule.style = camel_case_style
 
 ###############################
 # C# Coding Conventions       #
@@ -159,3 +178,9 @@ csharp_space_between_method_call_empty_parameter_list_parentheses = false
 # Wrapping preferences
 csharp_preserve_single_line_statements = true
 csharp_preserve_single_line_blocks = true
+
+###############################
+# C# Code quality rules       #
+###############################
+
+dotnet_diagnostic.CA1816.severity = none

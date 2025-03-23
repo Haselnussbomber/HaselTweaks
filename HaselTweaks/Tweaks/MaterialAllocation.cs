@@ -1,37 +1,36 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class MaterialAllocation(
-    PluginConfig PluginConfig,
-    IAddonLifecycle AddonLifecycle)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class MaterialAllocation : IConfigurableTweak
 {
-    public string InternalName => nameof(MaterialAllocation);
+    private readonly PluginConfig _pluginConfig;
+    private readonly IAddonLifecycle _addonLifecycle;
+
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    private MaterialAllocationConfiguration Config => PluginConfig.Tweaks.MaterialAllocation;
+    private MaterialAllocationConfiguration Config => _pluginConfig.Tweaks.MaterialAllocation;
 
     public void OnInitialize() { }
 
     public void OnEnable()
     {
-        AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PostReceiveEvent);
-        AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PreSetup);
+        _addonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PostReceiveEvent);
+        _addonLifecycle.RegisterListener(AddonEvent.PreSetup, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PreSetup);
     }
 
     public void OnDisable()
     {
-        AddonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PostReceiveEvent);
-        AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PreSetup);
+        _addonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PostReceiveEvent);
+        _addonLifecycle.UnregisterListener(AddonEvent.PreSetup, "MJICraftMaterialConfirmation", AddonMJICraftMaterialConfirmation_PreSetup);
     }
 
     void IDisposable.Dispose()
@@ -42,7 +41,6 @@ public unsafe partial class MaterialAllocation(
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void AddonMJICraftMaterialConfirmation_PreSetup(AddonEvent type, AddonArgs args)
@@ -72,6 +70,6 @@ public unsafe partial class MaterialAllocation(
             return;
 
         Config.LastSelectedTab = (byte)(receiveEventArgs.EventParam - 1);
-        PluginConfig.Save();
+        _pluginConfig.Save();
     }
 }

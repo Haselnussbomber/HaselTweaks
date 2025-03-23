@@ -1,9 +1,10 @@
 using FFXIVClientStructs.FFXIV.Client.System.String;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 
 namespace HaselTweaks.Structs;
 
 [GenerateInterop]
-[StructLayout(LayoutKind.Explicit, Size = 0x3488)]
+[StructLayout(LayoutKind.Explicit, Size = RaptureLogModule.StructSize)]
 public unsafe partial struct HaselRaptureLogModule
 {
     [MemberFunction("E8 ?? ?? ?? ?? 41 83 EC 01")]

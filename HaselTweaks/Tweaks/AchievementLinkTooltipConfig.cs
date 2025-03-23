@@ -1,5 +1,3 @@
-using HaselTweaks.Config;
-
 namespace HaselTweaks.Tweaks;
 
 public class AchievementLinkTooltipConfiguration
@@ -10,7 +8,7 @@ public class AchievementLinkTooltipConfiguration
 
 public partial class AchievementLinkTooltip
 {
-    private AchievementLinkTooltipConfiguration Config => PluginConfig.Tweaks.AchievementLinkTooltip;
+    private AchievementLinkTooltipConfiguration Config => _pluginConfig.Tweaks.AchievementLinkTooltip;
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
@@ -18,10 +16,10 @@ public partial class AchievementLinkTooltip
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawConfigurationHeader();
-        ConfigGui.DrawBool("ShowCompletionStatus", ref Config.ShowCompletionStatus);
-        ConfigGui.DrawBool("PreventSpoiler", ref Config.PreventSpoiler, noFixSpaceAfter: true);
+        _configGui.DrawConfigurationHeader();
+        _configGui.DrawBool("ShowCompletionStatus", ref Config.ShowCompletionStatus);
+        _configGui.DrawBool("PreventSpoiler", ref Config.PreventSpoiler, noFixSpaceAfter: true);
     }
 }

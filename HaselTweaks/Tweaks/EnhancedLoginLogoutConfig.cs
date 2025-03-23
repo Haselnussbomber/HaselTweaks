@@ -7,8 +7,6 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Gui;
-using HaselCommon.Services;
-using HaselTweaks.Config;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
 
@@ -36,7 +34,7 @@ public class EnhancedLoginLogoutConfiguration
 
 public unsafe partial class EnhancedLoginLogout
 {
-    private EnhancedLoginLogoutConfiguration Config => PluginConfig.Tweaks.EnhancedLoginLogout;
+    private EnhancedLoginLogoutConfiguration Config => _pluginConfig.Tweaks.EnhancedLoginLogout;
 
     private bool _isRecordingEmote;
     private readonly uint[] _changePoseEmoteIds = [91, 92, 93, 107, 108, 218, 219,];
@@ -57,10 +55,10 @@ public unsafe partial class EnhancedLoginLogout
                 break;
 
             case nameof(Config.EnableCharaSelectEmote):
-                if (!Config.EnableCharaSelectEmote && CurrentEntry != null && CurrentEntry.Character != null)
+                if (!Config.EnableCharaSelectEmote && _currentEntry != null && _currentEntry.Character != null)
                 {
                     ResetEmoteMode();
-                    CurrentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(3);
+                    _currentEntry.Character->Timeline.TimelineSequencer.PlayTimeline(3);
                 }
                 break;
         }
@@ -68,19 +66,19 @@ public unsafe partial class EnhancedLoginLogout
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawConfigurationHeader("EnhancedLoginLogout.Config.LoginOptions.Title");
+        _configGui.DrawConfigurationHeader("EnhancedLoginLogout.Config.LoginOptions.Title");
 
         // SkipLogo
-        ConfigGui.DrawBool("SkipLogo", ref Config.SkipLogo);
+        _configGui.DrawBool("SkipLogo", ref Config.SkipLogo);
 
         // ShowPets
-        ConfigGui.DrawBool("ShowPets", ref Config.ShowPets, drawAfterDescription: () =>
+        _configGui.DrawBool("ShowPets", ref Config.ShowPets, drawAfterDescription: () =>
         {
             if (ActiveContentId != 0 && !Config.PetMirageSettings.ContainsKey(ActiveContentId))
             {
-                ImGuiHelpers.SafeTextColoredWrapped(Color.Red, TextService.Translate("EnhancedLoginLogout.Config.ShowPets.Error.MissingPetMirageSettings"));
+                ImGuiHelpers.SafeTextColoredWrapped(Color.Red, _textService.Translate("EnhancedLoginLogout.Config.ShowPets.Error.MissingPetMirageSettings"));
             }
 
             // PetPosition
@@ -88,47 +86,47 @@ public unsafe partial class EnhancedLoginLogout
             {
                 ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemInnerSpacing.Y);
 
-                if (ImGui.DragFloat3(TextService.Translate("EnhancedLoginLogout.Config.PetPosition.Label"), ref Config.PetPosition, 0.01f, -10f, 10f))
+                if (ImGui.DragFloat3(_textService.Translate("EnhancedLoginLogout.Config.PetPosition.Label"), ref Config.PetPosition, 0.01f, -10f, 10f))
                 {
                     ApplyPetPosition();
-                    PluginConfig.Save();
+                    _pluginConfig.Save();
                 }
                 ImGui.SameLine();
-                if (ImGuiUtils.IconButton("##PetPositionReset", FontAwesomeIcon.Undo, TextService.Translate("HaselTweaks.Config.ResetToDefault", "-0.6, 0, 0")))
+                if (ImGuiUtils.IconButton("##PetPositionReset", FontAwesomeIcon.Undo, _textService.Translate("HaselTweaks.Config.ResetToDefault", "-0.6, 0, 0")))
                 {
                     Config.PetPosition = new(-0.6f, 0f, 0f);
                     ApplyPetPosition();
-                    PluginConfig.Save();
+                    _pluginConfig.Save();
                 }
             }
         });
 
         // PlayEmote
-        ConfigGui.DrawBool("PlayEmote", ref Config.EnableCharaSelectEmote, drawAfterDescription: () =>
+        _configGui.DrawBool("PlayEmote", ref Config.EnableCharaSelectEmote, drawAfterDescription: () =>
         {
             using var disabled = ImRaii.Disabled(!Config.EnableCharaSelectEmote);
 
             ImGuiUtils.PushCursorY(-ImGui.GetStyle().ItemInnerSpacing.Y);
-            ImGuiHelpers.SafeTextColoredWrapped(Color.Grey, TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.Note"));
+            ImGuiHelpers.SafeTextColoredWrapped(Color.Grey, _textService.Translate("EnhancedLoginLogout.Config.PlayEmote.Note"));
             ImGuiUtils.PushCursorY(3);
 
             if (!Config.EnableCharaSelectEmote || ActiveContentId == 0)
                 return;
 
             ImGuiUtils.PushCursorY(3);
-            ImGui.TextUnformatted(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote"));
+            ImGui.TextUnformatted(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote"));
             ImGui.SameLine();
 
             if (!Config.SelectedEmotes.TryGetValue(ActiveContentId, out var selectedEmoteId) || selectedEmoteId == 0)
             {
-                ImGui.TextUnformatted(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.None"));
+                ImGui.TextUnformatted(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.None"));
             }
             else
             {
-                ExcelService.TryGetRow<Emote>(90, out var defaultIdlePoseEmote); // first "Change Pose"
+                _excelService.TryGetRow<Emote>(90, out var defaultIdlePoseEmote); // first "Change Pose"
                 var changePoseIndex = 1;
 
-                var entry = ExcelService.GetSheet<Emote>()
+                var entry = _excelService.GetSheet<Emote>()
                     .Select(row => (
                         IsChangePose: _changePoseEmoteIds.Contains(row.RowId),
                         Name: _changePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name.ToDalamudString()} ({changePoseIndex++})" : $"{row.Name.ToDalamudString()}",
@@ -140,19 +138,19 @@ public unsafe partial class EnhancedLoginLogout
                 {
                     var (isChangePose, name, emote) = entry.Value;
                     ImGuiUtils.PushCursorY(-3);
-                    TextureService.DrawIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon, 24 * ImGuiHelpers.GlobalScale);
+                    _textureService.DrawIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon, 24 * ImGuiHelpers.GlobalScale);
                     ImGui.SameLine();
                     ImGui.TextUnformatted(name);
                 }
                 else
                 {
-                    ImGui.TextUnformatted(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.Unknown"));
+                    ImGui.TextUnformatted(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.Unknown"));
                 }
             }
 
-            if (!ClientState.IsLoggedIn)
+            if (!_clientState.IsLoggedIn)
             {
-                ImGui.TextUnformatted(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.NotLoggedIn"));
+                ImGui.TextUnformatted(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.NotLoggedIn"));
                 return;
             }
 
@@ -162,14 +160,14 @@ public unsafe partial class EnhancedLoginLogout
 
             if (_isRecordingEmote)
             {
-                if (ImGui.Button(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.StopRecordingButton.Label")))
+                if (ImGui.Button(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.StopRecordingButton.Label")))
                 {
                     _isRecordingEmote = false;
                 }
             }
             else
             {
-                if (ImGui.Button(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.ChangeButton.Label")))
+                if (ImGui.Button(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.ChangeButton.Label")))
                 {
                     _isRecordingEmote = true;
 
@@ -186,7 +184,7 @@ public unsafe partial class EnhancedLoginLogout
                 ImGui.SameLine();
 
                 ImGuiUtils.PushCursorY(-3);
-                if (ImGui.Button(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.UnsetButton.Label")))
+                if (ImGui.Button(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.UnsetButton.Label")))
                 {
                     SaveEmote(0);
                 }
@@ -195,24 +193,24 @@ public unsafe partial class EnhancedLoginLogout
             if (_isRecordingEmote)
             {
                 using (Color.Gold.Push(ImGuiCol.Text))
-                    ImGui.TextUnformatted(TextService.Translate("EnhancedLoginLogout.Config.PlayEmote.RecordingInfo"));
+                    ImGui.TextUnformatted(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.RecordingInfo"));
                 ImGuiUtils.PushCursorY(3);
             }
         });
 
 
         // PreloadTerritory
-        if (ConfigGui.DrawBool("PreloadTerritory", ref Config.PreloadTerritory))
+        if (_configGui.DrawBool("PreloadTerritory", ref Config.PreloadTerritory))
         {
             if (Config.PreloadTerritory)
-                OpenLoginWaitDialogHook?.Enable();
+                _openLoginWaitDialogHook?.Enable();
             else
-                OpenLoginWaitDialogHook?.Disable();
+                _openLoginWaitDialogHook?.Disable();
         }
 
-        ConfigGui.DrawConfigurationHeader("EnhancedLoginLogout.Config.LogoutOptions.Title");
+        _configGui.DrawConfigurationHeader("EnhancedLoginLogout.Config.LogoutOptions.Title");
 
         // ClearTellHistory
-        ConfigGui.DrawBool("ClearTellHistory", ref Config.ClearTellHistory, noFixSpaceAfter: true);
+        _configGui.DrawBool("ClearTellHistory", ref Config.ClearTellHistory, noFixSpaceAfter: true);
     }
 }

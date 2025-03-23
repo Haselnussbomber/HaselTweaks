@@ -1,5 +1,4 @@
 using Dalamud.Interface.Utility.Raii;
-using HaselTweaks.Config;
 
 namespace HaselTweaks.Tweaks;
 
@@ -20,7 +19,7 @@ public class MinimapAdjustmentsConfiguration
 
 public unsafe partial class MinimapAdjustments
 {
-    private MinimapAdjustmentsConfiguration Config => PluginConfig.Tweaks.MinimapAdjustments;
+    private MinimapAdjustmentsConfiguration Config => _pluginConfig.Tweaks.MinimapAdjustments;
 
     public void OnConfigOpen() { }
     public void OnConfigClose() { }
@@ -43,37 +42,37 @@ public unsafe partial class MinimapAdjustments
 
         if (fieldName is nameof(Config.DefaultOpacity))
         {
-            TargetAlpha = Config.DefaultOpacity;
+            _targetAlpha = Config.DefaultOpacity;
         }
     }
 
     public void DrawConfig()
     {
-        using var _ = ConfigGui.PushContext(this);
+        using var _ = _configGui.PushContext(this);
 
-        ConfigGui.DrawConfigurationHeader();
-        ConfigGui.DrawBool("Square", ref Config.Square);
-        ConfigGui.DrawFloat("DefaultOpacity", ref Config.DefaultOpacity, defaultValue: 0.8f, max: 1);
-        ConfigGui.DrawFloat("HoverOpacity", ref Config.HoverOpacity, defaultValue: 1, max: 1);
-        ConfigGui.DrawBool("HideCoords", ref Config.HideCoords, drawAfterDescription: () =>
+        _configGui.DrawConfigurationHeader();
+        _configGui.DrawBool("Square", ref Config.Square);
+        _configGui.DrawFloat("DefaultOpacity", ref Config.DefaultOpacity, defaultValue: 0.8f, max: 1);
+        _configGui.DrawFloat("HoverOpacity", ref Config.HoverOpacity, defaultValue: 1, max: 1);
+        _configGui.DrawBool("HideCoords", ref Config.HideCoords, drawAfterDescription: () =>
         {
             using (ImRaii.Disabled(!Config.HideCoords))
-                ConfigGui.DrawBool("CoordsVisibleOnHover", ref Config.CoordsVisibleOnHover);
+                _configGui.DrawBool("CoordsVisibleOnHover", ref Config.CoordsVisibleOnHover);
         });
-        ConfigGui.DrawBool("HideWeather", ref Config.HideWeather, drawAfterDescription: () =>
+        _configGui.DrawBool("HideWeather", ref Config.HideWeather, drawAfterDescription: () =>
         {
             using (ImRaii.Disabled(!Config.HideWeather))
-                ConfigGui.DrawBool("WeatherVisibleOnHover", ref Config.WeatherVisibleOnHover);
+                _configGui.DrawBool("WeatherVisibleOnHover", ref Config.WeatherVisibleOnHover);
         });
-        ConfigGui.DrawBool("HideSun", ref Config.HideSun, drawAfterDescription: () =>
+        _configGui.DrawBool("HideSun", ref Config.HideSun, drawAfterDescription: () =>
         {
             using (ImRaii.Disabled(!Config.HideSun))
-                ConfigGui.DrawBool("SunVisibleOnHover", ref Config.SunVisibleOnHover);
+                _configGui.DrawBool("SunVisibleOnHover", ref Config.SunVisibleOnHover);
         });
-        ConfigGui.DrawBool("HideCardinalDirections", ref Config.HideCardinalDirections, drawAfterDescription: () =>
+        _configGui.DrawBool("HideCardinalDirections", ref Config.HideCardinalDirections, drawAfterDescription: () =>
         {
             using (ImRaii.Disabled(!Config.HideCardinalDirections))
-                ConfigGui.DrawBool("CardinalDirectionsVisibleOnHover", ref Config.CardinalDirectionsVisibleOnHover);
+                _configGui.DrawBool("CardinalDirectionsVisibleOnHover", ref Config.CardinalDirectionsVisibleOnHover);
         });
     }
 }

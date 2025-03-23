@@ -1,36 +1,37 @@
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
-using HaselTweaks.Structs;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider) : ITweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class SimpleAethernetList : ITweak
 {
-    public string InternalName => nameof(SimpleAethernetList);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    private readonly IGameInteropProvider _gameInteropProvider;
 
-    private Hook<AddonTeleportTown.Delegates.ReceiveEvent>? ReceiveEventHook;
+    private Hook<AddonTeleportTown.Delegates.ReceiveEvent>? _receiveEventHook;
+
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()
     {
-        ReceiveEventHook = GameInteropProvider.HookFromAddress<AddonTeleportTown.Delegates.ReceiveEvent>(
+        _receiveEventHook = _gameInteropProvider.HookFromAddress<AddonTeleportTown.Delegates.ReceiveEvent>(
             AddonTeleportTown.StaticVirtualTablePointer->ReceiveEvent,
             ReceiveEventDetour);
     }
 
     public void OnEnable()
     {
-        ReceiveEventHook?.Enable();
+        _receiveEventHook?.Enable();
     }
 
     public void OnDisable()
     {
-        ReceiveEventHook?.Disable();
+        _receiveEventHook?.Disable();
     }
 
     void IDisposable.Dispose()
@@ -38,10 +39,9 @@ public unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
-        ReceiveEventHook?.Dispose();
+        _receiveEventHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void ReceiveEventDetour(AddonTeleportTown* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData)
@@ -62,6 +62,6 @@ public unsafe class SimpleAethernetList(IGameInteropProvider GameInteropProvider
             }
         }
 
-        ReceiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
+        _receiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
     }
 }

@@ -10,37 +10,36 @@ using Lumina.Extensions;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class BackgroundMusicKeybind(
-    PluginConfig PluginConfig,
-    ConfigGui ConfigGui,
-    TextService TextService,
-    IGameConfig GameConfig,
-    IKeyState KeyState,
-    IFramework Framework)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class BackgroundMusicKeybind : IConfigurableTweak
 {
-    public string InternalName => nameof(BackgroundMusicKeybind);
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly TextService _textService;
+    private readonly IGameConfig _gameConfig;
+    private readonly IKeyState _keyState;
+    private readonly IFramework _framework;
+
+    private bool _isPressingKeybind;
+
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private bool IsBgmMuted
     {
-        get => GameConfig.System.TryGet("IsSndBgm", out bool value) && value;
-        set => GameConfig.System.Set("IsSndBgm", value);
+        get => _gameConfig.System.TryGet("IsSndBgm", out bool value) && value;
+        set => _gameConfig.System.Set("IsSndBgm", value);
     }
-
-    private bool _isPressingKeybind;
 
     public void OnInitialize() { }
 
     public void OnEnable()
     {
-        Framework.Update += OnFrameworkUpdate;
+        _framework.Update += OnFrameworkUpdate;
     }
 
     public void OnDisable()
     {
-        Framework.Update -= OnFrameworkUpdate;
+        _framework.Update -= OnFrameworkUpdate;
     }
 
     void IDisposable.Dispose()
@@ -51,7 +50,6 @@ public unsafe partial class BackgroundMusicKeybind(
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnFrameworkUpdate(IFramework framework)
@@ -59,7 +57,7 @@ public unsafe partial class BackgroundMusicKeybind(
         var allKeybindsPressed = true;
 
         foreach (var key in Config.Keybind)
-            allKeybindsPressed &= KeyState[key];
+            allKeybindsPressed &= _keyState[key];
 
         if (!allKeybindsPressed)
         {
@@ -72,13 +70,13 @@ public unsafe partial class BackgroundMusicKeybind(
         if (_isPressingKeybind)
             return;
 
-        var numKeysPressed = KeyState.GetValidVirtualKeys().Count(key => KeyState[key]);
+        var numKeysPressed = _keyState.GetValidVirtualKeys().Count(key => _keyState[key]);
         if (numKeysPressed == Config.Keybind.Length)
         {
             // prevents the game from handling the key press
             if (Config.Keybind.TryGetFirst(x => x is not (VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT), out var key))
             {
-                KeyState[key] = false;
+                _keyState[key] = false;
             }
 
             IsBgmMuted = !IsBgmMuted;

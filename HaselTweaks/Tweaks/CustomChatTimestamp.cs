@@ -10,37 +10,36 @@ using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class CustomChatTimestamp(
-    PluginConfig PluginConfig,
-    ConfigGui ConfigGui,
-    TextService TextService,
-    ILogger<CustomChatTimestamp> Logger,
-    IGameInteropProvider GameInteropProvider,
-    IGameConfig GameConfig)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class CustomChatTimestamp : IConfigurableTweak
 {
-    public string InternalName => nameof(CustomChatTimestamp);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly TextService _textService;
+    private readonly ILogger<CustomChatTimestamp> _logger;
+    private readonly IGameInteropProvider _gameInteropProvider;
+    private readonly IGameConfig _gameConfig;
 
-    private Hook<HaselRaptureTextModule.Delegates.FormatAddonText2Int>? FormatAddonText2IntHook;
+    private Hook<HaselRaptureTextModule.Delegates.FormatAddonText2Int>? _formatAddonText2IntHook;
+
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()
     {
-        FormatAddonText2IntHook = GameInteropProvider.HookFromAddress<HaselRaptureTextModule.Delegates.FormatAddonText2Int>(
+        _formatAddonText2IntHook = _gameInteropProvider.HookFromAddress<HaselRaptureTextModule.Delegates.FormatAddonText2Int>(
             HaselRaptureTextModule.MemberFunctionPointers.FormatAddonText2Int,
             FormatAddonText2IntDetour);
     }
 
     public void OnEnable()
     {
-        FormatAddonText2IntHook?.Enable();
+        _formatAddonText2IntHook?.Enable();
         ReloadChat();
     }
 
     public void OnDisable()
     {
-        FormatAddonText2IntHook?.Disable();
+        _formatAddonText2IntHook?.Disable();
 
         if (Status is TweakStatus.Enabled)
             ReloadChat();
@@ -52,10 +51,9 @@ public unsafe partial class CustomChatTimestamp(
             return;
 
         OnDisable();
-        FormatAddonText2IntHook?.Dispose();
+        _formatAddonText2IntHook?.Dispose();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private byte* FormatAddonText2IntDetour(HaselRaptureTextModule* self, uint addonRowId, int value)
@@ -70,11 +68,11 @@ public unsafe partial class CustomChatTimestamp(
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Error formatting Chat Timestamp");
+                _logger.LogError(e, "Error formatting Chat Timestamp");
             }
         }
 
-        return FormatAddonText2IntHook!.Original(self, addonRowId, value);
+        return _formatAddonText2IntHook!.Original(self, addonRowId, value);
     }
 
     private static void ReloadChat()

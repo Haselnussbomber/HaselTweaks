@@ -12,21 +12,9 @@ using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public unsafe partial class ScrollableTabs(
-    PluginConfig PluginConfig,
-    ConfigGui ConfigGui,
-    ILogger<ScrollableTabs> Logger,
-    IFramework Framework,
-    IClientState ClientState,
-    IGameConfig GameConfig)
-    : IConfigurableTweak
+[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class ScrollableTabs : IConfigurableTweak
 {
-    public string InternalName => nameof(ScrollableTabs);
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    private ScrollableTabsConfiguration Config => PluginConfig.Tweaks.ScrollableTabs;
-
     private const int NumArmouryBoardTabs = 12;
     private const int NumInventoryTabs = 5;
     private const int NumInventoryLargeTabs = 4;
@@ -35,7 +23,16 @@ public unsafe partial class ScrollableTabs(
     private const int NumInventoryRetainerLargeTabs = 3;
     private const int NumBuddyTabs = 3;
 
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly ILogger<ScrollableTabs> _logger;
+    private readonly IFramework _framework;
+    private readonly IClientState _clientState;
+    private readonly IGameConfig _gameConfig;
+
     private int _wheelState;
+
+    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     private AtkCollisionNode* IntersectingCollisionNode
         => RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingCollisionNode;
@@ -50,12 +47,12 @@ public unsafe partial class ScrollableTabs(
 
     public void OnEnable()
     {
-        Framework.Update += OnFrameworkUpdate;
+        _framework.Update += OnFrameworkUpdate;
     }
 
     public void OnDisable()
     {
-        Framework.Update -= OnFrameworkUpdate;
+        _framework.Update -= OnFrameworkUpdate;
     }
 
     void IDisposable.Dispose()
@@ -66,12 +63,11 @@ public unsafe partial class ScrollableTabs(
         OnDisable();
 
         Status = TweakStatus.Disposed;
-        GC.SuppressFinalize(this);
     }
 
     private void OnFrameworkUpdate(IFramework framework)
     {
-        if (!ClientState.IsLoggedIn)
+        if (!_clientState.IsLoggedIn)
             return;
 
         _wheelState = Math.Clamp(UIInputData.Instance()->CursorInputs.MouseWheel, -1, 1);
@@ -143,7 +139,7 @@ public unsafe partial class ScrollableTabs(
             // used by InventoryLarge or InventoryExpansion
             case "InventoryCrystalGrid":
                 name = "InventoryLarge";
-                if (GameConfig.UiConfig.TryGet("ItemInventryWindowSizeType", out uint itemInventryWindowSizeType) && itemInventryWindowSizeType == 2)
+                if (_gameConfig.UiConfig.TryGet("ItemInventryWindowSizeType", out uint itemInventryWindowSizeType) && itemInventryWindowSizeType == 2)
                     name = "InventoryExpansion";
                 break;
 
@@ -198,7 +194,7 @@ public unsafe partial class ScrollableTabs(
 
             default:
 #if DEBUG
-                Logger.LogTrace("Unhandled AtkUnitBase: {name}", name);
+                _logger.LogTrace("Unhandled AtkUnitBase: {name}", name);
 #endif
                 _wheelState = 0;
                 return;

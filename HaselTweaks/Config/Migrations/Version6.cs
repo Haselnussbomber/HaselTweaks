@@ -9,7 +9,7 @@ using HaselTweaks.Interfaces;
 namespace HaselTweaks.Config.Migrations;
 
 // Version 6: removed TextureHash in favor of Id
-public class Version6(IDalamudPluginInterface PluginInterface, IPluginLog PluginLog) : IConfigMigration
+public class Version6(IDalamudPluginInterface pluginInterface, IPluginLog pluginLog) : IConfigMigration
 {
     public int Version => 6;
 
@@ -21,10 +21,10 @@ public class Version6(IDalamudPluginInterface PluginInterface, IPluginLog Plugin
         if (presets == null || presets.Count <= 0)
             return; // nothing to do
 
-        PluginLog.Info("[MigrationV6] Portrait thumbnails now use the preset guid as the name. Renaming files...");
+        pluginLog.Info("[MigrationV6] Portrait thumbnails now use the preset guid as the name. Renaming files...");
 
         var newPresets = new JsonArray();
-        var portraitsPath = Path.Join(PluginInterface.ConfigDirectory.FullName, "Portraits");
+        var portraitsPath = Path.Join(pluginInterface.ConfigDirectory.FullName, "Portraits");
 
         if (!Directory.Exists(portraitsPath))
             Directory.CreateDirectory(portraitsPath);
@@ -51,9 +51,9 @@ public class Version6(IDalamudPluginInterface PluginInterface, IPluginLog Plugin
 
             if (File.Exists(oldPath))
             {
-                var newPath = PluginInterface.GetPortraitThumbnailPath(guid);
+                var newPath = pluginInterface.GetPortraitThumbnailPath(guid);
 
-                PluginLog.Info($"[MigrationV6]   {oldPath} => {newPath}");
+                pluginLog.Info($"[MigrationV6]   {oldPath} => {newPath}");
 
                 File.Move(oldPath, newPath);
 
@@ -70,6 +70,6 @@ public class Version6(IDalamudPluginInterface PluginInterface, IPluginLog Plugin
 
         tweakConfigs!["PortraitHelper"]!["Presets"] = newPresets;
 
-        PluginLog.Info("[MigrationV6] Done!");
+        pluginLog.Info("[MigrationV6] Done!");
     }
 }

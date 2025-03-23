@@ -11,43 +11,32 @@ using Dalamud.Plugin.Services;
 using HaselCommon.Gui;
 using HaselCommon.Services;
 using HaselTweaks.Enums;
+using HaselTweaks.Extensions;
 using HaselTweaks.Interfaces;
+using HaselTweaks.Services;
 using ImGuiNET;
 
 namespace HaselTweaks.Windows;
 
-[RegisterSingleton]
+[RegisterSingleton, AutoConstruct]
 public partial class PluginWindow : SimpleWindow
 {
     private const uint SidebarWidth = 250;
-    private readonly LanguageProvider LanguageProvider;
-    private readonly TextService TextService;
-    private readonly ITextureProvider TextureProvider;
-    private readonly TweakManager TweakManager;
-    private ITweak[] Tweaks;
-
-    private ITweak? SelectedTweak;
+    private readonly TextService _textService;
+    private readonly ITextureProvider _textureProvider;
+    private readonly TweakManager _tweakManager;
+    private readonly IEnumerable<ITweak> _tweaks;
+    private ITweak[] _orderedTweaks;
+    private ITweak? _selectedTweak;
 
 #if !DEBUG
     [GeneratedRegex("\\.0$")]
     private static partial Regex VersionPatchZeroRegex();
 #endif
 
-    public PluginWindow(
-        WindowManager windowManager,
-        TextService textService,
-        LanguageProvider languageProvider,
-        ITextureProvider textureProvider,
-        TweakManager tweakManager,
-        IEnumerable<ITweak> tweaks)
-        : base(windowManager, textService, languageProvider)
+    [AutoPostConstruct]
+    private void Initialize()
     {
-        LanguageProvider = languageProvider;
-        TextService = textService;
-        TextureProvider = textureProvider;
-        TweakManager = tweakManager;
-        Tweaks = tweaks.ToArray();
-
         Size = new Vector2(766, 600);
         SizeConstraints = new()
         {
@@ -65,14 +54,15 @@ public partial class PluginWindow : SimpleWindow
         SortTweaksbyName();
     }
 
-    private void OnLanguageChanged(string langCode)
+    protected override void OnLanguageChanged(string langCode)
     {
+        base.OnLanguageChanged(langCode);
         SortTweaksbyName();
     }
 
     private void SortTweaksbyName()
     {
-        Tweaks = [.. Tweaks.OrderBy(tweak => TextService.TryGetTranslation(tweak.InternalName + ".Tweak.Name", out var name) ? name : tweak.InternalName)];
+        _orderedTweaks = [.. _tweaks.OrderBy(tweak => _textService.TryGetTranslation(tweak.GetInternalName() + ".Tweak.Name", out var name) ? name : tweak.GetInternalName())];
     }
 
     public override void OnOpen()
@@ -83,15 +73,13 @@ public partial class PluginWindow : SimpleWindow
             MinimumSize = (Vector2)Size,
             MaximumSize = new Vector2(4096, 2160)
         };
-        LanguageProvider.LanguageChanged += OnLanguageChanged;
     }
 
     public override void OnClose()
     {
-        LanguageProvider.LanguageChanged -= OnLanguageChanged;
-        SelectedTweak = null;
+        _selectedTweak = null;
 
-        foreach (var tweak in Tweaks.Where(tweak => tweak.Status == TweakStatus.Enabled))
+        foreach (var tweak in _orderedTweaks.Where(tweak => tweak.Status == TweakStatus.Enabled))
         {
             if (tweak is IConfigurableTweak configurableTweak)
                 configurableTweak.OnConfigClose();
@@ -121,8 +109,10 @@ public partial class PluginWindow : SimpleWindow
         ImGui.TableSetupColumn("Checkbox", ImGuiTableColumnFlags.WidthFixed);
         ImGui.TableSetupColumn("Tweak Name", ImGuiTableColumnFlags.WidthStretch);
 
-        foreach (var tweak in Tweaks)
+        foreach (var tweak in _orderedTweaks)
         {
+            var tweakName = tweak.GetInternalName();
+
             ImGui.TableNextRow();
             ImGui.TableNextColumn();
 
@@ -153,7 +143,7 @@ public partial class PluginWindow : SimpleWindow
                     if (tooltip)
                     {
                         using (color.Push(ImGuiCol.Text))
-                            ImGui.TextUnformatted(TextService.Translate($"HaselTweaks.Config.TweakStatus.{Enum.GetName(status)}"));
+                            ImGui.TextUnformatted(_textService.Translate($"HaselTweaks.Config.TweakStatus.{Enum.GetName(status)}"));
                     }
                 }
 
@@ -176,13 +166,13 @@ public partial class PluginWindow : SimpleWindow
             else
             {
                 var enabled = status == TweakStatus.Enabled;
-                if (ImGui.Checkbox($"##Enabled_{tweak.InternalName}", ref enabled))
+                if (ImGui.Checkbox($"##Enabled_{tweakName}", ref enabled))
                 {
                     // TODO: catch errors and display them
                     if (!enabled)
-                        TweakManager.UserDisableTweak(tweak);
+                        _tweakManager.UserDisableTweak(tweak);
                     else
-                        TweakManager.UserEnableTweak(tweak);
+                        _tweakManager.UserEnableTweak(tweak);
                 }
             }
 
@@ -202,24 +192,26 @@ public partial class PluginWindow : SimpleWindow
                 ImGui.PushStyleColor(ImGuiCol.Text, (uint)Color.Grey);
             }
 
-            if (!TextService.TryGetTranslation(tweak.InternalName + ".Tweak.Name", out var name))
-                name = tweak.InternalName;
+            if (!_textService.TryGetTranslation(tweakName + ".Tweak.Name", out var name))
+                name = tweakName;
 
-            if (ImGui.Selectable(name + "##Selectable_" + tweak.InternalName, SelectedTweak != null && SelectedTweak.InternalName == tweak.InternalName))
+            var selectedTweakName = _selectedTweak?.GetInternalName();
+
+            if (ImGui.Selectable(name + "##Selectable_" + tweakName, _selectedTweak != null && selectedTweakName == tweakName))
             {
-                if (SelectedTweak is IConfigurableTweak configurableTweak)
+                if (_selectedTweak is IConfigurableTweak configurableTweak)
                     configurableTweak.OnConfigClose();
 
-                if (SelectedTweak == null || SelectedTweak.InternalName != tweak.InternalName)
+                if (_selectedTweak == null || selectedTweakName != tweakName)
                 {
-                    SelectedTweak = Tweaks.FirstOrDefault(t => t.InternalName == tweak.InternalName);
+                    _selectedTweak = _orderedTweaks.FirstOrDefault(t => t.GetInternalName() == tweakName);
 
-                    if (SelectedTweak is IConfigurableTweak configurableTweak2)
+                    if (_selectedTweak is IConfigurableTweak configurableTweak2)
                         configurableTweak2.OnConfigOpen();
                 }
                 else
                 {
-                    SelectedTweak = null;
+                    _selectedTweak = null;
                 }
             }
 
@@ -236,52 +228,51 @@ public partial class PluginWindow : SimpleWindow
         if (!child)
             return;
 
-        if (SelectedTweak == null)
+        if (_selectedTweak == null)
         {
             var cursorPos = ImGui.GetCursorPos();
             var contentAvail = ImGui.GetContentRegionAvail();
 
-            if (TextureProvider.GetFromManifestResource(Assembly.GetExecutingAssembly(), "HaselTweaks.Assets.Logo.png").TryGetWrap(out var logo, out var _))
+            if (_textureProvider.GetFromManifestResource(Assembly.GetExecutingAssembly(), "HaselTweaks.Assets.Logo.png").TryGetWrap(out var logo, out var _))
             {
-                var maxWidth = SidebarWidth * 2 * 0.85f * ImGuiHelpers.GlobalScale;
-                var ratio = maxWidth / 425;
-                var scaledLogoSize = new Vector2(425, 132) * ratio;
-
-                ImGui.SetCursorPos(contentAvail / 2 - scaledLogoSize / 2 + new Vector2(ImGui.GetStyle().ItemSpacing.X, 0));
-                ImGui.Image(logo.ImGuiHandle, scaledLogoSize);
+                var logoSize = ImGuiHelpers.ScaledVector2(256, 128);
+                ImGui.SetCursorPos(contentAvail / 2 - logoSize / 2 + new Vector2(ImGui.GetStyle().ItemSpacing.X, 0));
+                ImGui.Image(logo.ImGuiHandle, logoSize);
             }
 
             // links, bottom left
             ImGui.SetCursorPos(cursorPos + new Vector2(0, contentAvail.Y - ImGui.GetTextLineHeight()));
-            ImGuiUtils.DrawLink("GitHub", TextService.Translate("HaselTweaks.Config.GitHubLink.Tooltip"), "https://github.com/Haselnussbomber/HaselTweaks");
+            ImGuiUtils.DrawLink("GitHub", _textService.Translate("HaselTweaks.Config.GitHubLink.Tooltip"), "https://github.com/Haselnussbomber/HaselTweaks");
             ImGui.SameLine();
             ImGui.TextUnformatted("•");
             ImGui.SameLine();
-            ImGuiUtils.DrawLink("Ko-fi", TextService.Translate("HaselTweaks.Config.KoFiLink.Tooltip"), "https://ko-fi.com/haselnussbomber");
+            ImGuiUtils.DrawLink("Ko-fi", _textService.Translate("HaselTweaks.Config.KoFiLink.Tooltip"), "https://ko-fi.com/haselnussbomber");
 
             // version, bottom right
 #if DEBUG
             ImGui.SetCursorPos(cursorPos + contentAvail - ImGui.CalcTextSize("dev"));
-            ImGuiUtils.DrawLink("dev", TextService.Translate("HaselTweaks.Config.DevGitHubLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev");
+            ImGuiUtils.DrawLink("dev", _textService.Translate("HaselTweaks.Config.DevGitHubLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev");
 #else
             var version = GetType().Assembly.GetName().Version;
             if (version != null)
             {
                 var versionString = "v" + VersionPatchZeroRegex().Replace(version.ToString(), "");
                 ImGui.SetCursorPos(cursorPos + contentAvail - ImGui.CalcTextSize(versionString));
-                ImGuiUtils.DrawLink(versionString, TextService.Translate("HaselTweaks.Config.ReleaseNotesLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/releases/tag/{versionString}");
+                ImGuiUtils.DrawLink(versionString, _textService.Translate("HaselTweaks.Config.ReleaseNotesLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/releases/tag/{versionString}");
             }
 #endif
 
             return;
         }
 
-        using var id = ImRaii.PushId(SelectedTweak.InternalName);
+        var selectedTweakName = _selectedTweak.GetInternalName();
 
-        ImGuiUtils.TextUnformattedColored(Color.Gold, TextService.TryGetTranslation(SelectedTweak.InternalName + ".Tweak.Name", out var name) ? name : SelectedTweak.InternalName);
+        using var id = ImRaii.PushId(selectedTweakName);
 
-        var statusText = TextService.Translate("HaselTweaks.Config.TweakStatus." + Enum.GetName(SelectedTweak.Status));
-        var statusColor = SelectedTweak.Status switch
+        ImGuiUtils.TextUnformattedColored(Color.Gold, _textService.TryGetTranslation(selectedTweakName + ".Tweak.Name", out var name) ? name : selectedTweakName);
+
+        var statusText = _textService.Translate("HaselTweaks.Config.TweakStatus." + Enum.GetName(_selectedTweak.Status));
+        var statusColor = _selectedTweak.Status switch
         {
             TweakStatus.InitializationFailed or TweakStatus.Outdated => Color.Red,
             TweakStatus.Enabled => Color.Green,
@@ -294,7 +285,7 @@ public partial class PluginWindow : SimpleWindow
 
         ImGuiUtils.TextUnformattedColored(statusColor, statusText);
 
-        if (TextService.TryGetTranslation(SelectedTweak.InternalName + ".Tweak.Description", out var description))
+        if (_textService.TryGetTranslation(selectedTweakName + ".Tweak.Description", out var description))
         {
             ImGuiUtils.DrawPaddedSeparator();
             ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);
@@ -302,7 +293,7 @@ public partial class PluginWindow : SimpleWindow
             ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);
         }
 
-        if (SelectedTweak is IConfigurableTweak configurableTweak)
+        if (_selectedTweak is IConfigurableTweak configurableTweak)
             configurableTweak.DrawConfig();
     }
 }
