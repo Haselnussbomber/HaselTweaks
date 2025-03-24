@@ -4,11 +4,11 @@ using Dalamud.Interface.Textures;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin.Services;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Extensions.Sheets;
-using HaselCommon.Extensions.Strings;
 using HaselCommon.Gui;
 using HaselCommon.Services;
 using HaselTweaks.Config;
@@ -31,6 +31,7 @@ public unsafe partial class GearSetGridWindow : LockableWindow
     private readonly IClientState _clientState;
     private readonly TextureService _textureService;
     private readonly ExcelService _excelService;
+    private readonly LanguageProvider _languageProvider;
     private readonly TextService _textService;
     private readonly ImGuiContextMenuService _imGuiContextMenuService;
     private readonly ItemService _itemService;
@@ -306,7 +307,7 @@ public unsafe partial class GearSetGridWindow : LockableWindow
             using (ImRaii.PushColor(ImGuiCol.Text, (uint)stain0.GetColor()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
-            ImGui.TextUnformatted(stain0.Name.ExtractText().FirstCharToUpper());
+            ImGui.TextUnformatted(stain0.Name.ExtractText().FirstCharToUpper(_languageProvider.CultureInfo));
 
             if (holdingShift)
             {
@@ -322,7 +323,7 @@ public unsafe partial class GearSetGridWindow : LockableWindow
             using (ImRaii.PushColor(ImGuiCol.Text, (uint)stain1.GetColor()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
-            ImGui.TextUnformatted(stain1.Name.ExtractText().FirstCharToUpper());
+            ImGui.TextUnformatted(stain1.Name.ExtractText().FirstCharToUpper(_languageProvider.CultureInfo));
 
             if (holdingShift)
             {

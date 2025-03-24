@@ -1,9 +1,9 @@
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Commands;
-using HaselCommon.Extensions.Strings;
 using HaselCommon.Game;
 using HaselCommon.Services;
 using HaselTweaks.Config;
@@ -19,6 +19,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe partial class Commands : IConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
+    private readonly LanguageProvider _languageProvider;
     private readonly TextService _textService;
     private readonly ExcelService _excelService;
     private readonly ItemService _itemService;
@@ -236,7 +237,7 @@ public unsafe partial class Commands : IConfigurableTweak
             .Append(_textService.TranslateSeString("Commands.WhatBarding.AppearanceOf", name))
             .AppendNewLine()
             .Append($"  {_textService.GetAddonText(4987)}: ")
-            .Append(stain.Name.ExtractText().FirstCharToUpper())
+            .Append(stain.Name.ExtractText().FirstCharToUpper(_languageProvider.CultureInfo))
             .AppendNewLine()
             .Append($"  {_textService.GetAddonText(4991)}: {(hasTopRow ? topRow.Name.ExtractText() : _textService.GetAddonText(4994))}")
             .AppendNewLine()
