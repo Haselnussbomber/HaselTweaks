@@ -181,7 +181,7 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
         var rank = currentRank > 30 ? 30 : currentRank; // 30 = Series Max Rank, hopefully in the future too
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var star = currentRank > claimedRank ? '*' : ' ';
-        var requiredExperience = pvpSeriesLevel.Unknown0;
+        var requiredExperience = pvpSeriesLevel.ExpToNext;
 
         SetText($"{job}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
         SetExperience(pvpProfile->SeriesExperience, requiredExperience);
