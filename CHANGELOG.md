@@ -1,5 +1,12 @@
 # Changelog
 
+## [34.0.2] (2025-03-27)
+
+Patch 7.2 fixes for:
+
+- Enhanced Experience Bar - Max Level Override
+- Simple Aethernet List
+
 ## [34.0.1] (2025-03-26)
 
 Preliminary update for Patch 7.2.
@@ -1967,6 +1974,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[34.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.1...v34.0.2
 [34.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.0...v34.0.1
 [34.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v33.0.2...v34.0.0
 [33.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v33.0.1...v33.0.2
