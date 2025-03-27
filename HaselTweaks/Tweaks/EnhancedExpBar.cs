@@ -111,7 +111,7 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
             return;
         }
 
-        if (!((AgentHUD*)thisPtr)->ExpIsMaxLevel)
+        if (!thisPtr->ExpFlags.HasFlag(AgentHudExpFlag.MaxLevel))
             return;
 
         switch (Config.MaxLevelOverride)
@@ -244,10 +244,7 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
         agentHUD->ExpLevel = 0;
         agentHUD->ExpContentLevel = 0;
 
-        agentHUD->ExpIsLevelSynced = false;
-        agentHUD->ExpUnkBool2 = false;
-        agentHUD->ExpIsMaxLevel = false;
-        agentHUD->ExpIsInEureka = false;
+        agentHUD->ExpFlags = AgentHudExpFlag.None;
     }
 
     private void SetColor(byte red = 100, byte green = 100, byte blue = 100)
