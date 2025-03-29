@@ -92,9 +92,6 @@ public unsafe partial class BiggerItemDyeingPreview : ITweak
         // image
         SetSize((AtkResNode*)image, width, height);
 
-        // image sharpness
-        image->Flags = 128;
-
         for (var i = 0u; i < 9; i++)
         {
             var checkbox = addon->GetNodeById(72 + i);
