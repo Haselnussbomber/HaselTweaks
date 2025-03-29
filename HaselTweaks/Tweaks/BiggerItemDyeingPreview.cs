@@ -81,7 +81,7 @@ public unsafe partial class BiggerItemDyeingPreview : ITweak
         var height = (int)(960 * scale);
 
         // preview
-        previewParent->SetPositionFloat(previewParent->X - 3, previewParent->Y - 132);
+        previewParent->SetPositionFloat(previewParent->X - 3, previewParent->Y - 128);
         preview->SetPositionFloat(0, 0);
         SetSize(preview, width, height);
         SetSize(previewParent, width, height);
@@ -95,11 +95,11 @@ public unsafe partial class BiggerItemDyeingPreview : ITweak
         // image sharpness
         image->Flags = 128;
 
-        for (var i = 0u; i < 8; i++)
+        for (var i = 0u; i < 9; i++)
         {
             var checkbox = addon->GetNodeById(72 + i);
             if (checkbox != null)
-                checkbox->SetPositionFloat(checkbox->X + 64, checkbox->Y + 224);
+                checkbox->SetPositionFloat(checkbox->X + 50, checkbox->Y + 228);
         }
     }
 }
