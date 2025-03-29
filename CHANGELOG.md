@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Bigger Item Dyeing Preview
+
+- **Fixed:** Nodes were out of place and a button was hiding behind the preview.
+
 ## [34.0.2] (2025-03-27)
 
 Patch 7.2 fixes for:
