@@ -81,7 +81,7 @@ public unsafe partial class BiggerItemDyeingPreview : ITweak
         var height = (int)(960 * scale);
 
         // preview
-        previewParent->SetPositionFloat(previewParent->X - 3, previewParent->Y - 156);
+        previewParent->SetPositionFloat(previewParent->X - 3, previewParent->Y - 132);
         preview->SetPositionFloat(0, 0);
         SetSize(preview, width, height);
         SetSize(previewParent, width, height);
