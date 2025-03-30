@@ -102,10 +102,6 @@ Lets you customize message formats for various chat channels.
 
 Lets you customize the chat timestamp format using C#'s [`DateTime.ToString()`](https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings).
 
-### Disable Mount Tilt
-
-Disables leaning into turns during riding or flying.
-
 ### DTR
 
 Shows Instance number (only if the current zone is instanced), FPS and Busy status (only if busy) in the DTR bar.
