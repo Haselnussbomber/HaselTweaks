@@ -125,7 +125,7 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
         ushort parentId,
         AtkResNode* targetNode,
         AtkTooltipManager.AtkTooltipArgs* tooltipArgs,
-        delegate* unmanaged[Stdcall]<float*, float*, void*> unkDelegate,
+        delegate* unmanaged[Stdcall]<float*, float*, AtkResNode*, void> unkDelegate,
         bool unk7,
         bool unk8)
     {
