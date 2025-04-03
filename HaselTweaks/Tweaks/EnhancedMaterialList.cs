@@ -7,6 +7,7 @@ using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -21,7 +22,6 @@ using Lumina.Text;
 using Lumina.Text.Payloads;
 using Lumina.Text.ReadOnly;
 using Microsoft.Extensions.Logging;
-using Character = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace HaselTweaks.Tweaks;
 
@@ -83,6 +83,9 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
         _addonObserver.AddonOpen += OnAddonOpen;
         _gameInventory.InventoryChangedRaw += OnInventoryUpdate;
         _clientState.Login += OnLogin;
+
+        if (_clientState.IsLoggedIn)
+            OnLogin();
 
         _agentRecipeMaterialListReceiveEventHook?.Enable();
         _addonRecipeMaterialListSetupRowHook?.Enable();
@@ -278,6 +281,7 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
         {
             Config.RestoreMaterialListRecipeId = recipeId;
             Config.RestoreMaterialListAmount = amount;
+            _logger.LogDebug("Saving {amount}x {id}", amount, recipeId);
             _pluginConfig.Save();
         }
     }
@@ -371,7 +375,7 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
         if (agentRecipeMaterialList->Recipe == null || agentRecipeMaterialList->Recipe->ResultItemId != itemId)
             return;
 
-        var localPlayer = (Character*)(_clientState.LocalPlayer?.Address ?? 0);
+        var localPlayer = Control.GetLocalPlayer();
         if (localPlayer == null || localPlayer->Mode == CharacterModes.Crafting)
             return;
 

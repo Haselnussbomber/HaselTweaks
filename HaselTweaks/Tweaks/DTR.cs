@@ -3,6 +3,7 @@ using Dalamud.Game.Text;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
+using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselCommon.Services;
 using HaselTweaks.Config;
@@ -158,7 +159,8 @@ public unsafe partial class DTR : IConfigurableTweak
         if (_dtrBusy == null)
             return;
 
-        _dtrBusy.Shown = _clientState.IsLoggedIn && _clientState.LocalPlayer?.OnlineStatus.RowId == 12;
+        var localPlayer = Control.GetLocalPlayer();
+        _dtrBusy.Shown = localPlayer != null && localPlayer->OnlineStatus == 12;
     }
 
     private void UpdateFPS()
