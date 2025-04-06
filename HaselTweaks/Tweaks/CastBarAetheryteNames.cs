@@ -2,6 +2,7 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -104,12 +105,12 @@ public unsafe partial class CastBarAetheryteNames : ITweak
         var placeName = true switch
         {
             _ when info.IsApartment => _textService.GetAddonText(8518),
-            _ when info.IsSharedHouse => _seStringEvaluator.EvaluateFromAddon(8519, [(uint)info.Ward, (uint)info.Plot]).ToString(),
+            _ when info.IsSharedHouse => _seStringEvaluator.EvaluateFromAddon(8519, [(uint)info.Ward, (uint)info.Plot]).ExtractText(),
             _ when row.PlaceName.IsValid => row.PlaceName.Value.Name.ExtractText(),
             _ => string.Empty
         };
 
-        AtkStage.Instance()->GetStringArrayData(StringArrayType.CastBar)->SetValue(0, placeName, false, true, false);
+        AtkStage.Instance()->GetStringArrayData(StringArrayType.CastBar)->SetValue(0, placeName.StripSoftHyphen(), false, true, false);
 
         Clear();
     }
