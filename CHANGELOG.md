@@ -1,5 +1,11 @@
 # Changelog
 
+## [34.0.4] (2025-04-06)
+
+### Cast Bar Aetheryte Name
+
+- **Fixed:** In some cases, the destination name was not formatted correctly.
+
 ## [34.0.3] (2025-03-29)
 
 ### Bigger Item Dyeing Preview
@@ -1980,6 +1986,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[34.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.3...v34.0.4
 [34.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.2...v34.0.3
 [34.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.1...v34.0.2
 [34.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.0...v34.0.1
