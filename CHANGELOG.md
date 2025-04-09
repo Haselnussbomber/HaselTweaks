@@ -1,5 +1,11 @@
 # Changelog
 
+## [34.0.5] (2025-04-09)
+
+### Forced Cutscene Sounds
+
+- **Fixed:** The game could crash under certain conditions when a cutscene ended.
+
 ## [34.0.4] (2025-04-06)
 
 ### Cast Bar Aetheryte Name
@@ -1986,6 +1992,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[34.0.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.4...v34.0.5
 [34.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.3...v34.0.4
 [34.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.2...v34.0.3
 [34.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.1...v34.0.2
