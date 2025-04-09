@@ -101,14 +101,16 @@ public unsafe partial class ForcedCutsceneMusic : IConfigurableTweak
 
     private void CutSceneControllerDtorDetour(CutSceneController* self, byte freeFlags)
     {
-        _logger.LogInformation("Cutscene {id} ended", self->CutsceneId);
+        var cutsceneId = self->CutsceneId;
+
+        _logger.LogInformation("Cutscene {id} ended", cutsceneId);
 
         _cutSceneControllerDtorHook!.Original(self, freeFlags);
 
         if (!Config.Restore)
             return;
 
-        if (self->CutsceneId == 0) // ignore title screen cutscene
+        if (cutsceneId == 0) // ignore title screen cutscene
             return;
 
         foreach (var optionName in ConfigOptions)
