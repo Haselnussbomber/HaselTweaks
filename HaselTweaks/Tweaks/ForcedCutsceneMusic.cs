@@ -35,7 +35,7 @@ public unsafe partial class ForcedCutsceneMusic : IConfigurableTweak
 
     private readonly Dictionary<string, bool> _wasMuted = [];
 
-    private delegate void CutSceneControllerDtorDelegate(CutSceneController* self, byte freeFlags);
+    private delegate CutSceneController* CutSceneControllerDtorDelegate(CutSceneController* self, byte freeFlags);
 
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
@@ -99,28 +99,25 @@ public unsafe partial class ForcedCutsceneMusic : IConfigurableTweak
         return ret;
     }
 
-    private void CutSceneControllerDtorDetour(CutSceneController* self, byte freeFlags)
+    private CutSceneController* CutSceneControllerDtorDetour(CutSceneController* self, byte freeFlags)
     {
         var cutsceneId = self->CutsceneId;
 
         _logger.LogInformation("Cutscene {id} ended", cutsceneId);
 
-        _cutSceneControllerDtorHook!.Original(self, freeFlags);
-
-        if (!Config.Restore)
-            return;
-
-        if (cutsceneId == 0) // ignore title screen cutscene
-            return;
-
-        foreach (var optionName in ConfigOptions)
+        if (Config.Restore && cutsceneId != 0) // ignore title screen cutscene
         {
-            if (ShouldHandle(optionName) && _wasMuted.TryGetValue(optionName, out var value) && value)
+            foreach (var optionName in ConfigOptions)
             {
-                _logger.LogInformation("Restoring {optionName} to {value}", optionName, value);
-                _gameConfig.System.Set(optionName, value);
+                if (ShouldHandle(optionName) && _wasMuted.TryGetValue(optionName, out var value) && value)
+                {
+                    _logger.LogInformation("Restoring {optionName} to {value}", optionName, value);
+                    _gameConfig.System.Set(optionName, value);
+                }
             }
         }
+
+        return _cutSceneControllerDtorHook!.Original(self, freeFlags);
     }
 
     private bool ShouldHandle(string optionName)
