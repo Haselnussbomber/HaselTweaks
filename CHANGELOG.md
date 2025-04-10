@@ -1,11 +1,11 @@
 # Changelog
 
-## [Unreleased]
+## [34.0.6] (2025-04-11)
 
 ### Custom Chat Message Formats
 
-- **Fixed:** Color picker was unusable.
-- **Fixed:** Enabling/disabling an entry would not apply the change immediately.
+- **Fixed:** Color picker was unusable, which led me to rewriting a lot of color related things plugin-wide.
+- **Fixed:** Enabling/disabling an entry would not immediately apply the change.
 
 ## [34.0.5] (2025-04-09)
 
@@ -1999,6 +1999,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[34.0.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.5...v34.0.6
 [34.0.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.4...v34.0.5
 [34.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.3...v34.0.4
 [34.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.2...v34.0.3
