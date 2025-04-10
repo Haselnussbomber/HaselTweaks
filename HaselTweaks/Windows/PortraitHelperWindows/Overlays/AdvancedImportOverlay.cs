@@ -82,8 +82,7 @@ public unsafe class AdvancedImportOverlay(
 
                 if (!isBannerBgUnlocked)
                 {
-                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Color.Red))
-                        ImGui.TextUnformatted(textService.Translate("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked"));
+                    ImGuiUtils.TextUnformattedColored(Color.Red, textService.Translate("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked"));
                 }
             },
             isBannerBgUnlocked
@@ -102,8 +101,7 @@ public unsafe class AdvancedImportOverlay(
 
                 if (!isBannerFrameUnlocked)
                 {
-                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Color.Red))
-                        ImGui.TextUnformatted(textService.Translate("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked"));
+                    ImGuiUtils.TextUnformattedColored(Color.Red, textService.Translate("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked"));
                 }
             },
             isBannerFrameUnlocked
@@ -122,8 +120,7 @@ public unsafe class AdvancedImportOverlay(
 
                 if (!isBannerDecorationUnlocked)
                 {
-                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Color.Red))
-                        ImGui.TextUnformatted(textService.Translate("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked"));
+                    ImGuiUtils.TextUnformattedColored(Color.Red, textService.Translate("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked"));
                 }
             },
             isBannerDecorationUnlocked
@@ -153,8 +150,7 @@ public unsafe class AdvancedImportOverlay(
 
                 if (!isBannerTimelineUnlocked)
                 {
-                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Color.Red))
-                        ImGui.TextUnformatted(textService.Translate("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked"));
+                    ImGuiUtils.TextUnformattedColored(Color.Red, textService.Translate("PortraitHelperWindows.AdvancedImportOverlay.NotUnlocked"));
                 }
             },
             isBannerTimelineUnlocked
@@ -284,7 +280,7 @@ public unsafe class AdvancedImportOverlay(
         ImGui.Columns(2, "##Columns", false);
 
         var isEnabled = isUnlocked && PortraitHelper.CurrentImportFlags.HasFlag(flag);
-        using var _textColor = !isEnabled ? ImRaii.PushColor(ImGuiCol.Text, (uint)(Color.From(ImGuiCol.Text) with { A = 0.5f })) : null;
+        using var _textColor = !isEnabled ? (Color.From(ImGuiCol.Text) with { A = 0.5f }).Push(ImGuiCol.Text) : null;
         using var _disabled = ImRaii.Disabled(!isUnlocked);
 
         if (ImGui.Checkbox(label + "##Checkbox", ref isEnabled))

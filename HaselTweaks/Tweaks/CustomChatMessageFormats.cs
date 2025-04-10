@@ -65,10 +65,10 @@ public unsafe partial class CustomChatMessageFormats : IConfigurableTweak
 
     private void OnLanguageChange(string langCode)
     {
-        if (IsConfigWindowOpen)
+        if (_isConfigWindowOpen)
         {
-            CachedLogKindRows = GenerateLogKindCache();
-            CachedTextColor = GenerateTextColor();
+            _cachedLogKindRows = GenerateLogKindCache();
+            _cachedTextColor = GenerateTextColor();
         }
     }
 

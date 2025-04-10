@@ -44,16 +44,15 @@ public partial class CustomChatTimestamp
                 ReloadChat();
             }
 
-            ImGui.PushStyleColor(ImGuiCol.Text, (uint)Color.Grey);
+            using var col = Color.Grey.Push(ImGuiCol.Text);
             ImGui.TextUnformatted(_textService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Pre"));
             ImGuiUtils.SameLineSpace();
-            using (ImRaii.PushColor(ImGuiCol.Text, (uint)Color.White))
+            using (Color.White.Push(ImGuiCol.Text))
             {
                 ImGuiUtils.DrawLink("DateTime.ToString()", _textService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Tooltip"), "https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings");
             }
             ImGuiUtils.SameLineSpace();
             ImGui.TextUnformatted(_textService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Post"));
-            ImGui.PopStyleColor();
         }
 
         if (string.IsNullOrWhiteSpace(Config.Format))
@@ -86,7 +85,7 @@ public partial class CustomChatTimestamp
 
             ImGuiUtils.TextUnformattedColored(Color.White, formatted);
             ImGui.SameLine(0, 0);
-            ImGuiHelpers.SafeTextColoredWrapped(Color.From(colorParty), _textService.Translate("CustomChatTimestamp.Config.Format.Example.Message"));
+            ImGuiHelpers.SafeTextColoredWrapped(Color.FromRGBA(colorParty), _textService.Translate("CustomChatTimestamp.Config.Format.Example.Message"));
         }
         catch (FormatException)
         {

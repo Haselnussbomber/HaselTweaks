@@ -237,7 +237,7 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
             var isClick =
                 eventType == AtkEventType.MouseClick || eventType == AtkEventType.ButtonClick ||
                 (eventType == AtkEventType.InputReceived && atkEventData->InputData.InputId == 1);
-             
+
             if (isClick && !UIInputData.Instance()->IsKeyDown(SeVirtualKey.SHIFT))
             {
                 SwitchClassJob(8 + (uint)eventParam - 24);

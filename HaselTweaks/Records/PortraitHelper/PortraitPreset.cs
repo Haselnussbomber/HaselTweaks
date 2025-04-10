@@ -7,7 +7,6 @@ using FFXIVClientStructs.FFXIV.Common.Math;
 using HaselCommon.Extensions.IO;
 using HaselCommon.Extensions.Math;
 using HaselTweaks.Enums.PortraitHelper;
-using HaselTweaks.Extensions;
 using HaselTweaks.JsonConverters;
 using HaselTweaks.Utils;
 using Microsoft.Extensions.Logging;

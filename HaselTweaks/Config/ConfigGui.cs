@@ -82,7 +82,7 @@ public partial class ConfigGui
 
                 if (_textService.TryGetTranslation($"{_tweakName}.Config.{fieldName}.Description", out var description))
                 {
-                    ImGuiHelpers.SeStringWrapped(ReadOnlySeString.FromText(description), new SeStringDrawParams() { Color = Color.Grey });
+                    ImGuiHelpers.SeStringWrapped(ReadOnlySeString.FromText(description), new SeStringDrawParams() { Color = Color.Grey.ToUInt() });
                 }
 
                 drawAfterDescription?.Invoke();
@@ -296,7 +296,7 @@ public partial class ConfigGui
     public void DrawNetworkWarning()
     {
         ImGui.SameLine();
-        ImGuiUtils.Icon(FontAwesomeIcon.Bolt, Color.Yellow);
+        ImGuiUtils.Icon(FontAwesomeIcon.Bolt, Color.Yellow.ToUInt());
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();

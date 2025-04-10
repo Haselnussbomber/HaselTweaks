@@ -178,14 +178,14 @@ public partial class LockWindowPosition
 
             using var windowStyles = ImRaii.PushStyle(ImGuiStyleVar.WindowBorderSize, 1.0f);
             using var windowColor = Color.Gold.Push(ImGuiCol.Border)
-                                                .Push(ImGuiCol.WindowBg, new Vector4(0.847f, 0.733f, 0.49f, 0.33f));
+                                              .Push(ImGuiCol.WindowBg, new Vector4(0.847f, 0.733f, 0.49f, 0.33f));
 
             if (ImGui.Begin("Lock Windows Picker", ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize))
             {
                 var drawList = ImGui.GetForegroundDrawList();
                 var textPos = _hoveredWindowPos + new Vector2(0, -ImGui.GetTextLineHeight());
-                drawList.AddText(textPos + Vector2.One, Color.Black, _hoveredWindowName);
-                drawList.AddText(textPos, Color.Gold, _hoveredWindowName);
+                drawList.AddText(textPos + Vector2.One, Color.Black.ToUInt(), _hoveredWindowName);
+                drawList.AddText(textPos, Color.Gold.ToUInt(), _hoveredWindowName);
 
                 ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
 

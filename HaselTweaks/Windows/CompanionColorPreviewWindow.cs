@@ -46,7 +46,7 @@ public unsafe partial class CompanionColorPreviewWindow : SimpleWindow
 
     private void LoadStains()
     {
-        _stains = [.. _excelService.GetSheet<Stain>().Skip(1).Take(85) ];
+        _stains = [.. _excelService.GetSheet<Stain>().Skip(1).Take(85)];
     }
 
     public override bool DrawConditions()

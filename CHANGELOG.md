@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Custom Chat Message Formats
+
+- **Fixed:** Color picker was unusable.
+- **Fixed:** Enabling/disabling an entry would not apply the change immediately.
+
 ## [34.0.5] (2025-04-09)
 
 ### Forced Cutscene Sounds

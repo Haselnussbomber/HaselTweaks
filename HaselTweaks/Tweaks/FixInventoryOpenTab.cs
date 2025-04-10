@@ -82,6 +82,6 @@ public unsafe partial class FixInventoryOpenTab : ITweak
             case "Inventory": ((AddonInventory*)addon)->SetTab(0); break;
             case "InventoryLarge": ((AddonInventoryLarge*)addon)->SetTab(0); break;
             case "InventoryExpansion": ((AddonInventoryExpansion*)addon)->SetTab(0, false); break;
-        };
+        }
     }
 }

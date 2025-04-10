@@ -32,8 +32,7 @@ public partial class DTR
         _configGui.DrawConfigurationHeader();
 
         ImGui.TextUnformatted(_textService.Translate("DTR.Config.Explanation.Pre"));
-        using (Color.From(ImGuiColors.DalamudRed).Push(ImGuiCol.Text))
-            ImGui.TextUnformatted(_textService.Translate("DTR.Config.Explanation.DalamudSettings"));
+        ImGuiUtils.TextUnformattedColored(Color.FromVector4(ImGuiColors.DalamudRed), _textService.Translate("DTR.Config.Explanation.DalamudSettings"));
         if (ImGui.IsItemHovered())
         {
             ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);

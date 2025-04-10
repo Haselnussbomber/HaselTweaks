@@ -34,8 +34,8 @@ public partial class PresetCard : IDisposable
 {
     public static readonly Vector2 PortraitSize = new(576, 960); // native texture size
 
-    private static readonly uint ButtonActiveColor = Color.White with { A = 0.3f };
-    private static readonly uint ButtonHoveredColor = Color.White with { A = 0.2f };
+    private static readonly Color ButtonActiveColor = Color.White with { A = 0.3f };
+    private static readonly Color ButtonHoveredColor = Color.White with { A = 0.2f };
 
     private readonly ILogger<PresetCard> _logger;
     private readonly IDalamudPluginInterface _pluginInterface;
@@ -162,7 +162,7 @@ public partial class PresetCard : IDisposable
         ImGui.SetCursorPos(cursorPos);
 
         {
-            using var Color = ImRaii.PushColor(ImGuiCol.Button, 0)
+            using var color = ImRaii.PushColor(ImGuiCol.Button, 0)
                 .Push(ImGuiCol.ButtonActive, ButtonActiveColor)
                 .Push(ImGuiCol.ButtonHovered, ButtonHoveredColor);
             using var rounding = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0);
@@ -220,7 +220,7 @@ public partial class PresetCard : IDisposable
                 {
                     ImGui.Separator();
 
-                    using (ImRaii.PushColor(ImGuiCol.Text, (uint)Color.Red))
+                    using (Color.Red.Push(ImGuiCol.Text))
                     {
                         ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.Title"));
 

@@ -4,7 +4,6 @@ using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Extensions.Sheets;
 using HaselCommon.Game;
 using HaselCommon.Gui;
 using HaselCommon.Services;
@@ -104,7 +103,7 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
 
             if (Misc.IsLightTheme && ExcelService.TryGetRow<UIColor>(2, out var uiColor))
             {
-                _windowText.Push(ImGuiCol.Text, (uint)uiColor.GetForegroundColor());
+                _windowText.Push(ImGuiCol.Text, Color.FromABGR(uiColor.Dark).ToUInt());
             }
 
             _windowBg.Push(ImGuiCol.WindowBg, 0);

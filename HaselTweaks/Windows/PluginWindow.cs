@@ -155,11 +155,11 @@ public partial class PluginWindow : SimpleWindow
 
                 drawList.PathLineTo(pos);
                 drawList.PathLineTo(pos + size);
-                drawList.PathStroke(Color.Red, ImDrawFlags.None, frameHeight / 5f * 0.5f);
+                drawList.PathStroke(Color.Red.ToUInt(), ImDrawFlags.None, frameHeight / 5f * 0.5f);
 
                 drawList.PathLineTo(pos + new Vector2(0, size.Y));
                 drawList.PathLineTo(pos + new Vector2(size.X, 0));
-                drawList.PathStroke(Color.Red, ImDrawFlags.None, frameHeight / 5f * 0.5f);
+                drawList.PathStroke(Color.Red.ToUInt(), ImDrawFlags.None, frameHeight / 5f * 0.5f);
 
                 fixY = true;
             }
@@ -185,11 +185,11 @@ public partial class PluginWindow : SimpleWindow
 
             if (status is TweakStatus.InitializationFailed or TweakStatus.Outdated)
             {
-                ImGui.PushStyleColor(ImGuiCol.Text, (uint)Color.Red);
+                ImGui.PushStyleColor(ImGuiCol.Text, Color.Red.ToUInt());
             }
             else if (status is not TweakStatus.Enabled)
             {
-                ImGui.PushStyleColor(ImGuiCol.Text, (uint)Color.Grey);
+                ImGui.PushStyleColor(ImGuiCol.Text, Color.Grey.ToUInt());
             }
 
             if (!_textService.TryGetTranslation(tweakName + ".Tweak.Name", out var name))

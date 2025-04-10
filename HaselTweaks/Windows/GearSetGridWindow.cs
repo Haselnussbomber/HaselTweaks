@@ -304,7 +304,7 @@ public unsafe partial class GearSetGridWindow : LockableWindow
         {
             ImGui.TextUnformatted(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelDye0"));
             ImGuiUtils.SameLineSpace();
-            using (ImRaii.PushColor(ImGuiCol.Text, (uint)stain0.GetColor()))
+            using (ImRaii.PushColor(ImGuiCol.Text, stain0.GetColor().ToUInt()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
             ImGui.TextUnformatted(stain0.Name.ExtractText().FirstCharToUpper(_languageProvider.CultureInfo));
@@ -320,7 +320,7 @@ public unsafe partial class GearSetGridWindow : LockableWindow
         {
             ImGui.TextUnformatted(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelDye1"));
             ImGuiUtils.SameLineSpace();
-            using (ImRaii.PushColor(ImGuiCol.Text, (uint)stain1.GetColor()))
+            using (ImRaii.PushColor(ImGuiCol.Text, stain1.GetColor().ToUInt()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
             ImGui.TextUnformatted(stain1.Name.ExtractText().FirstCharToUpper(_languageProvider.CultureInfo));
