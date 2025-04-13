@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Text.SeStringHandling;
@@ -298,7 +297,7 @@ public unsafe partial class LockWindowPosition : IConfigurableTweak
 
         AgentContext.Instance()->AddMenuItem(
             label,
-            (AtkEventInterface*)Unsafe.AsPointer(ref AtkStage.Instance()->RaptureAtkUnitManager->WindowContextMenuHandler),
+            &AtkStage.Instance()->RaptureAtkUnitManager->WindowContextMenuHandler,
             eventParam);
     }
 }
