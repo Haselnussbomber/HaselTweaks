@@ -49,6 +49,12 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
         UpdateWindow();
     }
 
+    public override void Dispose()
+    {
+        OnClose();
+        base.Dispose();
+    }
+
     public override void OnClose()
     {
         _windowPadding.Dispose();
