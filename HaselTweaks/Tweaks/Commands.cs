@@ -202,6 +202,7 @@ public unsafe partial class Commands : IConfigurableTweak
                 .Append(_textService.TranslateSeString("Commands.Emote", emoteId.ToString(), _textService.GetEmoteName(emoteId)))
                 .GetViewAsSpan());
     }
+
     [CommandHandler("/whatbarding", "Commands.Config.EnableWhatBardingCommand.Description", DisplayOrder: 2)]
     private void OnWhatBardingCommand(string command, string arguments)
     {
@@ -224,8 +225,6 @@ public unsafe partial class Commands : IConfigurableTweak
         var hasBodyRow = _excelService.TryFindRow<BuddyEquip>(row => row.ModelBody == (int)character->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Body).Value, out var bodyRow);
         var hasLegsRow = _excelService.TryFindRow<BuddyEquip>(row => row.ModelLegs == (int)character->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Feet).Value, out var legsRow);
 
-        _excelService.TryGetRow<Stain>(character->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Legs).Stain0, out var stain);
-
         var name = new SeStringBuilder()
             .PushColorType(1)
             .Append(character->GameObject.NameString)
@@ -237,7 +236,7 @@ public unsafe partial class Commands : IConfigurableTweak
             .Append(_textService.TranslateSeString("Commands.WhatBarding.AppearanceOf", name))
             .AppendNewLine()
             .Append($"  {_textService.GetAddonText(4987)}: ")
-            .Append(stain.Name.ExtractText().FirstCharToUpper(_languageProvider.CultureInfo))
+            .Append(_textService.GetStainName(character->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Legs).Stain0))
             .AppendNewLine()
             .Append($"  {_textService.GetAddonText(4991)}: {(hasTopRow ? topRow.Name.ExtractText() : _textService.GetAddonText(4994))}")
             .AppendNewLine()
