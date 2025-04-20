@@ -103,7 +103,7 @@ public partial class PluginConfig : IPluginConfiguration
 
             if (LastSavedConfigHash != hash)
             {
-                Util.WriteAllTextSafe(PluginInterface!.ConfigFile.FullName, serialized);
+                FilesystemUtil.WriteAllTextSafe(PluginInterface!.ConfigFile.FullName, serialized);
                 LastSavedConfigHash = hash;
                 PluginLog?.Information("Configuration saved.");
             }
