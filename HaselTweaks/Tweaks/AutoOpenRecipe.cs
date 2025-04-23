@@ -297,7 +297,7 @@ public unsafe partial class AutoOpenRecipe : ITweak
         if (recipe.CraftType.RowId == craftType)
             agentRecipeNote->OpenRecipeByRecipeIdInternal(recipe.RowId);
         else
-            agentRecipeNote->OpenRecipeByItemId(resultItemId);
+            agentRecipeNote->SearchRecipeByItemId(resultItemId);
 
         return true;
     }
