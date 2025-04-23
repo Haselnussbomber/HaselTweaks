@@ -1,5 +1,17 @@
 # Changelog
 
+## [34.1.0] (2025-04-23)
+
+### Enhanced Experience Bar
+
+- **Added:** A new Cosmic Research Bar, which displays the dataset for your current job and its analysis progress in Cosmic Exploration (default on).  
+  I hope I got this right. 🙂 It should always show the highest available stage/type.  
+  *Note:* If you're leveling a crafter or gatherer job and want to see the normal experience bar, you can disable the "Always show Cosmic Research Bar in Cosmic Exploration" option in the settings.
+
+### Portrait Helper
+
+- **Fixed:** The visibility of nodes in the portrait editor window didn't properly reset when an overlay was open and the plugin was unloaded.
+
 ## [34.0.6] (2025-04-11)
 
 ### Custom Chat Message Formats
@@ -1999,6 +2011,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[34.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.6...v34.1.0
 [34.0.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.5...v34.0.6
 [34.0.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.4...v34.0.5
 [34.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.3...v34.0.4

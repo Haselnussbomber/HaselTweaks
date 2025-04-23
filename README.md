@@ -117,13 +117,15 @@ Configuration options:
 Depending on the settings, the experience bar can be transformed into one of the following bars:
 
 - The PvP Series Bar displays your series rank and experience. If there is a \* symbol next to your rank, it means a rank-up reward is claimable.
-- The Sanctuary Bar displays your sanctuary level and island experience.
 - The Companion Bar displays your chocobos rank and experience.
+- The Sanctuary Bar displays your sanctuary level and island experience.
+- The Cosmic Research Bar displays the dataset for your current job and its analysis progress.
 
 Configuration options:
 
 - Always show PvP Series Bar in PvP Areas
 - Always show Sanctuary Bar on the Island
+- Always show Cosmic Research Bar in Cosmic Exploration
 - Hide Job on Sanctuary Bar
 - Max Level Override
   - Will switch to the selected bar if your current job is on max level and none of the settings above apply.
