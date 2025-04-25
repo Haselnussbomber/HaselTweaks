@@ -10,6 +10,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.Game.WKS;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Extensions.Sheets;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
@@ -29,8 +30,6 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly ExcelService _excelService;
-    private readonly PlayerService _playerService;
-    private readonly ZoneService _zoneService;
 
     private Hook<AgentHUD.Delegates.UpdateExp>? _updateExpHook;
     private byte _colorMultiplyRed = 100;
@@ -92,7 +91,7 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
     {
         _updateExpHook!.Original(thisPtr, expNumberArray, expStringArray, characterStringArray);
 
-        if (!_playerService.IsLoggedIn || !_playerService.TryGetClassJob(out var classJob))
+        if (PlayerState.Instance()->IsLoaded == 0 || !_excelService.TryGetRow<ClassJob>(PlayerState.Instance()->CurrentClassJobId, out var classJob))
             return;
 
         SetColor(); // reset unless overwritten
@@ -100,7 +99,7 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
         if (Config.ForceCompanionBar && OverwriteWithCompanionBar(classJob))
             return;
 
-        if (Config.ForcePvPSeriesBar && _zoneService.IsPvPZone() && OverwriteWithPvPBar(classJob))
+        if (Config.ForcePvPSeriesBar && _excelService.TryGetRow<TerritoryType>(GameMain.Instance()->CurrentTerritoryTypeId, out var territoryType) && territoryType.IsPvpZone && OverwriteWithPvPBar(classJob))
             return;
 
         if (Config.ForceSanctuaryBar && OverwriteWithSanctuaryBar(classJob))
@@ -229,7 +228,7 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
         if (wksManager == null || wksManager->Research == null || !wksManager->Research->IsLoaded)
             return false;
 
-        if (!(_playerService.IsCrafter() || _playerService.IsGatherer()))
+        if (!(classJob.IsCrafter() || classJob.IsGatherer()))
             return false;
 
         var job = classJob.Abbreviation;
