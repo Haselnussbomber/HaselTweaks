@@ -1,5 +1,11 @@
 # Changelog
 
+## [34.1.1] (2025-04-26)
+
+### Enhanced Experience Bar
+
+- **Fixed:** Cosmic Research Bar didn't display analysis progress for type 4.
+
 ## [34.1.0] (2025-04-23)
 
 ### Enhanced Experience Bar
@@ -2011,6 +2017,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[34.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.1.0...v34.1.1
 [34.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.6...v34.1.0
 [34.0.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.5...v34.0.6
 [34.0.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.4...v34.0.5
