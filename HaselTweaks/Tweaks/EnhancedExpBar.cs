@@ -250,7 +250,7 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
             return false;
 
         byte lastAvailableType = 1;
-        for (byte type = 1; type < 4; type++)
+        for (byte type = 1; type <= 4; type++)
         {
             if (!wksManager->Research->IsTypeAvailable(toolClassId, type))
                 break;
