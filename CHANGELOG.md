@@ -1,5 +1,11 @@
 # Changelog
 
+## [35.0.0] (2025-05-01)
+
+### New Tweak: Restore Golden City
+
+When the quest “Dawntrail” is completed, this tweak will restore the Golden City to its former glory - without New Game+.
+
 ## [34.1.1] (2025-04-26)
 
 ### Enhanced Experience Bar
@@ -2017,6 +2023,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[35.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.1.1...v35.0.0
 [34.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.1.0...v34.1.1
 [34.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.6...v34.1.0
 [34.0.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.0.5...v34.0.6
