@@ -302,6 +302,10 @@ Configuration options:
   - The glamour plate covers the slot(s) that caused the mismatch.
   - The mismatch was not caused by mainhand/headgear visibility or visor state.
 
+### Restore Golden City
+
+When the quest “Dawntrail” is completed, this tweak will restore the Golden City to its former glory - without New Game+.
+
 ### Reveal Duty Requirements
 
 Reveals duty names in duty finder, which were shown as "???" to prevent spoilers. Useful for unlocking Mentor roulette.
