@@ -16,16 +16,16 @@ public unsafe partial class RestoreGoldenCity : ITweak
     private readonly TextService _textService;
     private readonly IGameInteropProvider _gameInteropProvider;
 
-    private delegate bool IsZoneSharedGroupEnabledDelegate(ZoneSharedGroup* zoneSharedGroupRow);
-    private Hook<IsZoneSharedGroupEnabledDelegate> _hook;
+    private delegate byte GetEnabledRequirementIndexDelegate(ZoneSharedGroup* zoneSharedGroupRow);
+    private Hook<GetEnabledRequirementIndexDelegate> _hook;
 
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()
     {
-        _hook = _gameInteropProvider.HookFromSignature<IsZoneSharedGroupEnabledDelegate>(
+        _hook = _gameInteropProvider.HookFromSignature<GetEnabledRequirementIndexDelegate>(
             "E8 ?? ?? ?? ?? 0F B6 53 6C",
-            IsZoneSharedGroupEnabledDetour);
+            GetEnabledRequirementIndexDetour);
     }
 
     public void OnEnable()
@@ -51,12 +51,12 @@ public unsafe partial class RestoreGoldenCity : ITweak
         Status = TweakStatus.Disposed;
     }
 
-    private bool IsZoneSharedGroupEnabledDetour(ZoneSharedGroup* zoneSharedGroupRow)
+    private byte GetEnabledRequirementIndexDetour(ZoneSharedGroup* zoneSharedGroupRow)
     {
         if (zoneSharedGroupRow->LGBSharedGroup is 10591852 or 10591856 or 10613110 or 10613109 or 10596151 or 10109854 && QuestManager.IsQuestComplete(70495))
         {
             _logger.LogInformation("Overwriting enable state of LGBSharedGroup {id}", zoneSharedGroupRow->LGBSharedGroup);
-            return false;
+            return 0;
         }
 
         return _hook.Original(zoneSharedGroupRow);
@@ -76,8 +76,8 @@ public unsafe partial struct ZoneSharedGroup
     /// 1 = Quest<br/>
     /// 2 = Quest with specific Sequence<br/>
     /// 3 = AetherCurrent<br/>
-    /// 4 = ?<br/>
-    /// 5 = ReconstructionBox Progress
+    /// 4 = EurekaStoryProgress<br/>
+    /// 5 = DomaStoryProgress
     /// </remarks>
     [FieldOffset(0x3C), FixedSizeArray] internal FixedSizeArray6<uint> _types;
     [FieldOffset(0x42)] public byte Unknown8;
