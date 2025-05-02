@@ -5,7 +5,6 @@ using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
-using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
@@ -13,6 +12,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using HaselCommon.Extensions.Strings;
 using HaselCommon.Services;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
@@ -386,7 +386,7 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
     private (int, GatheringPoint, uint, bool, ReadOnlySeString)? GetPointForItem(uint itemId)
     {
         var gatheringItems = _itemService.GetGatheringItems(itemId);
-        if (!gatheringItems.Any())
+        if (gatheringItems.Length == 0)
             return null;
 
         // TODO: rethink this
