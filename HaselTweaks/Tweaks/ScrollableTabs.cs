@@ -6,6 +6,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
+using HaselTweaks.Structs;
 using Microsoft.Extensions.Logging;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
@@ -328,7 +329,7 @@ public unsafe partial class ScrollableTabs : IConfigurableTweak
                     UpdateCharacter(addonCharacter);
                     break;
                 case "CharacterRepute" when Config.HandleCharacterRepute:
-                    UpdateCharacterRepute(addonCharacter, (AddonCharacterRepute*)unitBase);
+                    UpdateCharacterRepute(addonCharacter, (HaselAddonCharacterRepute*)unitBase);
                     break;
             }
         }
@@ -736,24 +737,30 @@ public unsafe partial class ScrollableTabs : IConfigurableTweak
         addon->SetTab(tabIndex);
     }
 
-    private void UpdateCharacterRepute(AddonCharacter* addonCharacter, AddonCharacterRepute* addon)
+    private void UpdateCharacterRepute(AddonCharacter* addonCharacter, HaselAddonCharacterRepute* addon)
     {
+        if (addon->ExpansionsDropDownList == null || addon->ExpansionsDropDownList->IsOpen)
+            return;
+
+        var currentIndex = addon->ExpansionsDropDownList->GetSelectedItemIndex();
+
         // prev embedded addon
-        if (Config.HandleCharacter && (addon->SelectedExpansion + _wheelState < 0))
+        if (Config.HandleCharacter && (currentIndex + _wheelState < 0))
         {
             UpdateCharacter(addonCharacter);
             return;
         }
 
-        var tabIndex = GetTabIndex(addon->SelectedExpansion, addon->ExpansionsCount);
-
-        if (addon->SelectedExpansion == tabIndex)
+        var itemCount = addon->ExpansionsDropDownList->List->GetItemCount();
+        var tabIndex = GetTabIndex(currentIndex, itemCount);
+        if (currentIndex == tabIndex)
             return;
 
         var atkEvent = new AtkEvent();
         var data = new AtkEventData();
-        data.ListItemData.SelectedIndex = tabIndex; // technically the index of an id array, but it's literally the same value
+        data.ListItemData.SelectedIndex = tabIndex;
         addon->AtkUnitBase.ReceiveEvent((AtkEventType)37, 0, &atkEvent, &data);
 
+        addon->ExpansionsDropDownList->SelectItem(tabIndex);
     }
 }
