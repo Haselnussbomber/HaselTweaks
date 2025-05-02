@@ -1,5 +1,16 @@
 # Changelog
 
+## [35.0.2] (2025-05-02)
+
+### HaselTweaks
+
+- **Fixed:** For some tweaks, changes to configuration options were applied even if the tweak was disabled.
+
+### Scrollable Tabs
+
+- **Fixed:** Scrolling in the Reputation tab of the Character window was not correctly implemented, causing issues when all allied societies of an expansion weren't unlocked.
+- **Fixed:** After changing the expansion in the Reputation tab of the Character window using mouse scrolling, the highlighted expansion was not updated in the dropdown.
+
 ## [35.0.1] (2025-05-01)
 
 ### Restore Golden City
@@ -2029,6 +2040,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[35.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.0.1...v35.0.2
 [35.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.0.0...v35.0.1
 [35.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.1.1...v35.0.0
 [34.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.1.0...v34.1.1
