@@ -1,5 +1,12 @@
 # Changelog
 
+## [35.0.3] (2025-05-03)
+
+### Enhanced Material List
+
+- **Fixed:** List didn't properly load anymore.
+- **Fixed:** Gathering points markers were missing the type next to the level in their tooltips.
+
 ## [35.0.2] (2025-05-02)
 
 ### HaselTweaks
@@ -2040,6 +2047,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[35.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.0.2...v35.0.3
 [35.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.0.1...v35.0.2
 [35.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.0.0...v35.0.1
 [35.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v34.1.1...v35.0.0
