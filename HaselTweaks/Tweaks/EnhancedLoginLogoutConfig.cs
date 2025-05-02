@@ -7,6 +7,7 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselCommon.Gui;
+using HaselTweaks.Enums;
 using ImGuiNET;
 using Lumina.Excel.Sheets;
 
@@ -45,6 +46,9 @@ public unsafe partial class EnhancedLoginLogout
 
     public void OnConfigChange(string fieldName)
     {
+        if (Status != TweakStatus.Enabled)
+            return;
+
         switch (fieldName)
         {
             case nameof(Config.ShowPets):

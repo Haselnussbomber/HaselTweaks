@@ -1,4 +1,5 @@
 using Dalamud.Game;
+using HaselTweaks.Enums;
 
 namespace HaselTweaks.Tweaks;
 
@@ -19,7 +20,7 @@ public partial class EnhancedIsleworksAgenda
 
     public void OnConfigChange(string fieldName)
     {
-        if (fieldName == "EnableSearchBar")
+        if (Status == TweakStatus.Enabled && fieldName == "EnableSearchBar")
         {
             if (Config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"))
                 _window.Open();

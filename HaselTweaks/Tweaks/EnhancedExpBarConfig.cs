@@ -1,3 +1,5 @@
+using HaselTweaks.Enums;
+
 namespace HaselTweaks.Tweaks;
 
 public class EnhancedExpBarConfiguration
@@ -29,7 +31,8 @@ public unsafe partial class EnhancedExpBar
 
     public void OnConfigChange(string fieldName)
     {
-        TriggerReset();
+        if (Status == TweakStatus.Enabled)
+            TriggerReset();
     }
 
     public void DrawConfig()

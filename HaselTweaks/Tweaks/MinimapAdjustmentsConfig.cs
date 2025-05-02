@@ -1,4 +1,5 @@
 using Dalamud.Interface.Utility.Raii;
+using HaselTweaks.Enums;
 
 namespace HaselTweaks.Tweaks;
 
@@ -26,14 +27,13 @@ public unsafe partial class MinimapAdjustments
 
     public void OnConfigChange(string fieldName)
     {
-        if (fieldName is nameof(Config.HideCoords)
-                      or nameof(Config.HideWeather)
-                      or nameof(Config.HideSun)
-                      or nameof(Config.HideCardinalDirections))
+        if (Status == TweakStatus.Enabled
+            && fieldName is nameof(Config.HideCoords)
+                or nameof(Config.HideWeather)
+                or nameof(Config.HideSun)
+                or nameof(Config.HideCardinalDirections)
+            && TryGetAddon<NaviMap>("_NaviMap", out var naviMap))
         {
-            if (!TryGetAddon<NaviMap>("_NaviMap", out var naviMap))
-                return;
-
             naviMap->Coords->ToggleVisibility(!Config.HideCoords);
             naviMap->Weather->ToggleVisibility(!Config.HideWeather);
             naviMap->Sun->ToggleVisibility(!Config.HideSun);
