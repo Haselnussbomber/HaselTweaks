@@ -3,36 +3,20 @@
   <PropertyGroup>
     <Version>35.0.3</Version>
     <OutputPath>..\bin\</OutputPath>
+    <Use_Dalamud_FFXIVClientStructs>false</Use_Dalamud_FFXIVClientStructs>
+    <InteropGenerator_InteropNamespace>HaselTweaks</InteropGenerator_InteropNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Logo.png" />
+    <EmbeddedResource Include="Translations.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="SharpDX" Private="false" />
     <Reference Include="SharpDX.Direct3D11" Private="false" />
     <Reference Include="SharpDX.DXGI" Private="false" />
     <Reference Include="Microsoft.Extensions.ObjectPool" Private="false" />
-  </ItemGroup>
-
-  <ItemGroup Condition="!Exists('$(ProjectDir)..\FFXIVClientStructs')">
-    <Reference Include="InteropGenerator.Runtime" Private="false" />
-    <Reference Include="FFXIVClientStructs" Private="false" />
-  </ItemGroup>
-
-  <PropertyGroup Condition="Exists('$(ProjectDir)..\FFXIVClientStructs')">
-    <Use_Dalamud_FFXIVClientStructs>false</Use_Dalamud_FFXIVClientStructs>
-    <InteropGenerator_InteropNamespace>HaselTweaks</InteropGenerator_InteropNamespace>
-    <DefineConstants>HAS_LOCAL_CS</DefineConstants>
-  </PropertyGroup>
-
-  <ItemGroup Condition="Exists('$(ProjectDir)..\FFXIVClientStructs')">
-    <CompilerVisibleProperty Include="InteropGenerator_InteropNamespace" />
-    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator\InteropGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    <ProjectReference Include="..\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" Private="True" />
-    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" Private="True" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Assets\Logo.png" />
-    <EmbeddedResource Include="Translations.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +26,13 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.8" />
     <PackageReference Include="AutoCtor" Version="2.8.0" PrivateAssets="all" />
     <PackageReference Include="Injectio" Version="5.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <CompilerVisibleProperty Include="InteropGenerator_InteropNamespace" />
+    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator\InteropGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" Private="True" />
+    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" Private="True" />
   </ItemGroup>
 
   <ItemGroup>
