@@ -273,30 +273,59 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
         if (!_excelService.TryGetRow<RawRow>("WKSCosmoToolDataAmount", toolClassRow.ReadUInt8(0x8E), out var dataAmountRow)) // Unknown40
             return false;
 
-        byte lastAvailableType = 1;
+        byte selectedType = 0;
+        var lowestPercentage = float.MaxValue;
+
         for (byte type = 1; type <= 4; type++)
         {
             if (!wksManager->Research->IsTypeAvailable(toolClassId, type))
                 break;
-            lastAvailableType = type;
+
+            var neededXP = wksManager->Research->GetNeededAnalysis(toolClassId, type);
+            if (neededXP == 0)
+                continue;
+
+            var currentXP = wksManager->Research->GetCurrentAnalysis(toolClassId, type);
+            if (currentXP >= neededXP)
+                continue;
+
+            var percentage = (float)currentXP / neededXP;
+            if (percentage < lowestPercentage)
+            {
+                lowestPercentage = percentage;
+                selectedType = type;
+            }
         }
 
-        var toolNameId = toolClassRow.ReadUInt16((nuint)(8 * (lastAvailableType - 1) + 0x70));
+        if (selectedType == 0)
+        {
+            for (byte type = 1; type <= 4; type++)
+            {
+                if (!wksManager->Research->IsTypeAvailable(toolClassId, type))
+                    break;
+
+                selectedType = type;
+            }
+        }
+
+        if (selectedType == 0)
+            return false;
+
+        var toolNameId = toolClassRow.ReadUInt16((nuint)(8 * (selectedType - 1) + 0x70));
 
         if (!_excelService.TryGetRow<WKSCosmoToolName>(toolNameId, out var toolNameRow))
             return false;
 
         var toolName = toolNameRow.Unknown0.ExtractText();
-        var currentXP = wksManager->Research->GetCurrentAnalysis(toolClassId, lastAvailableType);
-        var neededXP = wksManager->Research->GetNeededAnalysis(toolClassId, lastAvailableType);
+        var finalCurrentXP = wksManager->Research->GetCurrentAnalysis(toolClassId, selectedType);
+        var finalNeededXP = wksManager->Research->GetNeededAnalysis(toolClassId, selectedType);
         var star = stage < nextStage ? '*' : ' ';
 
-        SetText($"{job} {toolName}{star}   {currentXP}/{neededXP}");
-        SetExperience(currentXP, neededXP);
+        SetText($"{job} {toolName}{star}   {finalCurrentXP}/{finalNeededXP}");
+        SetExperience(finalCurrentXP, finalNeededXP);
 
         if (!Config.DisableColorChanges)
             SetColor(30, 60, 170);
-
         return true;
     }
 
