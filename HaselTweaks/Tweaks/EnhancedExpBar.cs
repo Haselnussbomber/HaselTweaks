@@ -30,6 +30,7 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly ExcelService _excelService;
+    private readonly SeStringEvaluator _seStringEvaluator;
 
     private Hook<AgentHUD.Delegates.UpdateExp>? _updateExpHook;
     private byte _colorMultiplyRed = 100;
@@ -238,8 +239,31 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
 
         if (stage == 9)
         {
+            if (Config.ShowCosmicToolScore)
+            {
+                var score = wksManager->Scores[toolClassId - 1];
+                if (score < 500000)
+                {
+                    var max = score switch
+                    {
+                        >= 150000 => 500000,
+                        >= 50000 => 150000,
+                        _ => 50000,
+                    };
+
+                    SetText($"{job}  {_seStringEvaluator.EvaluateFromAddon(16852, [score])} / {_seStringEvaluator.EvaluateFromAddon(16852, [max])}");
+                    SetExperience(score, max);
+
+                    if (!Config.DisableColorChanges)
+                        SetColor(30, 60, 170);
+
+                    return true;
+                }
+            }
+
             SetText($"{job} {_textService.GetAddonText(6167)}"); // Complete
             SetExperience(0, 0);
+
             return true;
         }
 
