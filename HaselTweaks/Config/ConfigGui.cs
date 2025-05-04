@@ -70,7 +70,7 @@ public partial class ConfigGui
 
                 ImGui.TableNextColumn();
 
-                ImGui.TextUnformatted(_textService.Translate($"{_tweakName}.Config.{fieldName}.Label"));
+                ImGuiHelpers.SafeTextWrapped(_textService.Translate($"{_tweakName}.Config.{fieldName}.Label"));
 
                 if (ImGui.IsItemClicked())
                 {
