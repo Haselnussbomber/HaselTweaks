@@ -21,7 +21,7 @@ namespace HaselTweaks.Windows;
 [RegisterSingleton, AutoConstruct]
 public partial class PluginWindow : SimpleWindow
 {
-    private const uint SidebarWidth = 250;
+    private const uint SidebarWidth = 260;
     private readonly TextService _textService;
     private readonly ITextureProvider _textureProvider;
     private readonly TweakManager _tweakManager;
@@ -37,13 +37,6 @@ public partial class PluginWindow : SimpleWindow
     [AutoPostConstruct]
     private void Initialize()
     {
-        Size = new Vector2(766, 600);
-        SizeConstraints = new()
-        {
-            MinimumSize = new Vector2(766, 600),
-            MaximumSize = new Vector2(4096, 2160)
-        };
-
         SizeCondition = ImGuiCond.Always;
 
         Flags |= ImGuiWindowFlags.NoResize;
