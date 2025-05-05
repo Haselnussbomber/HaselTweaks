@@ -1,5 +1,12 @@
 # Changelog
 
+## [35.1.0] (2025-05-05)
+
+### Enhanced Experience Bar
+
+- **Added:** An option to show the cosmic class score needed for achievements after completing cosmic research (default on).
+- **Changed:** The Cosmic Research Bar is now smarter and will prioritize the dataset with the lowest experience percentage instead of just using the highest available type.
+
 ## [35.0.3] (2025-05-03)
 
 ### Enhanced Material List
@@ -2047,6 +2054,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[35.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.0.3...v35.1.0
 [35.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.0.2...v35.0.3
 [35.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.0.1...v35.0.2
 [35.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.0.0...v35.0.1
