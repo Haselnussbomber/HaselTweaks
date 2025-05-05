@@ -2,9 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
-#if !DEBUG
-using System.Text.RegularExpressions;
-#endif
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin.Services;
@@ -28,11 +25,6 @@ public partial class PluginWindow : SimpleWindow
     private readonly IEnumerable<ITweak> _tweaks;
     private ITweak[] _orderedTweaks;
     private ITweak? _selectedTweak;
-
-#if !DEBUG
-    [GeneratedRegex("\\.0$")]
-    private static partial Regex VersionPatchZeroRegex();
-#endif
 
     [AutoPostConstruct]
     private void Initialize()
@@ -246,10 +238,10 @@ public partial class PluginWindow : SimpleWindow
             ImGui.SetCursorPos(cursorPos + contentAvail - ImGui.CalcTextSize("dev"));
             ImGuiUtils.DrawLink("dev", _textService.Translate("HaselTweaks.Config.DevGitHubLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev");
 #else
-            var version = GetType().Assembly.GetName().Version;
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
             if (version != null)
             {
-                var versionString = "v" + VersionPatchZeroRegex().Replace(version.ToString(), "");
+                var versionString = "v" + version.ToString(3);
                 ImGui.SetCursorPos(cursorPos + contentAvail - ImGui.CalcTextSize(versionString));
                 ImGuiUtils.DrawLink(versionString, _textService.Translate("HaselTweaks.Config.ReleaseNotesLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/releases/tag/{versionString}");
             }
