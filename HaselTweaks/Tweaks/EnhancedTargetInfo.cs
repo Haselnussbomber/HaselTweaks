@@ -7,6 +7,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Services;
+using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
@@ -113,56 +114,46 @@ public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
 
         if (Config.DisplayMountStatus && chara->Mount.MountId != 0)
         {
-            var tooltipBuilder = SeStringBuilder.SharedPool.Get();
-            try
+            using (SeStringBuilderHelper.Rent(out var sb))
             {
-                tooltipBuilder.Append(_textService.GetMountName(chara->Mount.MountId));
+                sb.Append(_textService.GetMountName(chara->Mount.MountId));
 
                 if (target->EntityId != localPlayer->EntityId)
                 {
-                    tooltipBuilder.AppendNewLine();
+                    sb.AppendNewLine();
 
                     var isUnlocked = PlayerState.Instance()->IsMountUnlocked(chara->Mount.MountId);
 
-                    tooltipBuilder.PushColorType(isUnlocked ? 43u : 518);
-                    tooltipBuilder.Append(_textService.Translate(isUnlocked
+                    sb.PushColorType(isUnlocked ? 43u : 518);
+                    sb.Append(_textService.Translate(isUnlocked
                         ? "EnhancedTargetInfo.Unlocked"
                         : "EnhancedTargetInfo.NotUnlocked"));
-                    tooltipBuilder.PopColorType();
+                    sb.PopColorType();
                 }
 
-                TargetStatusUtils.AddPermanentStatus(0, 216201, 0, 0, default, tooltipBuilder.ToReadOnlySeString());
-            }
-            finally
-            {
-                SeStringBuilder.SharedPool.Return(tooltipBuilder);
+                TargetStatusUtils.AddPermanentStatus(0, 216201, 0, 0, default, sb.ToReadOnlySeString());
             }
         }
         else if (Config.DisplayOrnamentStatus && chara->OrnamentData.OrnamentId != 0)
         {
-            var tooltipBuilder = SeStringBuilder.SharedPool.Get();
-            try
+            using (SeStringBuilderHelper.Rent(out var sb))
             {
-                tooltipBuilder.Append(_textService.GetOrnamentName(chara->OrnamentData.OrnamentId));
+                sb.Append(_textService.GetOrnamentName(chara->OrnamentData.OrnamentId));
 
                 if (target->EntityId != localPlayer->EntityId)
                 {
-                    tooltipBuilder.AppendNewLine();
+                    sb.AppendNewLine();
 
                     var isUnlocked = PlayerState.Instance()->IsOrnamentUnlocked(chara->OrnamentData.OrnamentId);
 
-                    tooltipBuilder.PushColorType(isUnlocked ? 43u : 518);
-                    tooltipBuilder.Append(_textService.Translate(isUnlocked
+                    sb.PushColorType(isUnlocked ? 43u : 518);
+                    sb.Append(_textService.Translate(isUnlocked
                         ? "EnhancedTargetInfo.Unlocked"
                         : "EnhancedTargetInfo.NotUnlocked"));
-                    tooltipBuilder.PopColorType();
+                    sb.PopColorType();
                 }
 
-                TargetStatusUtils.AddPermanentStatus(0, 216234, 0, 0, default, tooltipBuilder.ToReadOnlySeString());
-            }
-            finally
-            {
-                SeStringBuilder.SharedPool.Return(tooltipBuilder);
+                TargetStatusUtils.AddPermanentStatus(0, 216234, 0, 0, default, sb.ToReadOnlySeString());
             }
         }
     }
