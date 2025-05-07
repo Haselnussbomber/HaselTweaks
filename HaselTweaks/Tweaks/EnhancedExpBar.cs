@@ -12,11 +12,13 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Extensions.Sheets;
 using HaselCommon.Services;
+using HaselCommon.Utils;
 using HaselTweaks.Config;
 using HaselTweaks.Enums;
 using HaselTweaks.Interfaces;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
+using Lumina.Text;
 
 namespace HaselTweaks.Tweaks;
 
@@ -156,7 +158,7 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
         if (!_excelService.TryGetRow<BuddyRank>(buddy.Rank, out var buddyRank))
             return false;
 
-        var levelLabel = (_textService.GetAddonText(4968) ?? "Rank").Trim().Replace(":", "");
+        var levelLabel = _textService.GetAddonText(4968).Trim().Replace(":", ""); // "Rank:"
         var rank = buddy.Rank > 20 ? 20 : buddy.Rank;
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var requiredExperience = buddyRank.ExpRequired;
@@ -177,7 +179,7 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
         var claimedRank = pvpProfile->GetSeriesClaimedRank();
         var currentRank = pvpProfile->GetSeriesCurrentRank();
 
-        var levelLabel = (_textService.GetAddonText(14860) ?? "Series Level").Trim().Replace(":", "");
+        var levelLabel = _textService.GetAddonText(14860).Trim().Replace(":", ""); // "Series Level: "
         var rank = currentRank > 30 ? 30 : currentRank; // 30 = Series Max Rank, hopefully in the future too
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var star = currentRank > claimedRank ? '*' : ' ';
@@ -202,7 +204,7 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
             return false;
 
         var job = Config.SanctuaryBarHideJob ? "" : classJob.Abbreviation + "  ";
-        var levelLabel = (_textService.GetAddonText(14252) ?? "Sanctuary Rank").Trim().Replace(":", "");
+        var levelLabel = _textService.GetAddonText(14252).Trim().Replace(":", ""); // "Sanctuary Rank:"
         var level = mjiManager->IslandState.CurrentRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var requiredExperience = mjiRank.ExpToNext;
 
@@ -251,7 +253,16 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
                         _ => 50000,
                     };
 
-                    SetText($"{job}  {_seStringEvaluator.EvaluateFromAddon(16852, [score])} / {_seStringEvaluator.EvaluateFromAddon(16852, [max])}");
+                    using (SeStringBuilderHelper.Rent(out var sb))
+                    {
+                        sb.Append(job);
+                        sb.Append("  ");
+                        sb.Append(_seStringEvaluator.EvaluateFromAddon(16852, [score]));
+                        sb.Append(" / ");
+                        sb.Append(_seStringEvaluator.EvaluateFromAddon(16852, [max]));
+                        SetText(sb);
+                    }
+
                     SetExperience(score, max);
 
                     if (!Config.DisableColorChanges)
@@ -327,6 +338,11 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
         if (!Config.DisableColorChanges)
             SetColor(30, 60, 170);
         return true;
+    }
+
+    private void SetText(in SeStringBuilder sb)
+    {
+        AtkStage.Instance()->GetStringArrayData(StringArrayType.Hud)->SetValue(69, sb.GetViewAsSpan());
     }
 
     private void SetText(string text)
