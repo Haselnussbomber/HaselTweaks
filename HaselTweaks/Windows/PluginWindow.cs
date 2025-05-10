@@ -102,7 +102,6 @@ public partial class PluginWindow : SimpleWindow
             ImGui.TableNextColumn();
 
             var status = tweak.Status;
-            var fixY = false;
 
             if (status is TweakStatus.InitializationFailed or TweakStatus.Outdated)
             {
@@ -145,8 +144,6 @@ public partial class PluginWindow : SimpleWindow
                 drawList.PathLineTo(pos + new Vector2(0, size.Y));
                 drawList.PathLineTo(pos + new Vector2(size.X, 0));
                 drawList.PathStroke(Color.Red.ToUInt(), ImDrawFlags.None, frameHeight / 5f * 0.5f);
-
-                fixY = true;
             }
             else
             {
@@ -162,20 +159,14 @@ public partial class PluginWindow : SimpleWindow
             }
 
             ImGui.TableNextColumn();
+            ImGui.AlignTextToFramePadding();
 
-            if (fixY)
+            using var _ = status switch
             {
-                ImGuiUtils.PushCursorY(3); // if i only knew why this happens
-            }
-
-            if (status is TweakStatus.InitializationFailed or TweakStatus.Outdated)
-            {
-                ImGui.PushStyleColor(ImGuiCol.Text, Color.Red.ToUInt());
-            }
-            else if (status is not TweakStatus.Enabled)
-            {
-                ImGui.PushStyleColor(ImGuiCol.Text, Color.Grey.ToUInt());
-            }
+                TweakStatus.InitializationFailed or TweakStatus.Outdated => Color.Red.Push(ImGuiCol.Text),
+                not TweakStatus.Enabled => Color.Grey.Push(ImGuiCol.Text),
+                _ => null
+            };
 
             if (!_textService.TryGetTranslation(tweakName + ".Tweak.Name", out var name))
                 name = tweakName;
@@ -198,11 +189,6 @@ public partial class PluginWindow : SimpleWindow
                 {
                     _selectedTweak = null;
                 }
-            }
-
-            if (status is TweakStatus.InitializationFailed or TweakStatus.Outdated or not TweakStatus.Enabled)
-            {
-                ImGui.PopStyleColor();
             }
         }
     }
