@@ -38,7 +38,7 @@ public unsafe partial class CompanionColorPreviewWindow : SimpleWindow
         RespectCloseHotkey = false;
     }
 
-    protected override void OnLanguageChanged(string langCode)
+    public override void OnLanguageChanged(string langCode)
     {
         base.OnLanguageChanged(langCode);
         LoadStains();

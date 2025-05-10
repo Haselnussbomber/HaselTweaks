@@ -9,16 +9,15 @@ namespace HaselTweaks.Utils;
 public abstract class LockableWindow : SimpleWindow
 {
     private static readonly ImGuiWindowFlags LockedWindowFlags = ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize;
+
+    private readonly TextService _textService = Service.Get<TextService>();
+    private readonly PluginConfig _pluginConfig = Service.Get<PluginConfig>();
+
     private readonly TitleBarButton _lockButton;
 
-    public readonly PluginConfig PluginConfig;
-
-    public LockableWindow(WindowManager windowManager, TextService textService, LanguageProvider languageProvider, PluginConfig pluginConfig)
-        : base(windowManager, textService, languageProvider)
+    public LockableWindow(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        PluginConfig = pluginConfig;
-
-        if (pluginConfig.LockedImGuiWindows.Contains(WindowName))
+        if (_pluginConfig.LockedImGuiWindows.Contains(WindowName))
             Flags |= LockedWindowFlags;
 
         _lockButton = new TitleBarButton()
@@ -30,7 +29,7 @@ public abstract class LockableWindow : SimpleWindow
             ShowTooltip = () =>
             {
                 ImGui.BeginTooltip();
-                ImGui.TextUnformatted(textService.Translate(WindowLocked
+                ImGui.TextUnformatted(_textService.Translate(WindowLocked
                     ? "ImGuiWindow.WindowLocked"
                     : "ImGuiWindow.WindowUnlocked"));
                 ImGui.EndTooltip();
@@ -52,7 +51,7 @@ public abstract class LockableWindow : SimpleWindow
         get => Flags.HasFlag(LockedWindowFlags);
         set
         {
-            var config = PluginConfig;
+            var config = _pluginConfig;
             if (WindowLocked && !value)
             {
                 Flags &= ~LockedWindowFlags;

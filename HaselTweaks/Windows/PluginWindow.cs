@@ -36,16 +36,16 @@ public partial class PluginWindow : SimpleWindow
         AllowClickthrough = false;
         AllowPinning = false;
 
-        SortTweaksbyName();
+        SortTweaksByName();
     }
 
-    protected override void OnLanguageChanged(string langCode)
+    public override void OnLanguageChanged(string langCode)
     {
         base.OnLanguageChanged(langCode);
-        SortTweaksbyName();
+        SortTweaksByName();
     }
 
-    private void SortTweaksbyName()
+    private void SortTweaksByName()
     {
         _orderedTweaks = [.. _tweaks.OrderBy(tweak => _textService.TryGetTranslation(tweak.GetInternalName() + ".Tweak.Name", out var name) ? name : tweak.GetInternalName())];
     }

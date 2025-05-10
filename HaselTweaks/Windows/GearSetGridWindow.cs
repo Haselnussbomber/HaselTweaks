@@ -35,9 +35,10 @@ public unsafe partial class GearSetGridWindow : LockableWindow
     private readonly TextService _textService;
     private readonly ImGuiContextMenuService _imGuiContextMenuService;
     private readonly ItemService _itemService;
+    private readonly PluginConfig _pluginConfig;
     private bool _resetScrollPosition;
 
-    public GearSetGridConfiguration Config => PluginConfig.Tweaks.GearSetGrid;
+    public GearSetGridConfiguration Config => _pluginConfig.Tweaks.GearSetGrid;
 
     [AutoPostConstruct]
     private void Initialize()

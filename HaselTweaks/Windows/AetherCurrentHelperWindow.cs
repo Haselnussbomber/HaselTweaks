@@ -27,13 +27,14 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
     private readonly ExcelService _excelService;
     private readonly TextService _textService;
     private readonly MapService _mapService;
+    private readonly PluginConfig _pluginConfig;
 
     private readonly Dictionary<uint, EObj> _aetherCurrentEObjCache = [];
     private readonly Dictionary<uint, Level> _eObjLevelCache = [];
 
     private bool _hideUnlocked = true;
 
-    private AetherCurrentHelperConfiguration Config => PluginConfig.Tweaks.AetherCurrentHelper;
+    private AetherCurrentHelperConfiguration Config => _pluginConfig.Tweaks.AetherCurrentHelper;
 
     public AetherCurrentCompFlgSet? CompFlgSet { get; set; }
 

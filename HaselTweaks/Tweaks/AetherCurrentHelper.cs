@@ -19,8 +19,11 @@ public unsafe partial class AetherCurrentHelper : IConfigurableTweak
     private readonly PluginConfig _pluginConfig;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly ExcelService _excelService;
-    private readonly AetherCurrentHelperWindow _window;
     private readonly ConfigGui _configGui;
+    private readonly WindowManager _windowManager;
+    private readonly IServiceProvider _serviceProvider;
+
+    private AetherCurrentHelperWindow? _window;
 
     private Hook<AgentAetherCurrent.Delegates.ReceiveEvent>? _receiveEventHook;
 
@@ -41,7 +44,7 @@ public unsafe partial class AetherCurrentHelper : IConfigurableTweak
     public void OnDisable()
     {
         _receiveEventHook?.Disable();
-        _window.Close();
+        _window?.Close();
     }
 
     void IDisposable.Dispose()
@@ -92,8 +95,14 @@ public unsafe partial class AetherCurrentHelper : IConfigurableTweak
         if (!_excelService.TryGetRow<AetherCurrentCompFlgSet>(index + 1, out var compFlgSet))
             return false;
 
+        _window ??= _windowManager.CreateOrOpen<AetherCurrentHelperWindow>();
+
+        if (_window.CompFlgSet?.RowId == compFlgSet.RowId)
+            _window.Toggle();
+        else
+            _window.Open();
+
         _window.CompFlgSet = compFlgSet;
-        _window.Open();
 
         return true;
     }

@@ -16,10 +16,11 @@ using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
-public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
+[AutoConstruct]
+public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverlay
 {
-    protected readonly PluginConfig PluginConfig;
-    protected readonly ExcelService ExcelService;
+    private readonly PluginConfig _pluginConfig;
+    private readonly ExcelService _excelService;
 
     private readonly ImRaii.Style _windowPadding = new();
     private readonly ImRaii.Color _windowBg = new();
@@ -27,22 +28,14 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
 
     protected uint DefaultImGuiTextColor { get; set; }
 
-    protected PortraitHelperConfiguration Config => PluginConfig.Tweaks.PortraitHelper;
+    protected PortraitHelperConfiguration Config => _pluginConfig.Tweaks.PortraitHelper;
 
     public bool IsWindow { get; set; }
     public virtual OverlayType Type => OverlayType.Window;
 
-    public Overlay(
-        WindowManager windowManager,
-        TextService textService,
-        LanguageProvider languageProvider,
-        PluginConfig pluginConfig,
-        ExcelService excelService)
-        : base(windowManager, textService, languageProvider)
+    [AutoPostConstruct]
+    private void Initialize()
     {
-        PluginConfig = pluginConfig;
-        ExcelService = excelService;
-
         DisableWindowSounds = true;
         RespectCloseHotkey = false;
 
@@ -107,7 +100,7 @@ public abstract unsafe class Overlay : SimpleWindow, IDisposable, IOverlay
                 _windowPadding.Push(ImGuiStyleVar.WindowPadding, Vector2.Zero);
             }
 
-            if (Misc.IsLightTheme && ExcelService.TryGetRow<UIColor>(2, out var uiColor))
+            if (Misc.IsLightTheme && _excelService.TryGetRow<UIColor>(2, out var uiColor))
             {
                 _windowText.Push(ImGuiCol.Text, Color.FromABGR(uiColor.Dark).ToUInt());
             }

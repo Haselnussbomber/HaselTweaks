@@ -7,6 +7,7 @@ using Dalamud.Memory;
 using HaselCommon.Extensions.Collections;
 using HaselCommon.Gui;
 using HaselCommon.Services;
+using HaselTweaks.Config;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using ImGuiNET;
@@ -21,6 +22,7 @@ public unsafe partial class PresetBrowserOverlay : Overlay
 
     private readonly ILogger<PresetBrowserOverlay> _logger;
     private readonly TextService _textService;
+    private readonly PluginConfig _pluginConfig;
 
     private int _reorderTagOldIndex = -1;
     private int _reorderTagNewIndex = -1;
@@ -136,7 +138,7 @@ public unsafe partial class PresetBrowserOverlay : Overlay
                     if (preset != null)
                     {
                         preset.Tags.Add(tag.Id);
-                        base.PluginConfig.Save();
+                        _pluginConfig.Save();
                     }
                 }
             }
@@ -207,7 +209,7 @@ public unsafe partial class PresetBrowserOverlay : Overlay
             var item = Config.PresetTags[_reorderTagOldIndex];
             Config.PresetTags.RemoveAt(_reorderTagOldIndex);
             Config.PresetTags.Insert(_reorderTagNewIndex, item);
-            base.PluginConfig.Save();
+            _pluginConfig.Save();
             _reorderTagOldIndex = -1;
             _reorderTagNewIndex = -1;
         }
@@ -271,7 +273,7 @@ public unsafe partial class PresetBrowserOverlay : Overlay
                 Config.PresetTags.Remove(tag);
         }
 
-        base.PluginConfig.Save();
+        _pluginConfig.Save();
     }
 
     private void DrawPresetBrowserContent()
