@@ -1,20 +1,7 @@
-using System.Linq;
-using System.Numerics;
-using Dalamud.Game.Addon.Lifecycle;
-using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Game.Text.SeStringHandling;
-using Dalamud.Hooking;
-using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Extensions.Dalamud;
-using HaselCommon.Services;
-using HaselTweaks.Config;
-using HaselTweaks.Enums;
-using HaselTweaks.Interfaces;
 using AtkEventInterface = FFXIVClientStructs.FFXIV.Component.GUI.AtkModuleInterface.AtkEventInterface;
-using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace HaselTweaks.Tweaks;
 
@@ -290,13 +277,12 @@ public unsafe partial class LockWindowPosition : IConfigurableTweak
 
     private void AddMenuEntry(string text, int eventParam)
     {
-        var label = new SeStringBuilder()
-            .AddUiForeground("\uE078 ", 32)
-            .AddText(text)
-            .Encode();
+        using var _ = SeStringBuilderHelper.Rent(out var sb);
 
         AgentContext.Instance()->AddMenuItem(
-            label,
+            sb.AppendHaselTweaksPrefix()
+              .Append(text)
+              .GetViewAsSpan(),
             &AtkStage.Instance()->RaptureAtkUnitManager->WindowContextMenuHandler,
             eventParam);
     }

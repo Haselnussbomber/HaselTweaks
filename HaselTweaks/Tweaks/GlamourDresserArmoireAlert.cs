@@ -1,17 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
-using Dalamud.Plugin.Services;
-using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using HaselCommon.Services;
-using HaselTweaks.Enums;
-using HaselTweaks.Interfaces;
 using HaselTweaks.Windows;
-using Lumina.Excel.Sheets;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using ItemKind = Dalamud.Game.Text.SeStringHandling.Payloads.ItemPayload.ItemKind;
 
 namespace HaselTweaks.Tweaks;
 

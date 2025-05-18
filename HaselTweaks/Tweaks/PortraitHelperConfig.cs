@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Numerics;
-using Dalamud.Interface.Utility.Raii;
 using HaselTweaks.Records.PortraitHelper;
 
 namespace HaselTweaks.Tweaks;

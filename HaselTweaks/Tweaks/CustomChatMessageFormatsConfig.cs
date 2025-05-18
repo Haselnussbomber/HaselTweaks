@@ -1,23 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Text.Json.Serialization;
-using Dalamud.Interface;
-using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.Text;
-using HaselCommon.Gui;
-using ImGuiNET;
-using Lumina.Excel.Sheets;
-using Lumina.Text;
-using Lumina.Text.Expressions;
-using Lumina.Text.Payloads;
-using Lumina.Text.ReadOnly;
-using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 

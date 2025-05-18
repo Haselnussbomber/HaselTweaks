@@ -1,17 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 using System.Reflection;
-using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
-using Dalamud.Plugin.Services;
-using HaselCommon.Gui;
-using HaselCommon.Services;
-using HaselTweaks.Enums;
-using HaselTweaks.Extensions;
-using HaselTweaks.Interfaces;
-using HaselTweaks.Services;
-using ImGuiNET;
 
 namespace HaselTweaks.Windows;
 

@@ -1,5 +1,3 @@
-using Lumina.Text;
-
 namespace HaselTweaks.Extensions;
 
 public static class SeStringBuilderExtensions

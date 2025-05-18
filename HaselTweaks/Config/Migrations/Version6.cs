@@ -1,10 +1,6 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Dalamud.Plugin;
-using Dalamud.Plugin.Services;
-using HaselTweaks.Extensions;
-using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Config.Migrations;
 

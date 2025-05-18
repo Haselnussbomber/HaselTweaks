@@ -1,9 +1,4 @@
-using Dalamud.Game.Addon.Lifecycle;
-using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselTweaks.Enums;
-using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Tweaks;
 

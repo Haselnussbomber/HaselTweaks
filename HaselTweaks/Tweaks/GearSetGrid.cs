@@ -1,8 +1,4 @@
 using HaselCommon.Commands;
-using HaselCommon.Services;
-using HaselTweaks.Config;
-using HaselTweaks.Enums;
-using HaselTweaks.Interfaces;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;

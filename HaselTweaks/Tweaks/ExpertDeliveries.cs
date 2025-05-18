@@ -1,9 +1,5 @@
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using HaselCommon.Services;
-using HaselTweaks.Enums;
-using HaselTweaks.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 

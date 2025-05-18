@@ -1,10 +1,3 @@
-using System.Numerics;
-using Dalamud.Interface;
-using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
-using HaselCommon.Gui;
-using ImGuiNET;
-
 namespace HaselTweaks.Tweaks;
 
 public class CustomChatTimestampConfiguration

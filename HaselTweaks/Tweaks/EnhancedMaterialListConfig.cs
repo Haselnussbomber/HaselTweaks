@@ -1,6 +1,4 @@
-using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using HaselTweaks.Enums;
 
 namespace HaselTweaks.Tweaks;
 

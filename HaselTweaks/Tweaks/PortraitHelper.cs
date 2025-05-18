@@ -1,8 +1,5 @@
 using System.Threading;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Hooking;
-using Dalamud.Plugin;
-using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
@@ -10,18 +7,9 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using HaselCommon.Game;
-using HaselCommon.Services;
-using HaselTweaks.Config;
-using HaselTweaks.Enums;
 using HaselTweaks.Enums.PortraitHelper;
-using HaselTweaks.Extensions;
-using HaselTweaks.Interfaces;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Windows.PortraitHelperWindows;
-using Lumina.Excel.Sheets;
-using Lumina.Text.ReadOnly;
-using Microsoft.Extensions.Logging;
 
 using DSeString = Dalamud.Game.Text.SeStringHandling.SeString;
 using LSeStringBuilder = Lumina.Text.SeStringBuilder;

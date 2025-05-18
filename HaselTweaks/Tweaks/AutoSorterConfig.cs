@@ -1,11 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
-using Dalamud.Interface;
-using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using HaselCommon.Gui;
-using HaselTweaks.Enums;
-using ImGuiNET;
 
 namespace HaselTweaks.Tweaks;
 

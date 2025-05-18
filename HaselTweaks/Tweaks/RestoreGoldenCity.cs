@@ -1,11 +1,4 @@
-using Dalamud.Hooking;
-using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using HaselCommon.Services;
-using HaselTweaks.Enums;
-using HaselTweaks.Interfaces;
-using HaselTweaks.Structs;
-using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Tweaks;
 

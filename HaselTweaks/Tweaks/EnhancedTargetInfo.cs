@@ -1,22 +1,9 @@
-using Dalamud.Hooking;
-using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using HaselCommon.Services;
-using HaselCommon.Utils;
-using HaselTweaks.Config;
-using HaselTweaks.Enums;
-using HaselTweaks.Interfaces;
-using HaselTweaks.Structs;
-using HaselTweaks.Utils;
-using Lumina.Excel.Sheets;
-using Lumina.Text;
-using Lumina.Text.Payloads;
-using Lumina.Text.ReadOnly;
 
 namespace HaselTweaks.Tweaks;
 

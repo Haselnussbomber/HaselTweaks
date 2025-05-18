@@ -1,6 +1,3 @@
-using HaselCommon.Services;
-using HaselTweaks.Enums;
-using HaselTweaks.Interfaces;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;

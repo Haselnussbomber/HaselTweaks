@@ -1,5 +1,3 @@
-using HaselTweaks.Interfaces;
-
 namespace HaselTweaks.Tweaks;
 
 public class ShopItemIconsConfiguration

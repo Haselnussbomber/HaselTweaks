@@ -1,16 +1,7 @@
-using System.Linq;
-using System.Numerics;
 using Dalamud.Interface.Textures;
-using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
-using HaselCommon.Gui;
-using HaselCommon.Services;
-using HaselTweaks.Tweaks;
-using ImGuiNET;
-using Lumina.Excel.Sheets;
 
 namespace HaselTweaks.Windows;
 

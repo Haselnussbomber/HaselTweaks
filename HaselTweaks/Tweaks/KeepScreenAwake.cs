@@ -1,6 +1,4 @@
 using System.Timers;
-using HaselTweaks.Enums;
-using HaselTweaks.Interfaces;
 using Windows.Win32;
 using Windows.Win32.System.Power;
 

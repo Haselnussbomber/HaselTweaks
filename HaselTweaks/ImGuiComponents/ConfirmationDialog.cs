@@ -1,10 +1,3 @@
-using System.Collections.Generic;
-using System.Numerics;
-using Dalamud.Interface.Utility.Raii;
-using HaselCommon.Gui;
-using HaselTweaks.Interfaces;
-using ImGuiNET;
-
 namespace HaselTweaks.ImGuiComponents;
 
 public abstract class ConfirmationDialog : IDialog

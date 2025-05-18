@@ -1,9 +1,3 @@
-using Dalamud.Interface;
-using HaselCommon.Gui;
-using HaselCommon.Services;
-using HaselTweaks.Config;
-using ImGuiNET;
-
 namespace HaselTweaks.Utils;
 
 public abstract class LockableWindow : SimpleWindow

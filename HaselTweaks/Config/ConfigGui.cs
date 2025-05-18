@@ -1,17 +1,5 @@
 using System.Globalization;
-using System.Linq;
-using Dalamud.Interface;
 using Dalamud.Interface.ImGuiSeStringRenderer;
-using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
-using Dalamud.Plugin;
-using HaselCommon.Gui;
-using HaselCommon.Services;
-using HaselTweaks.Enums;
-using HaselTweaks.Extensions;
-using HaselTweaks.Interfaces;
-using ImGuiNET;
-using Lumina.Text.ReadOnly;
 
 namespace HaselTweaks.Config;
 

@@ -1,9 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
 using Dalamud.Game.ClientState.Keys;
-using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
-using Lumina.Extensions;
 
 namespace HaselTweaks.Tweaks;
 

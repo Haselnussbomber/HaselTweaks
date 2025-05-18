@@ -1,5 +1,3 @@
-using HaselTweaks.Enums;
-
 namespace HaselTweaks.Interfaces;
 
 public interface ITweak : IDisposable

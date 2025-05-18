@@ -1,5 +1,4 @@
 using System.Text.Json.Nodes;
-using HaselTweaks.Interfaces;
 
 namespace HaselTweaks.Config.Migrations;
 

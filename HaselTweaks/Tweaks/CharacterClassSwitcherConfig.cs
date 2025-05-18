@@ -1,6 +1,3 @@
-using Dalamud.Interface.Utility.Raii;
-using HaselTweaks.Enums;
-
 namespace HaselTweaks.Tweaks;
 
 public class CharacterClassSwitcherConfiguration

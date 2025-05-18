@@ -1,12 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
-using Dalamud.Interface.Utility.Raii;
-using HaselCommon.Services;
-using HaselTweaks.Config;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
-using HaselTweaks.Tweaks;
-using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 

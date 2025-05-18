@@ -1,21 +1,8 @@
-using System.Collections.Generic;
-using System.Numerics;
 using Dalamud.Interface.Textures;
-using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
-using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using HaselCommon.Extensions.Sheets;
-using HaselCommon.Gui;
-using HaselCommon.Services;
-using HaselTweaks.Config;
-using HaselTweaks.Tweaks;
-using HaselTweaks.Utils;
-using ImGuiNET;
-using Lumina.Excel.Sheets;
 using GearsetEntry = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetEntry;
 using GearsetFlag = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetFlag;
 using GearsetItem = FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule.GearsetItem;
@@ -173,7 +160,7 @@ public unsafe partial class GearSetGridWindow : LockableWindow
 
                 ImGui.TableNextColumn();
 
-                var itemId = GetBaseItemId(slot->ItemId);
+                var itemId = ItemUtil.GetBaseId(slot->ItemId).ItemId;
                 if (itemId == 0)
                 {
                     var windowPos = ImGui.GetWindowPos();
@@ -240,7 +227,7 @@ public unsafe partial class GearSetGridWindow : LockableWindow
 
         // icon
         ImGui.SetCursorPos(startPos + IconInset * ImGuiHelpers.GlobalScale);
-        _textureService.DrawIcon(new GameIconLookup(item.Icon, IsHighQuality(slot->ItemId)), (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
+        _textureService.DrawIcon(new GameIconLookup(item.Icon, ItemUtil.IsHighQuality(slot->ItemId)), (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
         // icon overlay
         ImGui.SetCursorPos(startPos);

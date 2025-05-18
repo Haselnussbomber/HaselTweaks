@@ -1,17 +1,11 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Dalamud.Configuration;
-using Dalamud.Plugin;
-using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using HaselTweaks.Config.Migrations;
-using HaselTweaks.Interfaces;
 using HaselTweaks.JsonConverters;
-using HaselTweaks.Tweaks;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace HaselTweaks.Config;
 

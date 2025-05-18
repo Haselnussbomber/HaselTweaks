@@ -3,14 +3,6 @@ using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Commands;
-using HaselCommon.Game;
-using HaselCommon.Services;
-using HaselTweaks.Config;
-using HaselTweaks.Enums;
-using HaselTweaks.Extensions;
-using HaselTweaks.Interfaces;
-using Lumina.Excel.Sheets;
-using Lumina.Text;
 
 namespace HaselTweaks.Tweaks;
 
@@ -90,9 +82,9 @@ public unsafe partial class Commands : IConfigurableTweak
             return;
         }
 
-        var isEventItem = IsEventItem(id);
+        var isEventItem = ItemUtil.IsEventItem(id);
         var existsAsEventItem = isEventItem && _excelService.GetSheet<EventItem>().HasRow(id);
-        var existsAsItem = !isEventItem && _excelService.GetSheet<Item>().HasRow(GetBaseItemId(id));
+        var existsAsItem = !isEventItem && _excelService.GetSheet<Item>().HasRow(ItemUtil.GetBaseId(id).ItemId);
 
         if (!existsAsEventItem && !existsAsItem)
         {

@@ -1,9 +1,4 @@
-using Dalamud.Interface.Utility.Raii;
-using HaselCommon.Gui;
-using HaselCommon.Services;
-using HaselTweaks.Config;
 using HaselTweaks.Enums.PortraitHelper;
-using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 

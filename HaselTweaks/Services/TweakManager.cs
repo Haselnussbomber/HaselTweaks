@@ -1,10 +1,3 @@
-using System.Collections.Generic;
-using HaselTweaks.Config;
-using HaselTweaks.Enums;
-using HaselTweaks.Extensions;
-using HaselTweaks.Interfaces;
-using Microsoft.Extensions.Logging;
-
 namespace HaselTweaks.Services;
 
 [RegisterSingleton, AutoConstruct]

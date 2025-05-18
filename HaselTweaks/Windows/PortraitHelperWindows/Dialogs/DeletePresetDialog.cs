@@ -1,13 +1,7 @@
 using System.IO;
-using Dalamud.Plugin;
-using Dalamud.Plugin.Services;
-using HaselCommon.Services;
-using HaselTweaks.Config;
-using HaselTweaks.Extensions;
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
-using ImGuiNET;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 

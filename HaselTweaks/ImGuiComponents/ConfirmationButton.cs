@@ -1,7 +1,3 @@
-using System.Numerics;
-using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
-
 namespace HaselTweaks.ImGuiComponents;
 
 public class ConfirmationButton

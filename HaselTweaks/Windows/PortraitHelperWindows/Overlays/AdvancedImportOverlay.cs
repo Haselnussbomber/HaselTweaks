@@ -1,15 +1,6 @@
-using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Common.Math;
-using HaselCommon.Gui;
-using HaselCommon.Services;
 using HaselTweaks.Enums.PortraitHelper;
-using HaselTweaks.Tweaks;
-using HaselTweaks.Utils;
-using ImGuiNET;
-using Lumina.Excel.Sheets;
-using Microsoft.Extensions.Logging;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 

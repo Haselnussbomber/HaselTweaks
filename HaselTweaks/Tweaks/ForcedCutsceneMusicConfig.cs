@@ -1,5 +1,3 @@
-using HaselCommon.Gui;
-
 namespace HaselTweaks.Tweaks;
 
 public class ForcedCutsceneMusicConfiguration

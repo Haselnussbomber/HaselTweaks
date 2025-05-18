@@ -1,6 +1,3 @@
-using Dalamud.Game;
-using HaselTweaks.Enums;
-
 namespace HaselTweaks.Tweaks;
 
 public class EnhancedIsleworksAgendaConfiguration

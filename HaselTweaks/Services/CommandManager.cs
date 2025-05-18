@@ -1,5 +1,3 @@
-using Dalamud.Plugin;
-using HaselCommon.Services;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Services;

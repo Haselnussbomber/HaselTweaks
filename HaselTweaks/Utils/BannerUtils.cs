@@ -1,17 +1,12 @@
 using System.IO;
-using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.Exd;
-using HaselCommon.Services;
-using HaselTweaks.Structs;
-using Lumina.Excel.Sheets;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using ActionSheet = Lumina.Excel.Sheets.Action;
 
 namespace HaselTweaks.Utils;
 
