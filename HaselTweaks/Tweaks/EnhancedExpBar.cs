@@ -240,15 +240,14 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
                         _ => 50000,
                     };
 
-                    using (SeStringBuilderHelper.Rent(out var sb))
-                    {
-                        sb.Append(job);
-                        sb.Append("  ");
-                        sb.Append(_seStringEvaluator.EvaluateFromAddon(16852, [score]));
-                        sb.Append(" / ");
-                        sb.Append(_seStringEvaluator.EvaluateFromAddon(16852, [max]));
-                        SetText(sb);
-                    }
+                    using var rssb = new RentedSeStringBuilder();
+                    SetText(rssb.Builder
+                        .Append(job)
+                        .Append("  ")
+                        .Append(_seStringEvaluator.EvaluateFromAddon(16852, [score]))
+                        .Append(" / ")
+                        .Append(_seStringEvaluator.EvaluateFromAddon(16852, [max]))
+                        .GetViewAsSpan());
 
                     SetExperience(score, max);
 
@@ -327,9 +326,9 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
         return true;
     }
 
-    private void SetText(in SeStringBuilder sb)
+    private void SetText(ReadOnlySpan<byte> span)
     {
-        AtkStage.Instance()->GetStringArrayData(StringArrayType.Hud)->SetValue(69, sb.GetViewAsSpan());
+        AtkStage.Instance()->GetStringArrayData(StringArrayType.Hud)->SetValue(69, span);
     }
 
     private void SetText(string text)

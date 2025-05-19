@@ -101,47 +101,47 @@ public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
 
         if (Config.DisplayMountStatus && chara->Mount.MountId != 0)
         {
-            using (SeStringBuilderHelper.Rent(out var sb))
+            using var rssb = new RentedSeStringBuilder();
+            var sb = rssb.Builder;
+
+            sb.Append(_textService.GetMountName(chara->Mount.MountId));
+
+            if (target->EntityId != localPlayer->EntityId)
             {
-                sb.Append(_textService.GetMountName(chara->Mount.MountId));
+                sb.AppendNewLine();
 
-                if (target->EntityId != localPlayer->EntityId)
-                {
-                    sb.AppendNewLine();
+                var isUnlocked = PlayerState.Instance()->IsMountUnlocked(chara->Mount.MountId);
 
-                    var isUnlocked = PlayerState.Instance()->IsMountUnlocked(chara->Mount.MountId);
-
-                    sb.PushColorType(isUnlocked ? 43u : 518);
-                    sb.Append(_textService.Translate(isUnlocked
-                        ? "EnhancedTargetInfo.Unlocked"
-                        : "EnhancedTargetInfo.NotUnlocked"));
-                    sb.PopColorType();
-                }
-
-                TargetStatusUtils.AddPermanentStatus(0, 216201, 0, 0, default, sb.ToReadOnlySeString());
+                sb.PushColorType(isUnlocked ? 43u : 518);
+                sb.Append(_textService.Translate(isUnlocked
+                    ? "EnhancedTargetInfo.Unlocked"
+                    : "EnhancedTargetInfo.NotUnlocked"));
+                sb.PopColorType();
             }
+
+            TargetStatusUtils.AddPermanentStatus(0, 216201, 0, 0, default, sb.ToReadOnlySeString());
         }
         else if (Config.DisplayOrnamentStatus && chara->OrnamentData.OrnamentId != 0)
         {
-            using (SeStringBuilderHelper.Rent(out var sb))
+            using var rssb = new RentedSeStringBuilder();
+            var sb = rssb.Builder;
+
+            sb.Append(_textService.GetOrnamentName(chara->OrnamentData.OrnamentId));
+
+            if (target->EntityId != localPlayer->EntityId)
             {
-                sb.Append(_textService.GetOrnamentName(chara->OrnamentData.OrnamentId));
+                sb.AppendNewLine();
 
-                if (target->EntityId != localPlayer->EntityId)
-                {
-                    sb.AppendNewLine();
+                var isUnlocked = PlayerState.Instance()->IsOrnamentUnlocked(chara->OrnamentData.OrnamentId);
 
-                    var isUnlocked = PlayerState.Instance()->IsOrnamentUnlocked(chara->OrnamentData.OrnamentId);
-
-                    sb.PushColorType(isUnlocked ? 43u : 518);
-                    sb.Append(_textService.Translate(isUnlocked
-                        ? "EnhancedTargetInfo.Unlocked"
-                        : "EnhancedTargetInfo.NotUnlocked"));
-                    sb.PopColorType();
-                }
-
-                TargetStatusUtils.AddPermanentStatus(0, 216234, 0, 0, default, sb.ToReadOnlySeString());
+                sb.PushColorType(isUnlocked ? 43u : 518);
+                sb.Append(_textService.Translate(isUnlocked
+                    ? "EnhancedTargetInfo.Unlocked"
+                    : "EnhancedTargetInfo.NotUnlocked"));
+                sb.PopColorType();
             }
+
+            TargetStatusUtils.AddPermanentStatus(0, 216234, 0, 0, default, sb.ToReadOnlySeString());
         }
     }
 

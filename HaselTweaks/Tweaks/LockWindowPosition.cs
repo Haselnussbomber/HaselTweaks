@@ -277,12 +277,13 @@ public unsafe partial class LockWindowPosition : IConfigurableTweak
 
     private void AddMenuEntry(string text, int eventParam)
     {
-        using var _ = SeStringBuilderHelper.Rent(out var sb);
+        using var rssb = new RentedSeStringBuilder();
 
         AgentContext.Instance()->AddMenuItem(
-            sb.AppendHaselTweaksPrefix()
-              .Append(text)
-              .GetViewAsSpan(),
+            rssb.Builder
+                .AppendHaselTweaksPrefix()
+                .Append(text)
+                .GetViewAsSpan(),
             &AtkStage.Instance()->RaptureAtkUnitManager->WindowContextMenuHandler,
             eventParam);
     }

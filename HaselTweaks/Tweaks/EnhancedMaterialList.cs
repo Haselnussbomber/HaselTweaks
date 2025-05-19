@@ -311,8 +311,8 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
         if (placeName.Length > 23)
             placeName = placeName[..20] + "...";
 
-        using var _ = SeStringBuilderHelper.Rent(out var sb);
-        nameNode->SetText(sb
+        using var rssb = new RentedSeStringBuilder();
+        nameNode->SetText(rssb.Builder
             .Append(itemName)
             .BeginMacro(MacroCode.NewLine).EndMacro()
             .PushColorType((ushort)(isSameZone ? 570 : 4))
