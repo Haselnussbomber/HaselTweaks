@@ -363,7 +363,7 @@ public unsafe partial class InventoryHighlight : IConfigurableTweak
         if (component == null)
             return;
 
-        var ownerNode = (AtkResNode*)component->AtkComponentBase.OwnerNode;
+        var ownerNode = (AtkResNode*)component->OwnerNode;
         if (ownerNode == null)
             return;
 
@@ -422,7 +422,7 @@ public unsafe partial class InventoryHighlight : IConfigurableTweak
             if (component == null)
                 continue;
 
-            SetSlotBrightness((AtkResNode*)component->AtkComponentBase.OwnerNode, 100);
+            SetSlotBrightness((AtkResNode*)component->OwnerNode, 100);
         }
     }
 

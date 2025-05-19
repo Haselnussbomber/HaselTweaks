@@ -141,7 +141,7 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
             var node = addon->ButtonNodes.GetPointer(i)->Value;
             if (node == null) continue;
 
-            var collisionNode = node->AtkComponentBase.UldManager.RootNode;
+            var collisionNode = node->UldManager.RootNode;
             if (collisionNode == null) continue;
 
             collisionNode->AddEvent(AtkEventType.MouseClick, (uint)i + 2, (AtkEventListener*)addon, null, false);
@@ -173,24 +173,24 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
             if (IsCrafter(i))
             {
                 // but ensure the button is enabled, even though the player might not have desynthesis unlocked
-                node->AtkComponentBase.SetEnabledState(true);
+                node->SetEnabledState(true);
                 continue;
             }
 
-            var collisionNode = (AtkCollisionNode*)node->AtkComponentBase.UldManager.RootNode;
-            if (collisionNode == null)
+            var rootNode = node->UldManager.RootNode;
+            if (rootNode == null)
                 continue;
 
-            var imageNode = GetNode<AtkImageNode>(&node->AtkComponentBase, 4);
+            var imageNode = node->GetImageNodeById(4);
             if (imageNode == null)
                 continue;
 
             // if job is unlocked, it has full alpha
-            var isUnlocked = imageNode->AtkResNode.Color.A == 255;
+            var isUnlocked = imageNode->Color.A == 255;
             if (isUnlocked)
-                collisionNode->AtkResNode.DrawFlags |= 1 << 20; // add Cursor Pointer flag
+                rootNode->DrawFlags |= 1 << 20; // add Cursor Pointer flag
             else
-                collisionNode->AtkResNode.DrawFlags &= ~(uint)(1 << 20); // remove Cursor Pointer flag
+                rootNode->DrawFlags &= ~(uint)(1 << 20); // remove Cursor Pointer flag
         }
     }
 
@@ -209,15 +209,15 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
             return false;
 
         var node = addon->ButtonNodes.GetPointer(eventParam - 2)->Value;
-        if (node == null || node->AtkComponentBase.OwnerNode == null)
+        if (node == null || node->OwnerNode == null)
             return false;
 
-        var imageNode = GetNode<AtkImageNode>(&node->AtkComponentBase, 4);
+        var imageNode = (AtkImageNode*)node->GetImageNodeById(4);
         if (imageNode == null)
             return false;
 
         // if job is unlocked, it has full alpha
-        var isUnlocked = imageNode->AtkResNode.Color.A == 255;
+        var isUnlocked = imageNode->Color.A == 255;
         if (!isUnlocked)
             return false;
 
@@ -235,7 +235,7 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
             }
         }
 
-        return ProcessEvents(node->AtkComponentBase.OwnerNode, imageNode, eventType, atkEventData);
+        return ProcessEvents(node->OwnerNode, imageNode, eventType, atkEventData);
     }
 
     private void PvPCharacterOnSetup(AddonEvent type, AddonArgs args)
@@ -247,11 +247,11 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
             var entry = addon->ClassEntries.GetPointer(i);
             if (entry->Base == null) continue;
 
-            var collisionNode = entry->Base->UldManager.RootNode;
-            if (collisionNode == null) continue;
+            var rootNode = entry->Base->UldManager.RootNode;
+            if (rootNode == null) continue;
 
-            collisionNode->AddEvent(AtkEventType.MouseClick, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
-            collisionNode->AddEvent(AtkEventType.InputReceived, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
+            rootNode->AddEvent(AtkEventType.MouseClick, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
+            rootNode->AddEvent(AtkEventType.InputReceived, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
         }
     }
 
@@ -264,16 +264,16 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
             var entry = addon->ClassEntries.GetPointer(i);
             if (entry->Base == null || entry->Icon == null) continue;
 
-            var collisionNode = (AtkCollisionNode*)entry->Base->UldManager.RootNode;
-            if (collisionNode == null) continue;
+            var rootNode = entry->Base->UldManager.RootNode;
+            if (rootNode == null) continue;
 
             // if job is unlocked, it has full alpha
-            var isUnlocked = entry->Icon->AtkResNode.Color.A == 255;
+            var isUnlocked = entry->Icon->Color.A == 255;
 
             if (isUnlocked)
-                collisionNode->AtkResNode.DrawFlags |= 1 << 20; // add Cursor Pointer flag
+                rootNode->DrawFlags |= 1 << 20; // add Cursor Pointer flag
             else
-                collisionNode->AtkResNode.DrawFlags &= ~(uint)(1 << 20); // remove Cursor Pointer flag
+                rootNode->DrawFlags &= ~(uint)(1 << 20); // remove Cursor Pointer flag
         }
     }
 
@@ -299,7 +299,7 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
             return false;
 
         // if job is unlocked, it has full alpha
-        var isUnlocked = entry->Icon->AtkResNode.Color.A == 255;
+        var isUnlocked = entry->Icon->Color.A == 255;
         if (!isUnlocked)
             return false;
 
@@ -333,15 +333,15 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
 
         if (eventType == AtkEventType.MouseOver)
         {
-            componentNode->AtkResNode.AddBlue = 16;
-            componentNode->AtkResNode.AddGreen = 16;
-            componentNode->AtkResNode.AddRed = 16;
+            componentNode->AddBlue = 16;
+            componentNode->AddGreen = 16;
+            componentNode->AddRed = 16;
         }
         else if (eventType == AtkEventType.MouseOut)
         {
-            componentNode->AtkResNode.AddBlue = 0;
-            componentNode->AtkResNode.AddGreen = 0;
-            componentNode->AtkResNode.AddRed = 0;
+            componentNode->AddBlue = 0;
+            componentNode->AddGreen = 0;
+            componentNode->AddRed = 0;
         }
 
         return false;

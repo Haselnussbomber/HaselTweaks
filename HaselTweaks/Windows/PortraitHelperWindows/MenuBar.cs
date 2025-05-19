@@ -1,7 +1,6 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
@@ -292,12 +291,12 @@ public unsafe partial class MenuBar : SimpleWindow
         var addon = GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
 
         Position = new(
-            addon->AtkUnitBase.X + 4,
-            addon->AtkUnitBase.Y + 3 - height * scale
+            addon->X + 4,
+            addon->Y + 3 - height * scale
         );
 
         Size = new(
-            (addon->AtkUnitBase.GetScaledWidth(true) - 8) * scaledown,
+            (addon->GetScaledWidth(true) - 8) * scaledown,
             height
         );
     }
@@ -308,18 +307,18 @@ public unsafe partial class MenuBar : SimpleWindow
         {
             var addon = GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
 
-            var rightPanel = GetNode<AtkResNode>(&addon->AtkUnitBase, 107);
-            var charaView = GetNode<AtkResNode>(&addon->AtkUnitBase, 130);
-            var scale = GetNodeScale(charaView);
+            var rightPanel = addon->GetNodeById(107);
+            var charaView = addon->GetNodeById(130);
+            var scale = addon->Scale;
 
             var position = new Vector2(
-                addon->AtkUnitBase.X + rightPanel->X * scale.X,
-                addon->AtkUnitBase.Y + rightPanel->Y * scale.Y
+                addon->X + rightPanel->X * scale,
+                addon->Y + rightPanel->Y * scale
             );
 
             var size = new Vector2(
-                charaView->GetWidth() * scale.X,
-                charaView->GetHeight() * scale.Y
+                charaView->GetWidth() * scale,
+                charaView->GetHeight() * scale
             );
 
             ImGui.SetNextWindowPos(position);

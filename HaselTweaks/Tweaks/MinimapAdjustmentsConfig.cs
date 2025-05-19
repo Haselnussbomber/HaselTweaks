@@ -29,7 +29,7 @@ public unsafe partial class MinimapAdjustments
                 or nameof(Config.HideWeather)
                 or nameof(Config.HideSun)
                 or nameof(Config.HideCardinalDirections)
-            && TryGetAddon<NaviMap>("_NaviMap", out var naviMap))
+            && TryGetAddon<HaselAddonNaviMap>("_NaviMap", out var naviMap))
         {
             naviMap->Coords->ToggleVisibility(!Config.HideCoords);
             naviMap->Weather->ToggleVisibility(!Config.HideWeather);

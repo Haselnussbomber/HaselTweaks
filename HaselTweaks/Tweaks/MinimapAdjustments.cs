@@ -31,7 +31,7 @@ public unsafe partial class MinimapAdjustments : IConfigurableTweak
         if (Status is not TweakStatus.Enabled)
             return;
 
-        if (!TryGetAddon<NaviMap>("_NaviMap", out var naviMap))
+        if (!TryGetAddon<HaselAddonNaviMap>("_NaviMap", out var naviMap))
             return;
 
         // reset alpha
@@ -62,7 +62,7 @@ public unsafe partial class MinimapAdjustments : IConfigurableTweak
         if (!_clientState.IsLoggedIn)
             return;
 
-        if (!TryGetAddon<NaviMap>("_NaviMap", out var naviMap))
+        if (!TryGetAddon<HaselAddonNaviMap>("_NaviMap", out var naviMap))
             return;
 
         UpdateAlpha(naviMap);
@@ -74,7 +74,7 @@ public unsafe partial class MinimapAdjustments : IConfigurableTweak
         UpdateCollision(naviMap, Config.Square);
     }
 
-    private void UpdateAlpha(NaviMap* naviMap)
+    private void UpdateAlpha(HaselAddonNaviMap* naviMap)
     {
         var maskNode = naviMap->Mask;
         var targetAlphaByte = _targetAlpha * 255;
@@ -85,7 +85,7 @@ public unsafe partial class MinimapAdjustments : IConfigurableTweak
         maskNode->Color.A = (byte)MathUtils.DeltaLerp(maskNode->Color.A, targetAlphaByte, 0.16f);
     }
 
-    private void UpdateVisibility(NaviMap* naviMap, bool hovered)
+    private void UpdateVisibility(HaselAddonNaviMap* naviMap, bool hovered)
     {
         bool ShouldSetVisibility(bool hide, bool visibleOnHover)
             => hide && (visibleOnHover || (!visibleOnHover && hovered == false));
@@ -103,7 +103,7 @@ public unsafe partial class MinimapAdjustments : IConfigurableTweak
             naviMap->CardinalDirections->ToggleVisibility(hovered);
     }
 
-    private static void UpdateCollision(NaviMap* naviMap, bool square)
+    private static void UpdateCollision(HaselAddonNaviMap* naviMap, bool square)
     {
         var collisionNode = naviMap->Collision;
         var hasCircularCollisionFlag = (collisionNode->DrawFlags & (1 << 23)) != 0;
@@ -115,18 +115,15 @@ public unsafe partial class MinimapAdjustments : IConfigurableTweak
     }
 }
 
-public unsafe struct NaviMap
+[StructLayout(LayoutKind.Explicit)]
+public unsafe struct HaselAddonNaviMap
 {
-    public AtkResNode* GetNode(uint nodeId)
-    {
-        fixed (NaviMap* ptr = &this)
-            return GetNode<AtkResNode>((AtkUnitBase*)ptr, nodeId);
-    }
+    [FieldOffset(0)] public AtkUnitBase AtkUnitBase;
 
-    public AtkResNode* Collision => GetNode(19);
-    public AtkResNode* Mask => GetNode(17);
-    public AtkResNode* Coords => GetNode(5);
-    public AtkResNode* Weather => GetNode(14);
-    public AtkResNode* Sun => GetNode(16);
-    public AtkResNode* CardinalDirections => GetNode(8);
+    public AtkCollisionNode* Collision => AtkUnitBase.GetNodeById(19)->GetAsAtkCollisionNode();
+    public AtkImageNode* Mask => AtkUnitBase.GetNodeById(17)->GetAsAtkImageNode();
+    public AtkResNode* Coords => AtkUnitBase.GetNodeById(5);
+    public AtkResNode* Weather => AtkUnitBase.GetNodeById(14);
+    public AtkImageNode* Sun => AtkUnitBase.GetNodeById(16)->GetAsAtkImageNode();
+    public AtkResNode* CardinalDirections => AtkUnitBase.GetNodeById(8);
 }

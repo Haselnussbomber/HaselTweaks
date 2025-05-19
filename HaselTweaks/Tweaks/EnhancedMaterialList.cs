@@ -225,7 +225,7 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
 
         _logger.LogInformation("Refreshing RecipeMaterialList");
         var atkEvent = new AtkEvent();
-        recipeMaterialList->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 1, &atkEvent);
+        recipeMaterialList->ReceiveEvent(AtkEventType.ButtonClick, 1, &atkEvent);
     }
 
     private void RefreshRecipeTree()
@@ -309,8 +309,8 @@ public unsafe partial class EnhancedMaterialList : IConfigurableTweak
 
         // when you don't know how to add text nodes... Sadge
 
-        nameNode->AtkResNode.Y = 14;
-        nameNode->AtkResNode.DrawFlags |= 0x1;
+        nameNode->Y = 14;
+        nameNode->DrawFlags |= 0x1;
 
         nameNode->TextFlags = 192; // allow multiline text (not sure on the actual flags it sets though)
         nameNode->LineSpacing = 17;

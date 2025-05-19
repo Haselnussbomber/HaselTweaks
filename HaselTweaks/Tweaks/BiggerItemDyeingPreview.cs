@@ -54,11 +54,11 @@ public unsafe partial class BiggerItemDyeingPreview : ITweak
         if (leftDyeBox == null || itemNameNode == null || itemNameWrappedNode == null || textBackgroundNode == null || previewParent == null || preview == null)
             return;
 
-        var previewComponent = preview->GetComponent();
+        var previewComponent = preview->GetAsAtkComponentPreview();
         if (previewComponent == null)
             return;
 
-        var border = previewComponent->UldManager.SearchNodeById(3);
+        var border = previewComponent->GetNodeById(3);
         var image = (AtkImageNode*)previewComponent->GetImageNodeById(4);
         if (border == null || image == null)
             return;
@@ -68,24 +68,28 @@ public unsafe partial class BiggerItemDyeingPreview : ITweak
 
         rootNode->SetWidth(700);
 
-        SetWindowSize(windowNode, 760, null);
+        addon->SetSize(760, addon->WindowNode->Height);
         textBackgroundNode->SetWidth(leftDyeBox->Width);
 
         var scale = 0.56f;
-        var width = (int)(576 * scale);
-        var height = (int)(960 * scale);
+        var width = (ushort)(576 * scale);
+        var height = (ushort)(960 * scale);
 
         // preview
         previewParent->SetPositionFloat(previewParent->X - 3, previewParent->Y - 128);
         preview->SetPositionFloat(0, 0);
-        SetSize(preview, width, height);
-        SetSize(previewParent, width, height);
+        preview->SetWidth(width);
+        preview->SetHeight(height);
+        previewParent->SetWidth(width);
+        previewParent->SetHeight(height);
 
         // border
-        SetSize(border, width + 8, height + 10);
+        border->SetWidth((ushort)(width + 8));
+        border->SetHeight((ushort)(height + 10));
 
         // image
-        SetSize((AtkResNode*)image, width, height);
+        image->SetWidth(width);
+        image->SetHeight(height);
 
         for (var i = 0u; i < 9; i++)
         {

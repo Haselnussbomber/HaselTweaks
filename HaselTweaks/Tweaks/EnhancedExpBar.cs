@@ -117,22 +117,22 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
     {
         var addon = (AtkUnitBase*)args.Addon;
 
-        var gaugeBarNode = GetNode<AtkComponentNode>(addon, 6);
+        var gaugeBarNode = addon->GetComponentByNodeId(6);
         if (gaugeBarNode == null)
             return;
 
-        var nineGridNode = GetNode<AtkNineGridNode>(gaugeBarNode->Component, 4);
+        var nineGridNode = gaugeBarNode->GetNineGridNodeById(4);
         if (nineGridNode == null)
             return;
 
-        if (nineGridNode->AtkResNode.MultiplyRed != _colorMultiplyRed)
-            nineGridNode->AtkResNode.MultiplyRed = _colorMultiplyRed;
+        if (nineGridNode->MultiplyRed != _colorMultiplyRed)
+            nineGridNode->MultiplyRed = _colorMultiplyRed;
 
-        if (nineGridNode->AtkResNode.MultiplyGreen != _colorMultiplyGreen)
-            nineGridNode->AtkResNode.MultiplyGreen = _colorMultiplyGreen;
+        if (nineGridNode->MultiplyGreen != _colorMultiplyGreen)
+            nineGridNode->MultiplyGreen = _colorMultiplyGreen;
 
-        if (nineGridNode->AtkResNode.MultiplyBlue != _colorMultiplyBlue)
-            nineGridNode->AtkResNode.MultiplyBlue = _colorMultiplyBlue;
+        if (nineGridNode->MultiplyBlue != _colorMultiplyBlue)
+            nineGridNode->MultiplyBlue = _colorMultiplyBlue;
     }
 
     private bool OverwriteWithCompanionBar(ClassJob classJob)

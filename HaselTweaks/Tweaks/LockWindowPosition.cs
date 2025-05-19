@@ -149,7 +149,7 @@ public unsafe partial class LockWindowPosition : IConfigurableTweak
                     {
                         _hoveredWindowName = name;
                         _hoveredWindowPos = new(atkUnitBase->X, atkUnitBase->Y);
-                        _hoveredWindowSize = new(atkUnitBase->WindowNode->AtkResNode.Width, atkUnitBase->WindowNode->AtkResNode.Height - 7);
+                        _hoveredWindowSize = new(atkUnitBase->WindowNode->Width, atkUnitBase->WindowNode->Height - 7);
                     }
                     else
                     {

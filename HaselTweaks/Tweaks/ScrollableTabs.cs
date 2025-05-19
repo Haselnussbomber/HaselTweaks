@@ -361,7 +361,7 @@ public unsafe partial class ScrollableTabs : IConfigurableTweak
             values[2].Type = ValueType.UInt;
             values[2].UInt = 0;
 
-            addon->AtkUnitBase.FireCallback(3, values);
+            addon->FireCallback(3, values);
         }
         else
         {
@@ -393,7 +393,7 @@ public unsafe partial class ScrollableTabs : IConfigurableTweak
             values[2].Type = ValueType.UInt;
             values[2].UInt = 2;
 
-            addon->AtkUnitBase.FireCallback(3, values);
+            addon->FireCallback(3, values);
         }
         else
         {
@@ -511,8 +511,8 @@ public unsafe partial class ScrollableTabs : IConfigurableTweak
             if (addon->CurrentPageIndex > 0)
             {
                 var page = addon->CurrentPageIndex - 1;
-                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, &atkEvent);
-                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, 9, &atkEvent);
+                addon->ReceiveEvent(AtkEventType.ButtonClick, page + 10, &atkEvent);
+                addon->ReceiveEvent(AtkEventType.ButtonClick, 9, &atkEvent);
             }
         }
         else if (eventParam == 10)
@@ -520,12 +520,12 @@ public unsafe partial class ScrollableTabs : IConfigurableTweak
             if (addon->CurrentPageIndex < 4)
             {
                 var page = addon->CurrentPageIndex + 1;
-                addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, page + 10, &atkEvent);
+                addon->ReceiveEvent(AtkEventType.ButtonClick, page + 10, &atkEvent);
             }
         }
         else
         {
-            addon->AtkUnitBase.ReceiveEvent(AtkEventType.ButtonClick, eventParam, &atkEvent);
+            addon->ReceiveEvent(AtkEventType.ButtonClick, eventParam, &atkEvent);
         }
     }
 
@@ -624,7 +624,7 @@ public unsafe partial class ScrollableTabs : IConfigurableTweak
             return;
 
         numberArray->SetValue(0, newTab);
-        addon->AtkUnitBase.OnRequestedUpdate(atkStage->GetNumberArrayData(), atkStage->GetStringArrayData());
+        addon->OnRequestedUpdate(atkStage->GetNumberArrayData(), atkStage->GetStringArrayData());
     }
 
     private void UpdateInventoryBuddy(AddonInventoryBuddy* addon)
@@ -663,16 +663,16 @@ public unsafe partial class ScrollableTabs : IConfigurableTweak
     {
         if (addon->JobDropdown == null ||
             addon->JobDropdown->List == null ||
-            addon->JobDropdown->List->AtkComponentBase.OwnerNode == null ||
-            addon->JobDropdown->List->AtkComponentBase.OwnerNode->AtkResNode.IsVisible())
+            addon->JobDropdown->List->OwnerNode == null ||
+            addon->JobDropdown->List->OwnerNode->IsVisible())
         {
             return;
         }
 
         if (addon->OrderDropdown == null ||
             addon->OrderDropdown->List == null ||
-            addon->OrderDropdown->List->AtkComponentBase.OwnerNode == null ||
-            addon->OrderDropdown->List->AtkComponentBase.OwnerNode->AtkResNode.IsVisible())
+            addon->OrderDropdown->List->OwnerNode == null ||
+            addon->OrderDropdown->List->OwnerNode->IsVisible())
         {
             return;
         }

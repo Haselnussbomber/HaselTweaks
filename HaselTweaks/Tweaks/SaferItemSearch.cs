@@ -68,7 +68,7 @@ public unsafe partial class SaferItemSearch : ITweak
         if (addon == null)
             return;
 
-        addon->ComparePrices->AtkComponentBase.SetEnabledState(!_isSearching);
+        addon->ComparePrices->SetEnabledState(!_isSearching);
     }
 
     private void OnListingsStart()
