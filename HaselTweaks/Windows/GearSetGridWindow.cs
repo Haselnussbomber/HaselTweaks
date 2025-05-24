@@ -257,7 +257,7 @@ public unsafe partial class GearSetGridWindow : LockableWindow
 
         using var _ = ImRaii.Tooltip();
 
-        ImGuiUtils.TextUnformattedColored(_itemService.GetItemRarityColor(item.RowId), _textService.GetItemName(item.RowId));
+        ImGuiUtils.TextUnformattedColored(_itemService.GetItemRarityColor(item.RowId), _textService.GetItemName(item.RowId).ExtractText().StripSoftHyphen());
 
         var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         if (holdingShift)
@@ -279,7 +279,7 @@ public unsafe partial class GearSetGridWindow : LockableWindow
         {
             ImGui.TextUnformatted(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelGlamour"));
             ImGuiUtils.SameLineSpace();
-            ImGuiUtils.TextUnformattedColored(_itemService.GetItemRarityColor(glamourItem.RowId), _textService.GetItemName(slot->GlamourId));
+            ImGuiUtils.TextUnformattedColored(_itemService.GetItemRarityColor(glamourItem.RowId), _textService.GetItemName(slot->GlamourId).ExtractText().StripSoftHyphen());
 
             if (holdingShift)
             {
