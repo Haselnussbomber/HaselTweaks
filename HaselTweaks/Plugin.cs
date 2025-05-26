@@ -17,8 +17,6 @@ public sealed class Plugin : IDalamudPlugin
             new FileInfo(Path.Join(pluginInterface.ConfigDirectory.FullName, "SigCache.json")));
         Resolver.GetInstance.Resolve();
 
-
-
         Service.Collection
             .AddDalamud(pluginInterface)
             .AddSingleton(PluginConfig.Load)

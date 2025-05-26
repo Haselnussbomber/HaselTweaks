@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace HaselTweaks.Windows;
 
@@ -194,7 +195,7 @@ public partial class PluginWindow : SimpleWindow
             if (_textureProvider.GetFromManifestResource(Assembly.GetExecutingAssembly(), "HaselTweaks.Assets.Logo.png").TryGetWrap(out var logo, out var _))
             {
                 var logoSize = ImGuiHelpers.ScaledVector2(256, 128);
-                ImGui.SetCursorPos(contentAvail / 2 - logoSize / 2 + new Vector2(ImGui.GetStyle().ItemSpacing.X, 0));
+                ImGui.SetCursorPos(contentAvail / 2 - logoSize / 2 + ImGui.GetStyle().ItemSpacing.XOnly());
                 ImGui.Image(logo.ImGuiHandle, logoSize);
             }
 
@@ -205,6 +206,18 @@ public partial class PluginWindow : SimpleWindow
             ImGui.TextUnformatted("•");
             ImGui.SameLine();
             ImGuiUtils.DrawLink("Ko-fi", _textService.Translate("HaselTweaks.Config.KoFiLink.Tooltip"), "https://ko-fi.com/haselnussbomber");
+            ImGui.SameLine();
+            ImGui.TextUnformatted("•");
+            ImGui.SameLine();
+            ImGui.TextUnformatted(_textService.Translate("HaselTweaks.Config.Licenses"));
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+                if (ImGui.IsMouseReleased(ImGuiMouseButton.Left) && Service.TryGet<LicensesWindow>(out var licensesWindow))
+                {
+                    Task.Run(licensesWindow.Toggle);
+                }
+            }
 
             // version, bottom right
 #if DEBUG

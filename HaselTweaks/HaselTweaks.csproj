@@ -11,6 +11,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Assets\Logo.png" />
     <EmbeddedResource Include="Translations.json" />
+    <EmbeddedResource Include="LICENSES.md" />
+    <None Include="LICENSES.md" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

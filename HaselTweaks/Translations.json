@@ -5,10 +5,18 @@
   "PluginWindow.Title": {
     "en": "HaselTweaks"
   },
+  "LicensesWindow.Title": {
+    "en": "HaselTweaks - Licenses",
+    "de": "HaselTweaks - Lizenzen"
+  },
   "HaselTweaks.CommandHandlerHelpMessage": {
     "en": "Opens the HaselTweaks configuration window",
     "de": "Öffnet das HaselTweaks-Konfigurationsfenster",
     "zh": "打开HaselTweaks设置窗口"
+  },
+  "HaselTweaks.Config.Licenses": {
+    "en": "Licenses",
+    "de": "Lizenzen"
   },
   "HaselTweaks.Config.DevGitHubLink.Tooltip": {
     "en": "Compare changes",
