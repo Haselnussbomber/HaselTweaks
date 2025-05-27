@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Threading.Tasks;
+using HaselCommon.Windows;
 
 namespace HaselTweaks.Windows;
 
