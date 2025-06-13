@@ -4,9 +4,9 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class MonsterNote : ITweak
+public unsafe partial class EnhancedMonsterNote : ITweak
 {
-    private readonly ILogger<MonsterNote> _logger;
+    private readonly ILogger<EnhancedMonsterNote> _logger;
     private readonly AddonObserver _addonObserver;
 
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
