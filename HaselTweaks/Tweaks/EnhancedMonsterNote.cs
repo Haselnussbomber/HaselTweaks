@@ -1,26 +1,54 @@
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedMonsterNote : ITweak
+public unsafe partial class EnhancedMonsterNote : IConfigurableTweak
 {
     private readonly ILogger<EnhancedMonsterNote> _logger;
+    private readonly IClientState _clientState;
+    private readonly IGameInteropProvider _gameInteropProvider;
     private readonly AddonObserver _addonObserver;
+    private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
+    private readonly ExcelService _excelService;
+
+    private Hook<AgentMonsterNote.Delegates.Show> _showHook;
+    private Hook<HaselAgentMonsterNote.Delegates.OpenWithData> _openWithDataHook;
+
+    private bool _isShowCall;
+    private static readonly byte[] ClassIds = [1, 2, 3, 4, 5, 29, 6, 7, 26];
 
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
-    public void OnInitialize() { }
+    public void OnInitialize()
+    {
+        _showHook = _gameInteropProvider.HookFromAddress<AgentMonsterNote.Delegates.Show>(
+            AgentMonsterNote.Instance()->VirtualTable->Show,
+            ShowDetour);
+
+        _openWithDataHook = _gameInteropProvider.HookFromAddress<HaselAgentMonsterNote.Delegates.OpenWithData>(
+            HaselAgentMonsterNote.MemberFunctionPointers.OpenWithData,
+            OpenWithDataDetour);
+    }
 
     public void OnEnable()
     {
+        _showHook.Enable();
+        _openWithDataHook.Enable();
+        _clientState.Logout += OnLogout;
         _addonObserver.AddonOpen += OnAddonOpen;
     }
 
     public void OnDisable()
     {
+        _showHook.Disable();
+        _openWithDataHook.Disable();
+        _clientState.Logout -= OnLogout;
         _addonObserver.AddonOpen -= OnAddonOpen;
+        _isShowCall = false;
     }
 
     void IDisposable.Dispose()
@@ -29,24 +57,92 @@ public unsafe partial class EnhancedMonsterNote : ITweak
             return;
 
         OnDisable();
+        _showHook.Dispose();
+        _openWithDataHook.Dispose();
 
         Status = TweakStatus.Disposed;
     }
 
-    public void OnAddonOpen(string addonName)
+    private void OnLogout(int type, int code)
     {
-        if (addonName != "MonsterNote")
+        _isShowCall = false; // just for safety
+    }
+
+    private void OnAddonOpen(string addonName)
+    {
+        if (!Config.OpenWithIncompleteFilter || addonName != "MonsterNote")
             return;
 
-        if (!TryGetAddon<AtkUnitBase>(addonName, out var addon))
-            return;
+        _logger.LogDebug("Changing filter to Incomplete.");
+        var retVal = stackalloc AtkValue[1];
+        var values = stackalloc AtkValue[2];
+        values[0].SetInt(2); // Set Filter
+        values[1].SetInt(2); // Filter = 2
+        AgentMonsterNote.Instance()->ReceiveEvent(retVal, values, 2, 0);
+    }
 
-        // prevent item selection for controller users to reset to the first entry
-        if (AgentMonsterNote.Instance()->Filter == 2)
-            return;
+    private void ShowDetour(AgentMonsterNote* thisPtr)
+    {
+        if (!thisPtr->IsAgentActive())
+            _isShowCall = true;
 
-        _logger.LogDebug("Changing selected tab...");
+        _showHook.Original(thisPtr);
+    }
 
-        AgentMonsterNote.Instance()->Filter = 2;
+    private void OpenWithDataDetour(HaselAgentMonsterNote* thisPtr, byte classIndex, byte rank, byte a4, byte a5)
+    {
+        if (_isShowCall) // is called with 0xFF, 0, 0, 0
+        {
+            if (Config.OpenWithCurrentClass && TryGetCurrentClassIndex(out var currentClassIndex))
+            {
+                _logger.LogDebug("Selecing tab for current class.");
+                classIndex = currentClassIndex;
+            }
+            else if (Config.RememberTabSelection)
+            {
+                _logger.LogDebug("Re-using last class tab and rank.");
+                classIndex = thisPtr->BaseClass.ClassIndex;
+                rank = thisPtr->BaseClass.Rank;
+            }
+
+            _isShowCall = false;
+        }
+
+        _openWithDataHook.Original(thisPtr, classIndex, rank, a4, a5);
+    }
+
+    private bool TryGetCurrentClassIndex(out byte classIndex)
+    {
+        var classJobId = PlayerState.Instance()->CurrentClassJobId;
+
+        // short path
+        var idIndex = ClassIds.IndexOf(classJobId);
+        if (idIndex != -1)
+        {
+            classIndex = (byte)idIndex;
+            return true;
+        }
+
+        // long path
+        if (!_excelService.TryGetRow<ClassJob>(classJobId, out var classJobRow))
+        {
+            classIndex = byte.MaxValue;
+            return false;
+        }
+
+        // resolve parent class
+        if (classJobRow.ClassJobParent.RowId != 0)
+            classJobId = (byte)classJobRow.ClassJobParent.RowId;
+
+        // try again
+        idIndex = ClassIds.IndexOf(classJobId);
+        if (idIndex != -1)
+        {
+            classIndex = (byte)idIndex;
+            return true;
+        }
+
+        classIndex = byte.MaxValue;
+        return false;
     }
 }

@@ -1122,6 +1122,34 @@
     "zh": "对于目标物品。不再需要先打开配方树。"
   },
 
+  "EnhancedMonsterNote.Tweak.Name": {
+    "en": "Enhanced Hunting Log"
+  },
+  "EnhancedMonsterNote.Tweak.Description": {
+    "en": "Enhances the Hunting Log.",
+    "de": "Verbessert das Bestiarium."
+  },
+  "EnhancedMonsterNote.Config.RememberTabSelection.Label": {
+    "en": "Remember last selected class",
+    "de": "Zuletzt gewählte Klasse merken"
+  },
+  "EnhancedMonsterNote.Config.RememberTabSelection.Description": {
+    "en": "For the record, the game's default behaviour is to reset the window to the first tab.",
+    "de": "Die Standardeinstellung des Spiels ist es, das Fenster auf den ersten Tab zurückzusetzen."
+  },
+  "EnhancedMonsterNote.Config.OpenWithCurrentClass.Label": {
+    "en": "Automatically select the current class",
+    "de": "Automatisch die aktuelle Klasse auswählen"
+  },
+  "EnhancedMonsterNote.Config.OpenWithCurrentClass.Description": {
+    "en": "Only works if a matching class was found. Overrides the option \"Remember last selected class\" in that case.",
+    "de": "Funktioniert nur wenn eine passende Klasse gefunden wurde. Überschreibt in diesem Fall die Option \"Zuletzt gewählte Klasse merken\"."
+  },
+  "EnhancedMonsterNote.Config.OpenWithIncompleteFilter.Label": {
+    "en": "Automatically set the filter to \"Show Incomplete\"",
+    "de": "Automatisch den Filter auf \"Nur Unerledigte\" stellen"
+  },
+
   "EnhancedTargetInfo.Tweak.Name": {
     "en": "Enhanced Target Info",
     "zh": "目标信息增强"

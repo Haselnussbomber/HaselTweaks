@@ -134,6 +134,16 @@ Configuration options:
 > **Note**
 > In order for this tweak to work properly, please make sure "Show Experience Percentage" is disabled in Simple Tweaks.
 
+### Enhanced Hunting Log
+
+Configuration options:
+
+- Remember last selected class  
+  The game's default behaviour is to reset the window to the first tab.
+- Automatically select the current class  
+  Only works if a matching class was found. Overrides the option \"Remember last selected class\" in that case.
+- Automatically set the filter to "Show Incomplete"
+
 ### Enhanced Isleworks Agenda
 
 Slightly improves the Isleworks "Set Agenda" window.
