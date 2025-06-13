@@ -1,5 +1,17 @@
 # Changelog
 
+## [36.0.0] (2025-06-13)
+
+### New Tweak: Enhanced Hunting Log
+
+Configuration options:
+
+- Remember last selected class  
+  The game's default behaviour is to reset the window to the first tab.
+- Automatically select the current class  
+  Only works if a matching class was found. Overrides the option \"Remember last selected class\" in that case.
+- Automatically set the filter to "Show Incomplete" (Thanks to @Bloodsoul)
+
 ## [35.1.2] (2025-05-27)
 
 Update for 7.25.
@@ -2064,6 +2076,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[36.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.1.2...v36.0.0
 [35.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.1.1...v35.1.2
 [35.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.1.0...v35.1.1
 [35.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.0.3...v35.1.0
