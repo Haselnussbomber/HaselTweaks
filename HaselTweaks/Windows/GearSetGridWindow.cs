@@ -269,7 +269,7 @@ public unsafe partial class GearSetGridWindow : LockableWindow
         if (item.ItemUICategory.IsValid)
         {
             ImGuiUtils.PushCursorY(-ImGui.GetStyle().ItemSpacing.Y);
-            ImGui.TextUnformatted(item.ItemUICategory.Value.Name.ExtractText() ?? string.Empty);
+            ImGui.TextUnformatted(item.ItemUICategory.Value.Name.ExtractText().StripSoftHyphen() ?? string.Empty);
         }
 
         if (slot->GlamourId != 0 || slot->Stain0Id != 0 || slot->Stain1Id != 0)
