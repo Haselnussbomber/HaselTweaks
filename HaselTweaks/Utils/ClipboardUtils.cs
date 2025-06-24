@@ -5,6 +5,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
+using Windows.Win32.System.Memory;
 using Windows.Win32.System.Ole;
 
 namespace HaselTweaks.Utils;
@@ -23,7 +24,9 @@ public static class ClipboardUtils
     {
         await OpenClipboard();
 
-        PInvoke.EmptyClipboard();
+        if (!PInvoke.EmptyClipboard())
+            return;
+
         SetDIB(image);
         SetDIBV5(image);
         SetPNG(image);
@@ -32,7 +35,16 @@ public static class ClipboardUtils
 
     private static unsafe void SetDIB(Image<Rgba32> image)
     {
-        var data = Marshal.AllocHGlobal(sizeof(BITMAPINFOHEADER) + image.Width * image.Height * sizeof(Bgra32)); // tagBITMAPINFO
+        var hMem = PInvoke.GlobalAlloc(GLOBAL_ALLOC_FLAGS.GMEM_MOVEABLE, (nuint)(sizeof(BITMAPINFOHEADER) + image.Width * image.Height * sizeof(Bgra32))); // tagBITMAPINFO
+        if (hMem.IsNull)
+            return;
+
+        var data = (nint)PInvoke.GlobalLock(hMem);
+        if (data == 0)
+        {
+            PInvoke.GlobalFree(hMem);
+            return;
+        }
 
         var header = (BITMAPINFOHEADER*)data;
         header->biSize = (uint)sizeof(BITMAPINFOHEADER);
@@ -55,12 +67,22 @@ public static class ClipboardUtils
         foreach (ref var pixel in pixelSpan)
             pixel.A = 0; // rgbReserved of RGBQUAD "must be zero"
 
-        PInvoke.SetClipboardData((uint)CLIPBOARD_FORMAT.CF_DIB, (HANDLE)data);
+        PInvoke.GlobalUnlock(hMem);
+        PInvoke.SetClipboardData((uint)CLIPBOARD_FORMAT.CF_DIB, (HANDLE)(nint)hMem);
     }
 
     private static unsafe void SetDIBV5(Image<Rgba32> image)
     {
-        var data = Marshal.AllocHGlobal(sizeof(BITMAPV5HEADER) + image.Width * image.Height * sizeof(Bgra32));
+        var hMem = PInvoke.GlobalAlloc(GLOBAL_ALLOC_FLAGS.GMEM_MOVEABLE, (nuint)(sizeof(BITMAPV5HEADER) + image.Width * image.Height * sizeof(Bgra32)));
+        if (hMem.IsNull)
+            return;
+
+        var data = (nint)PInvoke.GlobalLock(hMem);
+        if (data == 0)
+        {
+            PInvoke.GlobalFree(hMem);
+            return;
+        }
 
         var bitmapInfo = (BITMAPV5HEADER*)data;
         bitmapInfo->bV5Size = (uint)Marshal.SizeOf(typeof(BITMAPV5HEADER));
@@ -96,16 +118,34 @@ public static class ClipboardUtils
         foreach (ref var pixel in pixelSpan)
             pixel.A = 0; // rgbReserved of RGBQUAD "must be zero"
 
-        PInvoke.SetClipboardData((uint)CLIPBOARD_FORMAT.CF_DIBV5, (HANDLE)data);
+        PInvoke.GlobalUnlock(hMem);
+        PInvoke.SetClipboardData((uint)CLIPBOARD_FORMAT.CF_DIBV5, (HANDLE)(nint)hMem);
     }
 
     private static unsafe void SetPNG(Image<Rgba32> image)
     {
+        var format = PInvoke.RegisterClipboardFormat("PNG");
+        if (format == 0)
+            return;
+
         using var ms = new MemoryStream();
         image.SaveAsPng(ms);
         var bytes = ms.ToArray();
-        var ptr = Marshal.AllocHGlobal(bytes.Length);
-        Marshal.Copy(bytes, 0, ptr, bytes.Length);
-        PInvoke.SetClipboardData(PInvoke.RegisterClipboardFormat("PNG"), (HANDLE)ptr);
+
+        var hMem = PInvoke.GlobalAlloc(GLOBAL_ALLOC_FLAGS.GMEM_MOVEABLE, (nuint)bytes.Length);
+        if (hMem.IsNull)
+            return;
+
+        var data = (nint)PInvoke.GlobalLock(hMem);
+        if (data == 0)
+        {
+            PInvoke.GlobalFree(hMem);
+            return;
+        }
+
+        Marshal.Copy(bytes, 0, data, bytes.Length);
+
+        PInvoke.GlobalUnlock(hMem);
+        PInvoke.SetClipboardData(format, (HANDLE)(nint)hMem);
     }
 }

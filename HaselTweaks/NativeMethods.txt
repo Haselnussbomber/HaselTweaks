@@ -1,7 +1,12 @@
 // winbase.h
 
 SetThreadExecutionState
+GlobalAlloc
+GlobalFree
+GlobalLock
+GlobalUnlock
 EXECUTION_STATE
+GLOBAL_ALLOC_FLAGS
 
 // winuser.h
 
