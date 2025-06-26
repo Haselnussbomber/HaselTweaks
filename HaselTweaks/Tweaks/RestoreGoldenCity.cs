@@ -1,4 +1,5 @@
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Component.Exd;
 
 namespace HaselTweaks.Tweaks;
 
@@ -9,28 +10,27 @@ public unsafe partial class RestoreGoldenCity : ITweak
     private readonly TextService _textService;
     private readonly IGameInteropProvider _gameInteropProvider;
 
-    private delegate byte GetEnabledRequirementIndexDelegate(ZoneSharedGroup* zoneSharedGroupRow);
-    private Hook<GetEnabledRequirementIndexDelegate> _hook;
+    private Hook<ExdModule.Delegates.GetEnabledZoneSharedGroupRequirementIndex> _hook;
 
     public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     public void OnInitialize()
     {
-        _hook = _gameInteropProvider.HookFromSignature<GetEnabledRequirementIndexDelegate>(
-            "E8 ?? ?? ?? ?? 0F B6 53 6C",
+        _hook = _gameInteropProvider.HookFromAddress<ExdModule.Delegates.GetEnabledZoneSharedGroupRequirementIndex>(
+            ExdModule.Addresses.GetEnabledZoneSharedGroupRequirementIndex.Value,
             GetEnabledRequirementIndexDetour);
     }
 
     public void OnEnable()
     {
         _hook.Enable();
-        HaselZoneSharedGroupManager.Instance()->Reload();
+        GameMain.Instance()->ZoneSharedGroupManager.Refresh();
     }
 
     public void OnDisable()
     {
         _hook.Disable();
-        HaselZoneSharedGroupManager.Instance()->Reload();
+        GameMain.Instance()->ZoneSharedGroupManager.Refresh();
     }
 
     void IDisposable.Dispose()
@@ -44,15 +44,16 @@ public unsafe partial class RestoreGoldenCity : ITweak
         Status = TweakStatus.Disposed;
     }
 
-    private byte GetEnabledRequirementIndexDetour(ZoneSharedGroup* zoneSharedGroupRow)
+    private uint GetEnabledRequirementIndexDetour(void* row)
     {
+        var zoneSharedGroupRow = (ZoneSharedGroup*)row;
         if (zoneSharedGroupRow->LGBSharedGroup is 10591852 or 10591856 or 10613110 or 10613109 or 10596151 or 10109854 && QuestManager.IsQuestComplete(70495))
         {
             _logger.LogInformation("Overwriting enable state of LGBSharedGroup {id}", zoneSharedGroupRow->LGBSharedGroup);
             return 0;
         }
 
-        return _hook.Original(zoneSharedGroupRow);
+        return _hook.Original(row);
     }
 }
 
