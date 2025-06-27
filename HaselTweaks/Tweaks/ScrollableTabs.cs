@@ -322,7 +322,7 @@ public unsafe partial class ScrollableTabs : IConfigurableTweak
                     UpdateCharacter(addonCharacter);
                     break;
                 case "CharacterRepute" when Config.HandleCharacterRepute:
-                    UpdateCharacterRepute(addonCharacter, (HaselAddonCharacterRepute*)unitBase);
+                    UpdateCharacterRepute(addonCharacter, (AddonCharacterRepute*)unitBase);
                     break;
             }
         }
@@ -730,7 +730,7 @@ public unsafe partial class ScrollableTabs : IConfigurableTweak
         addon->SetTab(tabIndex);
     }
 
-    private void UpdateCharacterRepute(AddonCharacter* addonCharacter, HaselAddonCharacterRepute* addon)
+    private void UpdateCharacterRepute(AddonCharacter* addonCharacter, AddonCharacterRepute* addon)
     {
         if (addon->ExpansionsDropDownList == null || addon->ExpansionsDropDownList->IsOpen)
             return;

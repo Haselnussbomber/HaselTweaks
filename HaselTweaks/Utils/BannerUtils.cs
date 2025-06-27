@@ -101,7 +101,7 @@ public unsafe partial class BannerUtils
         if (id == 0)
             return true;
 
-        var bannerCondition = HaselExdModule.GetBannerConditionByIndex(id);
+        var bannerCondition = ExdModule.GetBannerConditionByIndex(id);
         if (bannerCondition == null)
             return false;
 

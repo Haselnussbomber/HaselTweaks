@@ -16,7 +16,7 @@ public unsafe partial class EnhancedMonsterNote : IConfigurableTweak
     private readonly ExcelService _excelService;
 
     private Hook<AgentMonsterNote.Delegates.Show> _showHook;
-    private Hook<HaselAgentMonsterNote.Delegates.OpenWithData> _openWithDataHook;
+    private Hook<AgentMonsterNote.Delegates.OpenWithData> _openWithDataHook;
 
     private bool _isShowCall;
     private static readonly byte[] ClassIds = [1, 2, 3, 4, 5, 29, 6, 7, 26];
@@ -29,8 +29,8 @@ public unsafe partial class EnhancedMonsterNote : IConfigurableTweak
             AgentMonsterNote.Instance()->VirtualTable->Show,
             ShowDetour);
 
-        _openWithDataHook = _gameInteropProvider.HookFromAddress<HaselAgentMonsterNote.Delegates.OpenWithData>(
-            HaselAgentMonsterNote.MemberFunctionPointers.OpenWithData,
+        _openWithDataHook = _gameInteropProvider.HookFromAddress<AgentMonsterNote.Delegates.OpenWithData>(
+            AgentMonsterNote.MemberFunctionPointers.OpenWithData,
             OpenWithDataDetour);
     }
 
@@ -89,7 +89,7 @@ public unsafe partial class EnhancedMonsterNote : IConfigurableTweak
         _showHook.Original(thisPtr);
     }
 
-    private void OpenWithDataDetour(HaselAgentMonsterNote* thisPtr, byte classIndex, byte rank, byte a4, byte a5)
+    private void OpenWithDataDetour(AgentMonsterNote* thisPtr, byte classIndex, byte rank, byte a4, byte a5)
     {
         if (_isShowCall) // is called with 0xFF, 0, 0, 0
         {
@@ -101,8 +101,8 @@ public unsafe partial class EnhancedMonsterNote : IConfigurableTweak
             else if (Config.RememberTabSelection)
             {
                 _logger.LogDebug("Re-using last class tab and rank.");
-                classIndex = thisPtr->BaseClass.ClassIndex;
-                rank = thisPtr->BaseClass.Rank;
+                classIndex = thisPtr->ClassIndex;
+                rank = thisPtr->Rank;
             }
 
             _isShowCall = false;

@@ -438,7 +438,7 @@ public unsafe partial class EnhancedLoginLogout : IConfigurableTweak
 
         if (intro != 0 && loop != 0)
         {
-            ((HaselTimelineContainer*)(nint)(&_currentEntry.Character->Timeline))->PlayActionTimeline(intro, loop);
+            _currentEntry.Character->Timeline.PlayActionTimeline(intro, loop);
         }
         else if (loop != 0)
         {

@@ -19,7 +19,7 @@ public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
     private readonly SeStringEvaluator _seStringEvaluator;
 
     private Hook<AgentHUD.Delegates.UpdateTargetInfo> _updateTargetInfoHook;
-    private Hook<HaselRaptureTextModule.Delegates.FormatAddonText2IntIntUInt> _formatAddonText2IntIntUIntHook;
+    private Hook<RaptureTextModule.Delegates.FormatAddonText2IntIntUInt> _formatAddonText2IntIntUIntHook;
 
     private ReadOnlySeString _rewrittenHealthPercentageText;
 
@@ -31,8 +31,8 @@ public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
             AgentHUD.MemberFunctionPointers.UpdateTargetInfo,
             UpdateTargetInfoDetour);
 
-        _formatAddonText2IntIntUIntHook = _gameInteropProvider.HookFromAddress<HaselRaptureTextModule.Delegates.FormatAddonText2IntIntUInt>(
-            HaselRaptureTextModule.MemberFunctionPointers.FormatAddonText2IntIntUInt,
+        _formatAddonText2IntIntUIntHook = _gameInteropProvider.HookFromAddress<RaptureTextModule.Delegates.FormatAddonText2IntIntUInt>(
+            RaptureTextModule.MemberFunctionPointers.FormatAddonText2IntIntUInt,
             FormatAddonText2IntIntUIntDetour);
 
         if (_excelService.TryGetRow<Addon>(2057, _clientState.ClientLanguage, out var row))
@@ -145,15 +145,15 @@ public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
         }
     }
 
-    private byte* FormatAddonText2IntIntUIntDetour(HaselRaptureTextModule* self, uint addonRowId, int value1, int value2, uint value3)
+    private CStringPointer FormatAddonText2IntIntUIntDetour(RaptureTextModule* thisPtr, uint addonRowId, int value1, int value2, uint value3)
     {
         if (addonRowId == 2057 && Config.RemoveLeadingZeroInHPPercentage)
         {
-            var str = ((RaptureTextModule*)self)->UnkStrings1.GetPointer(1);
+            var str = thisPtr->UnkStrings1.GetPointer(1);
             str->SetString(_seStringEvaluator.Evaluate(_rewrittenHealthPercentageText, [value1, value2, value3], _clientState.ClientLanguage));
             return str->StringPtr;
         }
 
-        return _formatAddonText2IntIntUIntHook!.Original(self, addonRowId, value1, value2, value3);
+        return _formatAddonText2IntIntUIntHook!.Original(thisPtr, addonRowId, value1, value2, value3);
     }
 }
