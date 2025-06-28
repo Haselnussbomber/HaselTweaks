@@ -12,6 +12,7 @@ public unsafe partial class PresetBrowserOverlay : Overlay
     private readonly ILogger<PresetBrowserOverlay> _logger;
     private readonly TextService _textService;
     private readonly PluginConfig _pluginConfig;
+    private readonly IServiceProvider _serviceProvider;
 
     private int _reorderTagOldIndex = -1;
     private int _reorderTagNewIndex = -1;
@@ -294,7 +295,7 @@ public unsafe partial class PresetBrowserOverlay : Overlay
             {
                 if (!PresetCards.TryGetValue(preset.Id, out var card))
                 {
-                    var presetCard = new PresetCard(preset);
+                    var presetCard = (PresetCard)ActivatorUtilities.CreateInstance(_serviceProvider, typeof(PresetCard), preset);
                     PresetCards.Add(preset.Id, presetCard);
                 }
 

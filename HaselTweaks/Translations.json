@@ -2311,22 +2311,6 @@
     "zh": "简化都市传送网列表的行为：鼠标悬停选择以太之光与点击传送。"
   },
 
-  "ImGuiWindow.WindowLocked": {
-    "en": "Window locked",
-    "de": "Fenster gesperrt",
-    "fr": "Fenêtre verrouillée",
-    "ja": "ウィンドウがロックされました",
-    "zh": "窗口已锁定"
-  },
-
-  "ImGuiWindow.WindowUnlocked": {
-    "en": "Window unlocked",
-    "de": "Fenster entsperrt",
-    "fr": "Fenêtre déverrouillée",
-    "ja": "ウィンドウがロック解除されました",
-    "zh": "窗口已解锁"
-  },
-
   "ConfirmationButtonWindow.Save": {
     "en": "Save",
     "de": "Speichern",

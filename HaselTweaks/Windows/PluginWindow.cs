@@ -8,6 +8,7 @@ namespace HaselTweaks.Windows;
 public partial class PluginWindow : SimpleWindow
 {
     private const uint SidebarWidth = 260;
+    private readonly IServiceProvider _serviceProvider;
     private readonly TextService _textService;
     private readonly ITextureProvider _textureProvider;
     private readonly TweakManager _tweakManager;
@@ -214,7 +215,7 @@ public partial class PluginWindow : SimpleWindow
             if (ImGui.IsItemHovered())
             {
                 ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-                if (ImGui.IsMouseReleased(ImGuiMouseButton.Left) && Service.TryGet<LicensesWindow>(out var licensesWindow))
+                if (ImGui.IsMouseReleased(ImGuiMouseButton.Left) && _serviceProvider.TryGetService<LicensesWindow>(out var licensesWindow))
                 {
                     Task.Run(licensesWindow.Toggle);
                 }

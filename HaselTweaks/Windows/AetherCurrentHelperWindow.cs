@@ -5,7 +5,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 namespace HaselTweaks.Windows;
 
 [RegisterSingleton, AutoConstruct]
-public unsafe partial class AetherCurrentHelperWindow : LockableWindow
+public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
 {
     private static readonly Color TitleColor = new(216f / 255f, 187f / 255f, 125f / 255f);
     private static readonly string[] CompassHeadings = ["E", "NE", "N", "NW", "W", "SW", "S", "SE"];
@@ -39,7 +39,7 @@ public unsafe partial class AetherCurrentHelperWindow : LockableWindow
     }
 
     public override bool DrawConditions()
-        => CompFlgSet.HasValue && _clientState.IsLoggedIn && !RaptureAtkModule.Instance()->RaptureAtkUnitManager.UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
+        => CompFlgSet.HasValue && _clientState.IsLoggedIn && !RaptureAtkUnitManager.Instance()->UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
 
     public override unsafe void Draw()
     {

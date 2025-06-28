@@ -114,7 +114,6 @@ public partial class PluginConfig
     public int Version { get; set; } = CURRENT_CONFIG_VERSION;
     public HashSet<string> EnabledTweaks { get; set; } = [];
     public TweakConfigs Tweaks { get; set; } = new();
-    public HashSet<string> LockedImGuiWindows { get; set; } = [];
 }
 
 public class TweakConfigs

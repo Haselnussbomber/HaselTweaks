@@ -29,6 +29,6 @@ public partial class CommandManager : IDisposable
 
     private void TogglePluginWindow()
     {
-        _windowManager.CreateOrToggle(Service.Get<PluginWindow>);
+        _windowManager.CreateOrToggle<PluginWindow>();
     }
 }

@@ -15,7 +15,7 @@ using SixLabors.ImageSharp.Processing;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
-[RegisterTransient]
+[RegisterTransient, AutoConstruct]
 public partial class PresetCard : IDisposable
 {
     public static readonly Vector2 PortraitSize = new(576, 960); // native texture size
@@ -27,18 +27,19 @@ public partial class PresetCard : IDisposable
     private readonly IDalamudPluginInterface _pluginInterface;
     private readonly IDataManager _dataManager;
     private readonly ITextureProvider _textureProvider;
+    private readonly TextureService _textureService;
     private readonly PluginConfig _pluginConfig;
     private readonly TextService _textService;
     private readonly ExcelService _excelService;
     private readonly BannerUtils _bannerUtils;
 
-    private readonly SavedPreset _preset;
-    private readonly uint _bannerFrameImage;
-    private readonly uint _bannerDecorationImage;
-    private readonly bool _isBannerTimelineUnlocked;
-    private readonly bool _isBannerBgUnlocked;
-    private readonly bool _isBannerFrameUnlocked;
-    private readonly bool _isBannerDecorationUnlocked;
+    private SavedPreset _preset;
+    private uint _bannerFrameImage;
+    private uint _bannerDecorationImage;
+    private bool _isBannerTimelineUnlocked;
+    private bool _isBannerBgUnlocked;
+    private bool _isBannerFrameUnlocked;
+    private bool _isBannerDecorationUnlocked;
 
     private CancellationTokenSource? _closeTokenSource;
 
@@ -53,17 +54,9 @@ public partial class PresetCard : IDisposable
 
     private float _lastScale;
 
-    public PresetCard(SavedPreset preset)
+    [AutoPostConstruct]
+    private void Initialize(SavedPreset preset)
     {
-        _logger = Service.Get<ILogger<PresetCard>>();
-        _pluginInterface = Service.Get<IDalamudPluginInterface>();
-        _dataManager = Service.Get<IDataManager>();
-        _textureProvider = Service.Get<ITextureProvider>();
-        _pluginConfig = Service.Get<PluginConfig>();
-        _textService = Service.Get<TextService>();
-        _excelService = Service.Get<ExcelService>();
-        _bannerUtils = Service.Get<BannerUtils>();
-
         _preset = preset;
 
         if (_excelService.TryGetRow<BannerFrame>(_preset.Preset!.BannerFrame, out var bannerFrameRow))
@@ -105,9 +98,7 @@ public partial class PresetCard : IDisposable
         var cursorPos = ImGui.GetCursorPos();
         var center = cursorPos + PortraitSize * scale / 2f;
 
-        var TextureService = Service.Get<TextureService>();
-
-        TextureService.DrawIcon(190009, PortraitSize * scale);
+        _textureService.DrawIcon(190009, PortraitSize * scale);
         ImGui.SetCursorPos(cursorPos);
 
         if (_isImageLoading)
@@ -130,19 +121,19 @@ public partial class PresetCard : IDisposable
         if (_bannerFrameImage != 0)
         {
             ImGui.SetCursorPos(cursorPos);
-            TextureService.DrawIcon(_bannerFrameImage, PortraitSize * scale);
+            _textureService.DrawIcon(_bannerFrameImage, PortraitSize * scale);
         }
 
         if (_bannerDecorationImage != 0)
         {
             ImGui.SetCursorPos(cursorPos);
-            TextureService.DrawIcon(_bannerDecorationImage, PortraitSize * scale);
+            _textureService.DrawIcon(_bannerDecorationImage, PortraitSize * scale);
         }
 
         if (hasErrors)
         {
             ImGui.SetCursorPos(cursorPos + new Vector2(PortraitSize.X - 190, 10) * scale);
-            TextureService.Draw("ui/uld/Warning_hr1.tex", 160 * scale);
+            _textureService.Draw("ui/uld/Warning_hr1.tex", 160 * scale);
         }
 
         ImGui.SetCursorPos(cursorPos);
