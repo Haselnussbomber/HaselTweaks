@@ -295,7 +295,7 @@ public unsafe partial class PresetBrowserOverlay : Overlay
             {
                 if (!PresetCards.TryGetValue(preset.Id, out var card))
                 {
-                    var presetCard = (PresetCard)ActivatorUtilities.CreateInstance(_serviceProvider, typeof(PresetCard), preset);
+                    var presetCard = ActivatorUtilities.CreateInstance<PresetCard>(_serviceProvider, preset);
                     PresetCards.Add(preset.Id, presetCard);
                 }
 
