@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased]
+
+### HaselTweaks
+
+- **Removed:** The window locking feature from the Aether Current Helper and Gear Set Grid title bars was removed. This functionality predated Dalamud's built-in window pinning, which should be used instead.
+
+### Gear Set Grid
+
+- **Fixed:** In some languages, the item category was incorrectly displaying soft hyphens.
+
+### Portrait Helper
+
+- **Fixed:** Copying images in the Preset Browser used an incorrect method for clipboard memory handling. While copying images worked fine, the previous implementation could've caused memory leaks. This update now uses the proper Windows API calls.
+
 ## [36.0.0] (2025-06-13)
 
 ### New Tweak: Enhanced Hunting Log
