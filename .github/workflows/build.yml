@@ -24,7 +24,6 @@ on:
         options:
           - master
           - stg
-          - api12
 
 jobs:
   build:
@@ -43,7 +42,7 @@ jobs:
         with:
           cache: true
           cache-dependency-path: ${{ env.plugin_name }}/packages.lock.json
-          dotnet-version: 9.0.x
+          dotnet-version: 9.0.202
 
       - name: Determine Dalamud Branch
         id: branch
