@@ -1,0 +1,5 @@
+{
+  "sdk": {
+    "version": "9.0.202" // See DockerTag in https://github.com/goatcorp/Plogon/blob/master/Plogon/BuildProcessor.cs
+  }
+}
