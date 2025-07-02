@@ -37,6 +37,10 @@ jobs:
         with:
           submodules: true
 
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
       - name: Extract .NET SDK version from global.json
         id: get_dotnet_version
         run: |
