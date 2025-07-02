@@ -37,12 +37,22 @@ jobs:
         with:
           submodules: true
 
+      - name: Extract .NET SDK version from global.json
+        id: get_dotnet_version
+        run: |
+          deno run --allow-read --quiet --unstable - <<'EOF' >> "$GITHUB_OUTPUT"
+          import { parse } from "jsr:@std/jsonc";
+          const content = await Deno.readTextFile("global.json");
+          const json = parse(content);
+          console.log(`dotnet_version=${json.sdk.version}`);
+          EOF
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           cache: true
           cache-dependency-path: ${{ env.plugin_name }}/packages.lock.json
-          dotnet-version: 9.0.202
+          dotnet-version: ${{ steps.get_dotnet_version.outputs.dotnet_version }}
 
       - name: Determine Dalamud Branch
         id: branch
