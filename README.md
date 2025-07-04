@@ -1,4 +1,4 @@
-<img align="left" src="HaselTweaks/Assets/Icon.png" height="60px" alt="HaselTweaks"/>
+<img align="left" src="HaselTweaks/Assets/Icon.png" width="60px" height="60px" alt="HaselTweaks"/>
 
 **HaselTweaks** is an all-in-one plugin for all my tweaks and helpers.<br/>
 <br/>
