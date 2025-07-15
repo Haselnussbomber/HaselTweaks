@@ -23,6 +23,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Remove="ImGui.NET" />
+    <Reference Include="Dalamud.Bindings.ImGui" Private="false" />
+    <Reference Include="Dalamud.Bindings.ImPlot" Private="false" />
+    <Reference Include="Dalamud.Bindings.ImGuizmo" Private="false" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.7" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.7" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183" PrivateAssets="All" />

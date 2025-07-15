@@ -198,7 +198,7 @@ public partial class PluginWindow : SimpleWindow
             {
                 var logoSize = ImGuiHelpers.ScaledVector2(256, 128);
                 ImGui.SetCursorPos(contentAvail / 2 - logoSize / 2 + ImGui.GetStyle().ItemSpacing.XOnly());
-                ImGui.Image(logo.ImGuiHandle, logoSize);
+                ImGui.Image(logo.Handle, logoSize);
             }
 
             // links, bottom left

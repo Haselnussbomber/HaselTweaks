@@ -103,7 +103,7 @@ public unsafe partial class PresetBrowserOverlay : Overlay
                 var bytes = tag.Id.ToByteArray();
                 fixed (byte* ptr = bytes)
                 {
-                    ImGui.SetDragDropPayload("MoveTag", (nint)ptr, (uint)bytes.Length);
+                    ImGui.SetDragDropPayload("MoveTag"u8, ptr, (uint)bytes.Length);
                 }
             }
         }
@@ -112,18 +112,18 @@ public unsafe partial class PresetBrowserOverlay : Overlay
         {
             if (target)
             {
-                var payload = ImGui.AcceptDragDropPayload("MoveTag");
-                if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
+                var payload = ImGui.AcceptDragDropPayload("MoveTag"u8);
+                if (!payload.IsNull && payload.Data != null && payload.IsDelivery())
                 {
-                    var tagId = MemoryHelper.Read<Guid>(payload.Data).ToString();
+                    var tagId = MemoryHelper.Read<Guid>((nint)payload.Data).ToString();
                     _reorderTagOldIndex = Config.PresetTags.AsEnumerable().IndexOf((tag) => tag.Id.ToString() == tagId);
                     _reorderTagNewIndex = Config.PresetTags.IndexOf(tag);
                 }
 
-                payload = ImGui.AcceptDragDropPayload("MovePresetCard");
-                if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
+                payload = ImGui.AcceptDragDropPayload("MovePresetCard"u8);
+                if (!payload.IsNull && payload.Data != null && payload.IsDelivery())
                 {
-                    var presetId = MemoryHelper.Read<Guid>(payload.Data).ToString();
+                    var presetId = MemoryHelper.Read<Guid>((nint)payload.Data).ToString();
                     var preset = Config.Presets.FirstOrDefault((preset) => preset?.Id.ToString() == presetId, null);
                     if (preset != null)
                     {
@@ -217,7 +217,7 @@ public unsafe partial class PresetBrowserOverlay : Overlay
             ImGuiTreeNodeFlags.Leaf |
             (SelectedTagId == null ? ImGuiTreeNodeFlags.Selected : ImGuiTreeNodeFlags.None);
 
-        using var allTreeNode = ImRaii.TreeNode(_textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.AllTags.Title", Config.Presets.Count.ToString()) + $"##PresetBrowser_SideBar_All", treeNodeFlags);
+        using var allTreeNode = ImRaii.TreeNode(_textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.AllTags.Title", Config.Presets.Count.ToString()) + "##PresetBrowser_SideBar_All", treeNodeFlags);
         if (!allTreeNode)
             return;
 
@@ -309,12 +309,7 @@ public unsafe partial class PresetBrowserOverlay : Overlay
         var presetWidth = availableWidth / presetsPerRow;
         var scale = presetWidth / PresetCard.PortraitSize.X;
 
-        ImGuiListClipperPtr clipper;
-        unsafe
-        {
-            clipper = new ImGuiListClipperPtr(ImGuiNative.ImGuiListClipper_ImGuiListClipper());
-        }
-
+        var clipper = ImGui.ImGuiListClipper();
         clipper.Begin((int)Math.Ceiling(presetCards.Length / (float)presetsPerRow), PresetCard.PortraitSize.Y * scale);
         while (clipper.Step())
         {
@@ -332,6 +327,6 @@ public unsafe partial class PresetBrowserOverlay : Overlay
                 }
             }
         }
-        clipper.Destroy();
+        clipper.End();
     }
 }

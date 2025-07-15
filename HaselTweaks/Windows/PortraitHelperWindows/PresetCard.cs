@@ -115,7 +115,7 @@ public partial class PresetCard : IDisposable
         else if (_textureWrap != null)
         {
             ImGui.SetCursorPos(cursorPos);
-            ImGui.Image(_textureWrap.ImGuiHandle, PortraitSize * scale);
+            ImGui.Image(_textureWrap.Handle, PortraitSize * scale);
         }
 
         if (_bannerFrameImage != 0)
@@ -158,7 +158,7 @@ public partial class PresetCard : IDisposable
                     var bytes = _preset.Id.ToByteArray();
                     fixed (byte* ptr = bytes)
                     {
-                        ImGui.SetDragDropPayload("MovePresetCard", (nint)ptr, (uint)bytes.Length);
+                        ImGui.SetDragDropPayload("MovePresetCard"u8, ptr, (uint)bytes.Length);
                     }
                 }
             }
@@ -168,13 +168,13 @@ public partial class PresetCard : IDisposable
         {
             if (target)
             {
-                var payload = ImGui.AcceptDragDropPayload("MovePresetCard");
+                var payload = ImGui.AcceptDragDropPayload("MovePresetCard"u8);
                 unsafe
                 {
-                    if (payload.NativePtr != null && payload.IsDelivery() && payload.Data != 0)
+                    if (!payload.IsNull && payload.Data != null && payload.IsDelivery())
                     {
                         var config = _pluginConfig.Tweaks.PortraitHelper;
-                        var presetId = MemoryHelper.Read<Guid>(payload.Data).ToString();
+                        var presetId = MemoryHelper.Read<Guid>((nint)payload.Data).ToString();
                         var oldIndex = config.Presets.AsEnumerable().IndexOf((preset) => preset.Id.ToString() == presetId);
                         var newIndex = config.Presets.IndexOf(_preset);
                         var item = config.Presets[oldIndex];
