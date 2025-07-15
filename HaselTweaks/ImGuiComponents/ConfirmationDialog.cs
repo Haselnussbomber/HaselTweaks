@@ -43,7 +43,8 @@ public abstract class ConfirmationDialog : IDialog
             _openCalled = true;
         }
 
-        ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+        var center = ImGui.GetMainViewport().Pos + ImGui.GetMainViewport().Size / 2f; // ImGui.GetMainViewport().GetCenter()
+        ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f));
 
         using var windowPadding = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, new Vector2(14, 10));
         if (!ImGui.BeginPopupModal(WindowName, ref _shouldDraw, ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar))
