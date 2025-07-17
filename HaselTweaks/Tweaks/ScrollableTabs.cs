@@ -301,7 +301,7 @@ public unsafe partial class ScrollableTabs : IConfigurableTweak
         {
             var addonCharacter = name == "Character" ? (AddonCharacter*)unitBase : GetAddon<AddonCharacter>("Character");
 
-            if (addonCharacter == null || !addonCharacter->AddonControl.IsChildSetupComplete || IntersectingCollisionNode == addonCharacter->CharacterPreviewCollisionNode)
+            if (addonCharacter == null || !addonCharacter->AddonControl.IsChildSetupComplete || IntersectingCollisionNode == addonCharacter->PreviewController.CollisionNode)
             {
                 _wheelState = 0;
                 return;
