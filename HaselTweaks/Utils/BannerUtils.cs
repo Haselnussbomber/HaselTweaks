@@ -27,8 +27,8 @@ public unsafe partial class BannerUtils
         if (charaViewTexture == null || charaViewTexture->D3D11Texture2D == null)
             return null;
 
-        var device = _pluginInterface.UiBuilder.Device;
-        var texture = CppObject.FromPointer<Texture2D>((nint)charaViewTexture->D3D11Texture2D);
+        var device = new SharpDX.Direct3D11.Device(_pluginInterface.UiBuilder.DeviceHandle);
+        var texture = new Texture2D((nint)charaViewTexture->D3D11Texture2D);
 
         // thanks to ChatGPT
         // Get the texture description
