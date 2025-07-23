@@ -9,10 +9,9 @@ using AgentRecipeNote = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentRecipeNote
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class AutoOpenRecipe : ITweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class AutoOpenRecipe : BaseTweak
 {
-    private readonly ILogger<AutoOpenRecipe> _logger;
     private readonly ExcelService _excelService;
     private readonly TextService _textService;
     private readonly IFramework _framework;
@@ -21,30 +20,16 @@ public unsafe partial class AutoOpenRecipe : ITweak
     private CancellationTokenSource? _checkCTS;
     private DateTime _lastTimeRecipeOpened = DateTime.MinValue;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize() { }
-
-    public void OnEnable()
+    public override void OnEnable()
     {
         _gameInventory.ItemAddedExplicit += GameInventory_ItemAddedExplicit;
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
+        _gameInventory.ItemAddedExplicit -= GameInventory_ItemAddedExplicit;
         _checkCTS?.Cancel();
         _checkCTS = null;
-        _gameInventory.ItemAddedExplicit -= GameInventory_ItemAddedExplicit;
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-
-        Status = TweakStatus.Disposed;
     }
 
     private void GameInventory_ItemAddedExplicit(InventoryItemAddedArgs data)

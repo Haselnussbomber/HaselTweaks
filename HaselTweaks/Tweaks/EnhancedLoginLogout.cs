@@ -12,12 +12,11 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedLoginLogout : IConfigurableTweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class EnhancedLoginLogout : BaseTweak, IConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly TextService _textService;
-    private readonly ILogger<EnhancedLoginLogout> _logger;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IGameConfig _gameConfig;
     private readonly IClientState _clientState;
@@ -36,11 +35,9 @@ public unsafe partial class EnhancedLoginLogout : IConfigurableTweak
     private BattleChara* _pet = null;
     private ushort _petIndex = 0xFFFF;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
     #region Core
 
-    public void OnInitialize()
+    public override void OnEnable()
     {
         _updateCharaSelectDisplayHook = _gameInteropProvider.HookFromAddress<AgentLobby.Delegates.UpdateCharaSelectDisplay>(
             AgentLobby.MemberFunctionPointers.UpdateCharaSelectDisplay,
@@ -57,10 +54,11 @@ public unsafe partial class EnhancedLoginLogout : IConfigurableTweak
         _openLoginWaitDialogHook = _gameInteropProvider.HookFromAddress<AgentLobby.Delegates.OpenLoginWaitDialog>(
             AgentLobby.MemberFunctionPointers.OpenLoginWaitDialog,
             OpenLoginWaitDialogDetour);
-    }
 
-    public void OnEnable()
-    {
+        _updateCharaSelectDisplayHook.Enable();
+        _cleanupCharactersHook.Enable();
+        _executeEmoteHook.Enable();
+
         _gameConfig.Changed += OnGameConfigChanged;
         _clientState.Login += OnLogin;
         _clientState.Logout += OnLogout;
@@ -70,15 +68,11 @@ public unsafe partial class EnhancedLoginLogout : IConfigurableTweak
 
         _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "Logo", OnLogoPostSetup);
 
-        _updateCharaSelectDisplayHook?.Enable();
-        _cleanupCharactersHook?.Enable();
-        _executeEmoteHook?.Enable();
-
         if (Config.PreloadTerritory)
             _openLoginWaitDialogHook?.Enable();
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         _gameConfig.Changed -= OnGameConfigChanged;
         _clientState.Login -= OnLogin;
@@ -88,24 +82,17 @@ public unsafe partial class EnhancedLoginLogout : IConfigurableTweak
 
         CleanupCharaSelect();
 
-        _updateCharaSelectDisplayHook?.Disable();
-        _cleanupCharactersHook?.Disable();
-        _executeEmoteHook?.Disable();
-        _openLoginWaitDialogHook?.Disable();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
         _updateCharaSelectDisplayHook?.Dispose();
-        _cleanupCharactersHook?.Dispose();
-        _executeEmoteHook?.Dispose();
-        _openLoginWaitDialogHook?.Dispose();
+        _updateCharaSelectDisplayHook = null;
 
-        Status = TweakStatus.Disposed;
+        _cleanupCharactersHook?.Dispose();
+        _cleanupCharactersHook = null;
+
+        _executeEmoteHook?.Dispose();
+        _executeEmoteHook = null;
+
+        _openLoginWaitDialogHook?.Dispose();
+        _openLoginWaitDialogHook = null;
     }
 
     private void OnLogin()

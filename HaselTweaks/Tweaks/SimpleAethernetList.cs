@@ -4,40 +4,25 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class SimpleAethernetList : ITweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class SimpleAethernetList : BaseTweak
 {
     private readonly IGameInteropProvider _gameInteropProvider;
 
     private Hook<AddonTeleportTown.Delegates.ReceiveEvent>? _receiveEventHook;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize()
+    public override void OnEnable()
     {
         _receiveEventHook = _gameInteropProvider.HookFromAddress<AddonTeleportTown.Delegates.ReceiveEvent>(
             AddonTeleportTown.StaticVirtualTablePointer->ReceiveEvent,
             ReceiveEventDetour);
+        _receiveEventHook.Enable();
     }
 
-    public void OnEnable()
+    public override void OnDisable()
     {
-        _receiveEventHook?.Enable();
-    }
-
-    public void OnDisable()
-    {
-        _receiveEventHook?.Disable();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
         _receiveEventHook?.Dispose();
-
-        Status = TweakStatus.Disposed;
+        _receiveEventHook = null;
     }
 
     private void ReceiveEventDetour(AddonTeleportTown* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData)

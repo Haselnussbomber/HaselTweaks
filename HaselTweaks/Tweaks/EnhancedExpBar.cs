@@ -9,8 +9,8 @@ using Lumina.Excel;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedExpBar : IConfigurableTweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class EnhancedExpBar : BaseTweak, IConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;
@@ -26,49 +26,33 @@ public unsafe partial class EnhancedExpBar : IConfigurableTweak
     private byte _colorMultiplyGreen = 100;
     private byte _colorMultiplyBlue = 100;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize()
+    public override void OnEnable()
     {
         _updateExpHook = _gameInteropProvider.HookFromAddress<AgentHUD.Delegates.UpdateExp>(
             AgentHUD.MemberFunctionPointers.UpdateExp,
             UpdateExpDetour);
-    }
+        _updateExpHook?.Enable();
 
-    public void OnEnable()
-    {
         _clientState.LeavePvP += OnLeavePvP;
         _clientState.TerritoryChanged += OnTerritoryChanged;
 
         _addonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_Exp", OnAddonExpPostRequestedUpdate);
 
-        _updateExpHook?.Enable();
-
         TriggerReset();
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         _clientState.LeavePvP -= OnLeavePvP;
         _clientState.TerritoryChanged -= OnTerritoryChanged;
 
         _addonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "_Exp", OnAddonExpPostRequestedUpdate);
 
-        _updateExpHook?.Disable();
+        _updateExpHook?.Dispose();
+        _updateExpHook = null;
 
         if (Status is TweakStatus.Enabled)
             TriggerReset();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-        _updateExpHook?.Dispose();
-
-        Status = TweakStatus.Disposed;
     }
 
     private void OnLeavePvP()

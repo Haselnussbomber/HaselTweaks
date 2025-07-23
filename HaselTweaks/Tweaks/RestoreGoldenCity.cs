@@ -3,45 +3,31 @@ using FFXIVClientStructs.FFXIV.Component.Exd;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class RestoreGoldenCity : ITweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class RestoreGoldenCity : BaseTweak
 {
-    private readonly ILogger<RestoreGoldenCity> _logger;
     private readonly TextService _textService;
     private readonly IGameInteropProvider _gameInteropProvider;
 
-    private Hook<ExdModule.Delegates.GetEnabledZoneSharedGroupRequirementIndex> _hook;
+    private Hook<ExdModule.Delegates.GetEnabledZoneSharedGroupRequirementIndex>? _hook;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize()
+    public override void OnEnable()
     {
         _hook = _gameInteropProvider.HookFromAddress<ExdModule.Delegates.GetEnabledZoneSharedGroupRequirementIndex>(
             ExdModule.Addresses.GetEnabledZoneSharedGroupRequirementIndex.Value,
             GetEnabledRequirementIndexDetour);
-    }
 
-    public void OnEnable()
-    {
         _hook.Enable();
+
         GameMain.Instance()->ZoneSharedGroupManager.Refresh();
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
-        _hook.Disable();
+        _hook?.Dispose();
+        _hook = null;
+
         GameMain.Instance()->ZoneSharedGroupManager.Refresh();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-        _hook.Dispose();
-
-        Status = TweakStatus.Disposed;
     }
 
     private uint GetEnabledRequirementIndexDetour(void* row)
@@ -53,7 +39,7 @@ public unsafe partial class RestoreGoldenCity : ITweak
             return 0;
         }
 
-        return _hook.Original(row);
+        return _hook!.Original(row);
     }
 }
 

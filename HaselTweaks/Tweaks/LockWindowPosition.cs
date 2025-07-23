@@ -5,8 +5,8 @@ using AtkEventInterface = FFXIVClientStructs.FFXIV.Component.GUI.AtkModuleInterf
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class LockWindowPosition : IConfigurableTweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class LockWindowPosition : BaseTweak, IConfigurableTweak
 {
     private const int EventParamLock = 9901;
     private const int EventParamUnlock = 9902;
@@ -35,9 +35,7 @@ public unsafe partial class LockWindowPosition : IConfigurableTweak
 
     private delegate bool RaptureAtkUnitManagerVf6Delegate(RaptureAtkUnitManager* self, nint a2);
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize()
+    public override void OnEnable()
     {
         _moveDeltaHook = _gameInteropProvider.HookFromAddress<AtkUnitBase.Delegates.MoveDelta>(
             AtkUnitBase.MemberFunctionPointers.MoveDelta,
@@ -62,11 +60,6 @@ public unsafe partial class LockWindowPosition : IConfigurableTweak
         _windowContextMenuHandlerReceiveEventHook = _gameInteropProvider.HookFromAddress<AtkEventInterface.Delegates.ReceiveEvent>(
             RaptureAtkUnitManager.Instance()->WindowContextMenuHandler.VirtualTable->ReceiveEvent,
             WindowContextMenuHandlerReceiveEventDetour);
-    }
-
-    public void OnEnable()
-    {
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "GearSetList", GearSetList_PostSetup);
 
         _moveDeltaHook?.Enable();
         _raptureAtkUnitManagerVf6Hook?.Enable();
@@ -74,34 +67,31 @@ public unsafe partial class LockWindowPosition : IConfigurableTweak
         _addMenuItem2Hook?.Enable();
         _openContextMenuForAddonHook?.Enable();
         _windowContextMenuHandlerReceiveEventHook?.Enable();
+
+        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "GearSetList", GearSetList_PostSetup);
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "GearSetList", GearSetList_PostSetup);
 
-        _moveDeltaHook?.Disable();
-        _raptureAtkUnitManagerVf6Hook?.Disable();
-        _clearMenuHook?.Disable();
-        _addMenuItem2Hook?.Disable();
-        _openContextMenuForAddonHook?.Disable();
-        _windowContextMenuHandlerReceiveEventHook?.Disable();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
         _moveDeltaHook?.Dispose();
-        _raptureAtkUnitManagerVf6Hook?.Dispose();
-        _clearMenuHook?.Dispose();
-        _addMenuItem2Hook?.Dispose();
-        _openContextMenuForAddonHook?.Dispose();
-        _windowContextMenuHandlerReceiveEventHook?.Dispose();
+        _moveDeltaHook = null;
 
-        Status = TweakStatus.Disposed;
+        _raptureAtkUnitManagerVf6Hook?.Dispose();
+        _raptureAtkUnitManagerVf6Hook = null;
+
+        _clearMenuHook?.Dispose();
+        _clearMenuHook = null;
+
+        _addMenuItem2Hook?.Dispose();
+        _addMenuItem2Hook = null;
+
+        _openContextMenuForAddonHook?.Dispose();
+        _openContextMenuForAddonHook = null;
+
+        _windowContextMenuHandlerReceiveEventHook?.Dispose();
+        _windowContextMenuHandlerReceiveEventHook = null;
     }
 
     // block GearSetList from moving when opened by Character

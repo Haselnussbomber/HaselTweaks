@@ -2,17 +2,13 @@ using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class CompanionColorPreview : ITweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class CompanionColorPreview : BaseTweak
 {
     private readonly AddonObserver _addonObserver;
     private readonly WindowManager _windowManager;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize() { }
-
-    public void OnEnable()
+    public override void OnEnable()
     {
         _addonObserver.AddonOpen += OnAddonOpen;
         _addonObserver.AddonClose += OnAddonClose;
@@ -21,22 +17,12 @@ public unsafe partial class CompanionColorPreview : ITweak
             _windowManager.CreateOrOpen<CompanionColorPreviewWindow>();
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         _addonObserver.AddonOpen -= OnAddonOpen;
         _addonObserver.AddonClose -= OnAddonClose;
 
         _windowManager.Close<CompanionColorPreviewWindow>();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-
-        Status = TweakStatus.Disposed;
     }
 
     private void OnAddonOpen(string addonName)

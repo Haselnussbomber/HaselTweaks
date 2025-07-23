@@ -6,8 +6,8 @@ using HaselCommon.Commands;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class Commands : IConfigurableTweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class Commands : BaseTweak, IConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly LanguageProvider _languageProvider;
@@ -23,40 +23,35 @@ public unsafe partial class Commands : IConfigurableTweak
     private CommandHandler? _whatBardingCommandCommandHandler;
     private CommandHandler? _glamourPlateCommandCommandHandler;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize()
+    public override void OnEnable()
     {
         _itemLinkCommandHandler = _commandService.Register(OnItemLinkCommand);
         _whatMountCommandCommandHandler = _commandService.Register(OnWhatMountCommand);
         _whatEmoteCommandCommandHandler = _commandService.Register(OnWhatEmoteCommand);
         _whatBardingCommandCommandHandler = _commandService.Register(OnWhatBardingCommand);
         _glamourPlateCommandCommandHandler = _commandService.Register(OnGlamourPlateCommand);
-    }
 
-    public void OnEnable()
-    {
         UpdateCommands(true);
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         UpdateCommands(false);
-    }
 
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
         _itemLinkCommandHandler?.Dispose();
-        _whatMountCommandCommandHandler?.Dispose();
-        _whatEmoteCommandCommandHandler?.Dispose();
-        _whatBardingCommandCommandHandler?.Dispose();
-        _glamourPlateCommandCommandHandler?.Dispose();
+        _itemLinkCommandHandler = null;
 
-        Status = TweakStatus.Disposed;
+        _whatMountCommandCommandHandler?.Dispose();
+        _whatMountCommandCommandHandler = null;
+
+        _whatEmoteCommandCommandHandler?.Dispose();
+        _whatEmoteCommandCommandHandler = null;
+
+        _whatBardingCommandCommandHandler?.Dispose();
+        _whatBardingCommandCommandHandler = null;
+
+        _glamourPlateCommandCommandHandler?.Dispose();
+        _glamourPlateCommandCommandHandler = null;
     }
 
     private void UpdateCommands(bool enable)

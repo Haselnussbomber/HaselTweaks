@@ -4,42 +4,28 @@ using Windows.Win32.System.Power;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append)]
-public sealed class KeepScreenAwake : ITweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public partial class KeepScreenAwake : BaseTweak
 {
-    private readonly Timer _timer = new();
+    private Timer? _timer;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize()
+    public override void OnEnable()
     {
+        _timer = new();
         _timer.Elapsed += Timer_Elapsed;
         _timer.Interval = 10000; // every 10 seconds
-    }
-
-    public void OnEnable()
-    {
         _timer.Start();
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         if (Status is not TweakStatus.Enabled)
             return;
 
         PInvoke.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
-        _timer.Stop();
-    }
 
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-        _timer.Dispose();
-
-        Status = TweakStatus.Disposed;
+        _timer?.Dispose();
+        _timer = null;
     }
 
     private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)

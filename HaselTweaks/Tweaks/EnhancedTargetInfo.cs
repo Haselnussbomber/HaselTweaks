@@ -7,8 +7,8 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class EnhancedTargetInfo : BaseTweak, IConfigurableTweak
 {
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly PluginConfig _pluginConfig;
@@ -18,24 +18,14 @@ public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
     private readonly ExcelService _excelService;
     private readonly SeStringEvaluator _seStringEvaluator;
 
-    private Hook<AgentHUD.Delegates.UpdateTargetInfo> _updateTargetInfoHook;
-    private Hook<RaptureTextModule.Delegates.FormatAddonText2IntIntUInt> _formatAddonText2IntIntUIntHook;
+    private Hook<AgentHUD.Delegates.UpdateTargetInfo>? _updateTargetInfoHook;
+    private Hook<RaptureTextModule.Delegates.FormatAddonText2IntIntUInt>? _formatAddonText2IntIntUIntHook;
 
-    private ReadOnlySeString _rewrittenHealthPercentageText;
+    private ReadOnlySeString? _rewrittenHealthPercentageText;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize()
+    public override void OnEnable()
     {
-        _updateTargetInfoHook = _gameInteropProvider.HookFromAddress<AgentHUD.Delegates.UpdateTargetInfo>(
-            AgentHUD.MemberFunctionPointers.UpdateTargetInfo,
-            UpdateTargetInfoDetour);
-
-        _formatAddonText2IntIntUIntHook = _gameInteropProvider.HookFromAddress<RaptureTextModule.Delegates.FormatAddonText2IntIntUInt>(
-            RaptureTextModule.MemberFunctionPointers.FormatAddonText2IntIntUInt,
-            FormatAddonText2IntIntUIntDetour);
-
-        if (_excelService.TryGetRow<Addon>(2057, _clientState.ClientLanguage, out var row))
+        if (_rewrittenHealthPercentageText == null && _excelService.TryGetRow<Addon>(2057, _clientState.ClientLanguage, out var row))
         {
             var builder = new SeStringBuilder();
 
@@ -53,35 +43,31 @@ public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
 
             _rewrittenHealthPercentageText = builder.ToReadOnlySeString();
         }
-    }
 
-    public void OnEnable()
-    {
+        _updateTargetInfoHook = _gameInteropProvider.HookFromAddress<AgentHUD.Delegates.UpdateTargetInfo>(
+            AgentHUD.MemberFunctionPointers.UpdateTargetInfo,
+            UpdateTargetInfoDetour);
+
+        _formatAddonText2IntIntUIntHook = _gameInteropProvider.HookFromAddress<RaptureTextModule.Delegates.FormatAddonText2IntIntUInt>(
+            RaptureTextModule.MemberFunctionPointers.FormatAddonText2IntIntUInt,
+            FormatAddonText2IntIntUIntDetour);
+
         _updateTargetInfoHook.Enable();
         _formatAddonText2IntIntUIntHook.Enable();
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
-        _updateTargetInfoHook.Disable();
-        _formatAddonText2IntIntUIntHook.Disable();
-    }
+        _updateTargetInfoHook?.Dispose();
+        _updateTargetInfoHook = null;
 
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-        _updateTargetInfoHook.Dispose();
-        _formatAddonText2IntIntUIntHook.Dispose();
-
-        Status = TweakStatus.Disposed;
+        _formatAddonText2IntIntUIntHook?.Dispose();
+        _formatAddonText2IntIntUIntHook = null;
     }
 
     private void UpdateTargetInfoDetour(AgentHUD* thisPtr)
     {
-        _updateTargetInfoHook.Original(thisPtr);
+        _updateTargetInfoHook!.Original(thisPtr);
 
         if (Config.DisplayMountStatus || Config.DisplayOrnamentStatus)
             UpdateTargetInfoStatuses();
@@ -150,7 +136,7 @@ public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
         if (addonRowId == 2057 && Config.RemoveLeadingZeroInHPPercentage)
         {
             var str = thisPtr->UnkStrings1.GetPointer(1);
-            str->SetString(_seStringEvaluator.Evaluate(_rewrittenHealthPercentageText, [value1, value2, value3], _clientState.ClientLanguage));
+            str->SetString(_seStringEvaluator.Evaluate(_rewrittenHealthPercentageText!.Value, [value1, value2, value3], _clientState.ClientLanguage));
             return str->StringPtr;
         }
 

@@ -4,8 +4,8 @@ using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedIsleworksAgenda : IConfigurableTweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class EnhancedIsleworksAgenda : BaseTweak, IConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;
@@ -15,45 +15,30 @@ public unsafe partial class EnhancedIsleworksAgenda : IConfigurableTweak
 
     private Hook<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>? _receiveEventHook;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize()
+    public override void OnEnable()
     {
         _receiveEventHook = _gameInteropProvider.HookFromAddress<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>(
             AddonMJICraftScheduleSetting.StaticVirtualTablePointer->ReceiveEvent,
             ReceiveEventDetour);
-    }
 
-    public void OnEnable()
-    {
+        _receiveEventHook.Enable();
+
         if (Config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"))
             _window.Open();
 
         _addonObserver.AddonOpen += OnAddonOpen;
         _addonObserver.AddonClose += OnAddonClose;
-
-        _receiveEventHook?.Enable();
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         _addonObserver.AddonOpen -= OnAddonOpen;
         _addonObserver.AddonClose -= OnAddonClose;
 
-        _receiveEventHook?.Disable();
+        _receiveEventHook?.Dispose();
+        _receiveEventHook = null;
 
         _window.Close();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-        _receiveEventHook?.Dispose();
-
-        Status = TweakStatus.Disposed;
     }
 
     private void OnAddonOpen(string addonName)

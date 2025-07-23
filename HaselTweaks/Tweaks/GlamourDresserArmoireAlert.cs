@@ -4,10 +4,9 @@ using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class GlamourDresserArmoireAlert : ITweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class GlamourDresserArmoireAlert : BaseTweak
 {
-    private readonly ILogger<GlamourDresserArmoireAlert> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly IGameInventory _gameInventory;
     private readonly AddonObserver _addonObserver;
@@ -16,36 +15,23 @@ public unsafe partial class GlamourDresserArmoireAlert : ITweak
     private GlamourDresserArmoireAlertWindow? _window;
     private uint[]? _lastItemIds = null;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
     public Dictionary<uint, Dictionary<uint, (Item Item, bool IsHq)>> Categories { get; } = [];
 
-    public void OnInitialize() { }
-
-    public void OnEnable()
+    public override void OnEnable()
     {
         _addonObserver.AddonOpen += OnAddonOpen;
         _addonObserver.AddonClose += OnAddonClose;
         _gameInventory.InventoryChangedRaw += OnInventoryUpdate;
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         _addonObserver.AddonOpen -= OnAddonOpen;
         _addonObserver.AddonClose -= OnAddonClose;
         _gameInventory.InventoryChangedRaw -= OnInventoryUpdate;
 
-        _window?.Close();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-
-        Status = TweakStatus.Disposed;
+        _window?.Dispose();
+        _window = null;
     }
 
     private void OnAddonOpen(string addonName)

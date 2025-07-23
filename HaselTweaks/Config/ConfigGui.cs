@@ -17,7 +17,7 @@ public partial class ConfigGui
     public ImRaii.IEndObject PushContext(IConfigurableTweak tweak)
     {
         _tweak = tweak;
-        _tweakName = _tweak.GetInternalName();
+        _tweakName = _tweak.InternalName;
 
         var disabled = ImRaii.Disabled(tweak.Status == TweakStatus.Outdated);
 

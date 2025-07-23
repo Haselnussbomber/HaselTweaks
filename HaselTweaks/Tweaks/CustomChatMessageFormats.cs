@@ -3,14 +3,13 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class CustomChatMessageFormats : IConfigurableTweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class CustomChatMessageFormats : BaseTweak, IConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;
     private readonly LanguageProvider _languageProvider;
     private readonly TextService _textService;
-    private readonly ILogger<CustomChatMessageFormats> _logger;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly ExcelService _excelService;
     private readonly TextureService _textureService;
@@ -18,40 +17,27 @@ public unsafe partial class CustomChatMessageFormats : IConfigurableTweak
 
     private Hook<RaptureLogModule.Delegates.FormatLogMessage>? _formatLogMessageHook;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize()
+    public override void OnEnable()
     {
         _formatLogMessageHook = _gameInteropProvider.HookFromAddress<RaptureLogModule.Delegates.FormatLogMessage>(
             RaptureLogModule.MemberFunctionPointers.FormatLogMessage,
             FormatLogMessageDetour);
-    }
+        _formatLogMessageHook.Enable();
 
-    public void OnEnable()
-    {
-        ReloadChat();
         _languageProvider.LanguageChanged += OnLanguageChange;
-        _formatLogMessageHook?.Enable();
+
+        ReloadChat();
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         _languageProvider.LanguageChanged -= OnLanguageChange;
-        _formatLogMessageHook?.Disable();
+
+        _formatLogMessageHook?.Dispose();
+        _formatLogMessageHook = null;
 
         if (Status is TweakStatus.Enabled)
             ReloadChat();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-        _formatLogMessageHook?.Dispose();
-
-        Status = TweakStatus.Disposed;
     }
 
     private void OnLanguageChange(string langCode)

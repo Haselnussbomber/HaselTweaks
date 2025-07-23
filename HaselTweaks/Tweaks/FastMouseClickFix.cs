@@ -2,41 +2,28 @@ using Dalamud.Utility.Signatures;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class FastMouseClickFix : ITweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class FastMouseClickFix : BaseTweak
 {
     private readonly IGameInteropProvider _gameInteropProvider;
 
     private MemoryReplacement? _patch;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
     [Signature("EB 3F B8 ?? ?? ?? ?? 48 8B D7"), AutoConstructIgnore]
-    private nint Address { get; init; }
+    private nint Address { get; set; }
 
-    public void OnInitialize()
+    public override void OnEnable()
     {
-        _gameInteropProvider.InitializeFromAttributes(this);
+        if (Address == nint.Zero)
+            _gameInteropProvider.InitializeFromAttributes(this);
+
         _patch = new(Address, [0x90, 0x90]); // skip jump
+        _patch.Enable();
     }
 
-    public void OnEnable()
+    public override void OnDisable()
     {
-        _patch?.Enable();
-    }
-
-    public void OnDisable()
-    {
-        _patch?.Disable();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
         _patch?.Dispose();
-
-        Status = TweakStatus.Disposed;
+        _patch = null;
     }
 }

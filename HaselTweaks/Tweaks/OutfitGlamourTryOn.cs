@@ -4,35 +4,21 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class OutfitGlamourTryOn : ITweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class OutfitGlamourTryOn : BaseTweak
 {
     private readonly IContextMenu _contextMenu;
     private readonly ItemService _itemService;
     private readonly TextService _textService;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize() { }
-
-    public void OnEnable()
+    public override void OnEnable()
     {
         _contextMenu.OnMenuOpened += ContextMenu_OnMenuOpened;
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         _contextMenu.OnMenuOpened -= ContextMenu_OnMenuOpened;
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-
-        Status = TweakStatus.Disposed;
     }
 
     private void ContextMenu_OnMenuOpened(IMenuOpenedArgs args)

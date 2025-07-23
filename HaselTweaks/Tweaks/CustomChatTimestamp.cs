@@ -2,50 +2,33 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class CustomChatTimestamp : IConfigurableTweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class CustomChatTimestamp : BaseTweak, IConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;
     private readonly TextService _textService;
-    private readonly ILogger<CustomChatTimestamp> _logger;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IGameConfig _gameConfig;
 
     private Hook<RaptureTextModule.Delegates.FormatAddonText2Int>? _formatAddonText2IntHook;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize()
+    public override void OnEnable()
     {
         _formatAddonText2IntHook = _gameInteropProvider.HookFromAddress<RaptureTextModule.Delegates.FormatAddonText2Int>(
             RaptureTextModule.MemberFunctionPointers.FormatAddonText2Int,
             FormatAddonText2IntDetour);
-    }
-
-    public void OnEnable()
-    {
-        _formatAddonText2IntHook?.Enable();
+        _formatAddonText2IntHook.Enable();
         ReloadChat();
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
-        _formatAddonText2IntHook?.Disable();
+        _formatAddonText2IntHook?.Dispose();
+        _formatAddonText2IntHook = null;
 
         if (Status is TweakStatus.Enabled)
             ReloadChat();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-        _formatAddonText2IntHook?.Dispose();
-
-        Status = TweakStatus.Disposed;
     }
 
     private CStringPointer FormatAddonText2IntDetour(RaptureTextModule* thisPtr, uint addonRowId, int value)

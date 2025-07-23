@@ -2,7 +2,6 @@ using System.IO;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.Exd;
-using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SixLabors.ImageSharp;

@@ -7,8 +7,8 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class InventoryHighlight : IConfigurableTweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class InventoryHighlight : BaseTweak, IConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;
@@ -23,11 +23,7 @@ public unsafe partial class InventoryHighlight : IConfigurableTweak
     private uint _hoveredItemId;
     private bool _wasHighlighting;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize() { }
-
-    public void OnEnable()
+    public override void OnEnable()
     {
         _framework.Update += OnFrameworkUpdate;
         _clientState.Login += UpdateItemInventryWindowSizeTypes;
@@ -37,7 +33,7 @@ public unsafe partial class InventoryHighlight : IConfigurableTweak
         UpdateItemInventryWindowSizeTypes();
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         _framework.Update -= OnFrameworkUpdate;
         _clientState.Login -= UpdateItemInventryWindowSizeTypes;
@@ -47,16 +43,6 @@ public unsafe partial class InventoryHighlight : IConfigurableTweak
 
         if (Status is TweakStatus.Enabled)
             ResetGrids();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-
-        Status = TweakStatus.Disposed;
     }
 
     private void GameConfig_UiConfigChanged(object? sender, ConfigChangeEvent evt)

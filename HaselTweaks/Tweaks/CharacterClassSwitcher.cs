@@ -5,8 +5,8 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class CharacterClassSwitcher : BaseTweak, IConfigurableTweak
 {
     private const int NumClasses = 33; // includes blue mage, crafters and gatherers
     private const int NumPvPClasses = 21;
@@ -14,7 +14,6 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;
     private readonly TextService _textService;
-    private readonly ILogger<CharacterClassSwitcher> _logger;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IAddonLifecycle _addonLifecycle;
 
@@ -26,12 +25,8 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
     private Hook<AddonPvPCharacter.Delegates.ReceiveEvent>? _addonPvPCharacterReceiveEventHook;
     private Hook<AgentStatus.Delegates.Show>? _agentStatusShowHook;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize()
+    public override void OnEnable()
     {
-        _gameInteropProvider.InitializeFromAttributes(this);
-
         _atkTooltipManagerShowTooltipHook = _gameInteropProvider.HookFromAddress<AtkTooltipManager.Delegates.ShowTooltip>(
             AtkTooltipManager.Addresses.ShowTooltip.Value,
             AtkTooltipManagerShowTooltipDetour);
@@ -59,49 +54,42 @@ public unsafe partial class CharacterClassSwitcher : IConfigurableTweak
         _agentStatusShowHook = _gameInteropProvider.HookFromAddress<AgentStatus.Delegates.Show>(
             AgentStatus.Instance()->VirtualTable->Show,
             AgentStatusShowDetour);
-    }
 
-    public void OnEnable()
-    {
-        _atkTooltipManagerShowTooltipHook?.Enable();
-        _addonCharacterClassOnSetupHook?.Enable();
-        _addonCharacterClassOnRequestedUpdateHook?.Enable();
-        _addonCharacterClassReceiveEventHook?.Enable();
-        _addonPvPCharacterUpdateClassesHook?.Enable();
-        _addonPvPCharacterReceiveEventHook?.Enable();
-        _agentStatusShowHook?.Enable();
+        _atkTooltipManagerShowTooltipHook.Enable();
+        _addonCharacterClassOnSetupHook.Enable();
+        _addonCharacterClassOnRequestedUpdateHook.Enable();
+        _addonCharacterClassReceiveEventHook.Enable();
+        _addonPvPCharacterUpdateClassesHook.Enable();
+        _addonPvPCharacterReceiveEventHook.Enable();
+        _agentStatusShowHook.Enable();
 
         _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "PvPCharacter", PvPCharacterOnSetup);
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
-        _atkTooltipManagerShowTooltipHook?.Disable();
-        _addonCharacterClassOnSetupHook?.Disable();
-        _addonCharacterClassOnRequestedUpdateHook?.Disable();
-        _addonCharacterClassReceiveEventHook?.Disable();
-        _addonPvPCharacterUpdateClassesHook?.Disable();
-        _addonPvPCharacterReceiveEventHook?.Disable();
-        _agentStatusShowHook?.Disable();
-
         _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "PvPCharacter", PvPCharacterOnSetup);
-    }
 
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
         _atkTooltipManagerShowTooltipHook?.Dispose();
-        _addonCharacterClassOnSetupHook?.Dispose();
-        _addonCharacterClassOnRequestedUpdateHook?.Dispose();
-        _addonCharacterClassReceiveEventHook?.Dispose();
-        _addonPvPCharacterUpdateClassesHook?.Dispose();
-        _addonPvPCharacterReceiveEventHook?.Dispose();
-        _agentStatusShowHook?.Dispose();
+        _atkTooltipManagerShowTooltipHook = null;
 
-        Status = TweakStatus.Disposed;
+        _addonCharacterClassOnSetupHook?.Dispose();
+        _addonCharacterClassOnSetupHook = null;
+
+        _addonCharacterClassOnRequestedUpdateHook?.Dispose();
+        _addonCharacterClassOnRequestedUpdateHook = null;
+
+        _addonCharacterClassReceiveEventHook?.Dispose();
+        _addonCharacterClassReceiveEventHook = null;
+
+        _addonPvPCharacterUpdateClassesHook?.Dispose();
+        _addonPvPCharacterUpdateClassesHook = null;
+
+        _addonPvPCharacterReceiveEventHook?.Dispose();
+        _addonPvPCharacterReceiveEventHook = null;
+
+        _agentStatusShowHook?.Dispose();
+        _agentStatusShowHook = null;
     }
 
     private static bool IsCrafter(int id)

@@ -7,8 +7,8 @@ using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class DTR : IConfigurableTweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class DTR : BaseTweak, IConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;
@@ -26,11 +26,9 @@ public unsafe partial class DTR : IConfigurableTweak
     private int _lastFrameRate;
     private uint _lastInstanceId;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
     public void OnInitialize() { }
 
-    public void OnEnable()
+    public override void OnEnable()
     {
         _dtrInstance = _dtrBar.Get("[HaselTweaks] Instance");
         _dtrInstance.Tooltip = "HaselTweaks";
@@ -51,7 +49,7 @@ public unsafe partial class DTR : IConfigurableTweak
         _languageProvider.LanguageChanged += OnLanguageChanged;
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         _framework.Update -= OnFrameworkUpdate;
         _clientState.Logout -= OnLogout;
@@ -65,16 +63,6 @@ public unsafe partial class DTR : IConfigurableTweak
         _dtrBusy = null;
 
         ResetCache();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-
-        Status = TweakStatus.Disposed;
     }
 
     private void OnFrameworkUpdate(IFramework framework)

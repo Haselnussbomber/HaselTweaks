@@ -5,8 +5,8 @@ using FFXIVClientStructs.FFXIV.Client.UI.Shell;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class AutoSorter : IConfigurableTweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class AutoSorter : BaseTweak, IConfigurableTweak
 {
     private static readonly Dictionary<string, uint> CategorySet = new()
     {
@@ -84,7 +84,6 @@ public unsafe partial class AutoSorter : IConfigurableTweak
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;
     private readonly TextService _textService;
-    private readonly ILogger<AutoSorter> _logger;
     private readonly ExcelService _excelService;
     private readonly IClientState _clientState;
     private readonly IFramework _framework;
@@ -93,14 +92,10 @@ public unsafe partial class AutoSorter : IConfigurableTweak
     private readonly Queue<IGrouping<string, AutoSorterConfiguration.SortingRule>> _queue = new();
     private bool _isBusy = false;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
     private bool IsRetainerInventoryOpen => _addonObserver.IsAddonVisible("InventoryRetainer") || _addonObserver.IsAddonVisible("InventoryRetainerLarge");
     private bool IsInventoryBuddyOpen => _addonObserver.IsAddonVisible("InventoryBuddy");
 
-    public void OnInitialize() { }
-
-    public void OnEnable()
+    public override void OnEnable()
     {
         _queue.Clear();
 
@@ -111,7 +106,7 @@ public unsafe partial class AutoSorter : IConfigurableTweak
         _clientState.ClassJobChanged += OnClassJobChange;
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         _clientState.Login -= OnLogin;
         _clientState.Logout -= OnLogout;
@@ -120,16 +115,6 @@ public unsafe partial class AutoSorter : IConfigurableTweak
         _clientState.ClassJobChanged -= OnClassJobChange;
 
         _queue.Clear();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-
-        Status = TweakStatus.Disposed;
     }
 
     private void OnLogin()

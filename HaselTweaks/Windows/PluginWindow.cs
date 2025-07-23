@@ -11,14 +11,16 @@ public partial class PluginWindow : SimpleWindow
     private readonly IServiceProvider _serviceProvider;
     private readonly TextService _textService;
     private readonly ITextureProvider _textureProvider;
-    private readonly TweakManager _tweakManager;
-    private readonly IEnumerable<ITweak> _tweaks;
+    private readonly PluginConfig _pluginConfig;
+    private ITweak[] _tweaks;
     private ITweak[] _orderedTweaks;
     private ITweak? _selectedTweak;
 
     [AutoPostConstruct]
-    private void Initialize()
+    private void Initialize(IEnumerable<IHostedService> services)
     {
+        _tweaks = [.. services.OfType<ITweak>()];
+
         SizeCondition = ImGuiCond.Always;
 
         Flags |= ImGuiWindowFlags.NoResize;
@@ -37,7 +39,7 @@ public partial class PluginWindow : SimpleWindow
 
     private void SortTweaksByName()
     {
-        _orderedTweaks = [.. _tweaks.OrderBy(tweak => _textService.TryGetTranslation(tweak.GetInternalName() + ".Tweak.Name", out var name) ? name : tweak.GetInternalName())];
+        _orderedTweaks = [.. _tweaks.OrderBy(tweak => _textService.TryGetTranslation(tweak.InternalName + ".Tweak.Name", out var name) ? name : tweak.InternalName)];
     }
 
     public override void OnOpen()
@@ -86,7 +88,7 @@ public partial class PluginWindow : SimpleWindow
 
         foreach (var tweak in _orderedTweaks)
         {
-            var tweakName = tweak.GetInternalName();
+            var tweakName = tweak.InternalName;
 
             ImGui.TableNextRow();
             ImGui.TableNextColumn();
@@ -142,9 +144,27 @@ public partial class PluginWindow : SimpleWindow
                 {
                     // TODO: catch errors and display them
                     if (!enabled)
-                        _tweakManager.UserDisableTweak(tweak);
+                    {
+                        tweak.OnDisable();
+                        tweak.Status = TweakStatus.Disabled;
+
+                        if (_pluginConfig.EnabledTweaks.Contains(tweakName))
+                        {
+                            _pluginConfig.EnabledTweaks.Remove(tweakName);
+                            _pluginConfig.Save();
+                        }
+                    }
                     else
-                        _tweakManager.UserEnableTweak(tweak);
+                    {
+                        tweak.OnEnable();
+                        tweak.Status = TweakStatus.Enabled;
+
+                        if (!_pluginConfig.EnabledTweaks.Contains(tweakName))
+                        {
+                            _pluginConfig.EnabledTweaks.Add(tweakName);
+                            _pluginConfig.Save();
+                        }
+                    }
                 }
             }
 
@@ -161,7 +181,7 @@ public partial class PluginWindow : SimpleWindow
             if (!_textService.TryGetTranslation(tweakName + ".Tweak.Name", out var name))
                 name = tweakName;
 
-            var selectedTweakName = _selectedTweak?.GetInternalName();
+            var selectedTweakName = _selectedTweak?.InternalName;
 
             if (ImGui.Selectable(name + "##Selectable_" + tweakName, _selectedTweak != null && selectedTweakName == tweakName))
             {
@@ -170,7 +190,7 @@ public partial class PluginWindow : SimpleWindow
 
                 if (_selectedTweak == null || selectedTweakName != tweakName)
                 {
-                    _selectedTweak = _orderedTweaks.FirstOrDefault(t => t.GetInternalName() == tweakName);
+                    _selectedTweak = _orderedTweaks.FirstOrDefault(t => t.InternalName == tweakName);
 
                     if (_selectedTweak is IConfigurableTweak configurableTweak2)
                         configurableTweak2.OnConfigOpen();
@@ -238,7 +258,7 @@ public partial class PluginWindow : SimpleWindow
             return;
         }
 
-        var selectedTweakName = _selectedTweak.GetInternalName();
+        var selectedTweakName = _selectedTweak.InternalName;
 
         using var id = ImRaii.PushId(selectedTweakName);
 

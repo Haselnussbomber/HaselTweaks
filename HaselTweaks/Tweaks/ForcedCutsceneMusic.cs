@@ -3,8 +3,8 @@ using FFXIVClientStructs.FFXIV.Client.System.Scheduler.Base;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class ForcedCutsceneMusic : IConfigurableTweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class ForcedCutsceneMusic : BaseTweak, IConfigurableTweak
 {
     private static readonly string[] ConfigOptions = [
         "IsSndMaster",
@@ -18,7 +18,6 @@ public unsafe partial class ForcedCutsceneMusic : IConfigurableTweak
 
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;
-    private readonly ILogger<ForcedCutsceneMusic> _logger;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IGameConfig _gameConfig;
 
@@ -29,9 +28,7 @@ public unsafe partial class ForcedCutsceneMusic : IConfigurableTweak
 
     private delegate CutSceneController* CutSceneControllerDtorDelegate(CutSceneController* self, byte freeFlags);
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
-    public void OnInitialize()
+    public override void OnEnable()
     {
         _createCutSceneControllerHook = _gameInteropProvider.HookFromAddress<ScheduleManagement.Delegates.CreateCutSceneController>(
             ScheduleManagement.MemberFunctionPointers.CreateCutSceneController,
@@ -40,30 +37,18 @@ public unsafe partial class ForcedCutsceneMusic : IConfigurableTweak
         _cutSceneControllerDtorHook = _gameInteropProvider.HookFromVTable<CutSceneControllerDtorDelegate>(
             CutSceneController.StaticVirtualTablePointer, 0,
             CutSceneControllerDtorDetour);
+
+        _createCutSceneControllerHook.Enable();
+        _cutSceneControllerDtorHook.Enable();
     }
 
-    public void OnEnable()
+    public override void OnDisable()
     {
-        _createCutSceneControllerHook?.Enable();
-        _cutSceneControllerDtorHook?.Enable();
-    }
-
-    public void OnDisable()
-    {
-        _createCutSceneControllerHook?.Disable();
-        _cutSceneControllerDtorHook?.Disable();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
         _createCutSceneControllerHook?.Dispose();
-        _cutSceneControllerDtorHook?.Dispose();
+        _createCutSceneControllerHook = null;
 
-        Status = TweakStatus.Disposed;
+        _cutSceneControllerDtorHook?.Dispose();
+        _cutSceneControllerDtorHook = null;
     }
 
     private CutSceneController* CreateCutSceneControllerDetour(ScheduleManagement* self, byte* path, uint id, byte a4)

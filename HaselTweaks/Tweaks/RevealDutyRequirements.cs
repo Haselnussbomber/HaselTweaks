@@ -2,14 +2,12 @@ using Dalamud.Utility.Signatures;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public partial class RevealDutyRequirements : ITweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public partial class RevealDutyRequirements : BaseTweak
 {
     private readonly IGameInteropProvider _gameInteropProvider;
 
     private MemoryReplacement? _patch;
-
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
 
     /*
         48 8B C8   mov     rcx, rax
@@ -24,29 +22,18 @@ public partial class RevealDutyRequirements : ITweak
     [Signature("48 8B C8 48 8B D8 48 8B 10 FF 52 70 84 C0 74 1B"), AutoConstructIgnore]
     private nint Address { get; init; }
 
-    public void OnInitialize()
+    public override void OnEnable()
     {
-        _gameInteropProvider.InitializeFromAttributes(this);
-        _patch = new(Address + 14, [0x90, 0x90]);
-    }
+        if (Address == nint.Zero)
+            _gameInteropProvider.InitializeFromAttributes(this);
 
-    public void OnEnable()
-    {
+        _patch = new(Address + 14, [0x90, 0x90]);
         _patch?.Enable();
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
-        _patch?.Disable();
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
         _patch?.Dispose();
-
-        Status = TweakStatus.Disposed;
+        _patch = null;
     }
 }

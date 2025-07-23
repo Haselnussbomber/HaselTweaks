@@ -1,28 +1,37 @@
+using System.Threading;
+using System.Threading.Tasks;
+using HaselCommon.Commands;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Services;
 
-[RegisterSingleton, AutoConstruct]
-public partial class CommandManager : IDisposable
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public partial class CommandManager : IHostedService
 {
     private readonly IDalamudPluginInterface _pluginInterface;
     private readonly WindowManager _windowManager;
     private readonly CommandService _commandService;
+    private CommandHandler? _haselTweaksCommandHandler;
 
-    [AutoPostConstruct]
-    private void Initialize()
+    public Task StartAsync(CancellationToken cancellationToken)
     {
-        _commandService.Register("/haseltweaks", "HaselTweaks.CommandHandlerHelpMessage", HandleCommand, autoEnable: true, displayOrder: 1);
-
+        _haselTweaksCommandHandler = _commandService.Register(OnHaselTweaksCommand);
         _pluginInterface.UiBuilder.OpenConfigUi += TogglePluginWindow;
+        return Task.CompletedTask;
     }
 
-    public void Dispose()
+    public Task StopAsync(CancellationToken cancellationToken)
     {
+        _haselTweaksCommandHandler?.Dispose();
+        _haselTweaksCommandHandler = null;
+
         _pluginInterface.UiBuilder.OpenConfigUi -= TogglePluginWindow;
+
+        return Task.CompletedTask;
     }
 
-    private void HandleCommand(string command, string arguments)
+    [CommandHandler("/haseltweaks", "HaselTweaks.CommandHandlerHelpMessage", true, 1)]
+    private void OnHaselTweaksCommand(string command, string arguments)
     {
         TogglePluginWindow();
     }

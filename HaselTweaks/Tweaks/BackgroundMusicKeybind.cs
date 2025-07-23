@@ -3,8 +3,8 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 
 namespace HaselTweaks.Tweaks;
 
-[RegisterSingleton<ITweak>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class BackgroundMusicKeybind : IConfigurableTweak
+[RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
+public unsafe partial class BackgroundMusicKeybind : BaseTweak, IConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;
@@ -15,34 +15,20 @@ public unsafe partial class BackgroundMusicKeybind : IConfigurableTweak
 
     private bool _isPressingKeybind;
 
-    public TweakStatus Status { get; set; } = TweakStatus.Uninitialized;
-
     private bool IsBgmMuted
     {
         get => _gameConfig.System.TryGet("IsSndBgm", out bool value) && value;
         set => _gameConfig.System.Set("IsSndBgm", value);
     }
 
-    public void OnInitialize() { }
-
-    public void OnEnable()
+    public override void OnEnable()
     {
         _framework.Update += OnFrameworkUpdate;
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         _framework.Update -= OnFrameworkUpdate;
-    }
-
-    void IDisposable.Dispose()
-    {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
-            return;
-
-        OnDisable();
-
-        Status = TweakStatus.Disposed;
     }
 
     private void OnFrameworkUpdate(IFramework framework)
