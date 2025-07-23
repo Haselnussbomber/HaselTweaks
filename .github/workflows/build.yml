@@ -24,6 +24,7 @@ on:
         options:
           - master
           - stg
+          - imgui-bindings
 
 jobs:
   build:
@@ -65,8 +66,8 @@ jobs:
             echo "branch=${{ github.event.inputs.dalamud_branch }}" >> $GITHUB_OUTPUT
           elif [[ "${{ github.event.ref }}" == "refs/heads/stg" ]] || [[ "${{ github.event.head_commit.message }}" == "[stg]"* ]]; then
             echo "branch=stg" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event.ref }}" == "refs/heads/api12" ]] || [[ "${{ github.event.head_commit.message }}" == "[api12]"* ]]; then
-            echo "branch=api12" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.ref }}" == "refs/heads/imgui-bindings" ]] || [[ "${{ github.event.head_commit.message }}" == "[imgui-bindings]"* ]]; then
+            echo "branch=imgui-bindings" >> $GITHUB_OUTPUT
           else
             echo "branch=master" >> $GITHUB_OUTPUT
           fi
@@ -77,7 +78,7 @@ jobs:
             ${{ fromJson('{
               "master": "https://goatcorp.github.io/dalamud-distrib/latest.zip",
               "stg": "https://goatcorp.github.io/dalamud-distrib/stg/latest.zip",
-              "api12": "https://goatcorp.github.io/dalamud-distrib/api12/latest.zip"
+              "imgui-bindings": "https://goatcorp.github.io/dalamud-distrib/imgui-bindings/latest.zip"
             }')[steps.branch.outputs.branch] }}
         run: |
           curl -o latest.zip ${{ env.DALAMUD_URL }}
