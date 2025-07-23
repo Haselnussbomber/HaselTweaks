@@ -5,7 +5,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class OutfitGlamourTryOn : BaseTweak
+public unsafe partial class OutfitGlamourTryOn : Tweak
 {
     private readonly IContextMenu _contextMenu;
     private readonly ItemService _itemService;

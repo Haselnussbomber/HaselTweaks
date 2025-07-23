@@ -15,7 +15,7 @@ public partial class CommandManager : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _haselTweaksCommandHandler = _commandService.Register(OnHaselTweaksCommand);
+        _haselTweaksCommandHandler = _commandService.Register(OnHaselTweaksCommand, true);
         _pluginInterface.UiBuilder.OpenConfigUi += TogglePluginWindow;
         return Task.CompletedTask;
     }

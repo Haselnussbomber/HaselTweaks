@@ -9,14 +9,8 @@ public partial class CustomChatTimestamp
 {
     private CustomChatTimestampConfiguration Config => _pluginConfig.Tweaks.CustomChatTimestamp;
 
-    public void OnConfigOpen() { }
-    public void OnConfigClose() { }
-    public void OnConfigChange(string fieldName) { }
-
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawIncompatibilityWarnings([("SimpleTweaksPlugin", ["CustomTimestampFormat"])]);
 
         _configGui.DrawConfigurationHeader();

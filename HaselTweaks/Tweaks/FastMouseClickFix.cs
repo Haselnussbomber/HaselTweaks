@@ -3,7 +3,7 @@ using Dalamud.Utility.Signatures;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class FastMouseClickFix : BaseTweak
+public unsafe partial class FastMouseClickFix : Tweak
 {
     private readonly IGameInteropProvider _gameInteropProvider;
 

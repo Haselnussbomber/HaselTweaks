@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class MarketBoardItemPreview : BaseTweak
+public unsafe partial class MarketBoardItemPreview : Tweak
 {
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly ExcelService _excelService;

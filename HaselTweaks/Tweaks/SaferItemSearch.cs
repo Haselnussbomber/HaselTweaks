@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class SaferItemSearch : BaseTweak
+public unsafe partial class SaferItemSearch : Tweak
 {
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly MarketBoardService _marketBoardService;

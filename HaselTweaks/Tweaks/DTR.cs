@@ -8,7 +8,7 @@ using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class DTR : BaseTweak, IConfigurableTweak
+public unsafe partial class DTR : ConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;

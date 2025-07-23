@@ -13,10 +13,7 @@ public partial class GearSetGrid
 {
     private GearSetGridConfiguration Config => _pluginConfig.Tweaks.GearSetGrid;
 
-    public void OnConfigOpen() { }
-    public void OnConfigClose() { }
-
-    public void OnConfigChange(string fieldName)
+    public override void OnConfigChange(string fieldName)
     {
         if (Status == TweakStatus.Enabled && fieldName == "RegisterCommand")
         {
@@ -24,10 +21,8 @@ public partial class GearSetGrid
         }
     }
 
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawConfigurationHeader();
         _configGui.DrawBool("AutoOpenWithGearSetList", ref Config.AutoOpenWithGearSetList);
         _configGui.DrawBool("RegisterCommand", ref Config.RegisterCommand);

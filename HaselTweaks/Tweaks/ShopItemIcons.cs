@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class ShopItemIcons : BaseTweak, IConfigurableTweak
+public unsafe partial class ShopItemIcons : ConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;

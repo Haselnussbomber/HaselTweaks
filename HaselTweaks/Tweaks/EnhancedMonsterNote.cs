@@ -5,7 +5,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedMonsterNote : BaseTweak, IConfigurableTweak
+public unsafe partial class EnhancedMonsterNote : ConfigurableTweak
 {
     private readonly IClientState _clientState;
     private readonly IGameInteropProvider _gameInteropProvider;

@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using HaselCommon.Windows;
+using HaselTweaks.Config;
 
 namespace HaselTweaks.Windows;
 
@@ -12,6 +13,7 @@ public partial class PluginWindow : SimpleWindow
     private readonly TextService _textService;
     private readonly ITextureProvider _textureProvider;
     private readonly PluginConfig _pluginConfig;
+    private readonly ConfigGui _configGui;
     private ITweak[] _tweaks;
     private ITweak[] _orderedTweaks;
     private ITweak? _selectedTweak;
@@ -95,7 +97,7 @@ public partial class PluginWindow : SimpleWindow
 
             var status = tweak.Status;
 
-            if (status is TweakStatus.InitializationFailed or TweakStatus.Outdated)
+            if (status is TweakStatus.Error or TweakStatus.Outdated)
             {
                 var startPos = ImGui.GetCursorPos();
                 var drawList = ImGui.GetWindowDrawList();
@@ -110,7 +112,7 @@ public partial class PluginWindow : SimpleWindow
                 {
                     var color = status switch
                     {
-                        TweakStatus.InitializationFailed or TweakStatus.Outdated => Color.Red,
+                        TweakStatus.Error or TweakStatus.Outdated => Color.Red,
                         TweakStatus.Enabled => Color.Green,
                         _ => Color.Grey3
                     };
@@ -148,22 +150,16 @@ public partial class PluginWindow : SimpleWindow
                         tweak.OnDisable();
                         tweak.Status = TweakStatus.Disabled;
 
-                        if (_pluginConfig.EnabledTweaks.Contains(tweakName))
-                        {
-                            _pluginConfig.EnabledTweaks.Remove(tweakName);
+                        if (_pluginConfig.EnabledTweaks.Remove(tweakName))
                             _pluginConfig.Save();
-                        }
                     }
                     else
                     {
                         tweak.OnEnable();
                         tweak.Status = TweakStatus.Enabled;
 
-                        if (!_pluginConfig.EnabledTweaks.Contains(tweakName))
-                        {
-                            _pluginConfig.EnabledTweaks.Add(tweakName);
+                        if (_pluginConfig.EnabledTweaks.Add(tweakName))
                             _pluginConfig.Save();
-                        }
                     }
                 }
             }
@@ -173,7 +169,7 @@ public partial class PluginWindow : SimpleWindow
 
             using var _ = status switch
             {
-                TweakStatus.InitializationFailed or TweakStatus.Outdated => Color.Red.Push(ImGuiCol.Text),
+                TweakStatus.Error or TweakStatus.Outdated => Color.Red.Push(ImGuiCol.Text),
                 not TweakStatus.Enabled => Color.Grey.Push(ImGuiCol.Text),
                 _ => null
             };
@@ -267,7 +263,7 @@ public partial class PluginWindow : SimpleWindow
         var statusText = _textService.Translate("HaselTweaks.Config.TweakStatus." + Enum.GetName(_selectedTweak.Status));
         var statusColor = _selectedTweak.Status switch
         {
-            TweakStatus.InitializationFailed or TweakStatus.Outdated => Color.Red,
+            TweakStatus.Error or TweakStatus.Outdated => Color.Red,
             TweakStatus.Enabled => Color.Green,
             _ => Color.Grey3
         };
@@ -287,6 +283,9 @@ public partial class PluginWindow : SimpleWindow
         }
 
         if (_selectedTweak is IConfigurableTweak configurableTweak)
+        {
+            using var _ = _configGui.PushContext(configurableTweak);
             configurableTweak.DrawConfig();
+        }
     }
 }

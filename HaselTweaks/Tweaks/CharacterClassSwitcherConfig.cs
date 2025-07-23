@@ -11,14 +11,8 @@ public partial class CharacterClassSwitcher
 {
     private CharacterClassSwitcherConfiguration Config => _pluginConfig.Tweaks.CharacterClassSwitcher;
 
-    public void OnConfigOpen() { }
-    public void OnConfigClose() { }
-    public void OnConfigChange(string fieldName) { }
-
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawIncompatibilityWarnings([("SimpleTweaksPlugin", ["CharacterWindowJobSwitcher"])]);
 
         _configGui.DrawConfigurationHeader();

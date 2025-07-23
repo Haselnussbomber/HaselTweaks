@@ -7,7 +7,7 @@ using HaselCommon.Commands;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class Commands : BaseTweak, IConfigurableTweak
+public unsafe partial class Commands : ConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly LanguageProvider _languageProvider;

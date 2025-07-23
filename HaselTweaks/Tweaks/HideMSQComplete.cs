@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class HideMSQComplete : BaseTweak
+public unsafe partial class HideMSQComplete : Tweak
 {
     private readonly IAddonLifecycle _addonLifecycle;
 

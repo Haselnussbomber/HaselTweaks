@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Client.System.Scheduler.Base;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class ForcedCutsceneMusic : BaseTweak, IConfigurableTweak
+public unsafe partial class ForcedCutsceneMusic : ConfigurableTweak
 {
     private static readonly string[] ConfigOptions = [
         "IsSndMaster",

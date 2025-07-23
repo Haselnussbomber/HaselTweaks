@@ -20,14 +20,8 @@ public partial class AutoSorter
 {
     private AutoSorterConfiguration Config => _pluginConfig.Tweaks.AutoSorter;
 
-    public void OnConfigOpen() { }
-    public void OnConfigClose() { }
-    public void OnConfigChange(string fieldName) { }
-
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawConfigurationHeader();
         _configGui.DrawBool("SortArmouryOnJobChange", ref Config.SortArmouryOnJobChange);
 

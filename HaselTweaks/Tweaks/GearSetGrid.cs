@@ -4,7 +4,7 @@ using HaselTweaks.Windows;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public partial class GearSetGrid : BaseTweak, IConfigurableTweak
+public partial class GearSetGrid : ConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;

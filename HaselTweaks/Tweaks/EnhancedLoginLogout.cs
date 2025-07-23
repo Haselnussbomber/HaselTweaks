@@ -13,7 +13,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedLoginLogout : BaseTweak, IConfigurableTweak
+public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly TextService _textService;

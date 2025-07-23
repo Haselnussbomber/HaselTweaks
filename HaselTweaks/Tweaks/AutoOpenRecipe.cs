@@ -10,7 +10,7 @@ using AgentRecipeNote = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentRecipeNote
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class AutoOpenRecipe : BaseTweak
+public unsafe partial class AutoOpenRecipe : Tweak
 {
     private readonly ExcelService _excelService;
     private readonly TextService _textService;

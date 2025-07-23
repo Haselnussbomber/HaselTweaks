@@ -14,14 +14,8 @@ public partial class ShopItemIcons : IConfigurableTweak
 {
     private ShopItemIconsConfiguration Config => _pluginConfig.Tweaks.ShopItemIcons;
 
-    public void OnConfigOpen() { }
-    public void OnConfigChange(string fieldName) { }
-    public void OnConfigClose() { }
-
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawConfigurationHeader();
         _configGui.DrawBool("HandleShop", ref Config.HandleShop); // Shop
         _configGui.DrawBool("HandleShopExchangeItem", ref Config.HandleShopExchangeItem); // Item Exchange

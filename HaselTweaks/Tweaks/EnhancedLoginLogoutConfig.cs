@@ -31,10 +31,12 @@ public unsafe partial class EnhancedLoginLogout
     private readonly uint[] _changePoseEmoteIds = [91, 92, 93, 107, 108, 218, 219,];
     private List<uint>? _excludedEmotes;
 
-    public void OnConfigOpen() { }
-    public void OnConfigClose() => _isRecordingEmote = false;
+    public override void OnConfigClose()
+    {
+        _isRecordingEmote = false;
+    }
 
-    public void OnConfigChange(string fieldName)
+    public override void OnConfigChange(string fieldName)
     {
         if (Status != TweakStatus.Enabled)
             return;
@@ -58,10 +60,8 @@ public unsafe partial class EnhancedLoginLogout
         }
     }
 
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawConfigurationHeader("EnhancedLoginLogout.Config.LoginOptions.Title");
 
         // SkipLogo

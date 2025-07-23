@@ -6,7 +6,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class CharacterClassSwitcher : BaseTweak, IConfigurableTweak
+public unsafe partial class CharacterClassSwitcher : ConfigurableTweak
 {
     private const int NumClasses = 33; // includes blue mage, crafters and gatherers
     private const int NumPvPClasses = 21;

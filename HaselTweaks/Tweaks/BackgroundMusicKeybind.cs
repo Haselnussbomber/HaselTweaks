@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class BackgroundMusicKeybind : BaseTweak, IConfigurableTweak
+public unsafe partial class BackgroundMusicKeybind : ConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;

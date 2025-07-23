@@ -17,9 +17,7 @@ public partial class LockWindowPosition
 {
     private LockWindowPositionConfiguration Config => _pluginConfig.Tweaks.LockWindowPosition;
 
-    public void OnConfigOpen() { }
-
-    public void OnConfigClose()
+    public override void OnConfigClose()
     {
         _hoveredWindowName = "";
         _hoveredWindowPos = default;
@@ -27,12 +25,8 @@ public partial class LockWindowPosition
         _showPicker = false;
     }
 
-    public void OnConfigChange(string fieldName) { }
-
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawConfigurationHeader();
 
         ImGui.Checkbox(_textService.Translate("LockWindowPosition.Config.Inverted.Label"), ref Config.Inverted);

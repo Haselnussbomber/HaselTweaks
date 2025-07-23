@@ -6,7 +6,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class ScrollableTabs : BaseTweak, IConfigurableTweak
+public unsafe partial class ScrollableTabs : ConfigurableTweak
 {
     private const int NumArmouryBoardTabs = 12;
     private const int NumInventoryTabs = 5;

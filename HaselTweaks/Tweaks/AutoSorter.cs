@@ -6,7 +6,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Shell;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class AutoSorter : BaseTweak, IConfigurableTweak
+public unsafe partial class AutoSorter : ConfigurableTweak
 {
     private static readonly Dictionary<string, uint> CategorySet = new()
     {

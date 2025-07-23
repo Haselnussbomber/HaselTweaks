@@ -58,24 +58,20 @@ public partial class CustomChatMessageFormats
     private List<(LogKind LogKind, LogFilter LogFilter, ReadOnlySeString Format)>? _cachedLogKindRows = null;
     private TextColorEntry[]? _cachedTextColor = null;
 
-    public void OnConfigOpen()
+    public override void OnConfigOpen()
     {
         _isConfigWindowOpen = true;
     }
 
-    public void OnConfigClose()
+    public override void OnConfigClose()
     {
         _isConfigWindowOpen = false;
         _cachedLogKindRows = null;
         _cachedTextColor = null;
     }
 
-    public void OnConfigChange(string fieldName) { }
-
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawConfigurationHeader();
 
         _cachedLogKindRows ??= GenerateLogKindCache();

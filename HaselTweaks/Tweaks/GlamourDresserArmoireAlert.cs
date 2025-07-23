@@ -5,7 +5,7 @@ using HaselTweaks.Windows;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class GlamourDresserArmoireAlert : BaseTweak
+public unsafe partial class GlamourDresserArmoireAlert : Tweak
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IGameInventory _gameInventory;

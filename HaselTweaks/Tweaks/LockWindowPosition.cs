@@ -6,7 +6,7 @@ using AtkEventInterface = FFXIVClientStructs.FFXIV.Component.GUI.AtkModuleInterf
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class LockWindowPosition : BaseTweak, IConfigurableTweak
+public unsafe partial class LockWindowPosition : ConfigurableTweak
 {
     private const int EventParamLock = 9901;
     private const int EventParamUnlock = 9902;

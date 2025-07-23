@@ -5,7 +5,7 @@ using Windows.Win32.System.Power;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public partial class KeepScreenAwake : BaseTweak
+public partial class KeepScreenAwake : Tweak
 {
     private Timer? _timer;
 

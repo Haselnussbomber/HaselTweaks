@@ -12,19 +12,16 @@ public partial class ConfigGui
     private readonly TextureService _textureService;
 
     private IConfigurableTweak? _tweak = null;
-    private string _tweakName = string.Empty;
 
     public ImRaii.IEndObject PushContext(IConfigurableTweak tweak)
     {
         _tweak = tweak;
-        _tweakName = _tweak.InternalName;
 
         var disabled = ImRaii.Disabled(tweak.Status == TweakStatus.Outdated);
 
         return new EndUnconditionally(() =>
         {
             _tweak = null;
-            _tweakName = string.Empty;
             disabled.Dispose();
         }, true);
     }
@@ -58,7 +55,7 @@ public partial class ConfigGui
 
                 ImGui.TableNextColumn();
 
-                ImGuiHelpers.SafeTextWrapped(_textService.Translate($"{_tweakName}.Config.{fieldName}.Label"));
+                ImGuiHelpers.SafeTextWrapped(_textService.Translate($"{_tweak.InternalName}.Config.{fieldName}.Label"));
 
                 if (ImGui.IsItemClicked())
                 {
@@ -68,7 +65,7 @@ public partial class ConfigGui
 
                 drawAfterLabel?.Invoke();
 
-                if (_textService.TryGetTranslation($"{_tweakName}.Config.{fieldName}.Description", out var description))
+                if (_textService.TryGetTranslation($"{_tweak.InternalName}.Config.{fieldName}.Description", out var description))
                 {
                     ImGuiHelpers.SeStringWrapped(ReadOnlySeString.FromText(description), new SeStringDrawParams() { Color = Color.Grey.ToUInt() });
                 }
@@ -100,10 +97,10 @@ public partial class ConfigGui
         var result = false;
 
         string GetOptionLabel(int value)
-            => _textService.Translate($"{_tweakName}.Config.{fieldName}.Options.{Enum.GetName(enumType, value)}.Label");
+            => _textService.Translate($"{_tweak.InternalName}.Config.{fieldName}.Options.{Enum.GetName(enumType, value)}.Label");
 
         if (!noLabel)
-            ImGui.TextUnformatted(_textService.Translate($"{_tweakName}.Config.{fieldName}.Label"));
+            ImGui.TextUnformatted(_textService.Translate($"{_tweak.InternalName}.Config.{fieldName}.Label"));
 
         using var indent = ImGuiUtils.ConfigIndent(!noLabel);
 
@@ -133,7 +130,7 @@ public partial class ConfigGui
             }
         }
 
-        if (_textService.TryGetTranslation($"{_tweakName}.Config.{fieldName}.Description", out var description))
+        if (_textService.TryGetTranslation($"{_tweak.InternalName}.Config.{fieldName}.Description", out var description))
             ImGuiHelpers.SafeTextColoredWrapped(Color.Grey, description);
 
         return result;
@@ -146,7 +143,7 @@ public partial class ConfigGui
 
         using var id = ImRaii.PushId(fieldName);
 
-        ImGui.TextUnformatted(_textService.Translate($"{_tweakName}.Config.{fieldName}.Label"));
+        ImGui.TextUnformatted(_textService.Translate($"{_tweak.InternalName}.Config.{fieldName}.Label"));
 
         using var indent = ImGuiUtils.ConfigIndent();
 
@@ -164,7 +161,7 @@ public partial class ConfigGui
             _tweak.OnConfigChange(fieldName);
         }
 
-        if (_textService.TryGetTranslation($"{_tweakName}.Config.{fieldName}.Description", out var description))
+        if (_textService.TryGetTranslation($"{_tweak.InternalName}.Config.{fieldName}.Description", out var description))
             ImGuiHelpers.SafeTextColoredWrapped(Color.Grey, description);
 
         return result;
@@ -177,7 +174,7 @@ public partial class ConfigGui
 
         using var id = ImRaii.PushId(fieldName);
 
-        ImGui.TextUnformatted(_textService.Translate($"{_tweakName}.Config.{fieldName}.Label"));
+        ImGui.TextUnformatted(_textService.Translate($"{_tweak.InternalName}.Config.{fieldName}.Label"));
 
         using var indent = ImGuiUtils.ConfigIndent();
 
@@ -194,7 +191,7 @@ public partial class ConfigGui
             _tweak.OnConfigChange(fieldName);
         }
 
-        if (_textService.TryGetTranslation($"{_tweakName}.Config.{fieldName}.Description", out var description))
+        if (_textService.TryGetTranslation($"{_tweak.InternalName}.Config.{fieldName}.Description", out var description))
         {
             using var descriptionIndent = ImGuiUtils.ConfigIndent();
             ImGuiHelpers.SafeTextColoredWrapped(Color.Grey, description);

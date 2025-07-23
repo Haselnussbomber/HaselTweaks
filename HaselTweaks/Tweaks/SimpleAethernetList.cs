@@ -5,7 +5,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class SimpleAethernetList : BaseTweak
+public unsafe partial class SimpleAethernetList : Tweak
 {
     private readonly IGameInteropProvider _gameInteropProvider;
 

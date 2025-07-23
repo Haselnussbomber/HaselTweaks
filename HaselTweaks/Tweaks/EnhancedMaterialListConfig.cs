@@ -20,10 +20,7 @@ public unsafe partial class EnhancedMaterialList
 {
     private EnhancedMaterialListConfiguration Config => _pluginConfig.Tweaks.EnhancedMaterialList;
 
-    public void OnConfigOpen() { }
-    public void OnConfigClose() { }
-
-    public void OnConfigChange(string fieldName)
+    public override void OnConfigChange(string fieldName)
     {
         if (Status != TweakStatus.Enabled)
             return;
@@ -42,10 +39,8 @@ public unsafe partial class EnhancedMaterialList
         }
     }
 
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawConfigurationHeader();
 
         _configGui.DrawBool("EnableZoneNames", ref Config.EnableZoneNames, drawAfterDescription: () =>

@@ -12,18 +12,13 @@ public partial class DTR
 {
     private DTRConfiguration Config => _pluginConfig.Tweaks.DTR;
 
-    public void OnConfigOpen() { }
-    public void OnConfigClose() { }
-
-    public void OnConfigChange(string fieldName)
+    public override void OnConfigChange(string fieldName)
     {
         ResetCache();
     }
 
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawConfigurationHeader();
 
         ImGui.TextUnformatted(_textService.Translate("DTR.Config.Explanation.Pre"));

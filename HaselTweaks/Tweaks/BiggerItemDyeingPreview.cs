@@ -3,7 +3,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class BiggerItemDyeingPreview : BaseTweak
+public unsafe partial class BiggerItemDyeingPreview : Tweak
 {
     private readonly IAddonLifecycle _addonLifecycle;
 

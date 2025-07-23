@@ -8,7 +8,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedTargetInfo : BaseTweak, IConfigurableTweak
+public unsafe partial class EnhancedTargetInfo : ConfigurableTweak
 {
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly PluginConfig _pluginConfig;

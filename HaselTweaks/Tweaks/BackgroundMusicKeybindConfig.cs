@@ -11,14 +11,8 @@ public unsafe partial class BackgroundMusicKeybind
 {
     private BackgroundMusicKeybindConfiguration Config => _pluginConfig.Tweaks.BackgroundMusicKeybind;
 
-    public void OnConfigOpen() { }
-    public void OnConfigClose() { }
-    public void OnConfigChange(string fieldName) { }
-
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawConfigurationHeader();
 
         var shift = Config.Keybind.Contains(VirtualKey.SHIFT);

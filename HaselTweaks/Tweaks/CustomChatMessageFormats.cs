@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class CustomChatMessageFormats : BaseTweak, IConfigurableTweak
+public unsafe partial class CustomChatMessageFormats : ConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;

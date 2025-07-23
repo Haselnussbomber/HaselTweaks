@@ -19,10 +19,7 @@ public unsafe partial class MinimapAdjustments
 {
     private MinimapAdjustmentsConfiguration Config => _pluginConfig.Tweaks.MinimapAdjustments;
 
-    public void OnConfigOpen() { }
-    public void OnConfigClose() { }
-
-    public void OnConfigChange(string fieldName)
+    public override void OnConfigChange(string fieldName)
     {
         if (Status == TweakStatus.Enabled
             && fieldName is nameof(Config.HideCoords)
@@ -43,10 +40,8 @@ public unsafe partial class MinimapAdjustments
         }
     }
 
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawConfigurationHeader();
         _configGui.DrawBool("Square", ref Config.Square);
         _configGui.DrawFloat("DefaultOpacity", ref Config.DefaultOpacity, defaultValue: 0.8f, max: 1);

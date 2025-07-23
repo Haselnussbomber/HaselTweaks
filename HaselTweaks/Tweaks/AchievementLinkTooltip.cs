@@ -8,13 +8,13 @@ using Achievement = Lumina.Excel.Sheets.Achievement;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class AchievementLinkTooltip : BaseTweak, IConfigurableTweak
+public unsafe partial class AchievementLinkTooltip : ConfigurableTweak
 {
     private static readonly string[] ChatPanels = ["ChatLogPanel_0", "ChatLogPanel_1", "ChatLogPanel_2", "ChatLogPanel_3"];
 
     private readonly PluginConfig _pluginConfig;
-    private readonly IFramework _framework;
     private readonly ConfigGui _configGui;
+    private readonly IFramework _framework;
     private readonly TextService _textService;
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly ExcelService _excelService;

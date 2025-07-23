@@ -5,7 +5,7 @@ using HaselTweaks.Windows;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedIsleworksAgenda : BaseTweak, IConfigurableTweak
+public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly ConfigGui _configGui;

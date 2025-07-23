@@ -32,14 +32,8 @@ public unsafe partial class ScrollableTabs
 {
     private ScrollableTabsConfiguration Config => _pluginConfig.Tweaks.ScrollableTabs;
 
-    public void OnConfigOpen() { }
-    public void OnConfigChange(string fieldName) { }
-    public void OnConfigClose() { }
-
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawConfigurationHeader();
         _configGui.DrawBool("Invert", ref Config.Invert);
         _configGui.DrawBool("HandleAetherCurrent", ref Config.HandleAetherCurrent);

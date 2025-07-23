@@ -23,14 +23,8 @@ public unsafe partial class PortraitHelper
 {
     private PortraitHelperConfiguration Config => _pluginConfig.Tweaks.PortraitHelper;
 
-    public void OnConfigOpen() { }
-    public void OnConfigClose() { }
-    public void OnConfigChange(string fieldName) { }
-
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawConfigurationHeader();
         _configGui.DrawBool("EmbedPresetStringInThumbnails", ref Config.EmbedPresetStringInThumbnails);
         _configGui.DrawBool("NotifyGearChecksumMismatch", ref Config.NotifyGearChecksumMismatch, drawAfterDescription: () =>

@@ -25,19 +25,14 @@ public unsafe partial class EnhancedExpBar
 {
     private EnhancedExpBarConfiguration Config => _pluginConfig.Tweaks.EnhancedExpBar;
 
-    public void OnConfigOpen() { }
-    public void OnConfigClose() { }
-
-    public void OnConfigChange(string fieldName)
+    public override void OnConfigChange(string fieldName)
     {
         if (Status == TweakStatus.Enabled)
             TriggerReset();
     }
 
-    public void DrawConfig()
+    public override void DrawConfig()
     {
-        using var _ = _configGui.PushContext(this);
-
         _configGui.DrawIncompatibilityWarnings([("SimpleTweaksPlugin", ["ShowExperiencePercentage"])]);
 
         _configGui.DrawConfigurationHeader();

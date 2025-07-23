@@ -3,7 +3,7 @@ using Dalamud.Utility.Signatures;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public partial class RevealDutyRequirements : BaseTweak
+public partial class RevealDutyRequirements : Tweak
 {
     private readonly IGameInteropProvider _gameInteropProvider;
 

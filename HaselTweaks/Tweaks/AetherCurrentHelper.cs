@@ -6,7 +6,7 @@ using HaselTweaks.Windows;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class AetherCurrentHelper : BaseTweak, IConfigurableTweak
+public unsafe partial class AetherCurrentHelper : ConfigurableTweak
 {
     private readonly PluginConfig _pluginConfig;
     private readonly IGameInteropProvider _gameInteropProvider;

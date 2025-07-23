@@ -3,7 +3,7 @@ using HaselTweaks.Windows;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class CompanionColorPreview : BaseTweak
+public unsafe partial class CompanionColorPreview : Tweak
 {
     private readonly AddonObserver _addonObserver;
     private readonly WindowManager _windowManager;

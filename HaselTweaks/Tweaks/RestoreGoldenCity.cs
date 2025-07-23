@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Component.Exd;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class RestoreGoldenCity : BaseTweak
+public unsafe partial class RestoreGoldenCity : Tweak
 {
     private readonly TextService _textService;
     private readonly IGameInteropProvider _gameInteropProvider;

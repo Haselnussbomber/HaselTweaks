@@ -5,7 +5,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class SearchTheMarkets : BaseTweak
+public unsafe partial class SearchTheMarkets : Tweak
 {
     private readonly IContextMenu _contextMenu;
     private readonly LanguageProvider _languageProvider;

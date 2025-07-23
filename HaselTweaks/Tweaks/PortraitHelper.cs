@@ -17,7 +17,7 @@ using LSeStringBuilder = Lumina.Text.SeStringBuilder;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class PortraitHelper : BaseTweak, IConfigurableTweak
+public unsafe partial class PortraitHelper : ConfigurableTweak
 {
     private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
