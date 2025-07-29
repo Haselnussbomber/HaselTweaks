@@ -94,7 +94,7 @@ public unsafe partial class EnhancedTargetInfo : IConfigurableTweak
             return;
 
         var localPlayer = Control.GetLocalPlayer();
-        if (localPlayer == null)
+        if (localPlayer == null || localPlayer->GetObjectKind() != ObjectKind.Pc)
             return;
 
         var chara = (BattleChara*)target;

@@ -13,6 +13,12 @@ public static unsafe class TargetStatusUtils
         var numberArray = AtkStage.Instance()->GetNumberArrayData(NumberArrayType.Hud2);
         var stringArray = AtkStage.Instance()->GetStringArrayData(StringArrayType.Hud2);
 
+        if (numberArray == null || stringArray == null)
+            return;
+
+        if (numberArray->SubscribedAddonsCount == 0 || stringArray->SubscribedAddonsCount == 0)
+            return;
+
         ref var statusCount = ref numberArray->IntArray[4];
         if (statusCount == MaxStatusCount)
             return;
@@ -38,6 +44,12 @@ public static unsafe class TargetStatusUtils
         var numberArray = AtkStage.Instance()->GetNumberArrayData(NumberArrayType.Hud2);
         var stringArray = AtkStage.Instance()->GetStringArrayData(StringArrayType.Hud2);
 
+        if (numberArray == null || stringArray == null)
+            return;
+
+        if (numberArray->SubscribedAddonsCount == 0 || stringArray->SubscribedAddonsCount == 0)
+            return;
+
         ref var statusCount = ref numberArray->IntArray[4];
         if (statusCount == MaxStatusCount)
             return;
@@ -51,6 +63,12 @@ public static unsafe class TargetStatusUtils
         var numberArray = AtkStage.Instance()->GetNumberArrayData(NumberArrayType.Hud2);
         var stringArray = AtkStage.Instance()->GetStringArrayData(StringArrayType.Hud2);
 
+        if (numberArray == null || stringArray == null)
+            return;
+
+        if (numberArray->SubscribedAddonsCount == 0 || stringArray->SubscribedAddonsCount == 0)
+            return;
+
         var statusCount = numberArray->IntArray[4];
         if (index is < 0 or >= 30)
             return;
@@ -63,6 +81,6 @@ public static unsafe class TargetStatusUtils
 
     public static void ClearTimeRemainingCache()
     {
-        Unsafe.InitBlock(AgentHUD.Instance()->TargetInfoBuffTimeRemainingCache.GetPointer(0), 0, (8 + 4) * 30);
+        Unsafe.InitBlockUnaligned(AgentHUD.Instance()->TargetInfoBuffTimeRemainingCache.GetPointer(0), 0, (8 + 4) * 30);
     }
 }
