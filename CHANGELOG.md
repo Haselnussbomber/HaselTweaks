@@ -1,5 +1,11 @@
 # Changelog
 
+## [36.0.2] (2025-07-29)
+
+### Enhanced Target Info
+
+- **Updated:** Added some more safety checks to avoid crashes, just in case.
+
 ## [36.0.1] (2025-07-17)
 
 ### HaselTweaks
@@ -2090,6 +2096,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[36.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v36.0.1...v36.0.2
 [36.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v36.0.0...v36.0.1
 [36.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.1.2...v36.0.0
 [35.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.1.1...v35.1.2
