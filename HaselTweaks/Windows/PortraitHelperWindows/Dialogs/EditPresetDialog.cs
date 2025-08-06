@@ -51,7 +51,9 @@ public partial class EditPresetDialog : ConfirmationDialog
 
         ImGui.Spacing();
 
-        ImGui.InputText("##PresetName", ref _name, 30);
+        var name = _name ?? string.Empty;
+        ImGui.InputText("##PresetName", ref name, 100);
+        _name = name;
 
         var disabled = string.IsNullOrEmpty(_name.Trim());
         if (!disabled && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter)))

@@ -13,7 +13,7 @@ public unsafe partial class CastBarAetheryteNames : Tweak
     private readonly IClientState _clientState;
     private readonly ExcelService _excelService;
     private readonly TextService _textService;
-    private readonly SeStringEvaluator _seStringEvaluator;
+    private readonly ISeStringEvaluator _seStringEvaluator;
 
     private Hook<HaselActionManager.Delegates.OpenCastBar>? _openCastBarHook;
     private Hook<Telepo.Delegates.Teleport>? _teleportHook;

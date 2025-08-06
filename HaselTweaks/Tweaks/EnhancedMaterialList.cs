@@ -285,7 +285,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
         var (totalPoints, point, cost, isSameZone, placeNameSeString) = tuple.Value;
 
         nameNode->Y = 14;
-        nameNode->TextFlags = 192; // allow multiline text (not sure on the actual flags it sets though)
+        nameNode->TextFlags |= TextFlags.MultiLine;
         nameNode->LineSpacing = 17;
         nameNode->DrawFlags |= 0x1;
 

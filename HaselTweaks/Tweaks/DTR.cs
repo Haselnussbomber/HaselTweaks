@@ -102,7 +102,7 @@ public unsafe partial class DTR : ConfigurableTweak
             .Append(_excelService.TryGetRow<OnlineStatus>(12, out var busyStatus) ? busyStatus.Name : ReadOnlySeString.FromText("Busy"))
             .PopEdgeColorType()
             .PopColorType()
-            .ToSeString()
+            .ToReadOnlySeString()
             .ToDalamudString();
     }
 

@@ -37,6 +37,6 @@ public unsafe partial class MarketBoardItemPreview : Tweak
             return;
         }
 
-        AgentTryon.TryOn(((AtkUnitBase*)args.Addon)->Id, itemId, 0, 0, 0);
+        AgentTryon.TryOn(((AtkUnitBase*)args.Addon.Address)->Id, itemId, 0, 0, 0);
     }
 }

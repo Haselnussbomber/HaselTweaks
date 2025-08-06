@@ -23,7 +23,7 @@ public unsafe partial class FixInventoryOpenTab : Tweak
         if (args is not AddonRefreshArgs refreshArgs || refreshArgs.AtkValues == 0 || refreshArgs.AtkValueCount == 0)
             return;
 
-        var addon = (AtkUnitBase*)args.Addon;
+        var addon = (AtkUnitBase*)args.Addon.Address;
         if (addon->IsVisible)
             return; // Skipping: Addon is visible (using games logic)
 

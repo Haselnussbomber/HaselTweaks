@@ -16,7 +16,7 @@ public unsafe partial class EnhancedTargetInfo : ConfigurableTweak
     private readonly IClientState _clientState;
     private readonly TextService _textService;
     private readonly ExcelService _excelService;
-    private readonly SeStringEvaluator _seStringEvaluator;
+    private readonly ISeStringEvaluator _seStringEvaluator;
 
     private Hook<AgentHUD.Delegates.UpdateTargetInfo>? _updateTargetInfoHook;
     private Hook<RaptureTextModule.Delegates.FormatAddonText2IntIntUInt>? _formatAddonText2IntIntUIntHook;

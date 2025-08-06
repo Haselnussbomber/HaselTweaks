@@ -40,7 +40,9 @@ public partial class CreateTagDialog : ConfirmationDialog
 
         ImGui.Spacing();
 
-        ImGui.InputText("##TagName", ref _name, 30);
+        var name = _name ?? string.Empty;
+        ImGui.InputText("##TagName", ref name, 30);
+        _name = name;
 
         var disabled = string.IsNullOrEmpty(_name.Trim());
 

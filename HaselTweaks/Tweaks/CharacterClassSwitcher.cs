@@ -228,7 +228,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak
 
     private void PvPCharacterOnSetup(AddonEvent type, AddonArgs args)
     {
-        var addon = (AddonPvPCharacter*)args.Addon;
+        var addon = (AddonPvPCharacter*)args.Addon.Address;
 
         for (var i = 0; i < NumPvPClasses; i++)
         {

@@ -41,7 +41,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
 
     public override void Draw()
     {
-        ImGuiHelpers.SafeTextWrapped(_textService.Translate("GlamourDresserArmoireAlertWindow.Info"));
+        ImGui.TextWrapped(_textService.Translate("GlamourDresserArmoireAlertWindow.Info"));
 
         foreach (var (categoryId, categoryItems) in _tweak.Categories.OrderBy(kv => kv.Key))
         {

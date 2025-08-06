@@ -25,7 +25,7 @@ public unsafe partial class AdvancedEditOverlay : Overlay
 
     private AgentBannerEditorState* EditorState => AgentBannerEditor.Instance()->EditorState;
     private CharaViewPortrait* CharaView => EditorState != null ? EditorState->CharaView : null;
-    private Character* Character => CharaView != null ? CharaView->GetCharacter() : null;
+    private Character* Character => null; // TODO: CharaView != null ? CharaView->GetCharacter() : null;
 
     private hkaAnimation* GetBaseAnimation()
     {
@@ -109,7 +109,7 @@ public unsafe partial class AdvancedEditOverlay : Overlay
         using ((Misc.IsLightTheme && !IsWindow && _excelService.TryGetRow<UIColor>(3, out var noteColor) ? Color.FromABGR(noteColor.Dark) : Color.Grey).Push(ImGuiCol.Text))
         {
             ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.AdvancedEditOverlay.Note.Label"));
-            ImGuiHelpers.SafeTextWrapped(_textService.Translate("PortraitHelperWindows.AdvancedEditOverlay.Note.Text"));
+            ImGui.TextWrapped(_textService.Translate("PortraitHelperWindows.AdvancedEditOverlay.Note.Text"));
         }
     }
 

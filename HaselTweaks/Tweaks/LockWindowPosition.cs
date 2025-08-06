@@ -97,7 +97,7 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak
     // block GearSetList from moving when opened by Character
     private void GearSetList_PostSetup(AddonEvent type, AddonArgs args)
     {
-        var addon = (AddonGearSetList*)args.Addon;
+        var addon = (AddonGearSetList*)args.Addon.Address;
 
         var isLocked = Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == "GearSetList");
 

@@ -64,7 +64,7 @@ public unsafe partial class InventoryHighlight : ConfigurableTweak
     {
         if (IsHighlightActive())
         {
-            var addon = (AtkUnitBase*)args.Addon;
+            var addon = (AtkUnitBase*)args.Addon.Address;
             if (addon->IsVisible)
                 addon->IsVisible = false;
         }

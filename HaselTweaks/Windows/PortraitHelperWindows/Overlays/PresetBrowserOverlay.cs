@@ -101,10 +101,7 @@ public unsafe partial class PresetBrowserOverlay : Overlay
                     ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip", tag.Name));
 
                 var bytes = tag.Id.ToByteArray();
-                fixed (byte* ptr = bytes)
-                {
-                    ImGui.SetDragDropPayload("MoveTag"u8, ptr, (uint)bytes.Length);
-                }
+                ImGui.SetDragDropPayload("MoveTag"u8, bytes, ImGuiCond.None);
             }
         }
 

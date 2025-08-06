@@ -31,7 +31,7 @@ public unsafe partial class SaferItemSearch : Tweak
 
     private void ItemSearch_PostRequestedUpdate(AddonEvent type, AddonArgs args)
     {
-        var addon = (AddonItemSearch*)args.Addon;
+        var addon = (AddonItemSearch*)args.Addon.Address;
         if (addon == null)
             return;
 
@@ -43,7 +43,7 @@ public unsafe partial class SaferItemSearch : Tweak
 
     private void RetainerSell_PostSetup(AddonEvent type, AddonArgs args)
     {
-        UpdateRetainerSellButton((AddonRetainerSell*)args.Addon);
+        UpdateRetainerSellButton((AddonRetainerSell*)args.Addon.Address);
     }
 
     private void UpdateRetainerSellButton(AddonRetainerSell* addon = null)

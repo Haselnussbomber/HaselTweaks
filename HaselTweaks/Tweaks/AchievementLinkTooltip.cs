@@ -40,7 +40,7 @@ public unsafe partial class AchievementLinkTooltip : ConfigurableTweak
 
     private void OnChatLogPanelPostReceiveEvent(AddonEvent type, AddonArgs args)
     {
-        var addon = (AddonChatLogPanel*)args.Addon;
+        var addon = (AddonChatLogPanel*)args.Addon.Address;
 
         if (!addon->IsReady || addon->LogViewer.IsSelectingText || addon->IsResizing)
             return;

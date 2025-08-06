@@ -156,10 +156,7 @@ public partial class PresetCard : IDisposable
                 unsafe
                 {
                     var bytes = _preset.Id.ToByteArray();
-                    fixed (byte* ptr = bytes)
-                    {
-                        ImGui.SetDragDropPayload("MovePresetCard"u8, ptr, (uint)bytes.Length);
-                    }
+                    ImGui.SetDragDropPayload("MovePresetCard"u8, bytes, ImGuiCond.None);
                 }
             }
         }

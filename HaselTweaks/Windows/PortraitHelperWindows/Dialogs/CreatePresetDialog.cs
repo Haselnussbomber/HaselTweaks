@@ -58,7 +58,9 @@ public partial class CreatePresetDialog : ConfirmationDialog
     {
         ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.CreatePresetDialog.Name.Label"));
         ImGui.Spacing();
-        ImGui.InputText("##PresetName", ref _name, 100);
+        var name = _name ?? string.Empty;
+        ImGui.InputText("##PresetName", ref name, 100);
+        _name = name;
 
         var disabled = string.IsNullOrEmpty(_name.Trim());
         if (!disabled && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter)))

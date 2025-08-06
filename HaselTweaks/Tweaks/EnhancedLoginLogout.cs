@@ -181,7 +181,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
     {
         if (Config.SkipLogo)
         {
-            var addon = (AtkUnitBase*)args.Addon;
+            var addon = (AtkUnitBase*)args.Addon.Address;
             var value = new AtkValue
             {
                 Type = ValueType.Int,
@@ -200,7 +200,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
     private void UpdatePetMirageSettings()
     {
         var playerState = PlayerState.Instance();
-        if (playerState == null || playerState->IsLoaded != 0x01)
+        if (playerState == null || !playerState->IsLoaded)
             return;
 
         var contentId = playerState->ContentId;

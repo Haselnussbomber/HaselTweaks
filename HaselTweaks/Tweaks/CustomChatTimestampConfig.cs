@@ -72,17 +72,17 @@ public partial class CustomChatTimestamp
 
             ImGuiUtils.TextUnformattedColored(Color.White, formatted);
             ImGui.SameLine(0, 0);
-            ImGuiHelpers.SafeTextColoredWrapped(Color.FromRGBA(colorParty), _textService.Translate("CustomChatTimestamp.Config.Format.Example.Message"));
+            ImGui.TextColoredWrapped(Color.FromRGBA(colorParty), _textService.Translate("CustomChatTimestamp.Config.Format.Example.Message"));
         }
         catch (FormatException)
         {
             using var indent = ImRaii.PushIndent();
-            ImGuiHelpers.SafeTextColoredWrapped(Color.Red, _textService.Translate("CustomChatTimestamp.Config.Format.Invalid"));
+            ImGui.TextColoredWrapped(Color.Red, _textService.Translate("CustomChatTimestamp.Config.Format.Invalid"));
         }
         catch (Exception e)
         {
             using var indent = ImRaii.PushIndent();
-            ImGuiHelpers.SafeTextColoredWrapped(Color.Red, e.Message);
+            ImGui.TextColoredWrapped(Color.Red, e.Message);
         }
     }
 }

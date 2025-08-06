@@ -278,7 +278,7 @@ public partial class PluginWindow : SimpleWindow
         {
             ImGuiUtils.DrawPaddedSeparator();
             ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);
-            ImGuiHelpers.SafeTextColoredWrapped(Color.Grey2, description);
+            ImGui.TextColoredWrapped(Color.Grey2, description);
             ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);
         }
 

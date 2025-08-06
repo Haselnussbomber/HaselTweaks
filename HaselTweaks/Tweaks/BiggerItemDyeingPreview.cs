@@ -22,7 +22,7 @@ public unsafe partial class BiggerItemDyeingPreview : Tweak
         if (args is not AddonSetupArgs setupArgs)
             return;
 
-        var addon = (AtkUnitBase*)setupArgs.Addon;
+        var addon = (AtkUnitBase*)setupArgs.Addon.Address;
         var rootNode = addon->RootNode;
         if (rootNode == null)
             return;
