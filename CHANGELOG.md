@@ -1,12 +1,13 @@
 # Changelog
 
-## [Unreleased]
+## [36.1.0] (2025-08-08)
 
-Preliminary update for Patch 7.3.
+Preliminary update for Patch 7.3.  
+I didn't test it that much, because I was updating FFXIVClientStructs/Dalamud, but it seemed fine so far. Beware of crashes?!
 
 ### Removed Tweak: Restore Golden City
 
-Yep.
+If you know, you know. If you didn't know, well... now you know.
 
 ## [36.0.2] (2025-07-29)
 
@@ -2104,6 +2105,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[36.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v36.0.2...v36.1.0
 [36.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v36.0.1...v36.0.2
 [36.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v36.0.0...v36.0.1
 [36.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v35.1.2...v36.0.0
