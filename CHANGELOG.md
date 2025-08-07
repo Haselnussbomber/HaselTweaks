@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+Preliminary update for Patch 7.3.
+
+### Removed Tweak: Restore Golden City
+
+Yep.
+
 ## [36.0.2] (2025-07-29)
 
 ### Enhanced Target Info
