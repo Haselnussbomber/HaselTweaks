@@ -63,7 +63,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak
         _updateGearsetHook.Enable();
         _agentBannerPreviewShowHook.Enable();
 
-        _openPortraitEditPayload = _chatGui.AddChatLinkHandler(OpenPortraitEditChatHandler);
+        _openPortraitEditPayload = _chatGui.AddChatLinkHandler(1, OpenPortraitEditChatHandler);
 
         if (IsAddonOpen(AgentId.BannerEditor))
             OnAddonOpen("BannerEditor");
@@ -96,7 +96,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak
         _agentBannerPreviewShowHook = null;
     }
 
-    private void OpenPortraitEditChatHandler(Guid guid, DSeString message)
+    private void OpenPortraitEditChatHandler(uint commandId, DSeString message)
     {
         var raptureGearsetModule = RaptureGearsetModule.Instance();
         var gearsetId = raptureGearsetModule->CurrentGearsetIndex;
