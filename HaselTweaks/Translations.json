@@ -2277,7 +2277,7 @@
   },
   "ShopItemIcons.Config.HandleShopExchangeCurrency.Description": {
     "en": "This applies to vendors who sell items for currency, such as all the societies vendors, or the trophy crystal quartermaster.",
-    "de": "Betrifft Händler, die Gegenstände für Währung verkaufen, wie zum Beispiel all die Händler der Freundesvölker, oder dem Kristalltrophäen\u00ADVersorgungsoffizier.",
+    "de": "Betrifft Händler, die Gegenstände für Währung verkaufen, wie zum Beispiel all die Händler der Freundesvölker, oder dem Kristalltrophäen-Versorgungsoffizier.",
     "zh": "这项适用于以货币交易的商人，例如所有友好部族商人或战利水晶交易员。"
   },
   "ShopItemIcons.Config.HandleGrandCompanyExchange.Label": {
