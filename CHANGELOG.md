@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Character Class Switcher
+
+- **Fixed:** Clicking on crafters would always show the desynthesis window.
+
 ## [36.1.1] (2025-08-08)
 
 ### Cast Bar Aetheryte Name

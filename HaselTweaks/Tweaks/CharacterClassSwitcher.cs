@@ -196,11 +196,16 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak
         if (eventParam < 2)
             return false;
 
-        var node = addon->ButtonNodes.GetPointer(eventParam - 2)->Value;
-        if (node == null || node->OwnerNode == null)
+        var component = (AtkComponentBase*)addon->ButtonNodes.GetPointer(eventParam - 2)->Value;
+        if (component == null || component->OwnerNode == null)
             return false;
 
-        var imageNode = (AtkImageNode*)node->GetImageNodeById(4);
+        var imageNode = component->GetComponentType() switch
+        {
+            ComponentType.Button => component->GetImageNodeById(6),
+            ComponentType.Base => component->GetImageNodeById(4),
+            _ => null
+        };
         if (imageNode == null)
             return false;
 
@@ -223,7 +228,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak
             }
         }
 
-        return ProcessEvents(node->OwnerNode, imageNode, eventType, atkEventData);
+        return ProcessEvents(component->OwnerNode, imageNode, eventType, atkEventData);
     }
 
     private void PvPCharacterOnSetup(AddonEvent type, AddonArgs args)
