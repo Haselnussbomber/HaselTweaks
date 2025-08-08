@@ -25,7 +25,7 @@ public unsafe partial class AdvancedEditOverlay : Overlay
 
     private AgentBannerEditorState* EditorState => AgentBannerEditor.Instance()->EditorState;
     private CharaViewPortrait* CharaView => EditorState != null ? EditorState->CharaView : null;
-    private Character* Character => null; // TODO: CharaView != null ? CharaView->GetCharacter() : null;
+    private Character* Character => CharaView != null ? CharaView->GetCharacter() : null;
 
     private hkaAnimation* GetBaseAnimation()
     {

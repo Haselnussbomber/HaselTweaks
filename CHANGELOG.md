@@ -6,6 +6,10 @@
 
 - **Fixed:** Clicking on crafters would always show the desynthesis window.
 
+### Portrait Helper
+
+- **Fixed:** Advanced Edit Overlay was temporarily disabled. It's back now.
+
 ## [36.1.1] (2025-08-08)
 
 ### Cast Bar Aetheryte Name
