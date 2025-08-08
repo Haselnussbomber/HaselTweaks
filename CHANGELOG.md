@@ -10,6 +10,10 @@
 
 - **Fixed:** Advanced Edit Overlay was temporarily disabled. It's back now.
 
+### Scrollable Tabs
+
+- **Fixed:** Scrolling in the Character window didn't work.
+
 ## [36.1.1] (2025-08-08)
 
 ### Cast Bar Aetheryte Name
