@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Experience Bar
+
+- **Updated:** The Cosmic Research Bar should now work for the new Dataset, whenever it's added.
+- **Fixed:** Due to a human error when updating the code, the experience bar didn't show anything.
+
 ## [36.1.2] (2025-08-08)
 
 ### Character Class Switcher

@@ -65,7 +65,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
     {
         _updateExpHook!.Original(thisPtr, expNumberArray, expStringArray, characterStringArray);
 
-        if (PlayerState.Instance()->IsLoaded || !_excelService.TryGetRow<ClassJob>(PlayerState.Instance()->CurrentClassJobId, out var classJob))
+        if (!PlayerState.Instance()->IsLoaded || !_excelService.TryGetRow<ClassJob>(PlayerState.Instance()->CurrentClassJobId, out var classJob))
             return;
 
         SetColor(); // reset unless overwritten
@@ -261,7 +261,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
         byte selectedType = 0;
         var lowestPercentage = float.MaxValue;
 
-        for (byte type = 1; type <= 4; type++)
+        for (byte type = 1; type <= 5; type++)
         {
             if (!researchModule->IsTypeAvailable(toolClassId, type))
                 break;
@@ -284,7 +284,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
 
         if (selectedType == 0)
         {
-            for (byte type = 1; type <= 4; type++)
+            for (byte type = 1; type <= 5; type++)
             {
                 if (!researchModule->IsTypeAvailable(toolClassId, type))
                     break;
