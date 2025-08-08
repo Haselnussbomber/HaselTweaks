@@ -124,13 +124,16 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak
         for (var i = 0; i < NumClasses; i++)
         {
             // skip crafters as they already have ButtonClick events
-            if (IsCrafter(i)) continue;
+            if (IsCrafter(i))
+                continue;
 
-            var node = addon->ButtonNodes.GetPointer(i)->Value;
-            if (node == null) continue;
+            var node = addon->ClassComponents.GetPointer(i)->Value;
+            if (node == null)
+                continue;
 
             var collisionNode = node->UldManager.RootNode;
-            if (collisionNode == null) continue;
+            if (collisionNode == null)
+                continue;
 
             collisionNode->AddEvent(AtkEventType.MouseClick, (uint)i + 2, (AtkEventListener*)addon, null, false);
             collisionNode->AddEvent(AtkEventType.InputReceived, (uint)i + 2, (AtkEventListener*)addon, null, false);
@@ -153,23 +156,28 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak
 
         for (var i = 0; i < NumClasses; i++)
         {
-            var node = addon->ButtonNodes.GetPointer(i)->Value;
-            if (node == null)
+            var component = addon->ClassComponents.GetPointer(i)->Value;
+            if (component == null)
                 continue;
 
             // skip crafters as they already have Cursor Pointer flags
             if (IsCrafter(i))
             {
                 // but ensure the button is enabled, even though the player might not have desynthesis unlocked
-                node->SetEnabledState(true);
+                component->SetEnabledState(true);
                 continue;
             }
 
-            var rootNode = node->UldManager.RootNode;
+            var rootNode = component->UldManager.RootNode;
             if (rootNode == null)
                 continue;
 
-            var imageNode = node->GetImageNodeById(4);
+            var imageNode = component->GetComponentType() switch
+            {
+                ComponentType.Button => component->GetImageNodeById(6),
+                ComponentType.Base => component->GetImageNodeById(4),
+                _ => null
+            };
             if (imageNode == null)
                 continue;
 
@@ -196,7 +204,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak
         if (eventParam < 2)
             return false;
 
-        var component = (AtkComponentBase*)addon->ButtonNodes.GetPointer(eventParam - 2)->Value;
+        var component = addon->ClassComponents.GetPointer(eventParam - 2)->Value;
         if (component == null || component->OwnerNode == null)
             return false;
 
@@ -238,10 +246,12 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak
         for (var i = 0; i < NumPvPClasses; i++)
         {
             var entry = addon->ClassEntries.GetPointer(i);
-            if (entry->Base == null) continue;
+            if (entry->Base == null)
+                continue;
 
             var rootNode = entry->Base->UldManager.RootNode;
-            if (rootNode == null) continue;
+            if (rootNode == null)
+                continue;
 
             rootNode->AddEvent(AtkEventType.MouseClick, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
             rootNode->AddEvent(AtkEventType.InputReceived, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
@@ -255,10 +265,12 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak
         for (var i = 0; i < NumPvPClasses; i++)
         {
             var entry = addon->ClassEntries.GetPointer(i);
-            if (entry->Base == null || entry->Icon == null) continue;
+            if (entry->Base == null || entry->Icon == null)
+                continue;
 
             var rootNode = entry->Base->UldManager.RootNode;
-            if (rootNode == null) continue;
+            if (rootNode == null)
+                continue;
 
             // if job is unlocked, it has full alpha
             var isUnlocked = entry->Icon->Color.A == 255;
