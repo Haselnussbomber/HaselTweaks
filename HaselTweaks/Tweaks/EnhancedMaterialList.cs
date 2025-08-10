@@ -165,11 +165,8 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
                 if (Config.DisableClickToOpenMapForCrystals && (!_excelService.TryGetRow<Item>(itemId, out var item) || item.ItemUICategory.RowId == 59))
                     return;
 
-                var tuple = GetPointForItem(itemId);
-                if (tuple == null)
+                if (!TryGetPointForItem(itemId, out _, out var point, out _, out _, out _))
                     return;
-
-                var (totalPoints, point, cost, isSameZone, placeName) = tuple.Value;
 
                 _mapService.OpenMap(point, itemId, "HaselTweaks"u8);
 
@@ -278,14 +275,12 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
         if (Config.DisableZoneNameForCrystals && item.ItemUICategory.RowId == 59)
             return;
 
-        var tuple = GetPointForItem(itemId);
-        if (tuple == null)
+        if (!TryGetPointForItem(itemId, out _, out _, out _, out var isSameZone, out var placeNameSeString))
             return;
 
-        var (totalPoints, point, cost, isSameZone, placeNameSeString) = tuple.Value;
-
-        nameNode->Y = 14;
-        nameNode->TextFlags |= TextFlags.MultiLine;
+        nameNode->Y = 4;
+        nameNode->Height = 34;
+        nameNode->TextFlags = TextFlags.MultiLine;
         nameNode->LineSpacing = 17;
         nameNode->DrawFlags |= 0x1;
 
@@ -339,11 +334,23 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
         flags |= 2;
     }
 
-    private (int, GatheringPoint, uint, bool, ReadOnlySeString)? GetPointForItem(uint itemId)
+    private bool TryGetPointForItem(
+        uint itemId,
+        out int totalPoints,
+        out GatheringPoint point,
+        out uint cost,
+        out bool isSameZone,
+        out ReadOnlySeString placeName)
     {
+        totalPoints = default;
+        point = default;
+        cost = default;
+        isSameZone = default;
+        placeName = default;
+
         var gatheringItems = _itemService.GetGatheringItems(itemId);
         if (gatheringItems.Length == 0)
-            return null;
+            return false;
 
         // TODO: rethink this
         var gatheringPointSheet = _excelService.GetSheet<GatheringPoint>();
@@ -359,12 +366,15 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
             .ToList();
 
         if (gatheringPoints.Count == 0)
-            return null;
+            return false;
 
         var currentTerritoryTypeId = GameMain.Instance()->CurrentTerritoryTypeId;
-        var point = gatheringPoints.FirstOrDefault(row => row.TerritoryType.RowId == currentTerritoryTypeId);
-        var isSameZone = point.RowId != 0;
-        var cost = 0u;
+
+        totalPoints = gatheringPoints.Count;
+        point = gatheringPoints.FirstOrDefault(row => row.TerritoryType.RowId == currentTerritoryTypeId);
+        isSameZone = point.RowId != 0;
+        cost = 0u;
+
         if (point.RowId == 0)
         {
             foreach (var p in gatheringPoints)
@@ -382,9 +392,13 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
         }
 
         if (point.RowId == 0)
-            return null;
+            return false;
 
-        var placeName = point.TerritoryType.ValueNullable?.PlaceName.ValueNullable?.Name;
-        return placeName == null ? null : (gatheringPoints.Count, point, cost, isSameZone, (ReadOnlySeString)placeName);
+        var nullablePlayeName = point.TerritoryType.ValueNullable?.PlaceName.ValueNullable?.Name;
+        if (nullablePlayeName == null)
+            return false;
+
+        placeName = (ReadOnlySeString)nullablePlayeName;
+        return true;
     }
 }
