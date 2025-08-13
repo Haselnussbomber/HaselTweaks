@@ -44,7 +44,7 @@ public unsafe partial class AutoSelectSoilAndSeed : Tweak
         if (agentEx->State != 0)
             return;
 
-        if (agent->SelectableItems[0].InventoryType != InventoryType.Invalid && agent->SelectableItems[1].InventoryType != InventoryType.Invalid)
+        if (agent->SelectedItems[0].InventoryType != InventoryType.Invalid && agent->SelectedItems[1].InventoryType != InventoryType.Invalid)
             return;
 
         var isSoilSet = false;
