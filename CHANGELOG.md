@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Auto-select Soil and Seed
+
+Automatically selects the first available soil and seed from your inventory when opening the "Gardening" window.
+
 ## [36.1.3] (2025-08-08)
 
 ### Enhanced Experience Bar

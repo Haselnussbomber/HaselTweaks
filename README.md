@@ -41,6 +41,10 @@ Configuration options:
 
 If a new daily/tribal quest objective requires you to craft an item, and you have all the materials for it in your inventory at that moment, this tweak will automatically open the recipe, saving you a whopping 4-5 clicks.
 
+### Auto-select Soil and Seed
+
+Automatically selects the first available soil and seed from your inventory when opening the "Gardening" window.
+
 ### Background Music Keybind
 
 Adds a configurable keybind to toggle the background music, in addition to the game's existing keybind option to toggle the sound. No more `/bgm` macro. Works in cutscenes.

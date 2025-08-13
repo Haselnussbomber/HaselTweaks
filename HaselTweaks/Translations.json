@@ -391,6 +391,14 @@
     "zh": "无"
   },
 
+  "AutoSelectSoilAndSeed.Tweak.Name": {
+    "en": "Auto-select Soil and Seed"
+  },
+  "AutoSelectSoilAndSeed.Tweak.Description": {
+    "en": "Automatically selects the first available soil and seed from your inventory when opening the \"Gardening\" window.",
+    "de": "Wählt beim Öffnen des \"AUSSÄEN\"-Fensters automatisch die erste verfügbare Erde und den ersten Samen aus deinem Inventar aus."
+  },
+
   "BiggerItemDyeingPreview.Tweak.Name": {
     "en": "Bigger Item Dyeing Preview",
     "zh": "更大的染色预览"
