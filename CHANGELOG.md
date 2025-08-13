@@ -6,6 +6,10 @@
 
 Automatically selects the first available soil and seed from your inventory when opening the "Gardening" window.
 
+### Enhanced Material List
+
+- **Fixed:** The item and zone name had a display issue due to the games ellipsis flag not handling multiple lines.
+
 ## [36.1.3] (2025-08-08)
 
 ### Enhanced Experience Bar
