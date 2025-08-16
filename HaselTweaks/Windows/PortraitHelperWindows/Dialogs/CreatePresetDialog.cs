@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Services.PortraitHelper;

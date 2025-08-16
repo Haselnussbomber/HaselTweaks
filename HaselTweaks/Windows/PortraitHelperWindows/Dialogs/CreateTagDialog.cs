@@ -1,4 +1,3 @@
-using System;
 using HaselTweaks.ImGuiComponents;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;

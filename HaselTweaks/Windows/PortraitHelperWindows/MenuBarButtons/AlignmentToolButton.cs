@@ -1,4 +1,3 @@
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using HaselTweaks.Services.PortraitHelper;
 using HaselTweaks.Utils.PortraitHelper;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
