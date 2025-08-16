@@ -29,6 +29,7 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
         DisableWindowSounds = true;
         RespectCloseHotkey = false;
 
+        IsWindow = ImGuiHelpers.GlobalScaleSafe > 1;
         UpdateWindow();
     }
 
