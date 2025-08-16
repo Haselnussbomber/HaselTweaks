@@ -3,5 +3,4 @@
 	url = https://github.com/Haselnussbomber/HaselCommon.git
 [submodule "FFXIVClientStructs"]
 	path = FFXIVClientStructs
-	url = https://github.com/Haselnussbomber/FFXIVClientStructs.git
-  branch = custom
+	url = https://github.com/aers/FFXIVClientStructs.git
