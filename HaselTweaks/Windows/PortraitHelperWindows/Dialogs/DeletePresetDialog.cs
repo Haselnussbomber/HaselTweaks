@@ -1,83 +1,94 @@
 using System.IO;
-using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
-using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
+using HaselTweaks.Services.PortraitHelper;
+using HaselTweaks.Utils.PortraitHelper;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
-[RegisterScoped, AutoConstruct]
-public partial class DeletePresetDialog : ConfirmationDialog
+[RegisterSingleton, AutoConstruct]
+public partial class DeletePresetDialog
 {
-    private readonly IDalamudPluginInterface _pluginInterface;
     private readonly INotificationManager _notificationManager;
-    private readonly PluginConfig _pluginConfig;
     private readonly TextService _textService;
+    private readonly PluginConfig _pluginConfig;
+    private readonly ThumbnailService _thumbnailService;
 
-    private PresetBrowserOverlay? _presetBrowserOverlay;
+    private bool _shouldOpen;
     private SavedPreset? _preset;
 
-    [AutoPostConstruct]
-    private void Initialize()
+    public void Open(SavedPreset preset)
     {
-        WindowName = _textService.Translate("PortraitHelperWindows.DeletePresetDialog.Title");
-
-        AddButton(new ConfirmationButton(_textService.Translate("ConfirmationButtonWindow.Delete"), OnDelete));
-        AddButton(new ConfirmationButton(_textService.Translate("ConfirmationButtonWindow.Cancel"), Close));
-    }
-
-    public void Open(PresetBrowserOverlay presetBrowserOverlay, SavedPreset? preset)
-    {
-        _presetBrowserOverlay = presetBrowserOverlay;
         _preset = preset;
-        Show();
+        _shouldOpen = true;
     }
 
-    public void Close()
-    {
-        Hide();
-        _preset = null;
-    }
-
-    public override bool DrawCondition()
-        => base.DrawCondition() && _presetBrowserOverlay != null && _preset != null;
-
-    public override void InnerDraw()
-        => ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.DeletePresetDialog.Prompt", _preset!.Name));
-
-    private void OnDelete()
+    public void Draw()
     {
         if (_preset == null)
-        {
-            Close();
             return;
+
+        var title = _textService.Translate("PortraitHelperWindows.DeletePresetDialog.Title");
+
+        if (_shouldOpen)
+        {
+            ImGui.OpenPopup(title);
+            _shouldOpen = false;
         }
 
-        if (_presetBrowserOverlay!.PresetCards.TryGetValue(_preset.Id, out var card))
-        {
-            _presetBrowserOverlay.PresetCards.Remove(_preset.Id);
-            card.Dispose();
-        }
+        if (!ImGui.IsPopupOpen(title))
+            return;
 
-        var thumbPath = _pluginInterface.GetPortraitThumbnailPath(_preset.Id);
-        if (File.Exists(thumbPath))
+        // Always center this window when appearing
+        var center = ImGui.GetMainViewport().GetCenter();
+        ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new(0.5f, 0.5f));
+
+        using var modal = ImRaiiExt.PopupModal(title, ImGuiWindowFlags.AlwaysAutoResize);
+        if (!modal) return;
+
+        ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.DeletePresetDialog.Prompt", _preset.Name));
+
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.Spacing();
+
+        var combinedButtonWidths = ImGui.GetStyle().ItemSpacing.X
+            + MathF.Max(Constants.DialogButtonMinWidth, ImGuiHelpers.GetButtonSize(_textService.Translate("ConfirmationButtonWindow.Delete")).X)
+            + MathF.Max(Constants.DialogButtonMinWidth, ImGuiHelpers.GetButtonSize(_textService.Translate("ConfirmationButtonWindow.Cancel")).X);
+
+        ImGuiUtils.PushCursorX((ImGui.GetContentRegionAvail().X - combinedButtonWidths) / 2f);
+
+        if (ImGui.Button(_textService.Translate("ConfirmationButtonWindow.Delete"), new Vector2(120, 0)))
         {
-            try
+            var thumbPath = _thumbnailService.GetPortraitThumbnailPath(_preset.Id);
+            if (File.Exists(thumbPath))
             {
-                File.Delete(thumbPath);
-            }
-            catch (Exception ex)
-            {
-                _notificationManager.AddNotification(new()
+                try
                 {
-                    Title = "Could not delete preset",
-                    Content = ex.Message,
-                });
+                    File.Delete(thumbPath);
+                }
+                catch (Exception ex)
+                {
+                    _notificationManager.AddNotification(new()
+                    {
+                        Title = "Could not delete preset",
+                        Content = ex.Message,
+                    });
+                }
             }
+
+            _pluginConfig.Tweaks.PortraitHelper.Presets.Remove(_preset);
+            _pluginConfig.Save();
+
+            _preset = null;
+            ImGui.CloseCurrentPopup();
         }
 
-        _pluginConfig.Tweaks.PortraitHelper.Presets.Remove(_preset);
-        _pluginConfig.Save();
-
-        Close();
+        ImGui.SetItemDefaultFocus();
+        ImGui.SameLine();
+        if (ImGui.Button(_textService.Translate("ConfirmationButtonWindow.Cancel"), new Vector2(120, 0)))
+        {
+            _preset = null;
+            ImGui.CloseCurrentPopup();
+        }
     }
 }

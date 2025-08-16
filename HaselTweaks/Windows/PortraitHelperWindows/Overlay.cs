@@ -1,6 +1,7 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using HaselTweaks.Enums.PortraitHelper;
+using HaselTweaks.Services.PortraitHelper;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows;
 
@@ -9,6 +10,7 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
 {
     private readonly PluginConfig _pluginConfig;
     private readonly ExcelService _excelService;
+    private readonly MenuBarState _state;
 
     private readonly ImRaii.Style _windowPadding = new();
     private readonly ImRaii.Color _windowBg = new();
@@ -16,10 +18,10 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
 
     protected uint DefaultImGuiTextColor { get; set; }
 
-    protected PortraitHelperConfiguration Config => _pluginConfig.Tweaks.PortraitHelper;
+    private bool _isDisposed;
 
     public bool IsWindow { get; set; }
-    public virtual OverlayType Type => OverlayType.Window;
+    public virtual OverlayType Type => OverlayType.Full;
 
     [AutoPostConstruct]
     private void Initialize()
@@ -32,8 +34,13 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
 
     public override void Dispose()
     {
-        OnClose();
-        base.Dispose();
+        if (!_isDisposed)
+        {
+            _isDisposed = true; // do this first, or else... recursion
+            OnClose();
+            base.Dispose();
+            GC.SuppressFinalize(this);
+        }
     }
 
     public override void OnClose()
@@ -43,6 +50,8 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
         _windowText.Dispose();
 
         ToggleUiVisibility(true);
+
+        _state.CloseOverlay();
 
         base.OnClose();
     }
@@ -84,14 +93,10 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
         if (!IsWindow)
         {
             if (Type == OverlayType.LeftPane)
-            {
                 _windowPadding.Push(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-            }
 
             if (Misc.IsLightTheme && _excelService.TryGetRow<UIColor>(2, out var uiColor))
-            {
                 _windowText.Push(ImGuiCol.Text, Color.FromABGR(uiColor.Dark).ToUInt());
-            }
 
             _windowBg.Push(ImGuiCol.WindowBg, 0);
         }
@@ -125,7 +130,7 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
 
             var scale = addon->Scale;
 
-            if (Type == OverlayType.Window)
+            if (Type == OverlayType.Full)
             {
                 var windowNode = addon->WindowNode;
 

@@ -1975,15 +1975,9 @@
     "de": "Vorlagen-Browser umschalten",
     "zh": "开关预设浏览器"
   },
-  "PortraitHelperWindows.MenuBar.ToggleAlignmentTool.Label.CloseSettings": {
-    "en": "Toggle Alignment Tool\nShift: Close Settings",
-    "de": "Ausrichtungswerkzeug umschalten\nShift: Einstellungen schließen",
-    "zh": "开关辅助线\nShift：关闭设置"
-  },
-  "PortraitHelperWindows.MenuBar.ToggleAlignmentTool.Label.OpenSettings": {
-    "en": "Toggle Alignment Tool\nShift: Open Settings",
-    "de": "Ausrichtungswerkzeug umschalten\nShift: Einstellungen öffnen",
-    "zh": "开关辅助线\nShift：打开设置"
+  "PortraitHelperWindows.MenuBar.ToggleAlignmentTool.Label": {
+    "en": "Toggle Alignment Tool\nShift: Open/close Settings",
+    "de": "Ausrichtungswerkzeug umschalten\nShift: Einstellungen öffnen/schließen"
   },
   "PortraitHelperWindows.PresetCard.MovingPresetCard.Tooltip": {
     "en": "Moving \"{0}\"",
@@ -2323,6 +2317,10 @@
     "en": "Save",
     "de": "Speichern",
     "zh": "保存"
+  },
+  "ConfirmationButtonWindow.Saving": {
+    "en": "Saving...",
+    "de": "Speichert..."
   },
   "ConfirmationButtonWindow.Cancel": {
     "en": "Cancel",

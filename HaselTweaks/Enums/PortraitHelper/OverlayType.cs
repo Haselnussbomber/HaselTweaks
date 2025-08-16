@@ -2,6 +2,6 @@ namespace HaselTweaks.Enums.PortraitHelper;
 
 public enum OverlayType
 {
-    Window,
+    Full,
     LeftPane
 }
