@@ -1,14 +1,15 @@
+using System;
 using HaselTweaks.ImGuiComponents;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
-[RegisterScoped, AutoConstruct]
+[RegisterSingleton, AutoConstruct]
 public partial class CreateTagDialog : ConfirmationDialog
 {
     private readonly PluginConfig _pluginConfig;
     private readonly TextService _textService;
     private ConfirmationButton _saveButton;
-    private string? _name;
+    private string _name = string.Empty;
 
     [AutoPostConstruct]
     private void Initialize()
@@ -28,7 +29,7 @@ public partial class CreateTagDialog : ConfirmationDialog
     public void Close()
     {
         Hide();
-        _name = null;
+        _name = string.Empty;
     }
 
     public override bool DrawCondition()
@@ -40,9 +41,7 @@ public partial class CreateTagDialog : ConfirmationDialog
 
         ImGui.Spacing();
 
-        var name = _name ?? string.Empty;
-        ImGui.InputText("##TagName", ref name, 30);
-        _name = name;
+        ImGui.InputText("##TagName", ref _name, 30);
 
         var disabled = string.IsNullOrEmpty(_name.Trim());
 

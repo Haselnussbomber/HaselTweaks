@@ -3,7 +3,7 @@ using HaselTweaks.Records.PortraitHelper;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
-[RegisterScoped, AutoConstruct]
+[RegisterSingleton, AutoConstruct]
 public partial class RenameTagDialog : ConfirmationDialog
 {
     private readonly PluginConfig _pluginConfig;

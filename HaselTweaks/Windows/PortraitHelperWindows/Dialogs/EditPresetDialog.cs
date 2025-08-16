@@ -55,6 +55,41 @@ public partial class EditPresetDialog
         if (ImGui.InputText("##PresetName", ref name, Constants.PresetNameMaxLength))
             _name = name;
 
+        var availableTags = _pluginConfig.Tweaks.PortraitHelper.PresetTags;
+        if (availableTags.Count != 0)
+        {
+            ImGui.Spacing();
+            ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.EditPresetDialog.Tags.Label"));
+
+            var tagNames = _tags!
+                .Select(id => availableTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
+                .Where(name => !string.IsNullOrEmpty(name));
+
+            var preview = tagNames.Any() ? string.Join(", ", tagNames) : _textService.Translate("PortraitHelperWindows.EditPresetDialog.Tags.None");
+
+            ImGui.Spacing();
+            using var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge);
+            if (tagsCombo)
+            {
+                foreach (var tag in availableTags)
+                {
+                    var isSelected = _tags!.Contains(tag.Id);
+
+                    if (ImGui.Selectable($"{tag.Name}##PresetTag{tag.Id}", isSelected))
+                    {
+                        if (isSelected)
+                        {
+                            _tags.Remove(tag.Id);
+                        }
+                        else
+                        {
+                            _tags.Add(tag.Id);
+                        }
+                    }
+                }
+            }
+        }
+
         var disabled = string.IsNullOrWhiteSpace(_name);
         var shouldSave = !disabled && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter));
 
@@ -73,6 +108,11 @@ public partial class EditPresetDialog
             if (ImGui.Button(_textService.Translate("ConfirmationButtonWindow.Save"), new Vector2(120, 0)) || shouldSave)
             {
                 _preset.Name = _name;
+                _preset.Tags.Clear();
+
+                foreach (var tag in _tags)
+                    _preset.Tags.Add(tag);
+
                 _pluginConfig.Save();
                 _preset = null;
                 _name = string.Empty;

@@ -4,7 +4,7 @@ using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
-[RegisterScoped, AutoConstruct]
+[RegisterSingleton, AutoConstruct]
 public partial class DeleteTagDialog : ConfirmationDialog
 {
     private readonly PluginConfig _pluginConfig;
@@ -67,12 +67,6 @@ public partial class DeleteTagDialog : ConfirmationDialog
             // remove presets with tag
             foreach (var preset in presets)
             {
-                if (_presetBrowserOverlay!.PresetCards.TryGetValue(preset.Id, out var card))
-                {
-                    card.Dispose();
-                    _presetBrowserOverlay.PresetCards.Remove(preset.Id);
-                }
-
                 config.Presets.Remove(preset);
             }
         }
@@ -88,7 +82,7 @@ public partial class DeleteTagDialog : ConfirmationDialog
         config.PresetTags.Remove(_tag);
         _pluginConfig.Save();
 
-        if (_presetBrowserOverlay!.SelectedTagId == _tag.Id)
+        if (_presetBrowserOverlay?.SelectedTagId == _tag.Id)
             _presetBrowserOverlay.SelectedTagId = null;
 
         Close();

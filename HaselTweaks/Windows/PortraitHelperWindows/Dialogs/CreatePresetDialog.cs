@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Services.PortraitHelper;
@@ -22,19 +23,21 @@ public partial class CreatePresetDialog
     private string? _name;
     private PortraitPreset? _preset;
     private Image<Bgra32>? _image;
+    private HashSet<Guid>? _tags;
 
     public void Open(string name, PortraitPreset? preset, Image<Bgra32>? image)
     {
         _name = name;
         _preset = preset;
         _image = image;
+        _tags = [];
         _isSaving = false;
         _shouldOpen = true;
     }
 
     public void Draw()
     {
-        if (_preset == null || _image == null)
+        if (_preset == null || _image == null || _tags == null)
             return;
 
         var title = _textService.Translate("PortraitHelperWindows.CreatePresetDialog.Title");
@@ -65,6 +68,41 @@ public partial class CreatePresetDialog
         var name = _name ?? string.Empty;
         if (ImGui.InputText("##PresetName", ref name, Constants.PresetNameMaxLength))
             _name = name;
+
+        var availableTags = _pluginConfig.Tweaks.PortraitHelper.PresetTags;
+        if (availableTags.Count != 0)
+        {
+            ImGui.Spacing();
+            ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.CreatePresetDialog.Tags.Label"));
+
+            var tagNames = _tags!
+                .Select(id => availableTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
+                .Where(name => !string.IsNullOrEmpty(name));
+
+            var preview = tagNames.Any() ? string.Join(", ", tagNames) : _textService.Translate("PortraitHelperWindows.CreatePresetDialog.Tags.None");
+
+            ImGui.Spacing();
+            using var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge);
+            if (tagsCombo)
+            {
+                foreach (var tag in availableTags)
+                {
+                    var isSelected = _tags!.Contains(tag.Id);
+
+                    if (ImGui.Selectable($"{tag.Name}##PresetTag{tag.Id}", isSelected))
+                    {
+                        if (isSelected)
+                        {
+                            _tags.Remove(tag.Id);
+                        }
+                        else
+                        {
+                            _tags.Add(tag.Id);
+                        }
+                    }
+                }
+            }
+        }
 
         var disabled = string.IsNullOrWhiteSpace(_name);
         var shouldSave = !disabled && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter));
@@ -101,7 +139,7 @@ public partial class CreatePresetDialog
                             ColorType = PngColorType.Rgb // no need for alpha channel
                         });
 
-                        _pluginConfig.Tweaks.PortraitHelper.Presets.Insert(0, new(guid, name.Trim(), _preset, []));
+                        _pluginConfig.Tweaks.PortraitHelper.Presets.Insert(0, new(guid, name.Trim(), _preset, _tags));
                         _pluginConfig.Save();
 
                         _name = string.Empty;
