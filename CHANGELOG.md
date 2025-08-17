@@ -1,5 +1,13 @@
 # Changelog
 
+## [37.0.2] (2025-08-17)
+
+### Portrait Helper
+
+Reworked a bunch of code regarding Menu Bar and its overlays and how it writes data to the clipboard. Hopefully everything works!
+
+- **Fixed:** The Portrait Browser, when popped out due to interface scaling, will no longer throw "Cannot access a disposed object." errors and become unusable.
+
 ## [37.0.1] (2025-08-13)
 
 ### Auto-select Soil and Seed
@@ -2148,6 +2156,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[37.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v37.0.1...v37.0.2
 [37.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v37.0.0...v37.0.1
 [37.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v36.1.3...v37.0.0
 [36.1.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v36.1.2...v36.1.3
