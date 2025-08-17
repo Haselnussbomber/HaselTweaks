@@ -39,6 +39,19 @@ public partial class MenuBarState
         }
     }
 
+    public void CloseOverlay<T>() where T : IOverlay
+    {
+        CloseOverlay(typeof(T));
+    }
+
+    public void CloseOverlay(Type type)
+    {
+        if (Overlay?.GetType() == type)
+        {
+            CloseOverlay();
+        }
+    }
+
     public unsafe void SaveInitialPreset()
     {
         if (InitialPreset != null)

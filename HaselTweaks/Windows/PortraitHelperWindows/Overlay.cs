@@ -52,7 +52,7 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
 
         ToggleUiVisibility(true);
 
-        _state.CloseOverlay();
+        _state.CloseOverlay(GetType());
 
         base.OnClose();
     }
