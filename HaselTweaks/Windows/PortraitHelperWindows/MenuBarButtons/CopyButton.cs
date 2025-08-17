@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Services.PortraitHelper;
 using HaselTweaks.Utils.PortraitHelper;
@@ -10,6 +9,7 @@ public unsafe partial class CopyButton : MenuBarButton
 {
     private readonly TextService _textService;
     private readonly ClipboardService _clipboardService;
+    private readonly IFramework _framework;
 
     [AutoPostConstruct]
     private void Initialize()
@@ -21,6 +21,6 @@ public unsafe partial class CopyButton : MenuBarButton
 
     public override void OnClick()
     {
-        Task.Run(() => _clipboardService.SetClipboardPortraitPreset(PortraitPreset.FromState()));
+        _framework.Run(() => _clipboardService.SetClipboardPortraitPreset(PortraitPreset.FromState()));
     }
 }

@@ -58,17 +58,17 @@ public partial class ClipboardService : IDisposable
 
     public async Task SetClipboardPortraitPreset(PortraitPreset? preset)
     {
+        if (preset == null)
+        {
+            ClipboardPreset = null;
+            return;
+        }
+
         await OpenClipboard();
 
         try
         {
             PInvoke.EmptyClipboard();
-
-            if (preset == null)
-            {
-                ClipboardPreset = null;
-                return;
-            }
 
             var presetString = preset.ToExportedString();
             var length = Encoding.UTF8.GetByteCount(presetString);
