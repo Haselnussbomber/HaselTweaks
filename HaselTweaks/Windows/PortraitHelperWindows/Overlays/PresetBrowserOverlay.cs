@@ -479,21 +479,21 @@ public partial class PresetBrowserOverlay : Overlay
                             {
                                 ImGui.Text("•");
                                 ImGui.SameLine(0, 5);
-                                ImGui.Text(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.BackgroundNotUnlocked", bannerBgRow.Name.ExtractText()));
+                                ImGui.Text(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.BackgroundNotUnlocked", bannerBgRow.Name.ToString()));
                             }
 
                             if (!isBannerFrameUnlocked && hasBannerFrameRow)
                             {
                                 ImGui.Text("•");
                                 ImGui.SameLine(0, 5);
-                                ImGui.Text(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.FrameNotUnlocked", bannerFrameRow.Name.ExtractText()));
+                                ImGui.Text(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.FrameNotUnlocked", bannerFrameRow.Name.ToString()));
                             }
 
                             if (!isBannerDecorationUnlocked && hasBannerDecorationRow)
                             {
                                 ImGui.Text("•");
                                 ImGui.SameLine(0, 5);
-                                ImGui.Text(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.DecorationNotUnlocked", bannerDecorationRow.Name.ExtractText()));
+                                ImGui.Text(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.DecorationNotUnlocked", bannerDecorationRow.Name.ToString()));
                             }
                         }
                     }

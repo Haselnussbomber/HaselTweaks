@@ -257,7 +257,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
 
         using var _ = ImRaii.Tooltip();
 
-        ImGuiUtils.TextUnformattedColored(_itemService.GetItemRarityColor(item.RowId), _textService.GetItemName(item.RowId).ExtractText().StripSoftHyphen());
+        ImGuiUtils.TextUnformattedColored(_itemService.GetItemRarityColor(item.RowId), _textService.GetItemName(item.RowId).ToString());
 
         var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         if (holdingShift)
@@ -269,7 +269,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         if (item.ItemUICategory.IsValid)
         {
             ImGuiUtils.PushCursorY(-ImGui.GetStyle().ItemSpacing.Y);
-            ImGui.Text(item.ItemUICategory.Value.Name.ExtractText().StripSoftHyphen() ?? string.Empty);
+            ImGui.Text(item.ItemUICategory.Value.Name.ToString() ?? string.Empty);
         }
 
         if (slot->GlamourId != 0 || slot->Stain0Id != 0 || slot->Stain1Id != 0)
@@ -279,7 +279,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         {
             ImGui.Text(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelGlamour"));
             ImGuiUtils.SameLineSpace();
-            ImGuiUtils.TextUnformattedColored(_itemService.GetItemRarityColor(glamourItem.RowId), _textService.GetItemName(slot->GlamourId).ExtractText().StripSoftHyphen());
+            ImGuiUtils.TextUnformattedColored(_itemService.GetItemRarityColor(glamourItem.RowId), _textService.GetItemName(slot->GlamourId).ToString());
 
             if (holdingShift)
             {
@@ -295,7 +295,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
             using (ImRaii.PushColor(ImGuiCol.Text, stain0.GetColor().ToUInt()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
-            ImGui.Text(stain0.Name.ExtractText().FirstCharToUpper(_languageProvider.CultureInfo));
+            ImGui.Text(stain0.Name.ToString().FirstCharToUpper(_languageProvider.CultureInfo));
 
             if (holdingShift)
             {
@@ -311,7 +311,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
             using (ImRaii.PushColor(ImGuiCol.Text, stain1.GetColor().ToUInt()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
-            ImGui.Text(stain1.Name.ExtractText().FirstCharToUpper(_languageProvider.CultureInfo));
+            ImGui.Text(stain1.Name.ToString().FirstCharToUpper(_languageProvider.CultureInfo));
 
             if (holdingShift)
             {

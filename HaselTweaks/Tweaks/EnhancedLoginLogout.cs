@@ -360,7 +360,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
         if (actionTimeline.Key.IsEmpty)
             return;
 
-        _logger.LogInformation("Preloading tmb {key} (Emote: {emoteId}, ActionTimeline: {actionTimelineId})", actionTimeline.Key.ExtractText(), emoteId, actionTimelineId);
+        _logger.LogInformation("Preloading tmb {key} (Emote: {emoteId}, ActionTimeline: {actionTimelineId})", actionTimeline.Key.ToString(), emoteId, actionTimelineId);
 
         fixed (byte* keyPtr = actionTimeline.Key.Data.Span.WithNullTerminator())
         {
@@ -566,7 +566,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
         if (!_excelService.TryGetRow<TerritoryType>(territoryTypeId, out var territoryType))
             return;
 
-        var bg = territoryType.Bg.ExtractText();
+        var bg = territoryType.Bg.ToString();
 
         _logger.LogDebug("Preloading territory #{territoryId}: {bg}", territoryTypeId, bg);
 

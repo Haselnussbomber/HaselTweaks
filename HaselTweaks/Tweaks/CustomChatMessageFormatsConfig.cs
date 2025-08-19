@@ -811,7 +811,7 @@ public partial class CustomChatMessageFormats
         foreach (var row in _cachedLogKindRows)
         {
             if (row.LogKind.RowId == logKindId)
-                return row.LogFilter.Name.ExtractText();
+                return row.LogFilter.Name.ToString();
         }
 
         return $"LogKind #{logKindId}";

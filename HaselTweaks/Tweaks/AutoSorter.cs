@@ -346,7 +346,7 @@ public unsafe partial class AutoSorter : ConfigurableTweak
         if (!_excelService.TryGetRow<TextCommandParam>(rowId, _clientState.ClientLanguage, out var paramRow))
             return "";
 
-        var param = paramRow.Param.ExtractText();
+        var param = paramRow.Param.ToString();
         return string.IsNullOrEmpty(param) ? fallback ?? "" : param.ToLower();
     }
 
@@ -359,7 +359,7 @@ public unsafe partial class AutoSorter : ConfigurableTweak
             if (!_excelService.TryGetRow<TextCommandParam>(rowId, _clientState.ClientLanguage, out var paramRow))
                 return str;
 
-            var param = paramRow.Param.ExtractText();
+            var param = paramRow.Param.ToString();
             if (!string.IsNullOrEmpty(param))
                 str = param.ToLower();
         }

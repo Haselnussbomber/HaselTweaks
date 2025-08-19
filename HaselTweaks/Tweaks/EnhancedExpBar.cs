@@ -301,7 +301,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
         if (!_excelService.TryGetRow<WKSCosmoToolName>(toolNameId, out var toolNameRow))
             return false;
 
-        var toolName = toolNameRow.Name.ExtractText();
+        var toolName = toolNameRow.Name.ToString();
         var finalCurrentXP = researchModule->GetCurrentAnalysis(toolClassId, selectedType);
         var finalNeededXP = researchModule->GetNeededAnalysis(toolClassId, selectedType);
         var star = stage < nextStage ? '*' : ' ';

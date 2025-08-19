@@ -224,11 +224,11 @@ public unsafe partial class Commands : ConfigurableTweak
             .Append($"  {_textService.GetAddonText(4987)}: ")
             .Append(_textService.GetStainName(character->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Legs).Stain0))
             .AppendNewLine()
-            .Append($"  {_textService.GetAddonText(4991)}: {(hasTopRow ? topRow.Name.ExtractText() : _textService.GetAddonText(4994))}")
+            .Append($"  {_textService.GetAddonText(4991)}: {(hasTopRow ? topRow.Name.ToString() : _textService.GetAddonText(4994))}")
             .AppendNewLine()
-            .Append($"  {_textService.GetAddonText(4992)}: {(hasBodyRow ? bodyRow.Name.ExtractText() : _textService.GetAddonText(4994))}")
+            .Append($"  {_textService.GetAddonText(4992)}: {(hasBodyRow ? bodyRow.Name.ToString() : _textService.GetAddonText(4994))}")
             .AppendNewLine()
-            .Append($"  {_textService.GetAddonText(4993)}: {(hasLegsRow ? legsRow.Name.ExtractText() : _textService.GetAddonText(4994))}");
+            .Append($"  {_textService.GetAddonText(4993)}: {(hasLegsRow ? legsRow.Name.ToString() : _textService.GetAddonText(4994))}");
 
         Chat.Print(sb.GetViewAsSpan());
     }

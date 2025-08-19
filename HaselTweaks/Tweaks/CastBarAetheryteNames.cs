@@ -79,8 +79,8 @@ public unsafe partial class CastBarAetheryteNames : Tweak
         var placeName = true switch
         {
             _ when info.IsApartment => _textService.GetAddonText(8518),
-            _ when info.IsSharedHouse => _seStringEvaluator.EvaluateFromAddon(8519, [(uint)info.Ward, (uint)info.Plot]).ExtractText(),
-            _ when row.PlaceName.IsValid => row.PlaceName.Value.Name.ExtractText(),
+            _ when info.IsSharedHouse => _seStringEvaluator.EvaluateFromAddon(8519, [(uint)info.Ward, (uint)info.Plot]).ToString(),
+            _ when row.PlaceName.IsValid => row.PlaceName.Value.Name.ToString(),
             _ => string.Empty
         };
 

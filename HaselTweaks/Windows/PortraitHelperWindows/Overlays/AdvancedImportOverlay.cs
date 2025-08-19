@@ -55,7 +55,7 @@ public unsafe partial class AdvancedImportOverlay : Overlay
             () =>
             {
                 if (_excelService.TryGetRow<BannerBg>(_clipboardService.ClipboardPreset.BannerBg, out var bannerBgRow))
-                    ImGui.Text(bannerBgRow.Name.ExtractText());
+                    ImGui.Text(bannerBgRow.Name.ToString());
                 else
                     ImGui.Text(unknown);
 
@@ -74,7 +74,7 @@ public unsafe partial class AdvancedImportOverlay : Overlay
             () =>
             {
                 if (_excelService.TryGetRow<BannerFrame>(_clipboardService.ClipboardPreset.BannerFrame, out var bannerFrameRow))
-                    ImGui.Text(bannerFrameRow.Name.ExtractText());
+                    ImGui.Text(bannerFrameRow.Name.ToString());
                 else
                     ImGui.Text(unknown);
 
@@ -93,7 +93,7 @@ public unsafe partial class AdvancedImportOverlay : Overlay
             () =>
             {
                 if (_excelService.TryGetRow<BannerDecoration>(_clipboardService.ClipboardPreset.BannerDecoration, out var bannerDecorationRow))
-                    ImGui.Text(bannerDecorationRow.Name.ExtractText());
+                    ImGui.Text(bannerDecorationRow.Name.ToString());
                 else
                     ImGui.Text(unknown);
 
@@ -157,7 +157,7 @@ public unsafe partial class AdvancedImportOverlay : Overlay
                         && _excelService.TryGetRow<BannerFacial>(entry->RowId, out var bannerFacialRow)
                         && _excelService.TryGetRow<Emote>(bannerFacialRow.Emote.RowId, out var emoteRow))
                         {
-                            expressionName = emoteRow.Name.ExtractText();
+                            expressionName = emoteRow.Name.ToString();
                             break;
                         }
                     }

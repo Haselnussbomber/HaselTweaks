@@ -94,7 +94,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
                 ImGui.GetStyle().ItemInnerSpacing.X,
                 IconSize.Y * ImGuiHelpers.GlobalScale / 2f - ImGui.GetTextLineHeight() / 2f - 1));
 
-            ImGui.Text(_textService.GetItemName(item.RowId).ExtractText().StripSoftHyphen());
+            ImGui.Text(_textService.GetItemName(item.RowId).ToString());
         }
 
         _imGuiContextMenuService.Draw("ItemContextMenu", builder =>

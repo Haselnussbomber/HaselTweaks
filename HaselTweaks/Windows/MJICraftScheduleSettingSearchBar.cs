@@ -89,7 +89,7 @@ public unsafe partial class MJICraftScheduleSettingSearchBar : SimpleWindow
                     if (!_excelService.TryGetRow<Item>(mjiCraftworksObject.Item.RowId, Config.SearchLanguage, out var itemRow))
                         continue;
 
-                    var itemName = itemRow.Name.ExtractText();
+                    var itemName = itemRow.Name.ToString();
                     if (string.IsNullOrEmpty(itemName))
                         continue;
 

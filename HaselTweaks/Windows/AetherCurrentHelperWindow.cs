@@ -45,7 +45,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
     {
         DrawMainCommandButton();
 
-        var placeName = CompFlgSet!.Value.Territory.Value.PlaceName.Value.Name.ExtractText();
+        var placeName = CompFlgSet!.Value.Territory.Value.PlaceName.Value.Name.ToString();
 
         var textSize = ImGui.CalcTextSize(placeName);
         var availableSize = ImGui.GetContentRegionAvail();

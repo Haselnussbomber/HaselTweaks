@@ -284,11 +284,11 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
         nameNode->LineSpacing = 17;
         nameNode->DrawFlags |= 0x1;
 
-        var itemName = textPtr.ExtractText().Replace("\r\n", "");
+        var itemName = textPtr.ToString().Replace("\r\n", "");
         if (itemName.Length > 23)
             itemName = itemName[..20] + "...";
 
-        var placeName = placeNameSeString.ExtractText();
+        var placeName = placeNameSeString.ToString();
         if (placeName.Length > 23)
             placeName = placeName[..20] + "...";
 

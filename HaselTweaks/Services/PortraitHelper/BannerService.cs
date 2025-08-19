@@ -126,14 +126,14 @@ public unsafe partial class BannerService
         if (!_excelService.TryGetRow<BannerTimeline>(id, out var bannerTimeline))
             return _textService.GetAddonText(624); // Unknown
 
-        var poseName = bannerTimeline.Name.ExtractText();
+        var poseName = bannerTimeline.Name.ToString();
 
         if (string.IsNullOrEmpty(poseName) && bannerTimeline.Type != 0)
         {
             if (bannerTimeline.AdditionalData.TryGetValue<ActionSheet>(out var actionRow))
-                poseName = actionRow.Name.ExtractText();
+                poseName = actionRow.Name.ToString();
             else if (bannerTimeline.AdditionalData.TryGetValue<Emote>(out var emoteRow))
-                poseName = emoteRow.Name.ExtractText();
+                poseName = emoteRow.Name.ToString();
         }
 
         return !string.IsNullOrEmpty(poseName)
