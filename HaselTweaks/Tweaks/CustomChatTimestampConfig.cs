@@ -15,7 +15,7 @@ public partial class CustomChatTimestamp
 
         _configGui.DrawConfigurationHeader();
 
-        ImGui.TextUnformatted(_textService.Translate("CustomChatTimestamp.Config.Format.Label"));
+        ImGui.Text(_textService.Translate("CustomChatTimestamp.Config.Format.Label"));
         using (ImGuiUtils.ConfigIndent())
         {
             if (ImGui.InputText("##Format", ref Config.Format, 50))
@@ -32,14 +32,14 @@ public partial class CustomChatTimestamp
             }
 
             using var col = Color.Grey.Push(ImGuiCol.Text);
-            ImGui.TextUnformatted(_textService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Pre"));
+            ImGui.Text(_textService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Pre"));
             ImGuiUtils.SameLineSpace();
             using (Color.White.Push(ImGuiCol.Text))
             {
                 ImGuiUtils.DrawLink("DateTime.ToString()", _textService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Tooltip"), "https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings");
             }
             ImGuiUtils.SameLineSpace();
-            ImGui.TextUnformatted(_textService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Post"));
+            ImGui.Text(_textService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Post"));
         }
 
         if (string.IsNullOrWhiteSpace(Config.Format))
@@ -50,7 +50,7 @@ public partial class CustomChatTimestamp
             var formatted = DateTime.Now.ToString(Config.Format);
 
             ImGui.Spacing();
-            ImGui.TextUnformatted(_textService.Translate("CustomChatTimestamp.Config.Format.Example.Label"));
+            ImGui.Text(_textService.Translate("CustomChatTimestamp.Config.Format.Example.Label"));
 
             if (!_gameConfig.UiConfig.TryGet("ColorParty", out uint colorParty))
             {

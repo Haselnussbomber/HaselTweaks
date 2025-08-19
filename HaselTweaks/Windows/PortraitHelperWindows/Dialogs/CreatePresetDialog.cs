@@ -59,7 +59,7 @@ public partial class CreatePresetDialog
 
         using var disabledDueToSaving = ImRaii.Disabled(_isSaving);
 
-        ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.CreatePresetDialog.Name.Label"));
+        ImGui.Text(_textService.Translate("PortraitHelperWindows.CreatePresetDialog.Name.Label"));
 
         if (ImGui.IsWindowAppearing())
             ImGui.SetKeyboardFocusHere();
@@ -72,7 +72,7 @@ public partial class CreatePresetDialog
         if (availableTags.Count != 0)
         {
             ImGui.Spacing();
-            ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.CreatePresetDialog.Tags.Label"));
+            ImGui.Text(_textService.Translate("PortraitHelperWindows.CreatePresetDialog.Tags.Label"));
 
             var tagNames = _tags!
                 .Select(id => availableTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)

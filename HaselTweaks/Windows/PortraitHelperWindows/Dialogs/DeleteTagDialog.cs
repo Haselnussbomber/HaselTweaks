@@ -43,7 +43,7 @@ public partial class DeleteTagDialog : ConfirmationDialog
 
     public override void InnerDraw()
     {
-        ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.DeleteTagDialog.Prompt", _tag!.Name));
+        ImGui.Text(_textService.Translate("PortraitHelperWindows.DeleteTagDialog.Prompt", _tag!.Name));
         ImGui.Spacing();
         ImGui.Checkbox(_textService.Translate("PortraitHelperWindows.DeleteTagDialog.DeletePortraitsToo.Label"), ref _deletePortraits);
     }

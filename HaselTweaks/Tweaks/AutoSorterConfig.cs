@@ -69,7 +69,7 @@ public partial class AutoSorter
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
-                ImGui.TextUnformatted(_textService.Translate(entry.Enabled
+                ImGui.Text(_textService.Translate(entry.Enabled
                     ? "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsEnabled"
                     : "AutoSorter.Config.EnableCheckmark.Tooltip.RuleIsDisabled"));
                 ImGui.EndTooltip();
@@ -292,7 +292,7 @@ public partial class AutoSorter
                 if (ImGui.IsItemHovered())
                 {
                     ImGui.BeginTooltip();
-                    ImGui.TextUnformatted(_textService.Translate("AutoSorter.SortingInProgress"));
+                    ImGui.Text(_textService.Translate("AutoSorter.SortingInProgress"));
                     ImGui.EndTooltip();
                 }
             }

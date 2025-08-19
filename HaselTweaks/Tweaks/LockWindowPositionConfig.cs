@@ -46,7 +46,7 @@ public partial class LockWindowPosition
         ImGuiUtils.DrawPaddedSeparator();
         if (Config.LockedWindows.Count != 0)
         {
-            ImGui.TextUnformatted(_textService.Translate("LockWindowPosition.Config.Windows.Title"));
+            ImGui.Text(_textService.Translate("LockWindowPosition.Config.Windows.Title"));
 
             if (!ImGui.BeginTable("##Table", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX))
             {
@@ -75,7 +75,7 @@ public partial class LockWindowPosition
                         isLocked = !isLocked;
 
                     ImGui.BeginTooltip();
-                    ImGui.TextUnformatted(_textService.Translate(isLocked
+                    ImGui.Text(_textService.Translate(isLocked
                         ? "LockWindowPosition.Config.EnableCheckmark.Tooltip.Locked"
                         : "LockWindowPosition.Config.EnableCheckmark.Tooltip.Unlocked"));
                     ImGui.EndTooltip();
@@ -86,7 +86,7 @@ public partial class LockWindowPosition
                 }
 
                 ImGui.TableNextColumn();
-                ImGui.TextUnformatted(entry.Name);
+                ImGui.Text(entry.Name);
 
                 ImGui.TableNextColumn();
                 if (isWindowFocused && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)))
@@ -121,7 +121,7 @@ public partial class LockWindowPosition
         else
         {
             using (ImRaii.Disabled())
-                ImGui.TextUnformatted(_textService.Translate("LockWindowPosition.Config.NoWindowsAddedYet"));
+                ImGui.Text(_textService.Translate("LockWindowPosition.Config.NoWindowsAddedYet"));
             ImGuiUtils.PushCursorY(4);
         }
 

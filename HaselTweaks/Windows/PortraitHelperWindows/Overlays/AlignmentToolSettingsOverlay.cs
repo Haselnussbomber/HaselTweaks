@@ -31,14 +31,14 @@ public unsafe partial class AlignmentToolSettingsOverlay : Overlay
         ImGui.Separator();
         ImGui.Spacing();
 
-        ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.AlignmentToolSettingsOverlay.VerticalLines.Label"));
+        ImGui.Text(_textService.Translate("PortraitHelperWindows.AlignmentToolSettingsOverlay.VerticalLines.Label"));
         ImGui.Indent();
 
         changed |= ImGui.SliderInt("##Vertical Lines", ref config.AlignmentToolVerticalLines, 0, 10);
         changed |= ImGui.ColorEdit4("##Vertical Color", ref config.AlignmentToolVerticalColor);
 
         ImGui.Unindent();
-        ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.AlignmentToolSettingsOverlay.HorizontalLines.Label"));
+        ImGui.Text(_textService.Translate("PortraitHelperWindows.AlignmentToolSettingsOverlay.HorizontalLines.Label"));
         ImGui.Indent();
 
         changed |= ImGui.SliderInt("##Horizontal Lines", ref config.AlignmentToolHorizontalLines, 0, 10);

@@ -120,7 +120,7 @@ public partial class PluginWindow : SimpleWindow
                     if (tooltip)
                     {
                         using (color.Push(ImGuiCol.Text))
-                            ImGui.TextUnformatted(_textService.Translate($"HaselTweaks.Config.TweakStatus.{Enum.GetName(status)}"));
+                            ImGui.Text(_textService.Translate($"HaselTweaks.Config.TweakStatus.{Enum.GetName(status)}"));
                     }
                 }
 
@@ -220,13 +220,13 @@ public partial class PluginWindow : SimpleWindow
             ImGui.SetCursorPos(cursorPos + new Vector2(0, contentAvail.Y - ImGui.GetTextLineHeight()));
             ImGuiUtils.DrawLink("GitHub", _textService.Translate("HaselTweaks.Config.GitHubLink.Tooltip"), "https://github.com/Haselnussbomber/HaselTweaks");
             ImGui.SameLine();
-            ImGui.TextUnformatted("•");
+            ImGui.Text("•");
             ImGui.SameLine();
             ImGuiUtils.DrawLink("Ko-fi", _textService.Translate("HaselTweaks.Config.KoFiLink.Tooltip"), "https://ko-fi.com/haselnussbomber");
             ImGui.SameLine();
-            ImGui.TextUnformatted("•");
+            ImGui.Text("•");
             ImGui.SameLine();
-            ImGui.TextUnformatted(_textService.Translate("HaselTweaks.Config.Licenses"));
+            ImGui.Text(_textService.Translate("HaselTweaks.Config.Licenses"));
             if (ImGui.IsItemHovered())
             {
                 ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);

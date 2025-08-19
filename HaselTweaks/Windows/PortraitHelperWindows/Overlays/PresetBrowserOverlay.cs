@@ -103,7 +103,7 @@ public partial class PresetBrowserOverlay : Overlay
             if (source)
             {
                 using (ImRaii.PushColor(ImGuiCol.Text, DefaultImGuiTextColor))
-                    ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip", tag.Name));
+                    ImGui.Text(_textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.MovingTag.Tooltip", tag.Name));
 
                 var bytes = tag.Id.ToByteArray();
                 ImGui.SetDragDropPayload("MoveTag"u8, bytes, ImGuiCond.None);
@@ -374,7 +374,7 @@ public partial class PresetBrowserOverlay : Overlay
                 using var font = ImRaii.PushFont(UiBuilder.IconFont);
                 using var color = Color.Red.Push(ImGuiCol.Text);
                 ImGui.SetCursorPos(center - ImGui.CalcTextSize(FontAwesomeIcon.Times.ToIconString()) / 2f);
-                ImGui.TextUnformatted(FontAwesomeIcon.Times.ToIconString());
+                ImGui.Text(FontAwesomeIcon.Times.ToIconString());
             }
         }
         else if (!exists)
@@ -382,7 +382,7 @@ public partial class PresetBrowserOverlay : Overlay
             using var font = ImRaii.PushFont(UiBuilder.IconFont);
             using var color = Color.Red.Push(ImGuiCol.Text);
             ImGui.SetCursorPos(center - ImGui.CalcTextSize(FontAwesomeIcon.FileImage.ToIconString()) / 2f);
-            ImGui.TextUnformatted(FontAwesomeIcon.FileImage.ToIconString());
+            ImGui.Text(FontAwesomeIcon.FileImage.ToIconString());
         }
         else
         {
@@ -422,7 +422,7 @@ public partial class PresetBrowserOverlay : Overlay
             if (source)
             {
                 using (ImRaii.PushColor(ImGuiCol.Text, defaultImGuiTextColor))
-                    ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.PresetCard.MovingPresetCard.Tooltip", preset.Name));
+                    ImGui.Text(_textService.Translate("PortraitHelperWindows.PresetCard.MovingPresetCard.Tooltip", preset.Name));
 
                 ImGui.SetDragDropPayload("MovePresetCard"u8, preset.Id.ToByteArray(), ImGuiCond.None);
             }
@@ -455,7 +455,7 @@ public partial class PresetBrowserOverlay : Overlay
             using (ImRaii.Tooltip())
             {
                 using (ImRaii.PushColor(ImGuiCol.Text, defaultImGuiTextColor))
-                    ImGui.TextUnformatted(preset.Name);
+                    ImGui.Text(preset.Name);
 
                 if (hasErrors)
                 {
@@ -463,37 +463,37 @@ public partial class PresetBrowserOverlay : Overlay
 
                     using (Color.Red.Push(ImGuiCol.Text))
                     {
-                        ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.Title"));
+                        ImGui.Text(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.Title"));
 
                         using (ImRaii.PushStyle(ImGuiStyleVar.IndentSpacing, 2))
                         using (ImRaii.PushIndent(1))
                         {
                             if (!isBannerTimelineUnlocked)
                             {
-                                ImGui.TextUnformatted("•");
+                                ImGui.Text("•");
                                 ImGui.SameLine(0, 5);
-                                ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.PoseNotUnlocked", _bannerService.GetBannerTimelineName(preset.Preset!.BannerTimeline)));
+                                ImGui.Text(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.PoseNotUnlocked", _bannerService.GetBannerTimelineName(preset.Preset!.BannerTimeline)));
                             }
 
                             if (!isBannerBgUnlocked && _excelService.TryGetRow<BannerBg>(preset.Preset!.BannerBg, out var bannerBgRow))
                             {
-                                ImGui.TextUnformatted("•");
+                                ImGui.Text("•");
                                 ImGui.SameLine(0, 5);
-                                ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.BackgroundNotUnlocked", bannerBgRow.Name.ExtractText()));
+                                ImGui.Text(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.BackgroundNotUnlocked", bannerBgRow.Name.ExtractText()));
                             }
 
                             if (!isBannerFrameUnlocked && hasBannerFrameRow)
                             {
-                                ImGui.TextUnformatted("•");
+                                ImGui.Text("•");
                                 ImGui.SameLine(0, 5);
-                                ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.FrameNotUnlocked", bannerFrameRow.Name.ExtractText()));
+                                ImGui.Text(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.FrameNotUnlocked", bannerFrameRow.Name.ExtractText()));
                             }
 
                             if (!isBannerDecorationUnlocked && hasBannerDecorationRow)
                             {
-                                ImGui.TextUnformatted("•");
+                                ImGui.Text("•");
                                 ImGui.SameLine(0, 5);
-                                ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.DecorationNotUnlocked", bannerDecorationRow.Name.ExtractText()));
+                                ImGui.Text(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.DecorationNotUnlocked", bannerDecorationRow.Name.ExtractText()));
                             }
                         }
                     }

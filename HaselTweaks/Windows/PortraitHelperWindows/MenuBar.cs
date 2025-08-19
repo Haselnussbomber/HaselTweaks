@@ -56,7 +56,7 @@ public unsafe partial class MenuBar : SimpleWindow
         if (_state.InitialPreset == null)
         {
             ImGui.SetCursorPosY(ImGui.GetCursorPos().Y + 2);
-            ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.MenuBar.Initializing"));
+            ImGui.Text(_textService.Translate("PortraitHelperWindows.MenuBar.Initializing"));
             UpdatePosition();
             return;
         }
@@ -89,7 +89,7 @@ public unsafe partial class MenuBar : SimpleWindow
         {
             ImGuiUtils.VerticalSeparator();
             ImGui.SameLine();
-            ImGui.TextUnformatted(_state.PortraitName);
+            ImGui.Text(_state.PortraitName);
         }
 
         // ---

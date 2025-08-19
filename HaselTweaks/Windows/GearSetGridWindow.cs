@@ -118,11 +118,11 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
                 if (ImGui.IsItemHovered())
                 {
                     using var tooltip = ImRaii.Tooltip();
-                    ImGui.TextUnformatted($"[{gearset->Id + 1}] {name}");
+                    ImGui.Text($"[{gearset->Id + 1}] {name}");
 
                     if (gearset->GlamourSetLink != 0)
                     {
-                        ImGui.TextUnformatted($"{_textService.GetAddonText(3185)}: {gearset->GlamourSetLink}"); // "Glamour Plate: {link}"
+                        ImGui.Text($"{_textService.GetAddonText(3185)}: {gearset->GlamourSetLink}"); // "Glamour Plate: {link}"
                     }
                 }
 
@@ -145,7 +145,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
                 // gearset number
                 var text = $"{gearsetIndex + 1}";
                 ImGui.SetCursorPos(itemStartPos + new Vector2(iconSize / 2f - ImGui.CalcTextSize(text).X / 2f, iconSize));
-                ImGui.TextUnformatted(text);
+                ImGui.Text(text);
             }
 
             for (var slotIndex = 0u; slotIndex < NUM_SLOTS; slotIndex++)
@@ -263,13 +263,13 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         if (holdingShift)
         {
             ImGuiUtils.SameLineSpace();
-            ImGui.TextUnformatted($"[{item.RowId}]");
+            ImGui.Text($"[{item.RowId}]");
         }
 
         if (item.ItemUICategory.IsValid)
         {
             ImGuiUtils.PushCursorY(-ImGui.GetStyle().ItemSpacing.Y);
-            ImGui.TextUnformatted(item.ItemUICategory.Value.Name.ExtractText().StripSoftHyphen() ?? string.Empty);
+            ImGui.Text(item.ItemUICategory.Value.Name.ExtractText().StripSoftHyphen() ?? string.Empty);
         }
 
         if (slot->GlamourId != 0 || slot->Stain0Id != 0 || slot->Stain1Id != 0)
@@ -277,46 +277,46 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
 
         if (slot->GlamourId != 0 && _excelService.TryGetRow<Item>(slot->GlamourId, out var glamourItem))
         {
-            ImGui.TextUnformatted(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelGlamour"));
+            ImGui.Text(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelGlamour"));
             ImGuiUtils.SameLineSpace();
             ImGuiUtils.TextUnformattedColored(_itemService.GetItemRarityColor(glamourItem.RowId), _textService.GetItemName(slot->GlamourId).ExtractText().StripSoftHyphen());
 
             if (holdingShift)
             {
                 ImGuiUtils.SameLineSpace();
-                ImGui.TextUnformatted($"[{slot->GlamourId}]");
+                ImGui.Text($"[{slot->GlamourId}]");
             }
         }
 
         if (slot->Stain0Id != 0 && _excelService.TryGetRow<Stain>(slot->Stain0Id, out var stain0))
         {
-            ImGui.TextUnformatted(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelDye0"));
+            ImGui.Text(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelDye0"));
             ImGuiUtils.SameLineSpace();
             using (ImRaii.PushColor(ImGuiCol.Text, stain0.GetColor().ToUInt()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
-            ImGui.TextUnformatted(stain0.Name.ExtractText().FirstCharToUpper(_languageProvider.CultureInfo));
+            ImGui.Text(stain0.Name.ExtractText().FirstCharToUpper(_languageProvider.CultureInfo));
 
             if (holdingShift)
             {
                 ImGuiUtils.SameLineSpace();
-                ImGui.TextUnformatted($"[{slot->Stain0Id}]");
+                ImGui.Text($"[{slot->Stain0Id}]");
             }
         }
 
         if (slot->Stain1Id != 0 && _excelService.TryGetRow<Stain>(slot->Stain1Id, out var stain1))
         {
-            ImGui.TextUnformatted(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelDye1"));
+            ImGui.Text(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelDye1"));
             ImGuiUtils.SameLineSpace();
             using (ImRaii.PushColor(ImGuiCol.Text, stain1.GetColor().ToUInt()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
-            ImGui.TextUnformatted(stain1.Name.ExtractText().FirstCharToUpper(_languageProvider.CultureInfo));
+            ImGui.Text(stain1.Name.ExtractText().FirstCharToUpper(_languageProvider.CultureInfo));
 
             if (holdingShift)
             {
                 ImGuiUtils.SameLineSpace();
-                ImGui.TextUnformatted($"[{slot->Stain1Id}]");
+                ImGui.Text($"[{slot->Stain1Id}]");
             }
         }
 
@@ -324,7 +324,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         if (usedInGearsets.Count > 1)
         {
             ImGuiUtils.DrawPaddedSeparator();
-            ImGui.TextUnformatted(_textService.Translate("GearSetGridWindow.ItemTooltip.AlsoUsedInTheseGearsets"));
+            ImGui.Text(_textService.Translate("GearSetGridWindow.ItemTooltip.AlsoUsedInTheseGearsets"));
             using (ImRaii.PushIndent(ImGui.GetStyle().ItemSpacing.X))
             {
                 foreach (var entry in usedInGearsets)
@@ -332,7 +332,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
                     if (entry.Id == gearset->Id)
                         continue;
 
-                    ImGui.TextUnformatted($"[{entry.Id + 1}] {entry.Name}");
+                    ImGui.Text($"[{entry.Id + 1}] {entry.Name}");
                 }
             }
         }

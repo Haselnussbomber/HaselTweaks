@@ -56,12 +56,12 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            ImGui.TextUnformatted(_textService.Translate("AetherCurrentHelperWindow.HideUnlockedTooltip"));
+            ImGui.Text(_textService.Translate("AetherCurrentHelperWindow.HideUnlockedTooltip"));
             ImGui.EndTooltip();
         }
 
         ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
-        ImGui.TextUnformatted(placeName);
+        ImGui.Text(placeName);
         ImGui.SetCursorPos(startPos + new Vector2(0, textSize.Y + style.ItemSpacing.Y * 4));
 
         using var cellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(4));
@@ -115,7 +115,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
             var text = _textService.Translate("AetherCurrentHelperWindow.AllAetherCurrentsAttuned");
             textSize = ImGui.CalcTextSize(text);
             ImGui.SetCursorPos(startPos + new Vector2(availableSize.X / 2 - textSize.X / 2, style.ItemSpacing.Y));
-            ImGui.TextUnformatted(text);
+            ImGui.Text(text);
             ImGui.TableNextColumn();
         }
 
@@ -140,7 +140,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            ImGui.TextUnformatted(_textService.Translate("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip"));
+            ImGui.Text(_textService.Translate("AetherCurrentHelperWindow.OpenAetherCurrentsWindowTooltip"));
             ImGui.EndTooltip();
         }
 
@@ -192,7 +192,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
         // Content
         ImGui.TableNextColumn();
         ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {_textService.GetQuestName(quest.RowId)}");
-        ImGui.TextUnformatted($"{_mapService.GetHumanReadableCoords(quest.IssuerLocation.Value)} | {_textService.GetENpcResidentName(quest.IssuerStart.RowId)}");
+        ImGui.Text($"{_mapService.GetHumanReadableCoords(quest.IssuerLocation.Value)} | {_textService.GetENpcResidentName(quest.IssuerStart.RowId)}");
 
         // Actions
         ImGui.TableNextColumn();
@@ -234,7 +234,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
         // Content
         ImGui.TableNextColumn();
         ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {_textService.GetEObjName(eobj.RowId)}");
-        ImGui.TextUnformatted(_mapService.GetHumanReadableCoords(level));
+        ImGui.Text(_mapService.GetHumanReadableCoords(level));
 
         // Actions
         ImGui.TableNextColumn();
@@ -281,7 +281,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
                     }
                     else
                     {
-                        ImGui.TextUnformatted(text);
+                        ImGui.Text(text);
                     }
                 }
             }

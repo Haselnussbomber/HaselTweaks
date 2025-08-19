@@ -108,7 +108,7 @@ public partial class CustomChatMessageFormats
                 if (ImGui.IsItemHovered())
                 {
                     ImGui.BeginTooltip();
-                    ImGui.TextUnformatted(_textService.Translate(entry.Enabled
+                    ImGui.Text(_textService.Translate(entry.Enabled
                         ? "CustomChatMessageFormats.Config.Entry.EnableCheckbox.Tooltip.IsEnabled"
                         : "CustomChatMessageFormats.Config.Entry.EnableCheckbox.Tooltip.IsDisabled"));
                     ImGui.EndTooltip();
@@ -129,14 +129,14 @@ public partial class CustomChatMessageFormats
                     if (ImGui.IsItemHovered())
                     {
                         ImGui.BeginTooltip();
-                        ImGui.TextUnformatted(_textService.Translate("CustomChatMessageFormats.Config.Entry.InvalidPayloads.Tooltip"));
+                        ImGui.Text(_textService.Translate("CustomChatMessageFormats.Config.Entry.InvalidPayloads.Tooltip"));
                         ImGui.EndTooltip();
                     }
 
                     ImGuiUtils.SameLineSpace();
                 }
 
-                ImGui.TextUnformatted(GetLogKindlabel(logKindId));
+                ImGui.Text(GetLogKindlabel(logKindId));
 
                 DrawExample(entry.Format);
 
@@ -291,11 +291,11 @@ public partial class CustomChatMessageFormats
                 ImGuiUtils.PushCursorY(2f * ImGuiHelpers.GlobalScale);
 
                 if (payload.Type == ReadOnlySePayloadType.Text)
-                    ImGui.TextUnformatted("Text");
+                    ImGui.Text("Text");
                 else if (payload.Type == ReadOnlySePayloadType.Macro)
-                    ImGui.TextUnformatted(payload.MacroCode.ToString());
+                    ImGui.Text(payload.MacroCode.ToString());
                 else if (payload.Type == ReadOnlySePayloadType.Invalid)
-                    ImGui.TextUnformatted("Invalid");
+                    ImGui.Text("Invalid");
             }
 
             // Value
@@ -397,17 +397,17 @@ public partial class CustomChatMessageFormats
                                 {
                                     if (uintVal == 1)
                                     {
-                                        ImGui.TextUnformatted(_textService.Translate("CustomChatMessageFormats.Config.LStr1.Label")); // "Player Name"
+                                        ImGui.Text(_textService.Translate("CustomChatMessageFormats.Config.LStr1.Label")); // "Player Name"
                                         break;
                                     }
                                     if (uintVal == 2)
                                     {
-                                        ImGui.TextUnformatted(_textService.Translate("CustomChatMessageFormats.Config.LStr2.Label")); // "Message"
+                                        ImGui.Text(_textService.Translate("CustomChatMessageFormats.Config.LStr2.Label")); // "Message"
                                         break;
                                     }
                                 }
 
-                                ImGui.TextUnformatted(payload.ToString());
+                                ImGui.Text(payload.ToString());
                                 break;
                             }
 
@@ -425,9 +425,9 @@ public partial class CustomChatMessageFormats
                                     {
                                         var textColorEntry = _cachedTextColor?.FirstOrDefault(entry => entry.GNumIndex == parameterIndex);
                                         if (textColorEntry != null)
-                                            ImGui.TextUnformatted(textColorEntry.Label);
+                                            ImGui.Text(textColorEntry.Label);
                                         else
-                                            ImGui.TextUnformatted((parameterIndex - 1).ToString());
+                                            ImGui.Text((parameterIndex - 1).ToString());
                                     }
                                     break;
                                 }
@@ -455,19 +455,19 @@ public partial class CustomChatMessageFormats
                                     break;
                                 }
 
-                                ImGui.TextUnformatted(payload.ToString());
+                                ImGui.Text(payload.ToString());
                                 break;
                             }
 
                         default:
-                            ImGui.TextUnformatted(payload.ToString());
+                            ImGui.Text(payload.ToString());
                             break;
                     }
 
                 }
                 else if (payload.Type == ReadOnlySePayloadType.Invalid)
                 {
-                    ImGui.TextUnformatted("Invalid");
+                    ImGui.Text("Invalid");
                 }
 
                 if (ImGui.IsItemHovered())
@@ -480,7 +480,7 @@ public partial class CustomChatMessageFormats
                     if (isStringPlaceholder)
                     {
                         ImGui.BeginTooltip();
-                        ImGui.TextUnformatted(_textService.Translate("CustomChatMessageFormats.Config.Entry.Payload.StringPlaceholder.Tooltip"));
+                        ImGui.Text(_textService.Translate("CustomChatMessageFormats.Config.Entry.Payload.StringPlaceholder.Tooltip"));
                         ImGui.EndTooltip();
                     }
 
@@ -493,7 +493,7 @@ public partial class CustomChatMessageFormats
                     if (isStackColor)
                     {
                         ImGui.BeginTooltip();
-                        ImGui.TextUnformatted(_textService.Translate("CustomChatMessageFormats.Config.Entry.Payload.StackColor.Tooltip"));
+                        ImGui.Text(_textService.Translate("CustomChatMessageFormats.Config.Entry.Payload.StackColor.Tooltip"));
                         ImGui.EndTooltip();
                     }
                 }
@@ -718,7 +718,7 @@ public partial class CustomChatMessageFormats
         {
             if (payload.Type == ReadOnlySePayloadType.Text)
             {
-                ImGui.TextUnformatted(Encoding.UTF8.GetString(payload.Body.ToArray()));
+                ImGui.Text(Encoding.UTF8.GetString(payload.Body.ToArray()));
                 ImGui.SameLine(0, 0);
                 continue;
             }

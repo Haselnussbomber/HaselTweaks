@@ -100,7 +100,7 @@ public partial class ConfigGui
             => _textService.Translate($"{_tweak.InternalName}.Config.{fieldName}.Options.{Enum.GetName(enumType, value)}.Label");
 
         if (!noLabel)
-            ImGui.TextUnformatted(_textService.Translate($"{_tweak.InternalName}.Config.{fieldName}.Label"));
+            ImGui.Text(_textService.Translate($"{_tweak.InternalName}.Config.{fieldName}.Label"));
 
         using var indent = ImGuiUtils.ConfigIndent(!noLabel);
 
@@ -143,7 +143,7 @@ public partial class ConfigGui
 
         using var id = ImRaii.PushId(fieldName);
 
-        ImGui.TextUnformatted(_textService.Translate($"{_tweak.InternalName}.Config.{fieldName}.Label"));
+        ImGui.Text(_textService.Translate($"{_tweak.InternalName}.Config.{fieldName}.Label"));
 
         using var indent = ImGuiUtils.ConfigIndent();
 
@@ -174,7 +174,7 @@ public partial class ConfigGui
 
         using var id = ImRaii.PushId(fieldName);
 
-        ImGui.TextUnformatted(_textService.Translate($"{_tweak.InternalName}.Config.{fieldName}.Label"));
+        ImGui.Text(_textService.Translate($"{_tweak.InternalName}.Config.{fieldName}.Label"));
 
         using var indent = ImGuiUtils.ConfigIndent();
 
@@ -285,7 +285,7 @@ public partial class ConfigGui
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            ImGui.TextUnformatted(_textService.Translate("HaselTweaks.Config.NetworkRequestWarning"));
+            ImGui.Text(_textService.Translate("HaselTweaks.Config.NetworkRequestWarning"));
             ImGui.EndTooltip();
         }
     }

@@ -46,7 +46,7 @@ public partial class EditPresetDialog
         using var modal = ImRaiiExt.PopupModal(title, ImGuiWindowFlags.AlwaysAutoResize);
         if (!modal) return;
 
-        ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.EditPresetDialog.Name.Label"));
+        ImGui.Text(_textService.Translate("PortraitHelperWindows.EditPresetDialog.Name.Label"));
 
         if (ImGui.IsWindowAppearing())
             ImGui.SetKeyboardFocusHere();
@@ -59,7 +59,7 @@ public partial class EditPresetDialog
         if (availableTags.Count != 0)
         {
             ImGui.Spacing();
-            ImGui.TextUnformatted(_textService.Translate("PortraitHelperWindows.EditPresetDialog.Tags.Label"));
+            ImGui.Text(_textService.Translate("PortraitHelperWindows.EditPresetDialog.Tags.Label"));
 
             var tagNames = _tags!
                 .Select(id => availableTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)

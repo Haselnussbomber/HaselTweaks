@@ -108,12 +108,12 @@ public unsafe partial class EnhancedLoginLogout
                 return;
 
             ImGuiUtils.PushCursorY(3);
-            ImGui.TextUnformatted(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote"));
+            ImGui.Text(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote"));
             ImGui.SameLine();
 
             if (!Config.SelectedEmotes.TryGetValue(ActiveContentId, out var selectedEmoteId) || selectedEmoteId == 0)
             {
-                ImGui.TextUnformatted(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.None"));
+                ImGui.Text(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.None"));
             }
             else
             {
@@ -134,17 +134,17 @@ public unsafe partial class EnhancedLoginLogout
                     ImGuiUtils.PushCursorY(-3);
                     _textureService.DrawIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon, 24 * ImGuiHelpers.GlobalScale);
                     ImGui.SameLine();
-                    ImGui.TextUnformatted(name);
+                    ImGui.Text(name);
                 }
                 else
                 {
-                    ImGui.TextUnformatted(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.Unknown"));
+                    ImGui.Text(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote.Unknown"));
                 }
             }
 
             if (!_clientState.IsLoggedIn)
             {
-                ImGui.TextUnformatted(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.NotLoggedIn"));
+                ImGui.Text(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.NotLoggedIn"));
                 return;
             }
 
@@ -187,7 +187,7 @@ public unsafe partial class EnhancedLoginLogout
             if (_isRecordingEmote)
             {
                 using (Color.Gold.Push(ImGuiCol.Text))
-                    ImGui.TextUnformatted(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.RecordingInfo"));
+                    ImGui.Text(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.RecordingInfo"));
                 ImGuiUtils.PushCursorY(3);
             }
         });
