@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Dalamud.NET.Sdk/13.0.0">
+<Project Sdk="Dalamud.NET.Sdk/13.1.0">
   <PropertyGroup>
     <Version>37.0.3</Version>
     <OutputPath>..\bin\</OutputPath>
+    <Use_Dalamud_Newtonsoft_Json>false</Use_Dalamud_Newtonsoft_Json>
     <Use_Dalamud_FFXIVClientStructs>false</Use_Dalamud_FFXIVClientStructs>
     <InteropGenerator_InteropNamespace>HaselTweaks</InteropGenerator_InteropNamespace>
     <DefineConstants>AUTOCTOR_EMBED_ATTRIBUTES</DefineConstants>
@@ -19,7 +20,6 @@
     <Reference Include="SharpDX" Private="false" />
     <Reference Include="SharpDX.Direct3D11" Private="false" />
     <Reference Include="SharpDX.DXGI" Private="false" />
-    <Reference Include="Microsoft.Extensions.ObjectPool" Private="false" />
   </ItemGroup>
 
   <ItemGroup>
