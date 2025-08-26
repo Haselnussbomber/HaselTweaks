@@ -42,12 +42,11 @@ public class Version6(IDalamudPluginInterface pluginInterface, IPluginLog plugin
                 continue;
 
             var guid = Guid.Parse(id);
-
             var oldPath = Path.Join(portraitsPath, $"{textureHash}.png");
 
             if (File.Exists(oldPath))
             {
-                var newPath = pluginInterface.GetPortraitThumbnailPath(guid);
+                var newPath = Path.Join(portraitsPath, $"{guid.ToString("D").ToLowerInvariant()}.png");
 
                 pluginLog.Info($"[MigrationV6]   {oldPath} => {newPath}");
 
