@@ -257,7 +257,7 @@ public partial class PluginWindow : SimpleWindow
 
         using var id = ImRaii.PushId(selectedTweakName);
 
-        ImGuiUtils.TextUnformattedColored(Color.Gold, _textService.TryGetTranslation(selectedTweakName + ".Tweak.Name", out var name) ? name : selectedTweakName);
+        ImGui.TextColored(Color.Gold, _textService.TryGetTranslation(selectedTweakName + ".Tweak.Name", out var name) ? name : selectedTweakName);
 
         var statusText = _textService.Translate("HaselTweaks.Config.TweakStatus." + Enum.GetName(_selectedTweak.Status));
         var statusColor = _selectedTweak.Status switch
@@ -271,7 +271,7 @@ public partial class PluginWindow : SimpleWindow
         var textSize = ImGui.CalcTextSize(statusText);
         ImGui.SameLine(windowX - textSize.X);
 
-        ImGuiUtils.TextUnformattedColored(statusColor, statusText);
+        ImGui.TextColored(statusColor, statusText);
 
         if (_textService.TryGetTranslation(selectedTweakName + ".Tweak.Description", out var description))
         {

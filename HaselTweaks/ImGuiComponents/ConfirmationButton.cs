@@ -1,37 +1,25 @@
 namespace HaselTweaks.ImGuiComponents;
 
-public class ConfirmationButton
+public class ConfirmationButton(string label, ConfirmationButton.ClickCallbackDelegate clickCallback)
 {
     public delegate void ClickCallbackDelegate();
 
-    public string Label;
-    public ClickCallbackDelegate ClickCallback;
+    public string Label = label;
+    public ClickCallbackDelegate ClickCallback = clickCallback;
 
     public bool Disabled { get; set; }
-
-    public ConfirmationButton(string label, ClickCallbackDelegate clickCallback)
-    {
-        Label = label;
-        ClickCallback = clickCallback;
-    }
 
     internal bool Draw(int buttonIndex, float buttonWidth)
     {
         using var id = ImRaii.PushId(buttonIndex);
+        using var disabled = ImRaii.Disabled(Disabled);
 
-        if (Disabled)
-            ImGui.BeginDisabled();
-
-        var clicked = ImGui.Button(Label, new Vector2(buttonWidth, ImGui.GetFrameHeight()));
-
-        if (Disabled)
-            ImGui.EndDisabled();
-
-        if (clicked)
+        if (ImGui.Button(Label, new Vector2(buttonWidth, ImGui.GetFrameHeight())))
         {
             ClickCallback();
+            return true;
         }
 
-        return clicked;
+        return false;
     }
 }

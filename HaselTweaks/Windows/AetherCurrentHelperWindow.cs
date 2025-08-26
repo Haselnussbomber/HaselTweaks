@@ -191,7 +191,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
 
         // Content
         ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {_textService.GetQuestName(quest.RowId)}");
+        ImGui.TextColored(TitleColor, $"[#{index}] {_textService.GetQuestName(quest.RowId)}");
         ImGui.Text($"{_mapService.GetHumanReadableCoords(quest.IssuerLocation.Value)} | {_textService.GetENpcResidentName(quest.IssuerStart.RowId)}");
 
         // Actions
@@ -233,7 +233,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
 
         // Content
         ImGui.TableNextColumn();
-        ImGuiUtils.TextUnformattedColored(TitleColor, $"[#{index}] {_textService.GetEObjName(eobj.RowId)}");
+        ImGui.TextColored(TitleColor, $"[#{index}] {_textService.GetEObjName(eobj.RowId)}");
         ImGui.Text(_mapService.GetHumanReadableCoords(level));
 
         // Actions
@@ -277,7 +277,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
 
                     if (isUnlocked)
                     {
-                        ImGuiUtils.TextUnformattedColored(Color.Green, text);
+                        ImGui.TextColored(Color.Green, text);
                     }
                     else
                     {
@@ -293,7 +293,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
             {
                 ImGuiUtils.PushCursorX(2);
                 using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
-                ImGuiUtils.TextUnformattedColored(Color.Grey4, FontAwesomeIcon.Times.ToIconString());
+                ImGui.TextColored(Color.Grey4, FontAwesomeIcon.Times.ToIconString());
             }
         }
     }
@@ -308,6 +308,6 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
             ImGuiUtils.PushCursorX(ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(icon).X / 2);
         }
 
-        ImGuiUtils.TextUnformattedColored(Color.Green, icon);
+        ImGui.TextColored(Color.Green, icon);
     }
 }

@@ -17,7 +17,7 @@ public abstract class ConfirmationDialog : IDialog
     }
 
     public void Hide()
-        => _shouldDraw = true;
+        => _shouldDraw = false;
 
     public void AddButton(ConfirmationButton button)
         => _buttons.Add(button);
@@ -25,17 +25,11 @@ public abstract class ConfirmationDialog : IDialog
     public virtual bool DrawCondition()
         => _shouldDraw;
 
-    public virtual void PreDraw() { }
-
-    public virtual void PostDraw() { }
-
     public abstract void InnerDraw();
 
     public void Draw()
     {
         if (!DrawCondition()) return;
-
-        PreDraw();
 
         if (!_openCalled)
         {
@@ -43,10 +37,10 @@ public abstract class ConfirmationDialog : IDialog
             _openCalled = true;
         }
 
-        var center = ImGui.GetMainViewport().Pos + ImGui.GetMainViewport().Size / 2f; // ImGui.GetMainViewport().GetCenter()
-        ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f));
+        ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new Vector2(0.5f));
 
         using var windowPadding = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, new Vector2(14, 10));
+
         if (!ImGui.BeginPopupModal(WindowName, ref _shouldDraw, ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar))
             return;
 
@@ -56,7 +50,7 @@ public abstract class ConfirmationDialog : IDialog
         }
         catch (Exception ex)
         {
-            ImGuiUtils.TextUnformattedColored(Color.Red, ex.Message);
+            ImGui.TextColored(Color.Red, ex.Message);
         }
 
         ImGui.Spacing();
@@ -84,7 +78,5 @@ public abstract class ConfirmationDialog : IDialog
         }
 
         ImGui.EndPopup();
-
-        PostDraw();
     }
 }

@@ -168,11 +168,7 @@ public partial class PresetBrowserOverlay : Overlay
 
         ImGui.SameLine();
         ImGui.SetCursorPosX(4);
-
-        using (ImRaii.PushFont(UiBuilder.IconFont))
-        {
-            ImGuiUtils.TextUnformattedDisabled(FontAwesomeIcon.Tag.ToIconString());
-        }
+        DrawTagIcon();
     }
 
     private void DrawPresetBrowserSidebar()
@@ -247,9 +243,14 @@ public partial class PresetBrowserOverlay : Overlay
 
         ImGui.SameLine();
         ImGui.SetCursorPosX(4);
+        DrawTagIcon();
+    }
 
+    private static void DrawTagIcon()
+    {
         using (ImRaii.PushFont(UiBuilder.IconFont))
-            ImGuiUtils.TextUnformattedDisabled(FontAwesomeIcon.Tags.ToIconString());
+        using (ImRaii.Disabled())
+            ImGui.Text(FontAwesomeIcon.Tags.ToIconString());
     }
 
     private void RemoveUnusedTags()

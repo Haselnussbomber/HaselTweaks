@@ -70,7 +70,7 @@ public partial class CustomChatTimestamp
             using var child = ImRaii.Child("##FormatExample", size, true);
             if (!child) return;
 
-            ImGuiUtils.TextUnformattedColored(Color.White, formatted);
+            ImGui.TextColored(Color.White, formatted);
             ImGui.SameLine(0, 0);
             ImGui.TextColoredWrapped(Color.FromRGBA(colorParty), _textService.Translate("CustomChatTimestamp.Config.Format.Example.Message"));
         }

@@ -9,7 +9,5 @@ public interface IDialog
     void Hide();
     void AddButton(ConfirmationButton button);
     bool DrawCondition();
-    void PreDraw();
-    void PostDraw();
     void InnerDraw();
 }
