@@ -66,14 +66,9 @@ public unsafe partial class Commands : ConfigurableTweak
     [CommandHandler("/itemlink", "Commands.Config.EnableItemLinkCommand.Description", DisplayOrder: 2)]
     private void OnItemLinkCommand(string command, string arguments)
     {
-        uint id;
-        try
+        if (!uint.TryParse(arguments.Trim(), out var id))
         {
-            id = Convert.ToUInt32(arguments.Trim());
-        }
-        catch (Exception e)
-        {
-            Chat.PrintError(e.Message);
+            Chat.PrintError(_textService.Translate("Commands.InvalidArguments"));
             return;
         }
 
@@ -236,7 +231,7 @@ public unsafe partial class Commands : ConfigurableTweak
     [CommandHandler("/glamourplate", "Commands.Config.EnableGlamourPlateCommand.Description", DisplayOrder: 2)]
     private void OnGlamourPlateCommand(string command, string arguments)
     {
-        if (!byte.TryParse(arguments, out var glamourPlateId) || glamourPlateId == 0 || glamourPlateId > 20)
+        if (!byte.TryParse(arguments.Trim(), out var glamourPlateId) || glamourPlateId == 0 || glamourPlateId > 20)
         {
             Chat.PrintError(_textService.Translate("Commands.InvalidArguments"));
             return;
