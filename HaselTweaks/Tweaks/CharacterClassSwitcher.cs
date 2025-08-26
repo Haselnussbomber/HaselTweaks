@@ -108,7 +108,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak
         bool unk8)
     {
         if (Config.DisableTooltips && (
-            (TryGetAddon<AtkUnitBase>("CharacterClass", out var unitBase) && unitBase->Id == parentId) ||
+            (TryGetAddon("CharacterClass", out AtkUnitBase* unitBase) && unitBase->Id == parentId) ||
             (TryGetAddon("PvPCharacter", out unitBase) && unitBase->Id == parentId)))
         {
             return;

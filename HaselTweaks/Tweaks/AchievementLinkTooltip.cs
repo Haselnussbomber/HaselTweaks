@@ -117,7 +117,7 @@ public unsafe partial class AchievementLinkTooltip : ConfigurableTweak
             }
         }
 
-        _tooltipText->SetString(sb.ToArray());
+        _tooltipText->SetString(sb.GetViewAsSpan());
 
         // ShowTooltip call @ AddonChatLog_OnRefresh, case 0x12
         AtkStage.Instance()->TooltipManager.ShowTooltip(
