@@ -1,5 +1,11 @@
 # Changelog
 
+## [37.0.3] (2025-08-26)
+
+### Portrait Helper
+
+- **Fixed:** The button for the Advanced Edit mode was incorrectly tied to the preset in clipboard detection. Copy/paste mistake, sorry.
+
 ## [37.0.2] (2025-08-17)
 
 ### Portrait Helper
@@ -2156,6 +2162,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[37.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v37.0.2...v37.0.3
 [37.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v37.0.1...v37.0.2
 [37.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v37.0.0...v37.0.1
 [37.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v36.1.3...v37.0.0
