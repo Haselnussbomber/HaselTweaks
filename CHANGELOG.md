@@ -1,5 +1,11 @@
 # Changelog
 
+## [37.0.4] (2025-08-30)
+
+### Enhanced Material List
+
+- **Fixed:** Code cleanup in 37.0.3 went too far and called an incorrect function, causing a crash when the Material List opens. Sorry about that!
+
 ## [37.0.3] (2025-08-26)
 
 ### Portrait Helper
@@ -2162,6 +2168,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[37.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v37.0.3...v37.0.4
 [37.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v37.0.2...v37.0.3
 [37.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v37.0.1...v37.0.2
 [37.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v37.0.0...v37.0.1

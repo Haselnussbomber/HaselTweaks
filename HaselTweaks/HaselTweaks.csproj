@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Dalamud.NET.Sdk/13.1.0">
   <PropertyGroup>
-    <Version>37.0.3</Version>
+    <Version>37.0.4</Version>
     <OutputPath>..\bin\</OutputPath>
     <Use_Dalamud_Newtonsoft_Json>false</Use_Dalamud_Newtonsoft_Json>
     <Use_Dalamud_FFXIVClientStructs>false</Use_Dalamud_FFXIVClientStructs>
