@@ -263,7 +263,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
             return;
 
         var textPtr = nameNode->GetText();
-        if (textPtr.Value == null)
+        if (!textPtr.HasValue)
             return;
 
         // TODO: only for missing items?
@@ -284,7 +284,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
         nameNode->LineSpacing = 17;
         nameNode->DrawFlags |= 0x1;
 
-        var itemName = textPtr.ToString().Replace("\r\n", "");
+        var itemName = textPtr.AsReadOnlySeStringSpan().ToString().Replace("\r\n", "");
         if (itemName.Length > 23)
             itemName = itemName[..20] + "...";
 
