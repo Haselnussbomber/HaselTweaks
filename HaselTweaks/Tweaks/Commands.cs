@@ -1,6 +1,8 @@
+using Dalamud.Game.ClientState.Conditions;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using HaselCommon.Commands;
 
@@ -16,12 +18,15 @@ public unsafe partial class Commands : ConfigurableTweak
     private readonly ItemService _itemService;
     private readonly CommandService _commandService;
     private readonly ConfigGui _configGui;
+    private readonly ICondition _condition;
+    private readonly IFramework _framework;
 
     private CommandHandler? _itemLinkCommandHandler;
     private CommandHandler? _whatMountCommandCommandHandler;
     private CommandHandler? _whatEmoteCommandCommandHandler;
     private CommandHandler? _whatBardingCommandCommandHandler;
     private CommandHandler? _glamourPlateCommandCommandHandler;
+    private CommandHandler? _reloadUICommandCommandHandler;
 
     public override void OnEnable()
     {
@@ -30,6 +35,7 @@ public unsafe partial class Commands : ConfigurableTweak
         _whatEmoteCommandCommandHandler = _commandService.Register(OnWhatEmoteCommand);
         _whatBardingCommandCommandHandler = _commandService.Register(OnWhatBardingCommand);
         _glamourPlateCommandCommandHandler = _commandService.Register(OnGlamourPlateCommand);
+        _reloadUICommandCommandHandler = _commandService.Register(OnReloadUICommand);
 
         UpdateCommands(true);
     }
@@ -52,6 +58,9 @@ public unsafe partial class Commands : ConfigurableTweak
 
         _glamourPlateCommandCommandHandler?.Dispose();
         _glamourPlateCommandCommandHandler = null;
+
+        _reloadUICommandCommandHandler?.Dispose();
+        _reloadUICommandCommandHandler = null;
     }
 
     private void UpdateCommands(bool enable)
@@ -61,6 +70,7 @@ public unsafe partial class Commands : ConfigurableTweak
         _whatEmoteCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatEmoteCommand);
         _whatBardingCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatBardingCommand);
         _glamourPlateCommandCommandHandler?.SetEnabled(enable && Config.EnableGlamourPlateCommand);
+        _reloadUICommandCommandHandler?.SetEnabled(enable && Config.EnableReloadUICommand);
     }
 
     [CommandHandler("/itemlink", "Commands.Config.EnableItemLinkCommand.Description", DisplayOrder: 2)]
@@ -245,5 +255,29 @@ public unsafe partial class Commands : ConfigurableTweak
         }
 
         raptureGearsetModule->EquipGearset(raptureGearsetModule->CurrentGearsetIndex, glamourPlateId);
+    }
+
+    [CommandHandler("/reloadui", "Commands.Config.EnableReloadUICommand.Description")]
+    private unsafe void OnReloadUICommand(string command, string arguments)
+    {
+        var raptureAtkModule = RaptureAtkModule.Instance();
+
+        if (raptureAtkModule->UiMode != 1 || !_condition.OnlyAny(
+            ConditionFlag.NormalConditions,
+            ConditionFlag.InThatPosition,
+            ConditionFlag.Jumping,
+            ConditionFlag.Mounted,
+            ConditionFlag.UsingFashionAccessory))
+        {
+            Chat.PrintError(_textService.GetLogMessage(10775));
+            return;
+        }
+
+        // Note: The game calls Hide on all agents, which causes AgentHousingPlant to unblock inventory slots.
+        // This triggers an inventory/shop/retainer/recipe, and most importantly, a map markers update.
+        // For that, EventFramework sends a packet and the server responds with a packet, triggering the map markers update.
+        // This seems to be a very normal and frequent thing to occur, with a back-off of 2 seconds, so nothing to worry about.
+        raptureAtkModule->ChangeUiMode(0);
+        _framework.RunOnTick(() => raptureAtkModule->ChangeUiMode(1));
     }
 }

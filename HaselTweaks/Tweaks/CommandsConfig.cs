@@ -7,6 +7,7 @@ public class CommandsConfiguration
     public bool EnableWhatEmoteCommand = true;
     public bool EnableWhatBardingCommand = true;
     public bool EnableGlamourPlateCommand = true;
+    public bool EnableReloadUICommand = true;
 }
 
 public unsafe partial class Commands
@@ -25,6 +26,7 @@ public unsafe partial class Commands
         _configGui.DrawBool("EnableWhatMountCommand", ref Config.EnableWhatMountCommand);
         _configGui.DrawBool("EnableWhatEmoteCommand", ref Config.EnableWhatEmoteCommand);
         _configGui.DrawBool("EnableWhatBardingCommand", ref Config.EnableWhatBardingCommand);
-        _configGui.DrawBool("EnableGlamourPlateCommand", ref Config.EnableGlamourPlateCommand, noFixSpaceAfter: true);
+        _configGui.DrawBool("EnableGlamourPlateCommand", ref Config.EnableGlamourPlateCommand);
+        _configGui.DrawBool("EnableReloadUICommand", ref Config.EnableReloadUICommand, noFixSpaceAfter: true);
     }
 }

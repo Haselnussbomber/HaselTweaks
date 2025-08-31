@@ -534,6 +534,13 @@
     "de": "Dieser Abkürzungsbefehl führt den Befehl \"/gearset change\" mit der Nummer des aktuellen Ausrüstungssets und der angegebenen Projektionsplatten-Nummer (1-20) aus.",
     "zh": "该快捷指令使用当前的套装编号和给定的投影模板编号(1-20)执行“/套装 更换”命令。"
   },
+  "Commands.Config.EnableReloadUICommand.Label": {
+    "en": "/reloadui"
+  },
+  "Commands.Config.EnableReloadUICommand.Description": {
+    "en": "Reloads the games UI. This is helpful for applying texture changes without using the Aesthetician or relogging.",
+    "de": "Läd das UI des Spiels neu. Dies ist hilfreich, um Texturänderungen anzuwenden, ohne den Kosmetiker rufen oder sich neu einloggen zu müssen."
+  },
   "Commands.ItemLink.ItemNotFound": {
     "en": "Item {0} not found.",
     "de": "Gegenstand {0} nicht gefunden.",

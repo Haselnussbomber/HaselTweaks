@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Commands
+
+- **Added:** New command `/reloadui`  
+  Reloads the games UI. This is helpful for applying texture changes without using the Aesthetician or relogging.
+
 ## [37.0.4] (2025-08-30)
 
 ### Enhanced Material List
