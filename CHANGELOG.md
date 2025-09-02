@@ -1,6 +1,8 @@
 # Changelog
 
-## [Unreleased]
+## [37.1.0] (2025-09-02)
+
+Update for 7.31.
 
 ### Commands
 
