@@ -213,8 +213,9 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
         var toolClassId = (byte)(classJob.RowId - 7);
         var stage = researchModule->CurrentStages[toolClassId - 1];
         var nextStage = researchModule->UnlockedStages[toolClassId - 1];
+        var maxStage = _excelService.GetSheet<WKSCosmoToolPassiveBuff>().Max(row => row.Unknown0);
 
-        if (stage == 14)
+        if (stage == maxStage)
         {
             if (Config.ShowCosmicToolScore)
             {
@@ -252,10 +253,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
             return true;
         }
 
-        if (!_excelService.TryGetRow<RawRow>("WKSCosmoToolClass", toolClassId, out var toolClassRow))
-            return false;
-
-        if (!_excelService.TryGetRow<RawRow>("WKSCosmoToolDataAmount", toolClassRow.ReadUInt8(0x8E), out var dataAmountRow)) // Unknown40
+        if (!_excelService.TryGetRow<WKSCosmoToolClass>(toolClassId, out var toolClassRow))
             return false;
 
         byte selectedType = 0;
@@ -296,9 +294,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
         if (selectedType == 0)
             return false;
 
-        var toolNameId = toolClassRow.ReadUInt16((nuint)(8 * (selectedType - 1) + 0x70));
-
-        if (!_excelService.TryGetRow<WKSCosmoToolName>(toolNameId, out var toolNameRow))
+        if (!_excelService.TryGetRow<WKSCosmoToolName>(toolClassRow.Types[selectedType - 1].Name.RowId, out var toolNameRow))
             return false;
 
         var toolName = toolNameRow.Name.ToString();
