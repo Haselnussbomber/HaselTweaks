@@ -1,5 +1,11 @@
 # Changelog
 
+## [38.0.2] (2025-09-03)
+
+### Enhanced Experience Bar
+
+- **Fixed:** Fixed Cosmic Research Bar showing class score on stage 9, when there are 14 now.
+
 ## [38.0.1] (2025-09-03)
 
 ### Always Face Camera
@@ -2189,6 +2195,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[38.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v38.0.1...v38.0.2
 [38.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v38.0.0...v38.0.1
 [38.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v37.1.0...v38.0.0
 [37.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v37.0.4...v37.1.0
