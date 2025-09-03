@@ -214,7 +214,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
         var stage = researchModule->CurrentStages[toolClassId - 1];
         var nextStage = researchModule->UnlockedStages[toolClassId - 1];
 
-        if (stage == 9)
+        if (stage == 14)
         {
             if (Config.ShowCosmicToolScore)
             {
