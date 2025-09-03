@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Always Face Camera
+
+This tweak makes your character look at the camera when facing it, mimicking the behavior of the \"/facecamera\" command, with the position updated every frame. Does not work in combat or when you have a target.
+
 ## [37.1.0] (2025-09-02)
 
 Update for 7.31.

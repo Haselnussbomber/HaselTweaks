@@ -236,6 +236,14 @@
     "zh": "打开风脉泉窗口"
   },
 
+  "AlwaysFaceCamera.Tweak.Name": {
+    "en": "Always Face Camera"
+  },
+  "AlwaysFaceCamera.Tweak.Description": {
+    "en": "This tweak makes your character look at the camera when facing it, mimicking the behavior of the \"/facecamera\" command, with the position updated every frame. Does not work in combat or when you have a target.",
+    "de": "Dieser Tweak lässt deinen Charakter zur Kamera schauen, wenn er ihr zugewandt ist, und ahmt dabei das Verhalten des Befehls \"/facecamera\" nach, wobei die Position mit jedem Frame aktualisiert wird. Funktioniert nicht im Kampf oder wenn du ein Ziel hast."
+  },
+
   "AutoOpenRecipe.Tweak.Name": {
     "en": "Auto-open Recipe",
     "zh": "自动打开制作笔记"

@@ -27,6 +27,10 @@ Configuration options:
 
 Clicking on a zone in the Aether Currents window opens a helper window that shows where to find the aether currents or which quests unlocks them. Clicking on an aether current in the list flags the position of the aether current or the quest giver on the map.
 
+### Always Face Camera
+
+This tweak makes your character look at the camera when facing it, mimicking the behavior of the \"/facecamera\" command, with the position updated every frame. Does not work in combat or when you have a target.
+
 ### Auto Sorter
 
 Sorts items inside various containers when they are opened. Rules can be configured.
