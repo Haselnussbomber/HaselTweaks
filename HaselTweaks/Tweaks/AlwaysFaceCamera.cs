@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 
 namespace HaselTweaks.Tweaks;
@@ -15,7 +14,7 @@ public unsafe partial class AlwaysFaceCamera : Tweak
 
     public override void OnDisable()
     {
-        _framework.Update += OnUpdate;
+        _framework.Update -= OnUpdate;
         DisableFaceCamera();
     }
 
