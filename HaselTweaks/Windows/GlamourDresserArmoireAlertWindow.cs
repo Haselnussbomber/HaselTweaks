@@ -10,7 +10,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
 {
     private static readonly Vector2 IconSize = new(34);
 
-    private readonly TextureService _textureService;
+    private readonly ITextureProvider _textureProvider;
     private readonly ExcelService _excelService;
     private readonly TextService _textService;
     private readonly ImGuiContextMenuService _imGuiContextMenuService;
@@ -74,7 +74,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
 
         using (var group = ImRaii.Group())
         {
-            _textureService.DrawIcon(new GameIconLookup(item.Icon, isHq), IconSize * ImGuiHelpers.GlobalScale);
+            _textureProvider.DrawIcon(new GameIconLookup(item.Icon, isHq), IconSize * ImGuiHelpers.GlobalScale);
 
             ImGui.SameLine();
 

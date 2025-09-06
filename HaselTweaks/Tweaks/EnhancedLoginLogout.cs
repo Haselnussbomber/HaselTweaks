@@ -21,7 +21,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
     private readonly IGameConfig _gameConfig;
     private readonly IClientState _clientState;
     private readonly IAddonLifecycle _addonLifecycle;
-    private readonly TextureService _textureService;
+    private readonly ITextureProvider _textureProvider;
     private readonly ExcelService _excelService;
     private readonly ConfigGui _configGui;
 

@@ -28,7 +28,6 @@ public partial class PresetBrowserOverlay : Overlay
     private readonly PluginConfig _pluginConfig;
     private readonly TextService _textService;
     private readonly ExcelService _excelService;
-    private readonly TextureService _textureService;
     private readonly BannerService _bannerService;
     private readonly ThumbnailService _thumbnailService;
     private readonly ClipboardService _clipboardService;
@@ -351,7 +350,7 @@ public partial class PresetBrowserOverlay : Overlay
         var cursorPos = ImGui.GetCursorPos();
         var center = cursorPos + PortraitSize * scale / 2f;
 
-        _textureService.DrawIcon(190009, PortraitSize * scale);
+        _textureProvider.DrawIcon(190009, PortraitSize * scale);
         ImGui.SetCursorPos(cursorPos);
 
         var path = _thumbnailService.GetPortraitThumbnailPath(preset.Id);
@@ -393,19 +392,19 @@ public partial class PresetBrowserOverlay : Overlay
         if (bannerFrameImage != 0)
         {
             ImGui.SetCursorPos(cursorPos);
-            _textureService.DrawIcon(bannerFrameImage, PortraitSize * scale);
+            _textureProvider.DrawIcon(bannerFrameImage, PortraitSize * scale);
         }
 
         if (bannerDecorationImage != 0)
         {
             ImGui.SetCursorPos(cursorPos);
-            _textureService.DrawIcon(bannerDecorationImage, PortraitSize * scale);
+            _textureProvider.DrawIcon(bannerDecorationImage, PortraitSize * scale);
         }
 
         if (hasErrors)
         {
             ImGui.SetCursorPos(cursorPos + new Vector2(PortraitSize.X - 190, 10) * scale);
-            _textureService.Draw("ui/uld/Warning_hr1.tex", 160 * scale);
+            _textureProvider.Draw("ui/uld/Warning_hr1.tex", 160 * scale);
         }
 
         ImGui.SetCursorPos(cursorPos);

@@ -12,7 +12,7 @@ public unsafe partial class CustomChatMessageFormats : ConfigurableTweak
     private readonly TextService _textService;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly ExcelService _excelService;
-    private readonly TextureService _textureService;
+    private readonly GfdService _gfdService;
     private readonly ISeStringEvaluator _seStringEvaluator;
 
     private Hook<RaptureLogModule.Delegates.FormatLogMessage>? _formatLogMessageHook;

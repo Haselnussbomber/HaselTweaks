@@ -7,9 +7,9 @@ namespace HaselTweaks.Config;
 public partial class ConfigGui
 {
     private readonly IDalamudPluginInterface _pluginInterface;
+    private readonly ITextureProvider _textureProvider;
     private readonly PluginConfig _pluginConfig;
     private readonly TextService _textService;
-    private readonly TextureService _textureService;
 
     private IConfigurableTweak? _tweak = null;
 
@@ -220,7 +220,7 @@ public partial class ConfigGui
 
         DrawConfigurationHeader("HaselTweaks.Config.SectionTitle.IncompatibilityWarning");
 
-        _textureService.DrawIcon(60073, 24);
+        _textureProvider.DrawIcon(60073, 24);
         ImGui.SameLine();
         var cursorPosX = ImGui.GetCursorPosX();
 

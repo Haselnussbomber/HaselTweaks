@@ -16,7 +16,8 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
     private static readonly Vector2 IconInset = IconSize * 0.08333f;
     private static readonly float ItemCellWidth = IconSize.X;
     private readonly IClientState _clientState;
-    private readonly TextureService _textureService;
+    private readonly ITextureProvider _textureProvider;
+    private readonly UldService _uldService;
     private readonly ExcelService _excelService;
     private readonly LanguageProvider _languageProvider;
     private readonly TextService _textService;
@@ -140,7 +141,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
 
                 // class icon
                 ImGui.SetCursorPos(itemStartPos);
-                _textureService.DrawIcon(62100 + gearset->ClassJob, iconSize);
+                _textureProvider.DrawIcon(62100 + gearset->ClassJob, iconSize);
 
                 // gearset number
                 var text = $"{gearsetIndex + 1}";
@@ -168,7 +169,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
 
                     // icon background
                     ImGui.SetCursorPos(cursorPos);
-                    _textureService.DrawPart("Character", 8, 0, IconSize * ImGuiHelpers.GlobalScale);
+                    _uldService.DrawPart("Character", 8, 0, IconSize * ImGuiHelpers.GlobalScale);
 
                     ImGui.SetCursorPos(cursorPos + IconInset * ImGuiHelpers.GlobalScale);
                     var iconIndex = slotIndex switch
@@ -176,7 +177,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
                         12 => 11u, // left ring
                         _ => slotIndex,
                     };
-                    _textureService.DrawPart("Character", 12, 17 + iconIndex, (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
+                    _uldService.DrawPart("Character", 12, 17 + iconIndex, (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
                     continue;
                 }
@@ -223,21 +224,21 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
 
         // icon background
         ImGui.SetCursorPos(startPos);
-        _textureService.DrawPart("Character", 7, 4, IconSize * ImGuiHelpers.GlobalScale);
+        _uldService.DrawPart("Character", 7, 4, IconSize * ImGuiHelpers.GlobalScale);
 
         // icon
         ImGui.SetCursorPos(startPos + IconInset * ImGuiHelpers.GlobalScale);
-        _textureService.DrawIcon(new GameIconLookup(item.Icon, ItemUtil.IsHighQuality(slot->ItemId)), (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
+        _textureProvider.DrawIcon(new GameIconLookup(item.Icon, ItemUtil.IsHighQuality(slot->ItemId)), (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
         // icon overlay
         ImGui.SetCursorPos(startPos);
-        _textureService.DrawPart("Character", 7, 0, IconSize * ImGuiHelpers.GlobalScale);
+        _uldService.DrawPart("Character", 7, 0, IconSize * ImGuiHelpers.GlobalScale);
 
         // icon hover effect
         if (ImGui.IsItemHovered() || ImGui.IsPopupOpen("ItemTooltip"))
         {
             ImGui.SetCursorPos(startPos);
-            _textureService.DrawPart("Character", 7, 5, IconSize * ImGuiHelpers.GlobalScale);
+            _uldService.DrawPart("Character", 7, 5, IconSize * ImGuiHelpers.GlobalScale);
         }
 
         ImGui.SetCursorPos(startPos + new Vector2(0, (IconSize.Y - 3) * ImGuiHelpers.GlobalScale));

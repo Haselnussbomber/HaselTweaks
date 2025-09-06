@@ -332,7 +332,7 @@ public partial class CustomChatMessageFormats
                             if (!payload.TryGetExpression(out var iconExpr) || !iconExpr.TryGetUInt(out var iconId))
                                 break;
 
-                            _textureService.DrawGfd(iconId, 20);
+                            _gfdService.Draw(iconId, 20);
 
                             ImGui.SameLine();
 
@@ -348,7 +348,7 @@ public partial class CustomChatMessageFormats
                                     var maxLineWidth = 20 * 20;
                                     var posStart = ImGui.GetCursorPosX();
 
-                                    foreach (var selectorGfdEntry in _textureService.GfdFileView.Value.Entries)
+                                    foreach (var selectorGfdEntry in _gfdService.Entries)
                                     {
                                         if (selectorGfdEntry.IsEmpty || selectorGfdEntry.Id is 69 or 123)
                                             continue;
@@ -376,7 +376,7 @@ public partial class CustomChatMessageFormats
                                         }
 
                                         ImGui.SetCursorPos(startPos);
-                                        _textureService.DrawGfd(selectorGfdEntry.Id, size);
+                                        _gfdService.Draw(selectorGfdEntry.Id, size);
 
                                         ImGui.SameLine();
 
@@ -730,7 +730,7 @@ public partial class CustomChatMessageFormats
             {
                 case MacroCode.Icon:
                     if (payload.TryGetExpression(out var iconExpr) && iconExpr.TryGetUInt(out var iconId))
-                        _textureService.DrawGfd(iconId, 20);
+                        _gfdService.Draw(iconId, 20);
                     break;
 
                 case MacroCode.Color:

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- This .csproj is part of a mono-repo solution and shares dependencies with other projects. -->
 <Project Sdk="Dalamud.NET.Sdk/13.1.0">
   <!-- Project settings -->
   <PropertyGroup>
+    <AssemblyName>HaselTweaks</AssemblyName>
     <Version>38.0.2</Version>
     <OutputPath>..\bin\</OutputPath>
     <DefineConstants>$(DefineConstants);AUTOCTOR_EMBED_ATTRIBUTES</DefineConstants>
@@ -51,13 +53,13 @@
 
   <ItemGroup>
     <CompilerVisibleProperty Include="InteropGenerator_InteropNamespace" />
-    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator\InteropGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    <ProjectReference Include="..\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" Private="True" />
-    <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" Private="True" />
+    <ProjectReference Include="..\..\libs\FFXIVClientStructs\InteropGenerator\InteropGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\..\libs\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" Private="True" />
+    <ProjectReference Include="..\..\libs\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" Private="True" />
   </ItemGroup>
 
   <!-- HaselCommon -->
   <ItemGroup>
-    <ProjectReference Include="..\HaselCommon\HaselCommon\HaselCommon.csproj" />
+    <ProjectReference Include="..\..\libs\HaselCommon\HaselCommon\HaselCommon.csproj" />
   </ItemGroup>
 </Project>

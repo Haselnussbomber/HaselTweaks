@@ -11,7 +11,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
     private static readonly string[] CompassHeadings = ["E", "NE", "N", "NW", "W", "SW", "S", "SE"];
 
     private readonly IClientState _clientState;
-    private readonly TextureService _textureService;
+    private readonly ITextureProvider _textureProvider;
     private readonly ExcelService _excelService;
     private readonly TextService _textService;
     private readonly MapService _mapService;
@@ -135,7 +135,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
 
         ImGui.SetCursorPosX(windowSize.X + style.WindowPadding.X - iconSize - 1);
 
-        _textureService.DrawIcon(64, iconSize);
+        _textureProvider.DrawIcon(64, iconSize);
 
         if (ImGui.IsItemHovered())
         {
@@ -187,7 +187,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
 
         // Icon
         ImGui.TableNextColumn();
-        _textureService.DrawIcon(quest.EventIconType.Value!.MapIconAvailable + 1, 40);
+        _textureProvider.DrawIcon(quest.EventIconType.Value!.MapIconAvailable + 1, 40);
 
         // Content
         ImGui.TableNextColumn();
@@ -229,7 +229,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
 
         // Icon
         ImGui.TableNextColumn();
-        _textureService.DrawIcon(60033, 40);
+        _textureProvider.DrawIcon(60033, 40);
 
         // Content
         ImGui.TableNextColumn();
