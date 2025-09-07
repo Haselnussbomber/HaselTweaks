@@ -4,6 +4,7 @@
   <!-- Project settings -->
   <PropertyGroup>
     <AssemblyName>HaselTweaks</AssemblyName>
+    <RootNamespace>$(AssemblyName)</RootNamespace>
     <Version>38.0.2</Version>
     <OutputPath>..\bin\</OutputPath>
     <DefineConstants>$(DefineConstants);AUTOCTOR_EMBED_ATTRIBUTES</DefineConstants>
