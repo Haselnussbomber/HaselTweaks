@@ -358,7 +358,7 @@ public partial class CustomChatMessageFormats
                                         using var buttonActiveColor = ImRaii.PushColor(ImGuiCol.ButtonActive, 0xAAFFFFFF);
                                         using var buttonHoveredColor = ImRaii.PushColor(ImGuiCol.ButtonHovered, 0x77FFFFFF);
                                         using var buttonRounding = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 0);
-                                        var size = ImGuiHelpers.ScaledVector2(selectorGfdEntry.Width, selectorGfdEntry.Height) * 2;
+                                        var size = selectorGfdEntry.Size * 2f;
                                         if (ImGui.Button($"##Icon{selectorGfdEntry.Id}", size))
                                         {
                                             var sb = new SeStringBuilder();
