@@ -14,6 +14,7 @@ public unsafe partial class CastBarAetheryteNames : Tweak
     private readonly ExcelService _excelService;
     private readonly TextService _textService;
     private readonly ISeStringEvaluator _seStringEvaluator;
+    private readonly TeleportService _teleportService; // to update aetheryte list
 
     private Hook<HaselActionManager.Delegates.OpenCastBar>? _openCastBarHook;
     private Hook<Telepo.Delegates.Teleport>? _teleportHook;
