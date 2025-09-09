@@ -29,14 +29,12 @@ public partial class LockWindowPosition
     {
         _configGui.DrawConfigurationHeader();
 
-        ImGui.Checkbox(_textService.Translate("LockWindowPosition.Config.Inverted.Label"), ref Config.Inverted);
-        if (ImGui.IsItemClicked())
+        if (ImGui.Checkbox(_textService.Translate("LockWindowPosition.Config.Inverted.Label"), ref Config.Inverted))
         {
             _pluginConfig.Save();
         }
 
-        ImGui.Checkbox(_textService.Translate("LockWindowPosition.Config.AddLockUnlockContextMenuEntries.Label"), ref Config.AddLockUnlockContextMenuEntries);
-        if (ImGui.IsItemClicked())
+        if (ImGui.Checkbox(_textService.Translate("LockWindowPosition.Config.AddLockUnlockContextMenuEntries.Label"), ref Config.AddLockUnlockContextMenuEntries))
         {
             _pluginConfig.Save();
         }
@@ -66,7 +64,10 @@ public partial class LockWindowPosition
                 ImGui.TableNextRow();
 
                 ImGui.TableNextColumn();
-                ImGui.Checkbox(key + "_Enabled", ref entry.Enabled);
+                if (ImGui.Checkbox(key + "_Enabled", ref entry.Enabled))
+                {
+                    _pluginConfig.Save();
+                }
                 if (ImGui.IsItemHovered())
                 {
                     var isLocked = entry.Enabled;
@@ -79,10 +80,6 @@ public partial class LockWindowPosition
                         ? "LockWindowPosition.Config.EnableCheckmark.Tooltip.Locked"
                         : "LockWindowPosition.Config.EnableCheckmark.Tooltip.Unlocked"));
                     ImGui.EndTooltip();
-                }
-                if (ImGui.IsItemClicked())
-                {
-                    _pluginConfig.Save();
                 }
 
                 ImGui.TableNextColumn();
