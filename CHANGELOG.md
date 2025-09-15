@@ -1,5 +1,11 @@
 # Changelog
 
+## [38.0.4] (2025-09-15)
+
+### Portrait Helper
+
+- **Fixed:** Incorrect use of ImGui caused the game to crash when reordering presets in the Preset Browser. Sorry about that!
+
 ## [38.0.3] (2025-09-10)
 
 ### Cast Bar Aetheryte Names
@@ -2205,6 +2211,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[38.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v38.0.3...v38.0.4
 [38.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v38.0.2...v38.0.3
 [38.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v38.0.1...v38.0.2
 [38.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v38.0.0...v38.0.1
