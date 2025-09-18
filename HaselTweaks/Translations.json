@@ -2078,14 +2078,6 @@
     "zh": "不包括边框和装饰物"
   },
 
-  "RestoreGoldenCity.Tweak.Name": {
-    "en": "Restore Golden City"
-  },
-  "RestoreGoldenCity.Tweak.Description": {
-    "en": "When the quest \u201CDawntrail\u201D is completed, this tweak will restore the Golden City to its former glory - without New Game+.",
-    "de": "Wenn die Quest \u201EPfad der Morgensonne\u201C abgeschlossen ist, wird dieser Tweak die Goldene Stadt wieder in ihrem alten Glanz erstrahlen lassen - ohne Neues Spiel+."
-  },
-
   "RevealDutyRequirements.Tweak.Name": {
     "en": "Reveal Duty Requirements",
     "zh": "揭示任务需求"
