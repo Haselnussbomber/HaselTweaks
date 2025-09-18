@@ -2,7 +2,7 @@
 <Project Sdk="Dalamud.NET.Sdk/13.1.0">
   <!-- Project settings -->
   <PropertyGroup>
-    <Version>38.0.5</Version>
+    <Version>39.0.0</Version>
     <OutputPath>..\bin\</OutputPath>
     <DefineConstants>$(DefineConstants);AUTOCTOR_EMBED_ATTRIBUTES</DefineConstants>
   </PropertyGroup>
