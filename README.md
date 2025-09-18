@@ -247,6 +247,10 @@ Configuration options:
 
 Opens a small window next to the Glamour Dresser with a list of items that can be stored in the Armoire (only visible if qualified items were found).
 
+### Glamour Dresser Keyboard Navigation
+
+Enables using arrow keys to select items in the Glamour Dresser.
+
 ### Hide MSQ Complete
 
 Hides the Main Scenario Guide when the MSQ is completed, but still displays Job quests.

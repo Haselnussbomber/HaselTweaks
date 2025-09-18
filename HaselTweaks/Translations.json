@@ -1393,6 +1393,14 @@
     "zh": "这些物品可以被存储到收藏柜中！\n点击以重新存储物品。"
   },
 
+  "GlamourDresserKeyboardNavigation.Tweak.Name": {
+    "en": "Glamour Dresser Keyboard Navigation"
+  },
+  "GlamourDresserKeyboardNavigation.Tweak.Description": {
+    "en": "Enables using arrow keys to select items in the Glamour Dresser.",
+    "de": "Ermöglicht es mit Pfeiltasten die Gegenstände in der Projektionskommode auszuwählen."
+  },
+
   "OutfitGlamourTryOn.Tweak.Name": {
     "en": "Outfit Glamour Try On",
     "zh": "套装幻影化试穿"

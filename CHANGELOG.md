@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Glamour Dresser Keyboard Navigation
+
+Enables using arrow keys to select items in the Glamour Dresser.
+
 ## [38.0.5] (2025-09-18)
 
 ### HaselTweaks
