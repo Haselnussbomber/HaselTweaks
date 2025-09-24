@@ -257,6 +257,8 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
             return false;
 
         byte selectedType = 0;
+        byte secondType = 0;
+        var secondPercentage = float.MaxValue;
         var lowestPercentage = float.MaxValue;
 
         for (byte type = 1; type <= 5; type++)
@@ -275,8 +277,20 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
             var percentage = (float)currentXP / neededXP;
             if (percentage < lowestPercentage)
             {
+                if (lowestPercentage != float.MaxValue)
+                {
+                    secondPercentage = lowestPercentage;
+                    secondType = selectedType;
+                }
+
                 lowestPercentage = percentage;
                 selectedType = type;
+                continue;
+            }
+            else if (percentage < secondPercentage)
+            {
+                secondPercentage = percentage;
+                secondType = type;
             }
         }
 
@@ -297,13 +311,14 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
         if (!_excelService.TryGetRow<WKSCosmoToolName>(toolClassRow.Types[selectedType - 1].Name.RowId, out var toolNameRow))
             return false;
 
+        var secondname = (secondType != 0 && _excelService.TryGetRow<WKSCosmoToolName>(toolClassRow.Types[secondType - 1].Name.RowId, out var toolNameRow2)) ? toolNameRow2.Name.ToString().Substring(toolNameRow2.Name.ToString().LastIndexOf(" ") + 1) + "   " : string.Empty;
         var toolName = toolNameRow.Name.ToString();
         var finalCurrentXP = researchModule->GetCurrentAnalysis(toolClassId, selectedType);
         var finalNeededXP = researchModule->GetNeededAnalysis(toolClassId, selectedType);
         var star = stage < nextStage ? '*' : ' ';
 
-        SetText($"{job} {toolName}{star}   {finalCurrentXP}/{finalNeededXP}");
-        SetExperience(finalCurrentXP, finalNeededXP);
+        SetText($"{job} {toolName}{star}   {finalCurrentXP}/{finalNeededXP}   {((secondType != 0) ? secondname + researchModule->GetCurrentAnalysis(toolClassId, secondType) + "/" + researchModule->GetNeededAnalysis(toolClassId, secondType) : "")}");
+        SetExperience(finalCurrentXP, finalNeededXP, (int)((secondType != 0) ? secondPercentage * finalNeededXP : 0f));
 
         if (!Config.DisableColorChanges)
             SetColor(30, 60, 170);
