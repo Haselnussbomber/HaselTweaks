@@ -1,13 +1,12 @@
 using System.Runtime.CompilerServices;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Client.UI.Arrays;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Utils;
 
 public static unsafe class TargetStatusUtils
 {
-    public const int MaxStatusCount = 30;
-
     public static void AddPermanentStatus(int index, int iconId, int canDispel, int timeRemainingColor, ReadOnlySeString timeRemaining, ReadOnlySeString tooltipText)
     {
         var numberArray = AtkStage.Instance()->GetNumberArrayData(NumberArrayType.Hud2);
@@ -19,16 +18,19 @@ public static unsafe class TargetStatusUtils
         if (numberArray->SubscribedAddonsCount == 0 || stringArray->SubscribedAddonsCount == 0)
             return;
 
-        ref var statusCount = ref numberArray->IntArray[4];
-        if (statusCount == MaxStatusCount)
+        var typedNumberArray = (Hud2NumberArray*)numberArray->IntArray;
+
+        ref var statusCount = ref typedNumberArray->TargetStatusCount;
+        if (statusCount == typedNumberArray->TargetStatusIconIds.Length)
             return;
 
         // move statuses by 1
 
         for (var i = statusCount - 1 - index; i >= index; i--)
         {
-            numberArray->IntArray[5 + index + i + 1] = numberArray->IntArray[5 + index + i];
-            numberArray->IntArray[35 + index + i + 1] = numberArray->IntArray[35 + index + i];
+            typedNumberArray->TargetStatusIconIds[i + 1] = typedNumberArray->TargetStatusIconIds[i];
+            typedNumberArray->TargetStatusDispellable[i + 1] = typedNumberArray->TargetStatusDispellable[i];
+
             stringArray->SetValue(3 + index + i + 1, stringArray->StringArray[3 + index + i], readBeforeWrite: false);
             stringArray->SetValue(33 + index + i + 1, stringArray->StringArray[33 + index + i], readBeforeWrite: false);
         }
@@ -50,8 +52,10 @@ public static unsafe class TargetStatusUtils
         if (numberArray->SubscribedAddonsCount == 0 || stringArray->SubscribedAddonsCount == 0)
             return;
 
-        ref var statusCount = ref numberArray->IntArray[4];
-        if (statusCount == MaxStatusCount)
+        var typedNumberArray = (Hud2NumberArray*)numberArray->IntArray;
+
+        ref var statusCount = ref typedNumberArray->TargetStatusCount;
+        if (statusCount == typedNumberArray->TargetStatusIconIds.Length)
             return;
 
         SetStatus(statusCount, iconId, canDispel, timeRemainingColor, timeRemaining, tooltipText);
@@ -69,12 +73,15 @@ public static unsafe class TargetStatusUtils
         if (numberArray->SubscribedAddonsCount == 0 || stringArray->SubscribedAddonsCount == 0)
             return;
 
-        var statusCount = numberArray->IntArray[4];
-        if (index is < 0 or >= 30)
+        var typedNumberArray = (Hud2NumberArray*)numberArray->IntArray;
+
+        ref var statusCount = ref typedNumberArray->TargetStatusCount;
+        if (index < 0 || index >= typedNumberArray->TargetStatusIconIds.Length)
             return;
 
-        numberArray->IntArray[5 + index] = iconId + (timeRemainingColor << 29); // shifted id is UIColor RowId
-        numberArray->IntArray[35 + index] = 0; // CanDispel?
+        typedNumberArray->TargetStatusIconIds[index] = (uint)(iconId + (timeRemainingColor << 29)); // shifted id is UIColor RowId
+        typedNumberArray->TargetStatusDispellable[index] = false;
+
         stringArray->SetValue(3 + index, timeRemaining); // time remaining
         stringArray->SetValue(33 + index, tooltipText);
     }
