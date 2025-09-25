@@ -893,14 +893,6 @@
     "de": "Immer die Begleiterleiste anzeigen, wenn der Chocobo-Begleiter gerufen ist",
     "zh": "当陆行鸟搭档存在时始终显示搭档栏"
   },
-  "EnhancedExpBar.Config.ForceCosmicResearchBar.Label": {
-    "en": "Always show Cosmic Research Bar in Cosmic Exploration",
-    "de": "Immer die Kosmo-Forschungsleiste während der Kosmo-Erkundung anzeigen"
-  },
-  "EnhancedExpBar.Config.ShowCosmicToolScore.Label": {
-    "en": "Show class score for achievements after completing Cosmic Research",
-    "de": "Zeige Wertungen für Errungenschaften nach Abschluss der Kosmo-Forschung an"
-  },
   "EnhancedExpBar.Config.SanctuaryBarHideJob.Label": {
     "en": "Hide Job on Sanctuary Bar",
     "de": "Job auf dem Inselparadies-Balken verstecken",

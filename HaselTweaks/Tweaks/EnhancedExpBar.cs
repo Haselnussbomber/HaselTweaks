@@ -2,10 +2,8 @@ using Dalamud.Game.Text;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using FFXIVClientStructs.FFXIV.Client.Game.WKS;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Lumina.Excel;
 
 namespace HaselTweaks.Tweaks;
 
@@ -19,7 +17,6 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly ExcelService _excelService;
-    private readonly ISeStringEvaluator _seStringEvaluator;
 
     private Hook<AgentHUD.Delegates.UpdateExp>? _updateExpHook;
     private byte _colorMultiplyRed = 100;
@@ -77,9 +74,6 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
             return;
 
         if (Config.ForceSanctuaryBar && OverwriteWithSanctuaryBar(classJob))
-            return;
-
-        if (Config.ForceCosmicResearchBar && OverwriteWithCosmicResearchBar(classJob))
             return;
 
         if (!thisPtr->ExpFlags.HasFlag(AgentHudExpFlag.MaxLevel))
@@ -191,128 +185,6 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
             SetColor(25, 60, 255); // blue seems nice.. just like the sky ^_^
 
         return true;
-    }
-
-    private bool OverwriteWithCosmicResearchBar(ClassJob classJob)
-    {
-        if (GameMain.Instance()->CurrentTerritoryIntendedUseId != 60)
-            return false;
-
-        var wksManager = WKSManager.Instance();
-        if (wksManager == null)
-            return false;
-
-        var researchModule = wksManager->ResearchModule;
-        if (researchModule == null || !researchModule->IsLoaded)
-            return false;
-
-        if (!(classJob.IsCrafter() || classJob.IsGatherer()))
-            return false;
-
-        var job = classJob.Abbreviation;
-        var toolClassId = (byte)(classJob.RowId - 7);
-        var stage = researchModule->CurrentStages[toolClassId - 1];
-        var nextStage = researchModule->UnlockedStages[toolClassId - 1];
-        var maxStage = _excelService.GetSheet<WKSCosmoToolPassiveBuff>().Max(row => row.Unknown0);
-
-        if (stage == maxStage)
-        {
-            if (Config.ShowCosmicToolScore)
-            {
-                var score = wksManager->Scores[toolClassId - 1];
-                if (score < 500000)
-                {
-                    var max = score switch
-                    {
-                        >= 150000 => 500000,
-                        >= 50000 => 150000,
-                        _ => 50000,
-                    };
-
-                    using var rssb = new RentedSeStringBuilder();
-                    SetText(rssb.Builder
-                        .Append(job)
-                        .Append("  ")
-                        .Append(_seStringEvaluator.EvaluateFromAddon(16852, [score]))
-                        .Append(" / ")
-                        .Append(_seStringEvaluator.EvaluateFromAddon(16852, [max]))
-                        .GetViewAsSpan());
-
-                    SetExperience(score, max);
-
-                    if (!Config.DisableColorChanges)
-                        SetColor(30, 60, 170);
-
-                    return true;
-                }
-            }
-
-            SetText($"{job} {_textService.GetAddonText(6167)}"); // Complete
-            SetExperience(0, 0);
-
-            return true;
-        }
-
-        if (!_excelService.TryGetRow<WKSCosmoToolClass>(toolClassId, out var toolClassRow))
-            return false;
-
-        byte selectedType = 0;
-        var lowestPercentage = float.MaxValue;
-
-        for (byte type = 1; type <= 5; type++)
-        {
-            if (!researchModule->IsTypeAvailable(toolClassId, type))
-                break;
-
-            var neededXP = researchModule->GetNeededAnalysis(toolClassId, type);
-            if (neededXP == 0)
-                continue;
-
-            var currentXP = researchModule->GetCurrentAnalysis(toolClassId, type);
-            if (currentXP >= neededXP)
-                continue;
-
-            var percentage = (float)currentXP / neededXP;
-            if (percentage < lowestPercentage)
-            {
-                lowestPercentage = percentage;
-                selectedType = type;
-            }
-        }
-
-        if (selectedType == 0)
-        {
-            for (byte type = 1; type <= 5; type++)
-            {
-                if (!researchModule->IsTypeAvailable(toolClassId, type))
-                    break;
-
-                selectedType = type;
-            }
-        }
-
-        if (selectedType == 0)
-            return false;
-
-        if (!_excelService.TryGetRow<WKSCosmoToolName>(toolClassRow.Types[selectedType - 1].Name.RowId, out var toolNameRow))
-            return false;
-
-        var toolName = toolNameRow.Name.ToString();
-        var finalCurrentXP = researchModule->GetCurrentAnalysis(toolClassId, selectedType);
-        var finalNeededXP = researchModule->GetNeededAnalysis(toolClassId, selectedType);
-        var star = stage < nextStage ? '*' : ' ';
-
-        SetText($"{job} {toolName}{star}   {finalCurrentXP}/{finalNeededXP}");
-        SetExperience(finalCurrentXP, finalNeededXP);
-
-        if (!Config.DisableColorChanges)
-            SetColor(30, 60, 170);
-        return true;
-    }
-
-    private void SetText(ReadOnlySpan<byte> span)
-    {
-        AtkStage.Instance()->GetStringArrayData(StringArrayType.Hud)->SetValue(69, span);
     }
 
     private void SetText(string text)
