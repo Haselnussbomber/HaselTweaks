@@ -250,7 +250,7 @@ public unsafe partial class BannerService
             bannerEntry.BannerBg = preset.BannerBg;
             tempPortraitData->BannerBg = preset.BannerBg;
 
-            addonBannerEditor->BackgroundDropdown->SelectItem(GetUnlockedIndex(&state->Backgrounds, preset.BannerBg));
+            addonBannerEditor->Dropdowns[1].Dropdown->SelectItem(GetUnlockedIndex(&state->Backgrounds, preset.BannerBg));
         }
 
         if (hasFrameChanged)
@@ -261,7 +261,7 @@ public unsafe partial class BannerService
 
             state->SetFrame(preset.BannerFrame);
 
-            addonBannerEditor->FrameDropdown->SelectItem(GetUnlockedIndex(&state->Frames, preset.BannerFrame));
+            addonBannerEditor->Dropdowns[2].Dropdown->SelectItem(GetUnlockedIndex(&state->Frames, preset.BannerFrame));
         }
 
         if (hasDecorationChanged)
@@ -272,7 +272,7 @@ public unsafe partial class BannerService
 
             state->SetAccent(preset.BannerDecoration);
 
-            addonBannerEditor->AccentDropdown->SelectItem(GetUnlockedIndex(&state->Accents, preset.BannerDecoration));
+            addonBannerEditor->Dropdowns[3].Dropdown->SelectItem(GetUnlockedIndex(&state->Accents, preset.BannerDecoration));
         }
 
         if (hasBgChanged || hasFrameChanged || hasDecorationChanged)
@@ -284,10 +284,10 @@ public unsafe partial class BannerService
             {
                 presetIndex = addonBannerEditor->NumPresets - 1;
 
-                addonBannerEditor->PresetDropdown->List->SetItemCount(addonBannerEditor->NumPresets); // increase to maximum, so "Custom" is displayed
+                addonBannerEditor->Dropdowns[0].Dropdown->List->SetItemCount(addonBannerEditor->NumPresets); // increase to maximum, so "Custom" is displayed
             }
 
-            addonBannerEditor->PresetDropdown->SelectItem(presetIndex);
+            addonBannerEditor->Dropdowns[0].Dropdown->SelectItem(presetIndex);
         }
 
         if (hasBannerTimelineChanged)
@@ -299,7 +299,7 @@ public unsafe partial class BannerService
             bannerEntry.BannerTimeline = preset.BannerTimeline;
             tempPortraitData->BannerTimeline = preset.BannerTimeline;
 
-            addonBannerEditor->PoseDropdown->SelectItem(GetUnlockedIndex(&state->Poses, preset.BannerTimeline));
+            addonBannerEditor->Dropdowns[4].Dropdown->SelectItem(GetUnlockedIndex(&state->Poses, preset.BannerTimeline));
         }
 
         if (hasExpressionChanged)
@@ -311,7 +311,7 @@ public unsafe partial class BannerService
             bannerEntry.Expression = preset.Expression;
             tempPortraitData->Expression = preset.Expression;
 
-            addonBannerEditor->ExpressionDropdown->SelectItem(GetSortedIndex(&state->Expressions, preset.Expression));
+            addonBannerEditor->Dropdowns[5].Dropdown->SelectItem(GetSortedIndex(&state->Expressions, preset.Expression));
         }
 
         if (hasAmbientLightingBrightnessChanged)
