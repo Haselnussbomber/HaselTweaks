@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [40.0.0] (2025-09-25)
 
 ### New Tweak: Cosmic Research in Duty List
 
@@ -2238,6 +2238,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[40.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v39.0.0...v40.0.0
 [39.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v38.0.5...v39.0.0
 [38.0.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v38.0.4...v38.0.5
 [38.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v38.0.3...v38.0.4
