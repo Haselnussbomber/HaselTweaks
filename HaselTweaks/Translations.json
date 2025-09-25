@@ -431,6 +431,22 @@
     "zh": "陆行鸟搭档颜色预览"
   },
 
+  "CosmicResearchTodo.Tweak.Name": {
+    "en": "Cosmic Research in Duty List"
+  },
+  "CosmicResearchTodo.Tweak.Description": {
+    "en": "Displays the progress of Cosmic Research in the Duty List during Cosmic Exploration.",
+    "de": "Zeigt den Fortschritt der Kosmo-Forschung in der Aufgabenliste während der Kosmo-Erkundung an."
+  },
+  "CosmicResearchTodo.Config.ShowCosmicToolScore.Label": {
+    "en": "Show class score for achievements after completing Cosmic Research",
+    "de": "Zeige Wertungen für Errungenschaften nach Abschluss der Kosmo-Forschung an"
+  },
+  "CosmicResearchTodo.Config.ShowCompletedAnalysis.Label": {
+    "en": "Show completed datasets",
+    "de": "Zeige abgeschlossene Daten"
+  },
+
   "CastBarAetheryteNames.Tweak.Name": {
     "en": "Cast Bar Aetheryte Names",
     "zh": "咏唱以太之光之名"

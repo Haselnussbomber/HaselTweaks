@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Cosmic Research in Duty List
+
+Displays the progress of Cosmic Research in the Duty List during Cosmic Exploration.
+
+Configuration options:
+
+- Show class score for achievements after completing Cosmic Research (default on)
+- Show completed datasets (default on)
+
 ## [39.0.0] (2025-09-18)
 
 ### New Tweak: Glamour Dresser Keyboard Navigation

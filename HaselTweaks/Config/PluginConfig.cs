@@ -123,6 +123,7 @@ public class TweakConfigs
     public AutoSorterConfiguration AutoSorter { get; init; } = new();
     public BackgroundMusicKeybindConfiguration BackgroundMusicKeybind { get; init; } = new();
     public CharacterClassSwitcherConfiguration CharacterClassSwitcher { get; init; } = new();
+    public CosmicResearchTodoConfiguration CosmicResearchTodo { get; init; } = new();
     public CommandsConfiguration Commands { get; init; } = new();
     public CustomChatMessageFormatsConfiguration CustomChatMessageFormats { get; init; } = new();
     public CustomChatTimestampConfiguration CustomChatTimestamp { get; init; } = new();

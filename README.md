@@ -102,6 +102,15 @@ Available Commands:
 
 Shows a small drop-down menu above the "Companion" window to select the color of your own chocobo. This is just to preview the colors and will not be saved!
 
+### Cosmic Research in Duty List
+
+Displays the progress of Cosmic Research in the Duty List during Cosmic Exploration.
+
+Configuration options:
+
+- Show class score for achievements after completing Cosmic Research (default on)
+- Show completed datasets (default on)
+
 ### Custom Chat Message Formats
 
 Lets you customize message formats for various chat channels.
