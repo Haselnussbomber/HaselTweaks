@@ -11,6 +11,10 @@ Configuration options:
 - Show class score for achievements after completing Cosmic Research (default on)
 - Show completed datasets (default on)
 
+### Enhanced Experience Bar
+
+- **Removed:** The Cosmic Research Bar has been replaced with the "Cosmic Research in Duty List" tweak.
+
 ## [39.0.0] (2025-09-18)
 
 ### New Tweak: Glamour Dresser Keyboard Navigation
