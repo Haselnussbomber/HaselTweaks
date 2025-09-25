@@ -4,7 +4,7 @@ public sealed class Plugin : IDalamudPlugin
 {
     private readonly IHost _host;
 
-    public Plugin(IDalamudPluginInterface pluginInterface)
+    public Plugin(IDalamudPluginInterface pluginInterface, IFramework framework)
     {
         pluginInterface.InitializeCustomClientStructs();
 
@@ -19,7 +19,7 @@ public sealed class Plugin : IDalamudPlugin
             })
             .Build();
 
-        _host.Start();
+        framework.RunOnFrameworkThread(_host.Start);
     }
 
     void IDisposable.Dispose()
