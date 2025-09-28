@@ -189,7 +189,7 @@ public unsafe partial class CosmicResearchTodo : ConfigurableTweak
 
                 var percentage = currentValue >= neededValue
                     ? 100
-                    : (int)Math.Round(currentValue / (float)neededValue * 100f);
+                    : (int)Math.Floor(currentValue / (float)neededValue * 100f);
 
                 numberArray->DutyObjectiveTypes[index] = ToDoListNumberArray.ObjectiveType.Bar;
                 numberArray->DutyObjectiveValue[index] = percentage;
