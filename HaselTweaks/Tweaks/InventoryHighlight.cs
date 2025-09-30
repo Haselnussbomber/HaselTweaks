@@ -8,10 +8,8 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class InventoryHighlight : ConfigurableTweak
+public unsafe partial class InventoryHighlight : ConfigurableTweak<InventoryHighlightConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly IFramework _framework;
     private readonly IClientState _clientState;
     private readonly IGameConfig _gameConfig;
@@ -448,7 +446,7 @@ public unsafe partial class InventoryHighlight : ConfigurableTweak
     }
 
     private uint NormalizeItemId(uint itemId)
-        => Config.IgnoreQuality
+        => _config.IgnoreQuality
             ? ItemUtil.GetBaseId(itemId).ItemId
             : itemId;
 }

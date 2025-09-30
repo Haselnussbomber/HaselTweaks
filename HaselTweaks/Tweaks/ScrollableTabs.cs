@@ -6,7 +6,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class ScrollableTabs : ConfigurableTweak
+public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsConfiguration>
 {
     private const int NumArmouryBoardTabs = 12;
     private const int NumInventoryTabs = 5;
@@ -16,8 +16,6 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak
     private const int NumInventoryRetainerLargeTabs = 3;
     private const int NumBuddyTabs = 3;
 
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly IFramework _framework;
     private readonly IClientState _clientState;
     private readonly IGameConfig _gameConfig;
@@ -28,10 +26,10 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak
         => RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingCollisionNode;
 
     private bool IsNext
-        => _wheelState == (!Config.Invert ? 1 : -1);
+        => _wheelState == (!_config.Invert ? 1 : -1);
 
     private bool IsPrev
-        => _wheelState == (!Config.Invert ? -1 : 1);
+        => _wheelState == (!_config.Invert ? -1 : 1);
 
     public override void OnEnable()
     {
@@ -52,7 +50,7 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak
         if (_wheelState == 0)
             return;
 
-        if (Config.Invert)
+        if (_config.Invert)
             _wheelState *= -1;
 
         var hoveredUnitBase = RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingAddon;
@@ -184,11 +182,11 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak
             return;
         }
 
-        if (Config.HandleArmouryBoard && name == "ArmouryBoard")
+        if (_config.HandleArmouryBoard && name == "ArmouryBoard")
         {
             UpdateArmouryBoard((AddonArmouryBoard*)unitBase);
         }
-        else if (Config.HandleInventory && name is "Inventory" or "InventoryEvent" or "InventoryLarge" or "InventoryExpansion")
+        else if (_config.HandleInventory && name is "Inventory" or "InventoryEvent" or "InventoryLarge" or "InventoryExpansion")
         {
             switch (name)
             {
@@ -206,7 +204,7 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak
                     break;
             }
         }
-        else if (Config.HandleRetainer && name is "InventoryRetainer" or "InventoryRetainerLarge")
+        else if (_config.HandleRetainer && name is "InventoryRetainer" or "InventoryRetainerLarge")
         {
             switch (name)
             {
@@ -218,67 +216,67 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak
                     break;
             }
         }
-        else if ((Config.HandleMinionNoteBook && name == "MinionNoteBook") || (Config.HandleMountNoteBook && name == "MountNoteBook"))
+        else if ((_config.HandleMinionNoteBook && name == "MinionNoteBook") || (_config.HandleMountNoteBook && name == "MountNoteBook"))
         {
             UpdateMountMinion((AddonMinionMountBase*)unitBase);
         }
-        else if (Config.HandleFishGuide && name == "FishGuide2")
+        else if (_config.HandleFishGuide && name == "FishGuide2")
         {
             UpdateTabController(unitBase, &((AddonFishGuide2*)unitBase)->TabController);
         }
-        else if (Config.HandleAdventureNoteBook && name == "AdventureNoteBook")
+        else if (_config.HandleAdventureNoteBook && name == "AdventureNoteBook")
         {
             UpdateTabController(unitBase, &((AddonAdventureNoteBook*)unitBase)->TabController);
         }
-        else if (Config.HandleOrnamentNoteBook && name == "OrnamentNoteBook")
+        else if (_config.HandleOrnamentNoteBook && name == "OrnamentNoteBook")
         {
             UpdateTabController(unitBase, &((AddonOrnamentNoteBook*)unitBase)->TabController);
         }
-        else if (Config.HandleGoldSaucerCardList && name == "GSInfoCardList")
+        else if (_config.HandleGoldSaucerCardList && name == "GSInfoCardList")
         {
             UpdateTabController(unitBase, &((AddonGSInfoCardList*)unitBase)->TabController);
         }
-        else if (Config.HandleGoldSaucerCardDeckEdit && name == "GSInfoEditDeck")
+        else if (_config.HandleGoldSaucerCardDeckEdit && name == "GSInfoEditDeck")
         {
             UpdateTabController(unitBase, &((AddonGSInfoEditDeck*)unitBase)->TabController);
         }
-        else if (Config.HandleLovmPaletteEdit && name == "LovmPaletteEdit")
+        else if (_config.HandleLovmPaletteEdit && name == "LovmPaletteEdit")
         {
             UpdateTabController(unitBase, &((AddonLovmPaletteEdit*)unitBase)->TabController);
         }
-        else if (Config.HandleAOZNotebook && name == "AOZNotebook")
+        else if (_config.HandleAOZNotebook && name == "AOZNotebook")
         {
             UpdateAOZNotebook((AddonAOZNotebook*)unitBase);
         }
-        else if (Config.HandleAetherCurrent && name == "AetherCurrent")
+        else if (_config.HandleAetherCurrent && name == "AetherCurrent")
         {
             UpdateAetherCurrent((AddonAetherCurrent*)unitBase);
         }
-        else if (Config.HandleFateProgress && name == "FateProgress")
+        else if (_config.HandleFateProgress && name == "FateProgress")
         {
             UpdateFateProgress((AddonFateProgress*)unitBase);
         }
-        else if (Config.HandleFieldRecord && name == "MYCWarResultNotebook")
+        else if (_config.HandleFieldRecord && name == "MYCWarResultNotebook")
         {
             UpdateFieldNotes((AddonMYCWarResultNotebook*)unitBase);
         }
-        else if (Config.HandleMJIMinionNoteBook && name == "MJIMinionNoteBook")
+        else if (_config.HandleMJIMinionNoteBook && name == "MJIMinionNoteBook")
         {
             UpdateMJIMinionNoteBook((AddonMJIMinionNoteBook*)unitBase);
         }
-        else if (Config.HandleCurrency && name == "Currency")
+        else if (_config.HandleCurrency && name == "Currency")
         {
             UpdateCurrency((AddonCurrency*)unitBase);
         }
-        else if (Config.HandleInventoryBuddy && name is "InventoryBuddy" or "InventoryBuddy2")
+        else if (_config.HandleInventoryBuddy && name is "InventoryBuddy" or "InventoryBuddy2")
         {
             UpdateInventoryBuddy((AddonInventoryBuddy*)unitBase);
         }
-        else if (Config.HandleBuddy && name == "Buddy")
+        else if (_config.HandleBuddy && name == "Buddy")
         {
             UpdateBuddy((AddonBuddy*)unitBase);
         }
-        else if (Config.HandleMiragePrismPrismBox && name == "MiragePrismPrismBox")
+        else if (_config.HandleMiragePrismPrismBox && name == "MiragePrismPrismBox")
         {
             UpdateMiragePrismPrismBox((AddonMiragePrismPrismBox*)unitBase);
         }
@@ -294,19 +292,19 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak
 
             switch (name)
             {
-                case "Character" when Config.HandleCharacter:
+                case "Character" when _config.HandleCharacter:
                     UpdateCharacter(addonCharacter);
                     break;
-                case "CharacterClass" when Config.HandleCharacter && !Config.HandleCharacterClass:
+                case "CharacterClass" when _config.HandleCharacter && !_config.HandleCharacterClass:
                     UpdateCharacter(addonCharacter);
                     break;
-                case "CharacterClass" when Config.HandleCharacterClass:
+                case "CharacterClass" when _config.HandleCharacterClass:
                     UpdateCharacterClass(addonCharacter, (AddonCharacterClass*)unitBase);
                     break;
-                case "CharacterRepute" when Config.HandleCharacter && !Config.HandleCharacterRepute:
+                case "CharacterRepute" when _config.HandleCharacter && !_config.HandleCharacterRepute:
                     UpdateCharacter(addonCharacter);
                     break;
-                case "CharacterRepute" when Config.HandleCharacterRepute:
+                case "CharacterRepute" when _config.HandleCharacterRepute:
                     UpdateCharacterRepute(addonCharacter, (AddonCharacterRepute*)unitBase);
                     break;
             }
@@ -662,8 +660,8 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak
             return;
         }
 
-        var prevButton = !Config.Invert ? addon->PrevButton : addon->NextButton;
-        var nextButton = !Config.Invert ? addon->NextButton : addon->PrevButton;
+        var prevButton = !_config.Invert ? addon->PrevButton : addon->NextButton;
+        var nextButton = !_config.Invert ? addon->NextButton : addon->PrevButton;
 
         if (prevButton == null || (IsPrev && !prevButton->IsEnabled))
             return;
@@ -701,7 +699,7 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak
     private void UpdateCharacterClass(AddonCharacter* addonCharacter, AddonCharacterClass* addon)
     {
         // prev or next embedded addon
-        if (Config.HandleCharacter && (addon->TabIndex + _wheelState < 0 || addon->TabIndex + _wheelState > 1))
+        if (_config.HandleCharacter && (addon->TabIndex + _wheelState < 0 || addon->TabIndex + _wheelState > 1))
         {
             UpdateCharacter(addonCharacter);
             return;
@@ -723,7 +721,7 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak
         var currentIndex = addon->ExpansionsDropDownList->GetSelectedItemIndex();
 
         // prev embedded addon
-        if (Config.HandleCharacter && (currentIndex + _wheelState < 0))
+        if (_config.HandleCharacter && (currentIndex + _wheelState < 0))
         {
             UpdateCharacter(addonCharacter);
             return;

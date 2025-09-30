@@ -4,7 +4,7 @@ public sealed class Plugin : IDalamudPlugin
 {
     private readonly IHost _host;
 
-    public Plugin(IDalamudPluginInterface pluginInterface, IFramework framework)
+    public Plugin(IDalamudPluginInterface pluginInterface, IPluginLog pluginLog, IFramework framework)
     {
         pluginInterface.InitializeCustomClientStructs();
 
@@ -13,7 +13,7 @@ public sealed class Plugin : IDalamudPlugin
             .ConfigureServices(services =>
             {
                 services.AddDalamud(pluginInterface);
-                services.AddSingleton(PluginConfig.Load);
+                services.AddConfig(PluginConfig.Load(pluginInterface, pluginLog));
                 services.AddHaselCommon();
                 services.AddHaselTweaks();
             })

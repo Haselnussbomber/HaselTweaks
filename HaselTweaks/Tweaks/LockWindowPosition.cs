@@ -6,7 +6,7 @@ using AtkEventInterface = FFXIVClientStructs.FFXIV.Component.GUI.AtkModuleInterf
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class LockWindowPosition : ConfigurableTweak
+public unsafe partial class LockWindowPosition : ConfigurableTweak<LockWindowPositionConfiguration>
 {
     private const int EventParamLock = 9901;
     private const int EventParamUnlock = 9902;
@@ -14,8 +14,6 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak
         "CharaCardEditMenu", // always opens docked to CharaCard (OnSetup)
     ];
 
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly TextService _textService;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IAddonLifecycle _addonLifecycle;
@@ -99,9 +97,9 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak
     {
         var addon = (AddonGearSetList*)args.Addon.Address;
 
-        var isLocked = Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == "GearSetList");
+        var isLocked = _config.LockedWindows.Any(entry => entry.Enabled && entry.Name == "GearSetList");
 
-        if (Config.Inverted)
+        if (_config.Inverted)
             isLocked = !isLocked;
 
         if (isLocked)
@@ -113,9 +111,9 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak
         if (atkUnitBase != null)
         {
             var name = atkUnitBase->NameString;
-            var isLocked = Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == name);
+            var isLocked = _config.LockedWindows.Any(entry => entry.Enabled && entry.Name == name);
 
-            if (Config.Inverted)
+            if (_config.Inverted)
                 isLocked = !isLocked;
 
             if (isLocked)
@@ -195,23 +193,23 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak
 
                 if (!IgnoredAddons.Contains(name))
                 {
-                    var isLocked = Config.LockedWindows.Any(entry => entry.Enabled && entry.Name == name);
+                    var isLocked = _config.LockedWindows.Any(entry => entry.Enabled && entry.Name == name);
 
-                    if (Config.Inverted)
+                    if (_config.Inverted)
                         isLocked = !isLocked;
 
                     if (isLocked)
                     {
                         agent->CurrentContextMenu->ContextItemDisabledMask |= 1; // keeping it simple. disables "Return to Default Position"
 
-                        if (Config.AddLockUnlockContextMenuEntries)
+                        if (_config.AddLockUnlockContextMenuEntries)
                         {
                             AddMenuEntry(_textService.Translate("LockWindowPosition.UnlockPosition"), EventParamUnlock);
                         }
                     }
                     else
                     {
-                        if (Config.AddLockUnlockContextMenuEntries)
+                        if (_config.AddLockUnlockContextMenuEntries)
                         {
                             AddMenuEntry(_textService.Translate("LockWindowPosition.LockPosition"), EventParamLock);
                         }
@@ -230,10 +228,10 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak
             if (TryGetAddon<AtkUnitBase>((ushort)AgentContext.Instance()->OwnerAddon, out var addon))
             {
                 var name = addon->NameString;
-                var entry = Config.LockedWindows.FirstOrDefault(entry => entry?.Name == name, null);
+                var entry = _config.LockedWindows.FirstOrDefault(entry => entry?.Name == name, null);
                 var isLocked = eventKind == EventParamLock;
 
-                if (Config.Inverted)
+                if (_config.Inverted)
                     isLocked = !isLocked;
 
                 if (entry != null)
@@ -242,7 +240,7 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak
                 }
                 else
                 {
-                    Config.LockedWindows.Add(new()
+                    _config.LockedWindows.Add(new()
                     {
                         Enabled = isLocked,
                         Name = name,

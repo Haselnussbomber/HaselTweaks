@@ -9,13 +9,11 @@ public class EnhancedMonsterNoteConfiguration
 
 public unsafe partial class EnhancedMonsterNote
 {
-    private EnhancedMonsterNoteConfiguration Config => _pluginConfig.Tweaks.EnhancedMonsterNote;
-
     public override void DrawConfig()
     {
         _configGui.DrawConfigurationHeader();
-        _configGui.DrawBool("RememberTabSelection", ref Config.RememberTabSelection);
-        _configGui.DrawBool("OpenWithCurrentClass", ref Config.OpenWithCurrentClass);
-        _configGui.DrawBool("OpenWithIncompleteFilter", ref Config.OpenWithIncompleteFilter);
+        _configGui.DrawBool("RememberTabSelection", ref _config.RememberTabSelection);
+        _configGui.DrawBool("OpenWithCurrentClass", ref _config.OpenWithCurrentClass);
+        _configGui.DrawBool("OpenWithIncompleteFilter", ref _config.OpenWithIncompleteFilter);
     }
 }

@@ -5,13 +5,11 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedMonsterNote : ConfigurableTweak
+public unsafe partial class EnhancedMonsterNote : ConfigurableTweak<EnhancedMonsterNoteConfiguration>
 {
     private readonly IClientState _clientState;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly AddonObserver _addonObserver;
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly ExcelService _excelService;
 
     private Hook<AgentMonsterNote.Delegates.Show>? _showHook;
@@ -57,7 +55,7 @@ public unsafe partial class EnhancedMonsterNote : ConfigurableTweak
 
     private void OnAddonOpen(string addonName)
     {
-        if (!Config.OpenWithIncompleteFilter || addonName != "MonsterNote")
+        if (!_config.OpenWithIncompleteFilter || addonName != "MonsterNote")
             return;
 
         _logger.LogDebug("Changing filter to Incomplete.");
@@ -80,12 +78,12 @@ public unsafe partial class EnhancedMonsterNote : ConfigurableTweak
     {
         if (_isShowCall) // is called with 0xFF, 0, 0, 0
         {
-            if (Config.OpenWithCurrentClass && TryGetCurrentClassIndex(out var currentClassIndex))
+            if (_config.OpenWithCurrentClass && TryGetCurrentClassIndex(out var currentClassIndex))
             {
                 _logger.LogDebug("Selecing tab for current class.");
                 classIndex = currentClassIndex;
             }
-            else if (Config.RememberTabSelection)
+            else if (_config.RememberTabSelection)
             {
                 _logger.LogDebug("Re-using last class tab and rank.");
                 classIndex = thisPtr->ClassIndex;

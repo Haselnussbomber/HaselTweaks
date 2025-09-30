@@ -4,10 +4,8 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class BackgroundMusicKeybind : ConfigurableTweak
+public unsafe partial class BackgroundMusicKeybind : ConfigurableTweak<BackgroundMusicKeybindConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly TextService _textService;
     private readonly IGameConfig _gameConfig;
     private readonly IKeyState _keyState;
@@ -35,7 +33,7 @@ public unsafe partial class BackgroundMusicKeybind : ConfigurableTweak
     {
         var allKeybindsPressed = true;
 
-        foreach (var key in Config.Keybind)
+        foreach (var key in _config.Keybind)
             allKeybindsPressed &= _keyState[key];
 
         if (!allKeybindsPressed)
@@ -50,10 +48,10 @@ public unsafe partial class BackgroundMusicKeybind : ConfigurableTweak
             return;
 
         var numKeysPressed = _keyState.GetValidVirtualKeys().Count(key => _keyState[key]);
-        if (numKeysPressed == Config.Keybind.Length)
+        if (numKeysPressed == _config.Keybind.Length)
         {
             // prevents the game from handling the key press
-            if (Config.Keybind.TryGetFirst(x => x is not (VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT), out var key))
+            if (_config.Keybind.TryGetFirst(x => x is not (VirtualKey.CONTROL or VirtualKey.MENU or VirtualKey.SHIFT), out var key))
             {
                 _keyState[key] = false;
             }

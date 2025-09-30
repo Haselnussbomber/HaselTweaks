@@ -17,54 +17,52 @@ public class MinimapAdjustmentsConfiguration
 
 public unsafe partial class MinimapAdjustments
 {
-    private MinimapAdjustmentsConfiguration Config => _pluginConfig.Tweaks.MinimapAdjustments;
-
     public override void OnConfigChange(string fieldName)
     {
         if (Status == TweakStatus.Enabled
-            && fieldName is nameof(Config.HideCoords)
-                or nameof(Config.HideWeather)
-                or nameof(Config.HideSun)
-                or nameof(Config.HideCardinalDirections)
+            && fieldName is nameof(_config.HideCoords)
+                or nameof(_config.HideWeather)
+                or nameof(_config.HideSun)
+                or nameof(_config.HideCardinalDirections)
             && TryGetAddon<HaselAddonNaviMap>("_NaviMap", out var naviMap))
         {
-            naviMap->Coords->ToggleVisibility(!Config.HideCoords);
-            naviMap->Weather->ToggleVisibility(!Config.HideWeather);
-            naviMap->Sun->ToggleVisibility(!Config.HideSun);
-            naviMap->CardinalDirections->ToggleVisibility(!Config.HideCardinalDirections);
+            naviMap->Coords->ToggleVisibility(!_config.HideCoords);
+            naviMap->Weather->ToggleVisibility(!_config.HideWeather);
+            naviMap->Sun->ToggleVisibility(!_config.HideSun);
+            naviMap->CardinalDirections->ToggleVisibility(!_config.HideCardinalDirections);
         }
 
-        if (fieldName is nameof(Config.DefaultOpacity))
+        if (fieldName is nameof(_config.DefaultOpacity))
         {
-            _targetAlpha = Config.DefaultOpacity;
+            _targetAlpha = _config.DefaultOpacity;
         }
     }
 
     public override void DrawConfig()
     {
         _configGui.DrawConfigurationHeader();
-        _configGui.DrawBool("Square", ref Config.Square);
-        _configGui.DrawFloat("DefaultOpacity", ref Config.DefaultOpacity, defaultValue: 0.8f, max: 1);
-        _configGui.DrawFloat("HoverOpacity", ref Config.HoverOpacity, defaultValue: 1, max: 1);
-        _configGui.DrawBool("HideCoords", ref Config.HideCoords, drawAfterDescription: () =>
+        _configGui.DrawBool("Square", ref _config.Square);
+        _configGui.DrawFloat("DefaultOpacity", ref _config.DefaultOpacity, defaultValue: 0.8f, max: 1);
+        _configGui.DrawFloat("HoverOpacity", ref _config.HoverOpacity, defaultValue: 1, max: 1);
+        _configGui.DrawBool("HideCoords", ref _config.HideCoords, drawAfterDescription: () =>
         {
-            using (ImRaii.Disabled(!Config.HideCoords))
-                _configGui.DrawBool("CoordsVisibleOnHover", ref Config.CoordsVisibleOnHover);
+            using (ImRaii.Disabled(!_config.HideCoords))
+                _configGui.DrawBool("CoordsVisibleOnHover", ref _config.CoordsVisibleOnHover);
         });
-        _configGui.DrawBool("HideWeather", ref Config.HideWeather, drawAfterDescription: () =>
+        _configGui.DrawBool("HideWeather", ref _config.HideWeather, drawAfterDescription: () =>
         {
-            using (ImRaii.Disabled(!Config.HideWeather))
-                _configGui.DrawBool("WeatherVisibleOnHover", ref Config.WeatherVisibleOnHover);
+            using (ImRaii.Disabled(!_config.HideWeather))
+                _configGui.DrawBool("WeatherVisibleOnHover", ref _config.WeatherVisibleOnHover);
         });
-        _configGui.DrawBool("HideSun", ref Config.HideSun, drawAfterDescription: () =>
+        _configGui.DrawBool("HideSun", ref _config.HideSun, drawAfterDescription: () =>
         {
-            using (ImRaii.Disabled(!Config.HideSun))
-                _configGui.DrawBool("SunVisibleOnHover", ref Config.SunVisibleOnHover);
+            using (ImRaii.Disabled(!_config.HideSun))
+                _configGui.DrawBool("SunVisibleOnHover", ref _config.SunVisibleOnHover);
         });
-        _configGui.DrawBool("HideCardinalDirections", ref Config.HideCardinalDirections, drawAfterDescription: () =>
+        _configGui.DrawBool("HideCardinalDirections", ref _config.HideCardinalDirections, drawAfterDescription: () =>
         {
-            using (ImRaii.Disabled(!Config.HideCardinalDirections))
-                _configGui.DrawBool("CardinalDirectionsVisibleOnHover", ref Config.CardinalDirectionsVisibleOnHover);
+            using (ImRaii.Disabled(!_config.HideCardinalDirections))
+                _configGui.DrawBool("CardinalDirectionsVisibleOnHover", ref _config.CardinalDirectionsVisibleOnHover);
         });
     }
 }

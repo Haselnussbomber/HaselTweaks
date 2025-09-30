@@ -10,10 +10,8 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedMaterialList : ConfigurableTweak
+public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMaterialListConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly IFramework _framework;
@@ -130,15 +128,15 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
 
     private void OnLogin()
     {
-        if (!Config.RestoreMaterialList || Config.RestoreMaterialListRecipeId == 0)
+        if (!_config.RestoreMaterialList || _config.RestoreMaterialListRecipeId == 0)
             return;
 
         var agentRecipeMaterialList = AgentRecipeMaterialList.Instance();
-        if (agentRecipeMaterialList->RecipeId != Config.RestoreMaterialListRecipeId)
+        if (agentRecipeMaterialList->RecipeId != _config.RestoreMaterialListRecipeId)
         {
             _recipeMaterialListLockPending = true;
             _logger.LogInformation("Restoring RecipeMaterialList");
-            agentRecipeMaterialList->OpenByRecipeId((ushort)Config.RestoreMaterialListRecipeId, Math.Max(Config.RestoreMaterialListAmount, 1));
+            agentRecipeMaterialList->OpenByRecipeId((ushort)_config.RestoreMaterialListRecipeId, Math.Max(_config.RestoreMaterialListAmount, 1));
         }
     }
 
@@ -154,7 +152,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
                 return;
 
             case AtkEventType.ListItemClick:
-                if (!Config.ClickToOpenMap)
+                if (!_config.ClickToOpenMap)
                     return;
 
                 var data = (AtkEventData.AtkListItemData*)receiveEventArgs.Data;
@@ -162,7 +160,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
                     return;
 
                 var itemId = data->ListItem->UIntValues[1];
-                if (Config.DisableClickToOpenMapForCrystals && (!_excelService.TryGetRow<Item>(itemId, out var item) || item.ItemUICategory.RowId == 59))
+                if (_config.DisableClickToOpenMapForCrystals && (!_excelService.TryGetRow<Item>(itemId, out var item) || item.ItemUICategory.RowId == 59))
                     return;
 
                 if (!TryGetPointForItem(itemId, out _, out var point, out _, out _, out _))
@@ -199,7 +197,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
     {
         _pendingMaterialListRefresh = false;
 
-        if (!Config.AutoRefreshMaterialList || !_canRefreshMaterialList || !TryGetAddon<AddonRecipeMaterialList>(AgentId.RecipeMaterialList, out var recipeMaterialList))
+        if (!_config.AutoRefreshMaterialList || !_canRefreshMaterialList || !TryGetAddon<AddonRecipeMaterialList>(AgentId.RecipeMaterialList, out var recipeMaterialList))
             return;
 
         _logger.LogInformation("Refreshing RecipeMaterialList");
@@ -211,7 +209,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
     {
         _pendingRecipeTreeRefresh = false;
 
-        if (!Config.AutoRefreshRecipeTree || !_canRefreshRecipeTree || !TryGetAddon<AtkUnitBase>(AgentId.RecipeTree, out var recipeTree))
+        if (!_config.AutoRefreshRecipeTree || !_canRefreshRecipeTree || !TryGetAddon<AtkUnitBase>(AgentId.RecipeTree, out var recipeTree))
             return;
 
         _logger.LogInformation("Refreshing RecipeTree");
@@ -236,14 +234,14 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
 
     private void SaveRestoreMaterialList(AgentRecipeMaterialList* agent)
     {
-        var shouldSave = Config.RestoreMaterialList && agent->WindowLocked;
+        var shouldSave = _config.RestoreMaterialList && agent->WindowLocked;
         var recipeId = shouldSave ? agent->RecipeId : 0u;
         var amount = shouldSave ? agent->Amount : 0u;
 
-        if (Config.RestoreMaterialListRecipeId != recipeId || Config.RestoreMaterialListAmount != amount)
+        if (_config.RestoreMaterialListRecipeId != recipeId || _config.RestoreMaterialListAmount != amount)
         {
-            Config.RestoreMaterialListRecipeId = recipeId;
-            Config.RestoreMaterialListAmount = amount;
+            _config.RestoreMaterialListRecipeId = recipeId;
+            _config.RestoreMaterialListAmount = amount;
             _logger.LogDebug("Saving {amount}x {id}", amount, recipeId);
             _pluginConfig.Save();
         }
@@ -253,7 +251,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
     {
         _addonRecipeMaterialListSetupRowHook!.Original(thisPtr, listItemInfo, nodeList);
 
-        if (!Config.EnableZoneNames)
+        if (!_config.EnableZoneNames)
             return;
 
         var itemId = listItemInfo->ListItem->UIntValues[1];
@@ -272,7 +270,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
             return;
 
         // Exclude Crystals
-        if (Config.DisableZoneNameForCrystals && item.ItemUICategory.RowId == 59)
+        if (_config.DisableZoneNameForCrystals && item.ItemUICategory.RowId == 59)
             return;
 
         if (!TryGetPointForItem(itemId, out _, out _, out _, out var isSameZone, out var placeNameSeString))
@@ -317,7 +315,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak
 
         _handleRecipeResultItemContextMenu = false;
 
-        if (!Config.AddSearchForItemByCraftingMethodContextMenuEntry)
+        if (!_config.AddSearchForItemByCraftingMethodContextMenuEntry)
             return;
 
         if (!IsAddonOpen(AgentId.RecipeMaterialList))

@@ -7,8 +7,7 @@ namespace HaselTweaks.Tweaks;
 [AutoConstruct]
 public abstract unsafe partial class Tweak : ITweak, IHostedService
 {
-    private readonly PluginConfig _pluginConfig;
-    private readonly IFramework _framework;
+    protected readonly PluginConfig _pluginConfig;
 
     protected ILogger _logger;
 

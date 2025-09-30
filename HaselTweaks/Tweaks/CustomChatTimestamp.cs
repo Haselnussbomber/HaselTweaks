@@ -3,10 +3,8 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class CustomChatTimestamp : ConfigurableTweak
+public unsafe partial class CustomChatTimestamp : ConfigurableTweak<CustomChatTimestampConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly TextService _textService;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IGameConfig _gameConfig;
@@ -33,12 +31,12 @@ public unsafe partial class CustomChatTimestamp : ConfigurableTweak
 
     private CStringPointer FormatAddonText2IntDetour(RaptureTextModule* thisPtr, uint addonRowId, int value)
     {
-        if (addonRowId is 7840 or 7841 && !string.IsNullOrWhiteSpace(Config.Format))
+        if (addonRowId is 7840 or 7841 && !string.IsNullOrWhiteSpace(_config.Format))
         {
             try
             {
                 var str = thisPtr->UnkStrings1.GetPointer(1);
-                str->SetString(DateTimeOffset.FromUnixTimeSeconds(value).ToLocalTime().ToString(Config.Format));
+                str->SetString(DateTimeOffset.FromUnixTimeSeconds(value).ToLocalTime().ToString(_config.Format));
                 return str->StringPtr;
             }
             catch (Exception e)

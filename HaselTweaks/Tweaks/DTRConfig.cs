@@ -10,8 +10,6 @@ public class DTRConfiguration
 
 public partial class DTR
 {
-    private DTRConfiguration Config => _pluginConfig.Tweaks.DTR;
-
     public override void OnConfigChange(string fieldName)
     {
         ResetCache();
@@ -48,7 +46,7 @@ public partial class DTR
         ImGui.Separator();
         ImGui.Spacing();
 
-        _configGui.DrawString("FpsFormat", ref Config.FpsFormat, "{0} fps");
+        _configGui.DrawString("FpsFormat", ref _config.FpsFormat, "{0} fps");
 
         ImGui.Spacing();
         ImGui.Text(_textService.Translate("DTR.Config.Format.Example.Label"));
@@ -61,7 +59,7 @@ public partial class DTR
         {
             unsafe
             {
-                ImGui.Text(string.Format(Config.FpsFormat, (int)(GameFramework.Instance()->FrameRate + 0.5f)));
+                ImGui.Text(string.Format(_config.FpsFormat, (int)(GameFramework.Instance()->FrameRate + 0.5f)));
             }
         }
         catch (FormatException)

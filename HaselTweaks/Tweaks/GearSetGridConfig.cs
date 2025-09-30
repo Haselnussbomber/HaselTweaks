@@ -11,27 +11,25 @@ public class GearSetGridConfiguration
 
 public partial class GearSetGrid
 {
-    private GearSetGridConfiguration Config => _pluginConfig.Tweaks.GearSetGrid;
-
     public override void OnConfigChange(string fieldName)
     {
         if (Status == TweakStatus.Enabled && fieldName == "RegisterCommand")
         {
-            _gsgCommand?.SetEnabled(Config.RegisterCommand);
+            _gsgCommand?.SetEnabled(_config.RegisterCommand);
         }
     }
 
     public override void DrawConfig()
     {
         _configGui.DrawConfigurationHeader();
-        _configGui.DrawBool("AutoOpenWithGearSetList", ref Config.AutoOpenWithGearSetList);
-        _configGui.DrawBool("RegisterCommand", ref Config.RegisterCommand);
-        _configGui.DrawBool("ConvertSeparators", ref Config.ConvertSeparators, drawAfterDescription: () =>
+        _configGui.DrawBool("AutoOpenWithGearSetList", ref _config.AutoOpenWithGearSetList);
+        _configGui.DrawBool("RegisterCommand", ref _config.RegisterCommand);
+        _configGui.DrawBool("ConvertSeparators", ref _config.ConvertSeparators, drawAfterDescription: () =>
         {
-            using var disabled = ImRaii.Disabled(!Config.ConvertSeparators);
+            using var disabled = ImRaii.Disabled(!_config.ConvertSeparators);
 
-            _configGui.DrawString("SeparatorFilter", ref Config.SeparatorFilter, defaultValue: "===========");
-            _configGui.DrawBool("DisableSeparatorSpacing", ref Config.DisableSeparatorSpacing);
+            _configGui.DrawString("SeparatorFilter", ref _config.SeparatorFilter, defaultValue: "===========");
+            _configGui.DrawBool("DisableSeparatorSpacing", ref _config.DisableSeparatorSpacing);
         });
     }
 }

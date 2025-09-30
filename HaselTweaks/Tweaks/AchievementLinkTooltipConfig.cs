@@ -8,12 +8,10 @@ public class AchievementLinkTooltipConfiguration
 
 public partial class AchievementLinkTooltip
 {
-    private AchievementLinkTooltipConfiguration Config => _pluginConfig.Tweaks.AchievementLinkTooltip;
-
     public override void DrawConfig()
     {
         _configGui.DrawConfigurationHeader();
-        _configGui.DrawBool("ShowCompletionStatus", ref Config.ShowCompletionStatus);
-        _configGui.DrawBool("PreventSpoiler", ref Config.PreventSpoiler, noFixSpaceAfter: true);
+        _configGui.DrawBool("ShowCompletionStatus", ref _config.ShowCompletionStatus);
+        _configGui.DrawBool("PreventSpoiler", ref _config.PreventSpoiler, noFixSpaceAfter: true);
     }
 }

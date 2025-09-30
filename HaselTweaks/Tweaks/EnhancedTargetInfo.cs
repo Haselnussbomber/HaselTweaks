@@ -8,11 +8,9 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedTargetInfo : ConfigurableTweak
+public unsafe partial class EnhancedTargetInfo : ConfigurableTweak<EnhancedTargetInfoConfiguration>
 {
     private readonly IGameInteropProvider _gameInteropProvider;
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly IClientState _clientState;
     private readonly TextService _textService;
     private readonly ExcelService _excelService;
@@ -69,7 +67,7 @@ public unsafe partial class EnhancedTargetInfo : ConfigurableTweak
     {
         _updateTargetInfoHook!.Original(thisPtr);
 
-        if (Config.DisplayMountStatus || Config.DisplayOrnamentStatus)
+        if (_config.DisplayMountStatus || _config.DisplayOrnamentStatus)
             UpdateTargetInfoStatuses();
     }
 
@@ -85,7 +83,7 @@ public unsafe partial class EnhancedTargetInfo : ConfigurableTweak
 
         var chara = (BattleChara*)target;
 
-        if (Config.DisplayMountStatus && chara->Mount.MountId != 0)
+        if (_config.DisplayMountStatus && chara->Mount.MountId != 0)
         {
             using var rssb = new RentedSeStringBuilder();
             var sb = rssb.Builder;
@@ -107,7 +105,7 @@ public unsafe partial class EnhancedTargetInfo : ConfigurableTweak
 
             TargetStatusUtils.AddPermanentStatus(0, 216201, 0, 0, default, sb.ToReadOnlySeString());
         }
-        else if (Config.DisplayOrnamentStatus && chara->OrnamentData.OrnamentId != 0)
+        else if (_config.DisplayOrnamentStatus && chara->OrnamentData.OrnamentId != 0)
         {
             using var rssb = new RentedSeStringBuilder();
             var sb = rssb.Builder;
@@ -133,7 +131,7 @@ public unsafe partial class EnhancedTargetInfo : ConfigurableTweak
 
     private CStringPointer FormatAddonText2IntIntUIntDetour(RaptureTextModule* thisPtr, uint addonRowId, int value1, int value2, uint value3)
     {
-        if (addonRowId == 2057 && Config.RemoveLeadingZeroInHPPercentage)
+        if (addonRowId == 2057 && _config.RemoveLeadingZeroInHPPercentage)
         {
             var str = thisPtr->UnkStrings1.GetPointer(1);
             str->SetString(_seStringEvaluator.Evaluate(_rewrittenHealthPercentageText!.Value, [value1, value2, value3], _clientState.ClientLanguage));

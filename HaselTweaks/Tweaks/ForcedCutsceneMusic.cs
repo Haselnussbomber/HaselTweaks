@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Client.System.Scheduler.Base;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class ForcedCutsceneMusic : ConfigurableTweak
+public unsafe partial class ForcedCutsceneMusic : ConfigurableTweak<ForcedCutsceneMusicConfiguration>
 {
     private static readonly string[] ConfigOptions = [
         "IsSndMaster",
@@ -16,8 +16,6 @@ public unsafe partial class ForcedCutsceneMusic : ConfigurableTweak
         "IsSndPerform",
     ];
 
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IGameConfig _gameConfig;
 
@@ -82,7 +80,7 @@ public unsafe partial class ForcedCutsceneMusic : ConfigurableTweak
 
         _logger.LogInformation("Cutscene {id} ended", cutsceneId);
 
-        if (Config.Restore && cutsceneId != 0) // ignore title screen cutscene
+        if (_config.Restore && cutsceneId != 0) // ignore title screen cutscene
         {
             foreach (var optionName in ConfigOptions)
             {
@@ -101,13 +99,13 @@ public unsafe partial class ForcedCutsceneMusic : ConfigurableTweak
     {
         return optionName switch
         {
-            "IsSndMaster" => Config.HandleMaster,
-            "IsSndBgm" => Config.HandleBgm,
-            "IsSndSe" => Config.HandleSe,
-            "IsSndVoice" => Config.HandleVoice,
-            "IsSndEnv" => Config.HandleEnv,
-            "IsSndSystem" => Config.HandleSystem,
-            "IsSndPerform" => Config.HandlePerform,
+            "IsSndMaster" => _config.HandleMaster,
+            "IsSndBgm" => _config.HandleBgm,
+            "IsSndSe" => _config.HandleSe,
+            "IsSndVoice" => _config.HandleVoice,
+            "IsSndEnv" => _config.HandleEnv,
+            "IsSndSystem" => _config.HandleSystem,
+            "IsSndPerform" => _config.HandlePerform,
             _ => false
         };
     }

@@ -8,10 +8,8 @@ using GameFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class DTR : ConfigurableTweak
+public unsafe partial class DTR : ConfigurableTweak<DTRConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly LanguageProvider _languageProvider;
     private readonly TextService _textService;
     private readonly ExcelService _excelService;
@@ -153,7 +151,7 @@ public unsafe partial class DTR : ConfigurableTweak
 
         try
         {
-            _dtrFPS.Text = string.Format(Config.FpsFormat, frameRate);
+            _dtrFPS.Text = string.Format(_config.FpsFormat, frameRate);
         }
         catch (FormatException)
         {

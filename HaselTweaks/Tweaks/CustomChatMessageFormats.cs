@@ -4,10 +4,8 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class CustomChatMessageFormats : ConfigurableTweak
+public unsafe partial class CustomChatMessageFormats : ConfigurableTweak<CustomChatMessageFormatsConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly LanguageProvider _languageProvider;
     private readonly TextService _textService;
     private readonly IGameInteropProvider _gameInteropProvider;
@@ -61,7 +59,7 @@ public unsafe partial class CustomChatMessageFormats : ConfigurableTweak
         if (thisPtr->LogKindSheet == null || thisPtr->AtkFontCodeModule == null)
             return 0;
 
-        if (!Config.FormatOverrides.TryGetValue(logKindId, out var logKindOverride) || !logKindOverride.Enabled || !logKindOverride.IsValid())
+        if (!_config.FormatOverrides.TryGetValue(logKindId, out var logKindOverride) || !logKindOverride.Enabled || !logKindOverride.IsValid())
             return _formatLogMessageHook!.Original(thisPtr, logKindId, sender, message, timestamp, a6, a7, chatTabIndex);
 
         var tempParseMessage1 = thisPtr->TempParseMessage.GetPointer(1);

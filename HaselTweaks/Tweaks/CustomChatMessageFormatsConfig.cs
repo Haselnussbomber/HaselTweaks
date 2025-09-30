@@ -52,8 +52,6 @@ public class CustomChatMessageFormatsConfiguration
 
 public partial class CustomChatMessageFormats
 {
-    public CustomChatMessageFormatsConfiguration Config => _pluginConfig.Tweaks.CustomChatMessageFormats;
-
     private bool _isConfigWindowOpen;
     private List<(LogKind LogKind, LogFilter LogFilter, ReadOnlySeString Format)>? _cachedLogKindRows = null;
     private TextColorEntry[]? _cachedTextColor = null;
@@ -94,7 +92,7 @@ public partial class CustomChatMessageFormats
         var entryToEdit = 0u;
         var entryToRemove = 0u;
 
-        foreach (var (logKindId, entry) in Config.FormatOverrides)
+        foreach (var (logKindId, entry) in _config.FormatOverrides)
         {
             using var id = ImRaii.PushId("Setting[" + logKindId.ToString() + "]");
             var isValid = entry.IsValid();
@@ -191,18 +189,18 @@ public partial class CustomChatMessageFormats
 
         if (entryToEdit != 0)
         {
-            Config.FormatOverrides[entryToEdit].EditMode = !Config.FormatOverrides[entryToEdit].EditMode;
+            _config.FormatOverrides[entryToEdit].EditMode = !_config.FormatOverrides[entryToEdit].EditMode;
         }
 
         if (entryToRemove != 0)
         {
-            Config.FormatOverrides.Remove(entryToRemove);
+            _config.FormatOverrides.Remove(entryToRemove);
             SaveAndReloadChat();
         }
 
         ImGui.Spacing();
 
-        var entries = _cachedLogKindRows.Where(entry => !Config.FormatOverrides.ContainsKey(entry.LogKind.RowId));
+        var entries = _cachedLogKindRows.Where(entry => !_config.FormatOverrides.ContainsKey(entry.LogKind.RowId));
         var entriesCount = entries.Count();
         if (entriesCount > 0)
         {
@@ -215,7 +213,7 @@ public partial class CustomChatMessageFormats
                 {
                     if (ImGui.Selectable($"{GetLogKindlabel(entry.LogKind.RowId)}##LogKind{entry.LogKind.RowId}", false, ImGuiSelectableFlags.None, new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetTextLineHeight() * 2)))
                     {
-                        Config.FormatOverrides.Add(entry.LogKind.RowId, new(entry.Format));
+                        _config.FormatOverrides.Add(entry.LogKind.RowId, new(entry.Format));
                         SaveAndReloadChat();
                     }
 

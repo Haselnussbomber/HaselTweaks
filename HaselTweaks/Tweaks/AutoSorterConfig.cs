@@ -18,12 +18,10 @@ public class AutoSorterConfiguration
 
 public partial class AutoSorter
 {
-    private AutoSorterConfiguration Config => _pluginConfig.Tweaks.AutoSorter;
-
     public override void DrawConfig()
     {
         _configGui.DrawConfigurationHeader();
-        _configGui.DrawBool("SortArmouryOnJobChange", ref Config.SortArmouryOnJobChange);
+        _configGui.DrawBool("SortArmouryOnJobChange", ref _config.SortArmouryOnJobChange);
 
         ImGuiUtils.DrawPaddedSeparator();
 
@@ -58,7 +56,7 @@ public partial class AutoSorter
         var entryToExecute = -1;
         var usedCategories = new HashSet<string>();
 
-        foreach (var entry in Config.Settings)
+        foreach (var entry in _config.Settings)
         {
             var key = $"##Setting[{i}]";
 
@@ -160,7 +158,7 @@ public partial class AutoSorter
 
             ImGui.SameLine(0, ItemInnerSpacing.X);
 
-            if (i < Config.Settings.Count - 1)
+            if (i < _config.Settings.Count - 1)
             {
                 if (ImGuiUtils.IconButton(key + "_Down", FontAwesomeIcon.ArrowDown, _textService.Translate("AutoSorter.Config.MoveRuleDownButton.Tooltip")))
                 {
@@ -262,7 +260,7 @@ public partial class AutoSorter
 
         if (ImGui.Button(_textService.Translate("AutoSorter.Config.AddButton.Label")))
         {
-            Config.Settings.Add(new());
+            _config.Settings.Add(new());
             _pluginConfig.Save();
         }
 
@@ -274,7 +272,7 @@ public partial class AutoSorter
             {
                 if (ImGui.Button(_textService.Translate("AutoSorter.Config.RunAllButton.Label")))
                 {
-                    var groups = Config.Settings
+                    var groups = _config.Settings
                         .FindAll(entry => !string.IsNullOrEmpty(entry.Category))
                         .GroupBy(entry => entry.Category!);
 
@@ -300,29 +298,29 @@ public partial class AutoSorter
 
         if (entryToMoveUp != -1)
         {
-            var removedItem = Config.Settings[entryToMoveUp];
-            Config.Settings.RemoveAt(entryToMoveUp);
-            Config.Settings.Insert(entryToMoveUp - 1, removedItem);
+            var removedItem = _config.Settings[entryToMoveUp];
+            _config.Settings.RemoveAt(entryToMoveUp);
+            _config.Settings.Insert(entryToMoveUp - 1, removedItem);
             _pluginConfig.Save();
         }
 
         if (entryToMoveDown != -1)
         {
-            var removedItem = Config.Settings[entryToMoveDown];
-            Config.Settings.RemoveAt(entryToMoveDown);
-            Config.Settings.Insert(entryToMoveDown + 1, removedItem);
+            var removedItem = _config.Settings[entryToMoveDown];
+            _config.Settings.RemoveAt(entryToMoveDown);
+            _config.Settings.Insert(entryToMoveDown + 1, removedItem);
             _pluginConfig.Save();
         }
 
         if (entryToRemove != -1)
         {
-            Config.Settings.RemoveAt(entryToRemove);
+            _config.Settings.RemoveAt(entryToRemove);
             _pluginConfig.Save();
         }
 
         if (entryToExecute != -1)
         {
-            var entry = Config.Settings[entryToExecute];
+            var entry = _config.Settings[entryToExecute];
             _queue.Enqueue(new[] { entry }.GroupBy(entry => entry.Category!).First());
         }
     }

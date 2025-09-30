@@ -17,15 +17,13 @@ using LSeStringBuilder = Lumina.Text.SeStringBuilder;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class PortraitHelper : ConfigurableTweak
+public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperConfiguration>
 {
     private static readonly TimeSpan CheckDelay = TimeSpan.FromMilliseconds(500);
 
     public static ImportFlags CurrentImportFlags { get; set; } = ImportFlags.All;
     public static PortraitPreset? ClipboardPreset { get; set; }
 
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly IChatGui _chatGui;
     private readonly TextService _textService;
     private readonly ExcelService _excelService;
@@ -156,7 +154,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak
 
     private int UpdateGearsetDetour(RaptureGearsetModule* raptureGearsetModule, int gearsetId)
     {
-        if (Config.AutoUpdatePotraitOnGearUpdate)
+        if (_config.AutoUpdatePotraitOnGearUpdate)
             _blockBannerPreview = true;
 
         var ret = _updateGearsetHook!.Original(raptureGearsetModule, gearsetId);
@@ -176,7 +174,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak
 
     private void AgentBannerPreviewShowDetour(AgentBannerPreview* thisPtr)
     {
-        if (!Config.AutoUpdatePotraitOnGearUpdate)
+        if (!_config.AutoUpdatePotraitOnGearUpdate)
         {
             _agentBannerPreviewShowHook!.Original(thisPtr);
             return;
@@ -232,7 +230,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak
         if (gearset == null)
             return;
 
-        if (Config.IgnoreDoHDoL && (!_excelService.TryGetRow<ClassJob>(gearset->ClassJob, out var classJobRow) || classJobRow.DohDolJobIndex != -1))
+        if (_config.IgnoreDoHDoL && (!_excelService.TryGetRow<ClassJob>(gearset->ClassJob, out var classJobRow) || classJobRow.DohDolJobIndex != -1))
             return;
 
         var bannerIndex = gearset->BannerIndex;
@@ -258,13 +256,13 @@ public unsafe partial class PortraitHelper : ConfigurableTweak
 
         _logger.LogInformation("Gear checksum mismatch detected! (Portrait: {bannerChecksum:X}, Equipped: {checksum:X})", banner->Checksum, checksum);
 
-        if (!isJobChange && Config.ReequipGearsetOnUpdate && gearset->GlamourSetLink > 0 && UIGlobals.CanApplyGlamourPlates())
+        if (!isJobChange && _config.ReequipGearsetOnUpdate && gearset->GlamourSetLink > 0 && UIGlobals.CanApplyGlamourPlates())
         {
             _logger.LogInformation("Re-equipping Gearset #{gearsetId} to reapply glamour plate", gearset->Id + 1);
             raptureGearsetModule->EquipGearset(gearset->Id, gearset->GlamourSetLink);
             RecheckGearChecksum(banner);
         }
-        else if (!isJobChange && Config.AutoUpdatePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
+        else if (!isJobChange && _config.AutoUpdatePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
         {
             _logger.LogInformation("Trying to send portrait update...");
 
@@ -277,7 +275,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak
                 _agentBannerPreviewShowHook?.Original(AgentBannerPreview.Instance());
             }
         }
-        else if (Config.NotifyGearChecksumMismatch)
+        else if (_config.NotifyGearChecksumMismatch)
         {
             NotifyMismatch();
         }

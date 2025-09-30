@@ -8,8 +8,6 @@ public class CosmicResearchTodoConfiguration
 
 public partial class CosmicResearchTodo
 {
-    private CosmicResearchTodoConfiguration Config => _pluginConfig.Tweaks.CosmicResearchTodo;
-
     public override void OnConfigChange(string fieldName)
     {
         RequestUpdate();
@@ -18,7 +16,7 @@ public partial class CosmicResearchTodo
     public override void DrawConfig()
     {
         _configGui.DrawConfigurationHeader();
-        _configGui.DrawBool("ShowCosmicToolScore", ref Config.ShowCosmicToolScore);
-        _configGui.DrawBool("ShowCompletedAnalysis", ref Config.ShowCompletedAnalysis);
+        _configGui.DrawBool("ShowCosmicToolScore", ref _config.ShowCosmicToolScore);
+        _configGui.DrawBool("ShowCompletedAnalysis", ref _config.ShowCompletedAnalysis);
     }
 }

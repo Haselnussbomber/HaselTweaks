@@ -4,12 +4,9 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class MaterialAllocation : ConfigurableTweak
+public unsafe partial class MaterialAllocation : ConfigurableTweak<MaterialAllocationConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
     private readonly IAddonLifecycle _addonLifecycle;
-
-    private MaterialAllocationConfiguration Config => _pluginConfig.Tweaks.MaterialAllocation;
 
     public override void OnEnable()
     {
@@ -25,10 +22,10 @@ public unsafe partial class MaterialAllocation : ConfigurableTweak
 
     private void AddonMJICraftMaterialConfirmation_PreSetup(AddonEvent type, AddonArgs args)
     {
-        if (Config.LastSelectedTab > 2)
-            Config.LastSelectedTab = 2;
+        if (_config.LastSelectedTab > 2)
+            _config.LastSelectedTab = 2;
 
-        AgentMJICraftSchedule.Instance()->CurReviewMaterialsTab = Config.LastSelectedTab;
+        AgentMJICraftSchedule.Instance()->CurReviewMaterialsTab = _config.LastSelectedTab;
 
         var addon = (AddonMJICraftMaterialConfirmation*)args.Addon.Address;
         for (var i = 0; i < 3; i++)
@@ -36,7 +33,7 @@ public unsafe partial class MaterialAllocation : ConfigurableTweak
             var button = addon->RadioButtons.GetPointer(i);
             if (button->Value != null)
             {
-                button->Value->IsSelected = i == Config.LastSelectedTab;
+                button->Value->IsSelected = i == _config.LastSelectedTab;
             }
         }
     }
@@ -49,7 +46,7 @@ public unsafe partial class MaterialAllocation : ConfigurableTweak
         if (receiveEventArgs.EventParam is not > 0 or not < 4)
             return;
 
-        Config.LastSelectedTab = (byte)(receiveEventArgs.EventParam - 1);
+        _config.LastSelectedTab = (byte)(receiveEventArgs.EventParam - 1);
         _pluginConfig.Save();
     }
 }

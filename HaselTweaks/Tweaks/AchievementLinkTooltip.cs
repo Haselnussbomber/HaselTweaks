@@ -8,12 +8,10 @@ using Achievement = Lumina.Excel.Sheets.Achievement;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class AchievementLinkTooltip : ConfigurableTweak
+public unsafe partial class AchievementLinkTooltip : ConfigurableTweak<AchievementLinkTooltipConfiguration>
 {
     private static readonly string[] ChatPanels = ["ChatLogPanel_0", "ChatLogPanel_1", "ChatLogPanel_2", "ChatLogPanel_3"];
 
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly IFramework _framework;
     private readonly TextService _textService;
     private readonly IAddonLifecycle _addonLifecycle;
@@ -63,10 +61,10 @@ public unsafe partial class AchievementLinkTooltip : ConfigurableTweak
         ref var achievements = ref UIState.Instance()->Achievement;
         var isComplete = achievements.IsComplete((int)achievement.RowId);
 
-        var canShowName = !Config.PreventSpoiler;
-        var canShowDescription = !Config.PreventSpoiler;
+        var canShowName = !_config.PreventSpoiler;
+        var canShowDescription = !_config.PreventSpoiler;
 
-        if (Config.PreventSpoiler)
+        if (_config.PreventSpoiler)
         {
             var isHiddenCategory = achievement.AchievementCategory.ValueNullable?.HideCategory == true;
             var isHiddenName = achievement.AchievementHideCondition.ValueNullable?.HideName == true;
@@ -95,7 +93,7 @@ public unsafe partial class AchievementLinkTooltip : ConfigurableTweak
         else
             sb.Append(_textService.GetAddonText(3385)); // "???"
 
-        if (Config.ShowCompletionStatus)
+        if (_config.ShowCompletionStatus)
         {
             sb.BeginMacro(MacroCode.NewLine).EndMacro();
 

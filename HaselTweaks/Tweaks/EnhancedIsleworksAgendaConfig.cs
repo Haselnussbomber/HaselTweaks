@@ -10,13 +10,11 @@ public class EnhancedIsleworksAgendaConfiguration
 
 public partial class EnhancedIsleworksAgenda
 {
-    private EnhancedIsleworksAgendaConfiguration Config => _pluginConfig.Tweaks.EnhancedIsleworksAgenda;
-
     public override void OnConfigChange(string fieldName)
     {
         if (Status == TweakStatus.Enabled && fieldName == "EnableSearchBar")
         {
-            if (Config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"))
+            if (_config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"))
                 _window.Open();
             else
                 _window.Close();
@@ -26,7 +24,7 @@ public partial class EnhancedIsleworksAgenda
     public override void DrawConfig()
     {
         _configGui.DrawConfigurationHeader();
-        _configGui.DrawBool("EnableSearchBar", ref Config.EnableSearchBar);
-        _configGui.DrawBool("DisableTreeListTooltips", ref Config.DisableTreeListTooltips);
+        _configGui.DrawBool("EnableSearchBar", ref _config.EnableSearchBar);
+        _configGui.DrawBool("DisableTreeListTooltips", ref _config.DisableTreeListTooltips);
     }
 }

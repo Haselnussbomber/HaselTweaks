@@ -30,34 +30,32 @@ public class ScrollableTabsConfiguration
 
 public unsafe partial class ScrollableTabs
 {
-    private ScrollableTabsConfiguration Config => _pluginConfig.Tweaks.ScrollableTabs;
-
     public override void DrawConfig()
     {
         _configGui.DrawConfigurationHeader();
-        _configGui.DrawBool("Invert", ref Config.Invert);
-        _configGui.DrawBool("HandleAetherCurrent", ref Config.HandleAetherCurrent);
-        _configGui.DrawBool("HandleArmouryBoard", ref Config.HandleArmouryBoard);
-        _configGui.DrawBool("HandleAOZNotebook", ref Config.HandleAOZNotebook);
-        _configGui.DrawBool("HandleCharacter", ref Config.HandleCharacter);
-        _configGui.DrawBool("HandleCharacterClass", ref Config.HandleCharacterClass);
-        _configGui.DrawBool("HandleCharacterRepute", ref Config.HandleCharacterRepute);
-        _configGui.DrawBool("HandleInventoryBuddy", ref Config.HandleInventoryBuddy);
-        _configGui.DrawBool("HandleBuddy", ref Config.HandleBuddy);
-        _configGui.DrawBool("HandleCurrency", ref Config.HandleCurrency);
-        _configGui.DrawBool("HandleOrnamentNoteBook", ref Config.HandleOrnamentNoteBook);
-        _configGui.DrawBool("HandleFieldRecord", ref Config.HandleFieldRecord);
-        _configGui.DrawBool("HandleFishGuide", ref Config.HandleFishGuide);
-        _configGui.DrawBool("HandleMiragePrismPrismBox", ref Config.HandleMiragePrismPrismBox);
-        _configGui.DrawBool("HandleGoldSaucerCardList", ref Config.HandleGoldSaucerCardList);
-        _configGui.DrawBool("HandleGoldSaucerCardDeckEdit", ref Config.HandleGoldSaucerCardDeckEdit);
-        _configGui.DrawBool("HandleLovmPaletteEdit", ref Config.HandleLovmPaletteEdit);
-        _configGui.DrawBool("HandleInventory", ref Config.HandleInventory);
-        _configGui.DrawBool("HandleMJIMinionNoteBook", ref Config.HandleMJIMinionNoteBook);
-        _configGui.DrawBool("HandleMinionNoteBook", ref Config.HandleMinionNoteBook);
-        _configGui.DrawBool("HandleMountNoteBook", ref Config.HandleMountNoteBook);
-        _configGui.DrawBool("HandleRetainer", ref Config.HandleRetainer);
-        _configGui.DrawBool("HandleFateProgress", ref Config.HandleFateProgress);
-        _configGui.DrawBool("HandleAdventureNoteBook", ref Config.HandleAdventureNoteBook);
+        _configGui.DrawBool("Invert", ref _config.Invert);
+        _configGui.DrawBool("HandleAetherCurrent", ref _config.HandleAetherCurrent);
+        _configGui.DrawBool("HandleArmouryBoard", ref _config.HandleArmouryBoard);
+        _configGui.DrawBool("HandleAOZNotebook", ref _config.HandleAOZNotebook);
+        _configGui.DrawBool("HandleCharacter", ref _config.HandleCharacter);
+        _configGui.DrawBool("HandleCharacterClass", ref _config.HandleCharacterClass);
+        _configGui.DrawBool("HandleCharacterRepute", ref _config.HandleCharacterRepute);
+        _configGui.DrawBool("HandleInventoryBuddy", ref _config.HandleInventoryBuddy);
+        _configGui.DrawBool("HandleBuddy", ref _config.HandleBuddy);
+        _configGui.DrawBool("HandleCurrency", ref _config.HandleCurrency);
+        _configGui.DrawBool("HandleOrnamentNoteBook", ref _config.HandleOrnamentNoteBook);
+        _configGui.DrawBool("HandleFieldRecord", ref _config.HandleFieldRecord);
+        _configGui.DrawBool("HandleFishGuide", ref _config.HandleFishGuide);
+        _configGui.DrawBool("HandleMiragePrismPrismBox", ref _config.HandleMiragePrismPrismBox);
+        _configGui.DrawBool("HandleGoldSaucerCardList", ref _config.HandleGoldSaucerCardList);
+        _configGui.DrawBool("HandleGoldSaucerCardDeckEdit", ref _config.HandleGoldSaucerCardDeckEdit);
+        _configGui.DrawBool("HandleLovmPaletteEdit", ref _config.HandleLovmPaletteEdit);
+        _configGui.DrawBool("HandleInventory", ref _config.HandleInventory);
+        _configGui.DrawBool("HandleMJIMinionNoteBook", ref _config.HandleMJIMinionNoteBook);
+        _configGui.DrawBool("HandleMinionNoteBook", ref _config.HandleMinionNoteBook);
+        _configGui.DrawBool("HandleMountNoteBook", ref _config.HandleMountNoteBook);
+        _configGui.DrawBool("HandleRetainer", ref _config.HandleRetainer);
+        _configGui.DrawBool("HandleFateProgress", ref _config.HandleFateProgress);
+        _configGui.DrawBool("HandleAdventureNoteBook", ref _config.HandleAdventureNoteBook);
     }
 }

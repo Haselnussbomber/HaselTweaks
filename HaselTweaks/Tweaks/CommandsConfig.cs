@@ -12,8 +12,6 @@ public class CommandsConfiguration
 
 public unsafe partial class Commands
 {
-    private CommandsConfiguration Config => _pluginConfig.Tweaks.Commands;
-
     public override void OnConfigChange(string fieldName)
     {
         UpdateCommands(Status == TweakStatus.Enabled);
@@ -22,11 +20,11 @@ public unsafe partial class Commands
     public override void DrawConfig()
     {
         _configGui.DrawConfigurationHeader();
-        _configGui.DrawBool("EnableItemLinkCommand", ref Config.EnableItemLinkCommand);
-        _configGui.DrawBool("EnableWhatMountCommand", ref Config.EnableWhatMountCommand);
-        _configGui.DrawBool("EnableWhatEmoteCommand", ref Config.EnableWhatEmoteCommand);
-        _configGui.DrawBool("EnableWhatBardingCommand", ref Config.EnableWhatBardingCommand);
-        _configGui.DrawBool("EnableGlamourPlateCommand", ref Config.EnableGlamourPlateCommand);
-        _configGui.DrawBool("EnableReloadUICommand", ref Config.EnableReloadUICommand, noFixSpaceAfter: true);
+        _configGui.DrawBool("EnableItemLinkCommand", ref _config.EnableItemLinkCommand);
+        _configGui.DrawBool("EnableWhatMountCommand", ref _config.EnableWhatMountCommand);
+        _configGui.DrawBool("EnableWhatEmoteCommand", ref _config.EnableWhatEmoteCommand);
+        _configGui.DrawBool("EnableWhatBardingCommand", ref _config.EnableWhatBardingCommand);
+        _configGui.DrawBool("EnableGlamourPlateCommand", ref _config.EnableGlamourPlateCommand);
+        _configGui.DrawBool("EnableReloadUICommand", ref _config.EnableReloadUICommand, noFixSpaceAfter: true);
     }
 }

@@ -9,18 +9,16 @@ public class CharacterClassSwitcherConfiguration
 
 public partial class CharacterClassSwitcher
 {
-    private CharacterClassSwitcherConfiguration Config => _pluginConfig.Tweaks.CharacterClassSwitcher;
-
     public override void DrawConfig()
     {
         _configGui.DrawIncompatibilityWarnings([("SimpleTweaksPlugin", ["CharacterWindowJobSwitcher"])]);
 
         _configGui.DrawConfigurationHeader();
-        _configGui.DrawBool("DisableTooltips", ref Config.DisableTooltips);
-        _configGui.DrawBool("AlwaysOpenOnClassesJobsTab", ref Config.AlwaysOpenOnClassesJobsTab, drawAfterDescription: () =>
+        _configGui.DrawBool("DisableTooltips", ref _config.DisableTooltips);
+        _configGui.DrawBool("AlwaysOpenOnClassesJobsTab", ref _config.AlwaysOpenOnClassesJobsTab, drawAfterDescription: () =>
         {
-            using (ImRaii.Disabled(!Config.AlwaysOpenOnClassesJobsTab))
-                _configGui.DrawEnum("ForceClassesJobsSubTab", ref Config.ForceClassesJobsSubTab);
+            using (ImRaii.Disabled(!_config.AlwaysOpenOnClassesJobsTab))
+                _configGui.DrawEnum("ForceClassesJobsSubTab", ref _config.ForceClassesJobsSubTab);
         });
     }
 }

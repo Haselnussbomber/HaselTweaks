@@ -18,22 +18,20 @@ public class EnhancedMaterialListConfiguration
 
 public unsafe partial class EnhancedMaterialList
 {
-    private EnhancedMaterialListConfiguration Config => _pluginConfig.Tweaks.EnhancedMaterialList;
-
     public override void OnConfigChange(string fieldName)
     {
         if (Status != TweakStatus.Enabled)
             return;
 
-        if (fieldName is nameof(Config.EnableZoneNames)
-                      or nameof(Config.DisableZoneNameForCrystals)
-                      or nameof(Config.DisableClickToOpenMapForCrystals))
+        if (fieldName is nameof(_config.EnableZoneNames)
+                      or nameof(_config.DisableZoneNameForCrystals)
+                      or nameof(_config.DisableClickToOpenMapForCrystals))
         {
             _pendingMaterialListRefresh = true;
             _timeOfMaterialListRefresh = DateTime.UtcNow;
         }
 
-        if (fieldName is nameof(Config.RestoreMaterialList))
+        if (fieldName is nameof(_config.RestoreMaterialList))
         {
             SaveRestoreMaterialList(AgentRecipeMaterialList.Instance());
         }
@@ -43,21 +41,21 @@ public unsafe partial class EnhancedMaterialList
     {
         _configGui.DrawConfigurationHeader();
 
-        _configGui.DrawBool("EnableZoneNames", ref Config.EnableZoneNames, drawAfterDescription: () =>
+        _configGui.DrawBool("EnableZoneNames", ref _config.EnableZoneNames, drawAfterDescription: () =>
         {
-            using (ImRaii.Disabled(!Config.EnableZoneNames))
-                _configGui.DrawBool("DisableZoneNameForCrystals", ref Config.DisableZoneNameForCrystals, noFixSpaceAfter: true);
+            using (ImRaii.Disabled(!_config.EnableZoneNames))
+                _configGui.DrawBool("DisableZoneNameForCrystals", ref _config.DisableZoneNameForCrystals, noFixSpaceAfter: true);
         });
 
-        _configGui.DrawBool("ClickToOpenMap", ref Config.ClickToOpenMap, drawAfterDescription: () =>
+        _configGui.DrawBool("ClickToOpenMap", ref _config.ClickToOpenMap, drawAfterDescription: () =>
         {
-            using (ImRaii.Disabled(!Config.ClickToOpenMap))
-                _configGui.DrawBool("DisableClickToOpenMapForCrystals", ref Config.DisableClickToOpenMapForCrystals, noFixSpaceAfter: true);
+            using (ImRaii.Disabled(!_config.ClickToOpenMap))
+                _configGui.DrawBool("DisableClickToOpenMapForCrystals", ref _config.DisableClickToOpenMapForCrystals, noFixSpaceAfter: true);
         });
 
-        _configGui.DrawBool("AutoRefreshMaterialList", ref Config.AutoRefreshMaterialList);
-        _configGui.DrawBool("AutoRefreshRecipeTree", ref Config.AutoRefreshRecipeTree);
-        _configGui.DrawBool("RestoreMaterialList", ref Config.RestoreMaterialList);
-        _configGui.DrawBool("AddSearchForItemByCraftingMethodContextMenuEntry", ref Config.AddSearchForItemByCraftingMethodContextMenuEntry, noFixSpaceAfter: true);
+        _configGui.DrawBool("AutoRefreshMaterialList", ref _config.AutoRefreshMaterialList);
+        _configGui.DrawBool("AutoRefreshRecipeTree", ref _config.AutoRefreshRecipeTree);
+        _configGui.DrawBool("RestoreMaterialList", ref _config.RestoreMaterialList);
+        _configGui.DrawBool("AddSearchForItemByCraftingMethodContextMenuEntry", ref _config.AddSearchForItemByCraftingMethodContextMenuEntry, noFixSpaceAfter: true);
     }
 }

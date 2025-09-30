@@ -4,10 +4,8 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class MinimapAdjustments : ConfigurableTweak
+public unsafe partial class MinimapAdjustments : ConfigurableTweak<MinimapAdjustmentsConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly IFramework _framework;
     private readonly IClientState _clientState;
 
@@ -15,7 +13,7 @@ public unsafe partial class MinimapAdjustments : ConfigurableTweak
 
     public override void OnEnable()
     {
-        _targetAlpha = Config.DefaultOpacity;
+        _targetAlpha = _config.DefaultOpacity;
 
         _framework.Update += OnFrameworkUpdate;
     }
@@ -54,10 +52,10 @@ public unsafe partial class MinimapAdjustments : ConfigurableTweak
         UpdateAlpha(naviMap);
 
         var isHovered = RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingAddon == naviMap;
-        _targetAlpha = isHovered ? Config.HoverOpacity : Config.DefaultOpacity;
+        _targetAlpha = isHovered ? _config.HoverOpacity : _config.DefaultOpacity;
 
         UpdateVisibility(naviMap, isHovered);
-        UpdateCollision(naviMap, Config.Square);
+        UpdateCollision(naviMap, _config.Square);
     }
 
     private void UpdateAlpha(HaselAddonNaviMap* naviMap)
@@ -76,16 +74,16 @@ public unsafe partial class MinimapAdjustments : ConfigurableTweak
         bool ShouldSetVisibility(bool hide, bool visibleOnHover)
             => hide && (visibleOnHover || (!visibleOnHover && hovered == false));
 
-        if (ShouldSetVisibility(Config.HideCoords, Config.CoordsVisibleOnHover))
+        if (ShouldSetVisibility(_config.HideCoords, _config.CoordsVisibleOnHover))
             naviMap->Coords->ToggleVisibility(hovered);
 
-        if (ShouldSetVisibility(Config.HideWeather, Config.WeatherVisibleOnHover))
+        if (ShouldSetVisibility(_config.HideWeather, _config.WeatherVisibleOnHover))
             naviMap->Weather->ToggleVisibility(hovered);
 
-        if (ShouldSetVisibility(Config.HideSun, Config.SunVisibleOnHover))
+        if (ShouldSetVisibility(_config.HideSun, _config.SunVisibleOnHover))
             naviMap->Sun->ToggleVisibility(hovered);
 
-        if (ShouldSetVisibility(Config.HideCardinalDirections, Config.CardinalDirectionsVisibleOnHover))
+        if (ShouldSetVisibility(_config.HideCardinalDirections, _config.CardinalDirectionsVisibleOnHover))
             naviMap->CardinalDirections->ToggleVisibility(hovered);
     }
 

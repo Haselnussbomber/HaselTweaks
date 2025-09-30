@@ -8,12 +8,10 @@ public class AetherCurrentHelperConfiguration
 
 public partial class AetherCurrentHelper
 {
-    private AetherCurrentHelperConfiguration Config => _pluginConfig.Tweaks.AetherCurrentHelper;
-
     public override void DrawConfig()
     {
         _configGui.DrawConfigurationHeader();
-        _configGui.DrawBool("AlwaysShowDistance", ref Config.AlwaysShowDistance);
-        _configGui.DrawBool("CenterDistance", ref Config.CenterDistance, noFixSpaceAfter: true);
+        _configGui.DrawBool("AlwaysShowDistance", ref _config.AlwaysShowDistance);
+        _configGui.DrawBool("CenterDistance", ref _config.CenterDistance, noFixSpaceAfter: true);
     }
 }

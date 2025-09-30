@@ -13,9 +13,8 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
+public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLoginLogoutConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
     private readonly TextService _textService;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IGameConfig _gameConfig;
@@ -23,7 +22,6 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly ITextureProvider _textureProvider;
     private readonly ExcelService _excelService;
-    private readonly ConfigGui _configGui;
 
     private Hook<AgentLobby.Delegates.UpdateCharaSelectDisplay>? _updateCharaSelectDisplayHook;
     private Hook<CharaSelectCharacterList.Delegates.CleanupCharacters>? _cleanupCharactersHook;
@@ -68,7 +66,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
 
         _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "Logo", OnLogoPostSetup);
 
-        if (Config.PreloadTerritory)
+        if (_config.PreloadTerritory)
             _openLoginWaitDialogHook?.Enable();
     }
 
@@ -104,7 +102,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
     {
         _isRecordingEmote = false;
 
-        if (Config.ClearTellHistory)
+        if (_config.ClearTellHistory)
             AcquaintanceModule.Instance()->ClearTellHistory();
     }
 
@@ -161,7 +159,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
 
         SpawnPet();
 
-        if (Config.SelectedEmotes.TryGetValue(ActiveContentId, out var emoteId))
+        if (_config.SelectedEmotes.TryGetValue(ActiveContentId, out var emoteId))
             PlayEmote(emoteId);
 
         return retVal;
@@ -179,7 +177,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
 
     private void OnLogoPostSetup(AddonEvent type, AddonArgs args)
     {
-        if (Config.SkipLogo)
+        if (_config.SkipLogo)
         {
             var addon = (AtkUnitBase*)args.Addon.Address;
             var value = new AtkValue
@@ -207,8 +205,8 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
         if (contentId == 0)
             return;
 
-        if (!Config.PetMirageSettings.TryGetValue(contentId, out var petMirageSettings))
-            Config.PetMirageSettings.Add(contentId, petMirageSettings = new());
+        if (!_config.PetMirageSettings.TryGetValue(contentId, out var petMirageSettings))
+            _config.PetMirageSettings.Add(contentId, petMirageSettings = new());
 
         try
         {
@@ -233,7 +231,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
 
     private void SpawnPet()
     {
-        if (!Config.ShowPets || _currentEntry == null)
+        if (!_config.ShowPets || _currentEntry == null)
             return;
 
         if (!(_currentEntry.ClassJobId is 26 or 27 or 28)) // Arcanist, Summoner, Scholar (Machinist: 31)
@@ -245,7 +243,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
         if (_pet != null)
             return;
 
-        if (!Config.PetMirageSettings.TryGetValue(ActiveContentId, out var petMirageSettings))
+        if (!_config.PetMirageSettings.TryGetValue(ActiveContentId, out var petMirageSettings))
             return;
 
         var bNpcId = _currentEntry.ClassJobId switch
@@ -319,7 +317,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
         if (_pet == null)
             return;
 
-        _pet->Character.GameObject.SetPosition(Config.PetPosition.X, Config.PetPosition.Y, Config.PetPosition.Z);
+        _pet->Character.GameObject.SetPosition(_config.PetPosition.X, _config.PetPosition.Y, _config.PetPosition.Z);
     }
 
     #endregion
@@ -330,7 +328,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
     {
         var processedActionTimelineIds = new HashSet<uint>();
 
-        foreach (var emoteId in Config.SelectedEmotes.Values.ToHashSet())
+        foreach (var emoteId in _config.SelectedEmotes.Values.ToHashSet())
         {
             if (!_excelService.TryGetRow<Emote>(emoteId, out var emote))
                 continue;
@@ -380,15 +378,15 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
     {
         _logger.LogInformation("Saving Emote #{emoteId} => {name}", emoteId, _excelService.TryGetRow<Emote>(emoteId, out var emote) ? emote.Name : "");
 
-        if (!Config.SelectedEmotes.TryAdd(ActiveContentId, emoteId))
-            Config.SelectedEmotes[ActiveContentId] = emoteId;
+        if (!_config.SelectedEmotes.TryAdd(ActiveContentId, emoteId))
+            _config.SelectedEmotes[ActiveContentId] = emoteId;
 
         _pluginConfig.Save();
     }
 
     private void PlayEmote(uint emoteId)
     {
-        if (!Config.EnableCharaSelectEmote)
+        if (!_config.EnableCharaSelectEmote)
             return;
 
         if (_currentEntry == null || _currentEntry.Character == null)
@@ -507,7 +505,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak
     {
         _openLoginWaitDialogHook!.Original(agent, position);
 
-        if (!Config.PreloadTerritory || _currentEntry == null)
+        if (!_config.PreloadTerritory || _currentEntry == null)
             return;
 
         ushort territoryTypeId = _currentEntry.TerritoryType switch

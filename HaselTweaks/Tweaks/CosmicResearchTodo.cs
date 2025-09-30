@@ -9,10 +9,8 @@ using TerritoryIntendedUse = HaselCommon.Game.Enums.TerritoryIntendedUse;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class CosmicResearchTodo : ConfigurableTweak
+public unsafe partial class CosmicResearchTodo : ConfigurableTweak<CosmicResearchTodoConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly ExcelService _excelService;
     private readonly LanguageProvider _languageProvider;
     private readonly TextService _textService;
@@ -133,7 +131,7 @@ public unsafe partial class CosmicResearchTodo : ConfigurableTweak
 
         if (stage == maxStage)
         {
-            if (Config.ShowCosmicToolScore)
+            if (_config.ShowCosmicToolScore)
             {
                 numberArray->DutyObjectiveCount = 0;
                 numberArray->DutyCompletedObjectives = 0;
@@ -165,7 +163,7 @@ public unsafe partial class CosmicResearchTodo : ConfigurableTweak
 
             var currentXP = researchModule->GetCurrentAnalysis(toolClassId, toolType);
 
-            if (!Config.ShowCompletedAnalysis && currentXP >= neededXP)
+            if (!_config.ShowCompletedAnalysis && currentXP >= neededXP)
                 continue;
 
             if (!_excelService.TryGetRow<WKSCosmoToolName>(toolClassRow.Types[toolType - 1].Name.RowId, out var toolNameRow))

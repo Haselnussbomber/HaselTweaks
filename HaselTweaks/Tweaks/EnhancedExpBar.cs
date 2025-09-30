@@ -8,10 +8,8 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedExpBar : ConfigurableTweak
+public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly TextService _textService;
     private readonly IClientState _clientState;
     private readonly IAddonLifecycle _addonLifecycle;
@@ -67,19 +65,19 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
 
         SetColor(); // reset unless overwritten
 
-        if (Config.ForceCompanionBar && OverwriteWithCompanionBar(classJob))
+        if (_config.ForceCompanionBar && OverwriteWithCompanionBar(classJob))
             return;
 
-        if (Config.ForcePvPSeriesBar && _excelService.TryGetRow<TerritoryType>(GameMain.Instance()->CurrentTerritoryTypeId, out var territoryType) && territoryType.IsPvpZone && OverwriteWithPvPBar(classJob))
+        if (_config.ForcePvPSeriesBar && _excelService.TryGetRow<TerritoryType>(GameMain.Instance()->CurrentTerritoryTypeId, out var territoryType) && territoryType.IsPvpZone && OverwriteWithPvPBar(classJob))
             return;
 
-        if (Config.ForceSanctuaryBar && OverwriteWithSanctuaryBar(classJob))
+        if (_config.ForceSanctuaryBar && OverwriteWithSanctuaryBar(classJob))
             return;
 
         if (!thisPtr->ExpFlags.HasFlag(AgentHudExpFlag.MaxLevel))
             return;
 
-        switch (Config.MaxLevelOverride)
+        switch (_config.MaxLevelOverride)
         {
             case MaxLevelOverrideType.PvPSeriesBar:
                 OverwriteWithPvPBar(classJob);
@@ -153,7 +151,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
         SetText($"{classJob.Abbreviation}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
         SetExperience(pvpProfile->SeriesExperience, requiredExperience);
 
-        if (!Config.DisableColorChanges)
+        if (!_config.DisableColorChanges)
             SetColor(65, 35); // trying to make it look like the xp bar in the PvP Profile window and failing miserably. eh, good enough
 
         return true;
@@ -168,7 +166,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
         if (mjiManager == null || !_excelService.TryGetRow<MJIRank>(mjiManager->IslandState.CurrentRank, out var mjiRank))
             return false;
 
-        var job = Config.SanctuaryBarHideJob ? "" : classJob.Abbreviation + "  ";
+        var job = _config.SanctuaryBarHideJob ? "" : classJob.Abbreviation + "  ";
         var levelLabel = _textService.GetAddonText(14252).Trim().Replace(":", ""); // "Sanctuary Rank:"
         var level = mjiManager->IslandState.CurrentRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var requiredExperience = mjiRank.ExpToNext;
@@ -181,7 +179,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak
         SetText($"{job}{levelLabel} {level}   {expStr}/{reqExpStr}");
         SetExperience((int)mjiManager->IslandState.CurrentXP, (int)requiredExperience);
 
-        if (!Config.DisableColorChanges)
+        if (!_config.DisableColorChanges)
             SetColor(25, 60, 255); // blue seems nice.. just like the sky ^_^
 
         return true;

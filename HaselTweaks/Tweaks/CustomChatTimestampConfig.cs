@@ -7,8 +7,6 @@ public class CustomChatTimestampConfiguration
 
 public partial class CustomChatTimestamp
 {
-    private CustomChatTimestampConfiguration Config => _pluginConfig.Tweaks.CustomChatTimestamp;
-
     public override void DrawConfig()
     {
         _configGui.DrawIncompatibilityWarnings([("SimpleTweaksPlugin", ["CustomTimestampFormat"])]);
@@ -18,7 +16,7 @@ public partial class CustomChatTimestamp
         ImGui.Text(_textService.Translate("CustomChatTimestamp.Config.Format.Label"));
         using (ImGuiUtils.ConfigIndent())
         {
-            if (ImGui.InputText("##Format", ref Config.Format, 50))
+            if (ImGui.InputText("##Format", ref _config.Format, 50))
             {
                 _pluginConfig.Save();
                 ReloadChat();
@@ -26,7 +24,7 @@ public partial class CustomChatTimestamp
             ImGui.SameLine();
             if (ImGuiUtils.IconButton("##FormatReset", FontAwesomeIcon.Undo, _textService.Translate("HaselTweaks.Config.ResetToDefault", "\"[HH:mm] \"")))
             {
-                Config.Format = "[HH:mm] ";
+                _config.Format = "[HH:mm] ";
                 _pluginConfig.Save();
                 ReloadChat();
             }
@@ -42,12 +40,12 @@ public partial class CustomChatTimestamp
             ImGui.Text(_textService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Post"));
         }
 
-        if (string.IsNullOrWhiteSpace(Config.Format))
+        if (string.IsNullOrWhiteSpace(_config.Format))
             return;
 
         try
         {
-            var formatted = DateTime.Now.ToString(Config.Format);
+            var formatted = DateTime.Now.ToString(_config.Format);
 
             ImGui.Spacing();
             ImGui.Text(_textService.Translate("CustomChatTimestamp.Config.Format.Example.Label"));

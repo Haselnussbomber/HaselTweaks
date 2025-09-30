@@ -6,7 +6,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Shell;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class AutoSorter : ConfigurableTweak
+public unsafe partial class AutoSorter : ConfigurableTweak<AutoSorterConfiguration>
 {
     private static readonly Dictionary<string, uint> CategorySet = new()
     {
@@ -81,8 +81,6 @@ public unsafe partial class AutoSorter : ConfigurableTweak
         "soul"
     ];
 
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly TextService _textService;
     private readonly ExcelService _excelService;
     private readonly IClientState _clientState;
@@ -151,7 +149,7 @@ public unsafe partial class AutoSorter : ConfigurableTweak
 
     private void OnClassJobChange(uint classJobId)
     {
-        if (Config.SortArmouryOnJobChange && _addonObserver.IsAddonVisible("ArmouryBoard"))
+        if (_config.SortArmouryOnJobChange && _addonObserver.IsAddonVisible("ArmouryBoard"))
         {
             OnOpenArmoury();
         }
@@ -159,7 +157,7 @@ public unsafe partial class AutoSorter : ConfigurableTweak
 
     private void OnOpenArmoury()
     {
-        var groups = Config.Settings
+        var groups = _config.Settings
             .FindAll(entry => entry.Enabled && (entry.Category is "armoury" || ArmourySubcategories.Any(subcat => subcat == entry.Category)))
             .GroupBy(entry => entry.Category!);
 
@@ -174,7 +172,7 @@ public unsafe partial class AutoSorter : ConfigurableTweak
         if (Conditions.Instance()->BetweenAreas || Conditions.Instance()->OccupiedInQuestEvent || Conditions.Instance()->OccupiedInCutSceneEvent)
             return;
 
-        var groups = Config.Settings
+        var groups = _config.Settings
             .FindAll(entry => entry.Enabled && entry.Category is "inventory")
             .GroupBy(entry => entry.Category!);
 
@@ -186,7 +184,7 @@ public unsafe partial class AutoSorter : ConfigurableTweak
 
     private void OnOpenInventoryBuddy()
     {
-        var groups = Config.Settings
+        var groups = _config.Settings
             .FindAll(entry => entry.Enabled && entry.Category is "saddlebag" or "rightsaddlebag")
             .GroupBy(entry => entry.Category!);
 
@@ -198,7 +196,7 @@ public unsafe partial class AutoSorter : ConfigurableTweak
 
     private void OnOpenRetainer()
     {
-        var groups = Config.Settings
+        var groups = _config.Settings
             .FindAll(entry => entry.Enabled && entry.Category is "retainer")
             .GroupBy(entry => entry.Category!);
 

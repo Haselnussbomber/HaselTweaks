@@ -4,10 +4,8 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class ShopItemIcons : ConfigurableTweak
+public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly ItemService _itemService;
     private readonly IAddonLifecycle _addonLifecycle;
 
@@ -33,7 +31,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak
 
     private void OnShopPreSetup(AddonEvent type, AddonArgs args)
     {
-        if (!Config.HandleShop || args is not AddonSetupArgs setupArgs)
+        if (!_config.HandleShop || args is not AddonSetupArgs setupArgs)
             return;
 
         UpdateShopIcons(setupArgs.AtkValues, setupArgs.AtkValueCount);
@@ -41,7 +39,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak
 
     private void OnShopPreRefresh(AddonEvent type, AddonArgs args)
     {
-        if (!Config.HandleShop || args is not AddonRefreshArgs refreshArgs)
+        if (!_config.HandleShop || args is not AddonRefreshArgs refreshArgs)
             return;
 
         UpdateShopIcons(refreshArgs.AtkValues, refreshArgs.AtkValueCount);
@@ -104,8 +102,8 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak
         if (args is not AddonRefreshArgs refreshArgs)
             return;
 
-        if ((args.AddonName == "ShopExchangeItem" && !Config.HandleShopExchangeItem) ||
-            (args.AddonName == "ShopExchangeCurrency" && !Config.HandleShopExchangeCurrency))
+        if ((args.AddonName == "ShopExchangeItem" && !_config.HandleShopExchangeItem) ||
+            (args.AddonName == "ShopExchangeCurrency" && !_config.HandleShopExchangeCurrency))
         {
             return;
         }
@@ -126,7 +124,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak
 
     private void OnGrandCompanyExchangePreRefresh(AddonEvent type, AddonArgs args)
     {
-        if (!Config.HandleGrandCompanyExchange || args is not AddonRefreshArgs refreshArgs)
+        if (!_config.HandleGrandCompanyExchange || args is not AddonRefreshArgs refreshArgs)
             return;
 
         // sometimes it refreshes with just 10 values
@@ -150,7 +148,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak
 
     private void OnInclusionShopPreRefresh(AddonEvent type, AddonArgs args)
     {
-        if (!Config.HandleInclusionShop || args is not AddonRefreshArgs refreshArgs)
+        if (!_config.HandleInclusionShop || args is not AddonRefreshArgs refreshArgs)
             return;
 
         var values = new Span<AtkValue>((void*)refreshArgs.AtkValues, (int)refreshArgs.AtkValueCount);
@@ -170,7 +168,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak
 
     private void OnFreeShopPreRefresh(AddonEvent type, AddonArgs args)
     {
-        if (!Config.HandleFreeShop || args is not AddonRefreshArgs refreshArgs)
+        if (!_config.HandleFreeShop || args is not AddonRefreshArgs refreshArgs)
             return;
 
         var values = new Span<AtkValue>((void*)refreshArgs.AtkValues, (int)refreshArgs.AtkValueCount);

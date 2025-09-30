@@ -4,10 +4,8 @@ using HaselTweaks.Windows;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public partial class GearSetGrid : ConfigurableTweak
+public partial class GearSetGrid : ConfigurableTweak<GearSetGridConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly CommandService _commandService;
     private readonly AddonObserver _addonObserver;
     private readonly GearSetGridWindow _window;
@@ -17,12 +15,12 @@ public partial class GearSetGrid : ConfigurableTweak
     public override void OnEnable()
     {
         _gsgCommand = _commandService.Register(OnGsgCommand);
-        _gsgCommand.SetEnabled(Config.RegisterCommand);
+        _gsgCommand.SetEnabled(_config.RegisterCommand);
 
         _addonObserver.AddonOpen += OnAddonOpen;
         _addonObserver.AddonClose += OnAddonClose;
 
-        if (Config.AutoOpenWithGearSetList && IsAddonOpen("GearSetList"))
+        if (_config.AutoOpenWithGearSetList && IsAddonOpen("GearSetList"))
             _window.Open();
     }
 
@@ -39,13 +37,13 @@ public partial class GearSetGrid : ConfigurableTweak
 
     private void OnAddonOpen(string addonName)
     {
-        if (Config.AutoOpenWithGearSetList && addonName == "GearSetList")
+        if (_config.AutoOpenWithGearSetList && addonName == "GearSetList")
             _window.Open();
     }
 
     private void OnAddonClose(string addonName)
     {
-        if (Config.AutoOpenWithGearSetList && addonName == "GearSetList")
+        if (_config.AutoOpenWithGearSetList && addonName == "GearSetList")
             _window.Close();
     }
 

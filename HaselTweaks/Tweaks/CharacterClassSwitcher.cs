@@ -6,13 +6,11 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class CharacterClassSwitcher : ConfigurableTweak
+public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<CharacterClassSwitcherConfiguration>
 {
     private const int NumClasses = 33; // includes blue mage, crafters and gatherers
     private const int NumPvPClasses = 21;
 
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly TextService _textService;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IAddonLifecycle _addonLifecycle;
@@ -107,7 +105,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak
         bool unk7,
         bool unk8)
     {
-        if (Config.DisableTooltips && (
+        if (_config.DisableTooltips && (
             (TryGetAddon("CharacterClass", out AtkUnitBase* unitBase) && unitBase->Id == parentId) ||
             (TryGetAddon("PvPCharacter", out unitBase) && unitBase->Id == parentId)))
         {
@@ -139,9 +137,9 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak
             collisionNode->AddEvent(AtkEventType.InputReceived, (uint)i + 2, (AtkEventListener*)addon, null, false);
         }
 
-        if (Config.AlwaysOpenOnClassesJobsTab && Config.ForceClassesJobsSubTab != ClassesJobsSubTabs.None)
+        if (_config.AlwaysOpenOnClassesJobsTab && _config.ForceClassesJobsSubTab != ClassesJobsSubTabs.None)
         {
-            addon->SetTab(Config.ForceClassesJobsSubTab switch
+            addon->SetTab(_config.ForceClassesJobsSubTab switch
             {
                 ClassesJobsSubTabs.DoWDoM => 0,
                 ClassesJobsSubTabs.DoHDoL => 1,
@@ -393,7 +391,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak
 
     private void AgentStatusShowDetour(AgentStatus* agent)
     {
-        if (Config.AlwaysOpenOnClassesJobsTab)
+        if (_config.AlwaysOpenOnClassesJobsTab)
         {
             agent->TabIndex = 2;
         }

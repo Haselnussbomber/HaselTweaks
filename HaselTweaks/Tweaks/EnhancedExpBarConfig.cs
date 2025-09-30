@@ -20,8 +20,6 @@ public enum MaxLevelOverrideType
 
 public unsafe partial class EnhancedExpBar
 {
-    private EnhancedExpBarConfiguration Config => _pluginConfig.Tweaks.EnhancedExpBar;
-
     public override void OnConfigChange(string fieldName)
     {
         if (Status == TweakStatus.Enabled)
@@ -34,11 +32,11 @@ public unsafe partial class EnhancedExpBar
 
         _configGui.DrawConfigurationHeader();
 
-        _configGui.DrawBool("ForcePvPSeriesBar", ref Config.ForcePvPSeriesBar);
-        _configGui.DrawBool("ForceSanctuaryBar", ref Config.ForceSanctuaryBar);
-        _configGui.DrawBool("ForceCompanionBar", ref Config.ForceCompanionBar);
-        _configGui.DrawBool("SanctuaryBarHideJob", ref Config.SanctuaryBarHideJob);
-        _configGui.DrawEnum("MaxLevelOverride", ref Config.MaxLevelOverride);
-        _configGui.DrawBool("DisableColorChanges", ref Config.DisableColorChanges);
+        _configGui.DrawBool("ForcePvPSeriesBar", ref _config.ForcePvPSeriesBar);
+        _configGui.DrawBool("ForceSanctuaryBar", ref _config.ForceSanctuaryBar);
+        _configGui.DrawBool("ForceCompanionBar", ref _config.ForceCompanionBar);
+        _configGui.DrawBool("SanctuaryBarHideJob", ref _config.SanctuaryBarHideJob);
+        _configGui.DrawEnum("MaxLevelOverride", ref _config.MaxLevelOverride);
+        _configGui.DrawBool("DisableColorChanges", ref _config.DisableColorChanges);
     }
 }

@@ -7,11 +7,9 @@ public class InventoryHighlightConfiguration
 
 public partial class InventoryHighlight
 {
-    private InventoryHighlightConfiguration Config => _pluginConfig.Tweaks.InventoryHighlight;
-
     public override void DrawConfig()
     {
         _configGui.DrawConfigurationHeader();
-        _configGui.DrawBool("IgnoreQuality", ref Config.IgnoreQuality);
+        _configGui.DrawBool("IgnoreQuality", ref _config.IgnoreQuality);
     }
 }

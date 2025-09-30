@@ -6,12 +6,10 @@ using HaselTweaks.Windows;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class AetherCurrentHelper : ConfigurableTweak
+public unsafe partial class AetherCurrentHelper : ConfigurableTweak<AetherCurrentHelperConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly ExcelService _excelService;
-    private readonly ConfigGui _configGui;
     private readonly WindowManager _windowManager;
     private readonly IServiceProvider _serviceProvider;
 

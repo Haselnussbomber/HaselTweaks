@@ -21,18 +21,16 @@ public class PortraitHelperConfiguration
 
 public unsafe partial class PortraitHelper
 {
-    private PortraitHelperConfiguration Config => _pluginConfig.Tweaks.PortraitHelper;
-
     public override void DrawConfig()
     {
         _configGui.DrawConfigurationHeader();
-        _configGui.DrawBool("EmbedPresetStringInThumbnails", ref Config.EmbedPresetStringInThumbnails);
-        _configGui.DrawBool("NotifyGearChecksumMismatch", ref Config.NotifyGearChecksumMismatch, drawAfterDescription: () =>
+        _configGui.DrawBool("EmbedPresetStringInThumbnails", ref _config.EmbedPresetStringInThumbnails);
+        _configGui.DrawBool("NotifyGearChecksumMismatch", ref _config.NotifyGearChecksumMismatch, drawAfterDescription: () =>
         {
-            using var disabled = ImRaii.Disabled(!Config.NotifyGearChecksumMismatch);
-            _configGui.DrawBool("IgnoreDoHDoL", ref Config.IgnoreDoHDoL);
+            using var disabled = ImRaii.Disabled(!_config.NotifyGearChecksumMismatch);
+            _configGui.DrawBool("IgnoreDoHDoL", ref _config.IgnoreDoHDoL);
         });
-        _configGui.DrawBool("ReequipGearsetOnUpdate", ref Config.ReequipGearsetOnUpdate, drawAfterLabel: _configGui.DrawNetworkWarning);
-        _configGui.DrawBool("AutoUpdatePotraitOnGearUpdate", ref Config.AutoUpdatePotraitOnGearUpdate, drawAfterLabel: _configGui.DrawNetworkWarning);
+        _configGui.DrawBool("ReequipGearsetOnUpdate", ref _config.ReequipGearsetOnUpdate, drawAfterLabel: _configGui.DrawNetworkWarning);
+        _configGui.DrawBool("AutoUpdatePotraitOnGearUpdate", ref _config.AutoUpdatePotraitOnGearUpdate, drawAfterLabel: _configGui.DrawNetworkWarning);
     }
 }

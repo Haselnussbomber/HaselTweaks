@@ -5,10 +5,8 @@ using HaselTweaks.Windows;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak
+public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak<EnhancedIsleworksAgendaConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
-    private readonly ConfigGui _configGui;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly AddonObserver _addonObserver;
     private readonly MJICraftScheduleSettingSearchBar _window;
@@ -23,7 +21,7 @@ public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak
 
         _receiveEventHook.Enable();
 
-        if (Config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"))
+        if (_config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"))
             _window.Open();
 
         _addonObserver.AddonOpen += OnAddonOpen;
@@ -43,7 +41,7 @@ public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak
 
     private void OnAddonOpen(string addonName)
     {
-        if (Config.EnableSearchBar && addonName == "MJICraftScheduleSetting")
+        if (_config.EnableSearchBar && addonName == "MJICraftScheduleSetting")
             _window.Open();
     }
 
@@ -55,7 +53,7 @@ public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak
 
     private void ReceiveEventDetour(AddonMJICraftScheduleSetting* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData)
     {
-        if (eventType == AtkEventType.ListItemRollOver && eventParam == 2 && Config.DisableTreeListTooltips)
+        if (eventType == AtkEventType.ListItemRollOver && eventParam == 2 && _config.DisableTreeListTooltips)
         {
             var index = atkEventData->ListItemData.SelectedIndex;
             var itemPtr = addon->TreeList->GetItem(index);

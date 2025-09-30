@@ -15,8 +15,6 @@ public class LockWindowPositionConfiguration
 
 public partial class LockWindowPosition
 {
-    private LockWindowPositionConfiguration Config => _pluginConfig.Tweaks.LockWindowPosition;
-
     public override void OnConfigClose()
     {
         _hoveredWindowName = "";
@@ -29,12 +27,12 @@ public partial class LockWindowPosition
     {
         _configGui.DrawConfigurationHeader();
 
-        if (ImGui.Checkbox(_textService.Translate("LockWindowPosition.Config.Inverted.Label"), ref Config.Inverted))
+        if (ImGui.Checkbox(_textService.Translate("LockWindowPosition.Config.Inverted.Label"), ref _config.Inverted))
         {
             _pluginConfig.Save();
         }
 
-        if (ImGui.Checkbox(_textService.Translate("LockWindowPosition.Config.AddLockUnlockContextMenuEntries.Label"), ref Config.AddLockUnlockContextMenuEntries))
+        if (ImGui.Checkbox(_textService.Translate("LockWindowPosition.Config.AddLockUnlockContextMenuEntries.Label"), ref _config.AddLockUnlockContextMenuEntries))
         {
             _pluginConfig.Save();
         }
@@ -42,7 +40,7 @@ public partial class LockWindowPosition
         var isWindowFocused = ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
 
         ImGuiUtils.DrawPaddedSeparator();
-        if (Config.LockedWindows.Count != 0)
+        if (_config.LockedWindows.Count != 0)
         {
             ImGui.Text(_textService.Translate("LockWindowPosition.Config.Windows.Title"));
 
@@ -58,7 +56,7 @@ public partial class LockWindowPosition
             var entryToRemove = -1;
             var i = 0;
 
-            foreach (var entry in Config.LockedWindows)
+            foreach (var entry in _config.LockedWindows)
             {
                 var key = $"##Table_Row{i}";
                 ImGui.TableNextRow();
@@ -72,7 +70,7 @@ public partial class LockWindowPosition
                 {
                     var isLocked = entry.Enabled;
 
-                    if (Config.Inverted)
+                    if (_config.Inverted)
                         isLocked = !isLocked;
 
                     ImGui.BeginTooltip();
@@ -111,7 +109,7 @@ public partial class LockWindowPosition
 
             if (entryToRemove != -1)
             {
-                Config.LockedWindows.RemoveAt(entryToRemove);
+                _config.LockedWindows.RemoveAt(entryToRemove);
                 _pluginConfig.Save();
             }
         }
@@ -140,13 +138,13 @@ public partial class LockWindowPosition
             }
         }
 
-        if (Config.LockedWindows.Count != 0)
+        if (_config.LockedWindows.Count != 0)
         {
             ImGui.SameLine();
 
             if (ImGui.Button(_textService.Translate("LockWindowPosition.Config.Picker.ToggleAllButton.Label")))
             {
-                foreach (var entry in Config.LockedWindows)
+                foreach (var entry in _config.LockedWindows)
                 {
                     entry.Enabled = !entry.Enabled;
                 }
@@ -176,9 +174,9 @@ public partial class LockWindowPosition
                 {
                     _showPicker = false;
 
-                    if (_hoveredWindowName != "" && !Config.LockedWindows.Any(entry => entry.Name == _hoveredWindowName))
+                    if (_hoveredWindowName != "" && !_config.LockedWindows.Any(entry => entry.Name == _hoveredWindowName))
                     {
-                        Config.LockedWindows.Add(new()
+                        _config.LockedWindows.Add(new()
                         {
                             Name = _hoveredWindowName
                         });

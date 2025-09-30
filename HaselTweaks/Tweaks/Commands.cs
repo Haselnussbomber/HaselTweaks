@@ -9,15 +9,13 @@ using HaselCommon.Commands;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class Commands : ConfigurableTweak
+public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
 {
-    private readonly PluginConfig _pluginConfig;
     private readonly LanguageProvider _languageProvider;
     private readonly TextService _textService;
     private readonly ExcelService _excelService;
     private readonly ItemService _itemService;
     private readonly CommandService _commandService;
-    private readonly ConfigGui _configGui;
     private readonly ICondition _condition;
     private readonly IFramework _framework;
 
@@ -65,12 +63,12 @@ public unsafe partial class Commands : ConfigurableTweak
 
     private void UpdateCommands(bool enable)
     {
-        _itemLinkCommandHandler?.SetEnabled(enable && Config.EnableItemLinkCommand);
-        _whatMountCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatMountCommand);
-        _whatEmoteCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatEmoteCommand);
-        _whatBardingCommandCommandHandler?.SetEnabled(enable && Config.EnableWhatBardingCommand);
-        _glamourPlateCommandCommandHandler?.SetEnabled(enable && Config.EnableGlamourPlateCommand);
-        _reloadUICommandCommandHandler?.SetEnabled(enable && Config.EnableReloadUICommand);
+        _itemLinkCommandHandler?.SetEnabled(enable && _config.EnableItemLinkCommand);
+        _whatMountCommandCommandHandler?.SetEnabled(enable && _config.EnableWhatMountCommand);
+        _whatEmoteCommandCommandHandler?.SetEnabled(enable && _config.EnableWhatEmoteCommand);
+        _whatBardingCommandCommandHandler?.SetEnabled(enable && _config.EnableWhatBardingCommand);
+        _glamourPlateCommandCommandHandler?.SetEnabled(enable && _config.EnableGlamourPlateCommand);
+        _reloadUICommandCommandHandler?.SetEnabled(enable && _config.EnableReloadUICommand);
     }
 
     [CommandHandler("/itemlink", "Commands.Config.EnableItemLinkCommand.Description", DisplayOrder: 2)]
