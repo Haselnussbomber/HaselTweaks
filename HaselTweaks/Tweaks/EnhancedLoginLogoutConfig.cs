@@ -1,6 +1,7 @@
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using ZLinq;
 
 namespace HaselTweaks.Tweaks;
 

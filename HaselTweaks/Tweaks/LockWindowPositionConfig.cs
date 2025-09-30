@@ -1,3 +1,5 @@
+using ZLinq;
+
 namespace HaselTweaks.Tweaks;
 
 public class LockWindowPositionConfiguration

@@ -1,3 +1,7 @@
+using ZLinq;
+
+[assembly: ZLinqDropIn("ZLinq", DropInGenerateTypes.Everything)]
+
 namespace HaselTweaks;
 
 public sealed class Plugin : IDalamudPlugin

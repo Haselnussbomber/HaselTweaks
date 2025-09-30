@@ -1,3 +1,4 @@
+using System.Linq;
 using Dalamud.Game.Config;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
@@ -328,7 +329,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
     {
         var processedActionTimelineIds = new HashSet<uint>();
 
-        foreach (var emoteId in _config.SelectedEmotes.Values.ToHashSet())
+        foreach (var emoteId in _config.SelectedEmotes.Values.Distinct())
         {
             if (!_excelService.TryGetRow<Emote>(emoteId, out var emote))
                 continue;

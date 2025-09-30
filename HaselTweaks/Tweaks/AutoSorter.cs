@@ -2,6 +2,7 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Client.UI.Shell;
+using ZLinq;
 
 namespace HaselTweaks.Tweaks;
 
@@ -87,7 +88,7 @@ public unsafe partial class AutoSorter : ConfigurableTweak<AutoSorterConfigurati
     private readonly IFramework _framework;
     private readonly AddonObserver _addonObserver;
 
-    private readonly Queue<IGrouping<string, AutoSorterConfiguration.SortingRule>> _queue = new();
+    private readonly Queue<System.Linq.IGrouping<string, AutoSorterConfiguration.SortingRule>> _queue = new();
     private bool _isBusy = false;
 
     private bool IsRetainerInventoryOpen => _addonObserver.IsAddonVisible("InventoryRetainer") || _addonObserver.IsAddonVisible("InventoryRetainerLarge");

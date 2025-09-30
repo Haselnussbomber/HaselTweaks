@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using HaselCommon.Windows;
+using ZLinq;
 
 namespace HaselTweaks.Windows;
 
@@ -20,7 +21,7 @@ public partial class PluginWindow : SimpleWindow
     [AutoPostConstruct]
     private void Initialize(IEnumerable<IHostedService> services)
     {
-        _tweaks = [.. services.OfType<ITweak>()];
+        _tweaks = services.OfType<ITweak>().ToArray();
 
         SizeCondition = ImGuiCond.Always;
 
@@ -40,7 +41,7 @@ public partial class PluginWindow : SimpleWindow
 
     private void SortTweaksByName()
     {
-        _orderedTweaks = [.. _tweaks.OrderBy(tweak => _textService.TryGetTranslation(tweak.InternalName + ".Tweak.Name", out var name) ? name : tweak.InternalName)];
+        _orderedTweaks = _tweaks.OrderBy(tweak => _textService.TryGetTranslation(tweak.InternalName + ".Tweak.Name", out var name) ? name : tweak.InternalName).ToArray();
     }
 
     public override void OnOpen()

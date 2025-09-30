@@ -4,6 +4,7 @@ using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.Text;
+using ZLinq;
 
 namespace HaselTweaks.Tweaks;
 

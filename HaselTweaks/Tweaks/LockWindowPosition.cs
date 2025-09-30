@@ -1,6 +1,7 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using ZLinq;
 using AtkEventInterface = FFXIVClientStructs.FFXIV.Component.GUI.AtkModuleInterface.AtkEventInterface;
 
 namespace HaselTweaks.Tweaks;
@@ -228,7 +229,7 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak<LockWindowPos
             if (TryGetAddon<AtkUnitBase>((ushort)AgentContext.Instance()->OwnerAddon, out var addon))
             {
                 var name = addon->NameString;
-                var entry = _config.LockedWindows.FirstOrDefault(entry => entry?.Name == name, null);
+                var entry = _config.LockedWindows!.FirstOrDefault(entry => entry?.Name == name, null);
                 var isLocked = eventKind == EventParamLock;
 
                 if (_config.Inverted)

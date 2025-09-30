@@ -5,6 +5,7 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using ZLinq;
 using AgentRecipeNote = FFXIVClientStructs.FFXIV.Client.UI.Agent.AgentRecipeNote;
 
 namespace HaselTweaks.Tweaks;
@@ -77,10 +78,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
         foreach (ref var questWork in questManager->NormalQuests)
         {
             if (questWork.QuestId == 0)
-            {
-                _logger.LogDebug("Skipping: Quest #{questId}", questWork.QuestId);
                 continue;
-            }
 
             if (!_excelService.TryGetRow<Quest>((uint)questWork.QuestId | 0x10000, out var quest))
             {

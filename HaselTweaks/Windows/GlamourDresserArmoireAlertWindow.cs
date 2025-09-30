@@ -2,6 +2,7 @@ using Dalamud.Interface.Textures;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using ZLinq;
 
 namespace HaselTweaks.Windows;
 

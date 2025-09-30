@@ -1,6 +1,7 @@
 using HaselTweaks.ImGuiComponents;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Windows.PortraitHelperWindows.Overlays;
+using ZLinq;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 

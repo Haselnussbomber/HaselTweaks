@@ -6,6 +6,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 using SixLabors.ImageSharp.PixelFormats;
+using ZLinq;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
@@ -78,7 +79,7 @@ public partial class CreatePresetDialog
                 .Select(id => availableTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
                 .Where(name => !string.IsNullOrEmpty(name));
 
-            var preview = tagNames.Any() ? string.Join(", ", tagNames) : _textService.Translate("PortraitHelperWindows.CreatePresetDialog.Tags.None");
+            var preview = tagNames.Any() ? tagNames.JoinToString(", ") : _textService.Translate("PortraitHelperWindows.CreatePresetDialog.Tags.None");
 
             ImGui.Spacing();
             using var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge);

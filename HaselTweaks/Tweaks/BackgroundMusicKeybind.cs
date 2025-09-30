@@ -1,5 +1,6 @@
 using Dalamud.Game.ClientState.Keys;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using ZLinq;
 
 namespace HaselTweaks.Tweaks;
 

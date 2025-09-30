@@ -1,4 +1,5 @@
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using ZLinq;
 
 namespace HaselTweaks.Tweaks;
 

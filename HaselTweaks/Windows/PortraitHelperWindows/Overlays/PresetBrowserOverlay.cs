@@ -9,6 +9,7 @@ using Lumina.Data.Files;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using ZLinq;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
@@ -119,7 +120,7 @@ public partial class PresetBrowserOverlay : Overlay
                     if (!payload.IsNull && payload.Data != null && payload.IsDelivery())
                     {
                         var tagId = MemoryHelper.Read<Guid>((nint)payload.Data).ToString();
-                        _reorderTagOldIndex = config.PresetTags.AsEnumerable().IndexOf((tag) => tag.Id.ToString() == tagId);
+                        _reorderTagOldIndex = config.PresetTags.IndexOf((tag) => tag.Id.ToString() == tagId);
                         _reorderTagNewIndex = config.PresetTags.IndexOf(tag);
                     }
 
@@ -127,7 +128,7 @@ public partial class PresetBrowserOverlay : Overlay
                     if (!payload.IsNull && payload.Data != null && payload.IsDelivery())
                     {
                         var presetId = MemoryHelper.Read<Guid>((nint)payload.Data).ToString();
-                        var preset = config.Presets.FirstOrDefault((preset) => preset?.Id.ToString() == presetId, null);
+                        var preset = config.Presets!.FirstOrDefault((preset) => preset?.Id.ToString() == presetId, null);
                         if (preset != null)
                         {
                             preset.Tags.Add(tag.Id);
@@ -439,7 +440,7 @@ public partial class PresetBrowserOverlay : Overlay
                     {
                         var presetId = MemoryHelper.Read<Guid>((nint)payload.Data).ToString();
                         var config = _pluginConfig.Tweaks.PortraitHelper;
-                        var oldIndex = config.Presets.AsEnumerable().IndexOf((preset) => preset.Id.ToString() == presetId);
+                        var oldIndex = config.Presets.IndexOf((preset) => preset.Id.ToString() == presetId);
                         var newIndex = config.Presets.IndexOf(preset);
                         var item = config.Presets[oldIndex];
                         config.Presets.RemoveAt(oldIndex);

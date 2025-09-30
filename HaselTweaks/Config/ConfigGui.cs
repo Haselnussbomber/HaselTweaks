@@ -1,5 +1,6 @@
 using System.Globalization;
 using Dalamud.Interface.ImGuiSeStringRenderer;
+using ZLinq;
 
 namespace HaselTweaks.Config;
 
@@ -212,8 +213,7 @@ public partial class ConfigGui
     public void DrawIncompatibilityWarnings((string InternalName, string[] ConfigNames)[] incompatibilityWarnings)
     {
         var warnings = incompatibilityWarnings
-            .Select(entry => (entry, IsLoaded: _pluginInterface.InstalledPlugins.Any(p => p.IsLoaded && p.InternalName == p.InternalName)))
-            .ToArray();
+            .Select(entry => (entry, IsLoaded: _pluginInterface.InstalledPlugins.Any(p => p.IsLoaded && p.InternalName == p.InternalName)));
 
         if (!warnings.Any(tuple => tuple.IsLoaded))
             return;
@@ -227,9 +227,10 @@ public partial class ConfigGui
         string getConfigName(string tweakName, string configName)
             => _textService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{tweakName}.Config.{configName}");
 
-        if (warnings.Length == 1)
+        var warningsCount = warnings.Count();
+        if (warningsCount == 1)
         {
-            var (entry, isLoaded) = warnings[0];
+            var (entry, isLoaded) = warnings.ElementAt(0);
             var pluginName = _textService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Name");
 
             if (isLoaded)
@@ -246,11 +247,11 @@ public partial class ConfigGui
                 else if (entry.ConfigNames.Length > 1)
                 {
                     var configNames = entry.ConfigNames.Select((configName) => _textService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Config.{configName}"));
-                    ImGui.TextColoredWrapped(Color.Grey2, _textService.Translate("HaselTweaks.Config.IncompatibilityWarning.Single.PluginSettings", pluginName) + $"\n- {string.Join("\n- ", configNames)}");
+                    ImGui.TextColoredWrapped(Color.Grey2, _textService.Translate("HaselTweaks.Config.IncompatibilityWarning.Single.PluginSettings", pluginName) + $"\n- {configNames.JoinToString("\n- ")}");
                 }
             }
         }
-        else if (warnings.Length > 1)
+        else if (warningsCount > 1)
         {
             ImGui.TextColoredWrapped(Color.Grey2, _textService.Translate("HaselTweaks.Config.IncompatibilityWarning.Multi.Preface"));
 
@@ -272,7 +273,7 @@ public partial class ConfigGui
                 else if (entry.ConfigNames.Length > 1)
                 {
                     var configNames = entry.ConfigNames.Select((configName) => _textService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Config.{configName}"));
-                    ImGui.TextColoredWrapped(Color.Grey2, _textService.Translate("HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSettings", pluginName) + $"\n    - {string.Join("\n    - ", configNames)}");
+                    ImGui.TextColoredWrapped(Color.Grey2, _textService.Translate("HaselTweaks.Config.IncompatibilityWarning.Multi.PluginSettings", pluginName) + $"\n    - {configNames.JoinToString("\n    - ")}");
                 }
             }
         }

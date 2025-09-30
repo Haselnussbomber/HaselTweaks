@@ -1,5 +1,6 @@
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Utils.PortraitHelper;
+using ZLinq;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
@@ -65,7 +66,7 @@ public partial class EditPresetDialog
                 .Select(id => availableTags.FirstOrDefault((t) => t.Id == id)?.Name ?? string.Empty)
                 .Where(name => !string.IsNullOrEmpty(name));
 
-            var preview = tagNames.Any() ? string.Join(", ", tagNames) : _textService.Translate("PortraitHelperWindows.EditPresetDialog.Tags.None");
+            var preview = tagNames.Any() ? tagNames.JoinToString(", ") : _textService.Translate("PortraitHelperWindows.EditPresetDialog.Tags.None");
 
             ImGui.Spacing();
             using var tagsCombo = ImRaii.Combo("##PresetTag", preview, ImGuiComboFlags.HeightLarge);
