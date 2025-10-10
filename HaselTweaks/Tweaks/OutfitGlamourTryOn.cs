@@ -8,7 +8,6 @@ namespace HaselTweaks.Tweaks;
 public unsafe partial class OutfitGlamourTryOn : Tweak
 {
     private readonly IContextMenu _contextMenu;
-    private readonly ItemService _itemService;
     private readonly TextService _textService;
 
     public override void OnEnable()
@@ -26,7 +25,7 @@ public unsafe partial class OutfitGlamourTryOn : Tweak
         if (args.AddonName != "MiragePrismPrismSetConvert")
             return;
 
-        var agent = (AgentMiragePrismPrismSetConvert*)AgentModule.Instance()->GetAgentByInternalId(AgentId.MiragePrismPrismSetConvert);
+        var agent = AgentMiragePrismPrismSetConvert.Instance();
         if (agent == null || agent->Data == null)
             return;
 
@@ -41,7 +40,7 @@ public unsafe partial class OutfitGlamourTryOn : Tweak
             Prefix = SeIconChar.BoxedLetterH,
             PrefixColor = 32,
             Name = _textService.GetAddonText(2426),
-            IsEnabled = _itemService.CanTryOn(itemId),
+            IsEnabled = AgentTryon.Instance()->CanTryOn(itemId),
             OnClicked = (args) => AgentTryon.TryOn(agent->AgentInterface.AddonId, itemId)
         });
     }

@@ -6,7 +6,6 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfiguration>
 {
-    private readonly ItemService _itemService;
     private readonly IAddonLifecycle _addonLifecycle;
 
     public override void OnEnable()
@@ -34,7 +33,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
         if (!_config.HandleShop || args is not AddonSetupArgs setupArgs)
             return;
 
-        UpdateShopIcons(setupArgs.AtkValues, setupArgs.AtkValueCount);
+        UpdateShopIcons(setupArgs.GetAtkValues());
     }
 
     private void OnShopPreRefresh(AddonEvent type, AddonArgs args)
@@ -42,21 +41,21 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
         if (!_config.HandleShop || args is not AddonRefreshArgs refreshArgs)
             return;
 
-        UpdateShopIcons(refreshArgs.AtkValues, refreshArgs.AtkValueCount);
+        UpdateShopIcons(refreshArgs.GetAtkValues());
     }
 
-    private void UpdateShopIcons(nint atkValues, uint atkValueCount)
+    private void UpdateShopIcons(Span<AtkValue> values)
     {
+        if (values.IsEmpty)
+            return;
+
         var handler = ShopEventHandler.AgentProxy.Instance()->Handler;
         if (handler == null)
             return;
 
-        var values = new Span<AtkValue>((void*)atkValues, (int)atkValueCount);
-        var tabIndexValue = values.GetPointer(0);
-        if (tabIndexValue->Type != ValueType.UInt)
+        if (values[0] is not { Type: ValueType.UInt, UInt: var tabIndex })
             return;
 
-        var tabIndex = tabIndexValue->UInt;
         const int IconIdOffset = 197;
 
         // Buy
@@ -64,19 +63,19 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
         {
             for (var i = 0; i < handler->VisibleItemsCount; i++)
             {
-                var iconIdValue = values.GetPointer(IconIdOffset + i);
-                if (iconIdValue->Type != ValueType.UInt)
+                ref var iconIdValue = ref values[IconIdOffset + i];
+                if (iconIdValue.Type != ValueType.UInt)
                     continue;
 
                 var itemIndex = handler->VisibleItems[i];
                 if (itemIndex < 0 || itemIndex > handler->ItemsCount)
                     continue;
 
-                var itemId = handler->Items.GetPointer(itemIndex)->ItemId;
-                if (itemId == 0)
+                var item = new ItemHandle(handler->Items[itemIndex].ItemId);
+                if (item.IsEmpty)
                     continue;
 
-                iconIdValue->UInt = _itemService.GetIconId(itemId);
+                iconIdValue.UInt = item.Icon;
             }
         }
         // Buyback
@@ -84,15 +83,15 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
         {
             for (var i = 0; i < handler->BuybackCount; i++)
             {
-                var iconIdValue = values.GetPointer(IconIdOffset + i);
-                if (iconIdValue->Type != ValueType.UInt)
+                ref var iconIdValue = ref values[IconIdOffset + i];
+                if (iconIdValue.Type != ValueType.UInt)
                     continue;
 
-                var itemId = handler->Buyback.GetPointer(i)->ItemId;
-                if (itemId == 0)
+                var item = new ItemHandle(handler->Buyback[i].ItemId);
+                if (item.IsEmpty)
                     continue;
 
-                iconIdValue->UInt = _itemService.GetIconId(itemId);
+                iconIdValue.UInt = item.Icon;
             }
         }
     }
@@ -108,17 +107,17 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
             return;
         }
 
-        var values = new Span<AtkValue>((void*)refreshArgs.AtkValues, (int)refreshArgs.AtkValueCount);
+        var values = refreshArgs.GetAtkValues();
 
         for (var i = 0; i < 60; i++)
         {
-            var itemIdValue = values.GetPointer(1063 + i);
-            var iconIdValue = values.GetPointer(209 + i);
+            ref var itemIdValue = ref values[1063 + i];
+            ref var iconIdValue = ref values[209 + i];
 
-            if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.Int || itemIdValue->UInt == 0)
+            if (itemIdValue.Type != ValueType.UInt || iconIdValue.Type != ValueType.Int || itemIdValue.UInt == 0)
                 continue;
 
-            iconIdValue->UInt = _itemService.GetIconId(itemIdValue->UInt);
+            iconIdValue.UInt = new ItemHandle(itemIdValue.UInt).Icon;
         }
     }
 
@@ -127,22 +126,22 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
         if (!_config.HandleGrandCompanyExchange || args is not AddonRefreshArgs refreshArgs)
             return;
 
-        // sometimes it refreshes with just 10 values
-        if (refreshArgs.AtkValueCount != 556)
-            return;
+        var values = refreshArgs.GetAtkValues();
 
-        var values = new Span<AtkValue>((void*)refreshArgs.AtkValues, (int)refreshArgs.AtkValueCount);
+        // sometimes it refreshes with just 10 values
+        if (values.Length != 556)
+            return;
 
         // last function called in GCShopEventHandler_vf48
         for (var i = 0; i < 50; i++)
         {
-            var itemIdValue = values.GetPointer(317 + i);
-            var iconIdValue = values.GetPointer(167 + i);
+            ref var itemIdValue = ref values[317 + i];
+            ref var iconIdValue = ref values[167 + i];
 
-            if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.UInt || itemIdValue->UInt == 0)
+            if (itemIdValue.Type != ValueType.UInt || iconIdValue.Type != ValueType.UInt || itemIdValue.UInt == 0)
                 continue;
 
-            iconIdValue->UInt = _itemService.GetIconId(itemIdValue->UInt);
+            iconIdValue.UInt = new ItemHandle(itemIdValue.UInt).Icon;
         }
     }
 
@@ -151,18 +150,19 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
         if (!_config.HandleInclusionShop || args is not AddonRefreshArgs refreshArgs)
             return;
 
-        var values = new Span<AtkValue>((void*)refreshArgs.AtkValues, (int)refreshArgs.AtkValueCount);
+        var values = refreshArgs.GetAtkValues();
+
         // "E8 ?? ?? ?? ?? 89 9D ?? ?? ?? ?? 8B FE"
-        var itemCount = values.GetPointer(298)->UInt;
+        var itemCount = values[298].UInt;
         for (var i = 0; i < itemCount; i++)
         {
-            var itemIdValue = values.GetPointer(300 + i * 18);
-            var iconIdValue = values.GetPointer(300 + i * 18 + 1);
+            ref var itemIdValue = ref values[300 + i * 18];
+            ref var iconIdValue = ref values[300 + i * 18 + 1];
 
-            if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.UInt || itemIdValue->UInt == 0)
+            if (itemIdValue.Type != ValueType.UInt || iconIdValue.Type != ValueType.UInt || itemIdValue.UInt == 0)
                 continue;
 
-            iconIdValue->UInt = _itemService.GetIconId(itemIdValue->UInt);
+            iconIdValue.UInt = new ItemHandle(itemIdValue.UInt).Icon;
         }
     }
 
@@ -171,17 +171,18 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
         if (!_config.HandleFreeShop || args is not AddonRefreshArgs refreshArgs)
             return;
 
-        var values = new Span<AtkValue>((void*)refreshArgs.AtkValues, (int)refreshArgs.AtkValueCount);
-        var itemCount = values.GetPointer(3)->UInt;
+        var values = refreshArgs.GetAtkValues();
+
+        var itemCount = values[3].UInt;
         for (var i = 0; i < itemCount; i++)
         {
-            var itemIdValue = values.GetPointer(65 + i);
-            var iconIdValue = values.GetPointer(126 + i);
+            ref var itemIdValue = ref values[65 + i];
+            ref var iconIdValue = ref values[126 + i];
 
-            if (itemIdValue->Type != ValueType.UInt || iconIdValue->Type != ValueType.UInt || itemIdValue->UInt == 0)
+            if (itemIdValue.Type != ValueType.UInt || iconIdValue.Type != ValueType.UInt || itemIdValue.UInt == 0)
                 continue;
 
-            iconIdValue->UInt = _itemService.GetIconId(itemIdValue->UInt);
+            iconIdValue.UInt = new ItemHandle(itemIdValue.UInt).Icon;
         }
     }
 }

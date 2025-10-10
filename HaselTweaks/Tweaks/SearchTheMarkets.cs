@@ -13,7 +13,7 @@ public unsafe partial class SearchTheMarkets : Tweak
     private readonly ItemService _itemService;
 
     private MenuItem? _menuItem;
-    private uint _itemId;
+    private ItemHandle _item;
 
     public override void OnEnable()
     {
@@ -24,11 +24,8 @@ public unsafe partial class SearchTheMarkets : Tweak
             PrefixColor = 32,
             OnClicked = (_) =>
             {
-                if (_itemId != 0)
-                {
-                    _itemService.Search(_itemId);
-                    _itemId = 0;
-                }
+                AgentItemSearch.Instance()->SearchForItem(_item);
+                _item = 0;
             }
         };
 
@@ -55,7 +52,7 @@ public unsafe partial class SearchTheMarkets : Tweak
         if (_menuItem == null)
             return;
 
-        var itemId = args.AddonName switch
+        ItemHandle item = args.AddonName switch
         {
             _ when args.Target is MenuTargetInventory inv => inv.TargetItem?.ItemId ?? 0,
             "GatheringNote" => AgentGatheringNote.Instance()->ContextMenuItemId,
@@ -67,18 +64,13 @@ public unsafe partial class SearchTheMarkets : Tweak
             _ => 0u,
         };
 
-        if (itemId == 0)
+        if (item.IsEmpty || item.IsEventItem)
             return;
 
-        itemId = ItemUtil.GetBaseId(itemId).ItemId;
-
-        if (ItemUtil.IsEventItem(itemId))
+        if (!AgentItemSearch.Instance()->CanSearchForItem(item))
             return;
 
-        _itemId = itemId;
-
-        if (_itemId == 0 || !_itemService.CanSearchForItem(itemId))
-            return;
+        _item = item;
 
         args.AddMenuItem(_menuItem);
     }

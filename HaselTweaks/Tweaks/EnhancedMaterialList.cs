@@ -347,7 +347,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
         placeName = default;
 
         var gatheringItems = _itemService.GetGatheringItems(itemId);
-        if (gatheringItems.Length == 0)
+        if (gatheringItems.Count == 0)
             return false;
 
         // TODO: rethink this

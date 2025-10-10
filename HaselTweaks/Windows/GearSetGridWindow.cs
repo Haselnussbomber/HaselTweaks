@@ -1,5 +1,4 @@
 using Dalamud.Interface.Textures;
-using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -191,7 +190,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
 
                 var itemLevelText = $"{item.LevelItem.RowId}";
                 ImGuiUtils.PushCursorX(IconSize.X * ImGuiHelpers.GlobalScale / 2f - ImGui.CalcTextSize(itemLevelText).X / 2f);
-                ImGui.TextColored(_itemService.GetItemLevelColor(gearset->ClassJob, item, Color.Red, Color.Yellow, Color.Green), itemLevelText);
+                ImGui.TextColored(_itemService.GetItemLevelColor(item, gearset->ClassJob, Color.Red, Color.Yellow, Color.Green), itemLevelText);
 
                 ImGuiUtils.PushCursorY(2f * ImGuiHelpers.GlobalScale);
             }
@@ -218,7 +217,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         return list;
     }
 
-    public void DrawItemIcon(GearsetEntry* gearset, uint slotIndex, GearsetItem* slot, Item item)
+    public void DrawItemIcon(GearsetEntry* gearset, uint slotIndex, GearsetItem* slot, ItemHandle item)
     {
         var startPos = ImGui.GetCursorPos();
 
@@ -246,41 +245,43 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         _imGuiContextMenuService.Draw("ItemTooltip", builder =>
         {
             builder
-                .AddTryOn(item.RowId, slot->GlamourId, slot->Stain0Id, slot->Stain1Id)
-                .AddItemFinder(item.RowId)
-                .AddCopyItemName(item.RowId)
-                .AddOpenOnGarlandTools("item", item.RowId)
-                .AddItemSearch(item.RowId);
+                .AddTryOn(item, slot->GlamourId, slot->Stain0Id, slot->Stain1Id)
+                .AddItemFinder(item)
+                .AddCopyItemName(item)
+                .AddOpenOnGarlandTools("item", item.ItemId)
+                .AddItemSearch(item);
         });
 
-        if (!ImGui.IsItemHovered())
+        if (!ImGui.IsItemHovered() || !item.TryGetItem(out var itemRow))
             return;
 
         using var _ = ImRaii.Tooltip();
 
-        ImGui.TextColored(_itemService.GetItemRarityColor(item.RowId), _textService.GetItemName(item.RowId).ToString());
+        ImGui.TextColored(item.RarityColor, item.Name.ToString());
 
         var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         if (holdingShift)
         {
             ImGuiUtils.SameLineSpace();
-            ImGui.Text($"[{item.RowId}]");
+            ImGui.Text($"[{item.ItemId}]");
         }
 
-        if (item.ItemUICategory.IsValid)
+        if (itemRow.ItemUICategory.IsValid)
         {
             ImGuiUtils.PushCursorY(-ImGui.GetStyle().ItemSpacing.Y);
-            ImGui.Text(item.ItemUICategory.Value.Name.ToString() ?? string.Empty);
+            ImGui.Text(itemRow.ItemUICategory.Value.Name.ToString() ?? string.Empty);
         }
 
-        if (slot->GlamourId != 0 || slot->Stain0Id != 0 || slot->Stain1Id != 0)
+        var glamourItem = new ItemHandle(slot->GlamourId);
+
+        if (!glamourItem.IsEmpty || slot->Stain0Id != 0 || slot->Stain1Id != 0)
             ImGuiUtils.DrawPaddedSeparator();
 
-        if (slot->GlamourId != 0 && _excelService.TryGetRow<Item>(slot->GlamourId, out var glamourItem))
+        if (!glamourItem.IsEmpty)
         {
             ImGui.Text(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelGlamour"));
             ImGuiUtils.SameLineSpace();
-            ImGui.TextColored(_itemService.GetItemRarityColor(glamourItem.RowId), _textService.GetItemName(slot->GlamourId).ToString());
+            ImGui.TextColored(glamourItem.RarityColor, glamourItem.Name.ToString());
 
             if (holdingShift)
             {
@@ -296,7 +297,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
             using (ImRaii.PushColor(ImGuiCol.Text, stain0.GetColor().ToUInt()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
-            ImGui.Text(stain0.Name.ToString().FirstCharToUpper(_languageProvider.CultureInfo));
+            ImGui.Text(_textService.GetStainName(slot->Stain0Id));
 
             if (holdingShift)
             {
@@ -312,7 +313,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
             using (ImRaii.PushColor(ImGuiCol.Text, stain1.GetColor().ToUInt()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
-            ImGui.Text(stain1.Name.ToString().FirstCharToUpper(_languageProvider.CultureInfo));
+            ImGui.Text(_textService.GetStainName(slot->Stain1Id));
 
             if (holdingShift)
             {

@@ -7,9 +7,6 @@ namespace HaselTweaks.Tweaks;
 public unsafe partial class MarketBoardItemPreview : Tweak
 {
     private readonly IAddonLifecycle _addonLifecycle;
-    private readonly ExcelService _excelService;
-    private readonly TextService _textService;
-    private readonly ItemService _itemService;
 
     public override void OnEnable()
     {
@@ -28,15 +25,15 @@ public unsafe partial class MarketBoardItemPreview : Tweak
 
         var eventData = (AtkEventData*)addonReceiveEventArgs.Data;
         var itemIndex = eventData->ListItemData.SelectedIndex;
-        var itemId = AgentItemSearch.Instance()->ListingPageItemIds[itemIndex];
-        _logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId} @ {addr:X}", itemIndex, itemId, args.Addon + itemIndex * 4 + 0xBBC);
+        var item = new ItemHandle(AgentItemSearch.Instance()->ListingPageItemIds[itemIndex]);
+        _logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId} @ {addr:X}", itemIndex, item.ItemId, args.Addon + itemIndex * 4 + 0xBBC);
 
-        if (!_itemService.CanTryOn(itemId))
+        if (!AgentTryon.Instance()->CanTryOn(item))
         {
-            _logger.LogInformation("Skipping preview of {name}, because it can't be tried on", _textService.GetItemName(itemId));
+            _logger.LogInformation("Skipping preview of {name}, because it can't be tried on", item.Name);
             return;
         }
 
-        AgentTryon.TryOn(((AtkUnitBase*)args.Addon.Address)->Id, itemId, 0, 0, 0);
+        AgentTryon.TryOn(args.Addon.Id, item, 0, 0, 0);
     }
 }

@@ -88,7 +88,7 @@ public unsafe partial class AdvancedEditOverlay : Overlay
                 _textService.Translate("PortraitHelperWindows.AdvancedEditOverlay.Title.Inner"),
                 pushDown: false,
                 respectUiTheme: true,
-                _excelService.CreateRef<UIColor>(2));
+                _excelService.CreateRowRef<UIColor>(2));
         }
 
         using (var table = ImRaii.Table("##Table", 2))
