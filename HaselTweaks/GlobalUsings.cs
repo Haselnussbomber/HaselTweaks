@@ -49,3 +49,4 @@ global using ItemUtil = Dalamud.Utility.ItemUtil;
 global using LinkMacroPayloadType = Lumina.Text.Payloads.LinkMacroPayloadType;
 global using MacroCode = Lumina.Text.Payloads.MacroCode;
 global using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
+global using RentedSeStringBuilder = Dalamud.Utility.RentedSeStringBuilder;
