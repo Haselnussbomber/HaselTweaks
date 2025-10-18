@@ -1,6 +1,7 @@
 using Dalamud.Game.ClientState.Keys;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Component.Exd;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;
@@ -35,6 +36,8 @@ public unsafe partial class GlamourDresserKeyboardNavigation : Tweak
         var unitManager = RaptureAtkUnitManager.Instance();
         if (unitManager == null || unitManager->FocusedAddon != addon)
             return;
+
+        EnsureVisibleItemsAreLoaded(agent);
 
         if (!NavKeys.TryGetFirst(key => _keyState[key], out var key))
             return;
@@ -144,7 +147,7 @@ public unsafe partial class GlamourDresserKeyboardNavigation : Tweak
                     _logger.LogDebug("UP: no more items -> go to previous page");
 
                     itemCount = GetItemCount();
-                    
+
                     targetIndex = itemIndex % 10;
                     while (targetIndex + 10 < itemCount)
                         targetIndex += 10;
@@ -248,6 +251,17 @@ public unsafe partial class GlamourDresserKeyboardNavigation : Tweak
             agent->ReceiveEvent(retVal, values, 3, 0);
 
             agent->UpdateItems(false, false);
+        }
+    }
+
+    private void EnsureVisibleItemsAreLoaded(AgentMiragePrismPrismBox* agent)
+    {
+        foreach (var itemIndex in agent->Data->PageItemIndexes)
+        {
+            if (itemIndex >= 8000)
+                continue;
+
+            ExdModule.GetItemRowById(agent->Data->PrismBoxItems[itemIndex].ItemId % 500000);
         }
     }
 }
