@@ -93,7 +93,7 @@ public unsafe partial class CosmicResearchTodo : ConfigurableTweak<CosmicResearc
             if (mtodos != null && mtodos->Any(o => o.Enabled))
                 return;
         }
-        
+
         var wksManager = WKSManager.Instance();
         if (wksManager == null)
             return;

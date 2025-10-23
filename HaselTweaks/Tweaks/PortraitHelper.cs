@@ -106,18 +106,14 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
 
     private void OnAddonOpen(string addonName)
     {
-        if (addonName != "BannerEditor")
-            return;
-
-        _menuBar.Open();
+        if (addonName == "BannerEditor")
+            _menuBar.Open();
     }
 
     private void OnAddonClose(string addonName)
     {
-        if (addonName != "BannerEditor")
-            return;
-
-        _menuBar.Close();
+        if (addonName == "BannerEditor")
+            _menuBar.Close();
     }
 
     private void OnTerritoryChanged(ushort territoryTypeId)

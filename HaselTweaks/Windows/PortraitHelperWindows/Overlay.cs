@@ -40,7 +40,6 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
             _isDisposed = true; // do this first, or else... recursion
             OnClose();
             base.Dispose();
-            GC.SuppressFinalize(this);
         }
     }
 

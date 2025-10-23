@@ -33,7 +33,17 @@ public partial class CommandManager : IHostedService
     [CommandHandler("/haseltweaks", "HaselTweaks.CommandHandlerHelpMessage", true, 1)]
     private void OnHaselTweaksCommand(string command, string arguments)
     {
-        TogglePluginWindow();
+        switch (arguments.Trim().ToLowerInvariant())
+        {
+#if DEBUG
+            case "debug":
+                _windowManager.CreateOrToggle<DebugWindow>();
+                break;
+#endif
+            default:
+                TogglePluginWindow();
+                break;
+        }
     }
 
     private void TogglePluginWindow()
