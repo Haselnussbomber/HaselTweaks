@@ -266,7 +266,8 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
             ConditionFlag.Jumping,
             ConditionFlag.Mounted,
             ConditionFlag.InFlight,
-            ConditionFlag.UsingFashionAccessory))
+            ConditionFlag.UsingFashionAccessory,
+            ConditionFlag.OnFreeTrial))
         {
             Chat.PrintError(_textService.GetLogMessage(10775));
             return;
