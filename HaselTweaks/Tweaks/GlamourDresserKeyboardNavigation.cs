@@ -33,8 +33,11 @@ public unsafe partial class GlamourDresserKeyboardNavigation : Tweak
         if (!TryGetAddon<AddonMiragePrismPrismBox>((ushort)agent->GetAddonId(), out var addon))
             return;
 
+        if (!TryGetAddon<AgentMiragePrismMiragePlate>((ushort)AgentMiragePrismMiragePlate.Instance()->GetAddonId(), out var mirageplateaddon))
+            return;
+
         var unitManager = RaptureAtkUnitManager.Instance();
-        if (unitManager == null || unitManager->FocusedAddon != addon)
+        if (unitManager == null || (unitManager->FocusedAddon != addon && unitManager->FocusedAddon != mirageplateaddon))
             return;
 
         EnsureVisibleItemsAreLoaded(agent);
