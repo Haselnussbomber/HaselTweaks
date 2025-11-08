@@ -26,18 +26,18 @@ public unsafe partial class GlamourDresserKeyboardNavigation : Tweak
 
     private void OnFrameworkUpdate(IFramework framework)
     {
-        var agent = AgentMiragePrismPrismBox.Instance();
-        if (agent == null || agent->Data == null || !agent->IsAgentActive())
+        if (!TryGetAddon<AddonMiragePrismPrismBox>(AgentId.MiragePrismPrismBox, out var addonPrismBox))
             return;
 
-        if (!TryGetAddon<AddonMiragePrismPrismBox>((ushort)agent->GetAddonId(), out var addon))
-            return;
-
-        if (!TryGetAddon<AgentMiragePrismMiragePlate>((ushort)AgentMiragePrismMiragePlate.Instance()->GetAddonId(), out var mirageplateaddon))
+        if (!TryGetAddon<AgentMiragePrismMiragePlate>(AgentId.MiragePrismMiragePlate, out var addonMiragePlate))
             return;
 
         var unitManager = RaptureAtkUnitManager.Instance();
-        if (unitManager == null || (unitManager->FocusedAddon != addon && unitManager->FocusedAddon != mirageplateaddon))
+        if (unitManager == null || (unitManager->FocusedAddon != addonPrismBox && unitManager->FocusedAddon != addonMiragePlate))
+            return;
+
+        var agent = AgentMiragePrismPrismBox.Instance();
+        if (agent == null || agent->Data == null)
             return;
 
         EnsureVisibleItemsAreLoaded(agent);
@@ -221,7 +221,7 @@ public unsafe partial class GlamourDresserKeyboardNavigation : Tweak
 
         bool TryGoToNextPage()
         {
-            if (!addon->NextButton->IsEnabled)
+            if (!addonPrismBox->NextButton->IsEnabled)
                 return false;
 
             agent->PageIndex++;
@@ -231,7 +231,7 @@ public unsafe partial class GlamourDresserKeyboardNavigation : Tweak
 
         bool TryGoToPrevPage()
         {
-            if (!addon->PrevButton->IsEnabled)
+            if (!addonPrismBox->PrevButton->IsEnabled)
                 return false;
 
             agent->PageIndex--;

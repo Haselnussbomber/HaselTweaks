@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Glamour Dresser Keyboard Navigation
+
+- **Updated:** Selection now also works when the "Glamour Plate Creation" window is focused.
+
 ## [40.0.3] (2025-10-28)
 
 ### Commands
