@@ -85,7 +85,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
         _addItemContextMenuEntriesHook?.Dispose();
         _addItemContextMenuEntriesHook = null;
 
-        if (Status is TweakStatus.Enabled && TryGetAddon<AtkUnitBase>("RecipeMaterialList", out var addon))
+        if (Status is TweakStatus.Enabled && TryGetAddon<AtkUnitBase>("RecipeMaterialList"u8, out var addon))
             addon->Close(true);
     }
 

@@ -25,7 +25,7 @@ public unsafe partial class MinimapAdjustments : ConfigurableTweak<MinimapAdjust
         if (Status is not TweakStatus.Enabled)
             return;
 
-        if (!TryGetAddon<HaselAddonNaviMap>("_NaviMap", out var naviMap))
+        if (!TryGetAddon<HaselAddonNaviMap>("_NaviMap"u8, out var naviMap))
             return;
 
         // reset alpha
@@ -46,7 +46,7 @@ public unsafe partial class MinimapAdjustments : ConfigurableTweak<MinimapAdjust
         if (!_clientState.IsLoggedIn)
             return;
 
-        if (!TryGetAddon<HaselAddonNaviMap>("_NaviMap", out var naviMap))
+        if (!TryGetAddon<HaselAddonNaviMap>("_NaviMap"u8, out var naviMap))
             return;
 
         UpdateAlpha(naviMap);

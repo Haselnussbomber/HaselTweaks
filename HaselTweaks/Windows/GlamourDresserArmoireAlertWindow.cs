@@ -34,7 +34,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
 
     public override bool DrawConditions()
     {
-        return TryGetAddon<AddonMiragePrismPrismBox>("MiragePrismPrismBox", out var addon)
+        return TryGetAddon<AddonMiragePrismPrismBox>("MiragePrismPrismBox"u8, out var addon)
             && addon->IsVisible
             && _tweak.Categories.Count != 0;
     }
@@ -59,7 +59,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
             }
         }
 
-        if (TryGetAddon<AddonMiragePrismPrismBox>("MiragePrismPrismBox", out var addon))
+        if (TryGetAddon<AddonMiragePrismPrismBox>("MiragePrismPrismBox"u8, out var addon))
         {
             Position = new(
                 addon->X + addon->GetScaledWidth(true) - 12,

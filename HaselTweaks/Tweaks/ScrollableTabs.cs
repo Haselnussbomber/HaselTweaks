@@ -282,7 +282,7 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
         }
         else if (name is "Character" or "CharacterClass" or "CharacterRepute")
         {
-            var addonCharacter = name == "Character" ? (AddonCharacter*)unitBase : GetAddon<AddonCharacter>("Character");
+            var addonCharacter = name == "Character" ? (AddonCharacter*)unitBase : GetAddon<AddonCharacter>("Character"u8);
 
             if (addonCharacter == null || !addonCharacter->AddonControl.IsChildSetupComplete || IntersectingCollisionNode == addonCharacter->PreviewController.CollisionNode)
             {
@@ -669,7 +669,7 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
         if (nextButton == null || (IsNext && !nextButton->IsEnabled))
             return;
 
-        if (IsAddonOpen("MiragePrismPrismBoxFilter"))
+        if (IsAddonOpen("MiragePrismPrismBoxFilter"u8))
             return;
 
         var agent = AgentMiragePrismPrismBox.Instance();

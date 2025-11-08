@@ -14,7 +14,7 @@ public partial class EnhancedIsleworksAgenda
     {
         if (Status == TweakStatus.Enabled && fieldName == "EnableSearchBar")
         {
-            if (_config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"))
+            if (_config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"u8))
                 _window.Open();
             else
                 _window.Close();

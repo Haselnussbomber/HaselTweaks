@@ -20,7 +20,7 @@ public partial class GearSetGrid : ConfigurableTweak<GearSetGridConfiguration>
         _addonObserver.AddonOpen += OnAddonOpen;
         _addonObserver.AddonClose += OnAddonClose;
 
-        if (_config.AutoOpenWithGearSetList && IsAddonOpen("GearSetList"))
+        if (_config.AutoOpenWithGearSetList && IsAddonOpen("GearSetList"u8))
             _window.Open();
     }
 

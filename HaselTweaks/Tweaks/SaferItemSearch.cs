@@ -49,7 +49,7 @@ public unsafe partial class SaferItemSearch : Tweak
     private void UpdateRetainerSellButton(AddonRetainerSell* addon = null)
     {
         if (addon == null)
-            addon = GetAddon<AddonRetainerSell>("RetainerSell");
+            addon = GetAddon<AddonRetainerSell>("RetainerSell"u8);
 
         if (addon == null)
             return;

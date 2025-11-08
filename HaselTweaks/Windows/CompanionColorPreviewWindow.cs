@@ -110,7 +110,7 @@ public unsafe partial class CompanionColorPreviewWindow : SimpleWindow
 
     public void UpdatePosition()
     {
-        if (!TryGetAddon<AtkUnitBase>("Buddy", out var addon))
+        if (!TryGetAddon<AtkUnitBase>("Buddy"u8, out var addon))
             return;
 
         Position = new(

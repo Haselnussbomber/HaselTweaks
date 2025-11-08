@@ -21,7 +21,7 @@ public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak<Enhanced
 
         _receiveEventHook.Enable();
 
-        if (_config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"))
+        if (_config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"u8))
             _window.Open();
 
         _addonObserver.AddonOpen += OnAddonOpen;

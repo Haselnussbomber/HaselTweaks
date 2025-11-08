@@ -15,7 +15,7 @@ public unsafe partial class MJICraftScheduleSettingSearchBar : SimpleWindow
     private bool _inputFocused;
     private string _query = string.Empty;
 
-    private static AddonMJICraftScheduleSetting* Addon => GetAddon<AddonMJICraftScheduleSetting>("MJICraftScheduleSetting");
+    private static AddonMJICraftScheduleSetting* Addon => GetAddon<AddonMJICraftScheduleSetting>("MJICraftScheduleSetting"u8);
     private EnhancedIsleworksAgendaConfiguration Config => _pluginConfig.Tweaks.EnhancedIsleworksAgenda;
 
     [AutoPostConstruct]
