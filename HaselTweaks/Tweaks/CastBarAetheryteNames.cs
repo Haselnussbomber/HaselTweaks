@@ -1,4 +1,5 @@
 using Dalamud.Utility;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -16,7 +17,7 @@ public unsafe partial class CastBarAetheryteNames : Tweak
     private readonly ISeStringEvaluator _seStringEvaluator;
     private readonly TeleportService _teleportService; // to update aetheryte list
 
-    private Hook<HaselActionManager.Delegates.OpenCastBar>? _openCastBarHook;
+    private Hook<ActionManager.Delegates.OpenCastBar>? _openCastBarHook;
     private Hook<Telepo.Delegates.Teleport>? _teleportHook;
 
     private TeleportInfo? _teleportInfo;
@@ -24,8 +25,8 @@ public unsafe partial class CastBarAetheryteNames : Tweak
 
     public override void OnEnable()
     {
-        _openCastBarHook = _gameInteropProvider.HookFromAddress<HaselActionManager.Delegates.OpenCastBar>(
-            HaselActionManager.MemberFunctionPointers.OpenCastBar,
+        _openCastBarHook = _gameInteropProvider.HookFromAddress<ActionManager.Delegates.OpenCastBar>(
+            ActionManager.MemberFunctionPointers.OpenCastBar,
             OpenCastBarDetour);
 
         _teleportHook = _gameInteropProvider.HookFromAddress<Telepo.Delegates.Teleport>(
@@ -90,11 +91,10 @@ public unsafe partial class CastBarAetheryteNames : Tweak
         Clear();
     }
 
-    private void OpenCastBarDetour(HaselActionManager* a1, BattleChara* a2, int type, uint rowId, uint type2, int rowId2, float a7, float a8)
+    private void OpenCastBarDetour(ActionManager* thisPtr, BattleChara* character, ActionType actionType, uint actionId, uint spellId, uint extraParam, float castTimeElapsed, float castTimeTotal)
     {
-        _isCastingTeleport = type == 1 && rowId == 5 && type2 == 5;
-
-        _openCastBarHook!.Original(a1, a2, type, rowId, type2, rowId2, a7, a8);
+        _isCastingTeleport = actionType == ActionType.Action && actionId == 5;
+        _openCastBarHook!.Original(thisPtr, character, actionType, actionId, spellId, extraParam, castTimeElapsed, castTimeTotal);
     }
 
     private bool TeleportDetour(Telepo* telepo, uint aetheryteID, byte subIndex)
