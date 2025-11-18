@@ -33,15 +33,15 @@ public unsafe partial class OutfitGlamourTryOn : Tweak
         if (data->ContextMenuItemIndex > data->Items.Length || data->ContextMenuItemIndex > data->NumItemsInSet)
             return;
 
-        var itemId = data->Items[data->ContextMenuItemIndex].ItemId;
+        ItemHandle item = data->Items[data->ContextMenuItemIndex].ItemId;
 
         args.AddMenuItem(new MenuItem()
         {
             Prefix = SeIconChar.BoxedLetterH,
             PrefixColor = 32,
             Name = _textService.GetAddonText(2426),
-            IsEnabled = AgentTryon.Instance()->CanTryOn(itemId),
-            OnClicked = (args) => AgentTryon.TryOn(agent->AgentInterface.AddonId, itemId)
+            IsEnabled = item.CanTryOn,
+            OnClicked = (args) => AgentTryon.TryOn(agent->AgentInterface.AddonId, item)
         });
     }
 }
