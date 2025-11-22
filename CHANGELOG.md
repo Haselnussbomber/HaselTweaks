@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Commands
+
+- **Updated:** `/whatbarding` can now print the bardings of the targets mount.
+
 ### Glamour Dresser Keyboard Navigation
 
 - **Updated:** Selection now also works when the "Glamour Plate Creation" window is focused.

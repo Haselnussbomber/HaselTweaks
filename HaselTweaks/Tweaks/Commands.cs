@@ -1,4 +1,5 @@
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.ClientState.Objects.Types;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
@@ -90,17 +91,11 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
             return;
         }
 
-        var idStr = new SeStringBuilder()
-            .PushColorType(1)
-            .Append(id)
-            .PopColorType()
-            .ToReadOnlySeString();
-
-        var sb = new SeStringBuilder()
+        using var rssb = new RentedSeStringBuilder();
+        Chat.Print(rssb.Builder
             .AppendHaselTweaksPrefix()
-            .Append(_textService.TranslateSeString("Commands.ItemLink.Item", idStr, _itemService.GetItemLink(id)));
-
-        Chat.Print(sb.GetViewAsSpan());
+            .Append(_textService.EvaluateTranslatedSeString("Commands.ItemLink.Item", id, _itemService.GetItemLink(id)))
+            .GetViewAsSpan());
     }
 
     [CommandHandler("/whatmount", "Commands.Config.EnableWhatMountCommand.Description", DisplayOrder: 2)]
@@ -132,28 +127,30 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
             return;
         }
 
-        var sb = new SeStringBuilder()
-            .AppendHaselTweaksPrefix();
-
-        var name = new SeStringBuilder()
+        using var rssb = new RentedSeStringBuilder();
+        var name = rssb.Builder
             .PushColorType(1)
             .Append(_textService.GetMountName(mount.RowId))
             .PopColorType()
             .ToReadOnlySeString();
 
+        rssb.Builder
+            .Clear()
+            .AppendHaselTweaksPrefix();
+
         if (!_excelService.TryFindRow<ItemAction>(row => row.Type == 1322 && row.Data[0] == mount.RowId, out var itemAction) || itemAction.RowId == 0)
         {
-            Chat.Print(sb.Append(_textService.TranslateSeString("Commands.WhatMount.WithoutItem", name)).GetViewAsSpan());
+            Chat.Print(rssb.Builder.Append(_textService.TranslateSeString("Commands.WhatMount.WithoutItem", name)).GetViewAsSpan());
             return;
         }
 
         if (!_excelService.TryFindRow<Item>(row => row.ItemAction.RowId == itemAction.RowId, out var item))
         {
-            Chat.Print(sb.Append(_textService.TranslateSeString("Commands.WhatMount.WithoutItem", name)).GetViewAsSpan());
+            Chat.Print(rssb.Builder.Append(_textService.TranslateSeString("Commands.WhatMount.WithoutItem", name)).GetViewAsSpan());
             return;
         }
 
-        Chat.Print(sb.Append(_textService.TranslateSeString("Commands.WhatMount.WithItem", name, _itemService.GetItemLink(item.RowId))).GetViewAsSpan());
+        Chat.Print(rssb.Builder.Append(_textService.EvaluateTranslatedSeString("Commands.WhatMount.WithItem", name, _itemService.GetItemLink(item.RowId))).GetViewAsSpan());
     }
 
     [CommandHandler("/whatemote", "Commands.Config.EnableWhatEmoteCommand.Description", DisplayOrder: 2)]
@@ -186,7 +183,8 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
             return;
         }
 
-        Chat.Print(new SeStringBuilder()
+        using var rssb = new RentedSeStringBuilder();
+        Chat.Print(rssb.Builder
                 .AppendHaselTweaksPrefix()
                 .Append(_textService.TranslateSeString("Commands.Emote", emoteId.ToString(), _textService.GetEmoteName(emoteId)))
                 .GetViewAsSpan());
@@ -202,27 +200,46 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
             return;
         }
 
-        if (target->GetObjectKind() != ObjectKind.BattleNpc || target->SubKind != 3) // BattleNpcSubKind.Chocobo
+        var name = string.Empty;
+
+        if (target->GetObjectKind() == ObjectKind.Pc)
+        {
+            var player = (BattleChara*)target;
+
+            if (player->Mount.MountObject == null || player->Mount.MountId == 0)
+            {
+                Chat.PrintError(_textService.Translate("Commands.TargetIsNotMounted"));
+                return;
+            }
+
+            if (player->Mount.MountId != 1)
+            {
+                Chat.PrintError(_textService.Translate("Commands.TargetsMountIsNotAChocobo"));
+                return;
+            }
+
+            target = (GameObject*)player->Mount.MountObject;
+            name = _textService.GetMountName(player->Mount.MountId);
+        }
+        else if (target->GetObjectKind() != ObjectKind.BattleNpc || target->SubKind != 3) // not BattleNpcSubKind.Chocobo
         {
             Chat.PrintError(_textService.Translate("Commands.TargetIsNotAChocobo"));
             return;
         }
+        else // is BattleNpcSubKind.Chocobo
+        {
+            name = target->NameString;
+        }
 
         var character = (Character*)target;
-
         var hasTopRow = _excelService.TryFindRow<BuddyEquip>(row => row.ModelTop == (int)character->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Head).Value, out var topRow);
         var hasBodyRow = _excelService.TryFindRow<BuddyEquip>(row => row.ModelBody == (int)character->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Body).Value, out var bodyRow);
         var hasLegsRow = _excelService.TryFindRow<BuddyEquip>(row => row.ModelLegs == (int)character->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Feet).Value, out var legsRow);
 
-        var name = new SeStringBuilder()
-            .PushColorType(1)
-            .Append(character->GameObject.NameString)
-            .PopColorType()
-            .ToReadOnlySeString();
-
-        var sb = new SeStringBuilder()
+        using var rssb = new RentedSeStringBuilder();
+        Chat.Print(rssb.Builder
             .AppendHaselTweaksPrefix()
-            .Append(_textService.TranslateSeString("Commands.WhatBarding.AppearanceOf", name))
+            .Append(_textService.EvaluateTranslatedSeString("Commands.WhatBarding.AppearanceOf", name))
             .AppendNewLine()
             .Append($"  {_textService.GetAddonText(4987)}: ")
             .Append(_textService.GetStainName(character->DrawData.Equipment(DrawDataContainer.EquipmentSlot.Legs).Stain0))
@@ -231,9 +248,8 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
             .AppendNewLine()
             .Append($"  {_textService.GetAddonText(4992)}: {(hasBodyRow ? bodyRow.Name.ToString() : _textService.GetAddonText(4994))}")
             .AppendNewLine()
-            .Append($"  {_textService.GetAddonText(4993)}: {(hasLegsRow ? legsRow.Name.ToString() : _textService.GetAddonText(4994))}");
-
-        Chat.Print(sb.GetViewAsSpan());
+            .Append($"  {_textService.GetAddonText(4993)}: {(hasLegsRow ? legsRow.Name.ToString() : _textService.GetAddonText(4994))}")
+            .GetViewAsSpan());
     }
 
     [CommandHandler("/glamourplate", "Commands.Config.EnableGlamourPlateCommand.Description", DisplayOrder: 2)]

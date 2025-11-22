@@ -571,9 +571,9 @@
     "zh": "物品{0}未找到。"
   },
   "Commands.ItemLink.Item": {
-    "en": "Item #{0}: {1}",
-    "de": "Gegenstand #{0}: {1}",
-    "zh": "物品#{0}：{1}"
+    "en": "Item #<num(lnum1)>: <string(lstr2)>",
+    "de": "Gegenstand #<num(lnum1)>: <string(lstr2)>",
+    "zh": "物品#<num(lnum1)>：<string(lstr2)>"
   },
   "Commands.Emote.NotExecutingEmote": {
     "en": "Target is not executing an emote.",
@@ -609,12 +609,20 @@
     "de": "Ziel ist kein Chocobo.",
     "zh": "目标不是陆行鸟。"
   },
+  "Commands.TargetIsNotMounted": {
+    "en": "Target is not mounted.",
+    "de": "Ziel reitet nicht."
+  },
+  "Commands.TargetsMountIsNotAChocobo": {
+    "en": "The mount of your target is not a chocobo.",
+    "de": "Das Reittier deines Ziels ist kein Chocobo."
+  },
   "Commands.WhatBarding.AppearanceOf": {
-    "en": "Appearance of {0}:",
-    "de": "Aussehen von {0}:",
-    "fr": "Apparence de {0}:",
-    "ja": "{0} の外見：",
-    "zh": "{0}的外观："
+    "en": "Appearance of <colortype(1)><string(lstr1)><color(stackcolor)>:",
+    "de": "Aussehen von <colortype(1)><string(lstr1)><color(stackcolor)>:",
+    "fr": "Apparence de <colortype(1)><string(lstr1)><color(stackcolor)>:",
+    "ja": "<colortype(1)><string(lstr1)><color(stackcolor)> の外見：",
+    "zh": "<colortype(1)><string(lstr1)><color(stackcolor)>的外观："
   },
   "Commands.WhatMount.TargetNotMounted": {
     "en": "Target is not mounted.",
@@ -632,11 +640,11 @@
     "zh": "坐骑："
   },
   "Commands.WhatMount.WithItem": {
-    "en": "Mount {0} is taught by {1}.",
-    "de": "Reittier {0} wird gelehrt von {1}.",
-    "fr": "Monture {0} apprise auprès de {1}.",
-    "ja": "{0} のマウントは {1} によって教えられています。",
-    "zh": "坐骑{0}由{1}解锁。"
+    "en": "Mount <string(lstr1)> is taught by <string(lstr2)>.",
+    "de": "Reittier <string(lstr1)> wird gelehrt von <string(lstr2)>.",
+    "fr": "Monture <string(lstr1)> apprise auprès de <string(lstr2)>.",
+    "ja": "<string(lstr1)> のマウントは <string(lstr2)> によって教えられています。",
+    "zh": "坐骑<string(lstr1)>由<string(lstr2)>解锁。"
   },
   "Commands.GlamourPlate.InvalidGearset": {
     "en": "Invalid gear set.",
