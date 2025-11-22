@@ -107,10 +107,10 @@ public unsafe partial class InventoryHighlight : ConfigurableTweak<InventoryHigh
         void ProcessInventoryType(InventoryType type)
         {
             var container = InventoryManager.Instance()->GetInventoryContainer(type);
-            if (!container->IsLoaded)
+            if (container == null || !container->IsLoaded)
                 return;
 
-            for (var i = 0; i < container->Size; i++)
+            for (var i = 0; i < container->GetSize(); i++)
             {
                 var slot = container->GetInventorySlot(i);
                 if (slot == null)
@@ -188,9 +188,8 @@ public unsafe partial class InventoryHighlight : ConfigurableTweak<InventoryHigh
         if (sorter == null || sorter->SortFunctionIndex != -1)
             return;
 
-        for (var i = 0u; i < sorter->Items.LongCount; i++)
+        foreach (ItemOrderModuleSorterItemEntry* item in sorter->Items)
         {
-            var item = sorter->Items[i].Value;
             if (item == null)
                 continue;
 
@@ -241,9 +240,8 @@ public unsafe partial class InventoryHighlight : ConfigurableTweak<InventoryHigh
         if (sorter == null || sorter->SortFunctionIndex != -1)
             return;
 
-        for (var i = 0u; i < sorter->Items.LongCount; i++)
+        foreach (ItemOrderModuleSorterItemEntry* item in sorter->Items)
         {
-            var item = sorter->Items[i].Value;
             if (item == null)
                 continue;
 
@@ -296,9 +294,8 @@ public unsafe partial class InventoryHighlight : ConfigurableTweak<InventoryHigh
         if (sorter == null || sorter->SortFunctionIndex != -1)
             return;
 
-        for (var i = 0u; i < sorter->Items.LongCount; i++)
+        foreach (ItemOrderModuleSorterItemEntry* item in sorter->Items)
         {
-            var item = sorter->Items[i].Value;
             if (item == null)
                 continue;
 

@@ -61,17 +61,15 @@ public abstract class ConfirmationDialog : IDialog
 
         ImGui.SetCursorPosX((ImGui.GetWindowWidth() - totalWidth) / 2f);
 
-        for (var i = 0; i < _buttons.Count; i++)
+        foreach (var (index, button) in _buttons.Index())
         {
-            var button = _buttons[i];
-
-            if (button.Draw(i, buttonWidth))
+            if (button.Draw(index, buttonWidth))
             {
                 _shouldDraw = false;
                 ImGui.CloseCurrentPopup();
             }
 
-            if (i < _buttons.Count)
+            if (index < _buttons.Count)
             {
                 ImGui.SameLine();
             }

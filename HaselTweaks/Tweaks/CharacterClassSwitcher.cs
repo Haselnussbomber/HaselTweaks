@@ -1,3 +1,4 @@
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -356,9 +357,11 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         if (gearsetModule == null)
             return;
 
+        var permittedGearsetCount = InventoryManager.Instance()->GetPermittedGearsetCount();
+
         // loop through all gearsets and find the one matching classJobId with the highest avg itemlevel
         var selectedGearset = (Id: -1, ItemLevel: -1);
-        for (var id = 0; id < 100; id++)
+        for (var id = 0; id < permittedGearsetCount; id++)
         {
             // skip if invalid
             if (!gearsetModule->IsValidGearset(id))

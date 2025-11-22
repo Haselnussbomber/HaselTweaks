@@ -207,7 +207,8 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         var list = new List<ItemInGearsetEntry>();
 
         var raptureGearsetModule = RaptureGearsetModule.Instance();
-        for (var gearsetIndex = 0; gearsetIndex < InventoryManager.Instance()->GetPermittedGearsetCount(); gearsetIndex++)
+        var permittedGearsetCount = InventoryManager.Instance()->GetPermittedGearsetCount();
+        for (var gearsetIndex = 0; gearsetIndex < permittedGearsetCount; gearsetIndex++)
         {
             var gearset = raptureGearsetModule->GetGearset(gearsetIndex);
             if (!gearset->Flags.HasFlag(GearsetFlag.Exists))

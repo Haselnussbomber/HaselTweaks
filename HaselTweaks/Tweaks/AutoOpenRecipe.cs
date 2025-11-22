@@ -284,11 +284,8 @@ public unsafe partial class AutoOpenRecipe : Tweak
         if (inventoryManager == null)
             return false;
 
-        for (var i = 0; i < recipe.Ingredient.Count; i++)
+        foreach (var (ingredientItem, ingredientAmount) in recipe.Ingredient.Zip(recipe.AmountIngredient))
         {
-            var ingredientItem = recipe.Ingredient[i];
-            var ingredientAmount = recipe.AmountIngredient[i];
-
             if (ingredientAmount == 0 || !ingredientItem.IsValid)
                 continue;
 
