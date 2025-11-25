@@ -123,7 +123,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
         _currentEntry = null;
     }
 
-    private ulong ActiveContentId => _currentEntry?.ContentId ?? _clientState.LocalContentId;
+    private ulong ActiveContentId => _currentEntry?.ContentId ?? PlayerState.Instance()->ContentId;
 
     // called every frame
     private bool UpdateCharaSelectDisplayDetour(AgentLobby* agent, sbyte index, bool a2)
