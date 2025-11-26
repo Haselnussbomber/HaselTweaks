@@ -48,7 +48,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
             if (!_excelService.TryGetRow<ItemUICategory>(categoryId, out var category))
                 continue;
 
-            ImGui.Text(category.Name.ToDalamudString().ToString());
+            ImGui.Text(category.Name.ToString());
             ImGuiUtils.PushCursorY(3 * ImGuiHelpers.GlobalScale);
 
             using var indent = ImRaii.PushIndent();

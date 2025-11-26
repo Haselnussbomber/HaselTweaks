@@ -121,7 +121,7 @@ public unsafe partial class EnhancedLoginLogout
                 var entry = _excelService.GetSheet<Emote>()
                     .Select(row => (
                         IsChangePose: _changePoseEmoteIds.Contains(row.RowId),
-                        Name: _changePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name.ToDalamudString()} ({changePoseIndex++})" : $"{row.Name.ToDalamudString()}",
+                        Name: _changePoseEmoteIds.Contains(row.RowId) ? $"{defaultIdlePoseEmote.Name} ({changePoseIndex++})" : $"{row.Name}",
                         Emote: row
                     ) as (bool IsChangePose, string Name, Emote Emote)?)
                     .FirstOrDefault(entry => entry != null && entry.Value.Emote.RowId == selectedEmoteId, null);
