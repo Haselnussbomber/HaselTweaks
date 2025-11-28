@@ -5,6 +5,7 @@
     <Version>40.0.3</Version>
     <OutputPath>..\bin\</OutputPath>
     <DefineConstants>$(DefineConstants);AUTOCTOR_EMBED_ATTRIBUTES</DefineConstants>
+    <NoWarn>$(NoWarn);Dalamud001</NoWarn>
   </PropertyGroup>
 
   <!-- Dalamud.NET.Sdk settings -->
