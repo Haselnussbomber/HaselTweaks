@@ -32,9 +32,7 @@
 
   <!-- References to Dalamud dependencies -->
   <ItemGroup>
-    <Reference Include="SharpDX" Private="false" />
-    <Reference Include="SharpDX.Direct3D11" Private="false" />
-    <Reference Include="SharpDX.DXGI" Private="false" />
+    <Reference Include="TerraFX.Interop.Windows" Private="false" />
   </ItemGroup>
 
   <!-- NuGet dependencies -->
