@@ -33,7 +33,7 @@ jobs:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -52,7 +52,7 @@ jobs:
           EOF
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           cache: true
           cache-dependency-path: ${{ env.plugin_name }}/packages.lock.json
@@ -93,7 +93,7 @@ jobs:
 
       - name: Upload Build Artifact
         if: github.event_name != 'pull_request'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           path: bin/${{ env.plugin_name }}/*
 
@@ -104,14 +104,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Download Build Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
 
       - name: Extract release notes
         id: extract-release-notes
-        uses: ffurrer2/extract-release-notes@v2
+        uses: ffurrer2/extract-release-notes@v3
 
       - name: Release
         uses: softprops/action-gh-release@v2
@@ -121,7 +121,7 @@ jobs:
           files: artifact/*
 
       - name: Trigger Repo Update
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.PAT }}
           repository: ${{ github.repository_owner }}/MyDalamudPlugins
