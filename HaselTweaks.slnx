@@ -1,0 +1,12 @@
+<Solution>
+  <Project Path="FFXIVClientStructs/FFXIVClientStructs.Generators/FFXIVClientStructs.Generators.csproj" />
+  <Project Path="FFXIVClientStructs/FFXIVClientStructs/FFXIVClientStructs.csproj" />
+  <Project Path="FFXIVClientStructs/InteropGenerator.Runtime/InteropGenerator.Runtime.csproj" />
+  <Project Path="FFXIVClientStructs/InteropGenerator/InteropGenerator.csproj" />
+  <Project Path="HaselCommon/HaselCommon/HaselCommon.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="HaselTweaks/HaselTweaks.csproj">
+    <Platform Project="x64" />
+  </Project>
+</Solution>
