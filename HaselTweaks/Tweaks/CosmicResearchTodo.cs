@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.Game.WKS;
 using FFXIVClientStructs.FFXIV.Client.UI.Arrays;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using TerritoryIntendedUse = HaselCommon.Game.Enums.TerritoryIntendedUse;
+using TerritoryIntendedUse = FFXIVClientStructs.FFXIV.Client.Enums.TerritoryIntendedUse;
 
 namespace HaselTweaks.Tweaks;
 
@@ -70,12 +70,12 @@ public unsafe partial class CosmicResearchTodo : ConfigurableTweak<CosmicResearc
 
     private void RequestUpdate()
     {
-        UIState.Instance()->MassivePcContentTodo.IsFullUpdatePending = true;
+        UIState.Instance()->MassivePcContentTodo.FullUpdatePending = true;
     }
 
     private void OnPreRequestedUpdate(AddonEvent type, AddonArgs args)
     {
-        if (GameMain.Instance()->CurrentTerritoryIntendedUseId != (byte)TerritoryIntendedUse.CosmicExploration)
+        if (GameMain.Instance()->CurrentTerritoryIntendedUseId != TerritoryIntendedUse.CosmicExploration)
             return;
 
         var director = EventFramework.Instance()->GetMassivePcContentDirector();

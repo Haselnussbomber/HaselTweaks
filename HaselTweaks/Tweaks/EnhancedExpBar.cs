@@ -4,6 +4,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using TerritoryIntendedUse = FFXIVClientStructs.FFXIV.Client.Enums.TerritoryIntendedUse;
 
 namespace HaselTweaks.Tweaks;
 
@@ -159,7 +160,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
 
     private bool OverwriteWithSanctuaryBar(ClassJob classJob)
     {
-        if (GameMain.Instance()->CurrentTerritoryIntendedUseId != 49)
+        if (GameMain.Instance()->CurrentTerritoryIntendedUseId != TerritoryIntendedUse.IslandSanctuary)
             return false;
 
         var mjiManager = MJIManager.Instance();

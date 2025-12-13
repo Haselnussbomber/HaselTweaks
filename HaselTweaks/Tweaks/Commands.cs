@@ -276,7 +276,7 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
     {
         var raptureAtkModule = RaptureAtkModule.Instance();
 
-        if (raptureAtkModule->UiMode != 1 || !_condition.OnlyAny(
+        if (raptureAtkModule->UIScene != GameUIScene.GameMain || !_condition.OnlyAny(
             ConditionFlag.NormalConditions,
             ConditionFlag.InThatPosition,
             ConditionFlag.Jumping,
