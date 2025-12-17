@@ -3,6 +3,7 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using SeVirtualKey = FFXIVClientStructs.FFXIV.Client.System.Input.SeVirtualKey;
 
 namespace HaselTweaks.Tweaks;
 

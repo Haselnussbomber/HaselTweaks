@@ -213,7 +213,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
     {
         if (!_aetherCurrentEObjCache.TryGetValue(aetherCurrent.RowId, out var eobj))
         {
-            if (!_excelService.TryFindRow(row => row.Data == aetherCurrent.RowId, out eobj))
+            if (!_excelService.TryFindRow(row => row.Data.RowId == aetherCurrent.RowId, out eobj))
                 return;
 
             _aetherCurrentEObjCache.Add(aetherCurrent.RowId, eobj);

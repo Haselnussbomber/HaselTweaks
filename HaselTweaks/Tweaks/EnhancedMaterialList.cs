@@ -155,7 +155,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
                 if (!_config.ClickToOpenMap)
                     return;
 
-                var data = (AtkEventData.AtkListItemData*)receiveEventArgs.Data;
+                var data = (AtkEventData.AtkListItemData*)receiveEventArgs.AtkEventData;
                 if (data == null || data->MouseButtonId == 1) // ignore right click
                     return;
 

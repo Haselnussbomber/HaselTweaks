@@ -138,7 +138,7 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
             .Clear()
             .AppendHaselTweaksPrefix();
 
-        if (!_excelService.TryFindRow<ItemAction>(row => row.Type == 1322 && row.Data[0] == mount.RowId, out var itemAction) || itemAction.RowId == 0)
+        if (!_excelService.TryFindRow<ItemAction>(row => row.Action.RowId == 1322 && row.Data[0] == mount.RowId, out var itemAction) || itemAction.RowId == 0)
         {
             Chat.Print(rssb.Builder.Append(_textService.TranslateSeString("Commands.WhatMount.WithoutItem", name)).GetViewAsSpan());
             return;
@@ -276,7 +276,7 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
     {
         var raptureAtkModule = RaptureAtkModule.Instance();
 
-        if (raptureAtkModule->UiMode != 1 || !_condition.OnlyAny(
+        if (raptureAtkModule->UIScene != GameUIScene.GameMain || !_condition.OnlyAny(
             ConditionFlag.NormalConditions,
             ConditionFlag.InThatPosition,
             ConditionFlag.Jumping,

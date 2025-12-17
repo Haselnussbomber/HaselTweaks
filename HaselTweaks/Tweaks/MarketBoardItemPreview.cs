@@ -23,7 +23,7 @@ public unsafe partial class MarketBoardItemPreview : Tweak
         if (args is not AddonReceiveEventArgs addonReceiveEventArgs || addonReceiveEventArgs.AtkEventType != (byte)AtkEventType.ListItemRollOver)
             return;
 
-        var eventData = (AtkEventData*)addonReceiveEventArgs.Data;
+        var eventData = (AtkEventData*)addonReceiveEventArgs.AtkEventData;
         var itemIndex = eventData->ListItemData.SelectedIndex;
         var item = new ItemHandle(AgentItemSearch.Instance()->ListingPageItemIds[itemIndex]);
         _logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId} @ {addr:X}", itemIndex, item.ItemId, args.Addon + itemIndex * 4 + 0xBBC);

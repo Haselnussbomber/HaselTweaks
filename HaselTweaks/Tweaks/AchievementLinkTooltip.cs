@@ -49,7 +49,7 @@ public unsafe partial class AchievementLinkTooltip : ConfigurableTweak<Achieveme
         if (receiveEventArgs.AtkEventType != (byte)AtkEventType.LinkMouseOver)
             return;
 
-        var eventData = (AtkEventData*)receiveEventArgs.Data;
+        var eventData = (AtkEventData*)receiveEventArgs.AtkEventData;
         var linkData = eventData->LinkData;
         var linkType = (LinkMacroPayloadType)linkData->LinkType;
         if (linkType is not LinkMacroPayloadType.Achievement)
