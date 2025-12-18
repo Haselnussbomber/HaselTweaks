@@ -107,7 +107,9 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Download Build Artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
+        with:
+          path: artifact
 
       - name: Extract release notes
         id: extract-release-notes
