@@ -184,7 +184,7 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak<LockWindowPos
 
     private void OpenContextMenuForAddonDetour(AgentContext* agent, uint ownerAddonId, bool bindToOwner)
     {
-        if (_eventIndexToDisable == 7 && agent->ContextMenuIndex == 0)
+        if (_eventIndexToDisable == 8 && agent->ContextMenuIndex == 0)
         {
             var addon = GetAddon<AtkUnitBase>((ushort)ownerAddonId);
             if (addon != null)
