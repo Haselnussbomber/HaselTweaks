@@ -98,6 +98,7 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
             case "CharacterRepute":        // Character -> Reputation
             case "Buddy":                  // Companion
             case "MiragePrismPrismBox":    // Glamours
+            case "GlassSelect":            // Facewear
                 break;
 
             // used by Inventory
@@ -279,6 +280,10 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
         else if (_config.HandleMiragePrismPrismBox && name == "MiragePrismPrismBox")
         {
             UpdateMiragePrismPrismBox((AddonMiragePrismPrismBox*)unitBase);
+        }
+        else if (_config.HandleGlassSelect && name == "GlassSelect")
+        {
+            UpdateGlassSelect((AddonGlassSelect*)unitBase);
         }
         else if (name is "Character" or "CharacterClass" or "CharacterRepute")
         {
@@ -675,6 +680,20 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
         var agent = AgentMiragePrismPrismBox.Instance();
         agent->PageIndex += (byte)_wheelState;
         agent->UpdateItems(false, false);
+    }
+
+    private void UpdateGlassSelect(AddonGlassSelect* addon)
+    {
+        UpdateTabController((AtkUnitBase*)addon, &addon->TabController);
+
+        for (var i = 0; i < addon->TabController.TabCount; i++)
+        {
+            var button = addon->Tabs.GetPointer(i);
+            if (button->Value != null)
+            {
+                button->Value->IsSelected = i == addon->TabController.TabIndex;
+            }
+        }
     }
 
     private void UpdateCharacter(AddonCharacter* addon)

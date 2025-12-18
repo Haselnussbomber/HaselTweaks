@@ -2203,6 +2203,10 @@
     "de": "Blättert durch Seiten, nicht durch Tabs.",
     "zh": "滚动页面，而非标签页。"
   },
+  "ScrollableTabs.Config.HandleGlassSelect.Label": {
+    "en": "Enable in Facewear",
+    "de": "Aktiviere für Gesichtsaccessoires"
+  },
   "ScrollableTabs.Config.HandleGoldSaucerCardList.Label": {
     "en": "Enable in Gold Saucer -> Card List",
     "de": "Aktiviere für Gold Saucer -> Karten",
