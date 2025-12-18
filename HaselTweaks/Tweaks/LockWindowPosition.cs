@@ -223,7 +223,7 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak<LockWindowPos
 
     private AtkValue* WindowContextMenuHandlerReceiveEventDetour(AtkEventInterface* self, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
     {
-        if (_eventIndexToDisable == 7 && (int)eventKind is EventParamUnlock or EventParamLock)
+        if (_eventIndexToDisable == 8 && (int)eventKind is EventParamUnlock or EventParamLock)
         {
             if (TryGetAddon<AtkUnitBase>((ushort)AgentContext.Instance()->OwnerAddon, out var addon))
             {
