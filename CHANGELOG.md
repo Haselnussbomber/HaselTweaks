@@ -1,5 +1,11 @@
 # Changelog
 
+## [40.1.1] (2025-12-19)
+
+### Outfit Glamour Try On
+
+- **Fixed:** Context menu entry didn't work correctly due to offset changes.
+
 ## [40.1.0] (2025-12-18)
 
 Update for 7.4.
@@ -2277,6 +2283,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[40.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.1.0...v40.1.1
 [40.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.0.3...v40.1.0
 [40.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.0.2...v40.0.3
 [40.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.0.1...v40.0.2
