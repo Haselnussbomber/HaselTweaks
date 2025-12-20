@@ -1,3 +1,4 @@
+using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -19,8 +20,13 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
     private readonly IFramework _framework;
     private readonly IClientState _clientState;
     private readonly IGameConfig _gameConfig;
+    private readonly IGameInteropProvider _gameInteropProvider;
+    private MemoryReplacement? _quickPanelPlaySoundEffectPatch;
 
     private int _wheelState;
+
+    [Signature("41 B8 ?? ?? ?? ?? 48 8D 54 24 ?? 48 8B 48 ?? ?? ?? ?? FF 50 ?? 48 8D 4C 24 ?? E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 0F B6 47"), AutoConstructIgnore]
+    private nint QuickPanelPlaySoundEffectAddress { get; init; }
 
     private AtkCollisionNode* IntersectingCollisionNode
         => RaptureAtkModule.Instance()->AtkCollisionManager.IntersectingCollisionNode;
@@ -33,12 +39,34 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
 
     public override void OnEnable()
     {
+        if (QuickPanelPlaySoundEffectAddress == nint.Zero)
+            _gameInteropProvider.InitializeFromAttributes(this);
+
+        _quickPanelPlaySoundEffectPatch = new(QuickPanelPlaySoundEffectAddress, [0xEB, 0x13]);
+
+        if (_config.SuppressQuickPanelSounds)
+            _quickPanelPlaySoundEffectPatch.Enable();
+
         _framework.Update += OnFrameworkUpdate;
     }
 
     public override void OnDisable()
     {
         _framework.Update -= OnFrameworkUpdate;
+
+        _quickPanelPlaySoundEffectPatch?.Dispose();
+        _quickPanelPlaySoundEffectPatch = null;
+    }
+
+    public override void OnConfigChange(string fieldName)
+    {
+        if (fieldName == nameof(ScrollableTabsConfiguration.SuppressQuickPanelSounds))
+        {
+            if (_config.SuppressQuickPanelSounds)
+                _quickPanelPlaySoundEffectPatch?.Enable();
+            else
+                _quickPanelPlaySoundEffectPatch?.Disable();
+        }
     }
 
     private void OnFrameworkUpdate(IFramework framework)

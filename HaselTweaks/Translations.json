@@ -2128,6 +2128,14 @@
     "de": "Invertiertes Scrollverhalten",
     "zh": "反转滚轮行为"
   },
+  "ScrollableTabs.Config.SuppressQuickPanelSounds.Label": {
+    "en": "Suppress sound effect when scrolling in Command Panel",
+    "de": "Soundeffekt beim scrollen in Kommandotafel unterdrücken"
+  },
+  "ScrollableTabs.Config.SuppressQuickPanelSounds.Description": {
+    "en": "Note: The game already integrated tab scrolling into the Command Panel.",
+    "de": "Hinweis: Das Spiel hat bereits Tab-Scrolling in die Kommandotafel integriert."
+  },
   "ScrollableTabs.Config.HandleAetherCurrent.Label": {
     "en": "Enable in Aether Currents",
     "de": "Aktiviere für Windätherquellen",

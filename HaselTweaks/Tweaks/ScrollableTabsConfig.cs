@@ -3,6 +3,7 @@ namespace HaselTweaks.Tweaks;
 public class ScrollableTabsConfiguration
 {
     public bool Invert = true;
+    public bool SuppressQuickPanelSounds = true;
     public bool HandleAetherCurrent = true;
     public bool HandleArmouryBoard = true;
     public bool HandleAOZNotebook = true;
@@ -35,6 +36,7 @@ public unsafe partial class ScrollableTabs
     {
         _configGui.DrawConfigurationHeader();
         _configGui.DrawBool("Invert", ref _config.Invert);
+        _configGui.DrawBool("SuppressQuickPanelSounds", ref _config.SuppressQuickPanelSounds);
         _configGui.DrawBool("HandleAetherCurrent", ref _config.HandleAetherCurrent);
         _configGui.DrawBool("HandleArmouryBoard", ref _config.HandleArmouryBoard);
         _configGui.DrawBool("HandleAOZNotebook", ref _config.HandleAOZNotebook);
