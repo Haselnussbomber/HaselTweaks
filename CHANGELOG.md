@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Scrollable Tabs
+
+- **Added:** An option to disable sound effects when scrolling tabs in the Command Panel.
+
 ## [40.1.1] (2025-12-19)
 
 ### Outfit Glamour Try On
