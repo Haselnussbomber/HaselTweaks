@@ -41,12 +41,13 @@ public unsafe partial class AutoSelectSoilAndSeed : Tweak
             return;
 
         var agentEx = (HaselAgentHousingPlant*)agent;
-        if (agentEx->State != 0)
+        if (agentEx->State != 0) // not 0 when item rows are loading
             return;
 
         if (agent->SelectedItems[0].InventoryType != InventoryType.Invalid && agent->SelectedItems[1].InventoryType != InventoryType.Invalid)
             return;
 
+        var isOutdoors = agent->PlotType == 14;
         var isSoilSet = false;
         var isSeedSet = false;
 
@@ -77,7 +78,10 @@ public unsafe partial class AutoSelectSoilAndSeed : Tweak
                     SelectItem(0, itemRow.RowId, itemRow.Icon, inventoryType, slotIndex);
                     isSoilSet = true;
                 }
-                else if (!isSeedSet && itemRow.FilterGroup == (byte)ItemFilterGroup.GardeningSeed)
+                else if (!isSeedSet
+                    && itemRow.FilterGroup == (byte)ItemFilterGroup.GardeningSeed
+                    && itemRow.AdditionalData.TryGetValue<GardeningSeed>(out var gardeningSeedRow)
+                    && (!isOutdoors || (isOutdoors && !gardeningSeedRow.Unknown1))) // Unknown1 = IsPlantPotFlowerSeed
                 {
                     _logger.LogDebug("Selecting seed {inventoryType}#{slotIndex} ({itemId}) - {itemName}", inventoryType, slotIndex, baseItemId, itemRow.Name);
                     SelectItem(1, itemRow.RowId, itemRow.Icon, inventoryType, slotIndex);
