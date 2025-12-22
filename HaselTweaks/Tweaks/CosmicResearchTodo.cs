@@ -113,7 +113,7 @@ public unsafe partial class CosmicResearchTodo : ConfigurableTweak<CosmicResearc
         if (!_excelService.TryGetRow<ClassJob>(PlayerState.Instance()->CurrentClassJobId, out var classJob))
             return;
 
-        if (!(classJob.IsCrafter() || classJob.IsGatherer()))
+        if (!(classJob.IsCrafter || classJob.IsGatherer))
             return;
 
         var toolClassId = (byte)(classJob.RowId - 7);
