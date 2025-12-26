@@ -94,7 +94,7 @@ Available Commands:
 - `/whatemote`  
   Target a player and execute the command to see which emote your target is currently executing.
 - `/whatbarding`  
-  Target a players chocobo companion and execute the command to see what barding it is wearing.
+  Target a players chocobo companion or mounted player and execute the command to see what barding the chocobo is wearing.
 - `/glamourplate <id>`  
   This shortcut command executes the "/gearset change" command with the current gear set id and the given glamour plate id (1-20).
 
@@ -352,6 +352,7 @@ Allows the mouse wheel to switch tabs (like with LB/RB on controllers) in the fo
 - Chocobo Saddlebag
 - Companion
 - Currency
+- Facewear
 - Fashion Accessories
 - Field Records
 - Fish Guide
@@ -366,6 +367,8 @@ Allows the mouse wheel to switch tabs (like with LB/RB on controllers) in the fo
 - Retainer Inventory
 - Shared FATE
 - Sightseeing Log
+
+The Command Panel already includes this functionality and instead has an option to disable its tab-scrolling sound effects.
 
 ### Search the markets
 
