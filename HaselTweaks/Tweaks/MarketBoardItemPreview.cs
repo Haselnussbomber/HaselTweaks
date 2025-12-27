@@ -26,13 +26,14 @@ public unsafe partial class MarketBoardItemPreview : Tweak
         var eventData = (AtkEventData*)addonReceiveEventArgs.AtkEventData;
         var itemIndex = eventData->ListItemData.SelectedIndex;
         var item = new ItemHandle(AgentItemSearch.Instance()->ListingPageItemIds[itemIndex]);
-        _logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId} @ {addr:X}", itemIndex, item.ItemId, args.Addon + itemIndex * 4 + 0xBBC);
 
         if (!item.CanTryOn)
         {
             _logger.LogInformation("Skipping preview of {name}, because it can't be tried on", item.Name);
             return;
         }
+
+        _logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId}", itemIndex, item.ItemId);
 
         AgentTryon.TryOn(args.Addon.Id, item, 0, 0, 0);
     }
