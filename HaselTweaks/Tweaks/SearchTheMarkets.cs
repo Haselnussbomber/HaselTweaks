@@ -43,8 +43,7 @@ public unsafe partial class SearchTheMarkets : Tweak
 
     private void OnLanguageChange(string langCode)
     {
-        if (_menuItem != null)
-            _menuItem.Name = _textService.Translate("ItemContextMenu.SearchTheMarkets");
+        _menuItem?.Name = _textService.Translate("ItemContextMenu.SearchTheMarkets");
     }
 
     private void ContextMenu_OnMenuOpened(IMenuOpenedArgs args)

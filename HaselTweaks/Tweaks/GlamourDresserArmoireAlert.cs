@@ -88,8 +88,7 @@ public unsafe partial class GlamourDresserArmoireAlert : Tweak
                 categoryItems.Add(i, (item, itemKind.HasFlag(ItemKind.Hq)));
         }
 
-        if (_window != null)
-            _window.IsUpdatePending = false;
+        _window?.IsUpdatePending = false;
 
         if (Categories.Count == 0)
             return;
