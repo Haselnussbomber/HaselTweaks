@@ -7,66 +7,57 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak<EnhancedIsleworksAgendaConfiguration>
 {
-    private readonly IGameInteropProvider _gameInteropProvider;
-    private readonly AddonObserver _addonObserver;
+    private readonly IAddonLifecycle _addonLifecycle;
     private readonly MJICraftScheduleSettingSearchBar _window;
-
-    private Hook<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>? _receiveEventHook;
 
     public override void OnEnable()
     {
-        _receiveEventHook = _gameInteropProvider.HookFromAddress<AddonMJICraftScheduleSetting.Delegates.ReceiveEvent>(
-            AddonMJICraftScheduleSetting.StaticVirtualTablePointer->ReceiveEvent,
-            ReceiveEventDetour);
-
-        _receiveEventHook.Enable();
+        _addonLifecycle.RegisterListener(AddonEvent.PreReceiveEvent, "MJICraftScheduleSetting", OnPreReceiveEvent);
+        _addonLifecycle.RegisterListener(AddonEvent.PostShow, "MJICraftScheduleSetting", OnPostShow);
+        _addonLifecycle.RegisterListener(AddonEvent.PreHide, "MJICraftScheduleSetting", OnPreHide);
 
         if (_config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"u8))
             _window.Open();
-
-        _addonObserver.AddonOpen += OnAddonOpen;
-        _addonObserver.AddonClose += OnAddonClose;
     }
 
     public override void OnDisable()
     {
-        _addonObserver.AddonOpen -= OnAddonOpen;
-        _addonObserver.AddonClose -= OnAddonClose;
-
-        _receiveEventHook?.Dispose();
-        _receiveEventHook = null;
-
+        _addonLifecycle.UnregisterListener(AddonEvent.PreReceiveEvent, "MJICraftScheduleSetting", OnPreReceiveEvent);
+        _addonLifecycle.UnregisterListener(AddonEvent.PostShow, "MJICraftScheduleSetting", OnPostShow);
+        _addonLifecycle.UnregisterListener(AddonEvent.PreHide, "MJICraftScheduleSetting", OnPreHide);
         _window.Close();
     }
 
-    private void OnAddonOpen(string addonName)
+    private void OnPostShow(AddonEvent type, AddonArgs args)
     {
-        if (_config.EnableSearchBar && addonName == "MJICraftScheduleSetting")
+        if (_config.EnableSearchBar)
             _window.Open();
     }
 
-    private void OnAddonClose(string addonName)
+    private void OnPreHide(AddonEvent type, AddonArgs args)
     {
-        if (addonName == "MJICraftScheduleSetting")
-            _window.Close();
+        _window.Close();
     }
 
-    private void ReceiveEventDetour(AddonMJICraftScheduleSetting* addon, AtkEventType eventType, int eventParam, AtkEvent* atkEvent, AtkEventData* atkEventData)
+    private void OnPreReceiveEvent(AddonEvent type, AddonArgs addonArgs)
     {
-        if (eventType == AtkEventType.ListItemRollOver && eventParam == 2 && _config.DisableTreeListTooltips)
-        {
-            var index = atkEventData->ListItemData.SelectedIndex;
-            var itemPtr = addon->TreeList->GetItem(index);
-            if (itemPtr != null && itemPtr->UIntValues.LongCount >= 1)
-            {
-                if (itemPtr->UIntValues[0] != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
-                {
-                    atkEvent->SetEventIsHandled();
-                    return;
-                }
-            }
-        }
+        if (!_config.DisableTreeListTooltips || addonArgs is not AddonReceiveEventArgs args)
+            return;
 
-        _receiveEventHook!.Original(addon, eventType, eventParam, atkEvent, atkEventData);
+        var eventType = (AtkEventType)args.AtkEventType;
+        if (eventType != AtkEventType.ListItemRollOver || args.EventParam != 2)
+            return;
+
+        var addon = (AddonMJICraftScheduleSetting*)args.Addon.Address;
+        var index = ((AtkEventData.AtkListItemData*)args.AtkEventData)->SelectedIndex;
+        var item = addon->TreeList->GetItem(index);
+        if (item == null || item->UIntValues.LongCount < 1)
+            return;
+
+        if (item->UIntValues[0] == (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
+            return;
+
+        args.EventParam = 0;
+        ((AtkEvent*)args.AtkEvent)->SetEventIsHandled();
     }
 }
