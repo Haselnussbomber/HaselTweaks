@@ -66,12 +66,12 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak<LockWindowPos
         _openContextMenuForAddonHook?.Enable();
         _windowContextMenuHandlerReceiveEventHook?.Enable();
 
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "GearSetList", GearSetList_PostSetup);
+        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "GearSetList", OnGearSetListPostSetup);
     }
 
     public override void OnDisable()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "GearSetList", GearSetList_PostSetup);
+        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "GearSetList", OnGearSetListPostSetup);
 
         _moveDeltaHook?.Dispose();
         _moveDeltaHook = null;
@@ -93,7 +93,7 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak<LockWindowPos
     }
 
     // block GearSetList from moving when opened by Character
-    private void GearSetList_PostSetup(AddonEvent type, AddonArgs args)
+    private void OnGearSetListPostSetup(AddonEvent type, AddonArgs args)
     {
         var addon = (AddonGearSetList*)args.Addon.Address;
 
