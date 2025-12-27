@@ -22,17 +22,17 @@ public unsafe partial class AutoOpenRecipe : Tweak
 
     public override void OnEnable()
     {
-        _gameInventory.ItemAddedExplicit += GameInventory_ItemAddedExplicit;
+        _gameInventory.ItemAddedExplicit += OnItemAddedExplicit;
     }
 
     public override void OnDisable()
     {
-        _gameInventory.ItemAddedExplicit -= GameInventory_ItemAddedExplicit;
+        _gameInventory.ItemAddedExplicit -= OnItemAddedExplicit;
         _checkCTS?.Cancel();
         _checkCTS = null;
     }
 
-    private void GameInventory_ItemAddedExplicit(InventoryItemAddedArgs data)
+    private void OnItemAddedExplicit(InventoryItemAddedArgs data)
     {
         if (data.Item.ItemId == 0) // idk, just for safety
             return;
