@@ -1,4 +1,4 @@
-using HaselCommon.Commands;
+using HaselCommon.Services.Commands;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
@@ -10,12 +10,15 @@ public partial class GearSetGrid : ConfigurableTweak<GearSetGridConfiguration>
     private readonly AddonObserver _addonObserver;
     private readonly GearSetGridWindow _window;
 
-    private CommandHandler? _gsgCommand;
+    private CommandHandler _gsgCommand;
 
     public override void OnEnable()
     {
-        _gsgCommand = _commandService.Register(OnGsgCommand);
-        _gsgCommand.SetEnabled(_config.RegisterCommand);
+        _gsgCommand = _commandService.AddCommand("gsg", cmd => cmd
+            .WithHelpTextKey("GearSetGrid.CommandHandlerHelpMessage")
+            .WithDisplayOrder(2)
+            .WithHandler(OnGsgCommand)
+            .SetEnabled(_config.RegisterCommand));
 
         _addonObserver.AddonOpen += OnAddonOpen;
         _addonObserver.AddonClose += OnAddonClose;
@@ -30,7 +33,6 @@ public partial class GearSetGrid : ConfigurableTweak<GearSetGridConfiguration>
         _addonObserver.AddonClose -= OnAddonClose;
 
         _gsgCommand?.Dispose();
-        _gsgCommand = null;
 
         _window.Close();
     }
@@ -47,12 +49,8 @@ public partial class GearSetGrid : ConfigurableTweak<GearSetGridConfiguration>
             _window.Close();
     }
 
-    [CommandHandler("/gsg", "GearSetGrid.CommandHandlerHelpMessage", DisplayOrder: 2)]
-    private void OnGsgCommand(string command, string arguments)
+    private void OnGsgCommand(CommandContext ctx)
     {
-        if (_window.IsOpen)
-            _window.Close();
-        else
-            _window.Open();
+        _window.Toggle();
     }
 }

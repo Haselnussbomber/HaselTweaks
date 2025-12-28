@@ -6,7 +6,7 @@ public static unsafe class ImRaiiExt
 {
     public static IEndObject PopupModal(string name, ImGuiWindowFlags flags)
     {
-        return new HaselCommon.Gui.EndConditionally(ImGui.EndPopup, BeginPopupModal(name, flags));
+        return new EndConditionally(ImGui.EndPopup, BeginPopupModal(name, flags));
     }
 
     private static bool BeginPopupModal(string name, ImGuiWindowFlags flags)

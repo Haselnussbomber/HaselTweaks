@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using HaselCommon.Commands;
+using HaselCommon.Services.Commands;
 
 namespace HaselTweaks.Tweaks;
 
@@ -28,12 +28,37 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
 
     public override void OnEnable()
     {
-        _itemLinkCommandHandler = _commandService.Register(OnItemLinkCommand);
-        _whatMountCommandCommandHandler = _commandService.Register(OnWhatMountCommand);
-        _whatEmoteCommandCommandHandler = _commandService.Register(OnWhatEmoteCommand);
-        _whatBardingCommandCommandHandler = _commandService.Register(OnWhatBardingCommand);
-        _glamourPlateCommandCommandHandler = _commandService.Register(OnGlamourPlateCommand);
-        _reloadUICommandCommandHandler = _commandService.Register(OnReloadUICommand);
+        _itemLinkCommandHandler = _commandService.AddCommand("itemlink", cmd => cmd
+            .WithHelpTextKey("Commands.Config.EnableItemLinkCommand.Description")
+            .WithDisplayOrder(2)
+            .WithArg<uint>("id")
+            .WithHandler(OnItemLinkCommand));
+
+        _whatMountCommandCommandHandler = _commandService.AddCommand("whatmount", cmd => cmd
+            .WithHelpTextKey("Commands.Config.EnableWhatMountCommand.Description")
+            .WithDisplayOrder(2)
+            .WithHandler(OnWhatMountCommand));
+
+        _whatEmoteCommandCommandHandler = _commandService.AddCommand("whatemote", cmd => cmd
+            .WithHelpTextKey("Commands.Config.EnableWhatEmoteCommand.Description")
+            .WithDisplayOrder(2)
+            .WithHandler(OnWhatEmoteCommand));
+
+        _whatBardingCommandCommandHandler = _commandService.AddCommand("whatbarding", cmd => cmd
+            .WithHelpTextKey("Commands.Config.EnableWhatBardingCommand.Description")
+            .WithDisplayOrder(2)
+            .WithHandler(OnWhatBardingCommand));
+
+        _glamourPlateCommandCommandHandler = _commandService.AddCommand("glamourplate", cmd => cmd
+            .WithHelpTextKey("Commands.Config.EnableGlamourPlateCommand.Description")
+            .WithDisplayOrder(2)
+            .WithArg<byte>("id")
+            .WithHandler(OnGlamourPlateCommand));
+
+        _reloadUICommandCommandHandler = _commandService.AddCommand("reloadui", cmd => cmd
+            .WithHelpTextKey("Commands.Config.EnableReloadUICommand.Description")
+            .WithDisplayOrder(2)
+            .WithHandler(OnReloadUICommand));
 
         UpdateCommands(true);
     }
@@ -71,10 +96,9 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
         _reloadUICommandCommandHandler?.SetEnabled(enable && _config.EnableReloadUICommand);
     }
 
-    [CommandHandler("/itemlink", "Commands.Config.EnableItemLinkCommand.Description", DisplayOrder: 2)]
-    private void OnItemLinkCommand(string command, string arguments)
+    private void OnItemLinkCommand(CommandContext ctx)
     {
-        if (!uint.TryParse(arguments.Trim(), out var id))
+        if (!ctx.TryGet("id", out uint id))
         {
             Chat.PrintError(_textService.Translate("Commands.InvalidArguments"));
             return;
@@ -97,8 +121,7 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
             .GetViewAsSpan());
     }
 
-    [CommandHandler("/whatmount", "Commands.Config.EnableWhatMountCommand.Description", DisplayOrder: 2)]
-    private void OnWhatMountCommand(string command, string arguments)
+    private void OnWhatMountCommand(CommandContext ctx)
     {
         var target = TargetSystem.Instance()->Target;
         if (target == null)
@@ -152,8 +175,7 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
         Chat.Print(rssb.Builder.Append(_textService.EvaluateTranslatedSeString("Commands.WhatMount.WithItem", name, _itemService.GetItemLink(item.RowId))).GetViewAsSpan());
     }
 
-    [CommandHandler("/whatemote", "Commands.Config.EnableWhatEmoteCommand.Description", DisplayOrder: 2)]
-    private void OnWhatEmoteCommand(string command, string arguments)
+    private void OnWhatEmoteCommand(CommandContext ctx)
     {
         var target = TargetSystem.Instance()->Target;
         if (target == null)
@@ -189,8 +211,7 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
                 .GetViewAsSpan());
     }
 
-    [CommandHandler("/whatbarding", "Commands.Config.EnableWhatBardingCommand.Description", DisplayOrder: 2)]
-    private void OnWhatBardingCommand(string command, string arguments)
+    private void OnWhatBardingCommand(CommandContext ctx)
     {
         var target = TargetSystem.Instance()->Target;
         if (target == null)
@@ -251,10 +272,9 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
             .GetViewAsSpan());
     }
 
-    [CommandHandler("/glamourplate", "Commands.Config.EnableGlamourPlateCommand.Description", DisplayOrder: 2)]
-    private void OnGlamourPlateCommand(string command, string arguments)
+    private void OnGlamourPlateCommand(CommandContext ctx)
     {
-        if (!byte.TryParse(arguments.Trim(), out var glamourPlateId) || glamourPlateId == 0 || glamourPlateId > 20)
+        if (!ctx.TryGet("id", out byte glamourPlateId) || glamourPlateId == 0 || glamourPlateId > 20)
         {
             Chat.PrintError(_textService.Translate("Commands.InvalidArguments"));
             return;
@@ -270,8 +290,7 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
         raptureGearsetModule->EquipGearset(raptureGearsetModule->CurrentGearsetIndex, glamourPlateId);
     }
 
-    [CommandHandler("/reloadui", "Commands.Config.EnableReloadUICommand.Description")]
-    private unsafe void OnReloadUICommand(string command, string arguments)
+    private unsafe void OnReloadUICommand(CommandContext ctx)
     {
         var raptureAtkModule = RaptureAtkModule.Instance();
 

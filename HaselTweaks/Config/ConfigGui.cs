@@ -1,5 +1,6 @@
 using System.Globalization;
 using Dalamud.Interface.ImGuiSeStringRenderer;
+using static Dalamud.Interface.Utility.Raii.ImRaii;
 
 namespace HaselTweaks.Config;
 
