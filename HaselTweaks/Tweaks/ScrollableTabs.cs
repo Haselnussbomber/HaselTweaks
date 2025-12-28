@@ -363,19 +363,12 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
     {
         if (addon->TabIndex == NumInventoryTabs - 1 && _wheelState > 0)
         {
+            // Client::UI::AddonInventory.SwitchToKeyItems call in HandleBackButtonInput
             var values = stackalloc AtkValue[3];
 
-            values[0].Ctor();
-            values[0].Type = ValueType.Int;
-            values[0].Int = 22;
-
-            values[1].Ctor();
-            values[1].Type = ValueType.Int;
-            values[1].Int = *(int*)((nint)addon + 0x228);
-
-            values[2].Ctor();
-            values[2].Type = ValueType.UInt;
-            values[2].UInt = 0;
+            values[0].SetInt(22);
+            values[1].SetInt(addon->OpenerAddonId);
+            values[2].SetUInt(0);
 
             addon->FireCallback(3, values);
         }
@@ -394,20 +387,14 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
     {
         if (addon->TabIndex == 0 && _wheelState < 0)
         {
-            // inside Vf68, fn call before return with a2 being 2
+            // Client::UI::AddonInventoryEvent.SwitchToInventory call in HandleBackButtonInput
             var values = stackalloc AtkValue[3];
 
-            values[0].Ctor();
-            values[0].Type = ValueType.Int;
-            values[0].Int = 22;
+            var a = values->String.AsReadOnlySeString();
 
-            values[1].Ctor();
-            values[1].Type = ValueType.Int;
-            values[1].Int = *(int*)((nint)addon + 0x280);
-
-            values[2].Ctor();
-            values[2].Type = ValueType.UInt;
-            values[2].UInt = 2;
+            values[0].SetInt(22);
+            values[1].SetInt(addon->OpenerAddonId);
+            values[2].SetUInt(2);
 
             addon->FireCallback(3, values);
         }
