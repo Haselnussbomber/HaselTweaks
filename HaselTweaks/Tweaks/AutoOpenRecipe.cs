@@ -69,7 +69,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
         var localPlayer = Control.GetLocalPlayer();
         if (localPlayer == null)
         {
-            _logger.LogDebug("Skipping: LocalPlayer is null");
+            _logger.LogTrace("Skipping: LocalPlayer is null");
             return false;
         }
 
@@ -78,36 +78,36 @@ public unsafe partial class AutoOpenRecipe : Tweak
         {
             if (questWork.QuestId == 0)
             {
-                _logger.LogDebug("Skipping: Quest #{questId}", questWork.QuestId);
+                _logger.LogTrace("Skipping: Quest #{questId}", questWork.QuestId);
                 continue;
             }
 
             if (!_excelService.TryGetRow<Quest>((uint)questWork.QuestId | 0x10000, out var quest))
             {
-                _logger.LogDebug("Skipping: Quest #{questId} not found", questWork.QuestId | 0x10000);
+                _logger.LogTrace("Skipping: Quest #{questId} not found", questWork.QuestId | 0x10000);
                 continue;
             }
 
             if (!(questManager->GetDailyQuestById(questWork.QuestId) != null || quest.BeastTribe.RowId != 0)) // check if daily or tribal quest
             {
-                _logger.LogDebug("Skipping: Quest #{questId} is not a daily or tribal quest", questWork.QuestId | 0x10000);
+                _logger.LogTrace("Skipping: Quest #{questId} is not a daily or tribal quest", questWork.QuestId | 0x10000);
                 continue;
             }
 
-            _logger.LogDebug("Checking Quest #{questId} ({questName}) (Sequence {questSequence})", questWork.QuestId, _textService.GetQuestName((uint)questWork.QuestId | 0x10000), questWork.Sequence);
+            _logger.LogTrace("Checking Quest #{questId} ({questName}) (Sequence {questSequence})", questWork.QuestId, _textService.GetQuestName((uint)questWork.QuestId | 0x10000), questWork.Sequence);
 
             // TODO: check if this still works
             var sequence = questWork.Sequence;
             if (!quest.TodoParams.TryGetFirst(param => param.ToDoCompleteSeq == sequence, out var todoParams, out var todoOffset))
             {
-                _logger.LogDebug("Skipping: ToDoCompleteSeq {sequence} not found", sequence);
+                _logger.LogTrace("Skipping: ToDoCompleteSeq {sequence} not found", sequence);
                 continue;
             }
 
             var questEventHandler = (QuestEventHandler*)EventFramework.Instance()->GetEventHandlerById(quest.RowId);
             if (questEventHandler == null)
             {
-                _logger.LogDebug("Skipping: No QuestEventHandler");
+                _logger.LogTrace("Skipping: No QuestEventHandler");
                 continue;
             }
 
@@ -229,7 +229,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
 
                 resultItemId %= 1000000;
 
-                _logger.LogDebug("TodoArgs #{todoIndex}: {numHave}/{numNeeded} of {resultItemId}", todoIndex, numHave, numNeeded, resultItemId);
+                _logger.LogTrace("TodoArgs #{todoIndex}: {numHave}/{numNeeded} of {resultItemId}", todoIndex, numHave, numNeeded, resultItemId);
 
                 if (resultItemId == 0)
                     continue;
