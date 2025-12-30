@@ -1,5 +1,19 @@
 # Changelog
 
+## [40.3.0] (2025-12-30)
+
+### HaselTweaks
+
+- **Updated:** New chat command handler system that supports subcommands (not used here yet) and printing out a help message.
+- **Updated:** Reworked the tweaks Character Class Switcher, Enhanced Isleworks Agenda, and Simple Aethernet List to use Dalamuds IAddonLifecycle.
+- **Updated:** Copied a new version of Dalamuds FuzzyMatch over to the plugin, used for the search bar in the Enhanced Isleworks Agenda tweak.
+
+### Glamour Dresser Armoire Alert
+
+- **Added:** Armoire items stored in Outfits are now detected.
+- **Fixed:** The window may not have appeared immediately when the Glamour Dresser was opened. Reworked the update logic to wait for it to be fully loaded.
+- **Fixed:** Withdrawing an item might have failed. It now preloads the item row in the game, so the new checks have data to work off of.
+
 ## [40.2.2] (2025-12-26)
 
 ### Portrait Helper
@@ -2301,6 +2315,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[40.3.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.2.2...v40.3.0
 [40.2.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.2.1...v40.2.2
 [40.2.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.2.0...v40.2.1
 [40.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.1.1...v40.2.0
