@@ -97,7 +97,7 @@ public unsafe partial class MJICraftScheduleSettingSearchBar : SimpleWindow
                 }
             }
 
-            if (entries.FuzzyMatch(_query.ToLower().Trim(), value => value.ItemName, _languageProvider.CultureInfo).TryGetFirst(out var result))
+            if (entries.FuzzyMatch(_query.ToLower().Trim(), value => value.ItemName).TryGetFirst(out var result))
             {
                 var index = result.Value.Index;
                 var item = Addon->TreeList->GetItem(index);
