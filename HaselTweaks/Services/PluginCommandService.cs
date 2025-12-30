@@ -19,7 +19,7 @@ public partial class PluginCommandService : IHostedService
             .WithDisplayOrder(1)
             .WithHandler(OnMainCommand)
             .AddSubcommand("debug", cmd => cmd
-#if DEBUG
+#if !DEBUG
                 .SetEnabled(false)
 #endif
                 .WithHandler(OnDebugCommand)));
