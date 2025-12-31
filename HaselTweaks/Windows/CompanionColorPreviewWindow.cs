@@ -56,6 +56,19 @@ public unsafe partial class CompanionColorPreviewWindow : SimpleWindow
         return true;
     }
 
+    public override void PreDraw()
+    {
+        base.PreDraw();
+
+        if (!TryGetAddon<AtkUnitBase>("Buddy"u8, out var addon))
+            return;
+
+        var height = ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y * 2 + ImGui.GetStyle().WindowPadding.Y * 2;
+        var offset = new Vector2(4, 3 - height);
+
+        Position = ImGui.GetMainViewport().Pos + addon->Position + offset;
+    }
+
     public override void Draw()
     {
         var localPlayer = Control.GetLocalPlayer();
@@ -104,18 +117,5 @@ public unsafe partial class CompanionColorPreviewWindow : SimpleWindow
             stainId = defaultStainId;
             drawObject->FlagSlotForUpdate((uint)DrawDataContainer.EquipmentSlot.Legs, stainSlot);
         }
-
-        UpdatePosition();
-    }
-
-    public void UpdatePosition()
-    {
-        if (!TryGetAddon<AtkUnitBase>("Buddy"u8, out var addon))
-            return;
-
-        Position = new(
-            addon->X + 4,
-            addon->Y + 3 - (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y * 2 + ImGui.GetStyle().WindowPadding.Y * 2)
-        );
     }
 }

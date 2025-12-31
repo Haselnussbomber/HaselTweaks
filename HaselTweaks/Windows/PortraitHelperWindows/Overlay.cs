@@ -1,5 +1,6 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Services.PortraitHelper;
 
@@ -100,6 +101,8 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
 
             _windowBg.Push(ImGuiCol.WindowBg, 0);
         }
+
+        UpdateWindow();
     }
 
     public override void Draw()
@@ -111,14 +114,11 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
     public override void PostDraw()
     {
         _windowText.Dispose();
-
-        UpdateWindow();
     }
 
     private void UpdateWindow()
     {
-        var addon = GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
-        if (addon == null)
+        if (!TryGetAddon<AtkUnitBase>(AgentId.BannerEditor, out var addon))
             return;
 
         if (!IsWindow)
@@ -132,17 +132,10 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
 
             if (Type == OverlayType.Full)
             {
-                var windowNode = addon->WindowNode;
+                var windowNode = (AtkResNode*)addon->WindowNode;
 
-                Position = new Vector2(
-                    addon->X + (windowNode->X + 8) * scale,
-                    addon->Y + (windowNode->Y + 40) * scale
-                );
-
-                Size = new Vector2(
-                    (windowNode->GetWidth() - 16) * scale,
-                    (windowNode->GetHeight() - 56) * scale
-                );
+                Position = ImGui.GetMainViewport().Pos + addon->Position + new Vector2(8, 40) * scale;
+                Size = (windowNode->Size - new Vector2(16, 56)) * scale;
             }
             else if (Type == OverlayType.LeftPane)
             {
@@ -150,15 +143,8 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
 
                 var leftPane = addon->GetNodeById(20);
 
-                Position = new Vector2(
-                    addon->X + leftPane->X * scale,
-                    addon->Y + leftPane->Y * scale
-                );
-
-                Size = new Vector2(
-                    leftPane->GetWidth() * scale,
-                    leftPane->GetHeight() * scale
-                );
+                Position = ImGui.GetMainViewport().Pos + addon->Position + leftPane->Position * scale;
+                Size = leftPane->Size * scale;
 
                 SizeConstraints = null;
             }

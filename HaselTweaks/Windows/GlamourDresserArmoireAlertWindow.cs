@@ -2,6 +2,7 @@ using Dalamud.Interface.Textures;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.Exd;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Windows;
 
@@ -34,10 +35,17 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
     }
 
     public override bool DrawConditions()
+        => IsAddonOpen("MiragePrismPrismBox"u8) && _tweak.Categories.Count != 0;
+
+    public override void PreDraw()
     {
-        return TryGetAddon<AddonMiragePrismPrismBox>("MiragePrismPrismBox"u8, out var addon)
-            && addon->IsVisible
-            && _tweak.Categories.Count != 0;
+        if (!TryGetAddon<AtkUnitBase>("MiragePrismPrismBox"u8, out var addon))
+            return;
+
+        var width = addon->GetScaledWidth(true);
+        var offset = new Vector2(width - 12, 9);
+
+        Position = ImGui.GetMainViewport().Pos + addon->Position + offset;
     }
 
     public override void Draw()
@@ -58,14 +66,6 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
             {
                 DrawItem(item);
             }
-        }
-
-        if (TryGetAddon<AddonMiragePrismPrismBox>("MiragePrismPrismBox"u8, out var addon))
-        {
-            Position = new(
-                addon->X + addon->GetScaledWidth(true) - 12,
-                addon->Y + 9
-            );
         }
     }
 

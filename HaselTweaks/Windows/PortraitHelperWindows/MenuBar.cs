@@ -1,5 +1,5 @@
-using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Services.PortraitHelper;
 using HaselTweaks.Utils.PortraitHelper;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
@@ -49,6 +49,7 @@ public unsafe partial class MenuBar : SimpleWindow
     public override void PreDraw()
     {
         _state.SaveInitialPreset();
+        UpdatePosition();
     }
 
     public override void Draw()
@@ -57,7 +58,6 @@ public unsafe partial class MenuBar : SimpleWindow
         {
             ImGui.SetCursorPosY(ImGui.GetCursorPos().Y + 2);
             ImGui.Text(_textService.Translate("PortraitHelperWindows.MenuBar.Initializing"));
-            UpdatePosition();
             return;
         }
 
@@ -94,27 +94,23 @@ public unsafe partial class MenuBar : SimpleWindow
 
         // ---
 
-        UpdatePosition();
         _createPresetDialog.Draw();
     }
 
     public void UpdatePosition()
     {
+        if (!TryGetAddon<AtkUnitBase>(AgentId.BannerEditor, out var addon))
+            return;
+
         var scale = ImGuiHelpers.GlobalScale;
-        var scaledown = 1 / scale;
-        var height = (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y * 2 + ImGui.GetStyle().WindowPadding.Y * 2) * scaledown;
+        var inverseScale = 1 / scale;
+        var addonWidth = addon->GetScaledWidth(true);
+        var width = (addonWidth - 8) * inverseScale;
+        var height = (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y * 2 + ImGui.GetStyle().WindowPadding.Y * 2) * inverseScale;
+        var offset = new Vector2(4, 3 - height * scale);
 
-        var addon = GetAddon<AddonBannerEditor>(AgentId.BannerEditor);
-
-        Position = new(
-            addon->X + 4,
-            addon->Y + 3 - height * scale
-        );
-
-        Size = new(
-            (addon->GetScaledWidth(true) - 8) * scaledown,
-            height
-        );
+        Position = ImGui.GetMainViewport().Pos + addon->Position + offset;
+        Size = new(width, height);
     }
 
     public override void PostDraw()
