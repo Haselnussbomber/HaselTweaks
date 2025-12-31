@@ -1,5 +1,11 @@
 # Changelog
 
+## [40.3.2] (2025-12-31)
+
+### HaselTweaks
+
+- **Fixed:** Plugin windows were not correctly attached to game windows when the multi-monitor feature is active in Dalamud and the game is played in windowed mode.
+
 ## [40.3.1] (2025-12-30)
 
 ### HaselTweaks
@@ -2322,6 +2328,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[40.3.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.3.1...v40.3.2
 [40.3.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.3.0...v40.3.1
 [40.3.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.2.2...v40.3.0
 [40.2.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.2.1...v40.2.2
