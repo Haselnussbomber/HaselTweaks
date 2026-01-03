@@ -6,8 +6,10 @@
 
 Previously called Bigger Item Dyeing Preview. The config was not migrated due to new config options.
 
-- **Added:** Support for the windows Character, Examine and Fitting Room.
-- **Added:** A config option to increase the sharpness of all preview images (default off).
+- **Added:** Support for the windows Character, Examine and Fitting Room.  
+  I think it's too big, but I'm not sure?!
+- **Added:** Config options to increase the sharpness of the preview images.  
+  I think it disables some kind of downscaling. It's disabled for the Character window by default, because I think it looks worse there when it's on. But it's your choice!
 
 ## [40.3.2] (2025-12-31)
 

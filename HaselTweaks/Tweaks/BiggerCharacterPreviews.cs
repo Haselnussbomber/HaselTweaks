@@ -1,4 +1,3 @@
-using FFXIVClientStructs.FFXIV.Client.Graphics.Kernel;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;
@@ -6,54 +5,31 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCharacterPreviewsConfiguration>
 {
+    private static readonly string[] AddonNames = ["Character", "CharacterInspect", "ColorantColoring", "Tryon"];
     private static readonly Vector2 CharaCardSize = new(576, 960); // native texture size
 
     private readonly IAddonLifecycle _addonLifecycle;
-    private readonly IGameInteropProvider _gameInteropProvider;
-    private Hook<AtkComponentPreview.Delegates.SetTexture>? _setTextureHook;
-    private bool _enableSharperImage;
 
     public override void OnEnable()
     {
-        _addonLifecycle.RegisterListener(AddonEvent.PreSetup, "Character", OnPreSetup);
-        _addonLifecycle.RegisterListener(AddonEvent.PreSetup, "CharacterInspect", OnPreSetup);
-        _addonLifecycle.RegisterListener(AddonEvent.PreSetup, "Tryon", OnPreSetup);
-        _addonLifecycle.RegisterListener(AddonEvent.PreSetup, "ColorantColoring", OnPreSetup);
-
         _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "Character", OnCharacterPostSetup);
         _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "CharacterInspect", OnCharacterInspectPostSetup);
         _addonLifecycle.RegisterListener(AddonEvent.PostDraw, "CharacterInspect", OnCharacterInspectPostDraw);
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "Tryon", OnTryonPostSetup);
         _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "ColorantColoring", OnColorantColoringPostSetup);
-
-        _setTextureHook ??= _gameInteropProvider.HookFromAddress<AtkComponentPreview.Delegates.SetTexture>(
-            AtkComponentPreview.MemberFunctionPointers.SetTexture,
-            SetTextureDetour);
-        _setTextureHook.Enable();
+        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "Tryon", OnTryonPostSetup);
+        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, AddonNames, OnPostSetupOrRefresh);
+        _addonLifecycle.RegisterListener(AddonEvent.PostRefresh, AddonNames, OnPostSetupOrRefresh);
     }
 
     public override void OnDisable()
     {
-        _setTextureHook?.Dispose();
-        _setTextureHook = null;
-
-        _addonLifecycle.UnregisterListener(AddonEvent.PreSetup, "Character", OnPreSetup);
-        _addonLifecycle.UnregisterListener(AddonEvent.PreSetup, "CharacterInspect", OnPreSetup);
-        _addonLifecycle.UnregisterListener(AddonEvent.PreSetup, "ColorantColoring", OnPreSetup);
-        _addonLifecycle.UnregisterListener(AddonEvent.PreSetup, "Tryon", OnPreSetup);
-
         _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Character", OnCharacterPostSetup);
         _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "CharacterInspect", OnCharacterInspectPostSetup);
         _addonLifecycle.UnregisterListener(AddonEvent.PostDraw, "CharacterInspect", OnCharacterInspectPostDraw);
         _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "ColorantColoring", OnColorantColoringPostSetup);
         _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Tryon", OnTryonPostSetup);
-
-        _enableSharperImage = false;
-    }
-
-    private void OnPreSetup(AddonEvent type, AddonArgs args)
-    {
-        _enableSharperImage = _config.SharperImages;
+        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, AddonNames, OnPostSetupOrRefresh);
+        _addonLifecycle.UnregisterListener(AddonEvent.PostRefresh, AddonNames, OnPostSetupOrRefresh);
     }
 
     private void OnCharacterPostSetup(AddonEvent type, AddonArgs args)
@@ -290,20 +266,50 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
             node->Position += size;
     }
 
-    private bool SetTextureDetour(AtkComponentPreview* thisPtr, Texture* texture)
+    private void OnPostSetupOrRefresh(AddonEvent type, AddonArgs args)
     {
-        var ret = _setTextureHook!.OriginalDisposeSafe(thisPtr, texture);
+        UpdatePreviewSharpening((AtkUnitBase*)args.Addon.Address);
+    }
 
-        if (_enableSharperImage)
+    private void UpdatePreviewSharpening(AtkUnitBase* addon)
+    {
+        if (addon == null)
+            return;
+
+        var nodeId = addon->NameString switch
         {
-            var imageNode = thisPtr->ImageNode;
-            if (imageNode != null)
-            {
-                imageNode->Flags.SetFlag((ImageNodeFlags)4, false);
-                imageNode->Flags.SetFlag((ImageNodeFlags)8, false);
-            }
-        }
+            "Character" => 72u,
+            "CharacterInspect" => 41u,
+            "ColorantColoring" => 71u,
+            "Tryon" => 31u,
+            _ => 0u
+        };
 
-        return ret;
+        var sharpen = addon->NameString switch
+        {
+            "Character" => _config.SharpenCharacter,
+            "CharacterInspect" => _config.SharpenCharacterInspect,
+            "ColorantColoring" => _config.SharpenColorantColoring,
+            "Tryon" => _config.SharpenTryon,
+            _ => false
+        };
+
+        if (nodeId == 0)
+            return;
+
+        var previewNode = addon->GetNodeById(nodeId);
+        if (previewNode == null)
+            return;
+
+        var previewComponent = previewNode->GetAsAtkComponentPreview();
+        if (previewComponent == null)
+            return;
+
+        var imageNode = previewComponent->ImageNode;
+        if (imageNode == null)
+            return;
+
+        imageNode->Flags.SetFlag((ImageNodeFlags)4, !sharpen);
+        imageNode->Flags.SetFlag((ImageNodeFlags)8, !sharpen);
     }
 }

@@ -62,7 +62,7 @@ Increases the size of the character preview in the following windows:
 - Fitting Room
 - Item Dyeing
 
-Also provides a config option to make preview images sharper (default off).
+Also provides config options to make preview images sharper.
 
 ### Cast Bar Aetheryte Names
 
