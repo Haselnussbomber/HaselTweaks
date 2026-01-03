@@ -1,13 +1,14 @@
 # Changelog
 
-## [Unreleased]
+## [41.0.0] (2026-01-03)
+
+Happy new year!
 
 ### Tweak reworked: Bigger Character Previews
 
 Previously called Bigger Item Dyeing Preview. The config was not migrated due to new config options.
 
-- **Added:** Support for the windows Character, Examine and Fitting Room.  
-  I think it's too big, but I'm not sure?!
+- **Added:** Support for the windows Character, Examine and Fitting Room.
 - **Added:** Config options to increase the sharpness of the preview images.  
   I think it disables some kind of downscaling. It's disabled for the Character window by default, because I think it looks worse there when it's on. But it's your choice!
 
@@ -2339,6 +2340,7 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
 [unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[41.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.3.2...v41.0.0
 [40.3.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.3.1...v40.3.2
 [40.3.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.3.0...v40.3.1
 [40.3.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.2.2...v40.3.0
