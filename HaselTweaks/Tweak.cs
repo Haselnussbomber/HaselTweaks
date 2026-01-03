@@ -72,7 +72,16 @@ public abstract unsafe partial class Tweak : ITweak, IHostedService
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;
 
-        OnDisable();
+        try
+        {
+            _logger.LogInformation("Disposing tweak");
+            OnDisable();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while disposing tweak");
+        }
+
         Status = TweakStatus.Disposed;
     }
 
