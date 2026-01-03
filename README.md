@@ -53,9 +53,16 @@ Automatically selects the first available soil and seed from your inventory when
 
 Adds a configurable keybind to toggle the background music, in addition to the game's existing keybind option to toggle the sound. No more `/bgm` macro. Works in cutscenes.
 
-### Bigger Item Dyeing Preview
+### Bigger Character Previews
 
-Increases the size of the character preview in the "Item Dyeing" window.
+Increases the size of the character preview in the following windows:
+
+- Character
+- Examine
+- Fitting Room
+- Item Dyeing
+
+Also provides a config option to make preview images sharper (default off).
 
 ### Cast Bar Aetheryte Names
 

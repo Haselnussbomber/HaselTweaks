@@ -374,6 +374,14 @@
     "zh": "未开通陆行鸟鞍囊2服务。"
   },
 
+  "AutoSelectSoilAndSeed.Tweak.Name": {
+    "en": "Auto-select Soil and Seed"
+  },
+  "AutoSelectSoilAndSeed.Tweak.Description": {
+    "en": "Automatically selects the first available soil and seed from your inventory when opening the \"Gardening\" window.",
+    "de": "Wählt beim Öffnen des \"AUSSÄEN\"-Fensters automatisch die erste verfügbare Erde und den ersten Samen aus deinem Inventar aus."
+  },
+
   "BackgroundMusicKeybind.Tweak.Name": {
     "en": "Background Music Keybind",
     "zh": "背景音乐按键绑定"
@@ -399,22 +407,48 @@
     "zh": "无"
   },
 
-  "AutoSelectSoilAndSeed.Tweak.Name": {
-    "en": "Auto-select Soil and Seed"
+  "BiggerCharacterPreviews.Tweak.Name": {
+    "en": "Bigger Character Previews"
   },
-  "AutoSelectSoilAndSeed.Tweak.Description": {
-    "en": "Automatically selects the first available soil and seed from your inventory when opening the \"Gardening\" window.",
-    "de": "Wählt beim Öffnen des \"AUSSÄEN\"-Fensters automatisch die erste verfügbare Erde und den ersten Samen aus deinem Inventar aus."
+  "BiggerCharacterPreviews.Tweak.Description": {
+    "en": "Increases the size of the character preview in various window.",
+    "de": "Vergrößert die Charaktervorschau in verschiedenen Fenstern."
   },
-
-  "BiggerItemDyeingPreview.Tweak.Name": {
-    "en": "Bigger Item Dyeing Preview",
-    "zh": "更大的染色预览"
+  "BiggerCharacterPreviews.Config.SharperImages.Label": {
+    "en": "Sharper preview images",
+    "de": "Schärfere Vorschaubilder"
   },
-  "BiggerItemDyeingPreview.Tweak.Description": {
-    "en": "Increases the size of the character preview in the \"Item Dyeing\" window.",
-    "de": "Vergrößert die Charaktervorschau im \"GEGENSTÄNDE FÄRBEN\"-Fenster.",
-    "zh": "增加“染色”窗口中角色预览部分的大小。"
+  "BiggerCharacterPreviews.Config.EnableCharacter.Label": {
+    "en": "Enable in Character",
+    "de": "Aktiviere für CHARAKTER"
+  },
+  "BiggerCharacterPreviews.Config.EnableCharacter.Description": {
+    "en": "Only to the bottom edge. Window is 36px wider.",
+    "de": "Nur bis zum unteren Rand. Das Fenster ist 36px breiter."
+  },
+  "BiggerCharacterPreviews.Config.EnableCharacterInspect.Label": {
+    "en": "Enable in examine character window",
+    "de": "Aktiviere für Character untersuchen-Fenster"
+  },
+  "BiggerCharacterPreviews.Config.EnableCharacterInspect.Description": {
+    "en": "Window is 86px wider and 174px taller.",
+    "de": "Das Fenster ist 86px breiter und 174px höher."
+  },
+  "BiggerCharacterPreviews.Config.EnableColorantColoring.Label": {
+    "en": "Enable in Item Dyeing",
+    "de": "Aktiviere für GEGENSTÄNDE FÄRBEN"
+  },
+  "BiggerCharacterPreviews.Config.EnableColorantColoring.Description": {
+    "en": "From top to bottom. Window is 106px wider.",
+    "de": "Von oben bis unten. Das Fenster ist 106px breiter."
+  },
+  "BiggerCharacterPreviews.Config.EnableTryon.Label": {
+    "en": "Enable in Fitting Room",
+    "de": "Aktiviere für ANPROBIEREN"
+  },
+  "BiggerCharacterPreviews.Config.EnableTryon.Description": {
+    "en": "Window is 94px wider and 160px taller.",
+    "de": "Das Fenster ist 94px breiter und 160px höher."
   },
 
   "CompanionColorPreview.Tweak.Name": {

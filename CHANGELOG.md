@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Tweak reworked: Bigger Character Previews
+
+Previously called Bigger Item Dyeing Preview. The config was not migrated due to new config options.
+
+- **Added:** Support for the windows Character, Examine and Fitting Room.
+- **Added:** A config option to increase the sharpness of all preview images (default off).
+
 ## [40.3.2] (2025-12-31)
 
 ### HaselTweaks
