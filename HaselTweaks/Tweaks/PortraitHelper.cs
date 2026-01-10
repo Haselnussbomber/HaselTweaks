@@ -198,6 +198,9 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
 
     private void CheckForGearChecksumMismatch(int gearsetId, bool isJobChange = false)
     {
+        if (Conditions.Instance()->DutyRecorderPlayback)
+            return;
+
         if (Conditions.Instance()->BoundByDuty56) // delay when bound by duty
         {
             _wasBoundByDuty = true;
