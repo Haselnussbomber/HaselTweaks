@@ -414,10 +414,6 @@
     "en": "Increases the size of the character preview in various window.",
     "de": "Vergrößert die Charaktervorschau in verschiedenen Fenstern."
   },
-  "BiggerCharacterPreviews.Config.SharperImages.Label": {
-    "en": "Sharper preview images",
-    "de": "Schärfere Vorschaubilder"
-  },
   "BiggerCharacterPreviews.Config.EnableCharacter.Label": {
     "en": "Enable in Character",
     "de": "Aktiviere für CHARAKTER"
@@ -425,6 +421,10 @@
   "BiggerCharacterPreviews.Config.EnableCharacter.Description": {
     "en": "Only to the bottom edge. Window is 36px wider.",
     "de": "Nur bis zum unteren Rand. Das Fenster ist 36px breiter."
+  },
+  "BiggerCharacterPreviews.Config.SharpenCharacter.Label": {
+    "en": "Sharper preview image",
+    "de": "Schärferes Vorschaubild"
   },
   "BiggerCharacterPreviews.Config.EnableCharacterInspect.Label": {
     "en": "Enable in examine character window",
@@ -434,6 +434,10 @@
     "en": "Window is 86px wider and 174px taller.",
     "de": "Das Fenster ist 86px breiter und 174px höher."
   },
+  "BiggerCharacterPreviews.Config.SharpenCharacterInspect.Label": {
+    "en": "Sharper preview image",
+    "de": "Schärferes Vorschaubild"
+  },
   "BiggerCharacterPreviews.Config.EnableColorantColoring.Label": {
     "en": "Enable in Item Dyeing",
     "de": "Aktiviere für GEGENSTÄNDE FÄRBEN"
@@ -442,6 +446,10 @@
     "en": "From top to bottom. Window is 106px wider.",
     "de": "Von oben bis unten. Das Fenster ist 106px breiter."
   },
+  "BiggerCharacterPreviews.Config.SharpenColorantColoring.Label": {
+    "en": "Sharper preview image",
+    "de": "Schärferes Vorschaubild"
+  },
   "BiggerCharacterPreviews.Config.EnableTryon.Label": {
     "en": "Enable in Fitting Room",
     "de": "Aktiviere für ANPROBIEREN"
@@ -449,6 +457,10 @@
   "BiggerCharacterPreviews.Config.EnableTryon.Description": {
     "en": "Window is 94px wider and 160px taller.",
     "de": "Das Fenster ist 94px breiter und 160px höher."
+  },
+  "BiggerCharacterPreviews.Config.SharpenTryon.Label": {
+    "en": "Sharper preview image",
+    "de": "Schärferes Vorschaubild"
   },
 
   "CompanionColorPreview.Tweak.Name": {
