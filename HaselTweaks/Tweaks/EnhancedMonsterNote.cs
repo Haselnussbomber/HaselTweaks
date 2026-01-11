@@ -1,6 +1,9 @@
+using Dalamud.Game.Agent.AgentArgTypes;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using DAgentEvent = Dalamud.Game.Agent.AgentEvent;
+using DAgentId = Dalamud.Game.Agent.AgentId;
 
 namespace HaselTweaks.Tweaks;
 
@@ -8,11 +11,11 @@ namespace HaselTweaks.Tweaks;
 public unsafe partial class EnhancedMonsterNote : ConfigurableTweak<EnhancedMonsterNoteConfiguration>
 {
     private readonly IClientState _clientState;
+    private readonly IAgentLifecycle _agentLifecycle;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly AddonObserver _addonObserver;
     private readonly ExcelService _excelService;
 
-    private Hook<AgentMonsterNote.Delegates.Show>? _showHook;
     private Hook<AgentMonsterNote.Delegates.OpenWithData>? _openWithDataHook;
 
     private bool _isShowCall;
@@ -20,15 +23,12 @@ public unsafe partial class EnhancedMonsterNote : ConfigurableTweak<EnhancedMons
 
     public override void OnEnable()
     {
-        _showHook = _gameInteropProvider.HookFromAddress<AgentMonsterNote.Delegates.Show>(
-            AgentMonsterNote.Instance()->VirtualTable->Show,
-            ShowDetour);
+        _agentLifecycle.RegisterListener(DAgentEvent.PreShow, DAgentId.MonsterNote, OnMonsterNotePreShow);
 
         _openWithDataHook = _gameInteropProvider.HookFromAddress<AgentMonsterNote.Delegates.OpenWithData>(
             AgentMonsterNote.MemberFunctionPointers.OpenWithData,
             OpenWithDataDetour);
 
-        _showHook.Enable();
         _openWithDataHook.Enable();
 
         _clientState.Logout += OnLogout;
@@ -37,8 +37,7 @@ public unsafe partial class EnhancedMonsterNote : ConfigurableTweak<EnhancedMons
 
     public override void OnDisable()
     {
-        _showHook?.Dispose();
-        _showHook = null;
+        _agentLifecycle.UnregisterListener(DAgentEvent.PreShow, DAgentId.MonsterNote, OnMonsterNotePreShow);
 
         _openWithDataHook?.Dispose();
         _openWithDataHook = null;
@@ -66,12 +65,11 @@ public unsafe partial class EnhancedMonsterNote : ConfigurableTweak<EnhancedMons
         AgentMonsterNote.Instance()->ReceiveEvent(retVal, values, 2, 0);
     }
 
-    private void ShowDetour(AgentMonsterNote* thisPtr)
+    private void OnMonsterNotePreShow(DAgentEvent type, AgentArgs args)
     {
-        if (!thisPtr->IsAgentActive())
+        var agent = args.GetAgentPointer<AgentMonsterNote>();
+        if (!agent->IsAgentActive())
             _isShowCall = true;
-
-        _showHook!.Original(thisPtr);
     }
 
     private void OpenWithDataDetour(AgentMonsterNote* thisPtr, byte classIndex, byte rank, byte a4, byte a5)
