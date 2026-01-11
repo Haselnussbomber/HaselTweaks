@@ -1,3 +1,4 @@
+using Dalamud.Game.Agent.AgentArgTypes;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
@@ -6,6 +7,8 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using DAgentId = Dalamud.Game.Agent.AgentId;
+using DAgentEvent = Dalamud.Game.Agent.AgentEvent;
 
 namespace HaselTweaks.Tweaks;
 
@@ -14,6 +17,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
 {
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IAddonLifecycle _addonLifecycle;
+    private readonly IAgentLifecycle _agentLifecycle;
     private readonly IFramework _framework;
     private readonly IClientState _clientState;
     private readonly IGameInventory _gameInventory;
@@ -22,7 +26,6 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
     private readonly MapService _mapService;
     private readonly ItemService _itemService;
 
-    private Hook<AgentRecipeMaterialList.Delegates.ReceiveEvent>? _agentRecipeMaterialListReceiveEventHook;
     private Hook<AtkComponentListItemPopulator.PopulateDelegate>? _addonRecipeMaterialListSetupRowHook;
     private Hook<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>? _addItemContextMenuEntriesHook;
 
@@ -38,9 +41,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
 
     public override void OnEnable()
     {
-        _agentRecipeMaterialListReceiveEventHook = _gameInteropProvider.HookFromAddress<AgentRecipeMaterialList.Delegates.ReceiveEvent>(
-            AgentRecipeMaterialList.StaticVirtualTablePointer->ReceiveEvent,
-            AgentRecipeMaterialListReceiveEventDetour);
+        _agentLifecycle.RegisterListener(DAgentEvent.PreReceiveEvent, DAgentId.RecipeMaterialList, OnPreRecipeMaterialListReceiveEvent);
 
         _addonRecipeMaterialListSetupRowHook = _gameInteropProvider.HookFromSignature<AtkComponentListItemPopulator.PopulateDelegate>(
             "48 89 5C 24 ?? 48 89 54 24 ?? 48 89 4C 24 ?? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 50 49 8B 08",
@@ -50,7 +51,6 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
             AgentRecipeItemContext.MemberFunctionPointers.AddItemContextMenuEntries,
             AddItemContextMenuEntriesDetour);
 
-        _agentRecipeMaterialListReceiveEventHook.Enable();
         _addonRecipeMaterialListSetupRowHook.Enable();
         _addItemContextMenuEntriesHook.Enable();
 
@@ -76,8 +76,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
         _gameInventory.InventoryChangedRaw -= OnInventoryUpdate;
         _clientState.Login -= OnLogin;
 
-        _agentRecipeMaterialListReceiveEventHook?.Dispose();
-        _agentRecipeMaterialListReceiveEventHook = null;
+        _agentLifecycle.UnregisterListener(DAgentEvent.PreReceiveEvent, DAgentId.RecipeMaterialList, OnPreRecipeMaterialListReceiveEvent);
 
         _addonRecipeMaterialListSetupRowHook?.Dispose();
         _addonRecipeMaterialListSetupRowHook = null;
@@ -217,19 +216,18 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
         recipeTree->ReceiveEvent(AtkEventType.ButtonClick, 0, &atkEvent);
     }
 
-    private AtkValue* AgentRecipeMaterialListReceiveEventDetour(AgentRecipeMaterialList* agent, AtkValue* returnValue, AtkValue* values, uint valueCount, ulong eventKind)
+    private void OnPreRecipeMaterialListReceiveEvent(DAgentEvent type, AgentArgs agentArgs)
     {
-        var ret = _agentRecipeMaterialListReceiveEventHook!.Original(agent, returnValue, values, valueCount, eventKind);
+        if (agentArgs is not AgentReceiveEventArgs args)
+            return;
 
-        if (eventKind != 1 && valueCount >= 1 && values->Int == 4)
-        {
-            _handleRecipeResultItemContextMenu = true;
-        }
+        _handleRecipeResultItemContextMenu = args.EventKind == 0
+            && args.ValueCount >= 1
+            && ((AtkValue*)args.AtkValues)->TryGetInt(out var value)
+            && value == 4;
 
         // TODO: add conditions?
-        SaveRestoreMaterialList(agent);
-
-        return ret;
+        SaveRestoreMaterialList(args.GetAgentPointer<AgentRecipeMaterialList>());
     }
 
     private void SaveRestoreMaterialList(AgentRecipeMaterialList* agent)
@@ -318,11 +316,8 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
         if (!_config.AddSearchForItemByCraftingMethodContextMenuEntry)
             return;
 
-        if (!IsAddonOpen(AgentId.RecipeMaterialList))
-            return;
-
-        var agentRecipeMaterialList = AgentRecipeMaterialList.Instance();
-        if (agentRecipeMaterialList->Recipe == null || agentRecipeMaterialList->Recipe->ResultItemId != itemId)
+        var agent = AgentRecipeMaterialList.Instance();
+        if (!agent->IsAddonShown() || agent->Recipe == null || agent->Recipe->ResultItemId != itemId)
             return;
 
         var localPlayer = Control.GetLocalPlayer();
