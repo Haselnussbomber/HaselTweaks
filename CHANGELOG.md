@@ -1,5 +1,20 @@
 # Changelog
 
+## [41.0.1] (2026-01-12)
+
+### HaselTweaks
+
+- Switched 3 ReceiveEvent hooks to the new IAgentLifecycle service from Dalamud: Aether Current Helper, Enhanced Material List, Enhanced Hunting Log.
+- The fuzzy matcher used for the search bar of Enhanced Isleworks Agenda was updated to kizers code from an [open pull request to Dalamud](https://github.com/goatcorp/Dalamud/pull/1583).
+
+### Bigger Character Previews
+
+- **Fixed:** Added missing translations. I had a single option to sharpen all previews at first, before reworking it into multiple, per-window options.
+
+### Portrait Helper
+
+- **Fixed:** The gear mismatch notification would trigger incorrectly while using the Duty Recorder.
+
 ## [41.0.0] (2026-01-03)
 
 Happy new year!
@@ -2339,7 +2354,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.0.1...main
+[41.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.0.0...v41.0.1
 [41.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.3.2...v41.0.0
 [40.3.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.3.1...v40.3.2
 [40.3.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.3.0...v40.3.1
