@@ -3,7 +3,7 @@
   <!-- Project settings -->
   <PropertyGroup>
     <Name>HaselTweaks</Name>
-    <Version>41.0.1</Version>
+    <Version>41.0.2</Version>
     <Author>Haselnussbomber</Author>
     <RepoUrl>https://github.com/Haselnussbomber/HaselTweaks</RepoUrl>
     <IconUrl>https://raw.githubusercontent.com/Haselnussbomber/HaselTweaks/refs/heads/main/HaselTweaks/Assets/Icon.png</IconUrl>
