@@ -1,6 +1,5 @@
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using HaselCommon.Sheets;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
@@ -112,7 +111,7 @@ public unsafe partial class GlamourDresserArmoireAlert : Tweak
 
     private bool IsSetContainingCabinetItems(uint itemId)
     {
-        if (!_excelService.TryGetRow<CustomMirageStoreSetItem>(itemId, out var set))
+        if (!_excelService.TryGetRow<MirageStoreSetItem>(itemId, out var set))
             return false;
         
         if (!set.TryGetSetItemBitArray(out var unlockArray, false))
