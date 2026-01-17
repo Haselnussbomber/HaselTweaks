@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [41.1.0] (2026-01-17)
 
 ### Glamour Dresser Armoire Alert
 
@@ -2367,7 +2367,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.0.2...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.0...main
+[41.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.0.2...v41.1.0
 [41.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.0.1...v41.0.2
 [41.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.0.0...v41.0.1
 [41.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v40.3.2...v41.0.0
