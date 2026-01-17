@@ -1445,6 +1445,10 @@
     "de": "Öffnet ein kleines Fenster neben der Projektionskommode mit einer Liste von Gegenständen, die im Kostbarkeitenkabinett aufbewahrt werden können (nur sichtbar, wenn qualifizierte Gegenstände gefunden wurden).",
     "zh": "在投影台界面旁打开一个列出能被存储到收藏柜里的物品（仅显示存在的符合条件的物品）的小窗口。"
   },
+  "GlamourDresserArmoireAlert.Config.IgnoreOutfits.Label": {
+    "en": "Ignore qualified items that are part of an outfit.",
+    "de": "Qualifizierte Gegenstände, die Teil eines Outfits sind, ignorieren"
+  },
   "GlamourDresserArmoireAlertWindow.Title": {
     "en": "[HaselTweaks] Glamour Dresser Armoire Alert",
     "zh": "[HaselTweaks] 投影台物品可放入收藏柜警报"

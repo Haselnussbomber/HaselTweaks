@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Glamour Dresser Armoire Alert
+
+- **Added:** A new config option to ignore Armoire-qualified items that are part of an outfit.
+
 ## [41.0.2] (2026-01-16)
 
 ### Hide MSQ Complete
