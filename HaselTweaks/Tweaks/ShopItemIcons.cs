@@ -53,7 +53,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
         if (handler == null)
             return;
 
-        if (values[0] is not { Type: ValueType.UInt, UInt: var tabIndex })
+        if (!values[0].TryGetUInt(out var tabIndex))
             return;
 
         const int IconIdOffset = 197;
@@ -64,7 +64,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
             for (var i = 0; i < handler->VisibleItemsCount; i++)
             {
                 ref var iconIdValue = ref values[IconIdOffset + i];
-                if (iconIdValue.Type != ValueType.UInt)
+                if (!iconIdValue.IsUInt)
                     continue;
 
                 var itemIndex = handler->VisibleItems[i];
@@ -84,7 +84,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
             for (var i = 0; i < handler->BuybackCount; i++)
             {
                 ref var iconIdValue = ref values[IconIdOffset + i];
-                if (iconIdValue.Type != ValueType.UInt)
+                if (!iconIdValue.IsUInt)
                     continue;
 
                 var item = new ItemHandle(handler->Buyback[i].ItemId);
@@ -114,7 +114,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
             ref var itemIdValue = ref values[1063 + i];
             ref var iconIdValue = ref values[209 + i];
 
-            if (itemIdValue.Type != ValueType.UInt || iconIdValue.Type != ValueType.Int || itemIdValue.UInt == 0)
+            if (!itemIdValue.IsUInt || !iconIdValue.IsInt || itemIdValue.UInt == 0)
                 continue;
 
             iconIdValue.UInt = new ItemHandle(itemIdValue.UInt).Icon;
@@ -138,7 +138,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
             ref var itemIdValue = ref values[317 + i];
             ref var iconIdValue = ref values[167 + i];
 
-            if (itemIdValue.Type != ValueType.UInt || iconIdValue.Type != ValueType.UInt || itemIdValue.UInt == 0)
+            if (!itemIdValue.IsUInt || !iconIdValue.IsUInt || itemIdValue.UInt == 0)
                 continue;
 
             iconIdValue.UInt = new ItemHandle(itemIdValue.UInt).Icon;
@@ -159,7 +159,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
             ref var itemIdValue = ref values[300 + i * 18];
             ref var iconIdValue = ref values[300 + i * 18 + 1];
 
-            if (itemIdValue.Type != ValueType.UInt || iconIdValue.Type != ValueType.UInt || itemIdValue.UInt == 0)
+            if (!itemIdValue.IsUInt || !iconIdValue.IsUInt || itemIdValue.UInt == 0)
                 continue;
 
             iconIdValue.UInt = new ItemHandle(itemIdValue.UInt).Icon;
@@ -179,7 +179,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
             ref var itemIdValue = ref values[65 + i];
             ref var iconIdValue = ref values[126 + i];
 
-            if (itemIdValue.Type != ValueType.UInt || iconIdValue.Type != ValueType.UInt || itemIdValue.UInt == 0)
+            if (!itemIdValue.IsUInt || !iconIdValue.IsUInt || itemIdValue.UInt == 0)
                 continue;
 
             iconIdValue.UInt = new ItemHandle(itemIdValue.UInt).Icon;

@@ -82,7 +82,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
             return;
 
         ref var tabIndex = ref values[1];
-        if (tabIndex.Type != ValueType.Int)
+        if (!tabIndex.IsInt)
             return;
 
         tabIndex.Int = 2;
