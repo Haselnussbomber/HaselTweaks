@@ -116,10 +116,10 @@ public unsafe partial class GlamourDresserArmoireAlert : ConfigurableTweak<Glamo
 
         if (!_excelService.TryGetRow<MirageStoreSetItem>(itemId, out var set))
             return false;
-        
+
         if (!set.TryGetSetItemBitArray(out var unlockArray, false))
             return false;
-        
+
         if (!set.Items.Where(setItem => setItem.RowId != 0).Any(setItem => _cabinetItems!.Contains(setItem.RowId)))
             return false;
 
