@@ -92,6 +92,12 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
         "RetainerGrid4",
     ];
 
+    private static readonly HashSet<string> MountMinionBaseAddons =
+    [
+        "MinionNoteBook",
+        "MountNoteBook",
+    ];
+
     private readonly IFramework _framework;
     private readonly IClientState _clientState;
     private readonly IGameConfig _gameConfig;
@@ -158,9 +164,7 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
             ["LovmPaletteEdit"] = ptr => UpdateTabController(ptr, &ptr.Cast<AddonLovmPaletteEdit>()->TabController, _config.HandleLovmPaletteEdit),
             ["MJIMinionNoteBook"] = ptr => UpdateMJIMinionNoteBook(ptr.Cast<AddonMJIMinionNoteBook>()),
             ["MYCWarResultNotebook"] = ptr => UpdateFieldNotes(ptr.Cast<AddonMYCWarResultNotebook>()),
-            ["MinionNoteBook"] = ptr => UpdateMountMinion(ptr, _config.HandleMinionNoteBook),
             ["MiragePrismPrismBox"] = ptr => UpdateMiragePrismPrismBox(ptr.Cast<AddonMiragePrismPrismBox>()),
-            ["MountNoteBook"] = ptr => UpdateMountMinion(ptr, _config.HandleMountNoteBook),
             ["OrnamentNoteBook"] = ptr => UpdateTabController(ptr, &ptr.Cast<AddonOrnamentNoteBook>()->TabController, _config.HandleOrnamentNoteBook)
         };
 
@@ -173,6 +177,7 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
         RegisterMultiHandler(handlers, InventoryBuddyAddons, ptr => UpdateInventoryBuddy());
         RegisterMultiHandler(handlers, InventoryRetainerAddons, ptr => UpdateInventoryRetainer());
         RegisterMultiHandler(handlers, InventoryRetainerLargeAddons, ptr => UpdateInventoryRetainerLarge());
+        RegisterMultiHandler(handlers, MountMinionBaseAddons, ptr => UpdateMountMinion(ptr.Cast<AddonMinionMountBase>()));
 
         _handlers = handlers.ToFrozenDictionary();
     }
@@ -478,12 +483,17 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
         }
     }
 
-    private void UpdateMountMinion(Pointer<AtkUnitBase> unitBase, bool isEnabled)
+    private void UpdateMountMinion(AddonMinionMountBase* addon)
     {
+        var isEnabled = addon->NameString switch
+        {
+            "MinionNoteBook" => _config.HandleMinionNoteBook,
+            "MountNoteBook" => _config.HandleMountNoteBook,
+            _ => false,
+        };
+
         if (!isEnabled)
             return;
-
-        var addon = unitBase.Cast<AddonMinionMountBase>();
 
         if (addon->CurrentView == AddonMinionMountBase.ViewType.Normal)
         {
@@ -493,12 +503,12 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
             }
             else
             {
-                UpdateTabController(unitBase, &addon->TabController, true);
+                UpdateTabController((AtkUnitBase*)addon, &addon->TabController, true);
             }
         }
         else if (addon->CurrentView == AddonMinionMountBase.ViewType.Favorites && _wheelState > 0)
         {
-            addon->TabController.CallbackFunction(0, unitBase);
+            addon->TabController.CallbackFunction(0, (AtkUnitBase*)addon);
         }
     }
 
