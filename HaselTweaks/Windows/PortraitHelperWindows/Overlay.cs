@@ -65,7 +65,7 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
         if (agnet == null || addon == null || agnet->EditorState == null || !addon->IsReady)
             return false;
 
-        var isContextMenuOpen = addon->NumOpenPopups != 0;
+        var isContextMenuOpen = addon->NumBlockingAddons != 0;
         var isCloseDialogOpen = agnet->EditorState->CloseDialogAddonId != 0;
 
         return IsOpen && !isContextMenuOpen && !isCloseDialogOpen;

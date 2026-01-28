@@ -103,7 +103,7 @@ public unsafe partial class CompanionColorPreviewWindow : SimpleWindow
                     if (ImGui.Selectable(stainName, isCurrentStain, ImGuiSelectableFlags.SpanAllColumns))
                     {
                         stainId = (byte)stain.RowId;
-                        drawObject->FlagSlotForUpdate((uint)DrawDataContainer.EquipmentSlot.Legs, stainSlot);
+                        drawObject->SetEquipmentSlotModel((uint)DrawDataContainer.EquipmentSlot.Legs, stainSlot);
                     }
                 }
             }
@@ -115,7 +115,7 @@ public unsafe partial class CompanionColorPreviewWindow : SimpleWindow
         if (ImGuiUtils.IconButton("##Reset", FontAwesomeIcon.Undo, _textService.Translate("HaselTweaks.Config.ResetToDefault", _textService.GetStainName(defaultStainId))))
         {
             stainId = defaultStainId;
-            drawObject->FlagSlotForUpdate((uint)DrawDataContainer.EquipmentSlot.Legs, stainSlot);
+            drawObject->SetEquipmentSlotModel((uint)DrawDataContainer.EquipmentSlot.Legs, stainSlot);
         }
     }
 }

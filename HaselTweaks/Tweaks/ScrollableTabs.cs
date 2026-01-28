@@ -236,7 +236,7 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
             return;
         }
 
-        if (_handlers.TryGetValue(name, out var handler))
+        if (_handlers != null && _handlers.TryGetValue(name, out var handler))
         {
             handler(hoveredUnitBase);
         }
