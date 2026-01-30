@@ -24,8 +24,6 @@ public unsafe partial class DTR : ConfigurableTweak<DTRConfiguration>
     private int _lastFrameRate;
     private uint _lastInstanceId;
 
-    public void OnInitialize() { }
-
     public override void OnEnable()
     {
         _dtrInstance = _dtrBar.Get("[HaselTweaks] Instance");
