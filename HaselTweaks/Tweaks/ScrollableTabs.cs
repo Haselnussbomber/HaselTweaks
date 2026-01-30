@@ -697,6 +697,12 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
         if (!TryGetAddon<AddonCharacter>("Character"u8, out var addon))
             return;
 
+        if (!addon->AddonControl.IsChildSetupComplete)
+            return;
+
+        if (IntersectingCollisionNode == addon->PreviewController.CollisionNode)
+            return;
+
         var tabIndex = GetTabIndex(addon->TabIndex, addon->TabCount);
 
         if (addon->TabIndex == tabIndex)
