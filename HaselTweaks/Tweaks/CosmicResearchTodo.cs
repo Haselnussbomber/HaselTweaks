@@ -152,7 +152,7 @@ public unsafe partial class CosmicResearchTodo : ConfigurableTweak<CosmicResearc
         numberArray->DutyObjectiveCount = 0;
         numberArray->DutyCompletedObjectives = 0;
 
-        for (byte toolType = 1; toolType <= 5; toolType++)
+        for (byte toolType = 1; toolType <= toolClassRow.Types.Count; toolType++)
         {
             if (!researchModule->IsTypeAvailable(toolClassId, toolType))
                 break;
