@@ -1,5 +1,15 @@
 # Changelog
 
+## [41.1.3] (2026-01-30)
+
+### Character Class Switcher
+
+- **Fixed:** Switching to a crafter job would unintentionally open the Desynthesis Skill window briefly.
+
+### Scrollable Tabs
+
+- **Fixed:** Scrolling on the character preview in the Character window would unintentionally scroll the tabs.
+
 ## [41.1.2] (2026-01-30)
 
 ### Cosmic Research in Duty List
@@ -2378,7 +2388,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.2...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.3...main
+[41.1.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.2...v41.1.3
 [41.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.1...v41.1.2
 [41.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.0...v41.1.1
 [41.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.0.2...v41.1.0
