@@ -1,5 +1,11 @@
 # Changelog
 
+## [41.1.2] (2026-01-30)
+
+### Cosmic Research in Duty List
+
+- **Fixed:** Latest Dataset wasn't taken into account. (Thanks to @Scrxtchy)
+
 ## [41.1.1] (2026-01-28)
 
 - Updated ClientStructs for Patch 7.41.
@@ -2372,7 +2378,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.1...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.2...main
+[41.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.1...v41.1.2
 [41.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.0...v41.1.1
 [41.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.0.2...v41.1.0
 [41.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.0.1...v41.0.2
