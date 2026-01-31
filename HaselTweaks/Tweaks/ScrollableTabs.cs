@@ -720,11 +720,8 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
 
     private void UpdateCharacterClass(AddonCharacterClass* addon)
     {
-        if (!_config.HandleCharacterClass)
-            return;
-
         // prev or next embedded addon
-        if (_config.HandleCharacter && (addon->TabIndex + _wheelState < 0 || addon->TabIndex + _wheelState > 1))
+        if (!_config.HandleCharacterClass || addon->TabIndex + _wheelState < 0 || addon->TabIndex + _wheelState > 1)
         {
             UpdateCharacter();
             return;
@@ -740,16 +737,13 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
 
     private void UpdateCharacterRepute(AddonCharacterRepute* addon)
     {
-        if (!_config.HandleCharacterRepute)
-            return;
-
         if (addon->ExpansionsDropDownList == null || addon->ExpansionsDropDownList->IsOpen)
             return;
 
         var currentIndex = addon->ExpansionsDropDownList->GetSelectedItemIndex();
 
         // prev embedded addon
-        if (_config.HandleCharacter && (currentIndex + _wheelState < 0))
+        if (!_config.HandleCharacterRepute || currentIndex + _wheelState < 0)
         {
             UpdateCharacter();
             return;
