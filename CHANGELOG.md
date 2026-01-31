@@ -1,5 +1,11 @@
 # Changelog
 
+## [41.1.4] (2026-01-31)
+
+### Scrollable Tabs
+
+- **Fixed:** Scrolling in the Character window while Classes/Jobs or Repute was disabled would not work as intended.
+
 ## [41.1.3] (2026-01-30)
 
 ### Character Class Switcher
@@ -2388,7 +2394,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.3...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.4...main
+[41.1.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.3...v41.1.4
 [41.1.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.2...v41.1.3
 [41.1.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.1...v41.1.2
 [41.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.0...v41.1.1
