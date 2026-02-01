@@ -7,6 +7,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfiguration>
 {
     private readonly IAddonLifecycle _addonLifecycle;
+    private readonly ItemService _itemService;
 
     public override void OnEnable()
     {
@@ -71,11 +72,11 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
                 if (itemIndex < 0 || itemIndex > handler->ItemsCount)
                     continue;
 
-                var item = new ItemHandle(handler->Items[itemIndex].ItemId);
-                if (item.IsEmpty)
+                var itemId = handler->Items[itemIndex].ItemId;
+                if (itemId == 0)
                     continue;
 
-                iconIdValue.UInt = item.Icon;
+                iconIdValue.UInt = _itemService.GetItemIcon(itemId);
             }
         }
         // Buyback
@@ -87,11 +88,11 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
                 if (!iconIdValue.IsUInt)
                     continue;
 
-                var item = new ItemHandle(handler->Buyback[i].ItemId);
-                if (item.IsEmpty)
+                var itemId = handler->Buyback[i].ItemId;
+                if (itemId == 0)
                     continue;
 
-                iconIdValue.UInt = item.Icon;
+                iconIdValue.UInt = _itemService.GetItemIcon(itemId);
             }
         }
     }
@@ -117,7 +118,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
             if (!itemIdValue.IsUInt || !iconIdValue.IsInt || itemIdValue.UInt == 0)
                 continue;
 
-            iconIdValue.UInt = new ItemHandle(itemIdValue.UInt).Icon;
+            iconIdValue.UInt = _itemService.GetItemIcon(itemIdValue.UInt);
         }
     }
 
@@ -141,7 +142,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
             if (!itemIdValue.IsUInt || !iconIdValue.IsUInt || itemIdValue.UInt == 0)
                 continue;
 
-            iconIdValue.UInt = new ItemHandle(itemIdValue.UInt).Icon;
+            iconIdValue.UInt = _itemService.GetItemIcon(itemIdValue.UInt);
         }
     }
 
@@ -162,7 +163,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
             if (!itemIdValue.IsUInt || !iconIdValue.IsUInt || itemIdValue.UInt == 0)
                 continue;
 
-            iconIdValue.UInt = new ItemHandle(itemIdValue.UInt).Icon;
+            iconIdValue.UInt = _itemService.GetItemIcon(itemIdValue.UInt);
         }
     }
 
@@ -182,7 +183,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
             if (!itemIdValue.IsUInt || !iconIdValue.IsUInt || itemIdValue.UInt == 0)
                 continue;
 
-            iconIdValue.UInt = new ItemHandle(itemIdValue.UInt).Icon;
+            iconIdValue.UInt = _itemService.GetItemIcon(itemIdValue.UInt);
         }
     }
 }

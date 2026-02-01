@@ -21,7 +21,6 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
     private readonly ExcelService _excelService;
     private readonly LanguageProvider _languageProvider;
     private readonly TextService _textService;
-    private readonly ImGuiContextMenuService _imGuiContextMenuService;
     private readonly ItemService _itemService;
     private readonly PluginConfig _pluginConfig;
     private readonly ISeStringEvaluator _seStringEvaluator;
@@ -130,7 +129,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
                     ImGui.Text(_seStringEvaluator.EvaluateFromAddon(4350, [gearset->ItemLevel]).ToString());
                 }
 
-                _imGuiContextMenuService.Draw("GearsetContext", builder =>
+                ImGuiContextMenu.Draw("GearsetContext", builder =>
                 {
                     builder
                         .AddGearsetLinkGlamour(gearset)
@@ -232,7 +231,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
 
         // icon
         ImGui.SetCursorPos(startPos + IconInset * ImGuiHelpers.GlobalScale);
-        _textureProvider.DrawIcon(new GameIconLookup(item.Icon, ItemUtil.IsHighQuality(slotItem.ItemId)), (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
+        _textureProvider.DrawIcon(new GameIconLookup(_itemService.GetItemIcon(item), ItemUtil.IsHighQuality(slotItem.ItemId)), (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
         // icon overlay
         ImGui.SetCursorPos(startPos);
@@ -248,7 +247,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         ImGui.SetCursorPos(startPos + new Vector2(0, (IconSize.Y - 3) * ImGuiHelpers.GlobalScale));
 
         var (glamourId, stain0Id, stain1Id) = (slotItem.GlamourId, slotItem.Stain0Id, slotItem.Stain1Id);
-        _imGuiContextMenuService.Draw("ItemTooltip", builder =>
+        ImGuiContextMenu.Draw("ItemTooltip", builder =>
         {
             builder
                 .AddTryOn(item, glamourId, stain0Id, stain1Id)
@@ -258,12 +257,12 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
                 .AddItemSearch(item);
         });
 
-        if (!ImGui.IsItemHovered() || !item.TryGetItem(out var itemRow))
+        if (!ImGui.IsItemHovered() || !_itemService.TryGetItem(item, out var itemRow))
             return;
 
         using var _ = ImRaii.Tooltip();
 
-        ImGui.TextColored(item.RarityColor, item.Name.ToString());
+        ImGui.TextColored(ItemUtil.GetItemRarityColorType(item), _itemService.GetItemName(item).ToString());
 
         var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         if (holdingShift)
@@ -287,7 +286,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         {
             ImGui.Text(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelGlamour"));
             ImGuiUtils.SameLineSpace();
-            ImGui.TextColored(glamourItem.RarityColor, glamourItem.Name.ToString());
+            ImGui.TextColored(ItemUtil.GetItemRarityColorType(glamourItem), _itemService.GetItemName(glamourItem).ToString());
 
             if (holdingShift)
             {

@@ -11,6 +11,7 @@ public unsafe partial class GlamourDresserArmoireAlert : ConfigurableTweak<Glamo
     private readonly IGameInventory _gameInventory;
     private readonly AddonObserver _addonObserver;
     private readonly ExcelService _excelService;
+    private readonly ItemService _itemService;
     private readonly IFramework _framework;
 
     private GlamourDresserArmoireAlertWindow? _window;
@@ -88,7 +89,7 @@ public unsafe partial class GlamourDresserArmoireAlert : ConfigurableTweak<Glamo
             if (itemId == 0)
                 continue;
 
-            if (!item.TryGetItem(out var itemRow) && itemRow.ItemUICategory.TryGetRow(out var itemUICategory))
+            if (!_itemService.TryGetItem(item, out var itemRow) && itemRow.ItemUICategory.TryGetRow(out var itemUICategory))
                 continue;
 
             if (!_cabinetItems.Contains(itemId) && !IsSetContainingCabinetItems(itemId))

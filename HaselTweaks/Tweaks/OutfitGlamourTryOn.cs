@@ -9,6 +9,7 @@ public unsafe partial class OutfitGlamourTryOn : Tweak
 {
     private readonly IContextMenu _contextMenu;
     private readonly TextService _textService;
+    private readonly ItemService _itemService;
 
     public override void OnEnable()
     {
@@ -33,15 +34,15 @@ public unsafe partial class OutfitGlamourTryOn : Tweak
         if (data->ContextMenuItemIndex > data->Items.Length || data->ContextMenuItemIndex > data->NumItemsInSet)
             return;
 
-        ItemHandle item = data->Items[data->ContextMenuItemIndex].ItemId;
+        var itemId = data->Items[data->ContextMenuItemIndex].ItemId;
 
         args.AddMenuItem(new MenuItem()
         {
             Prefix = SeIconChar.BoxedLetterH,
             PrefixColor = 32,
             Name = _textService.GetAddonText(2426),
-            IsEnabled = item.CanTryOn,
-            OnClicked = (args) => AgentTryon.TryOn(agent->AgentInterface.AddonId, item)
+            IsEnabled = _itemService.CanTryOn(itemId),
+            OnClicked = (args) => AgentTryon.TryOn(agent->AgentInterface.AddonId, itemId)
         });
     }
 }

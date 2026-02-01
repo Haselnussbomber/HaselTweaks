@@ -7,6 +7,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe partial class MarketBoardItemPreview : Tweak
 {
     private readonly IAddonLifecycle _addonLifecycle;
+    private readonly ItemService _itemService;
 
     public override void OnEnable()
     {
@@ -25,16 +26,16 @@ public unsafe partial class MarketBoardItemPreview : Tweak
 
         var eventData = (AtkEventData*)addonReceiveEventArgs.AtkEventData;
         var itemIndex = eventData->ListItemData.SelectedIndex;
-        var item = new ItemHandle(AgentItemSearch.Instance()->ListingPageItemIds[itemIndex]);
+        var itemId = AgentItemSearch.Instance()->ListingPageItemIds[itemIndex];
 
-        if (!item.CanTryOn)
+        if (!_itemService.CanTryOn(itemId))
         {
-            _logger.LogInformation("Skipping preview of {name}, because it can't be tried on", item.Name);
+            _logger.LogInformation("Skipping preview of {name}, because it can't be tried on", _itemService.GetItemName(itemId, false));
             return;
         }
 
-        _logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId}", itemIndex, item.ItemId);
+        _logger.LogTrace("Previewing Index {atkEventData} with ItemId {itemId}", itemIndex, itemId);
 
-        AgentTryon.TryOn(args.Addon.Id, item, 0, 0, 0);
+        AgentTryon.TryOn(args.Addon.Id, itemId, 0, 0, 0);
     }
 }

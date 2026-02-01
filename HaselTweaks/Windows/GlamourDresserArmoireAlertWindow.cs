@@ -14,7 +14,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
     private readonly ITextureProvider _textureProvider;
     private readonly ExcelService _excelService;
     private readonly TextService _textService;
-    private readonly ImGuiContextMenuService _imGuiContextMenuService;
+    private readonly ItemService _itemService;
     private readonly GlamourDresserArmoireAlert _tweak;
 
     public bool IsUpdatePending { get; set; }
@@ -74,7 +74,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
 
         using (var group = ImRaii.Group())
         {
-            _textureProvider.DrawIcon(new GameIconLookup(item.Icon, item.IsHighQuality), IconSize * ImGuiHelpers.GlobalScale);
+            _textureProvider.DrawIcon(new GameIconLookup(_itemService.GetItemIcon(item), item.IsHighQuality), IconSize * ImGuiHelpers.GlobalScale);
 
             ImGui.SameLine();
 
@@ -99,10 +99,10 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
                 ImGui.GetStyle().ItemInnerSpacing.X,
                 IconSize.Y * ImGuiHelpers.GlobalScale / 2f - ImGui.GetTextLineHeight() / 2f - 1));
 
-            ImGui.Text(item.Name.ToString());
+            ImGui.Text(_itemService.GetItemName(item, false).ToString());
         }
 
-        _imGuiContextMenuService.Draw("ItemContextMenu", builder =>
+        ImGuiContextMenu.Draw("ItemContextMenu", builder =>
         {
             builder
                 .AddTryOn(item)
