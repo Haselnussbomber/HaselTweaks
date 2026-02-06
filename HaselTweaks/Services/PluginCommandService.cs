@@ -14,15 +14,19 @@ public partial class PluginCommandService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _commandService.AddCommand("haseltweaks", cmd => cmd
-            .WithHelpTextKey("HaselTweaks.CommandHandlerHelpMessage")
-            .WithDisplayOrder(1)
-            .WithHandler(OnMainCommand)
-            .AddSubcommand("debug", cmd => cmd
-#if !DEBUG
-                .SetEnabled(false)
+        _commandService.AddCommand("haseltweaks", cmd =>
+        {
+            cmd.WithHelpTextKey("HaselTweaks.CommandHandlerHelpMessage");
+            cmd.WithDisplayOrder(1);
+            cmd.WithHandler(OnMainCommand);
+
+#if DEBUG
+            cmd.AddSubcommand("debug", cmd =>
+            {
+                cmd.WithHandler(OnDebugCommand);
+            });
 #endif
-                .WithHandler(OnDebugCommand)));
+        });
 
         _pluginInterface.UiBuilder.OpenConfigUi += TogglePluginWindow;
 
