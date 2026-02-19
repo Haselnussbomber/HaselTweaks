@@ -262,7 +262,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
 
         using var _ = ImRaii.Tooltip();
 
-        ImGui.TextColored(ItemUtil.GetItemRarityColorType(item), _itemService.GetItemName(item).ToString());
+        ImGui.TextColored(_itemService.GetItemRarityColor(item), _itemService.GetItemName(item).ToString());
 
         var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         if (holdingShift)
@@ -286,7 +286,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         {
             ImGui.Text(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelGlamour"));
             ImGuiUtils.SameLineSpace();
-            ImGui.TextColored(ItemUtil.GetItemRarityColorType(glamourItem), _itemService.GetItemName(glamourItem).ToString());
+            ImGui.TextColored(_itemService.GetItemRarityColor(glamourItem), _itemService.GetItemName(glamourItem).ToString());
 
             if (holdingShift)
             {
