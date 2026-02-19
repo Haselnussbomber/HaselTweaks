@@ -1,5 +1,11 @@
 # Changelog
 
+## [41.1.6] (2026-02-19)
+
+### Gear Set Grid
+
+- **Fixed:** Item rarity color and dye color in the tooltip were not displayed correctly.
+
 ## [41.1.5] (2026-02-06)
 
 ### HaselTweaks
@@ -2401,7 +2407,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.5...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.4...main
+[41.1.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.5...v41.1.6
 [41.1.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.4...v41.1.5
 [41.1.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.3...v41.1.4
 [41.1.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.2...v41.1.3
