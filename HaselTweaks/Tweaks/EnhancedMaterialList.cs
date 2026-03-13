@@ -144,7 +144,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
         if (args is not AddonReceiveEventArgs receiveEventArgs)
             return;
 
-        switch ((AtkEventType)receiveEventArgs.AtkEventType)
+        switch (receiveEventArgs.EventType)
         {
             case AtkEventType.ButtonClick when receiveEventArgs.EventParam == 1: // refresh button clicked
                 _canRefreshMaterialList = false;
@@ -154,11 +154,14 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
                 if (!_config.ClickToOpenMap)
                     return;
 
-                var data = (AtkEventData.AtkListItemData*)receiveEventArgs.AtkEventData;
-                if (data == null || data->MouseButtonId == 1) // ignore right click
+                var eventData = receiveEventArgs.GetEventData<AtkEventData.AtkListItemData>();
+                if (eventData == null || eventData->ListItem == null)
                     return;
 
-                var itemId = data->ListItem->UIntValues[1];
+                if (eventData->MouseButtonId == 1) // ignore right click
+                    return;
+
+                var itemId = eventData->ListItem->UIntValues[1];
                 if (_config.DisableClickToOpenMapForCrystals && (!_excelService.TryGetRow<Item>(itemId, out var item) || item.ItemUICategory.RowId == 59))
                     return;
 
@@ -180,7 +183,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
         if (args is not AddonReceiveEventArgs receiveEventArgs)
             return;
 
-        switch ((AtkEventType)receiveEventArgs.AtkEventType)
+        switch (receiveEventArgs.EventType)
         {
             case AtkEventType.ButtonClick when receiveEventArgs.EventParam == 0: // refresh button clicked
                 _canRefreshRecipeTree = false;

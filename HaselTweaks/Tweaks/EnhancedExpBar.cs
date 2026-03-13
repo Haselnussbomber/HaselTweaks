@@ -92,7 +92,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
 
     private void OnAddonExpPostRequestedUpdate(AddonEvent type, AddonArgs args)
     {
-        var addon = (AtkUnitBase*)args.Addon.Address;
+        var addon = args.GetAddon<AtkUnitBase>();
 
         var gaugeBarNode = addon->GetComponentByNodeId(6);
         if (gaugeBarNode == null)

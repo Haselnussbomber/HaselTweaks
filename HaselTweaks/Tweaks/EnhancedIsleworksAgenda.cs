@@ -44,11 +44,12 @@ public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak<Enhanced
         if (!_config.DisableTreeListTooltips || addonArgs is not AddonReceiveEventArgs args)
             return;
 
-        if ((AtkEventType)args.AtkEventType != AtkEventType.ListItemRollOver || args.EventParam != 2)
+        if (args.EventType != AtkEventType.ListItemRollOver || args.EventParam != 2)
             return;
 
-        var addon = (AddonMJICraftScheduleSetting*)args.Addon.Address;
-        var index = ((AtkEventData.AtkListItemData*)args.AtkEventData)->SelectedIndex;
+        var addon = args.GetAddon<AddonMJICraftScheduleSetting>();
+        var eventData = args.GetEventData<AtkEventData.AtkListItemData>();
+        var index = eventData->SelectedIndex;
         var item = addon->TreeList->GetItem(index);
         if (item == null || item->UIntValues.LongCount < 1)
             return;

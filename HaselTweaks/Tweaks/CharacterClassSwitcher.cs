@@ -94,7 +94,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
 
     private void OnCharacterClassPostSetup(AddonEvent type, AddonArgs args)
     {
-        var addon = (AddonCharacterClass*)args.Addon.Address;
+        var addon = args.GetAddon<AddonCharacterClass>();
 
         for (var i = 0; i < addon->ClassComponents.Length; i++)
         {
@@ -127,7 +127,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
 
     private void OnCharacterClassPostRequestedUpdate(AddonEvent type, AddonArgs args)
     {
-        var addon = (AddonCharacterClass*)args.Addon.Address;
+        var addon = args.GetAddon<AddonCharacterClass>();
 
         for (var i = 0; i < addon->ClassComponents.Length; i++)
         {
@@ -170,10 +170,10 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         if (addonArgs is not AddonReceiveEventArgs args)
             return;
 
-        var addon = (AddonCharacterClass*)args.Addon.Address;
-        var eventType = (AtkEventType)args.AtkEventType;
+        var addon = args.GetAddon<AddonCharacterClass>();
+        var eventType = args.EventType;
         var eventParam = args.EventParam;
-        var eventData = (AtkEventData*)args.AtkEventData;
+        var eventData = args.GetEventData<AtkEventData>();
 
         if (eventParam < 2) // skip events for tabs
             return;
@@ -221,7 +221,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
 
     private void OnPvPCharacterPostSetup(AddonEvent type, AddonArgs args)
     {
-        var addon = (AddonPvPCharacter*)args.Addon.Address;
+        var addon = args.GetAddon<AddonPvPCharacter>();
 
         for (var i = 0; i < addon->ClassEntries.Length; i++)
         {
@@ -240,7 +240,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
 
     private void OnPvPCharacterPostRequestedUpdate(AddonEvent type, AddonArgs args)
     {
-        var addon = (AddonPvPCharacter*)args.Addon.Address;
+        var addon = args.GetAddon<AddonPvPCharacter>();
 
         for (var i = 0; i < addon->ClassEntries.Length; i++)
         {
@@ -267,10 +267,10 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         if (addonArgs is not AddonReceiveEventArgs args)
             return;
 
-        var addon = (AddonPvPCharacter*)args.Addon.Address;
-        var eventType = (AtkEventType)args.AtkEventType;
+        var addon = args.GetAddon<AddonPvPCharacter>();
+        var eventType = args.EventType;
         var eventParam = args.EventParam;
-        var eventData = (AtkEventData*)args.AtkEventData;
+        var eventData = args.GetEventData<AtkEventData>();
 
         if ((eventParam & 0xFFFF0000) != 0x10000)
             return;

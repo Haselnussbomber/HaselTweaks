@@ -179,7 +179,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
     {
         if (_config.SkipLogo)
         {
-            var addon = (AtkUnitBase*)args.Addon.Address;
+            var addon = args.GetAddon<AtkUnitBase>();
             var value = new AtkValue
             {
                 Type = ValueType.Int,

@@ -21,11 +21,11 @@ public unsafe partial class MarketBoardItemPreview : Tweak
 
     private void ItemSearch_PostReceiveEvent(AddonEvent type, AddonArgs args)
     {
-        if (args is not AddonReceiveEventArgs addonReceiveEventArgs || addonReceiveEventArgs.AtkEventType != (byte)AtkEventType.ListItemRollOver)
+        if (args is not AddonReceiveEventArgs receiveEventArgs || receiveEventArgs.EventType != AtkEventType.ListItemRollOver)
             return;
 
-        var eventData = (AtkEventData*)addonReceiveEventArgs.AtkEventData;
-        var itemIndex = eventData->ListItemData.SelectedIndex;
+        var eventData = receiveEventArgs.GetEventData<AtkEventData.AtkListItemData>();
+        var itemIndex = eventData->SelectedIndex;
         var itemId = AgentItemSearch.Instance()->ListingPageItemIds[itemIndex];
 
         if (!_itemService.CanTryOn(itemId))

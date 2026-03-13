@@ -27,7 +27,7 @@ public unsafe partial class MaterialAllocation : ConfigurableTweak<MaterialAlloc
 
         AgentMJICraftSchedule.Instance()->CurReviewMaterialsTab = _config.LastSelectedTab;
 
-        var addon = (AddonMJICraftMaterialConfirmation*)args.Addon.Address;
+        var addon = args.GetAddon<AddonMJICraftMaterialConfirmation>();
         for (var i = 0; i < addon->RadioButtons.Length; i++)
         {
             var button = addon->RadioButtons[i];

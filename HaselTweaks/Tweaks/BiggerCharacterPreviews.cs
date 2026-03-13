@@ -37,7 +37,7 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
         if (!_config.EnableCharacter)
             return;
 
-        var addon = (AtkUnitBase*)args.Addon.Address;
+        var addon = args.GetAddon<AtkUnitBase>();
 
         var previewNode = addon->GetNodeById(72);
         if (previewNode == null) return;
@@ -109,7 +109,7 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
         if (!_config.EnableCharacterInspect)
             return;
 
-        var addon = (AtkUnitBase*)args.Addon.Address;
+        var addon = args.GetAddon<AtkUnitBase>();
 
         var previewNode = addon->GetNodeById(41);
         if (previewNode == null) return;
@@ -158,7 +158,7 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
         if (!_config.EnableCharacterInspect)
             return;
 
-        var addon = (AtkUnitBase*)args.Addon.Address;
+        var addon = args.GetAddon<AtkUnitBase>();
 
         var previewNode = addon->GetNodeById(41);
         if (previewNode == null) return;
@@ -191,7 +191,7 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
         if (!_config.EnableColorantColoring)
             return;
 
-        var addon = (AtkUnitBase*)args.Addon.Address;
+        var addon = args.GetAddon<AtkUnitBase>();
 
         var previewNode = addon->GetNodeById(71);
         if (previewNode == null) return;
@@ -223,7 +223,7 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
         if (!_config.EnableTryon)
             return;
 
-        var addon = (AtkUnitBase*)args.Addon.Address;
+        var addon = args.GetAddon<AtkUnitBase>();
 
         var previewNode = addon->GetNodeById(31);
         if (previewNode == null) return;
@@ -268,7 +268,7 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
 
     private void OnPostSetupOrRefresh(AddonEvent type, AddonArgs args)
     {
-        UpdatePreviewSharpening((AtkUnitBase*)args.Addon.Address);
+        UpdatePreviewSharpening(args.GetAddon<AtkUnitBase>());
     }
 
     private void UpdatePreviewSharpening(AtkUnitBase* addon)

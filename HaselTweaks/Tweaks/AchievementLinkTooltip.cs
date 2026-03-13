@@ -38,7 +38,7 @@ public unsafe partial class AchievementLinkTooltip : ConfigurableTweak<Achieveme
 
     private void OnChatLogPanelPostReceiveEvent(AddonEvent type, AddonArgs args)
     {
-        var addon = (AddonChatLogPanel*)args.Addon.Address;
+        var addon = args.GetAddon<AddonChatLogPanel>();
 
         if (!addon->IsReady || addon->LogViewer.IsSelectingText || addon->IsResizing)
             return;
@@ -46,13 +46,16 @@ public unsafe partial class AchievementLinkTooltip : ConfigurableTweak<Achieveme
         if (args is not AddonReceiveEventArgs receiveEventArgs)
             return;
 
-        if (receiveEventArgs.AtkEventType != (byte)AtkEventType.LinkMouseOver)
+        if (receiveEventArgs.EventType != AtkEventType.LinkMouseOver)
             return;
 
-        var eventData = (AtkEventData*)receiveEventArgs.AtkEventData;
+        var eventData = receiveEventArgs.GetEventData<AtkEventData>();
         var linkData = eventData->LinkData;
+        if (linkData == null)
+            return;
+
         var linkType = (LinkMacroPayloadType)linkData->LinkType;
-        if (linkType is not LinkMacroPayloadType.Achievement)
+        if (linkType != LinkMacroPayloadType.Achievement)
             return;
 
         if (!_excelService.TryGetRow<Achievement>(linkData->UIntValue1, out var achievement))

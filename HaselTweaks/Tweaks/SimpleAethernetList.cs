@@ -24,15 +24,15 @@ public unsafe partial class SimpleAethernetList : Tweak
         if (addonArgs is not AddonReceiveEventArgs args)
             return;
 
-        if ((AtkEventType)args.AtkEventType != AtkEventType.ListItemRollOver)
+        if (args.EventType != AtkEventType.ListItemRollOver)
             return;
 
-        var listItemData = (AtkEventData.AtkListItemData*)args.AtkEventData;
-        var index = listItemData->SelectedIndex;
+        var eventData = args.GetEventData<AtkEventData.AtkListItemData>();
+        var index = eventData->SelectedIndex;
         if (index < 0)
             return;
 
-        var addon = (AddonTeleportTown*)args.Addon.Address;
+        var addon = args.GetAddon<AddonTeleportTown>();
         var item = addon->List->GetItem(index);
         if (item == null || item->UIntValues.LongCount < 4)
             return;
@@ -43,6 +43,6 @@ public unsafe partial class SimpleAethernetList : Tweak
 
         agent->Data->SelectedAetheryte = (byte)item->UIntValues[3];
         agent->Data->Flags |= 2;
-        listItemData->SelectedIndex = -1; // suppress original handling of this event
+        eventData->SelectedIndex = -1; // suppress original handling of this event
     }
 }
