@@ -56,7 +56,6 @@ public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak<Enhanced
         if (item->UIntValues[0] == (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
             return;
 
-        args.EventParam = 0;
-        ((AtkEvent*)args.AtkEvent)->SetEventIsHandled();
+        args.PreventOriginal();
     }
 }

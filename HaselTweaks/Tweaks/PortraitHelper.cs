@@ -1,4 +1,5 @@
 using System.Threading;
+using Dalamud.Game.Agent.AgentArgTypes;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
@@ -11,6 +12,8 @@ using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Windows.PortraitHelperWindows;
 
+using AgentEvent = Dalamud.Game.Agent.AgentEvent;
+using DAgentId = Dalamud.Game.Agent.AgentId;
 using DSeString = Dalamud.Game.Text.SeStringHandling.SeString;
 using LSeStringBuilder = Lumina.Text.SeStringBuilder;
 
@@ -29,6 +32,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
     private readonly ExcelService _excelService;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IDalamudPluginInterface _pluginInterface;
+    private readonly IAgentLifecycle _agentLifecycle;
     private readonly IFramework _framework;
     private readonly IClientState _clientState;
     private readonly AddonObserver _addonObserver;
@@ -39,7 +43,6 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
 
     private Hook<UIClipboard.Delegates.OnClipboardDataChanged>? _onClipboardDataChangedHook;
     private Hook<RaptureGearsetModule.Delegates.UpdateGearset>? _updateGearsetHook;
-    private Hook<AgentBannerPreview.Delegates.Show>? _agentBannerPreviewShowHook;
     private bool _wasBoundByDuty;
     private bool _blockBannerPreview;
 
@@ -53,13 +56,10 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
             RaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
             UpdateGearsetDetour);
 
-        _agentBannerPreviewShowHook = _gameInteropProvider.HookFromAddress<AgentBannerPreview.Delegates.Show>(
-            AgentBannerPreview.Instance()->VirtualTable->Show,
-            AgentBannerPreviewShowDetour);
+        _agentLifecycle.RegisterListener(AgentEvent.PreShow, DAgentId.BannerPreview, OnBannerPreviewPreShow);
 
         _onClipboardDataChangedHook.Enable();
         _updateGearsetHook.Enable();
-        _agentBannerPreviewShowHook.Enable();
 
         _openPortraitEditPayload = _chatGui.AddChatLinkHandler(1, OpenPortraitEditChatHandler);
 
@@ -90,8 +90,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
         _updateGearsetHook?.Dispose();
         _updateGearsetHook = null;
 
-        _agentBannerPreviewShowHook?.Dispose();
-        _agentBannerPreviewShowHook = null;
+        _agentLifecycle.UnregisterListener(AgentEvent.PreShow, DAgentId.BannerPreview, OnBannerPreviewPreShow);
     }
 
     private void OpenPortraitEditChatHandler(uint commandId, DSeString message)
@@ -168,21 +167,16 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
         return ret;
     }
 
-    private void AgentBannerPreviewShowDetour(AgentBannerPreview* thisPtr)
+    private void OnBannerPreviewPreShow(AgentEvent type, AgentArgs args)
     {
         if (!_config.AutoUpdatePotraitOnGearUpdate)
-        {
-            _agentBannerPreviewShowHook!.Original(thisPtr);
             return;
-        }
 
-        if (_blockBannerPreview)
-        {
-            _blockBannerPreview = false;
+        if (!_blockBannerPreview)
             return;
-        }
 
-        _agentBannerPreviewShowHook!.Original(thisPtr);
+        _blockBannerPreview = false;
+        args.PreventOriginal();
     }
 
     private void OnClassJobChange(uint classJobId)
@@ -271,7 +265,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
             }
             else
             {
-                _agentBannerPreviewShowHook?.Original(AgentBannerPreview.Instance());
+                AgentBannerPreview.Instance()->Show();
             }
         }
         else if (_config.NotifyGearChecksumMismatch)

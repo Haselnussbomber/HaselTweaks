@@ -66,6 +66,6 @@ public unsafe partial class AetherCurrentHelper : ConfigurableTweak<AetherCurren
 
         _window.CompFlgSet = compFlgSet;
 
-        values[0].SetInt(1337);
+        agentArgs.PreventOriginal();
     }
 }

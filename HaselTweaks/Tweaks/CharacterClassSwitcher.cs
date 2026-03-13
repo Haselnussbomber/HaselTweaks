@@ -206,13 +206,13 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
             if (isClick && !UIInputData.Instance()->IsKeyDown(SeVirtualKey.SHIFT))
             {
                 SwitchClassJob(8 + (uint)eventParam - 24);
-                args.AtkEventType = 0;
+                args.PreventOriginal();
                 return;
             }
         }
 
         if (ProcessEvents(component->OwnerNode, imageNode, eventType, eventData))
-            args.AtkEventType = 0;
+            args.PreventOriginal();
     }
 
     #endregion
@@ -289,7 +289,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
             return;
 
         if (ProcessEvents(entry->Base->OwnerNode, entry->Icon, eventType, eventData))
-            args.AtkEventType = 0;
+            args.PreventOriginal();
     }
 
     #endregion
