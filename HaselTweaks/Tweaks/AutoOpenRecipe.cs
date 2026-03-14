@@ -78,7 +78,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
         {
             if (questWork.QuestId == 0)
             {
-                _logger.LogTrace("Skipping: Quest #{questId}", questWork.QuestId);
+                // _logger.LogTrace("Skipping: Quest #{questId}", questWork.QuestId);
                 continue;
             }
 
@@ -90,13 +90,12 @@ public unsafe partial class AutoOpenRecipe : Tweak
 
             if (!(questManager->GetDailyQuestById(questWork.QuestId) != null || quest.BeastTribe.RowId != 0)) // check if daily or tribal quest
             {
-                _logger.LogTrace("Skipping: Quest #{questId} is not a daily or tribal quest", questWork.QuestId | 0x10000);
+                // _logger.LogTrace("Skipping: Quest #{questId} is not a daily or tribal quest", questWork.QuestId | 0x10000);
                 continue;
             }
 
             _logger.LogTrace("Checking Quest #{questId} ({questName}) (Sequence {questSequence})", questWork.QuestId, _textService.GetQuestName((uint)questWork.QuestId | 0x10000), questWork.Sequence);
 
-            // TODO: check if this still works
             var sequence = questWork.Sequence;
             if (!quest.TodoParams.TryGetFirst(param => param.ToDoCompleteSeq == sequence, out var todoParams, out var todoOffset))
             {
