@@ -184,3 +184,9 @@ csharp_preserve_single_line_blocks = true
 ###############################
 
 dotnet_diagnostic.CA1816.severity = none
+
+###############################
+# BannedApiAnalyzers          #
+###############################
+
+dotnet_diagnostic.RS0030.severity = error
