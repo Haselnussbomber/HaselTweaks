@@ -1,5 +1,9 @@
 # Changelog
 
+## [41.1.9] (2026-03-24)
+
+- Updated ClientStructs for Patch 7.45 HotFix 2.
+
 ## [41.1.8] (2026-03-11)
 
 - Updated ClientStructs for Patch 7.45 HotFix.
@@ -2415,7 +2419,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.8...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.9...main
+[41.1.9]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.8...v41.1.9
 [41.1.8]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.7...v41.1.8
 [41.1.7]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.6...v41.1.7
 [41.1.6]: https://github.com/Haselnussbomber/HaselTweaks/compare/v41.1.5...v41.1.6
