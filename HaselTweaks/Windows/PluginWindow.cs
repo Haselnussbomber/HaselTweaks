@@ -231,7 +231,7 @@ public partial class PluginWindow : SimpleWindow
                 ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
                 if (ImGui.IsMouseReleased(ImGuiMouseButton.Left) && _serviceProvider.GetService<LicensesWindow>() is { } licensesWindow)
                 {
-                    Task.Run(licensesWindow.Toggle);
+                    _ = Task.Run(licensesWindow.Toggle);
                 }
             }
 

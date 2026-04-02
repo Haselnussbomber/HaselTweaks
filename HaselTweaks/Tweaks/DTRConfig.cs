@@ -31,13 +31,14 @@ public partial class DTR
             {
                 if (ImGui.IsMouseDown(ImGuiMouseButton.Left))
                 {
-                    _framework.RunOnTick(OpenSettings, delayTicks: 2);
+                    _ = _framework.RunOnTick(OpenSettings, delayTicks: 2);
                     return;
                 }
 
                 _dalamudPluginInterface.OpenDalamudSettingsTo(SettingsOpenKind.ServerInfoBar);
             }
-            _framework.RunOnTick(OpenSettings, delayTicks: 2);
+
+            _ = _framework.RunOnTick(OpenSettings, delayTicks: 2);
         }
         ImGuiUtils.SameLineSpace();
         ImGui.Text(_textService.Translate("DTR.Config.Explanation.Post"));

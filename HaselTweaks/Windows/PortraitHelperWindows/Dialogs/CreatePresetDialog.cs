@@ -122,7 +122,7 @@ public partial class CreatePresetDialog
             {
                 _isSaving = true;
 
-                Task.Run(() =>
+                _ = Task.Run(() =>
                 {
                     try
                     {

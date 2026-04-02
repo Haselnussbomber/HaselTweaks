@@ -312,6 +312,6 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
         // For that, EventFramework sends a packet and the server responds with a packet, triggering the map markers update.
         // This seems to be a very normal and frequent thing to occur, with a back-off of 2 seconds, so nothing to worry about.
         raptureAtkModule->ChangeUiMode(0);
-        _framework.RunOnTick(() => raptureAtkModule->ChangeUiMode(1));
+        _ = _framework.RunOnTick(() => raptureAtkModule->ChangeUiMode(1));
     }
 }

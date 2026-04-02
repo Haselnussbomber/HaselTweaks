@@ -32,7 +32,7 @@ public unsafe partial class CosmicResearchTodo : ConfigurableTweak<CosmicResearc
         _clientState.ClassJobChanged += OnClassJobChanged;
         _languageProvider.LanguageChanged += OnLanguageChanged;
 
-        _framework.RunOnTick(RequestUpdate, delayTicks: 1);
+        _ = _framework.RunOnTick(RequestUpdate, delayTicks: 1);
     }
 
     public override void OnDisable()

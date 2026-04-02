@@ -21,6 +21,6 @@ public unsafe partial class CopyButton : MenuBarButton
 
     public override void OnClick()
     {
-        _framework.Run(() => _clipboardService.SetClipboardPortraitPreset(PortraitPreset.FromState()));
+        _ = _framework.Run(() => _clipboardService.SetClipboardPortraitPreset(PortraitPreset.FromState()));
     }
 }

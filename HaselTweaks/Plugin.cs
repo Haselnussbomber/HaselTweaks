@@ -19,7 +19,7 @@ public sealed class Plugin : IDalamudPlugin
             })
             .Build();
 
-        framework.RunOnFrameworkThread(_host.Start);
+        _ = framework.RunOnFrameworkThread(_host.Start);
     }
 
     void IDisposable.Dispose()

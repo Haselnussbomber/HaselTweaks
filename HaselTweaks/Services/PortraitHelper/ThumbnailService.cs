@@ -107,11 +107,11 @@ public partial class ThumbnailService : IDisposable
 
         if (imageResult.Image == null)
         {
-            _imageTasks.GetOrAdd(id, _ => Task.Run(async () =>
+            _ = _imageTasks.GetOrAdd(id, _ => Task.Run(async () =>
             {
                 try
                 {
-                    imageResult.Image = await Image.LoadAsync<Rgba32>(path, _disposeCTS.Token);
+                    imageResult.Image = await Image.LoadAsync<Rgba32>(path, _disposeCTS.Token).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -131,7 +131,7 @@ public partial class ThumbnailService : IDisposable
 
         thumbnailResult = _thumbnails.GetOrAdd((id, size), static (key) => new ThumbnailResult { Id = key.Item1, Size = key.Item2 });
 
-        _thumbnailTasks.GetOrAdd(id, _ => Task.Run(() =>
+        _ = _thumbnailTasks.GetOrAdd(id, _ => Task.Run(() =>
         {
             try
             {

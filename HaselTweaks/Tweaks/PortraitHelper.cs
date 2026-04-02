@@ -124,7 +124,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
             _mismatchCheckCTS?.Cancel();
             _mismatchCheckCTS = new();
 
-            _framework.RunOnTick(
+            _ = _framework.RunOnTick(
                 () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex),
                 CheckDelay,
                 cancellationToken: _mismatchCheckCTS.Token);
@@ -159,7 +159,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
         _mismatchCheckCTS?.Cancel();
         _mismatchCheckCTS = new();
 
-        _framework.RunOnTick(
+        _ = _framework.RunOnTick(
             () => CheckForGearChecksumMismatch(gearsetId),
             CheckDelay,
             cancellationToken: _mismatchCheckCTS.Token);
@@ -184,7 +184,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
         _mismatchCheckCTS?.Cancel();
         _mismatchCheckCTS = new();
 
-        _framework.RunOnTick(
+        _ = _framework.RunOnTick(
             () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex, true),
             CheckDelay,
             cancellationToken: _mismatchCheckCTS.Token);
@@ -206,7 +206,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
             _mismatchCheckCTS?.Cancel();
             _mismatchCheckCTS = new();
 
-            _framework.RunOnTick(
+            _ = _framework.RunOnTick(
                 () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex),
                 CheckDelay,
                 cancellationToken: _mismatchCheckCTS.Token);
@@ -279,7 +279,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
         _mismatchCheckCTS?.Cancel();
         _mismatchCheckCTS = new();
 
-        _framework.RunOnTick(() =>
+        _ = _framework.RunOnTick(() =>
         {
             var checksum = UIGlobals.GenerateEquippedItemsChecksum();
 

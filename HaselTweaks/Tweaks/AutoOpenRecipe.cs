@@ -58,7 +58,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
                 _lastTimeRecipeOpened = DateTime.UtcNow;
         }
 
-        _framework.RunOnTick(
+        _ = _framework.RunOnTick(
             action,
             delay: TimeSpan.FromMilliseconds(100),
             cancellationToken: _checkCTS.Token);

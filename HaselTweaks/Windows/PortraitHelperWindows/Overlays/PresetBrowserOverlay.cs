@@ -523,21 +523,21 @@ public partial class PresetBrowserOverlay : Overlay
             _editPresetDialog.Open(preset);
 
         if (ImGui.MenuItem(_textService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.ExportToClipboard.Label")))
-            Task.Run(() => _clipboardService.SetClipboardPortraitPreset(preset.Preset));
+            _ = Task.Run(() => _clipboardService.SetClipboardPortraitPreset(preset.Preset));
 
         if (hasThumbnailResult && ImGui.BeginMenu(_textService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Label")))
         {
             if (ImGui.MenuItem(_textService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.Everything.Label")))
-                Task.Run(() => CopyImage(preset, path));
+                _ = Task.Run(() => CopyImage(preset, path));
 
             if (ImGui.MenuItem(_textService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrame.Label")))
-                Task.Run(() => CopyImage(preset, path, CopyImageFlags.NoFrame));
+                _ = Task.Run(() => CopyImage(preset, path, CopyImageFlags.NoFrame));
 
             if (ImGui.MenuItem(_textService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutDecoration.Label")))
-                Task.Run(() => CopyImage(preset, path, CopyImageFlags.NoDecoration));
+                _ = Task.Run(() => CopyImage(preset, path, CopyImageFlags.NoDecoration));
 
             if (ImGui.MenuItem(_textService.Translate("PortraitHelperWindows.PresetCard.ContextMenu.CopyImage.WithoutFrameAndDecoration.Label")))
-                Task.Run(() => CopyImage(preset, path, CopyImageFlags.NoFrame | CopyImageFlags.NoDecoration));
+                _ = Task.Run(() => CopyImage(preset, path, CopyImageFlags.NoFrame | CopyImageFlags.NoDecoration));
 
             ImGui.EndMenu();
         }
@@ -572,7 +572,7 @@ public partial class PresetBrowserOverlay : Overlay
 
     private async Task CopyImage(SavedPreset preset, string filePath, CopyImageFlags flags = CopyImageFlags.None)
     {
-        using var tempImage = await Image.LoadAsync<Rgba32>(filePath);
+        using var tempImage = await Image.LoadAsync<Rgba32>(filePath).ConfigureAwait(false);
 
         if (!flags.HasFlag(CopyImageFlags.NoFrame) && _excelService.TryGetRow<BannerFrame>(preset.Preset!.BannerFrame, out var bannerFrameRow) && bannerFrameRow.Image != 0)
         {
