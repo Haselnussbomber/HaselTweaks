@@ -54,7 +54,7 @@ public partial class CreatePresetDialog
         var center = ImGui.GetMainViewport().GetCenter();
         ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new(0.5f, 0.5f));
 
-        using var modal = ImRaiiExt.PopupModal(title, ImGuiWindowFlags.AlwaysAutoResize);
+        using var modal = ImRaii.PopupModal(title, ImGuiWindowFlags.AlwaysAutoResize);
         if (!modal) return;
 
         using var disabledDueToSaving = ImRaii.Disabled(_isSaving);

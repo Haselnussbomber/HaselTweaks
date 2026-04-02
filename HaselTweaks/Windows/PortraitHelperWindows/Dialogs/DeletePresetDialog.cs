@@ -42,7 +42,7 @@ public partial class DeletePresetDialog
         var center = ImGui.GetMainViewport().GetCenter();
         ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new(0.5f, 0.5f));
 
-        using var modal = ImRaiiExt.PopupModal(title, ImGuiWindowFlags.AlwaysAutoResize);
+        using var modal = ImRaii.PopupModal(title, ImGuiWindowFlags.AlwaysAutoResize);
         if (!modal) return;
 
         ImGui.Text(_textService.Translate("PortraitHelperWindows.DeletePresetDialog.Prompt", _preset.Name));
