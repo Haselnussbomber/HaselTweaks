@@ -5,10 +5,11 @@ using Windows.Win32.System.Ole;
 
 namespace HaselTweaks.Utils.PortraitHelper;
 
+[StructLayout(LayoutKind.Auto)]
 public unsafe struct ClipboardWriter : IDisposable
 {
-    private readonly uint _format;
     private HGLOBAL _hMem = HGLOBAL.Null;
+    private readonly uint _format;
 
     public ClipboardWriter()
     {

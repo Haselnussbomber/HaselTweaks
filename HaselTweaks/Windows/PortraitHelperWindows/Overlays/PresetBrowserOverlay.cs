@@ -602,6 +602,6 @@ public partial class PresetBrowserOverlay : Overlay
             }
         }
 
-        await _clipboardService.SetClipboardImage(tempImage);
+        await _clipboardService.SetClipboardImage(tempImage).ConfigureAwait(false);
     }
 }
