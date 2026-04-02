@@ -8,7 +8,7 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public unsafe partial class AutoSorter : ConfigurableTweak<AutoSorterConfiguration>
 {
-    private static readonly Dictionary<string, uint> CategorySet = new()
+    private static readonly Dictionary<string, uint> CategorySet = new(StringComparer.Ordinal)
     {
         ["inventory"] = 257,
         ["retainer"] = 261,
@@ -26,10 +26,10 @@ public unsafe partial class AutoSorter : ConfigurableTweak<AutoSorterConfigurati
         ["ears"] = 285,
         ["wrists"] = 287,
         ["rings"] = 289,
-        ["soul"] = 291
+        ["soul"] = 291,
     };
 
-    private static readonly Dictionary<string, uint> ConditionSet = new()
+    private static readonly Dictionary<string, uint> ConditionSet = new(StringComparer.Ordinal)
     {
         ["id"] = 271,
         ["spiritbond"] = 275,
@@ -56,13 +56,13 @@ public unsafe partial class AutoSorter : ConfigurableTweak<AutoSorterConfigurati
         ["control"] = 323,
         ["gathering"] = 325,
         ["perception"] = 327,
-        ["tab"] = 273
+        ["tab"] = 273,
     };
 
-    private static readonly Dictionary<string, uint> OrderSet = new()
+    private static readonly Dictionary<string, uint> OrderSet = new(StringComparer.Ordinal)
     {
         ["asc"] = 281,
-        ["des"] = 283
+        ["des"] = 283,
     };
 
     private static readonly List<string> ArmourySubcategories =
@@ -78,7 +78,7 @@ public unsafe partial class AutoSorter : ConfigurableTweak<AutoSorterConfigurati
         "ears",
         "wrists",
         "rings",
-        "soul"
+        "soul",
     ];
 
     private readonly TextService _textService;
