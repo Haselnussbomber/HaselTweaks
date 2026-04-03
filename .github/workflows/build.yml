@@ -58,24 +58,13 @@ jobs:
           cache-dependency-path: ${{ env.plugin_name }}/packages.lock.json
           dotnet-version: ${{ steps.get_dotnet_version.outputs.dotnet_version }}
 
-      - name: Determine Dalamud Branch
-        id: branch
-        run: |
-          if [[ -n "${{ github.event.inputs.dalamud_branch }}" ]]; then
-            echo "branch=${{ github.event.inputs.dalamud_branch }}" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event.ref }}" == "refs/heads/stg" ]] || [[ "${{ github.event.head_commit.message }}" == "[stg]"* ]]; then
-            echo "branch=stg" >> $GITHUB_OUTPUT
-          else
-            echo "branch=master" >> $GITHUB_OUTPUT
-          fi
-
       - name: Download Dalamud
         env:
-          DALAMUD_URL: >
-            ${{ fromJson('{
-              "master": "https://goatcorp.github.io/dalamud-distrib/latest.zip",
-              "stg": "https://goatcorp.github.io/dalamud-distrib/stg/latest.zip"
-            }')[steps.branch.outputs.branch] }}
+          DALAMUD_URL: |-
+            ${{ case(
+              github.event.inputs.dalamud_branch == 'stg' || github.event.ref == 'refs/heads/stg' || startsWith(github.event.head_commit.message, '[stg]'), 'https://goatcorp.github.io/dalamud-distrib/stg/latest.zip',
+              'https://goatcorp.github.io/dalamud-distrib/latest.zip'
+            ) }}
         run: |
           curl -o latest.zip ${{ env.DALAMUD_URL }}
           mkdir -p ~/.xlcore/dalamud/Hooks/dev/
