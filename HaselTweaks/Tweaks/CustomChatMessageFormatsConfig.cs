@@ -303,7 +303,7 @@ public partial class CustomChatMessageFormats
 
                 if (payload.Type == ReadOnlySePayloadType.Text)
                 {
-                    var text = Encoding.UTF8.GetString(payload.Body.ToArray());
+                    var text = Encoding.UTF8.GetString(payload.Body.Span);
                     ImGui.SetNextItemWidth(-1);
                     ImGuiUtils.PushCursorY(-ImGui.GetStyle().CellPadding.Y);
                     if (ImGui.InputText($"##TextPayload{i}", ref text, 255))
@@ -716,7 +716,7 @@ public partial class CustomChatMessageFormats
         {
             if (payload.Type == ReadOnlySePayloadType.Text)
             {
-                ImGui.Text(Encoding.UTF8.GetString(payload.Body.ToArray()));
+                ImGui.Text(Encoding.UTF8.GetString(payload.Body.Span));
                 ImGui.SameLine(0, 0);
                 continue;
             }
