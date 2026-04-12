@@ -305,28 +305,25 @@ public partial class PresetBrowserOverlay : Overlay
         var presetWidth = availableWidth / presetsPerRow;
         var scale = presetWidth / PortraitSize.X;
 
-        var clipper = ImGui.ImGuiListClipper();
-
         var presets = _pluginConfig.Tweaks.PortraitHelper.Presets
             .Where((preset) => (SelectedTagId == null || preset.Tags.Contains(SelectedTagId.Value)) && preset.Preset != null);
 
         var presetCount = presets.Count();
+        var itemsCount = (int)Math.Ceiling(presetCount / (float)presetsPerRow);
+        var itemsHeight = PortraitSize.Y * scale;
 
-        clipper.Begin((int)Math.Ceiling(presetCount / (float)presetsPerRow), PortraitSize.Y * scale);
-        while (clipper.Step())
+        using var clipper = new ImRaiiListClipper(itemsCount, itemsHeight);
+
+        foreach (var row in clipper)
         {
-            for (var row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
+            for (int i = 0, index = row * presetsPerRow; i < presetsPerRow && index < presetCount; i++, index++)
             {
-                for (int i = 0, index = row * presetsPerRow; i < presetsPerRow && index < presetCount; i++, index++)
-                {
-                    DrawPresetCard(presets.ElementAt(index), scale, DefaultImGuiTextColor);
+                DrawPresetCard(presets.ElementAt(index), scale, DefaultImGuiTextColor);
 
-                    if (i < presetsPerRow - 1 && index + 1 < presetCount)
-                        ImGui.SameLine(0, style.ItemInnerSpacing.X);
-                }
+                if (i < presetsPerRow - 1 && index + 1 < presetCount)
+                    ImGui.SameLine(0, style.ItemInnerSpacing.X);
             }
         }
-        clipper.Destroy();
     }
 
     private void DrawPresetCard(SavedPreset preset, float scale, uint defaultImGuiTextColor)
