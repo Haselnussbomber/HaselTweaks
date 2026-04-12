@@ -21,7 +21,15 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
 
     private bool _isDisposed;
 
-    public bool IsWindow { get; set; }
+    public bool IsWindow
+    {
+        get; set
+        {
+            field = value;
+            AllowBackgroundBlur = value;
+        }
+    }
+
     public virtual OverlayType Type => OverlayType.Full;
 
     [AutoPostConstruct]
