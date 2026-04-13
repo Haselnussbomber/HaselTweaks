@@ -3,7 +3,7 @@ using HaselTweaks.Enums.PortraitHelper;
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
 [RegisterTransient, AutoConstruct]
-public unsafe partial class AlignmentToolSettingsOverlay : Overlay
+public partial class AlignmentToolSettingsOverlay : Overlay
 {
     private readonly TextService _textService;
     private readonly PluginConfig _pluginConfig;

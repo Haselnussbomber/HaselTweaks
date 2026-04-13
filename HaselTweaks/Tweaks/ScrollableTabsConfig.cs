@@ -30,7 +30,7 @@ public class ScrollableTabsConfiguration
     public bool HandleAdventureNoteBook = true;
 }
 
-public unsafe partial class ScrollableTabs
+public partial class ScrollableTabs
 {
     public override void DrawConfig()
     {

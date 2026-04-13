@@ -7,7 +7,7 @@ public class BackgroundMusicKeybindConfiguration
     public VirtualKey[] Keybind = [VirtualKey.CONTROL, VirtualKey.M];
 }
 
-public unsafe partial class BackgroundMusicKeybind
+public partial class BackgroundMusicKeybind
 {
     public override void DrawConfig()
     {

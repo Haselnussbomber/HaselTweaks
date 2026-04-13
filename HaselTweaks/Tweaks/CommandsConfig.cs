@@ -10,7 +10,7 @@ public class CommandsConfiguration
     public bool EnableReloadUICommand = true;
 }
 
-public unsafe partial class Commands
+public partial class Commands
 {
     public override void OnConfigChange(string fieldName)
     {

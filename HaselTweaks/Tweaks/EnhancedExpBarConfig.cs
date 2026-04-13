@@ -18,7 +18,7 @@ public enum MaxLevelOverrideType
     // No SanctuaryBar, because data is only available on the island
 }
 
-public unsafe partial class EnhancedExpBar
+public partial class EnhancedExpBar
 {
     public override void OnConfigChange(string fieldName)
     {

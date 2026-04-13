@@ -290,7 +290,7 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
         raptureGearsetModule->EquipGearset(raptureGearsetModule->CurrentGearsetIndex, glamourPlateId);
     }
 
-    private unsafe void OnReloadUICommand(CommandContext ctx)
+    private void OnReloadUICommand(CommandContext ctx)
     {
         var raptureAtkModule = RaptureAtkModule.Instance();
 

@@ -12,7 +12,7 @@ public class ForcedCutsceneMusicConfiguration
     public bool HandlePerform = false;
 }
 
-public unsafe partial class ForcedCutsceneMusic
+public partial class ForcedCutsceneMusic
 {
     public override void DrawConfig()
     {

@@ -5,7 +5,7 @@ public class GlamourDresserArmoireAlertConfiguration
     public bool IgnoreOutfits = false;
 }
 
-public unsafe partial class GlamourDresserArmoireAlert
+public partial class GlamourDresserArmoireAlert
 {
     public override void DrawConfig()
     {

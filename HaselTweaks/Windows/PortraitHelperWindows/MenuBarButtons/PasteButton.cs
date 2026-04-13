@@ -4,7 +4,7 @@ using HaselTweaks.Utils.PortraitHelper;
 namespace HaselTweaks.Windows.PortraitHelperWindows.MenuBarButtons;
 
 [RegisterSingleton, AutoConstruct]
-public unsafe partial class PasteButton : MenuBarButton
+public partial class PasteButton : MenuBarButton
 {
     private readonly MenuBarState _state;
     private readonly TextService _textService;

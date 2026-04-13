@@ -122,7 +122,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
             Flags |= ImGuiWindowFlags.NoFocusOnAppearing;
     }
 
-    private unsafe bool DrawMainCommandButton()
+    private bool DrawMainCommandButton()
     {
         if (IsAddonOpen(AgentId.AetherCurrent))
             return false;

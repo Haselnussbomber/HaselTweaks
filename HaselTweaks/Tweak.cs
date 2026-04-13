@@ -5,7 +5,7 @@ using Dalamud.Utility.Signatures;
 namespace HaselTweaks.Tweaks;
 
 [AutoConstruct]
-public abstract unsafe partial class Tweak : ITweak, IHostedService
+public abstract partial class Tweak : ITweak, IHostedService
 {
     protected readonly PluginConfig _pluginConfig;
 

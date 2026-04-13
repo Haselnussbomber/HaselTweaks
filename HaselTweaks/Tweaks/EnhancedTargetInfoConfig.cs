@@ -7,7 +7,7 @@ public class EnhancedTargetInfoConfiguration
     public bool RemoveLeadingZeroInHPPercentage = false;
 }
 
-public unsafe partial class EnhancedTargetInfo
+public partial class EnhancedTargetInfo
 {
     public override void DrawConfig()
     {

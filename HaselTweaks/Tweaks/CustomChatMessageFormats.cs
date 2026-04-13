@@ -47,14 +47,14 @@ public unsafe partial class CustomChatMessageFormats : ConfigurableTweak<CustomC
         }
     }
 
-    private static unsafe void ReloadChat()
+    private static void ReloadChat()
     {
         var raptureLogModule = RaptureLogModule.Instance();
         for (var i = 0; i < 4; i++)
             raptureLogModule->ChatTabIsPendingReload[i] = true;
     }
 
-    private unsafe uint FormatLogMessageDetour(RaptureLogModule* thisPtr, uint logKindId, Utf8String* sender, Utf8String* message, int* timestamp, void* a6, Utf8String* a7, int chatTabIndex)
+    private uint FormatLogMessageDetour(RaptureLogModule* thisPtr, uint logKindId, Utf8String* sender, Utf8String* message, int* timestamp, void* a6, Utf8String* a7, int chatTabIndex)
     {
         if (thisPtr->LogKindSheet == null || thisPtr->AtkFontCodeModule == null)
             return 0;

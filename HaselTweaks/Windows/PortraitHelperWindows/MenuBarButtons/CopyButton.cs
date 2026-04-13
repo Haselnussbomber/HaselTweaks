@@ -5,7 +5,7 @@ using HaselTweaks.Utils.PortraitHelper;
 namespace HaselTweaks.Windows.PortraitHelperWindows.MenuBarButtons;
 
 [RegisterSingleton, AutoConstruct]
-public unsafe partial class CopyButton : MenuBarButton
+public partial class CopyButton : MenuBarButton
 {
     private readonly TextService _textService;
     private readonly ClipboardService _clipboardService;

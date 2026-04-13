@@ -1,7 +1,7 @@
 namespace HaselTweaks.Tweaks;
 
 [AutoConstruct]
-public abstract unsafe partial class ConfigurableTweak<T> : Tweak, IConfigurableTweak
+public abstract partial class ConfigurableTweak<T> : Tweak, IConfigurableTweak
 {
     protected readonly ConfigGui _configGui;
     protected readonly T _config;

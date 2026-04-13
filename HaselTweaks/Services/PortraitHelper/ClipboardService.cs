@@ -216,7 +216,7 @@ public partial class ClipboardService : IDisposable
             pixel.A = 0; // rgbReserved of RGBQUAD "must be zero"
     }
 
-    private unsafe void SetPNG(Image<Rgba32> image)
+    private void SetPNG(Image<Rgba32> image)
     {
         var format = PInvoke.RegisterClipboardFormat("PNG");
         if (format == 0)

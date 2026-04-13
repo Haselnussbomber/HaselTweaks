@@ -6,7 +6,7 @@ using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 namespace HaselTweaks.Windows.PortraitHelperWindows.MenuBarButtons;
 
 [RegisterSingleton, AutoConstruct]
-public unsafe partial class SaveAsPresetButton : MenuBarButton
+public partial class SaveAsPresetButton : MenuBarButton
 {
     private readonly MenuBarState _state;
     private readonly TextService _textService;

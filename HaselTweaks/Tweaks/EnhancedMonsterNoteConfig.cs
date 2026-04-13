@@ -7,7 +7,7 @@ public class EnhancedMonsterNoteConfiguration
     public bool OpenWithIncompleteFilter = true;
 }
 
-public unsafe partial class EnhancedMonsterNote
+public partial class EnhancedMonsterNote
 {
     public override void DrawConfig()
     {

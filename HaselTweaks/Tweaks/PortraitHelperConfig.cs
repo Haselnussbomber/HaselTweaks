@@ -19,7 +19,7 @@ public class PortraitHelperConfiguration
     public bool IgnoreDoHDoL = false;
 }
 
-public unsafe partial class PortraitHelper
+public partial class PortraitHelper
 {
     public override void DrawConfig()
     {

@@ -150,7 +150,7 @@ public unsafe partial class BannerService
             : _textService.GetAddonText(624);
     }
 
-    public unsafe void ImportPresetToState(PortraitPreset? preset, ImportFlags importFlags = ImportFlags.All)
+    public void ImportPresetToState(PortraitPreset? preset, ImportFlags importFlags = ImportFlags.All)
     {
         if (preset == null)
             return;
@@ -519,7 +519,7 @@ public unsafe partial class BannerService
         _logger.LogDebug("Import complete");
     }
 
-    private static unsafe int GetUnlockedIndex(AgentBannerEditorState.Dataset* dataset, ushort id)
+    private static int GetUnlockedIndex(AgentBannerEditorState.Dataset* dataset, ushort id)
     {
         for (var i = 0; i < dataset->UnlockedEntriesCount; i++)
         {
@@ -531,7 +531,7 @@ public unsafe partial class BannerService
         return 0;
     }
 
-    private static unsafe int GetSortedIndex(AgentBannerEditorState.Dataset* dataset, ushort id)
+    private static int GetSortedIndex(AgentBannerEditorState.Dataset* dataset, ushort id)
     {
         for (var i = 0; i < dataset->SortedEntriesCount; i++)
         {
