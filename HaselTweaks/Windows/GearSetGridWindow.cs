@@ -190,6 +190,9 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
 
                 DrawItemIcon(gearset, slotIndex, slotItem, item);
 
+                if (slotIndex == GearsetItemIndex.SoulStone)
+                    continue;
+
                 var itemLevelText = $"{item.LevelItem.RowId}";
                 ImCursor.X += IconSize.X * ImGuiHelpers.GlobalScale / 2f - ImGui.CalcTextSize(itemLevelText).X / 2f;
                 ImGui.TextColored(_itemService.GetItemLevelColor(item, gearset->ClassJob, Color.Red, Color.Yellow, Color.Green), itemLevelText);
