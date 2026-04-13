@@ -105,10 +105,10 @@
     "de": "Veraltet",
     "zh": "过时的"
   },
-  "HaselTweaks.Config.TweakStatus.InitializationFailed": {
-    "en": "Initialization failed",
-    "de": "Initialisierung fehlgeschlagen",
-    "zh": "初始化失败"
+  "HaselTweaks.Config.TweakStatus.Error": {
+    "en": "Error",
+    "de": "Fehler",
+    "zh": "错误"
   },
   "HaselTweaks.Config.TweakStatus.Enabled": {
     "en": "Enabled",
