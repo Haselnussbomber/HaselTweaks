@@ -38,6 +38,10 @@
     "de": "Unterstütze mich auf Ko-fi",
     "zh": "在Ko-fi支持我"
   },
+  "HaselTweaks.Config.Search.Hint": {
+    "en": "Search for Tweaks...",
+    "de": "Nach Tweaks suchen..."
+  },
   "HaselTweaks.Config.SectionTitle.IncompatibilityWarning": {
     "en": "Incompatibility Warning",
     "de": "Inkompatibilitätswarnung",
