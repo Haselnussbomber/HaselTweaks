@@ -1,6 +1,5 @@
 using System.Globalization;
 using Dalamud.Interface.ImGuiSeStringRenderer;
-using static Dalamud.Interface.Utility.Raii.ImRaii;
 
 namespace HaselTweaks.Config;
 
@@ -20,7 +19,7 @@ public partial class ConfigGui
 
         var disabled = ImRaii.Disabled(tweak.Status == TweakStatus.Outdated);
 
-        return new EndUnconditionally(() =>
+        return new ImRaii.EndUnconditionally(() =>
         {
             _tweak = null;
             disabled.Dispose();
@@ -39,7 +38,7 @@ public partial class ConfigGui
 
         using var id = ImRaii.PushId(fieldName);
 
-        var itemSpacing = ImGui.GetStyle().ItemSpacing;
+        var itemSpacing = ImStyle.ItemSpacing;
         var result = false;
 
         using (var table = ImRaii.Table(fieldName, 2, ImGuiTableFlags.NoSavedSettings))
@@ -76,7 +75,7 @@ public partial class ConfigGui
         }
 
         if (!noFixSpaceAfter)
-            ImGuiUtils.PushCursorY(-itemSpacing.Y / 2);
+            ImCursor.Y += -itemSpacing.Y / 2;
 
         if (result)
         {
@@ -223,7 +222,7 @@ public partial class ConfigGui
 
         _textureProvider.DrawIcon(60073, 24);
         ImGui.SameLine();
-        var cursorPosX = ImGui.GetCursorPosX();
+        var cursorPosX = ImCursor.X;
 
         string getConfigName(string tweakName, string configName)
             => _textService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{tweakName}.Config.{configName}");
@@ -259,7 +258,7 @@ public partial class ConfigGui
             {
                 var pluginName = _textService.Translate($"HaselTweaks.Config.IncompatibilityWarning.Plugin.{entry.InternalName}.Name");
 
-                ImGui.SetCursorPosX(cursorPosX);
+                ImCursor.X = cursorPosX;
 
                 if (entry.ConfigNames.Length == 0)
                 {

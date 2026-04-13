@@ -25,7 +25,7 @@ public unsafe partial class AdvancedImportOverlay : Overlay
         }
 
         if (IsWindow)
-            ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y * 2);
+            ImCursor.Y += ImStyle.ItemSpacing.Y * 2;
 
         var state = AgentBannerEditor.Instance()->EditorState;
         var unknown = _textService.GetAddonText(624) ?? "Unknown";
@@ -249,7 +249,7 @@ public unsafe partial class AdvancedImportOverlay : Overlay
         );
 
         if (IsWindow)
-            ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);
+            ImCursor.Y += ImStyle.ItemSpacing.Y;
     }
 
     private void DrawImportSetting(string label, ImportFlags flag, System.Action drawFn, bool isUnlocked = true)

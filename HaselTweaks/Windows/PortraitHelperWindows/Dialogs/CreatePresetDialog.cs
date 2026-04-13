@@ -110,11 +110,11 @@ public partial class CreatePresetDialog
         ImGui.Separator();
         ImGui.Spacing();
 
-        var combinedButtonWidths = ImGui.GetStyle().ItemSpacing.X
+        var combinedButtonWidths = ImStyle.ItemSpacing.X
             + MathF.Max(Constants.DialogButtonMinWidth, ImGuiHelpers.GetButtonSize(_textService.Translate("ConfirmationButtonWindow.Save")).X)
             + MathF.Max(Constants.DialogButtonMinWidth, ImGuiHelpers.GetButtonSize(_textService.Translate("ConfirmationButtonWindow.Cancel")).X);
 
-        ImGuiUtils.PushCursorX((ImGui.GetContentRegionAvail().X - combinedButtonWidths) / 2f);
+        ImCursor.X += (ImGui.GetContentRegionAvail().X - combinedButtonWidths) / 2f;
 
         using (ImRaii.Disabled(disabled))
         {

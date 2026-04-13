@@ -239,7 +239,7 @@ public unsafe partial class AdvancedEditOverlay : Overlay
 
             ImGui.TableNextColumn();
 
-            var itemWidth = (ImGui.GetColumnWidth() - ImGui.GetStyle().ItemInnerSpacing.X) / 2f - 0.5f;
+            var itemWidth = (ImGui.GetColumnWidth() - ImStyle.ItemInnerSpacing.X) / 2f - 0.5f;
             ImGui.SetNextItemWidth(itemWidth);
 
             var zoom = (int)CharaView->CameraZoom;
@@ -252,7 +252,7 @@ public unsafe partial class AdvancedEditOverlay : Overlay
                     EditorState->SetHasChanged(true);
             }
 
-            ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
+            ImGui.SameLine(0, ImStyle.ItemInnerSpacing.X);
             ImGui.SetNextItemWidth(itemWidth + 0.5f);
 
             var rotation = (int)CharaView->ImageRotation;

@@ -51,11 +51,11 @@ public partial class DeletePresetDialog
         ImGui.Separator();
         ImGui.Spacing();
 
-        var combinedButtonWidths = ImGui.GetStyle().ItemSpacing.X
+        var combinedButtonWidths = ImStyle.ItemSpacing.X
             + MathF.Max(Constants.DialogButtonMinWidth, ImGuiHelpers.GetButtonSize(_textService.Translate("ConfirmationButtonWindow.Delete")).X)
             + MathF.Max(Constants.DialogButtonMinWidth, ImGuiHelpers.GetButtonSize(_textService.Translate("ConfirmationButtonWindow.Cancel")).X);
 
-        ImGuiUtils.PushCursorX((ImGui.GetContentRegionAvail().X - combinedButtonWidths) / 2f);
+        ImCursor.X += (ImGui.GetContentRegionAvail().X - combinedButtonWidths) / 2f;
 
         if (ImGui.Button(_textService.Translate("ConfirmationButtonWindow.Delete"), new Vector2(120, 0)))
         {

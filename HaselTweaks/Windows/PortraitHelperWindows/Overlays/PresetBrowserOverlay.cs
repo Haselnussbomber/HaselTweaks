@@ -58,7 +58,7 @@ public partial class PresetBrowserOverlay : Overlay
 
         DrawPresetBrowserSidebar();
 
-        var paddingX = ImGui.GetStyle().ItemSpacing.X;
+        var paddingX = ImStyle.ItemSpacing.X;
         ImGui.SameLine(0, paddingX * 2);
 
         var separatorStartPos = ImGui.GetWindowPos() + new Vector2(SidebarWidth + paddingX, 0);
@@ -166,14 +166,14 @@ public partial class PresetBrowserOverlay : Overlay
         }
 
         ImGui.SameLine();
-        ImGui.SetCursorPosX(4);
+        ImCursor.X = 4;
         DrawTagIcon();
     }
 
     private void DrawPresetBrowserSidebar()
     {
         using var framePadding = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
-        using var child = ImRaii.Child("PresetBrowser_SideBar", new Vector2(SidebarWidth - ImGui.GetStyle().ItemSpacing.X, -1));
+        using var child = ImRaii.Child("PresetBrowser_SideBar", new Vector2(SidebarWidth - ImStyle.ItemSpacing.X, -1));
         if (!child) return;
         framePadding?.Dispose();
 
@@ -241,7 +241,7 @@ public partial class PresetBrowserOverlay : Overlay
         }
 
         ImGui.SameLine();
-        ImGui.SetCursorPosX(4);
+        ImCursor.X = 4;
         DrawTagIcon();
     }
 
@@ -288,19 +288,18 @@ public partial class PresetBrowserOverlay : Overlay
             pushDown: false,
             respectUiTheme: !IsWindow);
 
-        var style = ImGui.GetStyle();
-        ImGuiUtils.PushCursorY(style.ItemSpacing.Y);
+        ImCursor.Y += ImStyle.ItemSpacing.Y;
 
         using var framePaddingChild = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var presetCardsChild = ImRaii.Child("PresetBrowser_Content_PresetCards");
         if (!presetCardsChild) return;
         framePaddingChild?.Dispose();
 
-        using var indentSpacing = ImRaii.PushStyle(ImGuiStyleVar.IndentSpacing, style.ItemSpacing.X);
+        using var indentSpacing = ImRaii.PushStyle(ImGuiStyleVar.IndentSpacing, ImStyle.ItemSpacing.X);
         using var indent = ImRaii.PushIndent();
 
         var presetsPerRow = 3;
-        var availableWidth = ImGui.GetContentRegionAvail().X - style.ItemInnerSpacing.X * presetsPerRow;
+        var availableWidth = ImGui.GetContentRegionAvail().X - ImStyle.ItemInnerSpacing.X * presetsPerRow;
 
         var presetWidth = availableWidth / presetsPerRow;
         var scale = presetWidth / PortraitSize.X;
@@ -321,7 +320,7 @@ public partial class PresetBrowserOverlay : Overlay
                 DrawPresetCard(presets.ElementAt(index), scale, DefaultImGuiTextColor);
 
                 if (i < presetsPerRow - 1 && index + 1 < presetCount)
-                    ImGui.SameLine(0, style.ItemInnerSpacing.X);
+                    ImGui.SameLine(0, ImStyle.ItemInnerSpacing.X);
             }
         }
     }
@@ -340,15 +339,13 @@ public partial class PresetBrowserOverlay : Overlay
         var isBannerDecorationUnlocked = _bannerService.IsBannerDecorationUnlocked(preset.Preset.BannerDecoration);
 
         var hasErrors = !isBannerTimelineUnlocked || !isBannerBgUnlocked || !isBannerFrameUnlocked || !isBannerDecorationUnlocked;
-        var style = ImGui.GetStyle();
 
-        using var _id = ImRaii.PushId(preset.Id.ToString());
+        using var id = ImRaii.PushId(preset.Id.ToString());
 
-        var cursorPos = ImGui.GetCursorPos();
+        var cursorPos = ImCursor.Position;
         var center = cursorPos + PortraitSize * scale / 2f;
-
         _textureProvider.DrawIcon(190009, PortraitSize * scale);
-        ImGui.SetCursorPos(cursorPos);
+        ImCursor.Position = cursorPos;
 
         var path = _thumbnailService.GetPortraitThumbnailPath(preset.Id);
 
@@ -363,14 +360,14 @@ public partial class PresetBrowserOverlay : Overlay
         {
             if (textureWrap != null)
             {
-                ImGui.SetCursorPos(cursorPos);
+                ImCursor.Position = cursorPos;
                 ImGui.Image(textureWrap.Handle, PortraitSize * scale);
             }
             else if (exception != null)
             {
                 using var font = ImRaii.PushFont(UiBuilder.IconFont);
                 using var color = Color.Red.Push(ImGuiCol.Text);
-                ImGui.SetCursorPos(center - ImGui.CalcTextSize(FontAwesomeIcon.Times.ToIconString()) / 2f);
+                ImCursor.Position = center - ImGui.CalcTextSize(FontAwesomeIcon.Times.ToIconString()) / 2f;
                 ImGui.Text(FontAwesomeIcon.Times.ToIconString());
             }
         }
@@ -378,7 +375,7 @@ public partial class PresetBrowserOverlay : Overlay
         {
             using var font = ImRaii.PushFont(UiBuilder.IconFont);
             using var color = Color.Red.Push(ImGuiCol.Text);
-            ImGui.SetCursorPos(center - ImGui.CalcTextSize(FontAwesomeIcon.FileImage.ToIconString()) / 2f);
+            ImCursor.Position = center - ImGui.CalcTextSize(FontAwesomeIcon.FileImage.ToIconString()) / 2f;
             ImGui.Text(FontAwesomeIcon.FileImage.ToIconString());
         }
         else
@@ -388,23 +385,23 @@ public partial class PresetBrowserOverlay : Overlay
 
         if (bannerFrameImage != 0)
         {
-            ImGui.SetCursorPos(cursorPos);
+            ImCursor.Position = cursorPos;
             _textureProvider.DrawIcon(bannerFrameImage, PortraitSize * scale);
         }
 
         if (bannerDecorationImage != 0)
         {
-            ImGui.SetCursorPos(cursorPos);
+            ImCursor.Position = cursorPos;
             _textureProvider.DrawIcon(bannerDecorationImage, PortraitSize * scale);
         }
 
         if (hasErrors)
         {
-            ImGui.SetCursorPos(cursorPos + new Vector2(PortraitSize.X - 190, 10) * scale);
+            ImCursor.Position = cursorPos + new Vector2(PortraitSize.X - 190, 10) * scale;
             _textureProvider.Draw("ui/uld/Warning_hr1.tex", 160 * scale);
         }
 
-        ImGui.SetCursorPos(cursorPos);
+        ImCursor.Position = cursorPos;
 
         {
             using var color = ImRaii.PushColor(ImGuiCol.Button, 0)

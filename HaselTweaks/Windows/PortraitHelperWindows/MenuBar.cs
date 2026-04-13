@@ -56,7 +56,7 @@ public unsafe partial class MenuBar : SimpleWindow
     {
         if (_state.InitialPreset == null)
         {
-            ImGui.SetCursorPosY(ImGui.GetCursorPos().Y + 2);
+            ImCursor.Y += 2;
             ImGui.Text(_textService.Translate("PortraitHelperWindows.MenuBar.Initializing"));
             return;
         }
@@ -106,7 +106,7 @@ public unsafe partial class MenuBar : SimpleWindow
         var inverseScale = 1 / scale;
         var addonWidth = addon->GetScaledWidth(true);
         var width = (addonWidth - 8) * inverseScale;
-        var height = (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y * 2 + ImGui.GetStyle().WindowPadding.Y * 2) * inverseScale;
+        var height = (ImGui.GetTextLineHeight() + ImStyle.FramePadding.Y * 2 + ImStyle.WindowPadding.Y * 2) * inverseScale;
         var offset = new Vector2(4, 3 - height * scale);
 
         Position = ImGui.GetMainViewport().Pos + addon->Position + offset;

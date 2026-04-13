@@ -44,7 +44,7 @@ public partial class PluginWindow : SimpleWindow
 
     public override void OnOpen()
     {
-        Size = new Vector2(SidebarWidth * 3 + ImGui.GetStyle().ItemSpacing.X + ImGui.GetStyle().FramePadding.X * 2, 600);
+        Size = new Vector2(SidebarWidth * 3 + ImStyle.ItemSpacing.X + ImStyle.FramePadding.X * 2, 600);
         SizeConstraints = new()
         {
             MinimumSize = (Vector2)Size,
@@ -97,13 +97,13 @@ public partial class PluginWindow : SimpleWindow
 
             if (status is TweakStatus.Error or TweakStatus.Outdated)
             {
-                var startPos = ImGui.GetCursorPos();
+                var startPos = ImCursor.Position;
                 var drawList = ImGui.GetWindowDrawList();
-                var pos = ImGui.GetWindowPos() + startPos - new Vector2(0, ImGui.GetScrollY());
+                var pos = ImCursor.ScreenPosition - new Vector2(0, ImGui.GetScrollY());
                 var frameHeight = ImGui.GetFrameHeight();
 
                 var size = new Vector2(frameHeight);
-                ImGui.SetCursorPos(startPos);
+                ImCursor.Position = startPos;
                 ImGui.Dummy(size);
 
                 if (ImGui.IsItemHovered())
@@ -205,18 +205,18 @@ public partial class PluginWindow : SimpleWindow
 
         if (_selectedTweak == null)
         {
-            var cursorPos = ImGui.GetCursorPos();
+            var cursorPos = ImCursor.Position;
             var contentAvail = ImGui.GetContentRegionAvail();
 
             if (_textureProvider.GetFromManifestResource(Assembly.GetExecutingAssembly(), "HaselTweaks.Assets.Logo.png").TryGetWrap(out var logo, out var _))
             {
                 var logoSize = ImGuiHelpers.ScaledVector2(256, 128);
-                ImGui.SetCursorPos(contentAvail / 2 - logoSize / 2 + ImGui.GetStyle().ItemSpacing.XOnly());
+                ImCursor.Position = contentAvail / 2 - logoSize / 2 + ImStyle.ItemSpacing.XOnly();
                 ImGui.Image(logo.Handle, logoSize);
             }
 
             // links, bottom left
-            ImGui.SetCursorPos(cursorPos + new Vector2(0, contentAvail.Y - ImGui.GetTextLineHeight()));
+            ImCursor.Position = cursorPos + new Vector2(0, contentAvail.Y - ImGui.GetTextLineHeight());
             ImGuiUtils.DrawLink("GitHub", _textService.Translate("HaselTweaks.Config.GitHubLink.Tooltip"), "https://github.com/Haselnussbomber/HaselTweaks");
             ImGui.SameLine();
             ImGui.Text("•");
@@ -237,14 +237,14 @@ public partial class PluginWindow : SimpleWindow
 
             // version, bottom right
 #if DEBUG
-            ImGui.SetCursorPos(cursorPos + contentAvail - ImGui.CalcTextSize("dev"));
+            ImCursor.Position = cursorPos + contentAvail - ImGui.CalcTextSize("dev");
             ImGuiUtils.DrawLink("dev", _textService.Translate("HaselTweaks.Config.DevGitHubLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev");
 #else
             var version = Assembly.GetExecutingAssembly().GetName().Version;
             if (version != null)
             {
                 var versionString = "v" + version.ToString(3);
-                ImGui.SetCursorPos(cursorPos + contentAvail - ImGui.CalcTextSize(versionString));
+                ImCursor.Position = cursorPos + contentAvail - ImGui.CalcTextSize(versionString);
                 ImGuiUtils.DrawLink(versionString, _textService.Translate("HaselTweaks.Config.ReleaseNotesLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/releases/tag/{versionString}");
             }
 #endif
@@ -275,9 +275,9 @@ public partial class PluginWindow : SimpleWindow
         if (_textService.TryGetTranslation(selectedTweakName + ".Tweak.Description", out var description))
         {
             ImGuiUtils.DrawPaddedSeparator();
-            ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);
+            ImCursor.Y += ImStyle.ItemSpacing.Y;
             ImGui.TextColoredWrapped(Color.Grey2, description);
-            ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemSpacing.Y);
+            ImCursor.Y += ImStyle.ItemSpacing.Y;
         }
 
         if (_selectedTweak is IConfigurableTweak configurableTweak)

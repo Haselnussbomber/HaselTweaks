@@ -57,7 +57,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
                 continue;
 
             ImGui.Text(category.Name.ToString());
-            ImGuiUtils.PushCursorY(3 * ImGuiHelpers.GlobalScale);
+            ImCursor.Y += 3 * ImGuiHelpers.GlobalScale;
 
             using var indent = ImRaii.PushIndent();
 
@@ -78,7 +78,8 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
 
             ImGui.SameLine();
 
-            var pos = ImGui.GetCursorPos();
+            var pos = ImCursor.Position;
+
             if (ImGui.Selectable(
                 "##Selectable",
                 false,
@@ -95,9 +96,9 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
                 ExdModule.GetItemRowById(item); // make sure item is loaded, otherwise RestorePrismBoxItem will fail
             }
 
-            ImGui.SetCursorPos(pos + new Vector2(
-                ImGui.GetStyle().ItemInnerSpacing.X,
-                IconSize.Y * ImGuiHelpers.GlobalScale / 2f - ImGui.GetTextLineHeight() / 2f - 1));
+            ImCursor.Position = pos + new Vector2(
+                ImStyle.ItemInnerSpacing.X,
+                IconSize.Y * ImGuiHelpers.GlobalScale / 2f - ImGui.GetTextLineHeight() / 2f - 1);
 
             ImGui.Text(_itemService.GetItemName(item, false).ToString());
         }

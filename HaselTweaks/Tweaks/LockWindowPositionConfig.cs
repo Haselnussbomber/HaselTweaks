@@ -117,7 +117,7 @@ public partial class LockWindowPosition
         {
             using (ImRaii.Disabled())
                 ImGui.Text(_textService.Translate("LockWindowPosition.Config.NoWindowsAddedYet"));
-            ImGuiUtils.PushCursorY(4);
+            ImCursor.Y += 4;
         }
 
         if (_showPicker)

@@ -48,7 +48,7 @@ public unsafe partial class MJICraftScheduleSettingSearchBar : SimpleWindow
         var inverseScale = 1 / scale;
         var addonWidth = addon->GetScaledWidth(true);
         var width = (addonWidth - 8) * inverseScale;
-        var height = (ImGui.GetTextLineHeight() + ImGui.GetStyle().FramePadding.Y * 2 + ImGui.GetStyle().WindowPadding.Y * 2) * inverseScale;
+        var height = (ImGui.GetTextLineHeight() + ImStyle.FramePadding.Y * 2 + ImStyle.WindowPadding.Y * 2) * inverseScale;
         var offset = new Vector2(4, 3 - height * scale);
 
         Position = ImGui.GetMainViewport().Pos + addon->Position + offset;
@@ -69,7 +69,7 @@ public unsafe partial class MJICraftScheduleSettingSearchBar : SimpleWindow
         var lastQuery = _query;
         var contentRegionAvail = ImGui.GetContentRegionAvail();
 
-        ImGui.SetNextItemWidth(contentRegionAvail.X - LanguageSelectorWidth * ImGuiHelpers.GlobalScale - ImGui.GetStyle().ItemSpacing.X);
+        ImGui.SetNextItemWidth(contentRegionAvail.X - LanguageSelectorWidth * ImGuiHelpers.GlobalScale - ImStyle.ItemSpacing.X);
         if (ImGui.InputTextWithHint("##Query", _textService.Translate("EnhancedIsleworksAgenda.MJICraftScheduleSettingSearchBar.QueryHint"), ref _query, 255, ImGuiInputTextFlags.EnterReturnsTrue))
         {
             var evt = new AtkEvent();

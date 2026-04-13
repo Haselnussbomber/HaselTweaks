@@ -70,7 +70,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
             _resetScrollPosition = false;
         }
 
-        ImGui.TableSetupColumn("##ID", ImGuiTableColumnFlags.WidthFixed, (24 + 14 + ImGui.GetStyle().ItemInnerSpacing.X * 2f + ImGui.GetStyle().ItemSpacing.X * 2f) * ImGuiHelpers.GlobalScale);
+        ImGui.TableSetupColumn("##ID", ImGuiTableColumnFlags.WidthFixed, (24 + 14 + ImStyle.ItemInnerSpacing.X * 2f + ImStyle.ItemSpacing.X * 2f) * ImGuiHelpers.GlobalScale);
 
         foreach (var slot in slotIndices)
         {
@@ -107,7 +107,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
             ImGui.TableNextRow();
             ImGui.TableNextColumn();
             {
-                var startPos = ImGui.GetCursorPos();
+                var startPos = ImCursor.Position;
                 var region = ImGui.GetContentRegionAvail();
                 var rowHeight = IconSize.Y * ImGuiHelpers.GlobalScale + ImGui.GetFrameHeight();
 
@@ -139,15 +139,15 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
                 });
 
                 var iconSize = 28 * ImGuiHelpers.GlobalScale;
-                var itemStartPos = startPos + new Vector2(region.X / 2f - iconSize / 2f, ImGui.GetStyle().ItemInnerSpacing.Y); // start from the right
+                var itemStartPos = startPos + new Vector2(region.X / 2f - iconSize / 2f, ImStyle.ItemInnerSpacing.Y); // start from the right
 
                 // class icon
-                ImGui.SetCursorPos(itemStartPos);
+                ImCursor.Position = itemStartPos;
                 _textureProvider.DrawIcon(62100 + gearset->ClassJob, iconSize);
 
                 // gearset number
                 var text = $"{gearsetIndex + 1}";
-                ImGui.SetCursorPos(itemStartPos + new Vector2(iconSize / 2f - ImGui.CalcTextSize(text).X / 2f, iconSize));
+                ImCursor.Position = itemStartPos + new Vector2(iconSize / 2f - ImGui.CalcTextSize(text).X / 2f, iconSize);
                 ImGui.Text(text);
             }
 
@@ -166,14 +166,13 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
                 var itemId = ItemUtil.GetBaseId(slotItem.ItemId).ItemId;
                 if (itemId == 0)
                 {
-                    var windowPos = ImGui.GetWindowPos();
-                    var cursorPos = ImGui.GetCursorPos();
+                    var cursorPos = ImCursor.Position;
 
                     // icon background
-                    ImGui.SetCursorPos(cursorPos);
+                    ImCursor.Position = cursorPos;
                     _uldService.DrawPart("Character", 8, 0, IconSize * ImGuiHelpers.GlobalScale);
 
-                    ImGui.SetCursorPos(cursorPos + IconInset * ImGuiHelpers.GlobalScale);
+                    ImCursor.Position = cursorPos + IconInset * ImGuiHelpers.GlobalScale;
                     var iconIndex = slotIndex switch
                     {
                         GearsetItemIndex.RingLeft => GearsetItemIndex.RingRight, // left ring
@@ -187,15 +186,15 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
                 if (!_excelService.TryGetRow<Item>(itemId, out var item))
                     continue;
 
-                ImGuiUtils.PushCursorY(2f * ImGuiHelpers.GlobalScale);
+                ImCursor.Y += 2f * ImGuiHelpers.GlobalScale;
 
                 DrawItemIcon(gearset, slotIndex, slotItem, item);
 
                 var itemLevelText = $"{item.LevelItem.RowId}";
-                ImGuiUtils.PushCursorX(IconSize.X * ImGuiHelpers.GlobalScale / 2f - ImGui.CalcTextSize(itemLevelText).X / 2f);
+                ImCursor.X += IconSize.X * ImGuiHelpers.GlobalScale / 2f - ImGui.CalcTextSize(itemLevelText).X / 2f;
                 ImGui.TextColored(_itemService.GetItemLevelColor(item, gearset->ClassJob, Color.Red, Color.Yellow, Color.Green), itemLevelText);
 
-                ImGuiUtils.PushCursorY(2f * ImGuiHelpers.GlobalScale);
+                ImCursor.Y += 2f * ImGuiHelpers.GlobalScale;
             }
         }
     }
@@ -223,28 +222,27 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
 
     public void DrawItemIcon(GearsetEntry* gearset, GearsetItemIndex slotIndex, in GearsetItem slotItem, ItemHandle item)
     {
-        var startPos = ImGui.GetCursorPos();
+        var startPos = ImCursor.Position;
 
         // icon background
-        ImGui.SetCursorPos(startPos);
         _uldService.DrawPart("Character", 7, 4, IconSize * ImGuiHelpers.GlobalScale);
 
         // icon
-        ImGui.SetCursorPos(startPos + IconInset * ImGuiHelpers.GlobalScale);
+        ImCursor.Position = startPos + IconInset * ImGuiHelpers.GlobalScale;
         _textureProvider.DrawIcon(new GameIconLookup(_itemService.GetItemIcon(item), ItemUtil.IsHighQuality(slotItem.ItemId)), (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
 
         // icon overlay
-        ImGui.SetCursorPos(startPos);
+        ImCursor.Position = startPos;
         _uldService.DrawPart("Character", 7, 0, IconSize * ImGuiHelpers.GlobalScale);
 
         // icon hover effect
         if (ImGui.IsItemHovered() || ImGui.IsPopupOpen("ItemTooltip"))
         {
-            ImGui.SetCursorPos(startPos);
+            ImCursor.Position = startPos;
             _uldService.DrawPart("Character", 7, 5, IconSize * ImGuiHelpers.GlobalScale);
         }
 
-        ImGui.SetCursorPos(startPos + new Vector2(0, (IconSize.Y - 3) * ImGuiHelpers.GlobalScale));
+        ImCursor.Position = startPos + new Vector2(0, (IconSize.Y - 3) * ImGuiHelpers.GlobalScale);
 
         var (glamourId, stain0Id, stain1Id) = (slotItem.GlamourId, slotItem.Stain0Id, slotItem.Stain1Id);
         ImGuiContextMenu.Draw("ItemTooltip", builder =>
@@ -267,13 +265,13 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         var holdingShift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         if (holdingShift)
         {
-            ImGuiUtils.SameLineSpace();
+            ImCursor.SameLineSpace();
             ImGui.Text($"[{item.ItemId}]");
         }
 
         if (itemRow.ItemUICategory.IsValid)
         {
-            ImGuiUtils.PushCursorY(-ImGui.GetStyle().ItemSpacing.Y);
+            ImCursor.Y += -ImStyle.ItemSpacing.Y;
             ImGui.Text(itemRow.ItemUICategory.Value.Name.ToString() ?? string.Empty);
         }
 
@@ -285,12 +283,12 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         if (!glamourItem.IsEmpty)
         {
             ImGui.Text(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelGlamour"));
-            ImGuiUtils.SameLineSpace();
+            ImCursor.SameLineSpace();
             ImGui.TextColored(_itemService.GetItemRarityColor(glamourItem), _itemService.GetItemName(glamourItem).ToString());
 
             if (holdingShift)
             {
-                ImGuiUtils.SameLineSpace();
+                ImCursor.SameLineSpace();
                 ImGui.Text($"[{slotItem.GlamourId}]");
             }
         }
@@ -298,7 +296,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         if (slotItem.Stain0Id != 0 && _excelService.TryGetRow<Stain>(slotItem.Stain0Id, out var stain0))
         {
             ImGui.Text(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelDye0"));
-            ImGuiUtils.SameLineSpace();
+            ImCursor.SameLineSpace();
             using (ImRaii.PushColor(ImGuiCol.Text, stain0.GetColor().ToUInt()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
@@ -306,7 +304,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
 
             if (holdingShift)
             {
-                ImGuiUtils.SameLineSpace();
+                ImCursor.SameLineSpace();
                 ImGui.Text($"[{slotItem.Stain0Id}]");
             }
         }
@@ -314,7 +312,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         if (slotItem.Stain1Id != 0 && _excelService.TryGetRow<Stain>(slotItem.Stain1Id, out var stain1))
         {
             ImGui.Text(_textService.Translate("GearSetGridWindow.ItemTooltip.LabelDye1"));
-            ImGuiUtils.SameLineSpace();
+            ImCursor.SameLineSpace();
             using (ImRaii.PushColor(ImGuiCol.Text, stain1.GetColor().ToUInt()))
                 ImGui.Bullet();
             ImGui.SameLine(0, 0);
@@ -322,7 +320,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
 
             if (holdingShift)
             {
-                ImGuiUtils.SameLineSpace();
+                ImCursor.SameLineSpace();
                 ImGui.Text($"[{slotItem.Stain1Id}]");
             }
         }
@@ -332,7 +330,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         {
             ImGuiUtils.DrawPaddedSeparator();
             ImGui.Text(_textService.Translate("GearSetGridWindow.ItemTooltip.AlsoUsedInTheseGearsets"));
-            using (ImRaii.PushIndent(ImGui.GetStyle().ItemSpacing.X))
+            using (ImRaii.PushIndent(ImStyle.ItemSpacing.X))
             {
                 foreach (var entry in usedInGearsets)
                 {

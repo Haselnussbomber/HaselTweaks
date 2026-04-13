@@ -40,7 +40,7 @@ public partial class DTR
 
             _ = _framework.RunOnTick(OpenSettings, delayTicks: 2);
         }
-        ImGuiUtils.SameLineSpace();
+        ImCursor.SameLineSpace();
         ImGui.Text(_textService.Translate("DTR.Config.Explanation.Post"));
 
         ImGui.Spacing();
@@ -52,7 +52,7 @@ public partial class DTR
         ImGui.Spacing();
         ImGui.Text(_textService.Translate("DTR.Config.Format.Example.Label"));
 
-        var size = new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetStyle().WindowPadding.Y * 2 + ImGui.GetTextLineHeight() + 2);
+        var size = new Vector2(ImGui.GetContentRegionAvail().X, ImStyle.WindowPadding.Y * 2 + ImGui.GetTextLineHeight() + 2);
         using var child = ImRaii.Child("##FormatExample", size, true);
         if (!child) return;
 

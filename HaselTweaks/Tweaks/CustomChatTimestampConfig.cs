@@ -31,12 +31,12 @@ public partial class CustomChatTimestamp
 
             using var col = Color.Grey.Push(ImGuiCol.Text);
             ImGui.Text(_textService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Pre"));
-            ImGuiUtils.SameLineSpace();
+            ImCursor.SameLineSpace();
             using (Color.White.Push(ImGuiCol.Text))
             {
                 ImGuiUtils.DrawLink("DateTime.ToString()", _textService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Tooltip"), "https://docs.microsoft.com/dotnet/standard/base-types/custom-date-and-time-format-strings");
             }
-            ImGuiUtils.SameLineSpace();
+            ImCursor.SameLineSpace();
             ImGui.Text(_textService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Post"));
         }
 
@@ -64,7 +64,7 @@ public partial class CustomChatTimestamp
                 colorParty = 0xFF000000u | (blue << 16) | (green << 8) | red;
             }
 
-            var size = new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetStyle().WindowPadding.Y * 2 + ImGui.GetTextLineHeight() + 2);
+            var size = new Vector2(ImGui.GetContentRegionAvail().X, ImStyle.WindowPadding.Y * 2 + ImGui.GetTextLineHeight() + 2);
             using var child = ImRaii.Child("##FormatExample", size, true);
             if (!child) return;
 

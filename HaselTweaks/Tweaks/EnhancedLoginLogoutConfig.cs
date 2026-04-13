@@ -75,7 +75,7 @@ public unsafe partial class EnhancedLoginLogout
             // PetPosition
             using (ImRaii.Disabled(!_config.ShowPets))
             {
-                ImGuiUtils.PushCursorY(ImGui.GetStyle().ItemInnerSpacing.Y);
+                ImCursor.Y += ImStyle.ItemInnerSpacing.Y;
 
                 if (ImGui.DragFloat3(_textService.Translate("EnhancedLoginLogout.Config.PetPosition.Label"), ref _config.PetPosition, 0.01f, -10f, 10f))
                 {
@@ -97,14 +97,14 @@ public unsafe partial class EnhancedLoginLogout
         {
             using var disabled = ImRaii.Disabled(!_config.EnableCharaSelectEmote);
 
-            ImGuiUtils.PushCursorY(-ImGui.GetStyle().ItemInnerSpacing.Y);
+            ImCursor.Y += -ImStyle.ItemInnerSpacing.Y;
             ImGui.TextColoredWrapped(Color.Grey, _textService.Translate("EnhancedLoginLogout.Config.PlayEmote.Note"));
-            ImGuiUtils.PushCursorY(3);
+            ImCursor.Y += 3;
 
             if (!_config.EnableCharaSelectEmote || ActiveContentId == 0)
                 return;
 
-            ImGuiUtils.PushCursorY(3);
+            ImCursor.Y += 3;
             ImGui.Text(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.CurrentEmote"));
             ImGui.SameLine();
 
@@ -128,7 +128,7 @@ public unsafe partial class EnhancedLoginLogout
                 if (entry.HasValue)
                 {
                     var (isChangePose, name, emote) = entry.Value;
-                    ImGuiUtils.PushCursorY(-3);
+                    ImCursor.Y += -3;
                     _textureProvider.DrawIcon((uint)(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon), 24 * ImGuiHelpers.GlobalScale);
                     ImGui.SameLine();
                     ImGui.Text(name);
@@ -147,7 +147,7 @@ public unsafe partial class EnhancedLoginLogout
 
             ImGui.SameLine();
 
-            ImGuiUtils.PushCursorY(-3);
+            ImCursor.Y += -3;
 
             if (_isRecordingEmote)
             {
@@ -174,7 +174,7 @@ public unsafe partial class EnhancedLoginLogout
             {
                 ImGui.SameLine();
 
-                ImGuiUtils.PushCursorY(-3);
+                ImCursor.Y += -3;
                 if (ImGui.Button(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.UnsetButton.Label")))
                 {
                     SaveEmote(0);
@@ -185,7 +185,7 @@ public unsafe partial class EnhancedLoginLogout
             {
                 using (Color.Gold.Push(ImGuiCol.Text))
                     ImGui.Text(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.RecordingInfo"));
-                ImGuiUtils.PushCursorY(3);
+                ImCursor.Y += 3;
             }
         });
 
