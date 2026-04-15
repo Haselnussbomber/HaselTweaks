@@ -77,7 +77,7 @@ public partial class CustomChatMessageFormats
 
         var ItemInnerSpacing = ImStyle.ItemInnerSpacing;
 
-        using var cellpadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, ItemInnerSpacing * ImGuiHelpers.GlobalScale);
+        using var cellpadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, ItemInnerSpacing * ImStyle.Scale);
         using var table = ImRaii.Table("##Table", 3, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.NoPadOuterX);
         if (!table)
             return;
@@ -118,7 +118,7 @@ public partial class CustomChatMessageFormats
             // Channel Name and Format
             ImGui.TableNextColumn();
             {
-                ImCursor.Y += -2 * ImGuiHelpers.GlobalScale;
+                ImCursor.Y += -2 * ImStyle.Scale;
 
                 if (!isValid)
                 {
@@ -140,7 +140,7 @@ public partial class CustomChatMessageFormats
 
                 if (entry.EditMode)
                 {
-                    ImCursor.Y += 3 * ImGuiHelpers.GlobalScale;
+                    ImCursor.Y += 3 * ImStyle.Scale;
                     DrawEditMode(entry);
                 }
             }
@@ -211,7 +211,7 @@ public partial class CustomChatMessageFormats
                 var i = 0;
                 foreach (var entry in entries)
                 {
-                    if (ImGui.Selectable($"{GetLogKindlabel(entry.LogKind.RowId)}##LogKind{entry.LogKind.RowId}", false, ImGuiSelectableFlags.None, new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetTextLineHeight() * 2)))
+                    if (ImGui.Selectable($"{GetLogKindlabel(entry.LogKind.RowId)}##LogKind{entry.LogKind.RowId}", false, ImGuiSelectableFlags.None, new Vector2(ImStyle.ContentRegionAvail.X, ImStyle.TextLineHeight * 2)))
                     {
                         _config.FormatOverrides.Add(entry.LogKind.RowId, new(entry.Format));
                         SaveAndReloadChat();
@@ -219,8 +219,8 @@ public partial class CustomChatMessageFormats
 
                     var afterCursor = ImCursor.Position;
 
-                    ImCursor.X += 14 * ImGuiHelpers.GlobalScale;
-                    ImCursor.Y += -ImGui.GetTextLineHeight() - ImStyle.ItemSpacing.Y;
+                    ImCursor.X += 14 * ImStyle.Scale;
+                    ImCursor.Y += -ImStyle.TextLineHeight - ImStyle.ItemSpacing.Y;
 
                     DrawExample(entry.Format);
 
@@ -288,7 +288,7 @@ public partial class CustomChatMessageFormats
             // Payload
             ImGui.TableNextColumn();
             {
-                ImCursor.Y += 2f * ImGuiHelpers.GlobalScale;
+                ImCursor.Y += 2f * ImStyle.Scale;
 
                 if (payload.Type == ReadOnlySePayloadType.Text)
                     ImGui.Text("Text");
@@ -301,7 +301,7 @@ public partial class CustomChatMessageFormats
             // Value
             ImGui.TableNextColumn();
             {
-                ImCursor.Y += 2f * ImGuiHelpers.GlobalScale;
+                ImCursor.Y += 2f * ImStyle.Scale;
 
                 if (payload.Type == ReadOnlySePayloadType.Text)
                 {

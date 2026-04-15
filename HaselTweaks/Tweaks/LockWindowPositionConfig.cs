@@ -164,7 +164,7 @@ public partial class LockWindowPosition
             if (ImGui.Begin("Lock Windows Picker", ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize))
             {
                 var drawList = ImGui.GetForegroundDrawList();
-                var textPos = _hoveredWindowPos + new Vector2(0, -ImGui.GetTextLineHeight());
+                var textPos = _hoveredWindowPos + new Vector2(0, -ImStyle.TextLineHeight);
                 drawList.AddText(textPos + Vector2.One, Color.Black.ToUInt(), _hoveredWindowName);
                 drawList.AddText(textPos, Color.Gold.ToUInt(), _hoveredWindowName);
 

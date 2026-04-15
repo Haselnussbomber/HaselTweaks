@@ -289,7 +289,7 @@ public unsafe partial class AdvancedImportOverlay : Overlay
         if (!table)
             return;
 
-        var scale = ImGuiHelpers.GlobalScale;
+        var scale = ImStyle.Scale;
         ImGui.TableSetupColumn("Preview", ImGuiTableColumnFlags.WidthFixed, 26 * scale);
         ImGui.TableSetupColumn("R", ImGuiTableColumnFlags.WidthFixed, 40 * scale);
         ImGui.TableSetupColumn("G", ImGuiTableColumnFlags.WidthFixed, 40 * scale);
@@ -307,7 +307,7 @@ public unsafe partial class AdvancedImportOverlay : Overlay
             ImGui.Text(label);
 
             var valueStr = _textService.Translate("PortraitHelperWindows.AdvancedImportOverlay.ColorInput.ValueFormat", value);
-            ImGui.SameLine(0, ImGui.GetContentRegionAvail().X - labelWidth - ImGui.CalcTextSize(valueStr).X);
+            ImGui.SameLine(0, ImStyle.ContentRegionAvail.X - labelWidth - ImGui.CalcTextSize(valueStr).X);
             ImGui.Text(valueStr);
         }
 
@@ -322,7 +322,7 @@ public unsafe partial class AdvancedImportOverlay : Overlay
         if (!table)
             return;
 
-        var scale = ImGuiHelpers.GlobalScale;
+        var scale = ImStyle.Scale;
         ImGui.TableSetupColumn("X", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
         ImGui.TableSetupColumn("Y", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
 
@@ -336,7 +336,7 @@ public unsafe partial class AdvancedImportOverlay : Overlay
             ImGui.Text(label);
 
             var valueStr = _textService.Translate("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.ValueFormat", value);
-            ImGui.SameLine(0, ImGui.GetContentRegionAvail().X - labelWidth - ImGui.CalcTextSize(valueStr).X);
+            ImGui.SameLine(0, ImStyle.ContentRegionAvail.X - labelWidth - ImGui.CalcTextSize(valueStr).X);
             ImGui.Text(valueStr);
         }
 
@@ -350,7 +350,7 @@ public unsafe partial class AdvancedImportOverlay : Overlay
         if (!table)
             return;
 
-        var scale = ImGuiHelpers.GlobalScale;
+        var scale = ImStyle.Scale;
         ImGui.TableSetupColumn("X", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
         ImGui.TableSetupColumn("Y", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
         ImGui.TableSetupColumn("Z", ImGuiTableColumnFlags.WidthFixed, 50 * scale);
@@ -366,7 +366,7 @@ public unsafe partial class AdvancedImportOverlay : Overlay
             ImGui.Text(label);
 
             var valueStr = _textService.Translate("PortraitHelperWindows.AdvancedImportOverlay.VectorInput.ValueFormat", value);
-            ImGui.SameLine(0, ImGui.GetContentRegionAvail().X - labelWidth - ImGui.CalcTextSize(valueStr).X);
+            ImGui.SameLine(0, ImStyle.ContentRegionAvail.X - labelWidth - ImGui.CalcTextSize(valueStr).X);
             ImGui.Text(valueStr);
         }
 

@@ -102,11 +102,11 @@ public unsafe partial class MenuBar : SimpleWindow
         if (!TryGetAddon<AtkUnitBase>(AgentId.BannerEditor, out var addon))
             return;
 
-        var scale = ImGuiHelpers.GlobalScale;
+        var scale = ImStyle.Scale;
         var inverseScale = 1 / scale;
         var addonWidth = addon->GetScaledWidth(true);
         var width = (addonWidth - 8) * inverseScale;
-        var height = (ImGui.GetTextLineHeight() + ImStyle.FramePadding.Y * 2 + ImStyle.WindowPadding.Y * 2) * inverseScale;
+        var height = (ImStyle.TextLineHeight + ImStyle.FramePadding.Y * 2 + ImStyle.WindowPadding.Y * 2) * inverseScale;
         var offset = new Vector2(4, 3 - height * scale);
 
         Position = ImGui.GetMainViewport().Pos + addon->Position + offset;

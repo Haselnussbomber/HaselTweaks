@@ -52,7 +52,7 @@ public partial class DTR
         ImGui.Spacing();
         ImGui.Text(_textService.Translate("DTR.Config.Format.Example.Label"));
 
-        var size = new Vector2(ImGui.GetContentRegionAvail().X, ImStyle.WindowPadding.Y * 2 + ImGui.GetTextLineHeight() + 2);
+        var size = new Vector2(ImStyle.ContentRegionAvail.X, ImStyle.WindowPadding.Y * 2 + ImStyle.TextLineHeight + 2);
         using var child = ImRaii.Child("##FormatExample", size, true);
         if (!child) return;
 

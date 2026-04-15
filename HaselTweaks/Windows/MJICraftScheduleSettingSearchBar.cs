@@ -44,11 +44,11 @@ public unsafe partial class MJICraftScheduleSettingSearchBar : SimpleWindow
         if (!TryGetAddon<AtkUnitBase>("MJICraftScheduleSetting"u8, out var addon))
             return;
 
-        var scale = ImGuiHelpers.GlobalScale;
+        var scale = ImStyle.Scale;
         var inverseScale = 1 / scale;
         var addonWidth = addon->GetScaledWidth(true);
         var width = (addonWidth - 8) * inverseScale;
-        var height = (ImGui.GetTextLineHeight() + ImStyle.FramePadding.Y * 2 + ImStyle.WindowPadding.Y * 2) * inverseScale;
+        var height = (ImStyle.TextLineHeight + ImStyle.FramePadding.Y * 2 + ImStyle.WindowPadding.Y * 2) * inverseScale;
         var offset = new Vector2(4, 3 - height * scale);
 
         Position = ImGui.GetMainViewport().Pos + addon->Position + offset;
@@ -67,16 +67,16 @@ public unsafe partial class MJICraftScheduleSettingSearchBar : SimpleWindow
             return;
 
         var lastQuery = _query;
-        var contentRegionAvail = ImGui.GetContentRegionAvail();
+        var contentRegionAvail = ImStyle.ContentRegionAvail;
 
-        ImGui.SetNextItemWidth(contentRegionAvail.X - LanguageSelectorWidth * ImGuiHelpers.GlobalScale - ImStyle.ItemSpacing.X);
+        ImGui.SetNextItemWidth(contentRegionAvail.X - LanguageSelectorWidth * ImStyle.Scale - ImStyle.ItemSpacing.X);
         if (ImGui.InputTextWithHint("##Query", _textService.Translate("EnhancedIsleworksAgenda.MJICraftScheduleSettingSearchBar.QueryHint"), ref _query, 255, ImGuiInputTextFlags.EnterReturnsTrue))
         {
             var evt = new AtkEvent();
             addon->ReceiveEvent(AtkEventType.ButtonClick, 6, &evt);
         }
         ImGui.SameLine();
-        ImGui.SetNextItemWidth(LanguageSelectorWidth * ImGuiHelpers.GlobalScale);
+        ImGui.SetNextItemWidth(LanguageSelectorWidth * ImStyle.Scale);
         using (var dropdown = ImRaii.Combo("##Language", Enum.GetName(_config.SearchLanguage) ?? "Language..."))
         {
             if (dropdown)

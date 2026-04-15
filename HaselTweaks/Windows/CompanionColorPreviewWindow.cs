@@ -63,7 +63,7 @@ public unsafe partial class CompanionColorPreviewWindow : SimpleWindow
         if (!TryGetAddon<AtkUnitBase>("Buddy"u8, out var addon))
             return;
 
-        var height = ImGui.GetTextLineHeight() + ImStyle.FramePadding.Y * 2 + ImStyle.WindowPadding.Y * 2;
+        var height = ImStyle.TextLineHeight + ImStyle.FramePadding.Y * 2 + ImStyle.WindowPadding.Y * 2;
         var offset = new Vector2(4, 3 - height);
 
         Position = ImGui.GetMainViewport().Pos + addon->Position + offset;
@@ -83,7 +83,7 @@ public unsafe partial class CompanionColorPreviewWindow : SimpleWindow
         var stainSlot = battleChara->DrawData.EquipmentModelIds.GetPointer((int)DrawDataContainer.EquipmentSlot.Legs);
         ref var stainId = ref stainSlot->Stain0;
 
-        ImGui.SetNextItemWidth(180 * ImGuiHelpers.GlobalScale);
+        ImGui.SetNextItemWidth(180 * ImStyle.Scale);
         using (var combo = ImRaii.Combo("##Color", _textService.GetStainName(stainId), ImGuiComboFlags.HeightLarge))
         {
             if (combo)

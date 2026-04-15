@@ -57,7 +57,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
                 continue;
 
             ImGui.Text(category.Name.ToString());
-            ImCursor.Y += 3 * ImGuiHelpers.GlobalScale;
+            ImCursor.Y += 3 * ImStyle.Scale;
 
             using var indent = ImRaii.PushIndent();
 
@@ -74,7 +74,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
 
         using (var group = ImRaii.Group())
         {
-            _textureProvider.DrawIcon(new GameIconLookup(_itemService.GetItemIcon(item), item.IsHighQuality), IconSize * ImGuiHelpers.GlobalScale);
+            _textureProvider.DrawIcon(new GameIconLookup(_itemService.GetItemIcon(item), item.IsHighQuality), IconSize * ImStyle.Scale);
 
             ImGui.SameLine();
 
@@ -86,7 +86,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
                 IsUpdatePending
                     ? ImGuiSelectableFlags.Disabled
                     : ImGuiSelectableFlags.None,
-                ImGuiHelpers.ScaledVector2(ImGui.GetContentRegionAvail().X, IconSize.Y)))
+                ImGuiHelpers.ScaledVector2(ImStyle.ContentRegionAvail.X, IconSize.Y)))
             {
                 RestoreItem(item);
             }
@@ -98,7 +98,7 @@ public unsafe partial class GlamourDresserArmoireAlertWindow : SimpleWindow
 
             ImCursor.Position = pos + new Vector2(
                 ImStyle.ItemInnerSpacing.X,
-                IconSize.Y * ImGuiHelpers.GlobalScale / 2f - ImGui.GetTextLineHeight() / 2f - 1);
+                IconSize.Y * ImStyle.Scale / 2f - ImStyle.TextLineHeight / 2f - 1);
 
             ImGui.Text(_itemService.GetItemName(item, false).ToString());
         }

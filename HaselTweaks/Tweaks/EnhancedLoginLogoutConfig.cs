@@ -129,7 +129,7 @@ public unsafe partial class EnhancedLoginLogout
                 {
                     var (isChangePose, name, emote) = entry.Value;
                     ImCursor.Y += -3;
-                    _textureProvider.DrawIcon((uint)(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon), 24 * ImGuiHelpers.GlobalScale);
+                    _textureProvider.DrawIcon((uint)(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon), 24 * ImStyle.Scale);
                     ImGui.SameLine();
                     ImGui.Text(name);
                 }

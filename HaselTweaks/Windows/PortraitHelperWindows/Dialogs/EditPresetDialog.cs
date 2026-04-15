@@ -101,7 +101,7 @@ public partial class EditPresetDialog
             + MathF.Max(Constants.DialogButtonMinWidth, ImGuiHelpers.GetButtonSize(_textService.Translate("ConfirmationButtonWindow.Save")).X)
             + MathF.Max(Constants.DialogButtonMinWidth, ImGuiHelpers.GetButtonSize(_textService.Translate("ConfirmationButtonWindow.Cancel")).X);
 
-        ImCursor.X += (ImGui.GetContentRegionAvail().X - combinedButtonWidths) / 2f;
+        ImCursor.X += (ImStyle.ContentRegionAvail.X - combinedButtonWidths) / 2f;
 
         using (ImRaii.Disabled(disabled))
         {

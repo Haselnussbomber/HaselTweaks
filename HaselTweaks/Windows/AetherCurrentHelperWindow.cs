@@ -48,7 +48,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
         var placeName = _textService.GetPlaceName(CompFlgSet!.Value.Territory.Value.PlaceName.RowId);
         var textSize = ImGui.CalcTextSize(placeName);
 
-        var availableSize = ImGui.GetContentRegionAvail();
+        var availableSize = ImStyle.ContentRegionAvail;
         var startPos = ImCursor.Position;
 
         ImGui.Checkbox("##HideUnlocked", ref _hideUnlocked);
@@ -128,10 +128,9 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
             return false;
 
         var startPos = ImCursor.Position;
-        var windowSize = ImGui.GetContentRegionAvail();
-        var iconSize = ImGui.GetFrameHeight();
+        var iconSize = ImStyle.FrameHeight;
 
-        ImCursor.X = windowSize.X + ImStyle.WindowPadding.X - iconSize - 1;
+        ImCursor.X = ImStyle.ContentRegionAvail.X + ImStyle.WindowPadding.X - iconSize - 1;
 
         _textureProvider.DrawIcon(64, iconSize);
 
@@ -195,7 +194,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
         // Actions
         ImGui.TableNextColumn();
         var selected = false;
-        ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImStyle.FramePadding.Y) * 2));
+        ImGui.Selectable($"##aetherCurrent-{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImStyle.TextLineHeight + ImStyle.FramePadding.Y) * 2));
         if (selected)
         {
             _mapService.OpenMap(quest.IssuerLocation.Value);
@@ -237,7 +236,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
         // Actions
         ImGui.TableNextColumn();
         var selected = false;
-        ImGui.Selectable($"##AetherCurrent_{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImGui.GetTextLineHeight() + ImStyle.FramePadding.Y) * 2));
+        ImGui.Selectable($"##AetherCurrent_{aetherCurrent.RowId}", ref selected, ImGuiSelectableFlags.SpanAllColumns, new Vector2(0, (ImStyle.TextLineHeight + ImStyle.FramePadding.Y) * 2));
         if (selected)
         {
             _mapService.OpenMap(level);
@@ -270,7 +269,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
 
                     if (Config.CenterDistance)
                     {
-                        ImCursor.X += ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2;
+                        ImCursor.X += ImStyle.ContentRegionAvail.X / 2 - ImGui.CalcTextSize(text).X / 2;
                     }
 
                     if (isUnlocked)
@@ -303,7 +302,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
 
         if (isSameTerritory && Config.CenterDistance)
         {
-            ImCursor.X += ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(icon).X / 2;
+            ImCursor.X += ImStyle.ContentRegionAvail.X / 2 - ImGui.CalcTextSize(icon).X / 2;
         }
 
         ImGui.TextColored(Color.Green, icon);

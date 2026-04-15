@@ -18,7 +18,7 @@ public unsafe partial class AlignmentToolRenderer
         if (!config.ShowAlignmentTool)
             return;
 
-        if (ImGuiHelpers.GlobalScale <= 1 && _state.Overlay is AdvancedImportOverlay or PresetBrowserOverlay)
+        if (ImStyle.Scale <= 1 && _state.Overlay is AdvancedImportOverlay or PresetBrowserOverlay)
             return;
 
         if (!TryGetAddon<AddonBannerEditor>(AgentId.BannerEditor, out var addon))

@@ -38,14 +38,13 @@ public partial class ConfigGui
 
         using var id = ImRaii.PushId(fieldName);
 
-        var itemSpacing = ImStyle.ItemSpacing;
         var result = false;
 
         using (var table = ImRaii.Table(fieldName, 2, ImGuiTableFlags.NoSavedSettings))
         {
             if (table)
             {
-                ImGui.TableSetupColumn("Checkbox", ImGuiTableColumnFlags.WidthFixed, ImGui.GetFrameHeight());
+                ImGui.TableSetupColumn("Checkbox", ImGuiTableColumnFlags.WidthFixed, ImStyle.FrameHeight);
                 ImGui.TableSetupColumn("Text", ImGuiTableColumnFlags.WidthStretch);
 
                 ImGui.TableNextRow();
@@ -75,7 +74,7 @@ public partial class ConfigGui
         }
 
         if (!noFixSpaceAfter)
-            ImCursor.Y += -itemSpacing.Y / 2;
+            ImCursor.Y += -ImStyle.ItemSpacing.Y / 2;
 
         if (result)
         {

@@ -299,7 +299,7 @@ public partial class PresetBrowserOverlay : Overlay
         using var indent = ImRaii.PushIndent();
 
         var presetsPerRow = 3;
-        var availableWidth = ImGui.GetContentRegionAvail().X - ImStyle.ItemInnerSpacing.X * presetsPerRow;
+        var availableWidth = ImStyle.ContentRegionAvail.X - ImStyle.ItemInnerSpacing.X * presetsPerRow;
 
         var presetWidth = availableWidth / presetsPerRow;
         var scale = presetWidth / PortraitSize.X;

@@ -84,7 +84,7 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
         if (!IsOpen)
             return;
 
-        IsWindow = ImGuiHelpers.GlobalScale > 1;
+        IsWindow = ImStyle.Scale > 1;
 
         var agent = AgentBannerEditor.Instance();
         var isCloseDialogOpen =

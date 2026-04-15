@@ -95,7 +95,7 @@ public unsafe partial class AdvancedEditOverlay : Overlay
         {
             if (table)
             {
-                ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, 150 * ImGuiHelpers.GlobalScale);
+                ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, 150 * ImStyle.Scale);
                 ImGui.TableSetupColumn("Value", ImGuiTableColumnFlags.WidthStretch);
 
                 DrawCameraOrientation();

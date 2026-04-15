@@ -64,7 +64,7 @@ public partial class CustomChatTimestamp
                 colorParty = 0xFF000000u | (blue << 16) | (green << 8) | red;
             }
 
-            var size = new Vector2(ImGui.GetContentRegionAvail().X, ImStyle.WindowPadding.Y * 2 + ImGui.GetTextLineHeight() + 2);
+            var size = new Vector2(ImStyle.ContentRegionAvail.X, ImStyle.WindowPadding.Y * 2 + ImStyle.TextLineHeight + 2);
             using var child = ImRaii.Child("##FormatExample", size, true);
             if (!child) return;
 

@@ -70,7 +70,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
             _resetScrollPosition = false;
         }
 
-        ImGui.TableSetupColumn("##ID", ImGuiTableColumnFlags.WidthFixed, (24 + 14 + ImStyle.ItemInnerSpacing.X * 2f + ImStyle.ItemSpacing.X * 2f) * ImGuiHelpers.GlobalScale);
+        ImGui.TableSetupColumn("##ID", ImGuiTableColumnFlags.WidthFixed, (24 + 14 + ImStyle.ItemInnerSpacing.X * 2f + ImStyle.ItemSpacing.X * 2f) * ImStyle.Scale);
 
         foreach (var slot in slotIndices)
         {
@@ -78,7 +78,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
             if (slot == GearsetItemIndex.Belt)
                 continue;
 
-            ImGui.TableSetupColumn($"##Slot{(int)slot}", ImGuiTableColumnFlags.WidthFixed, IconSize.X * ImGuiHelpers.GlobalScale);
+            ImGui.TableSetupColumn($"##Slot{(int)slot}", ImGuiTableColumnFlags.WidthFixed, IconSize.X * ImStyle.Scale);
         }
 
         var raptureGearsetModule = RaptureGearsetModule.Instance();
@@ -99,7 +99,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
                 {
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
-                    ImGui.Dummy(new Vector2(1, IconSize.Y * ImGuiHelpers.GlobalScale / 2f));
+                    ImGui.Dummy(new Vector2(1, IconSize.Y * ImStyle.Scale / 2f));
                 }
                 continue;
             }
@@ -108,8 +108,8 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
             ImGui.TableNextColumn();
             {
                 var startPos = ImCursor.Position;
-                var region = ImGui.GetContentRegionAvail();
-                var rowHeight = IconSize.Y * ImGuiHelpers.GlobalScale + ImGui.GetFrameHeight();
+                var region = ImStyle.ContentRegionAvail;
+                var rowHeight = IconSize.Y * ImStyle.Scale + ImStyle.FrameHeight;
 
                 if (ImGui.Selectable("##Equip", gearsetIndex == raptureGearsetModule->CurrentGearsetIndex, ImGuiSelectableFlags.None, new Vector2(region.X, rowHeight)))
                 {
@@ -138,7 +138,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
                         .AddGearsetChangePortrait(gearset);
                 });
 
-                var iconSize = 28 * ImGuiHelpers.GlobalScale;
+                var iconSize = 28 * ImStyle.Scale;
                 var itemStartPos = startPos + new Vector2(region.X / 2f - iconSize / 2f, ImStyle.ItemInnerSpacing.Y); // start from the right
 
                 // class icon
@@ -170,15 +170,15 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
 
                     // icon background
                     ImCursor.Position = cursorPos;
-                    _uldService.DrawPart("Character", 8, 0, IconSize * ImGuiHelpers.GlobalScale);
+                    _uldService.DrawPart("Character", 8, 0, IconSize * ImStyle.Scale);
 
-                    ImCursor.Position = cursorPos + IconInset * ImGuiHelpers.GlobalScale;
+                    ImCursor.Position = cursorPos + IconInset * ImStyle.Scale;
                     var iconIndex = slotIndex switch
                     {
                         GearsetItemIndex.RingLeft => GearsetItemIndex.RingRight, // left ring
                         _ => slotIndex,
                     };
-                    _uldService.DrawPart("Character", 12, 17 + (uint)iconIndex, (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
+                    _uldService.DrawPart("Character", 12, 17 + (uint)iconIndex, (IconSize - IconInset * 2f) * ImStyle.Scale);
 
                     continue;
                 }
@@ -186,7 +186,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
                 if (!_excelService.TryGetRow<Item>(itemId, out var item))
                     continue;
 
-                ImCursor.Y += 2f * ImGuiHelpers.GlobalScale;
+                ImCursor.Y += 2f * ImStyle.Scale;
 
                 DrawItemIcon(gearset, slotIndex, slotItem, item);
 
@@ -194,10 +194,10 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
                     continue;
 
                 var itemLevelText = $"{item.LevelItem.RowId}";
-                ImCursor.X += IconSize.X * ImGuiHelpers.GlobalScale / 2f - ImGui.CalcTextSize(itemLevelText).X / 2f;
+                ImCursor.X += IconSize.X * ImStyle.Scale / 2f - ImGui.CalcTextSize(itemLevelText).X / 2f;
                 ImGui.TextColored(_itemService.GetItemLevelColor(item, gearset->ClassJob, Color.Red, Color.Yellow, Color.Green), itemLevelText);
 
-                ImCursor.Y += 2f * ImGuiHelpers.GlobalScale;
+                ImCursor.Y += 2f * ImStyle.Scale;
             }
         }
     }
@@ -228,24 +228,24 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         var startPos = ImCursor.Position;
 
         // icon background
-        _uldService.DrawPart("Character", 7, 4, IconSize * ImGuiHelpers.GlobalScale);
+        _uldService.DrawPart("Character", 7, 4, IconSize * ImStyle.Scale);
 
         // icon
-        ImCursor.Position = startPos + IconInset * ImGuiHelpers.GlobalScale;
-        _textureProvider.DrawIcon(new GameIconLookup(_itemService.GetItemIcon(item), ItemUtil.IsHighQuality(slotItem.ItemId)), (IconSize - IconInset * 2f) * ImGuiHelpers.GlobalScale);
+        ImCursor.Position = startPos + IconInset * ImStyle.Scale;
+        _textureProvider.DrawIcon(new GameIconLookup(_itemService.GetItemIcon(item), ItemUtil.IsHighQuality(slotItem.ItemId)), (IconSize - IconInset * 2f) * ImStyle.Scale);
 
         // icon overlay
         ImCursor.Position = startPos;
-        _uldService.DrawPart("Character", 7, 0, IconSize * ImGuiHelpers.GlobalScale);
+        _uldService.DrawPart("Character", 7, 0, IconSize * ImStyle.Scale);
 
         // icon hover effect
         if (ImGui.IsItemHovered() || ImGui.IsPopupOpen("ItemTooltip"))
         {
             ImCursor.Position = startPos;
-            _uldService.DrawPart("Character", 7, 5, IconSize * ImGuiHelpers.GlobalScale);
+            _uldService.DrawPart("Character", 7, 5, IconSize * ImStyle.Scale);
         }
 
-        ImCursor.Position = startPos + new Vector2(0, (IconSize.Y - 3) * ImGuiHelpers.GlobalScale);
+        ImCursor.Position = startPos + new Vector2(0, (IconSize.Y - 3) * ImStyle.Scale);
 
         var (glamourId, stain0Id, stain1Id) = (slotItem.GlamourId, slotItem.Stain0Id, slotItem.Stain1Id);
         ImGuiContextMenu.Draw("ItemTooltip", builder =>

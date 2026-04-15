@@ -56,7 +56,7 @@ public abstract class ConfirmationDialog : IDialog
         ImGui.Spacing();
 
         var buttonSpacing = ImStyle.ItemSpacing.X;
-        var buttonWidth = (int)Math.Max(80f, (ImGui.GetContentRegionAvail().X - buttonSpacing * (_buttons.Count - 1)) / _buttons.Count - 80);
+        var buttonWidth = (int)Math.Max(80f, (ImStyle.ContentRegionAvail.X - buttonSpacing * (_buttons.Count - 1)) / _buttons.Count - 80);
         var totalWidth = _buttons.Count * buttonWidth + buttonSpacing * (_buttons.Count - 1);
 
         ImCursor.X = (ImGui.GetWindowWidth() - totalWidth) / 2f;

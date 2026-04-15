@@ -14,7 +14,7 @@ public class ConfirmationButton(string label, ConfirmationButton.ClickCallbackDe
         using var id = ImRaii.PushId(buttonIndex);
         using var disabled = ImRaii.Disabled(Disabled);
 
-        if (ImGui.Button(Label, new Vector2(buttonWidth, ImGui.GetFrameHeight())))
+        if (ImGui.Button(Label, new Vector2(buttonWidth, ImStyle.FrameHeight)))
         {
             ClickCallback();
             return true;
