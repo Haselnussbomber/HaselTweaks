@@ -121,7 +121,7 @@ public partial class PluginWindow : SimpleWindow
         ImGui.GetWindowDrawList().AddRectFilled(
             ImCursor.ScreenPosition,
             ImCursor.ScreenPosition + new Vector2(SidebarWidth * ImStyle.Scale, ImStyle.ContentRegionAvail.Y),
-            rgba(1, 1, 1, 0.05f).ToUInt(),
+            (Color.White with { A = 0.05f }).ToUInt(),
             ImStyle.WindowRounding,
             ImDrawFlags.RoundCornersBottomLeft);
     }

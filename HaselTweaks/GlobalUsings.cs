@@ -41,7 +41,6 @@ global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
 global using static FFXIVClientStructs.Interop.SpanExtensions;
 global using static HaselCommon.Globals.Addon;
-global using static HaselCommon.Globals.ColorHelpers;
 global using Action = System.Action;
 global using ActionSheet = Lumina.Excel.Sheets.Action;
 global using Color = HaselCommon.Graphics.Color;
