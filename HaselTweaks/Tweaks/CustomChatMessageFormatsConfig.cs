@@ -122,7 +122,7 @@ public partial class CustomChatMessageFormats
 
                 if (!isValid)
                 {
-                    ImGuiUtils.Icon(FontAwesomeIcon.ExclamationCircle, Color.Red.ToUInt());
+                    ImGuiUtils.Icon(FontAwesomeIcon.ExclamationCircle, Color.ErrorForeground.ToUInt());
 
                     if (ImGui.IsItemHovered())
                     {

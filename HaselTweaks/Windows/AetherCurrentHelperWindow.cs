@@ -259,7 +259,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
         }
         else
         {
-            if (isSameTerritory)
+           /* if (isSameTerritory)
             {
                 var distance = _mapService.GetDistanceFromPlayer(level);
                 if (distance < float.MaxValue)
@@ -286,11 +286,11 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
             {
                 DrawCheckmark(isSameTerritory);
             }
-            else
+            else*/
             {
                 ImCursor.X += 2;
                 using var iconFont = ImRaii.PushFont(UiBuilder.IconFont);
-                ImGui.TextColored(Color.Grey4, FontAwesomeIcon.Times.ToIconString());
+                ImGui.TextColored(Color.Text200, FontAwesomeIcon.Times.ToIconString());
             }
         }
     }

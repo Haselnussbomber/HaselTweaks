@@ -69,7 +69,7 @@ public unsafe partial class EnhancedLoginLogout
         {
             if (ActiveContentId != 0 && !_config.PetMirageSettings.ContainsKey(ActiveContentId))
             {
-                ImGui.TextColoredWrapped(Color.Red, _textService.Translate("EnhancedLoginLogout.Config.ShowPets.Error.MissingPetMirageSettings"));
+                ImGui.TextColoredWrapped(Color.ErrorForeground, _textService.Translate("EnhancedLoginLogout.Config.ShowPets.Error.MissingPetMirageSettings"));
             }
 
             // PetPosition
@@ -98,7 +98,7 @@ public unsafe partial class EnhancedLoginLogout
             using var disabled = ImRaii.Disabled(!_config.EnableCharaSelectEmote);
 
             ImCursor.Y += -ImStyle.ItemInnerSpacing.Y;
-            ImGui.TextColoredWrapped(Color.Grey, _textService.Translate("EnhancedLoginLogout.Config.PlayEmote.Note"));
+            ImGui.TextColoredWrapped(Color.Text700, _textService.Translate("EnhancedLoginLogout.Config.PlayEmote.Note"));
             ImCursor.Y += 3;
 
             if (!_config.EnableCharaSelectEmote || ActiveContentId == 0)

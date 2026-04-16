@@ -183,7 +183,7 @@ public partial class PresetBrowserOverlay : Overlay
         ImGuiUtils.DrawSection(
             _textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Tags.Title"),
             pushDown: false,
-            respectUiTheme: !IsWindow);
+            GetSectionColor());
 
         using var framePaddingChild = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, Vector2.Zero);
         using var tagsChild = ImRaii.Child("PresetBrowser_Content_Tags");
@@ -286,7 +286,7 @@ public partial class PresetBrowserOverlay : Overlay
         ImGuiUtils.DrawSection(
             _textService.Translate("PortraitHelperWindows.PresetBrowserOverlay.Sidebar.Presets.Title"),
             pushDown: false,
-            respectUiTheme: !IsWindow);
+            GetSectionColor());
 
         ImCursor.Y += ImStyle.ItemSpacing.Y;
 
@@ -366,7 +366,7 @@ public partial class PresetBrowserOverlay : Overlay
             else if (exception != null)
             {
                 using var font = ImRaii.PushFont(UiBuilder.IconFont);
-                using var color = Color.Red.Push(ImGuiCol.Text);
+                using var color = Color.ErrorForeground.Push(ImGuiCol.Text);
                 ImCursor.Position = center - ImGui.CalcTextSize(FontAwesomeIcon.Times.ToIconString()) / 2f;
                 ImGui.Text(FontAwesomeIcon.Times.ToIconString());
             }
@@ -374,7 +374,7 @@ public partial class PresetBrowserOverlay : Overlay
         else if (!exists)
         {
             using var font = ImRaii.PushFont(UiBuilder.IconFont);
-            using var color = Color.Red.Push(ImGuiCol.Text);
+            using var color = Color.ErrorForeground.Push(ImGuiCol.Text);
             ImCursor.Position = center - ImGui.CalcTextSize(FontAwesomeIcon.FileImage.ToIconString()) / 2f;
             ImGui.Text(FontAwesomeIcon.FileImage.ToIconString());
         }
@@ -455,7 +455,7 @@ public partial class PresetBrowserOverlay : Overlay
                 {
                     ImGui.Separator();
 
-                    using (Color.Red.Push(ImGuiCol.Text))
+                    using (Color.ErrorForeground.Push(ImGuiCol.Text))
                     {
                         ImGui.Text(_textService.Translate("PortraitHelperWindows.PresetCard.Tooltip.ElementsNotApplied.Title"));
 

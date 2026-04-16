@@ -202,14 +202,8 @@ public partial class PluginWindow : SimpleWindow
                 using var tooltip = ImRaii.Tooltip();
                 if (tooltip)
                 {
-                    var statusColor = status switch
-                    {
-                        TweakStatus.Error or TweakStatus.Outdated => Color.Red,
-                        TweakStatus.Enabled => Color.Green,
-                        _ => Color.Grey3
-                    };
-
-                    ImGui.TextColored(statusColor, _textService.Translate($"HaselTweaks.Config.TweakStatus.{Enum.GetName(status)}"));
+                    var statusColor = status.GetColor();
+                    ImGui.TextColored(statusColor, _textService.Translate(status.GetTranslateKey()));
                 }
             }
         }
@@ -288,11 +282,11 @@ public partial class PluginWindow : SimpleWindow
 
         drawList.PathLineTo(pos);
         drawList.PathLineTo(pos + size);
-        drawList.PathStroke(Color.Red.ToUInt(), ImDrawFlags.None, frameHeight / 5f * 0.5f);
+        drawList.PathStroke(Color.ErrorForeground.ToUInt(), ImDrawFlags.None, frameHeight / 5f * 0.5f);
 
         drawList.PathLineTo(pos + new Vector2(0, size.Y));
         drawList.PathLineTo(pos + new Vector2(size.X, 0));
-        drawList.PathStroke(Color.Red.ToUInt(), ImDrawFlags.None, frameHeight / 5f * 0.5f);
+        drawList.PathStroke(Color.ErrorForeground.ToUInt(), ImDrawFlags.None, frameHeight / 5f * 0.5f);
     }
 
     private static bool ListSelectable(string label, bool selected)
@@ -374,15 +368,10 @@ public partial class PluginWindow : SimpleWindow
 
         ImGui.TextColored(Color.Gold, _textService.TryGetTranslation(internalName + ".Tweak.Name", out var name) ? name : internalName);
 
-        var statusText = _textService.Translate("HaselTweaks.Config.TweakStatus." + Enum.GetName(_selectedTweak.Status));
-        var statusColor = _selectedTweak.Status switch
-        {
-            TweakStatus.Error or TweakStatus.Outdated => Color.Red,
-            TweakStatus.Enabled => Color.Green,
-            _ => Color.Grey3
-        };
+        var statusText = _textService.Translate(_selectedTweak.Status.GetTranslateKey());
+        var statusColor = _selectedTweak.Status.GetColor();
 
-        var windowX = ImStyle.ContentRegionAvail.X;
+        var windowX = ImStyle.ContentRegionMax.X;
         var textSize = ImGui.CalcTextSize(statusText);
         ImGui.SameLine(windowX - textSize.X);
 
@@ -392,7 +381,7 @@ public partial class PluginWindow : SimpleWindow
         {
             ImGuiUtils.DrawPaddedSeparator();
             ImCursor.Y += ImStyle.ItemSpacing.Y;
-            ImGui.TextColoredWrapped(Color.Grey2, description);
+            ImGui.TextWrapped(description);
             ImCursor.Y += ImStyle.ItemSpacing.Y;
         }
 

@@ -29,7 +29,7 @@ public partial class CustomChatTimestamp
                 ReloadChat();
             }
 
-            using var col = Color.Grey.Push(ImGuiCol.Text);
+            using var col = Color.Text700.Push(ImGuiCol.Text);
             ImGui.Text(_textService.Translate("CustomChatTimestamp.Config.Format.DateTimeLink.Pre"));
             ImCursor.SameLineSpace();
             using (Color.White.Push(ImGuiCol.Text))
@@ -75,12 +75,12 @@ public partial class CustomChatTimestamp
         catch (FormatException)
         {
             using var indent = ImRaii.PushIndent();
-            ImGui.TextColoredWrapped(Color.Red, _textService.Translate("CustomChatTimestamp.Config.Format.Invalid"));
+            ImGui.TextColoredWrapped(Color.ErrorForeground, _textService.Translate("CustomChatTimestamp.Config.Format.Invalid"));
         }
         catch (Exception e)
         {
             using var indent = ImRaii.PushIndent();
-            ImGui.TextColoredWrapped(Color.Red, e.Message);
+            ImGui.TextColoredWrapped(Color.ErrorForeground, e.Message);
         }
     }
 }

@@ -50,7 +50,7 @@ public abstract class ConfirmationDialog : IDialog
         }
         catch (Exception ex)
         {
-            ImGui.TextColored(Color.Red, ex.Message);
+            ImGui.TextColored(Color.ErrorForeground, ex.Message);
         }
 
         ImGui.Spacing();

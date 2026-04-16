@@ -65,7 +65,7 @@ public partial class DTR
         }
         catch (FormatException)
         {
-            using (Color.Red.Push(ImGuiCol.Text))
+            using (Color.ErrorForeground.Push(ImGuiCol.Text))
                 ImGui.Text(_textService.Translate("DTR.Config.FpsFormat.Invalid"));
         }
     }

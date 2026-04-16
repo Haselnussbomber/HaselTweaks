@@ -19,7 +19,7 @@ public partial class AlignmentToolSettingsOverlay : Overlay
         ImGuiUtils.DrawSection(
             _textService.Translate("PortraitHelperWindows.AlignmentToolSettingsOverlay.Title.Inner"),
             pushDown: false,
-            respectUiTheme: !IsWindow);
+            GetSectionColor());
 
         var changed = false;
 
