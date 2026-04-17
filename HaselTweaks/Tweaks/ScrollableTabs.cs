@@ -271,13 +271,14 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
         if (addon->TabIndex == NumInventoryTabs - 1 && _wheelState > 0)
         {
             // Client::UI::AddonInventory.SwitchToKeyItems call in HandleBackButtonInput
-            var values = stackalloc AtkValue[3];
+            Span<AtkValue> values = stackalloc AtkValue[3];
+            values.Clear();
 
             values[0].SetInt(22);
             values[1].SetInt(addon->OpenerAddonId);
             values[2].SetUInt(0);
 
-            addon->FireCallback(3, values);
+            addon->FireCallback(3, values.GetPointer(0));
         }
         else
         {
@@ -301,13 +302,14 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
         if (addon->TabIndex == 0 && _wheelState < 0)
         {
             // Client::UI::AddonInventoryEvent.SwitchToInventory call in HandleBackButtonInput
-            var values = stackalloc AtkValue[3];
+            Span<AtkValue> values = stackalloc AtkValue[3];
+            values.Clear();
 
             values[0].SetInt(22);
             values[1].SetInt(addon->OpenerAddonId);
             values[2].SetUInt(2);
 
-            addon->FireCallback(3, values);
+            addon->FireCallback(3, values.GetPointer(0));
         }
         else
         {

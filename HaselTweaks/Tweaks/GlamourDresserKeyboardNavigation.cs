@@ -247,11 +247,14 @@ public unsafe partial class GlamourDresserKeyboardNavigation : Tweak
             UIGlobals.PlaySoundEffect(1);
 
             var retVal = stackalloc AtkValue[1];
-            var values = stackalloc AtkValue[3];
+
+            Span<AtkValue> values = stackalloc AtkValue[3];
+            values.Clear();
+
             values[0].SetUInt(2);
             values[1].SetUInt(index);
-            values[2].Ctor();
-            agent->ReceiveEvent(retVal, values, 3, 0);
+
+            agent->ReceiveEvent(retVal, values.GetPointer(0), 3, 0);
 
             agent->UpdateItems(false, false);
         }

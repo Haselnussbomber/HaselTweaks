@@ -182,7 +182,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
             var addon = args.GetAddon<AtkUnitBase>();
             var value = new AtkValue
             {
-                Type = ValueType.Int,
+                Type = AtkValueType.Int,
                 Int = 0
             };
             _logger.LogInformation("Sending change stage to title screen event...");

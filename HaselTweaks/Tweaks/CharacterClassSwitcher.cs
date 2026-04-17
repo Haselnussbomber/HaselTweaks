@@ -52,7 +52,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
 
     private void AtkTooltipManagerShowTooltipDetour(
         AtkTooltipManager* thisPtr,
-        AtkTooltipManager.AtkTooltipType type,
+        AtkTooltipType type,
         ushort parentId,
         AtkResNode* targetNode,
         AtkTooltipManager.AtkTooltipArgs* tooltipArgs,

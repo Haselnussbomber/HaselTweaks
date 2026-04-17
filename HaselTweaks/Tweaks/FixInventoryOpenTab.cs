@@ -24,17 +24,19 @@ public unsafe partial class FixInventoryOpenTab : Tweak
             return;
 
         var addon = args.GetAddon<AtkUnitBase>();
+
         if (addon->IsVisible)
             return; // Skipping: Addon is visible (using games logic)
 
         if (GetTabIndex(addon) == 0)
             return; // Skipping: TabIndex already 0 (nothing to do)
 
-        var values = new Span<AtkValue>((void*)refreshArgs.AtkValues, (int)refreshArgs.AtkValueCount);
-        if (values[0].Type != ValueType.Int)
+        var values = refreshArgs.GetAtkValues();
+
+        if (!values[0].TryGetInt(out var openType))
             return; // Skipping: value[0] is not int (invalid)
 
-        if (values[0].Int == 6)
+        if (openType == 6)
             return; // Skipping: value[0] is 6 (means it requested to open key items)
 
         ResetTabIndex(addon);

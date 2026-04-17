@@ -58,11 +58,16 @@ public unsafe partial class EnhancedMonsterNote : ConfigurableTweak<EnhancedMons
             return;
 
         _logger.LogDebug("Changing filter to Incomplete.");
+
         var retVal = stackalloc AtkValue[1];
-        var values = stackalloc AtkValue[2];
+
+        Span<AtkValue> values = stackalloc AtkValue[2];
+        values.Clear();
+
         values[0].SetInt(2); // Set Filter
         values[1].SetInt(2); // Filter = 2
-        AgentMonsterNote.Instance()->ReceiveEvent(retVal, values, 2, 0);
+
+        AgentMonsterNote.Instance()->ReceiveEvent(retVal, values.GetPointer(0), 2, 0);
     }
 
     private void OnMonsterNotePreShow(DAgentEvent type, AgentArgs args)

@@ -252,7 +252,7 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak<LockWindowPos
 
             _eventIndexToDisable = 0;
 
-            returnValue->Type = ValueType.Bool;
+            returnValue->Type = AtkValueType.Bool;
             returnValue->Byte = 0;
             return returnValue;
         }

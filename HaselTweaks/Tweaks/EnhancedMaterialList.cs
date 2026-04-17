@@ -226,7 +226,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
 
         _handleRecipeResultItemContextMenu = args.EventKind == 0
             && args.ValueCount >= 1
-            && ((AtkValue*)args.AtkValues)->TryGetInt(out var value)
+            && args.GetAtkValues()[0].TryGetInt(out var value)
             && value == 4;
 
         // TODO: add conditions?
