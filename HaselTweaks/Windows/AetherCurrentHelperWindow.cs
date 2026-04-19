@@ -39,7 +39,7 @@ public unsafe partial class AetherCurrentHelperWindow : SimpleWindow
     }
 
     public override bool DrawConditions()
-        => CompFlgSet.HasValue && _clientState.IsLoggedIn && !RaptureAtkUnitManager.Instance()->UiFlags.HasFlag(UIModule.UiFlags.ActionBars);
+        => CompFlgSet.HasValue && _clientState.IsLoggedIn && !RaptureAtkUnitManager.Instance()->IsUiFlagsSet(UiFlags.ActionBars);
 
     public override void Draw()
     {

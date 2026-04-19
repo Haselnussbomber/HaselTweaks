@@ -248,7 +248,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
         }
     }
 
-    private void AddonRecipeMaterialListPopulateRowDetour(AtkUnitBase* thisPtr, AtkComponentListItemPopulator.ListItemInfo* listItemInfo, AtkResNode** nodeList)
+    private void AddonRecipeMaterialListPopulateRowDetour(AtkEventListener* thisPtr, AtkComponentListItemPopulator.ListItemInfo* listItemInfo, AtkResNode** nodeList)
     {
         _addonRecipeMaterialListSetupRowHook!.Original(thisPtr, listItemInfo, nodeList);
 
