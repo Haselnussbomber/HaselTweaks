@@ -180,6 +180,8 @@ public partial class PluginWindow : SimpleWindow
 
         style.Dispose();
 
+        style.Push(ImGuiStyleVar.ItemSpacing, Vector2.Zero);
+
         foreach (var tweak in _shownTweaks)
         {
             DrawSidebarListItem(tweak);
