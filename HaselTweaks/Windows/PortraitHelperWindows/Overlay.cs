@@ -13,7 +13,7 @@ public abstract unsafe partial class Overlay : SimpleWindow, IDisposable, IOverl
     private readonly ExcelService _excelService;
     private readonly MenuBarState _state;
 
-    private readonly ImRaii.Style _windowPadding = new();
+    private readonly ImRaii.StyleDisposable _windowPadding = new();
 
     protected uint DefaultImGuiTextColor { get; set; }
 

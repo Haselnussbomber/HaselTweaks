@@ -51,7 +51,7 @@ public unsafe partial class CastBarAetheryteNames : Tweak
         _teleportHook = null;
     }
 
-    private void OnTerritoryChanged(ushort id)
+    private void OnTerritoryChanged(uint id)
     {
         Clear();
     }

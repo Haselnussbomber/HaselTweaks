@@ -115,7 +115,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
             _menuBar.Close();
     }
 
-    private void OnTerritoryChanged(ushort territoryTypeId)
+    private void OnTerritoryChanged(uint territoryTypeId)
     {
         if (_wasBoundByDuty && !Conditions.Instance()->BoundByDuty56)
         {

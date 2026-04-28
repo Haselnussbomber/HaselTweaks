@@ -202,11 +202,8 @@ public partial class PluginWindow : SimpleWindow
             if (ImGui.IsItemHovered())
             {
                 using var tooltip = ImRaii.Tooltip();
-                if (tooltip)
-                {
-                    var statusColor = status.GetColor();
-                    ImGui.TextColored(statusColor, _textService.Translate(status.GetTranslateKey()));
-                }
+                var statusColor = status.GetColor();
+                ImGui.TextColored(statusColor, _textService.Translate(status.GetTranslateKey()));
             }
         }
         else

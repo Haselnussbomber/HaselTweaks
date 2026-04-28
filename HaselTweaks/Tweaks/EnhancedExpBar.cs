@@ -54,7 +54,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
     private void OnLeavePvP()
         => TriggerReset();
 
-    private void OnTerritoryChanged(ushort territoryType)
+    private void OnTerritoryChanged(uint territoryType)
         => TriggerReset();
 
     private void UpdateExpDetour(AgentHUD* thisPtr, NumberArrayData* expNumberArray, StringArrayData* expStringArray, StringArrayData* characterStringArray)

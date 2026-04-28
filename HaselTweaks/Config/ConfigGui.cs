@@ -13,17 +13,17 @@ public partial class ConfigGui
 
     private IConfigurableTweak? _tweak = null;
 
-    public ImRaii.IEndObject PushContext(IConfigurableTweak tweak)
+    public DisposableAction PushContext(IConfigurableTweak tweak)
     {
         _tweak = tweak;
 
         var disabled = ImRaii.Disabled(tweak.Status == TweakStatus.Outdated);
 
-        return new ImRaii.EndUnconditionally(() =>
+        return new DisposableAction(() =>
         {
             _tweak = null;
             disabled.Dispose();
-        }, true);
+        });
     }
 
     public void DrawConfigurationHeader(string labelKey = "HaselTweaks.Config.SectionTitle.Configuration")

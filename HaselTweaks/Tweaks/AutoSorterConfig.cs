@@ -256,7 +256,7 @@ public partial class AutoSorter
             i++;
         }
 
-        table?.Dispose();
+        table.Dispose();
 
         if (ImGui.Button(_textService.Translate("AutoSorter.Config.AddButton.Label")))
         {

@@ -185,7 +185,7 @@ public partial class CustomChatMessageFormats
             }
         }
 
-        table?.Dispose();
+        table.Dispose();
 
         if (entryToEdit != 0)
         {
@@ -557,7 +557,7 @@ public partial class CustomChatMessageFormats
 
             i++;
         }
-        payloadTable?.Dispose();
+        payloadTable.Dispose();
 
         if (entryToMoveUp != -1)
         {
@@ -710,7 +710,7 @@ public partial class CustomChatMessageFormats
 
     private void DrawExample(ReadOnlySeString format)
     {
-        using var textColor = new ImRaii.Color();
+        using var textColor = new ImRaii.ColorDisposable();
 
         var resolved = _seStringEvaluator.Evaluate(format, [
             _textService.Translate("CustomChatMessageFormats.Config.LStr1.Label"), // "Player Name"
