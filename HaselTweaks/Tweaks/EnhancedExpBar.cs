@@ -126,7 +126,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
         var rank = buddy.Rank > 20 ? 20 : buddy.Rank;
         var level = rank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var requiredExperience = buddyRank.ExpRequired;
-        var xpText = requiredExperience == 0 ? "" : $"   {buddy.CurrentXP}/{requiredExperience}";
+        var xpText = requiredExperience == 0 ? "" : $"   {buddy.CurrentXP:N0}/{requiredExperience:N0}";
 
         SetText($"{classJob.Abbreviation}  {levelLabel} {level}{xpText}");
         SetExperience((int)buddy.CurrentXP, (int)requiredExperience);
@@ -149,7 +149,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
         var star = currentRank > claimedRank ? '*' : ' ';
         var requiredExperience = pvpSeriesLevel.ExpToNext;
 
-        SetText($"{classJob.Abbreviation}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience}/{requiredExperience}");
+        SetText($"{classJob.Abbreviation}  {levelLabel} {level}{star}   {pvpProfile->SeriesExperience:N0}/{requiredExperience:N0}");
         SetExperience(pvpProfile->SeriesExperience, requiredExperience);
 
         if (!_config.DisableColorChanges)
@@ -172,8 +172,8 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
         var level = mjiManager->IslandState.CurrentRank.ToString().Aggregate("", (str, chr) => str + (char)(SeIconChar.Number0 + byte.Parse(chr.ToString())));
         var requiredExperience = mjiRank.ExpToNext;
 
-        var expStr = mjiManager->IslandState.CurrentXP.ToString();
-        var reqExpStr = requiredExperience.ToString();
+        var expStr = mjiManager->IslandState.CurrentXP.ToString("#,##0");
+        var reqExpStr = requiredExperience.ToString("#,##0");
         if (requiredExperience == 0)
             expStr = reqExpStr = "--";
 
