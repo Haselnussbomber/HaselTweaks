@@ -59,9 +59,6 @@ public partial class PluginWindow : SimpleWindow
         _shownTweaks = string.IsNullOrWhiteSpace(_searchInput)
             ? [.. tweaks]
             : [.. tweaks.FuzzyMatch(_searchInput, t => t.Label).Select(r => r.Value)];
-
-        if (IsOpen)
-            Size = (Size ?? new Vector2(0, 630)) with { X = tweaks.Max(entry => ImGui.CalcTextSize(entry.Label).X) };
     }
 
     public override void OnOpen()
