@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Portrait Helper
+
+Removed SixLabors.ImageSharp as dependency (due to new licensing requirements) and rewrote the code to use Windows Imaging Component (WIC) instead.
+
+As a result of this migration:
+
+- Preset codes, which were written to the Exif metadata as `UserComment`, are now written as `Comment` to the metadata, because WIC does not support EXIF metadata in PNG files.
+- Thumbnail file sizes may be slightly larger, because WIC does not expose control over PNG compression strength.
+
 ## [44.0.1] (2026-05-13)
 
 ### Enhanced Glamour Dresser

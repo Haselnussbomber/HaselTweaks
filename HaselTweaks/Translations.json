@@ -1830,9 +1830,8 @@
     "zh": "在缩略图中内置预设代码"
   },
   "PortraitHelper.Config.EmbedPresetStringInThumbnails.Description": {
-    "en": "The preset code, which is also used for clipboard import/export, is written to the Exif metadata as a UserComment.",
-    "de": "Der Vorlagen-Code, der auch für den Import/Export der Zwischenablage verwendet wird, wird als UserComment in die Exif-Metadaten geschrieben.",
-    "zh": "预设代码（用于剪贴板导入/导出）也作为用户注解写入Exif元数据。"
+    "en": "The preset code, which is also used for clipboard import/export, is written to the metadata as comment.",
+    "de": "Der Vorlagen-Code, der auch für den Import/Export der Zwischenablage verwendet wird, wird als Kommentar in die Metadaten geschrieben."
   },
   "PortraitHelper.Config.NotifyGearChecksumMismatch.Label": {
     "en": "Notify if appearance and/or gear doesn't match Portait",

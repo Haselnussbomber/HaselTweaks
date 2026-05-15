@@ -362,7 +362,7 @@ A helper for editing portraits, featuring:
 Configuration options:
 
 - Embed preset codes in thumbnails  
-  The preset code, which is also used for clipboard import/export, is written to the Exif metadata as a UserComment.
+  The preset code, which is also used for clipboard import/export, is written to the metadata as comment.
 - "Notify if appearance and/or gear doesn't match Portait"  
   Prints a notification in chat which can be clicked to open the Portrait Editor.
 - "Automatically re-equip gear set to re-apply glamour plate"  
