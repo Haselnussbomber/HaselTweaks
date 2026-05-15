@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -6,8 +5,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.Exd;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
+using HaselTweaks.Utils.PortraitHelper;
 using TerraFX.Interop.DirectX;
 
 namespace HaselTweaks.Services.PortraitHelper;
@@ -20,7 +18,7 @@ public unsafe partial class BannerService
     private readonly ExcelService _excelService;
     private readonly TextService _textService;
 
-    public Image<Bgra32>? GetCurrentCharaViewImage()
+    public BgraImage? GetCurrentCharaViewImage()
     {
         var agent = AgentBannerEditor.Instance();
         if (agent->EditorState == null || agent->EditorState->CharaView == null)
@@ -30,52 +28,7 @@ public unsafe partial class BannerService
         if (charaViewTexture == null || charaViewTexture->D3D11Texture2D == null)
             return null;
 
-        var device = (ID3D11Device*)_pluginInterface.UiBuilder.DeviceHandle;
-        var texture = (ID3D11Texture2D*)charaViewTexture->D3D11Texture2D;
-
-        D3D11_TEXTURE2D_DESC desc;
-        texture->GetDesc(&desc);
-
-        desc.BindFlags = 0;
-        desc.CPUAccessFlags = (uint)D3D11_CPU_ACCESS_FLAG.D3D11_CPU_ACCESS_READ;
-        desc.Usage = D3D11_USAGE.D3D11_USAGE_STAGING;
-        desc.MiscFlags = 0;
-        desc.MipLevels = 1;
-
-        ID3D11Texture2D* stagingTexture;
-        if (device->CreateTexture2D(&desc, null, &stagingTexture) < 0)
-            return null;
-
-        ID3D11DeviceContext* context;
-        device->GetImmediateContext(&context);
-
-        context->CopyResource((ID3D11Resource*)stagingTexture, (ID3D11Resource*)texture);
-
-        D3D11_MAPPED_SUBRESOURCE mapped;
-        if (context->Map((ID3D11Resource*)stagingTexture, 0, D3D11_MAP.D3D11_MAP_READ, 0, &mapped) < 0)
-        {
-            stagingTexture->Release();
-            return null;
-        }
-
-        var sourcePtr = (nint)mapped.pData;
-        var rowPitch = mapped.RowPitch;
-        var image = new Image<Bgra32>((int)desc.Width, (int)desc.Height);
-
-        image.ProcessPixelRows(accessor =>
-        {
-            for (var y = 0; y < accessor.Height; y++)
-            {
-                var destSpan = accessor.GetRowSpan(y);
-                var src = (byte*)sourcePtr + y * rowPitch;
-                Buffer.MemoryCopy(src, Unsafe.AsPointer(ref destSpan[0]), destSpan.Length * 4, destSpan.Length * 4);
-            }
-        });
-
-        context->Unmap((ID3D11Resource*)stagingTexture, 0);
-        stagingTexture->Release();
-
-        return image;
+        return BgraImage.FromTexture2D((ID3D11Texture2D*)charaViewTexture->D3D11Texture2D);
     }
 
     public bool IsBannerBgUnlocked(uint id)

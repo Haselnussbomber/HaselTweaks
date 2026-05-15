@@ -4,11 +4,9 @@ using Dalamud.Utility;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Services.PortraitHelper;
+using HaselTweaks.Utils.PortraitHelper;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using Lumina.Data.Files;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Overlays;
 
@@ -351,7 +349,8 @@ public partial class PresetBrowserOverlay : Overlay
 
         var hasThumbnailResult = _thumbnailService.TryGetThumbnail(
             preset.Id,
-            new((int)(PortraitSize.X * scale), (int)(PortraitSize.Y * scale)),
+            (int)(PortraitSize.X * scale),
+            (int)(PortraitSize.Y * scale),
             out var exists,
             out var textureWrap,
             out var exception);
@@ -365,10 +364,18 @@ public partial class PresetBrowserOverlay : Overlay
             }
             else if (exception != null)
             {
-                using var font = ImRaii.PushFont(UiBuilder.IconFont);
-                using var color = Color.ErrorForeground.Push(ImGuiCol.Text);
-                ImCursor.Position = center - ImGui.CalcTextSize(FontAwesomeIcon.Times.ToIconString()) / 2f;
-                ImGui.Text(FontAwesomeIcon.Times.ToIconString());
+                {
+                    using var font = ImRaii.PushFont(UiBuilder.IconFont);
+                    using var color = Color.ErrorForeground.Push(ImGuiCol.Text);
+                    ImCursor.Position = center - ImGui.CalcTextSize(FontAwesomeIcon.Times.ToIconString()) / 2f;
+                    ImGui.Text(FontAwesomeIcon.Times.ToIconString());
+                }
+
+                if (ImGui.IsItemHovered())
+                {
+                    using var tooltip = ImRaii.Tooltip();
+                    ImGui.Text(exception.Message);
+                }
             }
         }
         else if (!exists)
@@ -566,32 +573,32 @@ public partial class PresetBrowserOverlay : Overlay
 
     private async Task CopyImage(SavedPreset preset, string filePath, CopyImageFlags flags = CopyImageFlags.None)
     {
-        using var tempImage = await Image.LoadAsync<Rgba32>(filePath).ConfigureAwait(false);
+        using var tempImage = BgraImage.FromFile(filePath);
 
         if (!flags.HasFlag(CopyImageFlags.NoFrame) && _excelService.TryGetRow<BannerFrame>(preset.Preset!.BannerFrame, out var bannerFrameRow) && bannerFrameRow.Image != 0)
         {
-            if (_textureProvider.TryGetIconPath(bannerFrameRow.Image, out var iconPath))
+            if (_textureProvider.TryGetIconPath(bannerFrameRow.Image, out var frameImagePath))
             {
-                var texture = _dataManager.GetFile<TexFile>(iconPath);
-                if (texture != null)
+                var texFile = _dataManager.GetFile<TexFile>(frameImagePath);
+                if (texFile != null)
                 {
-                    using var image = Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
-                    image.Mutate(x => x.Resize(tempImage.Width, tempImage.Height));
-                    tempImage.Mutate(x => x.DrawImage(image, 1f));
+                    using var image = BgraImage.FromTexFile(texFile);
+                    image.Resize(tempImage.Width, tempImage.Height);
+                    tempImage.CompositeLayers(image);
                 }
             }
         }
 
         if (!flags.HasFlag(CopyImageFlags.NoDecoration) && _excelService.TryGetRow<BannerDecoration>(preset.Preset!.BannerDecoration, out var bannerDecorationRow) && bannerDecorationRow.Image != 0)
         {
-            if (_textureProvider.TryGetIconPath(bannerDecorationRow.Image, out var iconPath))
+            if (_textureProvider.TryGetIconPath(bannerDecorationRow.Image, out var decorationImagePath))
             {
-                var texture = _dataManager.GetFile<TexFile>(iconPath);
-                if (texture != null)
+                var texFile = _dataManager.GetFile<TexFile>(decorationImagePath);
+                if (texFile != null)
                 {
-                    using var image = Image.LoadPixelData<Rgba32>(texture.GetRgbaImageData(), texture.Header.Width, texture.Header.Height);
-                    image.Mutate(x => x.Resize(tempImage.Width, tempImage.Height));
-                    tempImage.Mutate(x => x.DrawImage(image, 1f));
+                    using var image = BgraImage.FromTexFile(texFile);
+                    image.Resize(tempImage.Width, tempImage.Height);
+                    tempImage.CompositeLayers(image);
                 }
             }
         }

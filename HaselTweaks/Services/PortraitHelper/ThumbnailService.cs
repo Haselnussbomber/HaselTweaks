@@ -3,18 +3,16 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
+using HaselTweaks.Utils.PortraitHelper;
+using Size = (int Width, int Height);
 
 namespace HaselTweaks.Services.PortraitHelper;
 
 public record ImageResult : IDisposable
 {
     public Guid Id { get; init; }
-    public Image<Rgba32>? Image { get; set; }
+    public BgraImage? Image { get; set; }
     public Exception? Exception { get; set; }
 
     void IDisposable.Dispose() => Image?.Dispose();
@@ -70,7 +68,7 @@ public partial class ThumbnailService : IDisposable
         return Path.Join(portraitsPath, $"{id.ToString("D").ToLowerInvariant()}.png");
     }
 
-    public bool TryGetThumbnail(Guid id, Size size, out bool exists, out IDalamudTextureWrap? textureWrap, out Exception? exception)
+    public bool TryGetThumbnail(Guid id, int width, int height, out bool exists, out IDalamudTextureWrap? textureWrap, out Exception? exception)
     {
         exists = false;
         textureWrap = null;
@@ -79,12 +77,12 @@ public partial class ThumbnailService : IDisposable
         if (_disposing)
             return false;
 
-        if (_thumbnails.TryGetValue((id, size), out var thumbnailResult))
+        if (_thumbnails.TryGetValue((id, (width, height)), out var thumbnailResult))
         {
             exists = true;
             textureWrap = thumbnailResult.Texture;
             exception = thumbnailResult.Exception;
-            return textureWrap != null;
+            return true;
         }
 
         var path = GetPortraitThumbnailPath(id);
@@ -111,7 +109,7 @@ public partial class ThumbnailService : IDisposable
             {
                 try
                 {
-                    imageResult.Image = await Image.LoadAsync<Rgba32>(path, _disposeCTS.Token).ConfigureAwait(false);
+                    imageResult.Image = BgraImage.FromFile(path);
                 }
                 catch (Exception ex)
                 {
@@ -129,7 +127,7 @@ public partial class ThumbnailService : IDisposable
         if (imageResult.Image == null)
             return false;
 
-        thumbnailResult = _thumbnails.GetOrAdd((id, size), static (key) => new ThumbnailResult { Id = key.Item1, Size = key.Item2 });
+        thumbnailResult = _thumbnails.GetOrAdd((id, (width, height)), static (key) => new ThumbnailResult { Id = key.Item1, Size = key.Item2 });
 
         _ = _thumbnailTasks.GetOrAdd(id, _ => Task.Run(() =>
         {
@@ -140,18 +138,12 @@ public partial class ThumbnailService : IDisposable
                 if (_disposing)
                     return;
 
-                scaledImage.Mutate(i => i.Resize(size, KnownResamplers.Lanczos3, false));
+                scaledImage.Resize((uint)width, (uint)height);
 
                 if (_disposing)
                     return;
 
-                var data = new byte[4 * scaledImage.Width * scaledImage.Height];
-                scaledImage.CopyPixelDataTo(data);
-
-                if (_disposing)
-                    return;
-
-                thumbnailResult.Texture = _textureProvider.CreateFromRaw(RawImageSpecification.Rgba32(scaledImage.Width, scaledImage.Height), data);
+                thumbnailResult.Texture = scaledImage.AsDalamudTextureWrap(_textureProvider);
             }
             catch (Exception ex)
             {

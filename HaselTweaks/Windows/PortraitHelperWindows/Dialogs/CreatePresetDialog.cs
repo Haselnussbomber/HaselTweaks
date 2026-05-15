@@ -2,17 +2,13 @@ using System.Threading.Tasks;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Services.PortraitHelper;
 using HaselTweaks.Utils.PortraitHelper;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Metadata.Profiles.Exif;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 
 [RegisterSingleton, AutoConstruct]
 public partial class CreatePresetDialog
 {
-    private readonly INotificationManager _notificationManager;
+    private readonly ILogger<CreatePresetDialog> _logger;
     private readonly PluginConfig _pluginConfig;
     private readonly TextService _textService;
     private readonly ThumbnailService _thumbnailService;
@@ -21,10 +17,10 @@ public partial class CreatePresetDialog
     private bool _isSaving;
     private string? _name;
     private PortraitPreset? _preset;
-    private Image<Bgra32>? _image;
+    private BgraImage? _image;
     private HashSet<Guid>? _tags;
 
-    public void Open(string name, PortraitPreset? preset, Image<Bgra32>? image)
+    public void Open(string name, PortraitPreset? preset, BgraImage? image)
     {
         _name = name;
         _preset = preset;
@@ -129,14 +125,7 @@ public partial class CreatePresetDialog
                         var guid = Guid.CreateVersion7();
                         var thumbPath = _thumbnailService.GetPortraitThumbnailPath(guid);
 
-                        _image.Metadata.ExifProfile ??= new();
-                        _image.Metadata.ExifProfile.SetValue(ExifTag.UserComment, _preset.ToExportedString());
-
-                        _image.SaveAsPng(thumbPath, new PngEncoder
-                        {
-                            CompressionLevel = PngCompressionLevel.BestCompression,
-                            ColorType = PngColorType.Rgb // no need for alpha channel
-                        });
+                        _image.SaveAsPng(thumbPath, _preset.ToExportedString());
 
                         _pluginConfig.Tweaks.PortraitHelper.Presets.Insert(0, new(guid, name.Trim(), _preset, _tags));
                         _pluginConfig.Save();
@@ -144,14 +133,11 @@ public partial class CreatePresetDialog
                         _name = string.Empty;
                         _preset = null;
                         _image.Dispose();
+                        _image = null;
                     }
                     catch (Exception ex)
                     {
-                        _notificationManager.AddNotification(new()
-                        {
-                            Title = "Could not create preset",
-                            Content = ex.Message,
-                        });
+                        _logger.LogError(ex, "Could not create preset");
                     }
 
                     _isSaving = false;
@@ -167,6 +153,7 @@ public partial class CreatePresetDialog
             _name = string.Empty;
             _preset = null;
             _image.Dispose();
+            _image = null;
             ImGui.CloseCurrentPopup();
         }
     }
