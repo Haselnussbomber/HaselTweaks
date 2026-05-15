@@ -158,8 +158,6 @@ public unsafe class BgraImage : IDisposable
 
     public void SaveAsPng(string path, string? userComment = null)
     {
-        using var wicFactory = CreateWicFactory();
-
         using ComPtr<IStream> fileStream = null;
         fixed (char* pathPtr = path)
         {
@@ -173,39 +171,46 @@ public unsafe class BgraImage : IDisposable
             ).ThrowOnError();
         }
 
-        SaveAsPng(wicFactory, fileStream, userComment);
+        SaveAsPng(in fileStream, userComment);
 
         fileStream.Get()->Commit((uint)STGC.STGC_DEFAULT).ThrowOnError();
     }
 
     public void SaveAsPng(MemoryStream stream, string? userComment = null)
     {
-        using var wicFactory = CreateWicFactory();
-
-        using ComPtr<IStream> memStream = null;
-        memStream.Attach(SHCreateMemStream(null, 0));
+        using ComPtr<IStream> memStream = SHCreateMemStream(null, 0);
         if (memStream.Get() == null)
             throw new OutOfMemoryException("SHCreateMemStream failed.");
 
-        SaveAsPng(wicFactory, memStream, userComment);
+        SaveAsPng(in memStream, userComment);
 
         LARGE_INTEGER zero = default;
         ULARGE_INTEGER size = default;
         memStream.Get()->Seek(zero, (uint)STREAM_SEEK.STREAM_SEEK_END, &size).ThrowOnError();
         memStream.Get()->Seek(zero, (uint)STREAM_SEEK.STREAM_SEEK_SET, null).ThrowOnError();
 
-        var buffer = new byte[(int)size.QuadPart];
-        fixed (byte* bufferPtr = buffer)
+        var totalBytes = size.QuadPart;
+        if (totalBytes == 0)
+            return;
+
+        var startingPosition = stream.Position;
+        stream.SetLength(startingPosition + (long)totalBytes);
+
+        var targetSpan = stream.GetBuffer().AsSpan((int)startingPosition, (int)totalBytes);
+
+        fixed (byte* bufferPtr = targetSpan)
         {
             uint bytesRead;
-            memStream.Get()->Read(bufferPtr, (uint)buffer.Length, &bytesRead).ThrowOnError();
+            memStream.Get()->Read(bufferPtr, (uint)targetSpan.Length, &bytesRead).ThrowOnError();
         }
 
-        stream.Write(buffer);
+        stream.Position = startingPosition + (long)totalBytes;
     }
 
-    private void SaveAsPng(ComPtr<IWICImagingFactory> wicFactory, ComPtr<IStream> stream, string? userComment)
+    private void SaveAsPng(in ComPtr<IStream> stream, string? userComment)
     {
+        using var wicFactory = CreateWicFactory();
+
         // Create & initialize converter for BGRA to BGR
         using ComPtr<IWICFormatConverter> converter = null;
         wicFactory.Get()->CreateFormatConverter(converter.GetAddressOf()).ThrowOnError();
