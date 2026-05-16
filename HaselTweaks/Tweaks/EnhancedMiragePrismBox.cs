@@ -7,6 +7,7 @@ namespace HaselTweaks.Tweaks;
 public unsafe partial class EnhancedMiragePrismBox : ConfigurableTweak<EnhancedMiragePrismBoxConfiguration>
 {
     private readonly IAddonLifecycle _addonLifecycle;
+    private readonly MirageService _mirageService;
     private bool _setConvertFirstUpdate;
 
     public override void OnEnable()
@@ -54,7 +55,7 @@ public unsafe partial class EnhancedMiragePrismBox : ConfigurableTweak<EnhancedM
 
         foreach (ref var item in agent->Data->Items)
         {
-            if (item.ItemId == 0 || item.InventoryType != InventoryType.Invalid)
+            if (item.ItemId == 0 || item.InventoryType != InventoryType.Invalid || _mirageService.IsItemCollected(item.ItemId))
                 continue;
 
             hasHandInItems |= TryFindItem(ref item);
