@@ -1548,21 +1548,28 @@
     "en": "Glamour Dresser Alert"
   },
   "GlamourDresserAlert.Tweak.Description": {
-    "en": "Opens a small window next to the Glamour Dresser with a list of items that can be stored in the Armoire (only visible if qualified items were found).",
-    "de": "Öffnet ein kleines Fenster neben der Projektionskommode mit einer Liste von Gegenständen, die im Kostbarkeitenkabinett aufbewahrt werden können (nur sichtbar, wenn qualifizierte Gegenstände gefunden wurden).",
-    "zh": "在投影台界面旁打开一个列出能被存储到收藏柜里的物品（仅显示存在的符合条件的物品）的小窗口。"
+    "en": "Opens a small window next to the Glamour Dresser, displaying a list of items that can be combined into outfits, as well as items that can be stored in the Armoire (only visible if qualified items were found).",
+    "de": "Öffnet ein kleines Fenster neben der Projektionskommode, in dem eine Liste der Gegenstände angezeigt wird, die zu Outfits kombiniert werden können, sowie der Gegenstände, die im Kleiderschrank aufbewahrt werden können (nur sichtbar, wenn qualifizierte Gegenstände gefunden wurden)."
   },
   "GlamourDresserAlert.Config.IgnoreOutfits.Label": {
-    "en": "Ignore qualified items that are part of an outfit",
-    "de": "Qualifizierte Gegenstände, die Teil eines Outfits sind, ignorieren"
+    "en": "Ignore items that are part of an outfit",
+    "de": "Gegenstände, die Teil eines Outfits sind, ignorieren"
   },
   "GlamourDresserAlert.Config.IgnoreOutfits.Description": {
     "en": "Useful if you want to collect outfits rather than storing items in the amoire.",
     "de": "Nützlich wenn du lieber Ausrüstungssets sammeln möchtest, statt die Gegenstände im Kostbarkeitenkabinett einzulegen."
   },
   "GlamourDresserAlert.Config.IgnoreDyedGlamour.Label": {
-    "en": "Ignore qualified items that are dyed",
-    "de": "Qualifizierte Gegenstände, die gefärbt sind, ignorieren"
+    "en": "Ignore items that are dyed",
+    "de": "Gegenstände, die gefärbt sind, ignorieren"
+  },
+  "GlamourDresserAlert.Config.IgnoreDuplicates.Label": {
+    "en": "Ignore items that are already present in the armoire",
+    "de": "Gegenstände, die bereits im Kostbarkeitenkabinett eingelegt sind, ignorieren"
+  },
+  "GlamourDresserAlert.Config.IgnoreDuplicates.Description": {
+    "en": "Useful if you want to collect duplicates.",
+    "de": "Nützlich wenn du Duplikate sammeln möchtest."
   },
   "GlamourDresserAlertWindow.Title": {
     "en": "[HaselTweaks] Glamour Dresser Alert"
@@ -1579,6 +1586,10 @@
   "GlamourDresserAlertWindow.OutfitReadyItemsTreeNodeLabel": {
     "en": "<string(lnum1)> <if([lnum1==1],item,items)> Outfit Glamour-ready",
     "de": "<string(lnum1)> <if([lnum1==1],Gegenstand,Gegenstände)> als Set projizierbar"
+  },
+  "GlamourDresserAlertWindow.DuplicateSetItemsTooltip": {
+    "en": "The following items are stored in the armoire, and part of this set:",
+    "de": "Die folgenden Gegenstände sind im Kostbarkeitenkabinett\neingelegt und Teil dieses Ausrüstungssets:"
   },
 
   "GlamourDresserKeyboardNavigation.Tweak.Name": {

@@ -287,13 +287,15 @@ Configuration options:
 
 ### Glamour Dresser Alert
 
-Opens a small window next to the Glamour Dresser with a list of items that can be placed in the armoire or stored as outfit (only visible if qualified items were found).
+Opens a small window next to the Glamour Dresser, displaying a list of items that can be combined into outfits, as well as items that can be stored in the Armoire (only visible if qualified items were found).
 
 Configuration options:
 
 - Ignore qualified items that are part of an outfit  
   Useful if you want to collect outfits rather than storing items in the amoire.
 - Ignore qualified items that are dyed
+- Ignore items that are already present in the armoire
+  Useful if you want to collect duplicates.
 
 ### Glamour Dresser Keyboard Navigation
 

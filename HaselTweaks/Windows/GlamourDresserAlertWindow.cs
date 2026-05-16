@@ -17,6 +17,7 @@ public unsafe partial class GlamourDresserAlertWindow : SimpleWindow
     private readonly ItemService _itemService;
     private readonly GlamourDresserAlert _tweak;
     private readonly WindowManager _windowManager;
+    private readonly CabinetService _cabinetService;
 
     public bool IsUpdatePending { get; set; }
 
@@ -90,7 +91,7 @@ public unsafe partial class GlamourDresserAlertWindow : SimpleWindow
 
             foreach (var item in categoryItems)
             {
-                DrawItem(item);
+                DrawItem(item, true);
             }
         }
     }
@@ -118,12 +119,12 @@ public unsafe partial class GlamourDresserAlertWindow : SimpleWindow
 
             foreach (var item in categoryItems)
             {
-                DrawItem(item);
+                DrawItem(item, false);
             }
         }
     }
 
-    public void DrawItem(ItemHandle item)
+    public void DrawItem(ItemHandle item, bool isCabinetCategory)
     {
         using var id = ImRaii.PushId($"Item{item.ItemId}");
 
@@ -160,6 +161,27 @@ public unsafe partial class GlamourDresserAlertWindow : SimpleWindow
                 else
                 {
                     ExdModule.GetItemRowById(item);
+                }
+
+                if (isCabinetCategory && _excelService.TryGetRow<MirageStoreSetItem>(item, out var lookupRow) && lookupRow.Items.Any(setItem => _cabinetService.IsItemCollected(setItem)))
+                {
+                    using var tooltip = ImRaii.Tooltip();
+
+                    ImGui.Text(_textService.Translate("GlamourDresserAlertWindow.DuplicateSetItemsTooltip"));
+
+                    foreach (var setItem in lookupRow.Items)
+                    {
+                        if (setItem.RowId == 0 || !setItem.IsValid)
+                            continue;
+
+                        if (!_cabinetService.IsItemCollected(setItem))
+                            continue;
+
+                        ImGuiP.RenderBullet(ImGui.GetWindowDrawList(), ImCursor.ScreenPosition + new Vector2(ImStyle.FramePadding.X + ImGui.GetFontSize() * 0.5f, ImGui.GetFontSize() * 0.5f), Color.White.ToUInt());
+                        ImCursor.X += ImGui.GetFontSize() + ImStyle.FramePadding.X * 2;
+                        using (_itemService.GetItemRarityColor(setItem.RowId).Push(ImGuiCol.Text))
+                            ImGui.Text(_textService.GetItemName(setItem.RowId).ToString());
+                    }
                 }
             }
 

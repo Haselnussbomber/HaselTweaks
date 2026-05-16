@@ -103,6 +103,12 @@ public unsafe partial class GlamourDresserAlert : ConfigurableTweak<GlamourDress
             if (_config.IgnoreDyedGlamour && !isSet && (mirageManager->PrismBoxStain0Ids[i] != 0 || mirageManager->PrismBoxStain1Ids[i] != 0))
                 continue;
 
+            if (_config.IgnoreDuplicates && !isSet && _cabinetService.IsItemCollected(item))
+                continue;
+
+            if (_config.IgnoreDuplicates && isSet && setRow.Items.Where(item => item.RowId != 0 && item.IsValid).Any(item => _cabinetService.IsItemCollected(item)))
+                continue;
+
             if (ProcessCabinetStorableItem(item, itemRow, isSet, setRow))
                 continue;
 
