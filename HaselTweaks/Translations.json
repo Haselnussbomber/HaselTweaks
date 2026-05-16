@@ -1369,6 +1369,22 @@
     "zh": "\u2573 未解锁"
   },
 
+  "EnhancedTryon.Tweak.Name": {
+    "en": "Enhanced Fitting Room"
+  },
+  "EnhancedTryon.Tweak.Description": {
+    "en": "Enhancements for the Fitting Room.",
+    "de": "Verbesserungen für das \"ANPROBIEREN\"-Fenster."
+  },
+  "EnhancedTryon.Config.KeepFacewearOn.Label": {
+    "en": "Keep Facewear on",
+    "de": "Behalte Gesichtsaccessoires an"
+  },
+  "EnhancedTryon.Config.KeepFacewearOn.Description": {
+    "en": "When hiding your gear with the \"Display Gear\" button, your facewear remains visible.",
+    "de": "Wenn du die Ausrüstung mit dem \"Alles anlegen/ablegen\" Button ablegst, bleibt das Gesichtsaccessoire trotzdem sichtbar."
+  },
+
   "ExpertDeliveries.Tweak.Name": {
     "en": "Expert Deliveries",
     "zh": "筹备稀有品"

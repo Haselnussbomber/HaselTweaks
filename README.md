@@ -167,6 +167,13 @@ Configuration options:
 > **Note**
 > In order for this tweak to work properly, please make sure "Show Experience Percentage" is disabled in Simple Tweaks.
 
+### Enhanced Fitting Room
+
+Configuration options:
+
+- Keep Facewear on  
+  When hiding your gear with the "Display Gear" button, your facewear remains visible.
+
 ### Enhanced Glamour Dresser
 
 Configuration options:

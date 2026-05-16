@@ -138,6 +138,7 @@ public class TweakConfigs
     public EnhancedMonsterNoteConfiguration EnhancedMonsterNote { get; init; } = new();
     public EnhancedRecipeNoteConfiguration EnhancedRecipeNote { get; init; } = new();
     public EnhancedTargetInfoConfiguration EnhancedTargetInfo { get; init; } = new();
+    public EnhancedTryonConfiguration EnhancedTryon { get; init; } = new();
     public FlashTaskbarConfiguration FlashTaskbar { get; init; } = new();
     public ForcedCutsceneMusicConfiguration ForcedCutsceneMusic { get; init; } = new();
     public GearSetGridConfiguration GearSetGrid { get; init; } = new();
@@ -175,6 +176,7 @@ public static class PluginConfigExtension
         services.AddSingleton(pluginConfig.Tweaks.EnhancedMonsterNote);
         services.AddSingleton(pluginConfig.Tweaks.EnhancedRecipeNote);
         services.AddSingleton(pluginConfig.Tweaks.EnhancedTargetInfo);
+        services.AddSingleton(pluginConfig.Tweaks.EnhancedTryon);
         services.AddSingleton(pluginConfig.Tweaks.FlashTaskbar);
         services.AddSingleton(pluginConfig.Tweaks.ForcedCutsceneMusic);
         services.AddSingleton(pluginConfig.Tweaks.GearSetGrid);

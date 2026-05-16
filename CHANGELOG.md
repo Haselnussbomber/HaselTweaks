@@ -2,13 +2,20 @@
 
 ## [Unreleased]
 
+### New Tweak: Enhanced Fitting Room
+
+Configuration options:
+
+- Keep Facewear on  
+  When hiding your gear with the "Display Gear" button, your facewear remains visible.
+
 ### Glamour Dresser Alert
 
-- **Added:** A new config option "Ignore items that are already present in the armoire", useful if you want to collect duplicates.
+- **Added:** A new config option "Ignore items that are already present in the armoire". Useful if you want to collect duplicates.
 
 ### Portrait Helper
 
-Removed SixLabors.ImageSharp as dependency (due to new licensing requirements) and rewrote the code to use Windows Imaging Component (WIC) instead.
+Removed SixLabors.ImageSharp as dependency due to new licensing requirements and rewrote the code to use Windows Imaging Component (WIC) instead.
 
 As a result of this migration:
 
