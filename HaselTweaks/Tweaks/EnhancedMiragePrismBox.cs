@@ -8,23 +8,15 @@ public unsafe partial class EnhancedMiragePrismBox : ConfigurableTweak<EnhancedM
 {
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly MirageService _mirageService;
-    private bool _setConvertFirstUpdate;
 
     public override void OnEnable()
     {
-        _addonLifecycle.RegisterListener(AddonEvent.PreOpen, "MiragePrismPrismSetConvert", OnPreOpen);
         _addonLifecycle.RegisterListener(AddonEvent.PostRefresh, "MiragePrismPrismSetConvert", OnPostRefresh);
     }
 
     public override void OnDisable()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PreOpen, "MiragePrismPrismSetConvert", OnPreOpen);
         _addonLifecycle.UnregisterListener(AddonEvent.PostRefresh, "MiragePrismPrismSetConvert", OnPostRefresh);
-    }
-
-    private void OnPreOpen(AddonEvent type, AddonArgs args)
-    {
-        _setConvertFirstUpdate = true;
     }
 
     private void OnPostRefresh(AddonEvent type, AddonArgs args)
@@ -42,10 +34,8 @@ public unsafe partial class EnhancedMiragePrismBox : ConfigurableTweak<EnhancedM
         if (!values[0].TryGetUInt(out var flags))
             return;
 
-        if (flags != 4 || !_setConvertFirstUpdate)
+        if ((flags & 4) == 0 || (flags & 0x100000) != 0)
             return;
-
-        _setConvertFirstUpdate = false;
 
         var agent = AgentMiragePrismPrismSetConvert.Instance();
         if (agent->Data == null)
@@ -65,7 +55,7 @@ public unsafe partial class EnhancedMiragePrismBox : ConfigurableTweak<EnhancedM
             return;
 
         var haselAgent = (HaselAgentMiragePrismPrismSetConvert*)agent;
-        haselAgent->UpdateAddon(4);
+        haselAgent->UpdateAddon(4 | 0x100000); // imaginary 0x100000 flag, for our safety guard above
     }
 
     private static bool TryFindItem(ref AgentMiragePrismPrismSetConvert.AgentData.ItemSetItem item)

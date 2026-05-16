@@ -6,6 +6,10 @@
 
 - **Fixed**: The first try on after login would not show facewear. The tweak now falls back to the local players facewear when the try on window has no facewear saved yet.
 
+### Enhanced Glamour Dresser
+
+- **Fixed**: The tweak now automatically selects items when switching sets too, not just when the Outfit Glamour Creation window was first opened.
+
 ## [45.0.1] (2026-05-16)
 
 ### Enhanced Glamour Dresser
