@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Fitting Room
+
+- **Fixed**: The first try on after login would not show facewear. The tweak now falls back to the local players facewear when the try on window has no facewear saved yet.
+
 ## [45.0.1] (2026-05-16)
 
 ### Enhanced Glamour Dresser

@@ -1,5 +1,6 @@
 using Dalamud.Game.Agent;
 using Dalamud.Game.Agent.AgentArgTypes;
+using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using AgentId = Dalamud.Game.Agent.AgentId;
 
@@ -59,7 +60,13 @@ public unsafe partial class EnhancedTryon : ConfigurableTweak<EnhancedTryonConfi
 
             _logger.LogDebug("Keeping glasses on...");
             character->DrawData.SetGlasses(0, (ushort)slot.Id);
-            break;
+            return;
+        }
+
+        var localPlayer = Control.GetLocalPlayer();
+        if (localPlayer != null)
+        {
+            character->DrawData.SetGlasses(0, localPlayer->DrawData.GlassesIds[0]);
         }
     }
 }
