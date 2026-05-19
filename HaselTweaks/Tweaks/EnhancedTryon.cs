@@ -64,8 +64,9 @@ public unsafe partial class EnhancedTryon : ConfigurableTweak<EnhancedTryonConfi
         }
 
         var localPlayer = Control.GetLocalPlayer();
-        if (localPlayer != null)
+        if (localPlayer != null && localPlayer->DrawData.GlassesIds[0] != 0)
         {
+            _logger.LogDebug("Keeping glasses on... (fallback)");
             character->DrawData.SetGlasses(0, localPlayer->DrawData.GlassesIds[0]);
         }
     }
