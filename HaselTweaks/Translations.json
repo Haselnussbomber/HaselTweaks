@@ -1877,7 +1877,7 @@
   },
   "PortraitHelper.Config.ReequipGearsetOnUpdate.Label": {
     "en": "Automatically re-equip gear set to re-apply glamour plate",
-    "de": "Automatisch das Set neu ausrüsten, um die Projektionsplatte anzuwenden",
+    "de": "Automatisch das Ausrüstungsset neu ausrüsten, um die Projektionsplatte anzuwenden",
     "zh": "自动重新装备套装以重新应用投影模板"
   },
   "PortraitHelper.Config.ReequipGearsetOnUpdate.Description": {
@@ -1886,9 +1886,8 @@
     "zh": "仅在满足以下条件时才有效:\n- 套装有关联的投影模板。\n- 你在一个能够使用投影模板的地方。\n- 不匹配是由投影模板覆盖导致的。\n- 不匹配不是由主手/头部可见或头部装备状态引起的。"
   },
   "PortraitHelper.Config.AutoUpdatePotraitOnGearUpdate.Label": {
-    "en": "Automatically update portrait",
-    "de": "Automatisch das Portrait aktualisieren",
-    "zh": "自动更新肖像"
+    "en": "Automatically update portrait when the Gearset was updated",
+    "de": "Automatisch das Portrait aktualisieren wenn das Ausrüstungsset aktualisiert wurde"
   },
   "PortraitHelper.Config.AutoUpdatePotraitOnGearUpdate.Description": {
     "en": "Only works for gear sets that are not linked with a glamour plate.",
