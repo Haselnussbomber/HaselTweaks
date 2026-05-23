@@ -92,7 +92,7 @@ public partial class ClipboardService : IDisposable
         }
     }
 
-    public async Task SetClipboardImage(BgraImage image)
+    internal async Task SetClipboardImage(BgraImage image)
     {
         if (!await OpenClipboard().ConfigureAwait(false))
             return;

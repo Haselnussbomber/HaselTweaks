@@ -41,11 +41,6 @@
     <None Include="LICENSES.md" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <!-- References to Dalamud dependencies -->
-  <ItemGroup>
-    <Reference Include="TerraFX.Interop.Windows" Private="false" />
-  </ItemGroup>
-
   <!-- NuGet dependencies -->
   <ItemGroup>
     <PackageReference Include="AutoCtor" Version="3.0.0" PrivateAssets="all" ExcludeAssets="compile;runtime" />

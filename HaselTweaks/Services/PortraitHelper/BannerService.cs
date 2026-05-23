@@ -6,7 +6,7 @@ using FFXIVClientStructs.FFXIV.Component.Exd;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Utils.PortraitHelper;
-using TerraFX.Interop.DirectX;
+using Windows.Win32.Graphics.Direct3D11;
 
 namespace HaselTweaks.Services.PortraitHelper;
 
@@ -18,7 +18,7 @@ public unsafe partial class BannerService
     private readonly ExcelService _excelService;
     private readonly TextService _textService;
 
-    public BgraImage? GetCurrentCharaViewImage()
+    internal BgraImage? GetCurrentCharaViewImage()
     {
         var agent = AgentBannerEditor.Instance();
         if (agent->EditorState == null || agent->EditorState->CharaView == null)

@@ -20,7 +20,7 @@ public partial class CreatePresetDialog
     private BgraImage? _image;
     private HashSet<Guid>? _tags;
 
-    public void Open(string name, PortraitPreset? preset, BgraImage? image)
+    internal void Open(string name, PortraitPreset? preset, BgraImage? image)
     {
         _name = name;
         _preset = preset;

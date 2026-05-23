@@ -26,3 +26,57 @@ BITMAPINFOHEADER
 BITMAPV5HEADER
 CIEXYZ
 CIEXYZTRIPLE
+
+// d3d11.h
+D3D11_MAPPED_SUBRESOURCE
+D3D11_TEXTURE2D_DESC
+ID3D11Device
+ID3D11DeviceContext
+ID3D11Resource
+ID3D11Texture2D
+
+// WinNT.h
+GENERIC_ACCESS_RIGHTS
+HRESULT
+
+// objidl.h
+IStream
+
+// ocidl.h
+IPropertyBag2
+
+// wincodec.h
+CLSID_WICImagingFactory
+GUID_ContainerFormatPng
+GUID_WICPixelFormat24bppBGR
+GUID_WICPixelFormat32bppBGRA
+IWICBitmap
+IWICBitmapDecoder
+IWICBitmapEncoder
+IWICBitmapFrameDecode
+IWICBitmapFrameEncode
+IWICBitmapLock
+IWICBitmapScaler
+IWICBitmapSource
+IWICFormatConverter
+IWICImagingFactory
+IWICMetadataQueryWriter
+IWICStream
+WICBitmapInterpolationMode
+WICBitmapLockFlags
+
+// propidlbase.h
+PROPVARIANT
+
+// combaseapi.h
+CoCreateInstance
+
+// wtypesbase.h
+CLSCTX
+
+// Shlwapi.h
+SHCreateMemStream
+SHCreateStreamOnFileEx
+
+// wtypes.h
+STGC

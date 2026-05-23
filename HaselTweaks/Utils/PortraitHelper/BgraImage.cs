@@ -2,13 +2,18 @@ using System.IO;
 using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using Lumina.Data.Files;
-using TerraFX.Interop.DirectX;
-using TerraFX.Interop.Windows;
-using static TerraFX.Interop.Windows.Windows;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Direct3D11;
+using Windows.Win32.Graphics.Dxgi.Common;
+using Windows.Win32.Graphics.Imaging;
+using Windows.Win32.System.Com;
+using Windows.Win32.System.Com.StructuredStorage;
+using Windows.Win32.System.Variant;
 
 namespace HaselTweaks.Utils.PortraitHelper;
 
-public unsafe class BgraImage : IDisposable
+internal unsafe class BgraImage : IDisposable
 {
     private ComPtr<IWICBitmap> _bitmap;
 
@@ -16,12 +21,11 @@ public unsafe class BgraImage : IDisposable
     {
         get
         {
-            var bitmap = _bitmap.Get();
-            if (bitmap == null)
+            if (_bitmap.IsNull)
                 return (0, 0);
 
-            uint width, height;
-            bitmap->GetSize(&width, &height);
+            _bitmap.Get()->GetSize(out var width, out var height);
+
             return (width, height);
         }
     }
@@ -43,17 +47,16 @@ public unsafe class BgraImage : IDisposable
     {
         var device = (ID3D11Device*)ServiceLocator.GetService<IUiBuilder>()!.DeviceHandle;
 
-        D3D11_TEXTURE2D_DESC desc;
-        texture->GetDesc(&desc);
+        texture->GetDesc(out var desc);
 
         desc.BindFlags = 0;
-        desc.CPUAccessFlags = (uint)D3D11_CPU_ACCESS_FLAG.D3D11_CPU_ACCESS_READ;
+        desc.CPUAccessFlags = D3D11_CPU_ACCESS_FLAG.D3D11_CPU_ACCESS_READ;
         desc.Usage = D3D11_USAGE.D3D11_USAGE_STAGING;
         desc.MiscFlags = 0;
         desc.MipLevels = 1;
 
         using ComPtr<ID3D11Texture2D> stagingTexture = null;
-        device->CreateTexture2D(&desc, null, stagingTexture.GetAddressOf()).ThrowOnError();
+        device->CreateTexture2D(desc, null, stagingTexture.GetAddressOf());
 
         if (desc.Format != DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_UNORM)
             throw new Exception($"Unsupported image format. Expected DXGI_FORMAT_B8G8R8A8_UNORM, got {desc.Format}.");
@@ -61,32 +64,28 @@ public unsafe class BgraImage : IDisposable
         using ComPtr<ID3D11DeviceContext> context = null;
         device->GetImmediateContext(context.GetAddressOf());
 
-        context.Get()->CopyResource((ID3D11Resource*)stagingTexture.Get(), (ID3D11Resource*)texture);
-
-        D3D11_MAPPED_SUBRESOURCE mapped;
-        context.Get()->Map((ID3D11Resource*)stagingTexture.Get(), 0, D3D11_MAP.D3D11_MAP_READ, 0, &mapped).ThrowOnError();
+        context.Get()->CopyResource(stagingTexture.Cast<ID3D11Resource>(), (ID3D11Resource*)texture);
+        context.Get()->Map(stagingTexture.Cast<ID3D11Resource>(), 0, D3D11_MAP.D3D11_MAP_READ, 0, out var mapped);
 
         try
         {
             using var wicFactory = CreateWicFactory();
 
             ComPtr<IWICBitmap> bitmap = null;
-            var srcFmt = GUID.GUID_WICPixelFormat32bppBGRA;
+            
             wicFactory.Get()->CreateBitmapFromMemory(
                 desc.Width,
                 desc.Height,
-                &srcFmt,
+                PInvoke.GUID_WICPixelFormat32bppBGRA,
                 mapped.RowPitch,
-                mapped.RowPitch * desc.Height,
-                (byte*)mapped.pData,
-                bitmap.GetAddressOf()
-            ).ThrowOnError();
+                new ReadOnlySpan<byte>(mapped.pData, (int)(mapped.RowPitch * desc.Height)),
+                bitmap.GetAddressOf());
 
             return new BgraImage(bitmap);
         }
         finally
         {
-            context.Get()->Unmap((ID3D11Resource*)stagingTexture.Get(), 0);
+            context.Get()->Unmap(stagingTexture.Cast<ID3D11Resource>(), 0);
         }
     }
 
@@ -95,44 +94,33 @@ public unsafe class BgraImage : IDisposable
         using var wicFactory = CreateWicFactory();
 
         using ComPtr<IWICStream> wicStream = null;
-        wicFactory.Get()->CreateStream(wicStream.GetAddressOf()).ThrowOnError();
+        wicFactory.Get()->CreateStream(wicStream.GetAddressOf());
 
-        fixed (char* pathPtr = path)
-            wicStream.Get()->InitializeFromFilename(pathPtr, GENERIC_READ).ThrowOnError();
+        wicStream.Get()->InitializeFromFilename(path, (uint)GENERIC_ACCESS_RIGHTS.GENERIC_READ);
 
-        using ComPtr<IWICBitmapDecoder> decoder = null;
-        wicFactory.Get()->CreateDecoderFromStream(
-            (IStream*)wicStream.Get(),
-            null,
-            WICDecodeOptions.WICDecodeMetadataCacheOnDemand,
-            decoder.GetAddressOf()
-        ).ThrowOnError();
+        using ComPtr<IWICBitmapDecoder> decoder = wicFactory.Get()->CreateDecoderFromStream(wicStream.Cast<IStream>(), null, WICDecodeOptions.WICDecodeMetadataCacheOnDemand);
 
         using ComPtr<IWICBitmapFrameDecode> frame = null;
-        decoder.Get()->GetFrame(0, frame.GetAddressOf()).ThrowOnError();
+        decoder.Get()->GetFrame(0, frame.GetAddressOf());
 
         using ComPtr<IWICFormatConverter> converter = null;
-        wicFactory.Get()->CreateFormatConverter(converter.GetAddressOf()).ThrowOnError();
+        wicFactory.Get()->CreateFormatConverter(converter.GetAddressOf());
 
-        var dstFmt = GUID.GUID_WICPixelFormat32bppBGRA;
         converter.Get()->Initialize(
-            (IWICBitmapSource*)frame.Get(),
-            &dstFmt,
+            frame.Cast<IWICBitmapSource>(),
+            PInvoke.GUID_WICPixelFormat32bppBGRA,
             WICBitmapDitherType.WICBitmapDitherTypeNone,
             null,
             0.0,
-            WICBitmapPaletteType.WICBitmapPaletteTypeCustom
-        ).ThrowOnError();
+            WICBitmapPaletteType.WICBitmapPaletteTypeCustom);
 
-        uint width, height;
-        converter.Get()->GetSize(&width, &height).ThrowOnError();
+        converter.Get()->GetSize(out var width, out var height);
 
         ComPtr<IWICBitmap> bitmap = null;
         wicFactory.Get()->CreateBitmapFromSource(
-            (IWICBitmapSource*)converter.Get(),
+            converter.Cast<IWICBitmapSource>(),
             WICBitmapCreateCacheOption.WICBitmapCacheOnLoad,
-            bitmap.GetAddressOf()
-        ).ThrowOnError();
+            bitmap.GetAddressOf());
 
         return new BgraImage(bitmap);
     }
@@ -142,16 +130,14 @@ public unsafe class BgraImage : IDisposable
         using var wicFactory = CreateWicFactory();
 
         ComPtr<IWICBitmap> bitmap = null;
-        var srcFmt = GUID.GUID_WICPixelFormat32bppBGRA;
+
         wicFactory.Get()->CreateBitmapFromMemory(
             texFile.Header.Width,
             texFile.Header.Height,
-            &srcFmt,
+            PInvoke.GUID_WICPixelFormat32bppBGRA,
             texFile.Header.Width * 4u,
-            texFile.Header.Width * 4u * texFile.Header.Height,
-            texFile.ImageData.GetPointer(0),
-            bitmap.GetAddressOf()
-        ).ThrowOnError();
+            new ReadOnlySpan<byte>(texFile.ImageData.GetPointer(0), texFile.Header.Width * 4 * texFile.Header.Height),
+            bitmap.GetAddressOf());
 
         return new BgraImage(bitmap);
     }
@@ -161,35 +147,32 @@ public unsafe class BgraImage : IDisposable
         using ComPtr<IStream> fileStream = null;
         fixed (char* pathPtr = path)
         {
-            SHCreateStreamOnFileEx(
-                pathPtr,
-                STGM.STGM_WRITE | STGM.STGM_CREATE | STGM.STGM_SHARE_DENY_WRITE,
+            PInvoke.SHCreateStreamOnFileEx(
+                path,
+                (uint)(STGM.STGM_WRITE | STGM.STGM_CREATE | STGM.STGM_SHARE_DENY_WRITE),
                 0,
                 true,
                 null,
                 fileStream.GetAddressOf()
-            ).ThrowOnError();
+            ).ThrowOnFailure();
         }
 
         SaveAsPng(in fileStream, userComment);
 
-        fileStream.Get()->Commit((uint)STGC.STGC_DEFAULT).ThrowOnError();
+        fileStream.Get()->Commit((uint)STGC.STGC_DEFAULT);
     }
 
     public void SaveAsPng(MemoryStream stream, string? userComment = null)
     {
-        using ComPtr<IStream> memStream = SHCreateMemStream(null, 0);
-        if (memStream.Get() == null)
+        using ComPtr<IStream> memStream = PInvoke.SHCreateMemStream(null, 0);
+        if (memStream.IsNull)
             throw new OutOfMemoryException("SHCreateMemStream failed.");
 
         SaveAsPng(in memStream, userComment);
 
-        LARGE_INTEGER zero = default;
-        ULARGE_INTEGER size = default;
-        memStream.Get()->Seek(zero, (uint)STREAM_SEEK.STREAM_SEEK_END, &size).ThrowOnError();
-        memStream.Get()->Seek(zero, (uint)STREAM_SEEK.STREAM_SEEK_SET, null).ThrowOnError();
+        memStream.Get()->Seek(0, SeekOrigin.End, out var totalBytes);
+        memStream.Get()->Seek(0, SeekOrigin.Begin, null);
 
-        var totalBytes = size.QuadPart;
         if (totalBytes == 0)
             return;
 
@@ -201,7 +184,7 @@ public unsafe class BgraImage : IDisposable
         fixed (byte* bufferPtr = targetSpan)
         {
             uint bytesRead;
-            memStream.Get()->Read(bufferPtr, (uint)targetSpan.Length, &bytesRead).ThrowOnError();
+            memStream.Get()->Read(bufferPtr, (uint)targetSpan.Length, &bytesRead).ThrowOnFailure();
         }
 
         stream.Position = startingPosition + (long)totalBytes;
@@ -213,63 +196,57 @@ public unsafe class BgraImage : IDisposable
 
         // Create & initialize converter for BGRA to BGR
         using ComPtr<IWICFormatConverter> converter = null;
-        wicFactory.Get()->CreateFormatConverter(converter.GetAddressOf()).ThrowOnError();
+        wicFactory.Get()->CreateFormatConverter(converter.GetAddressOf());
 
-        var dstFmt = GUID.GUID_WICPixelFormat24bppBGR;
         converter.Get()->Initialize(
-            (IWICBitmapSource*)_bitmap.Get(),
-            &dstFmt,
+            _bitmap.Cast<IWICBitmapSource>(),
+            PInvoke.GUID_WICPixelFormat24bppBGR,
             WICBitmapDitherType.WICBitmapDitherTypeNone,
             null,
             0.0,
-            WICBitmapPaletteType.WICBitmapPaletteTypeCustom
-        ).ThrowOnError();
+            WICBitmapPaletteType.WICBitmapPaletteTypeCustom);
 
         // Create & initialize PNG encoder
-        var pngGuid = GUID.GUID_ContainerFormatPng;
-        using ComPtr<IWICBitmapEncoder> encoder = null;
-        wicFactory.Get()->CreateEncoder(&pngGuid, null, encoder.GetAddressOf()).ThrowOnError();
-        encoder.Get()->Initialize(stream.Get(), WICBitmapEncoderCacheOption.WICBitmapEncoderNoCache).ThrowOnError();
+        using ComPtr<IWICBitmapEncoder> encoder = wicFactory.Get()->CreateEncoder(PInvoke.GUID_ContainerFormatPng, Guid.Empty);
+        encoder.Get()->Initialize(stream.Get(), WICBitmapEncoderCacheOption.WICBitmapEncoderNoCache);
 
         // Create & initialize frame and property bag
         using ComPtr<IWICBitmapFrameEncode> frame = null;
         using ComPtr<IPropertyBag2> propertyBag = null;
-        encoder.Get()->CreateNewFrame(frame.GetAddressOf(), propertyBag.GetAddressOf()).ThrowOnError();
-        frame.Get()->Initialize(propertyBag).ThrowOnError();
+        encoder.Get()->CreateNewFrame(frame.GetAddressOf(), propertyBag.GetAddressOf());
+        frame.Get()->Initialize(propertyBag);
 
         // Set size
-        frame.Get()->SetSize(Width, Height).ThrowOnError();
+        frame.Get()->SetSize(Width, Height);
 
         // Set pixel format
-        var fmtGuid = GUID.GUID_WICPixelFormat24bppBGR;
-        frame.Get()->SetPixelFormat(&fmtGuid).ThrowOnError();
+        var fmtGuid = PInvoke.GUID_WICPixelFormat24bppBGR;
+        frame.Get()->SetPixelFormat(ref fmtGuid);
+        if (fmtGuid != PInvoke.GUID_WICPixelFormat24bppBGR)
+            throw new Exception("WICPixelFormat24bppBGR not supported");
 
         // Get metadata writer
         using ComPtr<IWICMetadataQueryWriter> metaWriter = null;
-        frame.Get()->GetMetadataQueryWriter(metaWriter.GetAddressOf()).ThrowOnError();
+        frame.Get()->GetMetadataQueryWriter(metaWriter.GetAddressOf());
 
         // Write user comment
         if (!string.IsNullOrEmpty(userComment))
         {
-            var metaPath = "/tEXt/{str=Comment}";
-            fixed (char* metaPathPtr = metaPath)
             fixed (char* commentPtr = userComment)
             {
-                var propVar = new PROPVARIANT
-                {
-                    vt = (ushort)VARENUM.VT_LPWSTR,
-                    pwszVal = commentPtr
-                };
-                metaWriter.Get()->SetMetadataByName(metaPathPtr, &propVar).ThrowOnError();
+                var propVar = new PROPVARIANT();
+                propVar.Anonymous.Anonymous.vt = VARENUM.VT_LPWSTR;
+                propVar.Anonymous.Anonymous.Anonymous.pwszVal = commentPtr;
+                metaWriter.Get()->SetMetadataByName("/tEXt/{str=Comment}", propVar);
             }
         }
 
         // Write RGB data from converter to frame
-        frame.Get()->WriteSource((IWICBitmapSource*)converter.Get(), null).ThrowOnError();
+        frame.Get()->WriteSource(converter.Cast<IWICBitmapSource>(), null);
 
         // Commit to everything
-        frame.Get()->Commit().ThrowOnError();
-        encoder.Get()->Commit().ThrowOnError();
+        frame.Get()->Commit();
+        encoder.Get()->Commit();
     }
 
     public void Resize(uint width, uint height, WICBitmapInterpolationMode interpolationMode = WICBitmapInterpolationMode.WICBitmapInterpolationModeHighQualityCubic)
@@ -277,19 +254,19 @@ public unsafe class BgraImage : IDisposable
         using var wicFactory = CreateWicFactory();
 
         using ComPtr<IWICBitmapScaler> scaler = null;
-        wicFactory.Get()->CreateBitmapScaler(scaler.GetAddressOf()).ThrowOnError();
+        wicFactory.Get()->CreateBitmapScaler(scaler.GetAddressOf());
 
         scaler.Get()->Initialize(
-            (IWICBitmapSource*)_bitmap.Get(),
+            _bitmap.Cast<IWICBitmapSource>(),
             width,
             height,
-            interpolationMode).ThrowOnError();
+            interpolationMode);
 
         ComPtr<IWICBitmap> newBitmap = null;
         wicFactory.Get()->CreateBitmapFromSource(
-            (IWICBitmapSource*)scaler.Get(),
+            scaler.Cast<IWICBitmapSource>(),
             WICBitmapCreateCacheOption.WICBitmapCacheOnLoad,
-            newBitmap.GetAddressOf()).ThrowOnError();
+            newBitmap.GetAddressOf());
 
         _bitmap.Dispose();
         _bitmap = newBitmap;
@@ -298,16 +275,12 @@ public unsafe class BgraImage : IDisposable
     public IDalamudTextureWrap AsDalamudTextureWrap(ITextureProvider textureProvider)
     {
         using ComPtr<IWICBitmapLock> bitmapLock = null;
-        var lockFlags = WICBitmapLockFlags.WICBitmapLockRead;
 
-        _bitmap.Get()->Lock(null, (uint)lockFlags, bitmapLock.GetAddressOf()).ThrowOnError();
+        _bitmap.Get()->Lock(null, (uint)WICBitmapLockFlags.WICBitmapLockRead, bitmapLock.GetAddressOf());
 
         byte* data;
-        uint bufferSize;
-        bitmapLock.Get()->GetDataPointer(&bufferSize, &data).ThrowOnError();
-
-        uint rowPitch;
-        bitmapLock.Get()->GetStride(&rowPitch).ThrowOnError();
+        bitmapLock.Get()->GetDataPointer(out var bufferSize, &data);
+        bitmapLock.Get()->GetStride(out var rowPitch);
 
         if (rowPitch != Width * 4)
             throw new InvalidOperationException("Invalid row pitch");
@@ -322,10 +295,9 @@ public unsafe class BgraImage : IDisposable
         using var wicFactory = CreateWicFactory();
 
         wicFactory.Get()->CreateBitmapFromSource(
-            (IWICBitmapSource*)_bitmap.Get(),
+            _bitmap.Cast<IWICBitmapSource>(),
             WICBitmapCreateCacheOption.WICBitmapCacheOnLoad,
-            copy.GetAddressOf()
-        ).ThrowOnError();
+            copy.GetAddressOf());
 
         return new BgraImage(copy);
     }
@@ -333,26 +305,22 @@ public unsafe class BgraImage : IDisposable
     public void CompositeLayers(params Span<BgraImage> layers)
     {
         using ComPtr<IWICBitmapLock> dstLock = null;
-        _bitmap.Get()->Lock(null, (uint)WICBitmapLockFlags.WICBitmapLockWrite, dstLock.GetAddressOf()).ThrowOnError();
+
+        _bitmap.Get()->Lock(null, (uint)WICBitmapLockFlags.WICBitmapLockWrite, dstLock.GetAddressOf());
 
         byte* dst;
-        uint dstSize;
-        dstLock.Get()->GetDataPointer(&dstSize, &dst).ThrowOnError();
-
-        uint dstStride;
-        dstLock.Get()->GetStride(&dstStride).ThrowOnError();
+        dstLock.Get()->GetDataPointer(out var dstSize, &dst);
+        dstLock.Get()->GetStride(out var dstStride);
 
         foreach (var layer in layers)
         {
             using ComPtr<IWICBitmapLock> srcLock = null;
-            layer._bitmap.Get()->Lock(null, (uint)WICBitmapLockFlags.WICBitmapLockRead, srcLock.GetAddressOf()).ThrowOnError();
+
+            layer._bitmap.Get()->Lock(null, (uint)WICBitmapLockFlags.WICBitmapLockRead, srcLock.GetAddressOf());
 
             byte* src;
-            uint srcSize;
-            srcLock.Get()->GetDataPointer(&srcSize, &src).ThrowOnError();
-
-            uint srcStride;
-            srcLock.Get()->GetStride(&srcStride).ThrowOnError();
+            srcLock.Get()->GetDataPointer(out var srcSize, &src);
+            srcLock.Get()->GetStride(out var srcStride);
 
             for (var y = 0; y < Height; y++)
             {
@@ -390,21 +358,18 @@ public unsafe class BgraImage : IDisposable
     public void CopyPixelDataTo(Span<byte> pixelSpan)
     {
         using ComPtr<IWICBitmapLock> srcLock = null;
-        _bitmap.Get()->Lock(null, (uint)WICBitmapLockFlags.WICBitmapLockRead, srcLock.GetAddressOf()).ThrowOnError();
+
+        _bitmap.Get()->Lock(null, (uint)WICBitmapLockFlags.WICBitmapLockRead, srcLock.GetAddressOf());
 
         byte* src;
-        uint srcSize;
-        srcLock.Get()->GetDataPointer(&srcSize, &src).ThrowOnError();
+        srcLock.Get()->GetDataPointer(out var srcSize, &src);
 
         Buffer.MemoryCopy(src, pixelSpan.GetPointer(0), pixelSpan.Length, srcSize);
     }
 
     private static ComPtr<IWICImagingFactory> CreateWicFactory()
     {
-        ComPtr<IWICImagingFactory> wicFactory = null;
-        var wicClsid = CLSID.CLSID_WICImagingFactory;
-        Guid wicIid = __uuidof<IWICImagingFactory>();
-        CoCreateInstance(&wicClsid, null, (uint)CLSCTX.CLSCTX_INPROC_SERVER, &wicIid, (void**)wicFactory.GetAddressOf()).ThrowOnError();
+        PInvoke.CoCreateInstance<IWICImagingFactory>(PInvoke.CLSID_WICImagingFactory, null, CLSCTX.CLSCTX_INPROC_SERVER, out var wicFactory);
         return wicFactory;
     }
 }

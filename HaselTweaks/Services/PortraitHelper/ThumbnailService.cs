@@ -12,7 +12,7 @@ namespace HaselTweaks.Services.PortraitHelper;
 public record ImageResult : IDisposable
 {
     public Guid Id { get; init; }
-    public BgraImage? Image { get; set; }
+    internal BgraImage? Image { get; set; }
     public Exception? Exception { get; set; }
 
     void IDisposable.Dispose() => Image?.Dispose();
