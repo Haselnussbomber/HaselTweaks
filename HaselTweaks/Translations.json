@@ -179,6 +179,7 @@
     "zh": "聚焦窗口并按住Shift以删除",
     "ja": "ウィンドウをフォーカスしてShiftを押しながら削除"
   },
+
   "AchievementLinkTooltip.Tweak.Name": {
     "en": "Achievement Link Tooltip",
     "zh": "成就链接提示文本"
@@ -231,6 +232,7 @@
     "zh": "\u2573 未完成",
     "ja": "\u2573 未達成"
   },
+
   "AetherCurrentHelper.Tweak.Name": {
     "en": "Aether Current Helper",
     "zh": "风脉泉助手",
@@ -297,6 +299,7 @@
     "de": "Dieser Tweak lässt deinen Charakter zur Kamera schauen, wenn er ihr zugewandt ist, und ahmt dabei das Verhalten des Befehls \"/facecamera\" nach, wobei die Position mit jedem Frame aktualisiert wird. Funktioniert nicht im Kampf oder wenn du ein Ziel hast.",
     "ja": "キャラクターがカメラの方向を向く際に「/facecamera」コマンドの動作を模倣し、毎フレーム位置を更新します。戦闘中やターゲットがいる場合は動作しません。"
   },
+
   "AutoOpenRecipe.Tweak.Name": {
     "en": "Auto-open Recipe",
     "zh": "自动打开制作笔记",
@@ -442,8 +445,7 @@
   "AutoSorter.SortingRule.Error.OverridesArmouryRule": {
     "en": "This rule overrides a slot-based armoury rule. Move it up!",
     "de": "Diese Regel überschreibt eine Slot-basierte Arsenal-Regel. Verschiebe sie nach oben!",
-    "zh": "该规则覆写了基于栏位的兵装库规则。向上移动它！",
-    "ja": "このルールはスロットベースの兵装庫ルールを上書きしています。上へ移動してください！"
+    "zh": "该规则覆写了基于栏位的兵装库规则。向上移动它！"
   },
   "AutoSorter.SortingRule.Error.PremiumSaddlebagNotSubscribed": {
     "en": "Not subscribed to the Companion Premium Service.",
@@ -451,6 +453,7 @@
     "zh": "未开通陆行鸟鞍囊2服务。",
     "ja": "コンパニオンアプリのプレミアムサービスに登録していません。"
   },
+
   "AutoSelectSoilAndSeed.Tweak.Name": {
     "en": "Auto-select Soil and Seed",
     "ja": "土と種の自動選択"
@@ -460,6 +463,7 @@
     "de": "Wählt beim Öffnen des \"AUSSÄEN\"-Fensters automatisch die erste verfügbare Erde und den ersten Samen aus deinem Inventar aus.",
     "ja": "「ガーデニング」ウィンドウを開いた際に、インベントリから最初に利用可能な土と種を自動的に選択します。"
   },
+
   "BackgroundMusicKeybind.Tweak.Name": {
     "en": "Background Music Keybind",
     "zh": "背景音乐按键绑定",
@@ -487,6 +491,7 @@
     "zh": "无",
     "ja": "なし"
   },
+
   "BiggerCharacterPreviews.Tweak.Name": {
     "en": "Bigger Character Previews",
     "ja": "キャラクタープレビューの拡大"
@@ -556,6 +561,7 @@
     "de": "Schärferes Vorschaubild",
     "ja": "プレビュー画像をシャープにする"
   },
+
   "CompanionColorPreview.Tweak.Name": {
     "en": "Companion Color Preview",
     "zh": "搭档颜色预览",
@@ -572,6 +578,7 @@
     "zh": "陆行鸟搭档颜色预览",
     "ja": "バディカラープレビュー"
   },
+
   "CosmicResearchTodo.Tweak.Name": {
     "en": "Cosmic Research in Duty List",
     "ja": "コスモ探索をコンテンツリストに表示"
@@ -591,6 +598,7 @@
     "de": "Zeige abgeschlossene Daten",
     "ja": "完了済みデータセットを表示する"
   },
+
   "CabinetQuickStore.Tweak.Name": {
     "en": "Armoire Quick Store"
   },
@@ -608,6 +616,7 @@
     "de": "Keine weiteren Gegenstände zum Einlegen.",
     "ja": "収納できるアイテムがありません。"
   },
+
   "CastBarAetheryteNames.Tweak.Name": {
     "en": "Cast Bar Aetheryte Names",
     "zh": "咏唱以太之光之名",
@@ -620,6 +629,7 @@
     "zh": "在咏唱“传送”时，将咏唱栏上的名称替换为目标以太之光的名称。",
     "ja": "アクション「テレポート」の名称を、テレポート先のエーテライト名に置き換えます。"
   },
+
   "CharacterClassSwitcher.Tweak.Name": {
     "en": "Character Class Switcher",
     "zh": "角色职业切换器",
