@@ -1475,8 +1475,7 @@
   },
   "EnhancedMiragePrismBox.Tweak.Description": {
     "en": "Enhancements for the Glamour Dresser.",
-    "de": "Verbesserungen für die Projektionskommode.",
-    "ja": "グラマー・ドレッサーを強化します。"
+    "de": "Verbesserungen für die Projektionskommode."
   },
   "EnhancedMiragePrismBox.Config.EnableAutoFillHandIn.Label": {
     "en": "Automatically select missing items from the inventory when opening the Outfit Glamour Creation",
@@ -2196,8 +2195,7 @@
   "PortraitHelper.Config.ReequipGearsetOnUpdate.Label": {
     "en": "Automatically re-equip gear set to re-apply glamour plate",
     "de": "Automatisch das Ausrüstungsset neu ausrüsten, um die Projektionsplatte anzuwenden",
-    "zh": "自动重新装备套装以重新应用投影模板",
-    "ja": "グラマープレートを適用するためにギアセットを自動的に再装備する"
+    "zh": "自动重新装备套装以重新应用投影模板"
   },
   "PortraitHelper.Config.ReequipGearsetOnUpdate.Description": {
     "en": "Works only if the following criteria are met:\n- The gear set has a glamour plate linked.\n- You are in a place where glamour plates are allowed to be applied.\n- The glamour plate covers the slot(s) that caused the mismatch.\n- The mismatch was not caused by mainhand/headgear visibility or visor state.",
@@ -2393,7 +2391,7 @@
     "en": "Please note:",
     "de": "Bitte beachte:",
     "zh": "请注意：",
-    "ja": "ご注意:"
+    "ja": "注意:"
   },
   "PortraitHelperWindows.AdvancedEditOverlay.Note.Text": {
     "en": "The game may verify the values on setting them and/or saving the portrait. If possible, it will automatically adjust them so that they are within a valid range. If not, it will throw an error and you have to fix the values yourself. In any case, if the game adjusts the values, the adjusted values will not be reflected here unless you reopen the window.",
@@ -2793,8 +2791,7 @@
   "ScrollableTabs.Config.HandleFieldRecord.Label": {
     "en": "Enable in Field Records",
     "de": "Aktiviere für Frontbericht",
-    "zh": "在战果记录窗口启用",
-    "ja": "フィールドレコードで有効化"
+    "zh": "在战果记录窗口启用"
   },
   "ScrollableTabs.Config.HandleFishGuide.Label": {
     "en": "Enable in Fish Guide",
@@ -2805,8 +2802,7 @@
   "ScrollableTabs.Config.HandleMiragePrismPrismBox.Label": {
     "en": "Enable in Glamour Dresser",
     "de": "Aktiviere für Projektionskommode",
-    "zh": "在投影台窗口启用",
-    "ja": "グラマー・ドレッサーで有効化"
+    "zh": "在投影台窗口启用"
   },
   "ScrollableTabs.Config.HandleMiragePrismPrismBox.Description": {
     "en": "Scrolls pages, not tabs.",
@@ -2868,8 +2864,7 @@
   "ScrollableTabs.Config.HandleFateProgress.Label": {
     "en": "Enable in Shared FATE",
     "de": "Aktiviere für FATE-Fortschritt",
-    "zh": "在危命任务完成度窗口启用",
-    "ja": "共闘FATEで有効化"
+    "zh": "在危命任务完成度窗口启用"
   },
   "ScrollableTabs.Config.HandleAdventureNoteBook.Label": {
     "en": "Enable in Sightseeing Log",
