@@ -140,6 +140,16 @@ Configuration options:
 
 - FPS unit text (default: " fps")
 
+### Disable Reward Popups
+
+Disables reward popups from appearing after completing activities.
+
+Configuration options:
+
+- Hide for FATE rewards
+- Hide for MGP rewards in the Gold Saucer
+- Hide for Stellar Mission rewards in the Cosmic Exploration
+
 ### Enhanced Crafting Log
 
 Configuration options:

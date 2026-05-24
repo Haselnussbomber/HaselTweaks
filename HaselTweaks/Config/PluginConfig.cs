@@ -130,6 +130,7 @@ public class TweakConfigs
     public CustomChatMessageFormatsConfiguration CustomChatMessageFormats { get; init; } = new();
     public CustomChatTimestampConfiguration CustomChatTimestamp { get; init; } = new();
     public DTRConfiguration DTR { get; init; } = new();
+    public DisableRewardPopupsConfiguration DisableRewardPopups { get; init; } = new();
     public EnhancedExpBarConfiguration EnhancedExpBar { get; init; } = new();
     public EnhancedIsleworksAgendaConfiguration EnhancedIsleworksAgenda { get; init; } = new();
     public EnhancedLoginLogoutConfiguration EnhancedLoginLogout { get; init; } = new();
@@ -168,6 +169,7 @@ public static class PluginConfigExtension
         services.AddSingleton(pluginConfig.Tweaks.CustomChatMessageFormats);
         services.AddSingleton(pluginConfig.Tweaks.CustomChatTimestamp);
         services.AddSingleton(pluginConfig.Tweaks.DTR);
+        services.AddSingleton(pluginConfig.Tweaks.DisableRewardPopups);
         services.AddSingleton(pluginConfig.Tweaks.EnhancedExpBar);
         services.AddSingleton(pluginConfig.Tweaks.EnhancedIsleworksAgenda);
         services.AddSingleton(pluginConfig.Tweaks.EnhancedLoginLogout);

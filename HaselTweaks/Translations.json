@@ -1057,6 +1057,26 @@
     "ja": "現在のフォーマットは無効です。"
   },
 
+  "DisableRewardPopups.Tweak.Name": {
+    "en": "Disable Reward Popups"
+  },
+  "DisableRewardPopups.Tweak.Description": {
+    "en": "Disables reward popups from appearing after completing activities.",
+    "de": "Deaktiviert das Einblenden von Belohnungspopups nach dem Abschluss von Aktivitäten."
+  },
+  "DisableRewardPopups.Config.DisableFateReward.Label": {
+    "en": "Hide for FATE rewards",
+    "de": "Für FATE-Belohnungen ausblenden"
+  },
+  "DisableRewardPopups.Config.DisableGoldSaucerReward.Label": {
+    "en": "Hide for MGP rewards in the Gold Saucer",
+    "de": "Für MGP-Belohnungen im Gold Saucer ausblenden"
+  },
+  "DisableRewardPopups.Config.DisableWKSReward.Label": {
+    "en": "Hide for Stellar Mission rewards in the Cosmic Exploration",
+    "de": "Für Stellarmissionsbelohnungen bei der Kosmo-Erkundung ausblenden"
+  },
+
   "DTR.Tweak.Name": {
     "en": "DTR"
   },

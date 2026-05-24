@@ -6,6 +6,16 @@
 
 - **Added:** Japanese translations by @kxffkx. Thanks!
 
+### New Tweak: Disable Reward Popups
+
+Disables reward popups from appearing after completing activities.
+
+Configuration options:
+
+- Hide for FATE rewards
+- Hide for MGP rewards in the Gold Saucer
+- Hide for Stellar Mission rewards in the Cosmic Exploration
+
 ### Shop Item Icons
 
 - **Added**: Support for icons in the Retainer Buyback window.
