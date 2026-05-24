@@ -1,11 +1,16 @@
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using static FFXIVClientStructs.FFXIV.Component.GUI.AtkModuleInterface;
+using EventHandler = FFXIVClientStructs.FFXIV.Client.Game.Event.EventHandler;
 
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfiguration>
 {
+    private const int ShopIconIdOffset = 197;
+
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly ItemService _itemService;
 
@@ -55,57 +60,99 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
             return;
         }
 
+        if (TryUpdateGilShopIcons(values))
+            return;
+
+        if (TryUpdateRetainerBuybackIcons(values))
+            return;
+
+        _logger.LogDebug("[UpdateShopIcons] Could not update icons: unknown Shop");
+    }
+
+    private bool TryUpdateGilShopIcons(Span<AtkValue> values)
+    {
         var handler = ShopEventHandler.AgentProxy.Instance()->Handler;
         if (handler == null)
-        {
-            _logger.LogDebug("[UpdateShopIcons] ShopEventHandler Handler is null. Aborting.");
-            return;
-        }
+            return false;
 
         if (!values[0].TryGetUInt(out var tabIndex))
         {
-            _logger.LogDebug("[UpdateShopIcons] Could not read tab index. Aborting.");
-            return;
+            _logger.LogDebug("[UpdateShopIcons:GilShop] Could not read tab index. Aborting.");
+            return false;
         }
 
-        const int IconIdOffset = 197;
-
-        // Buy
-        if (tabIndex == 0)
+        switch (tabIndex)
         {
-            for (var i = 0; i < handler->VisibleItemsCount; i++)
-            {
-                ref var iconIdValue = ref values[IconIdOffset + i];
-                if (!iconIdValue.IsUInt)
-                    continue;
+            case 0: // Buy
+                for (var i = 0; i < handler->VisibleItemsCount; i++)
+                {
+                    ref var iconIdValue = ref values[ShopIconIdOffset + i];
+                    if (!iconIdValue.IsUInt)
+                        continue;
 
-                var itemIndex = handler->VisibleItems[i];
-                if (itemIndex < 0 || itemIndex > handler->ItemsCount)
-                    continue;
+                    var itemIndex = handler->VisibleItems[i];
+                    if (itemIndex < 0 || itemIndex > handler->ItemsCount)
+                        continue;
 
-                var itemId = handler->Items[itemIndex].ItemId;
-                if (itemId == 0)
-                    continue;
+                    var itemId = handler->Items[itemIndex].ItemId;
+                    if (itemId == 0)
+                        continue;
 
-                iconIdValue.UInt = _itemService.GetItemIcon(itemId);
-            }
+                    iconIdValue.UInt = _itemService.GetItemIcon(itemId);
+                }
+
+                return true;
+
+            case 1: // Buyback
+                for (var i = 0; i < handler->BuybackCount; i++)
+                {
+                    ref var iconIdValue = ref values[ShopIconIdOffset + i];
+                    if (!iconIdValue.IsUInt)
+                        continue;
+
+                    var itemId = handler->Buyback[i].ItemId;
+                    if (itemId == 0)
+                        continue;
+
+                    iconIdValue.UInt = _itemService.GetItemIcon(itemId);
+                }
+
+                return true;
+
+            default:
+                _logger.LogDebug("[UpdateShopIcons:GilShop] Invalid TabIndex. Aborting.");
+                return false;
         }
-        // Buyback
-        else if (tabIndex == 1)
+    }
+
+    private bool TryUpdateRetainerBuybackIcons(Span<AtkValue> values)
+    {
+        var handler = EventFramework.Instance()->GetEventHandlerById(0x310001);
+        if (handler == null)
+            return false;
+
+        var agent = AgentShop.Instance();
+        if (agent->ItemRetainerBuyback == null)
+            return false;
+
+        var offset = EventHandler.StructSize + 8;
+        if (agent->EventReceiver != (AtkEventInterface*)((nint)handler + offset))
+            return false;
+
+        for (var i = 0; i < agent->ItemRetainerBuybackSpan.Length; i++)
         {
-            for (var i = 0; i < handler->BuybackCount; i++)
-            {
-                ref var iconIdValue = ref values[IconIdOffset + i];
-                if (!iconIdValue.IsUInt)
-                    continue;
+            ref var iconIdValue = ref values[ShopIconIdOffset + i];
+            if (!iconIdValue.IsUInt)
+                continue;
 
-                var itemId = handler->Buyback[i].ItemId;
-                if (itemId == 0)
-                    continue;
+            var itemId = agent->ItemRetainerBuybackSpan[i].ItemId;
+            if (itemId == 0)
+                continue;
 
-                iconIdValue.UInt = _itemService.GetItemIcon(itemId);
-            }
+            iconIdValue.UInt = _itemService.GetItemIcon(itemId);
         }
+
+        return true;
     }
 
     private void OnShopExchangePreRefresh(AddonEvent type, AddonArgs args)
