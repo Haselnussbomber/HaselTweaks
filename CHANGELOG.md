@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### HaselTweaks
+
+- **Added:** Japanese translations by @kxffkx. Thanks!
+
+### Shop Item Icons
+
+- **Added**: Support for icons in the Retainer Buyback window.
+
 ## [45.0.2] (2026-05-16)
 
 ### Enhanced Fitting Room
