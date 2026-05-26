@@ -394,6 +394,10 @@ Configuration options:
 - Automatically update portrait when the Gearset was updated  
   Only works for gear sets that are not linked with a glamour plate.
 
+### Prevent Reel-In from Movement
+
+Prevents reeling in your fishing rod if you accidentally move.
+
 ### Reveal Duty Requirements
 
 Reveals duty names in duty finder, which were shown as "???" to prevent spoilers. Useful for unlocking Mentor roulette.

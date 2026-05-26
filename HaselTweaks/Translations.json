@@ -2691,6 +2691,14 @@
     "ja": "装飾 \"{0}\" は未解放"
   },
 
+  "PreventMovementReelIn.Tweak.Name": {
+    "en": "Prevent Reel-In from Movement"
+  },
+  "PreventMovementReelIn.Tweak.Description": {
+    "en": "Prevents reeling in your fishing rod if you accidentally move.",
+    "de": "Verhindert das Einholen der Angelrute, wenn du dich versehentlich bewegst."
+  },
+
   "RevealDutyRequirements.Tweak.Name": {
     "en": "Reveal Duty Requirements",
     "zh": "揭示任务需求",

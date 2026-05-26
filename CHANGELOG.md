@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Prevent Reel-In from Movement
+
+Prevents reeling in your fishing rod if you accidentally move.
+
 ## [46.0.0] (2026-05-24)
 
 ### HaselTweaks
