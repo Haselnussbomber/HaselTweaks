@@ -428,7 +428,7 @@ public partial class PluginWindow : SimpleWindow
         ImGui.SameLine();
         ImGui.Text("•");
         ImGui.SameLine();
-        ImGuiUtils.DrawLink("Ko-fi", _textService.Translate("HaselTweaks.Config.KoFiLink.Tooltip"), "https://ko-fi.com/haselnussbomber");
+        ImGuiUtils.DrawLink("Sponsor", _textService.Translate("HaselTweaks.Config.SponsorLink.Tooltip"), "https://github.com/sponsors/Haselnussbomber");
         ImGui.SameLine();
         ImGui.Text("•");
         ImGui.SameLine();

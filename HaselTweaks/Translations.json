@@ -48,11 +48,11 @@
     "zh": "访问HaselTweaks的Github仓库",
     "ja": "HaselTweaks GitHubリポジトリを見る"
   },
-  "HaselTweaks.Config.KoFiLink.Tooltip": {
-    "en": "Support me on Ko-fi",
-    "de": "Unterstütze mich auf Ko-fi",
-    "zh": "在Ko-fi支持我",
-    "ja": "Ko-fiでサポートする"
+  "HaselTweaks.Config.SponsorLink.Tooltip": {
+    "en": "Support me on GitHub Sponsors",
+    "de": "Unterstütze mich auf GitHub Sponsors",
+    "zh": "在GitHub Sponsors支持我",
+    "ja": "GitHub Sponsorsでサポートする"
   },
   "HaselTweaks.Config.Search.Hint": {
     "en": "Search for Tweaks...",
