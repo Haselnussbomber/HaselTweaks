@@ -1,6 +1,11 @@
 # Changelog
 
-## [Unreleased]
+## [47.0.0] (2026-05-26)
+
+### HaselTweaks
+
+- **Changed:** The plugin now sets up ClientStructs and the services asynchronously for improved startup performance. After that, the tweaks are enabled on the main thread as before.
+- **Changed:** The link to my Ko-Fi page was replaced with a link to my [Github Sponsors](https://github.com/sponsors/Haselnussbomber) page. Thank you all for your support so far! <3
 
 ### New Tweak: Prevent Reel-In from Movement
 
@@ -2591,7 +2596,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v46.0.0...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.0.0...main
+[47.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v46.0.0...v47.0.0
 [46.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v45.0.2...v46.0.0
 [45.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v45.0.1...v45.0.2
 [45.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v45.0.0...v45.0.1
