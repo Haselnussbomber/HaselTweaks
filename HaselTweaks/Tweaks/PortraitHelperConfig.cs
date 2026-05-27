@@ -23,6 +23,14 @@ public partial class PortraitHelper
 {
     public override void DrawConfig()
     {
+        if (_pluginInterface.InstalledPlugins.Any(p => p.IsLoaded && p.InternalName == "Glamourer"))
+        {
+            _configGui.DrawConfigurationHeader("HaselTweaks.Config.SectionTitle.IncompatibilityWarning");
+            _textureProvider.DrawIcon(60073, 24);
+            ImGui.SameLine();
+            ImGui.TextWrapped(_textService.Translate("PortraitHelper.Config.IncompatibilityWarning.Glamourer"));
+        }
+
         _configGui.DrawConfigurationHeader();
         _configGui.DrawBool("EmbedPresetStringInThumbnails", ref _config.EmbedPresetStringInThumbnails);
         _configGui.DrawBool("NotifyGearChecksumMismatch", ref _config.NotifyGearChecksumMismatch, drawAfterDescription: () =>

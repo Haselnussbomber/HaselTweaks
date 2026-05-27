@@ -2183,6 +2183,10 @@
     "ja": "現在の外見や装備がポートレートと一致していません。",
     "zh": "当前外观或装备与肖像中显示的不匹配。"
   },
+  "PortraitHelper.Config.IncompatibilityWarning.Glamourer": {
+    "en": "In order for notifications and portrait updates to work properly, please make sure Glamourer is not automatically changing the visibility of the weapon, headgear or viera ears, the state of the visor, or changing facewear.",
+    "de": "Damit Benachrichtigungen und Portrait-Updates ordnungsgemäß funktionieren, stelle sicher, dass Glamourer nicht automatisch die Sichtbarkeit der Waffe, Kopfbedeckung oder Viera-Ohren ändert, den Status vom Visier, oder Gesichtsaccessoires wechselt."
+  },
   "PortraitHelper.Config.EmbedPresetStringInThumbnails.Label": {
     "en": "Embed preset codes in thumbnails",
     "de": "Vorlagen-Code in Vorschaubilder einbetten",

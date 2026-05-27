@@ -32,6 +32,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
     private readonly ExcelService _excelService;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IDalamudPluginInterface _pluginInterface;
+    private readonly ITextureProvider _textureProvider;
     private readonly IAgentLifecycle _agentLifecycle;
     private readonly IFramework _framework;
     private readonly IClientState _clientState;
