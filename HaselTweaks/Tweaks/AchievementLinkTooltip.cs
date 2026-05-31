@@ -1,5 +1,4 @@
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -16,24 +15,15 @@ public unsafe partial class AchievementLinkTooltip : ConfigurableTweak<Achieveme
     private readonly TextService _textService;
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly ExcelService _excelService;
-    private Utf8String* _tooltipText;
 
     public override void OnEnable()
     {
-        _tooltipText = Utf8String.CreateEmpty();
-
         _addonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, ChatPanels, OnChatLogPanelPostReceiveEvent);
     }
 
     public override void OnDisable()
     {
         _addonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, ChatPanels, OnChatLogPanelPostReceiveEvent);
-
-        if (_tooltipText != null)
-        {
-            _tooltipText->Dtor(true);
-            _tooltipText = null;
-        }
     }
 
     private void OnChatLogPanelPostReceiveEvent(AddonEvent type, AddonArgs args)
@@ -118,12 +108,10 @@ public unsafe partial class AchievementLinkTooltip : ConfigurableTweak<Achieveme
             }
         }
 
-        _tooltipText->SetString(sb.GetViewAsSpan());
-
         // ShowTooltip call @ AddonChatLog_OnRefresh, case 0x12
         AtkStage.Instance()->TooltipManager.ShowTooltip(
             addon->Id,
             (AtkResNode*)addon->PanelCollisionNode,
-            _tooltipText->StringPtr.Value);
+            sb.GetViewAsSpan());
     }
 }
