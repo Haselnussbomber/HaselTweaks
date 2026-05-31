@@ -1679,7 +1679,7 @@
     "ja": "特定のイベント発生時にタスクバーのウィンドウを点滅させます。"
   },
   "FlashTaskbar.Config.FlashOnAlarm.Label": {
-    "en": "Flash on Alarm",
+    "en": "Flash on alarm",
     "de": "Blinken bei Alarm",
     "ja": "アラーム時に点滅"
   },
@@ -1689,13 +1689,17 @@
     "ja": "ゲームの/alarm機能による通知がチャットに表示されたときに発動します。"
   },
   "FlashTaskbar.Config.FlashOnCombat.Label": {
-    "en": "Flash on Combat",
+    "en": "Flash on combat",
     "de": "Blinken bei Kampfbeginn",
     "ja": "戦闘開始時に点滅"
   },
   "FlashTaskbar.Config.FlashOnCombat.Description": {
     "en": "Triggers when your character is drawn into combat.",
     "de": "Wird ausgelöst, wenn dein Charakter in einen Kampf verwickelt wird."
+  },
+  "FlashTaskbar.Config.FlashOnCraftEnd.Label": {
+    "en": "Flash on synthesis completion",
+    "de": "Blinken bei Syntheseabschluss"
   },
 
   "FixInventoryOpenTab.Tweak.Name": {

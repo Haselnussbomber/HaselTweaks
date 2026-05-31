@@ -2,8 +2,9 @@ namespace HaselTweaks.Tweaks;
 
 public class FlashTaskbarConfiguration
 {
-    public bool FlashOnAlarm = true;
-    public bool FlashOnCombat = true;
+    public bool FlashOnAlarm;
+    public bool FlashOnCombat;
+    public bool FlashOnCraftEnd;
 }
 
 public partial class FlashTaskbar
@@ -12,6 +13,7 @@ public partial class FlashTaskbar
     {
         _configGui.DrawConfigurationHeader();
         _configGui.DrawBool("FlashOnAlarm", ref _config.FlashOnAlarm);
-        _configGui.DrawBool("FlashOnCombat", ref _config.FlashOnCombat, noFixSpaceAfter: true);
+        _configGui.DrawBool("FlashOnCombat", ref _config.FlashOnCombat);
+        _configGui.DrawBool("FlashOnCraftEnd", ref _config.FlashOnCraftEnd);
     }
 }

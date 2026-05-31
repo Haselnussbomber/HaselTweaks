@@ -265,10 +265,11 @@ Flashes the window on the taskbar when specific events are triggered.
 
 Configuration options:
 
-- Flash on Alarm  
+- Flash on alarm  
   Triggers when a notification from the game's /alarm feature is printed in chat.
-- Flash on Combat  
+- Flash on combat  
   Triggers when your character is drawn into combat.
+- Flash on synthesis completion
 
 ### Fix Inventory Open Tab
 

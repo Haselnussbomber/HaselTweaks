@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Flash Taskbar
+
+- **Added:** A new config option "Flash on synthesis completion".
+
 ## [47.0.0] (2026-05-26)
 
 ### HaselTweaks
