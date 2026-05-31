@@ -300,7 +300,8 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
     {
         var text = _textService.Translate("PortraitHelper.GearChecksumMismatch"); // based on LogMessage#5876
 
-        var sb = new LSeStringBuilder()
+        using var rssb = new RentedSeStringBuilder();
+        var sb = rssb.Builder
             .AppendHaselTweaksPrefix();
 
         var raptureGearsetModule = RaptureGearsetModule.Instance();

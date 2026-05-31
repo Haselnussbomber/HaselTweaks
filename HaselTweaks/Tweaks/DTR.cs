@@ -92,7 +92,8 @@ public unsafe partial class DTR : ConfigurableTweak<DTRConfiguration>
         if (_dtrBusy == null)
             return;
 
-        _dtrBusy.Text = new SeStringBuilder()
+        using var rssb = new RentedSeStringBuilder();
+        _dtrBusy.Text = rssb.Builder
             .PushColorType(1)
             .PushEdgeColorType(16)
             .Append(_excelService.TryGetRow<OnlineStatus>(12, out var busyStatus) ? busyStatus.Name : ReadOnlySeString.FromText("Busy"))

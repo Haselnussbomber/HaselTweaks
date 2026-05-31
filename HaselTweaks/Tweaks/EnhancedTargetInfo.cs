@@ -25,21 +25,21 @@ public unsafe partial class EnhancedTargetInfo : ConfigurableTweak<EnhancedTarge
     {
         if (_rewrittenHealthPercentageText == null && _excelService.TryGetRow<Addon>(2057, _clientState.ClientLanguage, out var row))
         {
-            var builder = new SeStringBuilder();
+            using var rssb = new RentedSeStringBuilder();
 
             foreach (var payload in row.Text)
             {
                 // Replace "<if([lnum1>0],<digit(lnum1,2)>,<num(lnum1)>)>" with just "<num(lnum1)>"
                 if (payload.Type == ReadOnlySePayloadType.Macro && payload.MacroCode == MacroCode.If)
                 {
-                    builder.BeginMacro(MacroCode.Num).AppendLocalNumberExpression(1).EndMacro();
+                    rssb.Builder.BeginMacro(MacroCode.Num).AppendLocalNumberExpression(1).EndMacro();
                     continue;
                 }
 
-                builder.Append(payload);
+                rssb.Builder.Append(payload);
             }
 
-            _rewrittenHealthPercentageText = builder.ToReadOnlySeString();
+            _rewrittenHealthPercentageText = rssb.Builder.ToReadOnlySeString();
         }
 
         _updateTargetInfoHook = _gameInteropProvider.HookFromAddress<AgentHUD.Delegates.UpdateTargetInfo>(

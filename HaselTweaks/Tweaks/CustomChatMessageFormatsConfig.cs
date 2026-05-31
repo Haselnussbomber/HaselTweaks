@@ -310,17 +310,17 @@ public partial class CustomChatMessageFormats
                     ImCursor.Y += -ImStyle.CellPadding.Y;
                     if (ImGui.InputText($"##TextPayload{i}", ref text, 255))
                     {
-                        var sb = new SeStringBuilder();
+                        using var rssb = new RentedSeStringBuilder();
                         var j = 0;
                         foreach (var tempPayload in entry.Format)
                         {
                             if (i == j)
-                                sb.Append(text);
+                                rssb.Builder.Append(text);
                             else
-                                sb.Append(tempPayload);
+                                rssb.Builder.Append(tempPayload);
                             j++;
                         }
-                        entry.Format = sb.ToReadOnlySeString();
+                        entry.Format = rssb.Builder.ToReadOnlySeString();
                         SaveAndReloadChat();
                     }
                 }
@@ -364,17 +364,17 @@ public partial class CustomChatMessageFormats
 
                                         if (ImGui.Button($"##Icon{selectorGfdEntry.Id}", size))
                                         {
-                                            var sb = new SeStringBuilder();
+                                            using var rssb = new RentedSeStringBuilder();
                                             var j = 0;
                                             foreach (var tempPayload in entry.Format)
                                             {
                                                 if (i == j)
-                                                    sb.AppendIcon(selectorGfdEntry.Id);
+                                                    rssb.Builder.AppendIcon(selectorGfdEntry.Id);
                                                 else
-                                                    sb.Append(tempPayload);
+                                                    rssb.Builder.Append(tempPayload);
                                                 j++;
                                             }
-                                            entry.Format = sb.ToReadOnlySeString();
+                                            entry.Format = rssb.Builder.ToReadOnlySeString();
                                             SaveAndReloadChat();
                                         }
 
@@ -442,17 +442,17 @@ public partial class CustomChatMessageFormats
                                     var hexColor = Color.FromBGRA(eColorVal).ToVector();
                                     if (ImGui.ColorEdit4("##ColorPicker", ref hexColor, ImGuiColorEditFlags.NoAlpha))
                                     {
-                                        var sb = new SeStringBuilder();
+                                        using var rssb = new RentedSeStringBuilder();
                                         var j = 0;
                                         foreach (var tempPayload in entry.Format)
                                         {
                                             if (i == j)
-                                                sb.PushColorRgba(hexColor);
+                                                rssb.Builder.PushColorRgba(hexColor);
                                             else
-                                                sb.Append(tempPayload);
+                                                rssb.Builder.Append(tempPayload);
                                             j++;
                                         }
-                                        entry.Format = sb.ToReadOnlySeString();
+                                        entry.Format = rssb.Builder.ToReadOnlySeString();
                                         SaveAndReloadChat();
                                     }
                                     break;
@@ -561,7 +561,7 @@ public partial class CustomChatMessageFormats
 
         if (entryToMoveUp != -1)
         {
-            var sb = new SeStringBuilder();
+            using var rssb = new RentedSeStringBuilder();
             ReadOnlySePayload? tempPayload = null;
             var j = 0;
             foreach (var payload in entry.Format)
@@ -575,23 +575,24 @@ public partial class CustomChatMessageFormats
 
                 if (j == entryToMoveUp && tempPayload != null)
                 {
-                    sb.Append(payload);
-                    sb.Append((ReadOnlySePayload)tempPayload);
+                    rssb.Builder
+                        .Append(payload)
+                        .Append((ReadOnlySePayload)tempPayload);
                     tempPayload = null;
                     j++;
                     continue;
                 }
 
-                sb.Append(payload);
+                rssb.Builder.Append(payload);
                 j++;
             }
-            entry.Format = sb.ToReadOnlySeString();
+            entry.Format = rssb.Builder.ToReadOnlySeString();
             SaveAndReloadChat();
         }
 
         if (entryToMoveDown != -1)
         {
-            var sb = new SeStringBuilder();
+            using var rssb = new RentedSeStringBuilder();
             ReadOnlySePayload? tempPayload = null;
             var j = 0;
             foreach (var payload in entry.Format)
@@ -603,11 +604,11 @@ public partial class CustomChatMessageFormats
                     continue;
                 }
 
-                sb.Append(payload);
+                rssb.Builder.Append(payload);
 
                 if (tempPayload != null)
                 {
-                    sb.Append((ReadOnlySePayload)tempPayload);
+                    rssb.Builder.Append((ReadOnlySePayload)tempPayload);
                     tempPayload = null;
                 }
 
@@ -615,23 +616,23 @@ public partial class CustomChatMessageFormats
             }
 
             if (tempPayload != null)
-                sb.Append((ReadOnlySePayload)tempPayload);
+                rssb.Builder.Append((ReadOnlySePayload)tempPayload);
 
-            entry.Format = sb.ToReadOnlySeString();
+            entry.Format = rssb.Builder.ToReadOnlySeString();
             SaveAndReloadChat();
         }
 
         if (entryToRemove != -1)
         {
-            var sb = new SeStringBuilder();
+            using var rssb = new RentedSeStringBuilder();
             var j = 0;
             foreach (var payload in entry.Format)
             {
                 if (j != entryToRemove)
-                    sb.Append(payload);
+                    rssb.Builder.Append(payload);
                 j++;
             }
-            entry.Format = sb.ToReadOnlySeString();
+            entry.Format = rssb.Builder.ToReadOnlySeString();
             SaveAndReloadChat();
         }
 
@@ -643,29 +644,32 @@ public partial class CustomChatMessageFormats
 
         if (ImGui.MenuItem(_textService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.TextPayload")))
         {
-            var sb = new SeStringBuilder();
-            sb.Append(entry.Format);
-            sb.Append(" ");
-            entry.Format = sb.ToReadOnlySeString();
+            using var rssb = new RentedSeStringBuilder();
+            entry.Format = rssb.Builder
+                .Append(entry.Format)
+                .Append(" ")
+                .ToReadOnlySeString();
             SaveAndReloadChat();
         }
 
         if (ImGui.MenuItem(_textService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.IconPayload")))
         {
-            var sb = new SeStringBuilder();
-            sb.Append(entry.Format);
-            sb.AppendIcon(1);
-            entry.Format = sb.ToReadOnlySeString();
+            using var rssb = new RentedSeStringBuilder();
+            entry.Format = rssb.Builder
+                .Append(entry.Format)
+                .AppendIcon(1)
+                .ToReadOnlySeString();
             SaveAndReloadChat();
         }
 
         if (ImGui.MenuItem(_textService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.CustomColor")))
         {
-            var sb = new SeStringBuilder();
-            sb.Append(entry.Format);
-            sb.PushColorRgba(0xFFFFFFFF);
-            sb.PopColor();
-            entry.Format = sb.ToReadOnlySeString();
+            using var rssb = new RentedSeStringBuilder();
+            entry.Format = rssb.Builder
+                .Append(entry.Format)
+                .PushColorRgba(0xFFFFFFFF)
+                .PopColor()
+                .ToReadOnlySeString();
             SaveAndReloadChat();
         }
 
@@ -685,11 +689,14 @@ public partial class CustomChatMessageFormats
                 {
                     if (ImGui.MenuItem(textColorEntry.Label + "##TextColor" + gNumIndex.ToString()))
                     {
-                        var sb = new SeStringBuilder();
-                        sb.Append(entry.Format);
-                        sb.BeginMacro(MacroCode.Color).AppendGlobalNumberExpression(gNumIndex).EndMacro();
-                        sb.PopColor();
-                        entry.Format = sb.ToReadOnlySeString();
+                        using var rssb = new RentedSeStringBuilder();
+                        entry.Format = rssb.Builder
+                            .Append(entry.Format)
+                            .BeginMacro(MacroCode.Color)
+                                .AppendGlobalNumberExpression(gNumIndex)
+                            .EndMacro()
+                            .PopColor()
+                            .ToReadOnlySeString();
                         SaveAndReloadChat();
                     }
                 }
@@ -700,10 +707,11 @@ public partial class CustomChatMessageFormats
 
         if (ImGui.MenuItem(_textService.Translate("CustomChatMessageFormats.Config.Entry.Payload.AddPayloadButton.Option.StackColor")))
         {
-            var sb = new SeStringBuilder();
-            sb.Append(entry.Format);
-            sb.PopColor();
-            entry.Format = sb.ToReadOnlySeString();
+            using var rssb = new RentedSeStringBuilder();
+            entry.Format = rssb.Builder
+                .Append(entry.Format)
+                .PopColor()
+                .ToReadOnlySeString();
             SaveAndReloadChat();
         }
     }

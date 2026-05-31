@@ -67,7 +67,8 @@ public unsafe partial class AchievementLinkTooltip : ConfigurableTweak<Achieveme
             canShowDescription |= !(isHiddenCategory || isHiddenAchievement) || isComplete;
         }
 
-        var sb = new SeStringBuilder();
+        using var rssb = new RentedSeStringBuilder();
+        var sb = rssb.Builder;
 
         sb.BeginMacro(MacroCode.Color)
           .AppendIntExpression(RaptureTextModule.Instance()->TextModule.MacroDecoder.GlobalParameters[61].IntValue)
