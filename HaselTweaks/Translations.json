@@ -1701,6 +1701,10 @@
     "en": "Flash on synthesis completion",
     "de": "Blinken bei Syntheseabschluss"
   },
+  "FlashTaskbar.Config.FlashOnCraftEnd.Description": {
+    "en": "Triggers when your character completes Synthesis or Quick Synthesis.",
+    "de": "Wird ausgelöst, wenn dein Charakter die Synthese oder Eilsynthese abgeschlossen hat."
+  },
 
   "FixInventoryOpenTab.Tweak.Name": {
     "en": "Fix Inventory Open Tab",

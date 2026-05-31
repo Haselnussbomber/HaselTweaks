@@ -4,7 +4,7 @@
 
 ### Flash Taskbar
 
-- **Added:** A new config option "Flash on synthesis completion".
+- **Added:** A new config option "Flash on synthesis completion". Triggers when your character completes Synthesis or Quick Synthesis.
 
 ## [47.0.0] (2026-05-26)
 

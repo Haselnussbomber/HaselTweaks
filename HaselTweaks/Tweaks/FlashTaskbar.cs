@@ -14,6 +14,7 @@ public unsafe partial class FlashTaskbar : ConfigurableTweak<FlashTaskbarConfigu
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IChatGui _chatGui;
     private readonly ICondition _condition;
+    private readonly IAddonLifecycle _addonLifecycle;
 
     private Hook<AtkModuleInterface.AtkEventInterface.Delegates.ReceiveEvent>? _normalCraftCallbackHook;
 
@@ -28,6 +29,8 @@ public unsafe partial class FlashTaskbar : ConfigurableTweak<FlashTaskbarConfigu
             NormalCraftCallbackDetour);
 
         _normalCraftCallbackHook.Enable();
+
+        _addonLifecycle.RegisterListener(AddonEvent.PostRefresh, "SynthesisSimple", OnSynthesisSimplePostRefresh);
     }
 
     public override void OnDisable()
@@ -37,6 +40,8 @@ public unsafe partial class FlashTaskbar : ConfigurableTweak<FlashTaskbarConfigu
 
         _normalCraftCallbackHook?.Dispose();
         _normalCraftCallbackHook = null;
+
+        _addonLifecycle.UnregisterListener(AddonEvent.PostRefresh, "SynthesisSimple", OnSynthesisSimplePostRefresh);
     }
 
     private void OnLogMessage(ILogMessage message)
@@ -63,10 +68,31 @@ public unsafe partial class FlashTaskbar : ConfigurableTweak<FlashTaskbarConfigu
 
         if (_config.FlashOnCraftEnd && valueCount > 0 && values[0].TryGetInt(out var status) && status == -2)
         {
-            Flash("Crafting ended!");
+            Flash("Synthesis completed!");
         }
 
         return _normalCraftCallbackHook!.Original(thisPtr, returnValue, values, valueCount, eventKind);
+    }
+
+    private void OnSynthesisSimplePostRefresh(AddonEvent type, AddonArgs args)
+    {
+        if (!_config.FlashOnCraftEnd)
+            return;
+
+        if (args is not AddonRefreshArgs refreshArgs)
+            return;
+
+        var values = refreshArgs.GetAtkValues();
+        if (values.Length != 9)
+        {
+            _logger.LogWarning("[SynthesisSimple] Unexpected amount of AtkValues. Expected 9, got {count}", values.Length);
+            return;
+        }
+
+        if (!values[3].TryGetUInt(out var craftedCount) || !values[4].TryGetUInt(out var toCraftCount) || craftedCount != toCraftCount)
+            return;
+
+        Flash("Quick Synthesis completed!");
     }
 
     private void Flash(string? reason = null)
