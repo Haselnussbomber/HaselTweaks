@@ -55,8 +55,12 @@ public unsafe class BgraImage : IDisposable
         using ComPtr<ID3D11Texture2D> stagingTexture = null;
         device->CreateTexture2D(&desc, null, stagingTexture.GetAddressOf()).ThrowOnError();
 
-        if (desc.Format != DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_UNORM)
-            throw new Exception($"Unsupported image format. Expected DXGI_FORMAT_B8G8R8A8_UNORM, got {desc.Format}.");
+        if (desc.Format != DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_UNORM &&
+            desc.Format != DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_TYPELESS &&
+            desc.Format != DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_UNORM_SRGB)
+        {
+            throw new Exception($"Unsupported image format. Expected a B8G8R8A8 variant, got {desc.Format}.");
+        }
 
         using ComPtr<ID3D11DeviceContext> context = null;
         device->GetImmediateContext(context.GetAddressOf());
