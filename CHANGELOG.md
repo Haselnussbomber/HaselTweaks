@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [47.2.0] (2026-06-02)
 
 ### Shop Item Icons
 
@@ -2614,7 +2614,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.1.1...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.2.0...main
+[47.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.1.1...v47.2.0
 [47.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.1.0...v47.1.1
 [47.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.0.0...v47.1.0
 [47.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v46.0.0...v47.0.0
