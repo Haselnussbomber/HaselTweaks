@@ -8,6 +8,7 @@ public class ShopItemIconsConfiguration
     public bool HandleShopExchangeCurrency = true;
     public bool HandleGrandCompanyExchange = true;
     public bool HandleFreeShop = true;
+    public bool HandleSkyIslandExchange2 = true;
 }
 
 public partial class ShopItemIcons
@@ -21,5 +22,6 @@ public partial class ShopItemIcons
         _configGui.DrawBool("HandleShopExchangeCurrency", ref _config.HandleShopExchangeCurrency); // Currency Exchange
         _configGui.DrawBool("HandleGrandCompanyExchange", ref _config.HandleGrandCompanyExchange); // Grand Company Seal Exchange
         _configGui.DrawBool("HandleFreeShop", ref _config.HandleFreeShop); // Rewards
+        _configGui.DrawBool("HandleSkyIslandExchange2", ref _config.HandleSkyIslandExchange2); // Exchange
     }
 }

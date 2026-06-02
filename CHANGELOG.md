@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Shop Item Icons
+
+- **Added**: Support for icons in the Exchange window used by the Calamity Salvager when exchanging old pigments for all-purpose pigments.
+
 ## [47.1.1] (2026-06-01)
 
 ### Portrait Helper

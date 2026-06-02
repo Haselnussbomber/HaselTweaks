@@ -22,6 +22,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
         _addonLifecycle.RegisterListener(AddonEvent.PreRefresh, "GrandCompanyExchange", OnGrandCompanyExchangePreRefresh);
         _addonLifecycle.RegisterListener(AddonEvent.PreRefresh, "InclusionShop", OnInclusionShopPreRefresh);
         _addonLifecycle.RegisterListener(AddonEvent.PreRefresh, "FreeShop", OnFreeShopPreRefresh);
+        _addonLifecycle.RegisterListener(AddonEvent.PreRefresh, "SkyIslandExchange2", OnSkyIslandExchange2PreRefresh);
     }
 
     public override void OnDisable()
@@ -32,6 +33,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
         _addonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "GrandCompanyExchange", OnGrandCompanyExchangePreRefresh);
         _addonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "InclusionShop", OnInclusionShopPreRefresh);
         _addonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "FreeShop", OnFreeShopPreRefresh);
+        _addonLifecycle.UnregisterListener(AddonEvent.PreRefresh, "SkyIslandExchange2", OnSkyIslandExchange2PreRefresh);
     }
 
     private void OnShopPreSetup(AddonEvent type, AddonArgs args)
@@ -278,6 +280,38 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
                 continue;
 
             iconIdValue.UInt = _itemService.GetItemIcon(itemIdValue.UInt);
+        }
+    }
+
+    private void OnSkyIslandExchange2PreRefresh(AddonEvent type, AddonArgs args)
+    {
+        if (!_config.HandleSkyIslandExchange2 || args is not AddonRefreshArgs refreshArgs)
+            return;
+
+        const int valueCount = 461;
+
+        var values = refreshArgs.GetAtkValues();
+        if (values.Length != valueCount)
+        {
+            _logger.LogDebug("[OnSkyIslandExchange2PreRefresh] Expected {count} AtkValues, found {actualCount}. Aborting.", valueCount, values.Length);
+            return;
+        }
+
+        if (!values[0].TryGetUInt(out var itemCount))
+        {
+            _logger.LogDebug("[OnSkyIslandExchange2PreRefresh] Could not read item count.");
+            return;
+        }
+
+        for (var i = 0; i < itemCount; i++)
+        {
+            ref var itemIdValue = ref values[56 + i];
+            ref var iconIdValue = ref values[176 + i];
+
+            if (!itemIdValue.IsUInt || !iconIdValue.IsInt || itemIdValue.UInt == 0)
+                continue;
+
+            iconIdValue.Int = (int)_itemService.GetItemIcon(itemIdValue.UInt);
         }
     }
 }

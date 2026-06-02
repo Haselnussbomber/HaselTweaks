@@ -3006,6 +3006,14 @@
     "zh": "这项适用于免费提供职业装备的商人。",
     "ja": "ジョブ装備を無料で提供する商人に適用されます。"
   },
+  "ShopItemIcons.Config.HandleSkyIslandExchange2.Label": {
+    "en": "Enable for Exchange",
+    "de": "Aktiviere für Eintauschen"
+  },
+  "ShopItemIcons.Config.HandleSkyIslandExchange2.Description": {
+    "en": "This applies, for example, to the Calamity Salvager when exchanging old pigments for all-purpose pigments.",
+    "de": "Betrifft z.B. den Fundsachen-Verwalter, bei dem alte Farbpigmente gegen Universalpigmente eingetauscht werden können."
+  },
 
   "SimpleAethernetList.Tweak.Name": {
     "en": "Simple Aethernet List",
