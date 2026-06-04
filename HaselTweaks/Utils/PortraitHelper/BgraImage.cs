@@ -1,4 +1,5 @@
 using System.IO;
+using System.Runtime.CompilerServices;
 using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using Lumina.Data.Files;
@@ -346,6 +347,9 @@ public unsafe class BgraImage : IDisposable
         uint dstStride;
         dstLock.Get()->GetStride(&dstStride).ThrowOnError();
 
+        var height = (int)Height;
+        var width = (int)Width;
+
         foreach (var layer in layers)
         {
             using ComPtr<IWICBitmapLock> srcLock = null;
@@ -358,38 +362,51 @@ public unsafe class BgraImage : IDisposable
             uint srcStride;
             srcLock.Get()->GetStride(&srcStride).ThrowOnError();
 
-            for (var y = 0; y < Height; y++)
+            var dstRow = dst;
+            var srcRow = src;
+
+            for (var y = 0; y < height; y++)
             {
-                var srcRow = src + y * srcStride;
-                var dstRow = dst + y * dstStride;
+                var srcPx = srcRow;
+                var dstPx = dstRow;
 
-                for (var x = 0; x < Width; x++)
+                for (var x = 0; x < width; x++, srcPx += 4, dstPx += 4)
                 {
-                    var s = srcRow + x * 4;
-                    var d = dstRow + x * 4;
+                    uint srcAlpha = srcPx[3];
 
-                    var sA = s[3] / 255f;
-                    var dA = d[3] / 255f;
-                    var outA = sA + dA * (1 - sA);
+                    // fully transparent, nothing to do
+                    if (srcAlpha == 0)
+                        continue;
 
-                    if (outA > 0)
+                    // fully opaque, copy full pixel
+                    if (srcAlpha == 255)
                     {
-                        d[0] = (byte)((s[0] * sA + d[0] * dA * (1 - sA)) / outA);
-                        d[1] = (byte)((s[1] * sA + d[1] * dA * (1 - sA)) / outA);
-                        d[2] = (byte)((s[2] * sA + d[2] * dA * (1 - sA)) / outA);
-                        d[3] = (byte)(outA * 255f);
+                        Unsafe.WriteUnaligned(dstPx, Unsafe.ReadUnaligned<uint>(srcPx));
+                        continue;
                     }
-                    else
-                    {
-                        d[0] = 0;
-                        d[1] = 0;
-                        d[2] = 0;
-                        d[3] = 0;
-                    }
+
+                    var invSrcAlpha = 255u - srcAlpha;
+                    var alphaMul = div255(dstPx[3] * invSrcAlpha);
+                    var dstAlpha = srcAlpha + alphaMul;
+                    var halfDstAlpha = div2(dstAlpha);
+
+                    dstPx[0] = (byte)((srcPx[0] * srcAlpha + dstPx[0] * alphaMul + halfDstAlpha) / dstAlpha);
+                    dstPx[1] = (byte)((srcPx[1] * srcAlpha + dstPx[1] * alphaMul + halfDstAlpha) / dstAlpha);
+                    dstPx[2] = (byte)((srcPx[2] * srcAlpha + dstPx[2] * alphaMul + halfDstAlpha) / dstAlpha);
+                    dstPx[3] = (byte)dstAlpha;
                 }
+
+                srcRow += srcStride;
+                dstRow += dstStride;
             }
         }
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static uint div2(uint x) => x >> 1; // x / 2
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static uint div255(uint x) => (x + (x >> 8) + 128u) >> 8; // roughly x / 255
 
     public void CopyPixelDataTo(Span<byte> pixelSpan)
     {
