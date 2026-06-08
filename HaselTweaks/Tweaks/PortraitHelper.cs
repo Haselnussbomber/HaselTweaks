@@ -43,8 +43,12 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
 
     private Hook<UIClipboard.Delegates.OnClipboardDataChanged>? _onClipboardDataChangedHook;
     private Hook<RaptureGearsetModule.Delegates.UpdateGearset>? _updateGearsetHook;
+    private Hook<UpdateGearVisibilityDelegate>? _updateGearVisibility;
     private bool _wasBoundByDuty;
     private bool _blockBannerPreview;
+    private bool _classJobChanged;
+
+    private delegate void UpdateGearVisibilityDelegate(uint entityId, nint packet);
 
     public override void OnEnable()
     {
@@ -56,10 +60,15 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
             RaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
             UpdateGearsetDetour);
 
+        _updateGearVisibility = _gameInteropProvider.HookFromSignature<UpdateGearVisibilityDelegate>(
+            "48 89 74 24 ?? 57 48 83 EC ?? 48 8B FA 8B D1",
+            UpdateGearVisibilityDetour);
+
         _agentLifecycle.RegisterListener(AgentEvent.PreShow, DAgentId.BannerPreview, OnBannerPreviewPreShow);
 
         _onClipboardDataChangedHook.Enable();
         _updateGearsetHook.Enable();
+        _updateGearVisibility.Enable();
 
         _openPortraitEditPayload = _chatGui.AddChatLinkHandler(1, OpenPortraitEditChatHandler);
 
@@ -90,6 +99,9 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
         _updateGearsetHook?.Dispose();
         _updateGearsetHook = null;
 
+        _updateGearVisibility?.Dispose();
+        _updateGearVisibility = null;
+
         _agentLifecycle.UnregisterListener(AgentEvent.PreShow, DAgentId.BannerPreview, OnBannerPreviewPreShow);
     }
 
@@ -115,19 +127,23 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
             _menuBar.Close();
     }
 
+    private void RestartCheck()
+    {
+        _mismatchCheckCTS?.Cancel();
+        _mismatchCheckCTS = new();
+
+        _ = _framework.RunOnTick(
+            CheckForGearChecksumMismatch,
+            CheckDelay,
+            cancellationToken: _mismatchCheckCTS.Token);
+    }
+
     private void OnTerritoryChanged(uint territoryTypeId)
     {
         if (_wasBoundByDuty && !Conditions.Instance()->BoundByDuty56)
         {
             _wasBoundByDuty = false;
-
-            _mismatchCheckCTS?.Cancel();
-            _mismatchCheckCTS = new();
-
-            _ = _framework.RunOnTick(
-                () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex),
-                CheckDelay,
-                cancellationToken: _mismatchCheckCTS.Token);
+            RestartCheck();
         }
     }
 
@@ -152,17 +168,25 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
         if (_config.AutoUpdatePotraitOnGearUpdate)
             _blockBannerPreview = true;
 
+        _logger.LogTrace("[UpdateGearsetDetour] Changed to {gearsetId}", gearsetId);
+
         var ret = _updateGearsetHook!.Original(raptureGearsetModule, gearsetId);
 
-        _mismatchCheckCTS?.Cancel();
-        _mismatchCheckCTS = new();
-
-        _ = _framework.RunOnTick(
-            () => CheckForGearChecksumMismatch(gearsetId),
-            CheckDelay,
-            cancellationToken: _mismatchCheckCTS.Token);
+        RestartCheck();
 
         return ret;
+    }
+
+    private void UpdateGearVisibilityDetour(uint entityId, nint packet)
+    {
+        _updateGearVisibility!.Original(entityId, packet);
+
+        if (!_classJobChanged || entityId != Control.Instance()->LocalPlayerEntityId)
+            return;
+
+        _logger.LogTrace("[UpdateGearVisibilityDetour] Updated LocalPlayer's gear visibility after Class/Job change");
+
+        RestartCheck();
     }
 
     private void OnBannerPreviewPreShow(AgentEvent type, AgentArgs args)
@@ -171,21 +195,22 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
         _blockBannerPreview = false;
 
         if (_config.AutoUpdatePotraitOnGearUpdate && blockBannerPreview)
+        {
+            _logger.LogTrace("[OnBannerPreviewPreShow] Suppressed!");
             args.PreventOriginal();
+        }
     }
 
     private void OnClassJobChange(uint classJobId)
     {
-        _mismatchCheckCTS?.Cancel();
-        _mismatchCheckCTS = new();
+        _classJobChanged |= true;
 
-        _ = _framework.RunOnTick(
-            () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex, true),
-            CheckDelay,
-            cancellationToken: _mismatchCheckCTS.Token);
+        _logger.LogTrace("[OnClassJobChange] Changed to {classJobId}", classJobId);
+
+        RestartCheck();
     }
 
-    private void CheckForGearChecksumMismatch(int gearsetId, bool isJobChange = false)
+    private void CheckForGearChecksumMismatch()
     {
         if (Conditions.Instance()->DutyRecorderPlayback)
             return;
@@ -198,18 +223,12 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
 
         if (Conditions.Instance()->BetweenAreas) // requeue when moving
         {
-            _mismatchCheckCTS?.Cancel();
-            _mismatchCheckCTS = new();
-
-            _ = _framework.RunOnTick(
-                () => CheckForGearChecksumMismatch(RaptureGearsetModule.Instance()->CurrentGearsetIndex),
-                CheckDelay,
-                cancellationToken: _mismatchCheckCTS.Token);
-
+            RestartCheck();
             return;
         }
 
         var raptureGearsetModule = RaptureGearsetModule.Instance();
+        var gearsetId = raptureGearsetModule->CurrentGearsetIndex;
 
         if (!raptureGearsetModule->IsValidGearset(gearsetId))
             return;
@@ -235,6 +254,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
             return;
 
         var checksum = UIGlobals.GenerateEquippedItemsChecksum();
+        var classJobChanged = Interlocked.Exchange(ref _classJobChanged, false);
 
         if (banner->Checksum == checksum)
         {
@@ -242,15 +262,15 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
             return;
         }
 
-        _logger.LogInformation("Gear checksum mismatch detected! (Portrait: {bannerChecksum:X}, Equipped: {checksum:X})", banner->Checksum, checksum);
+        _logger.LogInformation("Gear checksum mismatch detected! (Portrait: {bannerChecksum:X}, Equipped: {checksum:X}, ClassJobChanged = {classJobChanged})", banner->Checksum, checksum, classJobChanged);
 
-        if (!isJobChange && _config.ReequipGearsetOnUpdate && gearset->GlamourSetLink > 0 && UIGlobals.CanApplyGlamourPlates())
+        if (!classJobChanged && _config.ReequipGearsetOnUpdate && gearset->GlamourSetLink > 0 && UIGlobals.CanApplyGlamourPlates())
         {
             _logger.LogInformation("Re-equipping Gearset #{gearsetId} to reapply glamour plate", gearset->Id + 1);
             raptureGearsetModule->EquipGearset(gearset->Id, gearset->GlamourSetLink);
             RecheckGearChecksum(banner);
         }
-        else if (!isJobChange && _config.AutoUpdatePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
+        else if (!classJobChanged && _config.AutoUpdatePotraitOnGearUpdate && gearset->GlamourSetLink == 0)
         {
             _logger.LogInformation("Trying to send portrait update...");
 
