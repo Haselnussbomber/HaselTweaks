@@ -102,6 +102,10 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
         _updateGearVisibility?.Dispose();
         _updateGearVisibility = null;
 
+        _mismatchCheckCTS?.Cancel();
+        _mismatchCheckCTS?.Dispose();
+        _mismatchCheckCTS = null;
+
         _agentLifecycle.UnregisterListener(AgentEvent.PreShow, DAgentId.BannerPreview, OnBannerPreviewPreShow);
     }
 
