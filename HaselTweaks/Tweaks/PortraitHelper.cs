@@ -15,7 +15,6 @@ using HaselTweaks.Windows.PortraitHelperWindows;
 using AgentEvent = Dalamud.Game.Agent.AgentEvent;
 using DAgentId = Dalamud.Game.Agent.AgentId;
 using DSeString = Dalamud.Game.Text.SeStringHandling.SeString;
-using LSeStringBuilder = Lumina.Text.SeStringBuilder;
 
 namespace HaselTweaks.Tweaks;
 
@@ -155,8 +154,6 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
 
         var ret = _updateGearsetHook!.Original(raptureGearsetModule, gearsetId);
 
-        _blockBannerPreview = false;
-
         _mismatchCheckCTS?.Cancel();
         _mismatchCheckCTS = new();
 
@@ -170,14 +167,11 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
 
     private void OnBannerPreviewPreShow(AgentEvent type, AgentArgs args)
     {
-        if (!_config.AutoUpdatePotraitOnGearUpdate)
-            return;
-
-        if (!_blockBannerPreview)
-            return;
-
+        var blockBannerPreview = _blockBannerPreview;
         _blockBannerPreview = false;
-        args.PreventOriginal();
+
+        if (_config.AutoUpdatePotraitOnGearUpdate && blockBannerPreview)
+            args.PreventOriginal();
     }
 
     private void OnClassJobChange(uint classJobId)
