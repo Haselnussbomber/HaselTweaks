@@ -360,7 +360,9 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
 
         _logger.LogInformation("Preloading tmb {key} (Emote: {emoteId}, ActionTimeline: {actionTimelineId})", actionTimeline.Key.ToString(), emoteId, actionTimelineId);
 
-        fixed (byte* keyPtr = actionTimeline.Key.Data.Span.WithNullTerminator())
+        using var rssb = new RentedSeStringBuilder();
+        
+        fixed (byte* keyPtr = rssb.Builder.Append(actionTimeline.Key).GetViewAsSpan())
         {
             var preloadInfo = new ActionTimelineManager.PreloadActionTmbInfo
             {
