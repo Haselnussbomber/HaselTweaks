@@ -1,5 +1,13 @@
 # Changelog
 
+## [47.2.1] (2026-06-12)
+
+- Updated ClientStructs for Patch 7.51 HotFix.
+
+### Portrait Helper
+
+- **Updated:** The portrait checksum check is delayed a bit further after the client receives the packet that updates the local players gear visibility, which happens very shortly after switching the class/job. Also adjusted the checking logic a little with this.
+
 ## [47.2.0] (2026-06-02)
 
 ### Shop Item Icons
@@ -2614,7 +2622,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.2.0...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.2.1...main
+[47.2.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.2.0...v47.2.1
 [47.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.1.1...v47.2.0
 [47.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.1.0...v47.1.1
 [47.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.0.0...v47.1.0
