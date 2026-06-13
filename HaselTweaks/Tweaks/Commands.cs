@@ -118,7 +118,7 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
         Chat.Print(rssb.Builder
             .AppendHaselTweaksPrefix()
             .Append(_textService.EvaluateTranslatedSeString("Commands.ItemLink.Item", id, _itemService.GetItemLink(id)))
-            .GetViewAsSpan());
+            .ToReadOnlySeString());
     }
 
     private void OnWhatMountCommand(CommandContext ctx)
@@ -162,17 +162,17 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
 
         if (!_excelService.TryFindRow<ItemAction>(row => row.Action.RowId == 1322 && row.Data[0] == mount.RowId, out var itemAction) || itemAction.RowId == 0)
         {
-            Chat.Print(rssb.Builder.Append(_textService.TranslateSeString("Commands.WhatMount.WithoutItem", name)).GetViewAsSpan());
+            Chat.Print(rssb.Builder.Append(_textService.TranslateSeString("Commands.WhatMount.WithoutItem", name)).ToReadOnlySeString());
             return;
         }
 
         if (!_excelService.TryFindRow<Item>(row => row.ItemAction.RowId == itemAction.RowId, out var item))
         {
-            Chat.Print(rssb.Builder.Append(_textService.TranslateSeString("Commands.WhatMount.WithoutItem", name)).GetViewAsSpan());
+            Chat.Print(rssb.Builder.Append(_textService.TranslateSeString("Commands.WhatMount.WithoutItem", name)).ToReadOnlySeString());
             return;
         }
 
-        Chat.Print(rssb.Builder.Append(_textService.EvaluateTranslatedSeString("Commands.WhatMount.WithItem", name, _itemService.GetItemLink(item.RowId))).GetViewAsSpan());
+        Chat.Print(rssb.Builder.Append(_textService.EvaluateTranslatedSeString("Commands.WhatMount.WithItem", name, _itemService.GetItemLink(item.RowId))).ToReadOnlySeString());
     }
 
     private void OnWhatEmoteCommand(CommandContext ctx)
@@ -208,7 +208,7 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
         Chat.Print(rssb.Builder
                 .AppendHaselTweaksPrefix()
                 .Append(_textService.TranslateSeString("Commands.Emote", emoteId.ToString(), _textService.GetEmoteName(emoteId)))
-                .GetViewAsSpan());
+                .ToReadOnlySeString());
     }
 
     private void OnWhatBardingCommand(CommandContext ctx)
@@ -269,7 +269,7 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
             .Append($"  {_textService.GetAddonText(4992)}: {(hasBodyRow ? bodyRow.Name.ToString() : _textService.GetAddonText(4994))}")
             .AppendNewLine()
             .Append($"  {_textService.GetAddonText(4993)}: {(hasLegsRow ? legsRow.Name.ToString() : _textService.GetAddonText(4994))}")
-            .GetViewAsSpan());
+            .ToReadOnlySeString());
     }
 
     private void OnGlamourPlateCommand(CommandContext ctx)

@@ -343,7 +343,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
 
         UIModule.Instance()->ShowErrorText(text, false);
 
-        Chat.PrintError(sb.GetViewAsSpan());
+        Chat.PrintError(sb.ToReadOnlySeString());
     }
 
     private bool SendPortraitUpdate(BannerModuleEntry* banner)
