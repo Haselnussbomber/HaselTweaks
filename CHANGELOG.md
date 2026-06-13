@@ -1,6 +1,14 @@
 # Changelog
 
+## [47.2.2] (2026-06-13)
+
+### HaselTweaks
+
+- **Fixed:** The plugins chat messages would not be displayed correctly.
+
 ## [47.2.1] (2026-06-12)
+
+### HaselTweaks
 
 - Updated ClientStructs for Patch 7.51 HotFix.
 
@@ -2622,7 +2630,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.2.1...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.2.2...main
+[47.2.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.2.1...v47.2.2
 [47.2.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.2.0...v47.2.1
 [47.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.1.1...v47.2.0
 [47.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.1.0...v47.1.1
