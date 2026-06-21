@@ -10,6 +10,7 @@
     <Punchline>A collection of quality of life tweaks.</Punchline>
     <Description>Keep on tweaking.</Description>
     <LoadRequiredState>1</LoadRequiredState>
+    <CanUnloadAsync>true</CanUnloadAsync>
   </PropertyGroup>
 
   <!-- Build settings -->
