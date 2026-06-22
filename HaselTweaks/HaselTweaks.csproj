@@ -29,6 +29,7 @@
   <!-- Assets -->
   <ItemGroup>
     <EmbeddedResource Include="Assets\Logo.png" />
+    <None Condition="'$(Configuration)' == 'Debug'" Include="Assets\Icon.png" Link="images\icon.png" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- Translations -->
