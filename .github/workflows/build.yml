@@ -28,14 +28,14 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: true
+          submodules: recursive
 
       - uses: denoland/setup-deno@v2
         with:
@@ -43,6 +43,7 @@ jobs:
 
       - name: Extract .NET SDK version from global.json
         id: get_dotnet_version
+        shell: bash
         run: |
           deno run --allow-read --quiet --unstable - <<'EOF' >> "$GITHUB_OUTPUT"
           import { parse } from "jsr:@std/jsonc";
@@ -58,7 +59,16 @@ jobs:
           cache-dependency-path: ${{ env.plugin_name }}/packages.lock.json
           dotnet-version: ${{ steps.get_dotnet_version.outputs.dotnet_version }}
 
+      - uses: microsoft/setup-msbuild@v3
+
+      - run: choco install nasm -y
+
+      - uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+
       - name: Download Dalamud
+        shell: bash
         env:
           DALAMUD_URL: |-
             ${{ case(
@@ -67,17 +77,23 @@ jobs:
             ) }}
         run: |
           curl -o latest.zip ${{ env.DALAMUD_URL }}
-          mkdir -p ~/.xlcore/dalamud/Hooks/dev/
-          unzip latest.zip -d ~/.xlcore/dalamud/Hooks/dev/
+          mkdir -p ~/AppData/Roaming/XIVLauncher/addon/Hooks/dev
+          unzip latest.zip -d ~/AppData/Roaming/XIVLauncher/addon/Hooks/dev/
 
       - name: Restore dependencies
         run: dotnet restore --locked-mode
 
-      - name: Build
+      - name: Build cpp project
+        working-directory: HaselTweaks.Native
+        shell: cmd
+        run: build.bat
+
+      - name: Build csharp project
         run: dotnet build --no-restore -c Release -clp:NoSummary
 
       - name: Rename manifest
         if: github.event_name != 'pull_request'
+        shell: bash
         run: mv bin/${{ env.plugin_name }}/${{ env.plugin_name }}.json bin/${{ env.plugin_name }}/manifest.json
 
       - name: Upload Build Artifact

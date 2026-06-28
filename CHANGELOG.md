@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Faster Decompression
+
+Replaces the game's `zlib.uncompress` function with an optimized implementation from the [Intel® Intelligent Storage Acceleration Library (ISA-L)](https://github.com/intel/isa-l).
+
+The plan is to eventually implement this into Dalamud to provide this speed-boost for everyone, but the maintainers are currently very busy IRL. This gives us time to test it! :)
+
 ## [47.2.2] (2026-06-13)
 
 ### HaselTweaks

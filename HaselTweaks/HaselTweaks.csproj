@@ -46,6 +46,7 @@
   <!-- References to Dalamud dependencies -->
   <ItemGroup>
     <Reference Include="TerraFX.Interop.Windows" Private="false" />
+    <Reference Include="Iced" Private="false" />
   </ItemGroup>
 
   <!-- NuGet dependencies -->

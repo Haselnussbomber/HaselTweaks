@@ -1658,6 +1658,14 @@
     "zh": "始终打开“筹备任务”窗口的“筹备稀有品”标签页。"
   },
 
+  "FasterDecompression.Tweak.Name": {
+    "en": "Faster Decompression"
+  },
+  "FasterDecompression.Tweak.Description": {
+    "en": "Replaces the game's zlib.uncompress function with an optimized implementation from the Intel® Intelligent Storage Acceleration Library (ISA-L).",
+    "de": "Ersetzt die zlib.uncompress-Funktion des Spiels durch eine optimierte Implementierung aus der Intel® Intelligent Storage Acceleration Library (ISA-L)."
+  },
+
   "FastMouseClickFix.Tweak.Name": {
     "en": "Fast Mouse Click Fix",
     "zh": "鼠标快速点击修复"

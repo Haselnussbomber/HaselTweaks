@@ -361,6 +361,9 @@
           "Microsoft.Extensions.Logging": "[10.0.9, )"
         }
       },
+      "haseltweaks.native": {
+        "type": "Project"
+      },
       "interopgenerator.runtime": {
         "type": "Project"
       }

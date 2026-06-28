@@ -35,7 +35,7 @@ This tweak makes your character look at the camera when facing it, mimicking the
 
 Sorts items inside various containers when they are opened. Rules can be configured.
 
-Uses the games `/itemsort` command for sorting.
+Uses the game's `/itemsort` command for sorting.
 
 Configuration options:
 
@@ -251,6 +251,10 @@ Configuration options:
 ### Expert Deliveries
 
 Always opens the "Grand Company Delivery Missions" window on the "Expert Delivery" tab.
+
+### Faster Decompression
+
+Replaces the game's `zlib.uncompress` function with an optimized implementation from the [Intel® Intelligent Storage Acceleration Library (ISA-L)](https://github.com/intel/isa-l).
 
 ### Fast Mouse Click Fix
 

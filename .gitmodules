@@ -4,3 +4,6 @@
 [submodule "FFXIVClientStructs"]
 	path = FFXIVClientStructs
 	url = https://github.com/aers/FFXIVClientStructs.git
+[submodule "HaselTweaks.Native/lib/isa-l"]
+	path = HaselTweaks.Native/lib/isa-l
+	url = https://github.com/intel/isa-l.git

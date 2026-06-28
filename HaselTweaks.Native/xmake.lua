@@ -1,0 +1,25 @@
+add_rules("mode.debug", "mode.releasedbg")
+
+target("isal")
+    set_kind("static")
+    on_build(function (package)
+        os.cd("lib/isa-l")
+        import("package.tools.nmake").build(package, {"/f", "Makefile.nmake"})
+    end)
+
+target("HaselTweaks.Native")
+    set_kind("shared")
+    add_files("src/*.cpp")
+    set_optimize("fastest")
+    add_includedirs("lib/isa-l/include")
+    add_links("lib/isa-l/isa-l_static")
+    add_deps("isal")
+    after_build(function (target)
+        os.mkdir("../bin")
+
+        local targetfile = target:targetfile()
+        os.cp(targetfile, "../bin")
+
+        local symbolfile = target:symbolfile()
+        os.cp(symbolfile, "../bin")
+    end)
