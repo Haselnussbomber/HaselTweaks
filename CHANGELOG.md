@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [48.0.0] (2026-06-28)
 
 ### New Tweak: Faster Decompression
 
@@ -2638,7 +2638,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.2.2...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v448.0.0...main
+[48.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.2.2...v48.0.0
 [47.2.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.2.1...v47.2.2
 [47.2.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.2.0...v47.2.1
 [47.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v47.1.1...v47.2.0
