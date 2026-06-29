@@ -1662,8 +1662,8 @@
     "en": "Faster Decompression"
   },
   "FasterDecompression.Tweak.Description": {
-    "en": "Replaces the game's zlib.uncompress function with an optimized implementation from the Intel® Intelligent Storage Acceleration Library (ISA-L).",
-    "de": "Ersetzt die zlib.uncompress-Funktion des Spiels durch eine optimierte Implementierung aus der Intel® Intelligent Storage Acceleration Library (ISA-L)."
+    "en": "Replaces the game's zlib.uncompress function with an optimized implementation from libdeflate.",
+    "de": "Ersetzt die zlib.uncompress-Funktion des Spiels durch eine optimierte Implementierung von libdeflate."
   },
 
   "FastMouseClickFix.Tweak.Name": {

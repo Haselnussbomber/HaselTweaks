@@ -1,17 +1,21 @@
-#include <igzip_lib.h>
+#include "pch.h"
+#include "main.h"
 
-extern "C" __declspec(dllexport) int __fastcall Inflate(unsigned char* dest, unsigned long* destLen, const unsigned char* source, unsigned long sourceLen) {
-    thread_local inflate_state state;
-    isal_inflate_init(&state);
+BOOL APIENTRY DllMain(HMODULE hModule,
+    DWORD  ul_reason_for_call,
+    LPVOID lpReserved
+)
+{
+    switch (ul_reason_for_call)
+    {
+    case DLL_PROCESS_ATTACH:
+        libdeflate_set_memory_allocator(mi_malloc, mi_free);
+        break;
 
-    state.next_in = const_cast<unsigned char*>(source);
-    state.avail_in = static_cast<uint32_t>(sourceLen);
-    state.next_out = dest;
-    state.avail_out = static_cast<uint32_t>(*destLen);
-
-    int err = isal_inflate_stateless(&state);
-    if (err == ISAL_DECOMP_OK)
-        *destLen = static_cast<unsigned long>(state.total_out);
-
-    return err;
+    case DLL_THREAD_ATTACH:
+    case DLL_THREAD_DETACH:
+    case DLL_PROCESS_DETACH:
+        break;
+    }
+    return TRUE;
 }

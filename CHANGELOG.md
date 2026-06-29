@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Faster Decompression
+
+Replaced [Intel® Intelligent Storage Acceleration Library (ISA-L)](https://github.com/intel/isa-l) with [libdeflate](https://github.com/ebiggers/libdeflate), which is even faster - even if it's just a matter of milliseconds. :)
+
 ## [48.0.0] (2026-06-28)
 
 ### New Tweak: Faster Decompression
