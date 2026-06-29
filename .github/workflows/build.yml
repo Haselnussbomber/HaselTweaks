@@ -28,7 +28,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
@@ -37,13 +37,17 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Install mingw
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install mingw-w64
+
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
 
       - name: Extract .NET SDK version from global.json
         id: get_dotnet_version
-        shell: bash
         run: |
           deno run --allow-read --quiet --unstable - <<'EOF' >> "$GITHUB_OUTPUT"
           import { parse } from "jsr:@std/jsonc";
@@ -59,16 +63,11 @@ jobs:
           cache-dependency-path: ${{ env.plugin_name }}/packages.lock.json
           dotnet-version: ${{ steps.get_dotnet_version.outputs.dotnet_version }}
 
-      - uses: microsoft/setup-msbuild@v3
-
-      - run: choco install nasm -y
-
       - uses: xmake-io/github-action-setup-xmake@v1
         with:
           xmake-version: latest
 
       - name: Download Dalamud
-        shell: bash
         env:
           DALAMUD_URL: |-
             ${{ case(
@@ -77,23 +76,23 @@ jobs:
             ) }}
         run: |
           curl -o latest.zip ${{ env.DALAMUD_URL }}
-          mkdir -p ~/AppData/Roaming/XIVLauncher/addon/Hooks/dev
-          unzip latest.zip -d ~/AppData/Roaming/XIVLauncher/addon/Hooks/dev/
+          mkdir -p ~/.xlcore/dalamud/Hooks/dev/
+          unzip latest.zip -d ~/.xlcore/dalamud/Hooks/dev/
 
       - name: Restore dependencies
         run: dotnet restore --locked-mode
 
       - name: Build cpp project
         working-directory: HaselTweaks.Native
-        shell: cmd
-        run: build.bat
+        run: |
+          xmake f -p mingw -a x64 -m releasedbg
+          xmake
 
       - name: Build csharp project
         run: dotnet build --no-restore -c Release -clp:NoSummary
 
       - name: Rename manifest
         if: github.event_name != 'pull_request'
-        shell: bash
         run: mv bin/${{ env.plugin_name }}/${{ env.plugin_name }}.json bin/${{ env.plugin_name }}/manifest.json
 
       - name: Upload Build Artifact
