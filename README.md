@@ -254,7 +254,7 @@ Always opens the "Grand Company Delivery Missions" window on the "Expert Deliver
 
 ### Faster Decompression
 
-Replaces the game's `zlib.uncompress` function with an optimized implementation from the [Intel® Intelligent Storage Acceleration Library (ISA-L)](https://github.com/intel/isa-l).
+Replaces the game's `zlib.uncompress` function with an optimized implementation from [libdeflate](https://github.com/ebiggers/libdeflate).
 
 ### Fast Mouse Click Fix
 
