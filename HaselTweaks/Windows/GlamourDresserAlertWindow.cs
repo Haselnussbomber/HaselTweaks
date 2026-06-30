@@ -47,7 +47,11 @@ public unsafe partial class GlamourDresserAlertWindow : SimpleWindow
     }
 
     public override bool DrawConditions()
-        => IsAddonOpen("MiragePrismPrismBox"u8) && !IsAddonOpen("MiragePrismMiragePlate"u8) && (_tweak.CabinetStorableItems.Count != 0 || _tweak.OutfitConvertibleItems.Count != 0);
+    {
+        return IsAddonOpen("MiragePrismPrismBox"u8)
+            && !IsAddonOpen("MiragePrismMiragePlate"u8)
+            && _tweak.HasAnyItems;
+    }
 
     public override void PreDraw()
     {
@@ -64,22 +68,24 @@ public unsafe partial class GlamourDresserAlertWindow : SimpleWindow
     {
         ImGui.TextWrapped(_textService.Translate("GlamourDresserAlertWindow.Info"));
 
-        DrawCabinetItems();
-        DrawOutfitItems();
+        DrawItems(nameof(_tweak.CabinetStorableItems), _tweak.CabinetStorableItems);
+        DrawItems(nameof(_tweak.OutfitConvertibleItems), _tweak.OutfitConvertibleItems);
+        DrawItems(nameof(_tweak.DuplicateItemsInExistingSets), _tweak.DuplicateItemsInExistingSets);
+        DrawItems(nameof(_tweak.DuplicateItems), _tweak.DuplicateItems);
     }
 
-    public void DrawCabinetItems()
+    public void DrawItems(string key, Dictionary<uint, HashSet<ItemHandle>> items)
     {
-        if (_tweak.CabinetStorableItems.Count == 0)
+        if (items.Count == 0)
             return;
 
-        var itemCount = _tweak.CabinetStorableItems.Sum(kv => kv.Value.Count);
-        var label = _textService.EvaluateTranslatedSeString("GlamourDresserAlertWindow.CabinetReadyItemsTreeNodeLabel", itemCount).ToString();
-        using var treeNode = ImRaii.TreeNode($"{label}###CabinetReadyItemsTreeNode", ImGuiTreeNodeFlags.SpanAvailWidth);
+        var itemCount = items.Sum(kv => kv.Value.Count);
+        var label = _textService.EvaluateTranslatedSeString($"GlamourDresserAlertWindow.{key}TreeNodeLabel", itemCount).ToString();
+        using var treeNode = ImRaii.TreeNode($"{label}###{key}TreeNode", ImGuiTreeNodeFlags.SpanAvailWidth);
         if (!treeNode)
             return;
 
-        foreach (var (categoryId, categoryItems) in _tweak.CabinetStorableItems.OrderBy(kv => kv.Key))
+        foreach (var (categoryId, categoryItems) in items.OrderBy(kv => kv.Key))
         {
             if (!_excelService.TryGetRow<ItemUICategory>(categoryId, out var category))
                 continue;
@@ -92,34 +98,6 @@ public unsafe partial class GlamourDresserAlertWindow : SimpleWindow
             foreach (var item in categoryItems)
             {
                 DrawItem(item, true);
-            }
-        }
-    }
-
-    public void DrawOutfitItems()
-    {
-        if (_tweak.OutfitConvertibleItems.Count == 0)
-            return;
-
-        var itemCount = _tweak.OutfitConvertibleItems.Sum(kv => kv.Value.Count);
-        var label = _textService.EvaluateTranslatedSeString("GlamourDresserAlertWindow.OutfitReadyItemsTreeNodeLabel", itemCount).ToString();
-        using var treeNode = ImRaii.TreeNode($"{label}###OutfitReadyItemsTreeNode", ImGuiTreeNodeFlags.SpanAvailWidth);
-        if (!treeNode)
-            return;
-
-        foreach (var (categoryId, categoryItems) in _tweak.OutfitConvertibleItems.OrderBy(kv => kv.Key))
-        {
-            if (!_excelService.TryGetRow<ItemUICategory>(categoryId, out var category))
-                continue;
-
-            ImGui.Text(category.Name.ToString());
-            ImCursor.Y += 3 * ImStyle.Scale;
-
-            using var indent = ImRaii.PushIndent();
-
-            foreach (var item in categoryItems)
-            {
-                DrawItem(item, false);
             }
         }
     }

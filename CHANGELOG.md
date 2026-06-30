@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Glamour Dresser Alert
+
+- **Added:** Duplicate items and items that are already part of a set will now be listed in the alert window.
+
 ## [48.0.1] (2026-06-29)
 
 ### Faster Decompression

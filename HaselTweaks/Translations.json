@@ -1906,9 +1906,17 @@
     "en": "<string(lnum1)> <if([lnum1==1],item,items)> placeable in the armoire",
     "de": "<string(lnum1)> <if([lnum1==1],Gegenstand,Gegenstände)> ins Kostbarkeitenkabinett einlegbar"
   },
-  "GlamourDresserAlertWindow.OutfitReadyItemsTreeNodeLabel": {
+  "GlamourDresserAlertWindow.OutfitConvertibleItemsTreeNodeLabel": {
     "en": "<string(lnum1)> <if([lnum1==1],item,items)> Outfit Glamour-ready",
     "de": "<string(lnum1)> <if([lnum1==1],Gegenstand,Gegenstände)> als Set projizierbar"
+  },
+  "GlamourDresserAlertWindow.DuplicateItemsInExistingSetsTreeNodeLabel": {
+    "en": "<string(lnum1)> <if([lnum1==1],item already part of a set,items already part of sets)>",
+    "de": "<string(lnum1)> bereits in Set <if([lnum1==1],existierender Gegenstand,existierende Gegenstände)>"
+  },
+  "GlamourDresserAlertWindow.DuplicateItemsTreeNodeLabel": {
+    "en": "<string(lnum1)> duplicate <if([lnum1==1],item,items)>",
+    "de": "<string(lnum1)> <if([lnum1==1],doppelter Gegenstand,doppelte Gegenstände)>"
   },
   "GlamourDresserAlertWindow.DuplicateSetItemsTooltip": {
     "en": "The following items are stored in the armoire, and part of this set:",

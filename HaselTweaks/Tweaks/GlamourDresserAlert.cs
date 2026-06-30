@@ -14,6 +14,7 @@ public unsafe partial class GlamourDresserAlert : ConfigurableTweak<GlamourDress
     private readonly ItemService _itemService;
     private readonly CabinetService _cabinetService;
     private readonly IFramework _framework;
+    private readonly MirageService _mirageService;
 
     private GlamourDresserAlertWindow? _window;
     private bool _isPendingUpdate;
@@ -21,6 +22,14 @@ public unsafe partial class GlamourDresserAlert : ConfigurableTweak<GlamourDress
 
     public Dictionary<uint, HashSet<ItemHandle>> CabinetStorableItems { get; } = [];
     public Dictionary<uint, HashSet<ItemHandle>> OutfitConvertibleItems { get; } = [];
+    public Dictionary<uint, HashSet<ItemHandle>> DuplicateItemsInExistingSets { get; } = [];
+    public Dictionary<uint, HashSet<ItemHandle>> DuplicateItems { get; } = [];
+
+    public bool HasAnyItems
+        => CabinetStorableItems.Count != 0
+        || OutfitConvertibleItems.Count != 0
+        || DuplicateItemsInExistingSets.Count != 0
+        || DuplicateItems.Count != 0;
 
     public override void OnEnable()
     {
@@ -78,6 +87,8 @@ public unsafe partial class GlamourDresserAlert : ConfigurableTweak<GlamourDress
 
         CabinetStorableItems.Clear();
         OutfitConvertibleItems.Clear();
+        DuplicateItemsInExistingSets.Clear();
+        DuplicateItems.Clear();
 
         _logger.LogInformation("Updating...");
 
@@ -112,12 +123,19 @@ public unsafe partial class GlamourDresserAlert : ConfigurableTweak<GlamourDress
             if (ProcessCabinetStorableItem(item, itemRow, isSet, setRow))
                 continue;
 
-            ProcessOutfitConvertibleItem(item, itemRow);
+            if (ProcessDuplicateItemInExistingSet(itemIds, item, itemRow))
+                continue;
+
+            if (ProcessDuplicateItem(itemIds, item, itemRow))
+                continue;
+
+            if (ProcessOutfitConvertibleItem(item, itemRow))
+                continue;
         }
 
         _window?.IsUpdatePending = false;
 
-        if (CabinetStorableItems.Count == 0 && OutfitConvertibleItems.Count == 0)
+        if (!HasAnyItems)
             return;
 
         _window ??= _serviceProvider.CreateInstance<GlamourDresserAlertWindow>(this);
@@ -143,20 +161,50 @@ public unsafe partial class GlamourDresserAlert : ConfigurableTweak<GlamourDress
             CabinetStorableItems.TryAdd(itemRow.ItemUICategory.RowId, categoryItems = []);
 
         categoryItems.Add(item);
+
         return true;
     }
 
-    private void ProcessOutfitConvertibleItem(ItemHandle item, Item itemRow)
+    private bool ProcessOutfitConvertibleItem(ItemHandle item, Item itemRow)
     {
         if (!_excelService.TryGetRow<MirageStoreSetItemLookup>(item, out var setsRow))
-            return;
+            return false;
 
         if (!setsRow.Item.Any(setItem => setItem.RowId != 0 && setItem.IsValid))
-            return;
+            return false;
 
         if (!OutfitConvertibleItems.TryGetValue(itemRow.ItemUICategory.RowId, out var categoryItems))
             OutfitConvertibleItems.TryAdd(itemRow.ItemUICategory.RowId, categoryItems = []);
 
         categoryItems.Add(item);
+
+        return true;
+    }
+
+    private bool ProcessDuplicateItemInExistingSet(Span<uint> itemIds, ItemHandle item, Item itemRow)
+    {
+        if (!_mirageService.IsItemCollectedInSet(item))
+            return false;
+
+        if (!DuplicateItemsInExistingSets.TryGetValue(itemRow.ItemUICategory.RowId, out var categoryItems))
+            DuplicateItemsInExistingSets.TryAdd(itemRow.ItemUICategory.RowId, categoryItems = []);
+
+        categoryItems.Add(item);
+
+        return true;
+    }
+
+    private bool ProcessDuplicateItem(Span<uint> itemIds, ItemHandle item, Item itemRow)
+    {
+        var count = itemIds.Count(item.ItemId);
+        if (count <= 1)
+            return false;
+
+        if (!DuplicateItems.TryGetValue(itemRow.ItemUICategory.RowId, out var categoryItems))
+            DuplicateItems.TryAdd(itemRow.ItemUICategory.RowId, categoryItems = []);
+
+        categoryItems.Add(item);
+
+        return true;
     }
 }
