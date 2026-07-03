@@ -53,7 +53,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
                 var isWindowOpen = _windowManager.TryGetWindow<PluginWindow>(out var pluginWindow) && pluginWindow.IsOpen;
                 ImGui.SetTooltip(_textService.Translate(isWindowOpen ? "TitleBarButton.CloseConfig" : "TitleBarButton.OpenConfig"));
             },
-            Click = (button) => _windowManager.CreateOrToggle<PluginWindow>().SelectTweak<GearSetGrid>()
+            Click = (_) => _windowManager.CreateOrToggle<PluginWindow>().SelectTweak<GearSetGrid>()
         });
     }
 
@@ -236,7 +236,7 @@ public unsafe partial class GearSetGridWindow : SimpleWindow
         return list;
     }
 
-    public void DrawItemIcon(GearsetEntry* gearset, GearsetItemIndex slotIndex, in GearsetItem slotItem, ItemHandle item)
+    public void DrawItemIcon(GearsetEntry* gearset, GearsetItemIndex slotIndex, GearsetItem slotItem, ItemHandle item)
     {
         var startPos = ImCursor.Position;
 

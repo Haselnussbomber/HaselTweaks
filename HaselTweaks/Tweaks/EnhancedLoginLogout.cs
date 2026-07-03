@@ -361,7 +361,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
         _logger.LogInformation("Preloading tmb {key} (Emote: {emoteId}, ActionTimeline: {actionTimelineId})", actionTimeline.Key.ToString(), emoteId, actionTimelineId);
 
         using var rssb = new RentedSeStringBuilder();
-        
+
         fixed (byte* keyPtr = rssb.Builder.Append(actionTimeline.Key).GetViewAsSpan())
         {
             var preloadInfo = new ActionTimelineManager.PreloadActionTmbInfo
@@ -480,7 +480,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
                 var changePoseIndex = PlayerState.Instance()->SelectedPoses[0];
                 if (changePoseIndexBefore != changePoseIndex) // only process if standing pose was changed
                 {
-                    if (changePoseIndex >= 0 && changePoseIndex < _changePoseEmoteIds.Length)
+                    if (changePoseIndex < _changePoseEmoteIds.Length)
                     {
                         SaveEmote(_changePoseEmoteIds[changePoseIndex]);
                     }

@@ -183,10 +183,17 @@ csharp_preserve_single_line_blocks = true
 # C# Code quality rules       #
 ###############################
 
-dotnet_diagnostic.CA1816.severity = none
+dotnet_diagnostic.CA1816.severity = none # Call GC.SuppressFinalize correctly
+dotnet_diagnostic.CA1873.severity = none # Avoid potentially expensive logging
 
 ###############################
 # BannedApiAnalyzers          #
 ###############################
 
-dotnet_diagnostic.RS0030.severity = error
+dotnet_diagnostic.RS0030.severity = error # Do not used banned APIs
+
+###############################
+# Roslynator.Analyzers        #
+###############################
+
+dotnet_diagnostic.RCS1123.severity = none # Add parentheses when necessary

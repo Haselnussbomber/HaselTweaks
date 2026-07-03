@@ -9,9 +9,9 @@ using static TerraFX.Interop.Windows.Windows;
 
 namespace HaselTweaks.Utils.PortraitHelper;
 
-public unsafe class BgraImage : IDisposable
+public unsafe class BgraImage(ComPtr<IWICBitmap> bitmap) : IDisposable
 {
-    private ComPtr<IWICBitmap> _bitmap;
+    private ComPtr<IWICBitmap> _bitmap = bitmap;
 
     public (uint Width, uint Height) Size
     {
@@ -29,11 +29,6 @@ public unsafe class BgraImage : IDisposable
 
     public uint Width => Size.Width;
     public uint Height => Size.Height;
-
-    public BgraImage(ComPtr<IWICBitmap> bitmap)
-    {
-        _bitmap = bitmap;
-    }
 
     public void Dispose()
     {
@@ -176,7 +171,7 @@ public unsafe class BgraImage : IDisposable
             ).ThrowOnError();
         }
 
-        SaveAsPng(in fileStream, userComment);
+        SaveAsPng(fileStream, userComment);
 
         fileStream.Get()->Commit((uint)STGC.STGC_DEFAULT).ThrowOnError();
     }
@@ -187,7 +182,7 @@ public unsafe class BgraImage : IDisposable
         if (memStream.Get() == null)
             throw new OutOfMemoryException("SHCreateMemStream failed.");
 
-        SaveAsPng(in memStream, userComment);
+        SaveAsPng(memStream, userComment);
 
         LARGE_INTEGER zero = default;
         ULARGE_INTEGER size = default;
@@ -212,7 +207,7 @@ public unsafe class BgraImage : IDisposable
         stream.Position = startingPosition + (long)totalBytes;
     }
 
-    private void SaveAsPng(in ComPtr<IStream> stream, string? userComment)
+    private void SaveAsPng(ComPtr<IStream> stream, string? userComment)
     {
         using var wicFactory = CreateWicFactory();
 
@@ -256,16 +251,18 @@ public unsafe class BgraImage : IDisposable
         // Write user comment
         if (!string.IsNullOrEmpty(userComment))
         {
-            var metaPath = "/tEXt/{str=Comment}";
+            const string metaPath = "/tEXt/{str=Comment}";
             fixed (char* metaPathPtr = metaPath)
-            fixed (char* commentPtr = userComment)
             {
-                var propVar = new PROPVARIANT
+                fixed (char* commentPtr = userComment)
                 {
-                    vt = (ushort)VARENUM.VT_LPWSTR,
-                    pwszVal = commentPtr
-                };
-                metaWriter.Get()->SetMetadataByName(metaPathPtr, &propVar).ThrowOnError();
+                    var propVar = new PROPVARIANT
+                    {
+                        vt = (ushort)VARENUM.VT_LPWSTR,
+                        pwszVal = commentPtr
+                    };
+                    metaWriter.Get()->SetMetadataByName(metaPathPtr, &propVar).ThrowOnError();
+                }
             }
         }
 
@@ -303,7 +300,7 @@ public unsafe class BgraImage : IDisposable
     public IDalamudTextureWrap AsDalamudTextureWrap(ITextureProvider textureProvider)
     {
         using ComPtr<IWICBitmapLock> bitmapLock = null;
-        var lockFlags = WICBitmapLockFlags.WICBitmapLockRead;
+        const WICBitmapLockFlags lockFlags = WICBitmapLockFlags.WICBitmapLockRead;
 
         _bitmap.Get()->Lock(null, (uint)lockFlags, bitmapLock.GetAddressOf()).ThrowOnError();
 
