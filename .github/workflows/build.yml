@@ -31,6 +31,7 @@ jobs:
     runs-on: windows-latest
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+      DALAMUD_HOME: ${{ github.workspace }}/.dalamud
       is_release: ${{ startsWith(github.ref, 'refs/tags/v') && github.event_name != 'pull_request' }}
 
     steps:
@@ -67,7 +68,6 @@ jobs:
         run: build.bat
 
       - name: Download Dalamud
-        shell: bash
         env:
           DALAMUD_URL: |-
             ${{ case(
@@ -75,9 +75,10 @@ jobs:
               'https://goatcorp.github.io/dalamud-distrib/latest.zip'
             ) }}
         run: |
-          curl -o latest.zip ${{ env.DALAMUD_URL }}
-          mkdir -p ~/AppData/Roaming/XIVLauncher/addon/Hooks/dev
-          unzip latest.zip -d ~/AppData/Roaming/XIVLauncher/addon/Hooks/dev/
+          New-Item -ItemType Directory -Force -Path "${{ env.DALAMUD_HOME }}"
+          Invoke-WebRequest -Uri "${{ env.DALAMUD_URL }}" -OutFile dalamud.zip
+          Expand-Archive -Path dalamud.zip -DestinationPath "${{ env.DALAMUD_HOME }}" -Force
+          Remove-Item dalamud.zip
 
       - name: Build csharp project
         run: |
