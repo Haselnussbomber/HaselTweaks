@@ -1,5 +1,7 @@
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Dalamud.Interface.Textures.TextureWraps;
 
 namespace HaselTweaks.Windows;
 
@@ -21,6 +23,10 @@ public partial class PluginWindow : SimpleWindow
     private ITweak? _selectedTweak;
     private bool _scrollIntoView;
     private string _searchInput = string.Empty;
+
+    private IDalamudTextureWrap? _svgImageWrap;
+    private bool _svgError;
+    private bool _enableSvg;
 
     private readonly record struct TweakEntry(ITweak Tweak, string Label);
 
@@ -76,6 +82,9 @@ public partial class PluginWindow : SimpleWindow
             if (entry.Tweak is IConfigurableTweak configurableTweak)
                 configurableTweak.OnConfigClose();
         }
+
+        _svgImageWrap?.Dispose();
+        _svgImageWrap = null;
 
         WindowStyle.Dispose();
         base.OnClose();
@@ -415,9 +424,50 @@ public partial class PluginWindow : SimpleWindow
         var cursorPos = ImGui.GetCursorPos();
         var contentAvail = ImStyle.ContentRegionAvail;
 
-        if (_textureProvider.GetFromManifestResource(Assembly.GetExecutingAssembly(), "HaselTweaks.Assets.Logo.png").TryGetWrap(out var logo, out var _))
+        ImGui.Checkbox("###svgcheck"u8, ref _enableSvg);
+
+        var logoSize = new Vector2(MathF.Round(256 * ImStyle.Scale), MathF.Round(128 * ImStyle.Scale));
+        var svgPossible = !_svgError && _enableSvg;
+
+        if (svgPossible && (_svgImageWrap == null || _svgImageWrap.Size != logoSize))
         {
-            var logoSize = ImGuiHelpers.ScaledVector2(256, 128);
+            _svgImageWrap?.Dispose();
+            _svgImageWrap = null;
+
+            if (OperatingSystem.IsWindowsVersionAtLeast(10, 0, 15063))
+            {
+                try
+                {
+                    using var svgStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("HaselTweaks.Assets.Logo.svg")
+                        ?? throw new FileNotFoundException("HaselTweaks.Assets.Logo.svg");
+
+                    var svgArray = new byte[svgStream.Length];
+                    svgStream.ReadExactly(svgArray);
+
+                    using var svgImage = BgraImage.FromSvg(svgArray.AsSpan(), (uint)logoSize.X, (uint)logoSize.Y);
+
+                    _svgImageWrap = svgImage.AsDalamudTextureWrap(_textureProvider);
+                    _svgError = false;
+
+                    _logger.LogTrace("Loaded svg with size {size}", _svgImageWrap.Size);
+                }
+                catch (Exception ex)
+                {
+#if DEBUG
+                    _logger.LogError(ex, "Error loaded svg");
+#endif
+                    _svgError = true;
+                }
+            }
+        }
+
+        if (svgPossible && _svgImageWrap != null)
+        {
+            ImCursor.Position = contentAvail / 2 - _svgImageWrap.Size / 2 + ImStyle.ItemSpacing.XOnly();
+            _svgImageWrap.Draw(_svgImageWrap.Size);
+        }
+        else if (_textureProvider.GetFromManifestResource(Assembly.GetExecutingAssembly(), "HaselTweaks.Assets.Logo.png").TryGetWrap(out var logo, out var _))
+        {
             ImCursor.Position = contentAvail / 2 - logoSize / 2 + ImStyle.ItemSpacing.XOnly();
             ImGui.Image(logo.Handle, logoSize);
         }

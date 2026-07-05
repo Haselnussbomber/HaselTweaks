@@ -1,5 +1,6 @@
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.Versioning;
 using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using Lumina.Data.Files;
@@ -154,6 +155,133 @@ public unsafe class BgraImage(ComPtr<IWICBitmap> bitmap) : IDisposable
         ).ThrowOnError();
 
         return new BgraImage(bitmap);
+    }
+
+    [SupportedOSPlatform("windows10.0.15063")]
+    public static BgraImage FromSvg(string path, uint width, uint height)
+    {
+        using ComPtr<IStream> stream = null;
+        fixed (char* pathPtr = path)
+        {
+            SHCreateStreamOnFileEx(
+                pathPtr,
+                STGM.STGM_READ | STGM.STGM_SHARE_DENY_WRITE,
+                0,
+                false,
+                null,
+                stream.GetAddressOf()
+            ).ThrowOnError();
+        }
+
+        return FromSvgStream(stream.Get(), width, height);
+    }
+
+    [SupportedOSPlatform("windows10.0.15063")]
+    public static BgraImage FromSvg(ReadOnlySpan<byte> svgData, uint width, uint height)
+    {
+        fixed (byte* dataPtr = svgData)
+        {
+            using ComPtr<IStream> stream = SHCreateMemStream(dataPtr, (uint)svgData.Length);
+            if (stream.Get() == null)
+                throw new OutOfMemoryException("SHCreateMemStream failed.");
+
+            return FromSvgStream(stream.Get(), width, height);
+        }
+    }
+
+    [SupportedOSPlatform("windows10.0.15063")]
+    private static BgraImage FromSvgStream(IStream* stream, uint width, uint height)
+    {
+        using var wicFactory = CreateWicFactory();
+
+        var pbgraFmt = GUID.GUID_WICPixelFormat32bppPBGRA;
+        using ComPtr<IWICBitmap> renderTargetBitmap = null;
+        wicFactory.Get()->CreateBitmap(
+            width,
+            height,
+            &pbgraFmt,
+            WICBitmapCreateCacheOption.WICBitmapCacheOnDemand,
+            renderTargetBitmap.GetAddressOf()
+        ).ThrowOnError();
+
+        var d2dOptions = default(D2D1_FACTORY_OPTIONS);
+        using ComPtr<ID2D1Factory7> d2dFactory = null;
+        Guid d2dFactoryIid = __uuidof<ID2D1Factory7>();
+        DirectX.D2D1CreateFactory(
+            D2D1_FACTORY_TYPE.D2D1_FACTORY_TYPE_SINGLE_THREADED,
+            &d2dFactoryIid,
+            &d2dOptions,
+            (void**)d2dFactory.GetAddressOf()
+        ).ThrowOnError();
+
+        var rtProps = new D2D1_RENDER_TARGET_PROPERTIES()
+        {
+            type = D2D1_RENDER_TARGET_TYPE.D2D1_RENDER_TARGET_TYPE_DEFAULT,
+            pixelFormat = new D2D1_PIXEL_FORMAT
+            {
+                format = DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_UNORM,
+                alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_PREMULTIPLIED
+            },
+            usage = D2D1_RENDER_TARGET_USAGE.D2D1_RENDER_TARGET_USAGE_NONE,
+            minLevel = D2D1_FEATURE_LEVEL.D2D1_FEATURE_LEVEL_DEFAULT
+        };
+
+        using ComPtr<ID2D1RenderTarget> renderTarget = null;
+        d2dFactory.Get()->CreateWicBitmapRenderTarget(
+            renderTargetBitmap.Get(),
+            &rtProps,
+            renderTarget.GetAddressOf()
+        ).ThrowOnError();
+
+        using ComPtr<ID2D1DeviceContext5> d2dContext = null;
+        renderTarget.Get()->QueryInterface(
+            __uuidof<ID2D1DeviceContext5>(),
+            (void**)d2dContext.GetAddressOf()
+        ).ThrowOnError();
+
+        using ComPtr<ID2D1SvgDocument> svgDocument = null;
+        var viewportSize = new D2D_SIZE_F
+        {
+            width = width,
+            height = height
+        };
+        d2dContext.Get()->CreateSvgDocument(
+            stream,
+            viewportSize,
+            svgDocument.GetAddressOf()
+        ).ThrowOnError();
+
+        d2dContext.Get()->SetAntialiasMode(D2D1_ANTIALIAS_MODE.D2D1_ANTIALIAS_MODE_ALIASED);
+
+        d2dContext.Get()->BeginDraw();
+
+        var clearColor = default(DXGI_RGBA);
+        d2dContext.Get()->Clear(&clearColor);
+
+        d2dContext.Get()->DrawSvgDocument(svgDocument.Get());
+        d2dContext.Get()->EndDraw(null, null).ThrowOnError();
+
+        using ComPtr<IWICFormatConverter> converter = null;
+        wicFactory.Get()->CreateFormatConverter(converter.GetAddressOf()).ThrowOnError();
+
+        var straightBgraFmt = GUID.GUID_WICPixelFormat32bppBGRA;
+        converter.Get()->Initialize(
+            (IWICBitmapSource*)renderTargetBitmap.Get(),
+            &straightBgraFmt,
+            WICBitmapDitherType.WICBitmapDitherTypeNone,
+            null,
+            0.0,
+            WICBitmapPaletteType.WICBitmapPaletteTypeCustom
+        ).ThrowOnError();
+
+        ComPtr<IWICBitmap> finalBitmap = null;
+        wicFactory.Get()->CreateBitmapFromSource(
+            (IWICBitmapSource*)converter.Get(),
+            WICBitmapCreateCacheOption.WICBitmapCacheOnLoad,
+            finalBitmap.GetAddressOf()
+        ).ThrowOnError();
+
+        return new BgraImage(finalBitmap);
     }
 
     public void SaveAsPng(string path, string? userComment = null)
