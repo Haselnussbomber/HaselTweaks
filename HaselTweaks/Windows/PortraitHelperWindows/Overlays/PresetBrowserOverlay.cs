@@ -4,7 +4,6 @@ using Dalamud.Utility;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Services.PortraitHelper;
-using HaselTweaks.Utils.PortraitHelper;
 using HaselTweaks.Windows.PortraitHelperWindows.Dialogs;
 using Lumina.Data.Files;
 

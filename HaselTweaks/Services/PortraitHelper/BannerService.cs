@@ -5,7 +5,6 @@ using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.Exd;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
-using HaselTweaks.Utils.PortraitHelper;
 using TerraFX.Interop.DirectX;
 
 namespace HaselTweaks.Services.PortraitHelper;

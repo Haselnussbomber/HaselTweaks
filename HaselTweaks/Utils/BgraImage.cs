@@ -7,7 +7,7 @@ using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
 using static TerraFX.Interop.Windows.Windows;
 
-namespace HaselTweaks.Utils.PortraitHelper;
+namespace HaselTweaks.Utils;
 
 public unsafe class BgraImage(ComPtr<IWICBitmap> bitmap) : IDisposable
 {

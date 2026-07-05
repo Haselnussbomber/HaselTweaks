@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dalamud.Interface.Textures.TextureWraps;
-using HaselTweaks.Utils.PortraitHelper;
 using Size = (int Width, int Height);
 
 namespace HaselTweaks.Services.PortraitHelper;
