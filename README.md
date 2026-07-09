@@ -163,7 +163,7 @@ Depending on the settings, the experience bar can be transformed into one of the
 
 - The PvP Series Bar displays your series rank and experience. If there is a \* symbol next to your rank, it means a rank-up reward is claimable.
 - The Companion Bar displays your chocobos rank and experience.
-- The Sanctuary Bar displays your sanctuary level and island experience.
+- The Sanctuary Bar displays your Island Sanctuary level and island experience.
 
 Configuration options:
 

@@ -1141,7 +1141,7 @@
     "ja": "強化版経験値バー"
   },
   "EnhancedExpBar.Tweak.Description": {
-    "en": "Enhances the Experience Bar with the following modes:\n\n- The PvP Series Bar shows series rank and experience. A little * after the rank indicates a claimable rank-up reward.\n\n- The Sanctuary Bar shows sanctuary level and island experience.",
+    "en": "Enhances the Experience Bar with the following modes:\n\n- The PvP Series Bar shows series rank and experience. A little * after the rank indicates a claimable rank-up reward.\n\n- The Sanctuary Bar shows Island Sanctuary level and island experience.",
     "de": "Erweitert die Erfahrungsleiste um die folgenden Modi:\n\n- Die PvP-Serienleiste zeigt den Serienstufe und -erfahrung an. Ein kleines * hinter dem Rang zeigt an, dass eine Belohnung zum Einlösen bereit steht.\n\n- Der Inselparadies-Balken zeigt Inselstufe und Inselroutine an.",
     "zh": "通过以下模式增强经验栏：\n\n- 显示系列赛等级与经验的PvP系列赛栏。等级后的小*表示有可领取的等级奖励。\n\n- 显示无人岛等级与经验的无人岛栏。",
     "ja": "以下のモードで経験値バーを強化します：\n\n- PvPシリーズバーはシリーズランクと経験値を表示します。ランクの後ろにある小さな * は受け取れるランクアップ報酬があることを示します。\n\n- 島バーは島のレベルと経験値を表示します。"
