@@ -51,10 +51,7 @@ public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak<Enhanced
         var eventData = args.GetEventData<AtkEventData.AtkListItemData>();
         var index = eventData->SelectedIndex;
         var item = addon->TreeList->GetItem(index);
-        if (item == null || item->UIntValues.LongCount < 1)
-            return;
-
-        if (item->UIntValues[0] == (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
+        if (item == null || item->Type == TreeListItemType.Group)
             return;
 
         args.PreventOriginal();

@@ -99,7 +99,7 @@ public unsafe partial class MJICraftScheduleSettingSearchBar : SimpleWindow
             for (var i = 0; i < addon->TreeList->Items.LongCount; i++)
             {
                 var item = addon->TreeList->Items[i].Value;
-                if (item != null && item->UIntValues.LongCount >= 3 && item->UIntValues[0] != (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
+                if (item != null && item->UIntValues.LongCount >= 3 && item->Type != TreeListItemType.Group)
                 {
                     var rowId = item->UIntValues[2];
 
@@ -127,7 +127,7 @@ public unsafe partial class MJICraftScheduleSettingSearchBar : SimpleWindow
                     for (var i = index; i >= 0; i--)
                     {
                         var headerItem = addon->TreeList->Items[i].Value;
-                        if (headerItem != null && headerItem->UIntValues.LongCount >= 1 && headerItem->UIntValues[0] == (uint)AtkComponentTreeListItemType.CollapsibleGroupHeader)
+                        if (headerItem != null && headerItem->UIntValues.LongCount >= 1 && headerItem->Type == TreeListItemType.Group)
                         {
                             addon->TreeList->ExpandGroupExclusively(headerItem, false);
                             addon->TreeList->LayoutRefreshPending = true;
