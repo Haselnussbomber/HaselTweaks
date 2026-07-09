@@ -105,12 +105,12 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
             if (component->GetComponentType() == ComponentType.Button) // crafters are buttons already
                 continue;
 
-            var collisionNode = component->UldManager.RootNode;
-            if (collisionNode == null)
+            var node = component->GetAtkResNode();
+            if (node == null)
                 continue;
 
-            collisionNode->AddEvent(AtkEventType.MouseClick, (uint)i + 2, (AtkEventListener*)addon, null, false);
-            collisionNode->AddEvent(AtkEventType.InputReceived, (uint)i + 2, (AtkEventListener*)addon, null, false);
+            node->AddEvent(AtkEventType.MouseClick, (uint)i + 2, (AtkEventListener*)addon, null, false);
+            node->AddEvent(AtkEventType.InputReceived, (uint)i + 2, (AtkEventListener*)addon, null, false);
         }
 
         if (_config.AlwaysOpenOnClassesJobsTab && _config.ForceClassesJobsSubTab != ClassesJobsSubTabs.None)
@@ -142,17 +142,15 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
                 continue;
             }
 
-            var rootNode = component->UldManager.RootNode;
-            if (rootNode == null)
+            var node = component->GetAtkResNode();
+            if (node == null)
                 continue;
 
             var imageNode = component->GetImageNodeById(4);
             if (imageNode == null)
                 continue;
 
-            // if job is unlocked, it has full alpha
-            var isUnlocked = imageNode->Color.A == 255;
-            rootNode->IsClickableCursorOnHover = isUnlocked;
+            node->IsClickableCursorOnHover = IsClassUnlocked(addon, i);
         }
     }
 
@@ -161,35 +159,24 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         if (addonArgs is not AddonReceiveEventArgs args)
             return;
 
-        var addon = args.GetAddon<AddonCharacterClass>();
-        var eventType = args.EventType;
         var eventParam = args.EventParam;
-        var eventData = args.GetEventData<AtkEventData>();
-
         if (eventParam < 2) // skip events for tabs
             return;
 
-        var component = addon->ClassComponents.GetPointer(args.EventParam - 2)->Value;
+        var addon = args.GetAddon<AddonCharacterClass>();
+        var eventData = args.GetEventData<AtkEventData>();
+        var eventType = args.EventType;
+        var classIndex = args.EventParam - 2;
+
+        if (!IsClassUnlocked(addon, classIndex))
+            return;
+
+        var component = addon->ClassComponents[classIndex].Value;
         if (component == null || component->OwnerNode == null)
             return;
 
         var componentType = component->GetComponentType();
-        var imageNode = componentType switch
-        {
-            ComponentType.Button => component->GetImageNodeById(6),
-            ComponentType.Base => component->GetImageNodeById(4),
-            _ => null
-        };
-        if (imageNode == null)
-            return;
-
-        // if job is unlocked, it has full alpha
-        var isUnlocked = imageNode->Color.A == 255;
-        if (!isUnlocked)
-            return;
-
-        // special handling for crafters
-        if (componentType == ComponentType.Button)
+        if (componentType == ComponentType.Button) // special handling for crafters
         {
             var isClick =
                 eventType is AtkEventType.MouseClick or AtkEventType.ButtonClick ||
@@ -202,6 +189,16 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
                 return;
             }
         }
+
+        var imageNode = componentType switch
+        {
+            ComponentType.Button => component->GetImageNodeById(6),
+            ComponentType.Base => component->GetImageNodeById(4),
+            _ => null
+        };
+
+        if (imageNode == null)
+            return;
 
         if (ProcessEvents(component->OwnerNode, imageNode, eventType, eventData))
             args.PreventOriginal();
@@ -221,12 +218,12 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
             if (entry->Base == null)
                 continue;
 
-            var rootNode = entry->Base->UldManager.RootNode;
-            if (rootNode == null)
+            var node = entry->Base->GetAtkResNode();
+            if (node == null)
                 continue;
 
-            rootNode->AddEvent(AtkEventType.MouseClick, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
-            rootNode->AddEvent(AtkEventType.InputReceived, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
+            node->AddEvent(AtkEventType.MouseClick, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
+            node->AddEvent(AtkEventType.InputReceived, (uint)i | 0x10000, (AtkEventListener*)addon, null, false);
         }
     }
 
@@ -236,17 +233,15 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
 
         for (var i = 0; i < addon->ClassEntries.Length; i++)
         {
-            var entry = addon->ClassEntries.GetPointer(i);
-            if (entry->Base == null || entry->Icon == null)
+            ref var entry = ref addon->ClassEntries[i];
+            if (entry.Base == null || entry.Icon == null)
                 continue;
 
-            var rootNode = entry->Base->UldManager.RootNode;
-            if (rootNode == null)
+            var node = entry.Base->GetAtkResNode();
+            if (node == null)
                 continue;
 
-            // if job is unlocked, it has full alpha
-            var isUnlocked = entry->Icon->Color.A == 255;
-            rootNode->IsClickableCursorOnHover = isUnlocked;
+            node->IsClickableCursorOnHover = IsClassUnlocked(addon, i);
         }
     }
 
@@ -263,26 +258,23 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         if ((eventParam & 0xFFFF0000) != 0x10000)
             return;
 
-        var entryId = eventParam & 0x0000FFFF;
-        if (entryId < 0 || entryId > addon->ClassEntries.Length)
+        var index = eventParam & 0x0000FFFF;
+        if (index < 0 || index > addon->ClassEntries.Length)
             return;
 
-        var entry = addon->ClassEntries.GetPointer(entryId);
-        if (entry->Base == null || entry->Base->OwnerNode == null || entry->Icon == null)
+        if (!IsClassUnlocked(addon, index))
             return;
 
-        // if job is unlocked, it has full alpha
-        var isUnlocked = entry->Icon->Color.A == 255;
-        if (!isUnlocked)
+        ref var entry = ref addon->ClassEntries[index];
+        if (entry.Base == null || entry.Base->OwnerNode == null || entry.Icon == null)
             return;
 
-        if (ProcessEvents(entry->Base->OwnerNode, entry->Icon, eventType, eventData))
+        if (ProcessEvents(entry.Base->OwnerNode, entry.Icon, eventType, eventData))
             args.PreventOriginal();
     }
 
     #endregion
 
-    /// <returns>Boolean whether original code should be skipped (true) or not (false)</returns>
     private bool ProcessEvents(AtkComponentNode* componentNode, AtkImageNode* imageNode, AtkEventType eventType, AtkEventData* atkEventData)
     {
         var isClick =
@@ -291,23 +283,13 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
 
         if (isClick)
         {
-            var textureInfo = imageNode->PartsList->Parts[imageNode->PartId].UldAsset;
-            if (textureInfo == null || textureInfo->AtkTexture.Resource == null)
-                return false;
-
-            var iconId = textureInfo->AtkTexture.Resource->IconId;
-            if (iconId <= 62100)
-                return false;
-
-            // yes, you see correctly. the iconId is 62100 + ClassJob RowId :)
-            var classJobId = iconId - 62100;
-
-            SwitchClassJob(classJobId);
-
-            return true; // handled
+            if (TryGetClassJobId(imageNode, out var classJobId))
+            {
+                SwitchClassJob(classJobId);
+                return true; // prevent original
+            }
         }
-
-        if (eventType == AtkEventType.MouseOver)
+        else if (eventType == AtkEventType.MouseOver)
         {
             componentNode->AddBlue = 16;
             componentNode->AddGreen = 16;
@@ -362,5 +344,42 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
 
         _logger.LogInformation("Equipping gearset #{selectedGearsetId}", selectedGearset.Id);
         gearsetModule->EquipGearset(selectedGearset.Id - 1);
+    }
+
+    private static bool IsClassUnlocked(AddonCharacterClass* addon, int index)
+    {
+        return addon->ClassEntries[index].Level != 0;
+    }
+
+    private static bool IsClassUnlocked(AddonPvPCharacter* addon, int index)
+    {
+        return addon->ClassData[index].Level != 0;
+    }
+
+    private static bool TryGetClassJobId(AtkImageNode* imageNode, out uint classJobId)
+    {
+        if (imageNode == null || imageNode->PartsList == null || imageNode->PartsList->Parts == null || imageNode->PartsList->PartCount < imageNode->PartId)
+        {
+            classJobId = 0;
+            return false;
+        }
+
+        var textureInfo = imageNode->PartsList->Parts[imageNode->PartId].UldAsset;
+        if (textureInfo == null || textureInfo->AtkTexture.Resource == null)
+        {
+            classJobId = 0;
+            return false;
+        }
+
+        var iconId = textureInfo->AtkTexture.Resource->IconId;
+        if (iconId <= 62100)
+        {
+            classJobId = 0;
+            return false;
+        }
+
+        // yes, you see correctly. the iconId is 62100 + ClassJob RowId :)
+        classJobId = iconId - 62100;
+        return true;
     }
 }
