@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### New Tweak: Character Reputation Teleport
+
+Clicking an Allied Society in the Character window teleports you to the nearest Aetheryte instead of opening the map. Hold Shift to open the map normally.
+
 ## [48.1.1] (2026-06-30)
 
 I accidentally released v48.1.0 from an experimental branch in which I tried to build HaselTweaks.Native.dll under Linux.  

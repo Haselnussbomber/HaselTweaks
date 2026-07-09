@@ -636,7 +636,7 @@
     "ja": "キャラクタークラス切り替え"
   },
   "CharacterClassSwitcher.Tweak.Description": {
-    "en": "Clicking on a class/job in the character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window.",
+    "en": "Clicking on a class/job in the Character window finds the matching gearset and equips it. Hold shift on crafters to open the original desynthesis window.",
     "de": "Ein Klick auf eine Klasse/Job im Charakterfenster findet die passende Ausrüstung und rüstet sie aus. Halte die Umschalttaste bei Handwerkern gedrückt, um das ursprüngliche Desynthesefenster zu öffnen.",
     "zh": "在角色窗口点击一个职业或特职会寻找合适的套装并装备。在制作职业上按住shift以打开原来的分解窗口。",
     "ja": "キャラクターウィンドウでクラス/ジョブをクリックすると、対応するギアセットを検索して装備します。クラフター選択時にShiftを押したままにすると、元の分解ウィンドウが開きます。"
@@ -685,6 +685,14 @@
     "fr": "Impossible de trouver un ensemble d'équipement adapté.",
     "ja": "適切なギアセットが見つかりませんでした。",
     "zh": "无法找到合适的套装"
+  },
+
+  "CharacterReputeTeleport.Tweak.Name": {
+    "en": "Character Reputation Teleport"
+  },
+  "CharacterReputeTeleport.Tweak.Description": {
+    "en": "Clicking an Allied Society in the Character window teleports you to the nearest Aetheryte instead of opening the map. Hold Shift to open the map normally.",
+    "de": "Ein Klick auf ein Freundesvolk im Charakterfenster teleportiert dich zum nächstgelegenen Ätheryten, statt die Karte zu öffnen. Halt die Shift-Taste gedrückt, um die Karte normal zu öffnen."
   },
 
   "Commands.Tweak.Name": {

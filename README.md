@@ -74,7 +74,7 @@ Replaces the name of the action "Teleport" with the Aetheryte name of your desti
 
 ### Character Class Switcher
 
-Clicking on a class/job in the character window finds the matching gearset and equips it.
+Clicking on a class/job in the Character window finds the matching gearset and equips it.
 
 Features:
 
@@ -91,6 +91,10 @@ Features:
 
 > **Note**
 > In order for this tweak to work properly, please make sure "Character Window Job Switcher" is disabled in Simple Tweaks.
+
+### Character Reputation Teleport
+
+Clicking an Allied Society in the Character window teleports you to the nearest Aetheryte instead of opening the map. Hold Shift to open the map normally.
 
 ### Commands
 
