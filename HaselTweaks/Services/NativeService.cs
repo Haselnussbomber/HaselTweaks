@@ -11,7 +11,7 @@ public partial class NativeService : IDisposable
     private readonly IDalamudPluginInterface _pluginInterface;
     private HMODULE _library = HMODULE.Null;
 
-    public nint InflateAddr { get; private set; }
+    public nint ReadSqpkChunkAddr { get; private set; }
 
     [AutoPostConstruct]
     private void Initialize()
@@ -26,7 +26,7 @@ public partial class NativeService : IDisposable
             return;
         }
 
-        InflateAddr = PInvoke.GetProcAddress(_library, "Inflate");
+        ReadSqpkChunkAddr = PInvoke.GetProcAddress(_library, "ReadSqpkChunk");
     }
 
     public void Dispose()

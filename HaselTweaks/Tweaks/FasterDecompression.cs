@@ -14,31 +14,31 @@ public partial class FasterDecompression : Tweak
 
     public override void OnEnable()
     {
-        if (_nativeService.InflateAddr == 0)
+        if (_nativeService.ReadSqpkChunkAddr == 0)
         {
-            _logger.LogError("Could not find function Inflate");
+            _logger.LogError("Could not find function ReadSqpkChunk");
             Status = TweakStatus.Error;
             return;
         }
 
-        var zlibUncompressAddr = _sigScanner.ScanText("E8 ?? ?? ?? ?? 8B 5C 24 ?? 44 8B C3");
-        if (zlibUncompressAddr == 0)
+        var originalReadSqpkChunkAddr = _sigScanner.ScanText("48 89 5C 24 ?? 57 B8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 2B E0 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 4C 8B 49");
+        if (originalReadSqpkChunkAddr == 0)
         {
-            _logger.LogError("Could not find function zlib.uncompress");
+            _logger.LogError("Could not find function ReadSqpkChunk");
             Status = TweakStatus.Error;
             return;
         }
 
         var assembler = new Assembler(64);
 
-        assembler.mov(rax, (ulong)_nativeService.InflateAddr);
+        assembler.mov(rax, (ulong)_nativeService.ReadSqpkChunkAddr);
         assembler.jmp(rax);
 
         using var stream = new MemoryStream();
         var writer = new StreamCodeWriter(stream);
         assembler.Assemble(writer, 0);
 
-        _patch ??= new MemoryReplacement(zlibUncompressAddr, stream.ToArray());
+        _patch ??= new MemoryReplacement(originalReadSqpkChunkAddr, stream.ToArray());
         _patch.Enable();
     }
 

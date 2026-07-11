@@ -1,26 +1,28 @@
 #include "pch.h"
 #include "faster_decompression.h"
 
-EXPORT int __fastcall Inflate(unsigned char* dest, size_t* destLen, const unsigned char* source, size_t sourceLen) {
-    thread_local std::unique_ptr<libdeflate_decompressor, decltype(&libdeflate_free_decompressor)>
-        decompressor(libdeflate_alloc_decompressor(), &libdeflate_free_decompressor);
+EXPORT void __fastcall ReadSqpkChunk(uintptr_t srcData, uintptr_t dstData) {
+    uint8_t* source = *reinterpret_cast<uint8_t**>(srcData + 8);
+    uint8_t* dest = *reinterpret_cast<uint8_t**>(dstData + 0x78);
 
-    if (!decompressor)
-        return -1;
+    const auto header = *reinterpret_cast<SqpkBlockHeader*>(source);
 
-    size_t actual_out = 0;
+    if (header.decompressed_size == 0)
+        return;
 
-    int result = libdeflate_deflate_decompress(
-        decompressor.get(),
-        source,
-        sourceLen,
-        dest,
-        *destLen,
-        &actual_out
-    );
+    if (header.compressed_size == 32000) {
+        std::memcpy(dest, source + header.header_size, header.decompressed_size);
+    }
+    else {
+        thread_local std::unique_ptr<libdeflate_decompressor, decltype(&libdeflate_free_decompressor)>
+            decompressor(libdeflate_alloc_decompressor(), &libdeflate_free_decompressor);
 
-    if (result == LIBDEFLATE_SUCCESS)
-        *destLen = actual_out;
-
-    return result;
+        libdeflate_deflate_decompress(
+            decompressor.get(),
+            source + header.header_size,
+            header.compressed_size,
+            dest,
+            header.decompressed_size,
+            nullptr);
+    }
 }
