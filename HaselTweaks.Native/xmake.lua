@@ -24,7 +24,11 @@ target("mimalloc")
 
 target("libdeflate")
     set_kind("static")
-    add_files("lib/libdeflate/lib/*.c", "lib/libdeflate/lib/x86/*.c")
+    add_includedirs("lib/libdeflate", "lib/libdeflate/lib")
+    add_files(
+        "lib/libdeflate/lib/deflate_decompress.c",
+        "lib/libdeflate/lib/utils.c",
+        "lib/libdeflate/lib/x86/cpu_features.c")
 
 target("HaselTweaks.Native")
     set_kind("shared")
