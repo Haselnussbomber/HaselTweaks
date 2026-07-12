@@ -1390,6 +1390,10 @@
     "zh": "请登入以设置一个情感动作。",
     "ja": "エモートを設定するにはログインしてください。"
   },
+  "EnhancedLoginLogout.Config.LoopEmote.Label": {
+    "en": "Loop emote",
+    "de": "Emote in Endlosschleife abspielen"
+  },
   "EnhancedLoginLogout.Config.PreloadTerritory.Label": {
     "en": "Preload territory when queued",
     "de": "Zone in der Warteschlange vorladen",

@@ -14,6 +14,7 @@ public class EnhancedLoginLogoutConfiguration
 
     public Dictionary<ulong, PetMirageSetting> PetMirageSettings = [];
     public Dictionary<ulong, uint> SelectedEmotes = [];
+    public Dictionary<ulong, bool> LoopEmote = [];
 
     public class PetMirageSetting
     {
@@ -129,7 +130,7 @@ public unsafe partial class EnhancedLoginLogout
                 {
                     var (isChangePose, name, emote) = entry.Value;
                     ImCursor.Y += -3;
-                    _textureProvider.DrawIcon((uint)(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon), 24 * ImStyle.Scale);
+                    _textureProvider.DrawIcon(isChangePose ? defaultIdlePoseEmote.Icon : emote.Icon, 24 * ImStyle.Scale);
                     ImGui.SameLine();
                     ImGui.Text(name);
                 }
@@ -139,53 +140,13 @@ public unsafe partial class EnhancedLoginLogout
                 }
             }
 
-            if (!_clientState.IsLoggedIn)
+            DrawEmoteRecording(selectedEmoteId);
+
+            var isLoopEmoteEnabled = _config.LoopEmote.TryGetValue(ActiveContentId, out var loopEmote) && loopEmote;
+            if (_configGui.DrawBool("LoopEmote", ref isLoopEmoteEnabled))
             {
-                ImGui.Text(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.NotLoggedIn"));
-                return;
-            }
-
-            ImGui.SameLine();
-
-            ImCursor.Y += -3;
-
-            if (_isRecordingEmote)
-            {
-                if (ImGui.Button(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.StopRecordingButton.Label")))
-                {
-                    _isRecordingEmote = false;
-                }
-            }
-            else
-            {
-                if (ImGui.Button(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.ChangeButton.Label")))
-                {
-                    _isRecordingEmote = true;
-
-                    var agentEmote = AgentModule.Instance()->GetAgentByInternalId(AgentId.Emote);
-                    if (!agentEmote->IsAgentActive())
-                    {
-                        agentEmote->Show();
-                    }
-                }
-            }
-
-            if (selectedEmoteId != 0)
-            {
-                ImGui.SameLine();
-
-                ImCursor.Y += -3;
-                if (ImGui.Button(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.UnsetButton.Label")))
-                {
-                    SaveEmote(0);
-                }
-            }
-
-            if (_isRecordingEmote)
-            {
-                using (Color.Gold.Push(ImGuiCol.Text))
-                    ImGui.Text(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.RecordingInfo"));
-                ImCursor.Y += 3;
+                _config.LoopEmote[ActiveContentId] = isLoopEmoteEnabled;
+                _pluginConfig.Save();
             }
         });
 
@@ -203,5 +164,57 @@ public unsafe partial class EnhancedLoginLogout
 
         // ClearTellHistory
         _configGui.DrawBool("ClearTellHistory", ref _config.ClearTellHistory, noFixSpaceAfter: true);
+    }
+
+    private void DrawEmoteRecording(uint selectedEmoteId)
+    {
+        if (!_clientState.IsLoggedIn)
+        {
+            ImGui.Text(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.NotLoggedIn"));
+            return;
+        }
+
+        ImGui.SameLine();
+
+        ImCursor.Y += -3;
+
+        if (_isRecordingEmote)
+        {
+            if (ImGui.Button(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.StopRecordingButton.Label")))
+            {
+                _isRecordingEmote = false;
+            }
+        }
+        else
+        {
+            if (ImGui.Button(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.ChangeButton.Label")))
+            {
+                _isRecordingEmote = true;
+
+                var agentEmote = AgentModule.Instance()->GetAgentByInternalId(AgentId.Emote);
+                if (!agentEmote->IsAgentActive())
+                {
+                    agentEmote->Show();
+                }
+            }
+        }
+
+        if (selectedEmoteId != 0)
+        {
+            ImGui.SameLine();
+
+            ImCursor.Y += -3;
+            if (ImGui.Button(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.UnsetButton.Label")))
+            {
+                SaveEmote(0);
+            }
+        }
+
+        if (_isRecordingEmote)
+        {
+            using (Color.Gold.Push(ImGuiCol.Text))
+                ImGui.Text(_textService.Translate("EnhancedLoginLogout.Config.PlayEmote.RecordingInfo"));
+            ImCursor.Y += 3;
+        }
     }
 }
