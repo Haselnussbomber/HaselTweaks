@@ -117,7 +117,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
 
     private void OnUpdate(IFramework framework)
     {
-        if (_currentEntry == null)
+        if (_currentEntry == null || _currentEntry.IsEmotePlayed)
             return;
 
         var character = _currentEntry.Character;
@@ -129,7 +129,10 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
             return;
 
         if (character->EmoteController.EmoteId == 0 && _config.SelectedEmotes.TryGetValue(ActiveContentId, out var emoteId))
+        {
             PlayEmote(emoteId);
+            _currentEntry.IsEmotePlayed = true;
+        }
     }
 
     private void UpdateCharacterSettings()

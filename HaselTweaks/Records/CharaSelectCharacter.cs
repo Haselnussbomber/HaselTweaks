@@ -9,4 +9,5 @@ public unsafe class CharaSelectCharacter(Character* character, CharaSelectCharac
     public ulong ContentId { get; } = entry->ContentId;
     public ushort TerritoryType { get; } = entry->ClientSelectData.TerritoryType;
     public byte ClassJobId { get; } = entry->ClientSelectData.CurrentClass;
+    public bool IsEmotePlayed { get; set; }
 }

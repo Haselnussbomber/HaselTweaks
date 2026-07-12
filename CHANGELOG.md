@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Login/Logout
+
+- **Fixed:** Non-emotes were playing repeatedly.
+
 ## [49.0.0] (2026-07-10)
 
 ### HaselTweaks
