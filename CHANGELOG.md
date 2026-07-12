@@ -1,10 +1,18 @@
 # Changelog
 
-## [Unreleased]
+## [49.0.1] (2026-07-12)
+
+### HaselTweaks
+
+- The description was too long for my taste. Moved the tweak names into tags, so the plugin pops up in search results (theoretically).
 
 ### Enhanced Login/Logout
 
-- **Fixed:** Non-emotes were playing repeatedly.
+- **Fixed:** Non-emotes were playing repeatedly. Sorry about that!
+
+### Faster Decompression
+
+- **Changed:** The implementation now replaces the whole ReadSqpkChunk function in order to get rid of an unnecessary memcpy call.
 
 ## [49.0.0] (2026-07-10)
 
@@ -2675,7 +2683,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.0.0...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.0.1...main
+[49.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.0.0...v49.0.1
 [49.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v48.1.1...v49.0.0
 [48.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v48.1.0...v48.1.1
 [48.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v48.0.1...v48.1.0
