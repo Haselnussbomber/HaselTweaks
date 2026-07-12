@@ -1,5 +1,11 @@
 # Changelog
 
+## [49.1.0] (2026-07-12)
+
+### Enhanced Login/Logout
+
+- **Added:** Added an option to play non-looping emotes repeatedly. This is saved per-character.
+
 ## [49.0.1] (2026-07-12)
 
 ### HaselTweaks
@@ -2683,7 +2689,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.0.1...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.1.0...main
+[49.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.0.1...v49.1.0
 [49.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.0.0...v49.0.1
 [49.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v48.1.1...v49.0.0
 [48.1.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v48.1.0...v48.1.1
