@@ -28,7 +28,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
       DALAMUD_HOME: ${{ github.workspace }}/.dalamud
@@ -46,27 +46,6 @@ jobs:
           cache-dependency-path: ${{ env.plugin_name }}/packages.lock.json
           global-json-file: global.json
 
-      - name: Cache Native Build
-        id: cache-native
-        uses: actions/cache@v6
-        with:
-          path: |
-            bin/HaselTweaks.Native.dll
-            bin/HaselTweaks.Native.pdb
-          key: native-build-${{ runner.os }}-${{ hashFiles('HaselTweaks.Native/**') }}
-
-      - name: Install Native Build Tools
-        if: steps.cache-native.outputs.cache-hit != 'true'
-        run: |
-          choco install nasm xmake -y
-          Add-Content -Path $env:GITHUB_PATH -Value "C:\Program Files\xmake"
-
-      - name: Build cpp project
-        if: steps.cache-native.outputs.cache-hit != 'true'
-        working-directory: HaselTweaks.Native
-        shell: cmd
-        run: build.bat
-
       - name: Download Dalamud
         env:
           DALAMUD_URL: |-
@@ -75,10 +54,9 @@ jobs:
               'https://goatcorp.github.io/dalamud-distrib/latest.zip'
             ) }}
         run: |
-          New-Item -ItemType Directory -Force -Path "${{ env.DALAMUD_HOME }}"
-          Invoke-WebRequest -Uri "${{ env.DALAMUD_URL }}" -OutFile dalamud.zip
-          Expand-Archive -Path dalamud.zip -DestinationPath "${{ env.DALAMUD_HOME }}" -Force
-          Remove-Item dalamud.zip
+          curl -o latest.zip ${{ env.DALAMUD_URL }}
+          mkdir -p ${{ env.DALAMUD_HOME }}
+          unzip latest.zip -d ${{ env.DALAMUD_HOME }}
 
       - name: Build csharp project
         run: |

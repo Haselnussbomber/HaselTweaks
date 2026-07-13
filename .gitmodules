@@ -4,9 +4,3 @@
 [submodule "FFXIVClientStructs"]
 	path = FFXIVClientStructs
 	url = https://github.com/aers/FFXIVClientStructs.git
-[submodule "HaselTweaks.Native/lib/libdeflate"]
-	path = HaselTweaks.Native/lib/libdeflate
-	url = https://github.com/ebiggers/libdeflate.git
-[submodule "HaselTweaks.Native/lib/mimalloc"]
-	path = HaselTweaks.Native/lib/mimalloc
-	url = https://github.com/microsoft/mimalloc.git

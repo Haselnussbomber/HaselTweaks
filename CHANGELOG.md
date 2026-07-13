@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Tweak removed: Faster Decompression
+
+This was added to Dalamud. Currently on stg.
+
 ## [49.1.0] (2026-07-12)
 
 ### Enhanced Login/Logout
