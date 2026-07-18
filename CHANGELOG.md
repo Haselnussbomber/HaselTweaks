@@ -1,10 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## [49.2.0] (2026-07-18)
 
 ### Tweak removed: Faster Decompression
 
-This was added to Dalamud. Currently on stg.
+This was added to Dalamud. Still not sure if it actually increases loading performance...
 
 ## [49.1.0] (2026-07-12)
 
@@ -2695,7 +2695,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.1.0...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.0...main
+[49.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.1.0...v49.2.0
 [49.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.0.1...v49.1.0
 [49.0.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.0.0...v49.0.1
 [49.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v48.1.1...v49.0.0
