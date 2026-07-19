@@ -60,7 +60,12 @@ public unsafe partial class AutoOpenRecipe : Tweak
 
         _ = _framework.RunOnTick(
             action,
-            delay: TimeSpan.FromMilliseconds(100),
+            delay: TimeSpan.FromMilliseconds(500),
+            cancellationToken: _checkCTS.Token);
+
+        _ = _framework.RunOnTick(
+            action,
+            delay: TimeSpan.FromSeconds(1),
             cancellationToken: _checkCTS.Token);
     }
 
