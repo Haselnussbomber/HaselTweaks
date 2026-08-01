@@ -172,7 +172,10 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
 
         var character = CharaSelectCharacterList.GetCurrentCharacter();
         if (character == null)
+        {
+            CleanupCharaSelect();
             return retVal;
+        }
 
         if (_currentEntry?.ContentId == entry->ContentId)
             return retVal;
