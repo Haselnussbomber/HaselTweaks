@@ -7,30 +7,39 @@ namespace HaselTweaks;
 public partial class Plugin : IAsyncDalamudPlugin
 {
     private readonly IDalamudPluginInterface _pluginInterface;
-    private readonly IPluginLog _pluginLog;
     private readonly IFramework _framework;
-    private IHost? _host;
+    private IHost _host;
 
-    public Task LoadAsync(CancellationToken cancellationToken)
+    [AutoPostConstruct]
+    private void Initialize()
     {
-        _pluginInterface.InitializeCustomClientStructs();
-
         _host = new HostBuilder()
             .UseContentRoot(_pluginInterface.AssemblyLocation.Directory!.FullName)
             .ConfigureServices(services =>
             {
                 services.AddDalamud(_pluginInterface);
-                services.AddConfig(PluginConfig.Load(_pluginInterface, _pluginLog));
+                services.AddConfig(PluginConfig.Load(_pluginInterface));
                 services.AddHaselCommon();
                 services.AddHaselTweaks();
             })
             .Build();
+    }
 
+    public Task LoadAsync(CancellationToken cancellationToken)
+    {
+        _pluginInterface.InitializeCustomClientStructs();
         return _host.StartOnFrameworkThread(_framework, cancellationToken);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _host?.StopOnFrameworkThread(_framework) ?? ValueTask.CompletedTask;
+        try
+        {
+            await _host.StopOnFrameworkThread(_framework).ConfigureAwait(false);
+        }
+        finally
+        {
+            _host.Dispose();
+        }
     }
 }

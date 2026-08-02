@@ -26,9 +26,11 @@ public partial class PluginConfig : IPluginConfiguration
     [JsonIgnore]
     private static IPluginLog? PluginLog;
 
-    public static PluginConfig Load(IDalamudPluginInterface pluginInterface, IPluginLog pluginLog)
+    public static PluginConfig Load(IDalamudPluginInterface pluginInterface)
     {
         PluginInterface = pluginInterface;
+
+        var pluginLog = pluginInterface.GetRequiredService<IPluginLog>();
         PluginLog = pluginLog;
 
         SerializerOptions = new JsonSerializerOptions()
@@ -59,7 +61,7 @@ public partial class PluginConfig : IPluginConfiguration
         IConfigMigration[] migrations = [
             new Version2(),
             new Version5(),
-            new Version6(PluginInterface, PluginLog),
+            new Version6(PluginInterface, pluginLog),
             new Version7(),
             new Version8(),
             new Version9()
@@ -69,7 +71,7 @@ public partial class PluginConfig : IPluginConfiguration
         {
             if (version < migration.Version)
             {
-                PluginLog.Information("Migrating from version {version} to {migrationVersion}...", version, migration.Version);
+                pluginLog.Information("Migrating from version {version} to {migrationVersion}...", version, migration.Version);
 
                 migration.Migrate(ref config);
                 version = migration.Version;
@@ -78,11 +80,11 @@ public partial class PluginConfig : IPluginConfiguration
             }
         }
 
-        var obj = JsonSerializer.Deserialize<PluginConfig>(config, SerializerOptions) ?? new();
+        var obj = config.Deserialize<PluginConfig>(SerializerOptions) ?? new();
 
         if (migrated)
         {
-            PluginLog.Information("Configuration migrated successfully.");
+            pluginLog.Information("Configuration migrated successfully.");
             obj.Save();
         }
 
