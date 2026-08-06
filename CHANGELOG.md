@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Login/Logout
+
+- **Fixed:** When character data is not available due to congestion, pets would not properly despawn on hovering other characters.
+
+### Forced Cutscene Sounds
+
+- **Updated:** The tweak now checks and unmutes sounds whenever a cutscene-related event task was found. For example, this allows the tweak to unmute sounds while the games credits are playing.
+
+### Scrollable Tabs
+
+- **Fixed:** In the Fish Guide, scrolling the search results list will no longer incorrectly scroll the tabs.
+
 ## [49.2.1] (2026-07-28)
 
 ### HaselTweaks
