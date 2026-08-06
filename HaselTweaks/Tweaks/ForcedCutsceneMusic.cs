@@ -1,3 +1,5 @@
+using Dalamud.Utility;
+using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.System.Scheduler;
 using FFXIVClientStructs.FFXIV.Client.System.Scheduler.Base;
 
@@ -18,11 +20,15 @@ public unsafe partial class ForcedCutsceneMusic : ConfigurableTweak<ForcedCutsce
 
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IGameConfig _gameConfig;
+    private readonly IFramework _framework;
+
+    private readonly Dictionary<string, bool> _wasMuted = [];
 
     private Hook<ScheduleManagement.Delegates.CreateCutSceneController>? _createCutSceneControllerHook;
     private Hook<CutSceneController.Delegates.Dtor>? _cutSceneControllerDtorHook;
-
-    private readonly Dictionary<string, bool> _wasMuted = [];
+    private IDebouncer? _unmuteDebouncer;
+    private IDebouncer? _restoreDebouncer;
+    private bool _hasTask;
 
     public override void OnEnable()
     {
@@ -36,26 +42,97 @@ public unsafe partial class ForcedCutsceneMusic : ConfigurableTweak<ForcedCutsce
 
         _createCutSceneControllerHook.Enable();
         _cutSceneControllerDtorHook.Enable();
-    }
 
+        _unmuteDebouncer = _framework.CreateDebouncer(TimeSpan.FromMilliseconds(100), Unmute);
+        _restoreDebouncer = _framework.CreateDebouncer(TimeSpan.FromMilliseconds(100), Restore);
+
+        _framework.Update += OnUpdate;
+    }
     public override void OnDisable()
     {
+        _framework.Update -= OnUpdate;
+
         _createCutSceneControllerHook?.Dispose();
         _createCutSceneControllerHook = null;
 
         _cutSceneControllerDtorHook?.Dispose();
         _cutSceneControllerDtorHook = null;
+
+        _unmuteDebouncer?.Dispose();
+        _unmuteDebouncer = null;
+
+        _restoreDebouncer?.Dispose();
+        _restoreDebouncer = null;
+
+        _hasTask = false;
     }
 
-    private CutSceneController* CreateCutSceneControllerDetour(ScheduleManagement* self, byte* path, uint id, byte a4)
+    private void OnUpdate(IFramework framework)
     {
-        var ret = _createCutSceneControllerHook!.Original(self, path, id, a4);
+        var hasTask = EventFramework.Instance()->EventSceneModule.TaskManager.Tasks.Any(IsCutsceneTask);
 
-        _logger.LogInformation("Cutscene {id} started (Controller @ {address:X})", id, (nint)ret);
+        if (_hasTask == hasTask)
+            return;
 
-        if (id == 0) // ignore title screen cutscene
-            return ret;
+        _hasTask = hasTask;
 
+        if (hasTask)
+        {
+            _logger.LogDebug("Cutscene Task started");
+
+            _restoreDebouncer?.Cancel();
+            _unmuteDebouncer?.Debounce();
+        }
+        else
+        {
+            _logger.LogDebug("Cutscene Task ended");
+
+            _unmuteDebouncer?.Cancel();
+            _restoreDebouncer?.Debounce();
+        }
+    }
+
+    private static bool IsCutsceneTask(Pointer<EventSceneTaskInterface> task)
+    {
+        return !task.IsNull && task.Value->Type
+            is EventSceneTaskType.PlayCutScene
+            or EventSceneTaskType.PostCutScene
+            or EventSceneTaskType.PlayStaffRoll
+            or EventSceneTaskType.PlayToBeContinued;
+    }
+
+    private CutSceneController* CreateCutSceneControllerDetour(ScheduleManagement* self, byte* path, uint cutsceneId, byte a4)
+    {
+        var ret = _createCutSceneControllerHook!.Original(self, path, cutsceneId, a4);
+
+        _logger.LogInformation("Cutscene {id} started (Controller @ {address:X})", cutsceneId, (nint)ret);
+
+        if (cutsceneId != 0 && !_hasTask) // ignore title screen cutscene, skip if we have tasks running
+        {
+            _restoreDebouncer?.Cancel();
+            _unmuteDebouncer?.Debounce();
+        }
+
+        return ret;
+    }
+
+    private SchedulerState* CutSceneControllerDtorDetour(CutSceneController* self, byte freeFlags)
+    {
+        var cutsceneId = self->CutsceneId;
+
+        _logger.LogInformation("Cutscene {id} ended", cutsceneId);
+
+        if (cutsceneId != 0 && !_hasTask) // ignore title screen cutscene, skip if we have tasks running
+        {
+            _unmuteDebouncer?.Cancel();
+            _restoreDebouncer?.Debounce();
+        }
+
+        return _cutSceneControllerDtorHook!.Original(self, freeFlags);
+    }
+
+    private void Unmute()
+    {
         foreach (var optionName in ConfigOptions)
         {
             var isMuted = _gameConfig.System.TryGet(optionName, out bool value) && value;
@@ -68,17 +145,11 @@ public unsafe partial class ForcedCutsceneMusic : ConfigurableTweak<ForcedCutsce
                 _gameConfig.System.Set(optionName, false);
             }
         }
-
-        return ret;
     }
 
-    private SchedulerState* CutSceneControllerDtorDetour(CutSceneController* self, byte freeFlags)
+    private void Restore()
     {
-        var cutsceneId = self->CutsceneId;
-
-        _logger.LogInformation("Cutscene {id} ended", cutsceneId);
-
-        if (_config.Restore && cutsceneId != 0) // ignore title screen cutscene
+        if (_config.Restore)
         {
             foreach (var optionName in ConfigOptions)
             {
@@ -89,8 +160,6 @@ public unsafe partial class ForcedCutsceneMusic : ConfigurableTweak<ForcedCutsce
                 }
             }
         }
-
-        return _cutSceneControllerDtorHook!.Original(self, freeFlags);
     }
 
     private bool ShouldHandle(string optionName)
