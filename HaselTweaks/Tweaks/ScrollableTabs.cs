@@ -157,7 +157,7 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
             ["ArmouryBoard"] = ptr => UpdateArmouryBoard(ptr.Cast<AddonArmouryBoard>()),
             ["Currency"] = ptr => UpdateCurrency(ptr.Cast<AddonCurrency>()),
             ["FateProgress"] = ptr => UpdateFateProgress(ptr.Cast<AddonFateProgress>()),
-            ["FishGuide2"] = ptr => UpdateTabController(ptr, &ptr.Cast<AddonFishGuide2>()->TabController, _config.HandleFishGuide),
+            ["FishGuide2"] = ptr => UpdateTabController(ptr, &ptr.Cast<AddonFishGuide2>()->TabController, _config.HandleFishGuide && !AgentFishGuide.Instance()->IsSearchTab),
             ["GSInfoCardList"] = ptr => UpdateTabController(ptr, &ptr.Cast<AddonGSInfoCardList>()->TabController, _config.HandleGoldSaucerCardList),
             ["GSInfoEditDeck"] = ptr => UpdateTabController(ptr, &ptr.Cast<AddonGSInfoEditDeck>()->TabController, _config.HandleGoldSaucerCardDeckEdit),
             ["GlassSelect"] = ptr => UpdateGlassSelect(ptr.Cast<AddonGlassSelect>()),
