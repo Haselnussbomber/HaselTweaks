@@ -1,6 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## [49.2.2] (2026-08-07)
+
+### HaselTweaks
+
+- Updated ClientStructs for Patch 7.55 HotFix.
 
 ### Enhanced Login/Logout
 
@@ -2719,7 +2723,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.1...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.2...main
+[49.2.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.1...v49.2.2
 [49.2.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.0...v49.2.1
 [49.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.1.0...v49.2.0
 [49.1.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.0.1...v49.1.0
