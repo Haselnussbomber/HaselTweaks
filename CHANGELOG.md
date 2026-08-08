@@ -1,5 +1,11 @@
 # Changelog
 
+## [49.2.3] (2026-08-08)
+
+### Glamour Dresser Alert
+
+- **Fixed:** An incorrect translation key was used for the armoire-storable items tree node.
+
 ## [49.2.2] (2026-08-07)
 
 ### HaselTweaks
@@ -719,7 +725,7 @@ When the quest “Dawntrail” is completed, this tweak will restore the Golden 
 
 - **Added:** A new Cosmic Research Bar, which displays the dataset for your current job and its analysis progress in Cosmic Exploration (default on).  
   I hope I got this right. 🙂 It should always show the highest available stage/type.  
-  *Note:* If you're leveling a crafter or gatherer job and want to see the normal experience bar, you can disable the "Always show Cosmic Research Bar in Cosmic Exploration" option in the settings.
+  _Note:_ If you're leveling a crafter or gatherer job and want to see the normal experience bar, you can disable the "Always show Cosmic Research Bar in Cosmic Exploration" option in the settings.
 
 ### Portrait Helper
 
@@ -1146,7 +1152,7 @@ Disables leaning into turns during riding or flying.
 ### Portrait Helper
 
 - **Possibly Fixed:** Clicking the notification in chat would not open the correct gear set.
-  - *Note:* I'm calling a different function now which resolves the gearset id. This seems to be necessary for some older gearsets.
+  - _Note:_ I'm calling a different function now which resolves the gearset id. This seems to be necessary for some older gearsets.
 
 ## [25.1.1] (2024-07-12)
 
@@ -1323,8 +1329,8 @@ Lets you customize message formats for various chat channels.
 
 ### HaselTweaks
 
-- **Added:** The plugin has been translated to Simplified Chinese thanks to @cyf5119.  
-  - *Note:* I don't understand any of this, so please submit fixes if anything is wrong or missing (this also applies to other languages). Thank you! 😊
+- **Added:** The plugin has been translated to Simplified Chinese thanks to @cyf5119.
+  - _Note:_ I don't understand any of this, so please submit fixes if anything is wrong or missing (this also applies to other languages). Thank you! 😊
 
 ### Auto-open Recipe
 
@@ -1653,7 +1659,7 @@ A lot of internal restructuring due to my new HaselCommon library, which is now 
 
 - **Added:** A new option "Automatically update portrait" has been added. Thanks to @Rycko1 for helping!  
   This is only for gear sets that do not have a glamour plate linked! It will automatically send a portrait update to the server, when you update the gear set.
-- **Fixed:** The reset button should now properly reset the portrait to the initial state of the *current* portrait.
+- **Fixed:** The reset button should now properly reset the portrait to the initial state of the _current_ portrait.
 
 ## [16.1.3] (2023-08-19)
 
@@ -1690,7 +1696,7 @@ A lot of internal restructuring due to my new HaselCommon library, which is now 
 ### HaselTweaks
 
 - **Added:** You can now set the plugins language via a Plugin Configuration menu bar in the plugin window. To toggle the menu bar, click on the gear button in the top right corner. The default language, which was previously determined by the client language, is now whatever is set in Dalamud (if not supported, it defaults to English). You can also choose to automatically use whatever the client is using, or set the language directly.  
-  *Please note:* I can only provide full translation in English and German. While French and Japanese are supported as they are part of the game, I only included the few lines I had already translated using ChatGPT. If you want to help translating the plugin into another language, feel free to edit the Translations.json and submit a pull request! :)  
+  _Please note:_ I can only provide full translation in English and German. While French and Japanese are supported as they are part of the game, I only included the few lines I had already translated using ChatGPT. If you want to help translating the plugin into another language, feel free to edit the Translations.json and submit a pull request! :)  
   To avoid confusion I decided not to translate tweak names (for now).
 
 ### Aether Current Helper
@@ -1851,7 +1857,7 @@ Login options:
 - Show pets in character selection: Displays a carbuncle for Arcanist/Summoner and a fairy for Scholar next to your character. Position is adjustable.
   > **Note**
   > In order to apply the pet glamor settings, you must have logged in at least once.
-- Preload territory when queued: When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.  
+- Preload territory when queued: When it puts you in queue, it will preload the territory textures in the background, just as it does as when you start teleporting.
   > **Note**
   > Since I only have SSDs, I don't really know if this works at all.
 
@@ -2723,7 +2729,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.2...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.3...main
+[49.2.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.2...v49.2.3
 [49.2.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.1...v49.2.2
 [49.2.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.0...v49.2.1
 [49.2.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.1.0...v49.2.0
