@@ -1,5 +1,11 @@
 # Changelog
 
+## [49.2.4] (2026-08-08)
+
+### Commands
+
+- **Changed:** `/reloadui` now waits 100ms between changing scenes. Maybe this fixes some textures not unload properly.
+
 ## [49.2.3] (2026-08-08)
 
 ### Glamour Dresser Alert
@@ -2729,7 +2735,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.3...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.4...main
+[49.2.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.3...v49.2.4
 [49.2.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.2...v49.2.3
 [49.2.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.1...v49.2.2
 [49.2.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.0...v49.2.1
