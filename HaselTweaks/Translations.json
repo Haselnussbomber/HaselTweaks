@@ -606,6 +606,10 @@
     "en": "Shows a button above the \"Armoire\" window to place the first item in the list into the armoire.",
     "de": "Zeigt einen Button über dem \"AUSRÜSTUNG DEPONIEREN\"-Fenster an, um den ersten Gegenstand in der Liste ins Kostbarkeitenkabinett zu legen."
   },
+  "CabinetQuickStore.Config.IgnoreItemsInGearsets.Label": {
+    "en": "Ignore items in gearsets",
+    "de": "Ignoriere Gegenstände in Ausrüstungssets"
+  },
   "CabinetQuickStoreWindow.Button.Label": {
     "en": "Next Item",
     "de": "Nächster Gegenstand",

@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Armoire Quick Store
+
+- **Added:** A config option to ignore items that are part of gear sets.
+
 ## [49.2.4] (2026-08-08)
 
 ### Commands

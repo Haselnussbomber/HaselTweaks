@@ -126,6 +126,7 @@ public class TweakConfigs
     public AutoSorterConfiguration AutoSorter { get; init; } = new();
     public BackgroundMusicKeybindConfiguration BackgroundMusicKeybind { get; init; } = new();
     public BiggerCharacterPreviewsConfiguration BiggerCharacterPreviews { get; init; } = new();
+    public CabinetQuickStoreConfiguration CabinetQuickStore { get; init; } = new();
     public CharacterClassSwitcherConfiguration CharacterClassSwitcher { get; init; } = new();
     public CommandsConfiguration Commands { get; init; } = new();
     public CosmicResearchTodoConfiguration CosmicResearchTodo { get; init; } = new();
@@ -165,6 +166,7 @@ public static class PluginConfigExtension
         services.AddSingleton(pluginConfig.Tweaks.AutoSorter);
         services.AddSingleton(pluginConfig.Tweaks.BackgroundMusicKeybind);
         services.AddSingleton(pluginConfig.Tweaks.BiggerCharacterPreviews);
+        services.AddSingleton(pluginConfig.Tweaks.CabinetQuickStore);
         services.AddSingleton(pluginConfig.Tweaks.CharacterClassSwitcher);
         services.AddSingleton(pluginConfig.Tweaks.Commands);
         services.AddSingleton(pluginConfig.Tweaks.CosmicResearchTodo);

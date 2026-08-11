@@ -1,5 +1,7 @@
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using CabinetSheet = Lumina.Excel.Sheets.Cabinet;
 
@@ -12,6 +14,7 @@ public unsafe partial class CabinetQuickStoreWindow : SimpleWindow
     private readonly TextService _textService;
     private readonly ItemService _itemService;
     private readonly ITextureProvider _textureProvider;
+    private readonly CabinetQuickStoreConfiguration _config;
     private byte[]? _lastItems;
     private bool _locked;
 
@@ -104,9 +107,37 @@ public unsafe partial class CabinetQuickStoreWindow : SimpleWindow
             if (cabinetItemId == 0)
                 break;
 
-            if (sheet.TryGetRow(cabinetItemId, out var row) && row.Item.RowId != 0 && row.Item.IsValid && !cabinet.IsItemInCabinet(cabinetItemId))
+            if (!sheet.TryGetRow(cabinetItemId, out var row) || row.Item.RowId == 0 || !row.Item.IsValid)
+                continue;
+
+            if (_config.IgnoreItemsInGearsets && IsInGearset(row.Item.RowId))
+                continue;
+
+            if (!cabinet.IsItemInCabinet(cabinetItemId))
             {
                 cabinetId = cabinetItemId;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsInGearset(uint rowId)
+    {
+        var gearsetModule = RaptureGearsetModule.Instance();
+        var permittedGearsetCount = InventoryManager.Instance()->GetPermittedGearsetCount();
+
+        for (var id = 0; id < permittedGearsetCount; id++)
+        {
+            if (!gearsetModule->IsValidGearset(id))
+                continue;
+
+            var gearset = gearsetModule->GetGearset(id);
+            for (var i = 0; i < gearset->Items.Length; i++)
+            {
+                ref var item = ref gearset->Items[i];
+                if (item.ItemId == rowId)
                 return true;
             }
         }

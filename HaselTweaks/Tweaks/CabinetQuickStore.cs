@@ -3,7 +3,7 @@ using HaselTweaks.Windows;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public partial class CabinetQuickStore : Tweak
+public partial class CabinetQuickStore : ConfigurableTweak<CabinetQuickStoreConfiguration>
 {
     private readonly AddonObserver _addonObserver;
     private readonly WindowManager _windowManager;
