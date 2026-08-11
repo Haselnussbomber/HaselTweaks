@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [49.3.0] (2026-08-11)
 
 ### Armoire Quick Store
 
@@ -2741,7 +2741,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.4...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.3.0...main
+[49.3.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.4...v49.3.0
 [49.2.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.3...v49.2.4
 [49.2.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.2...v49.2.3
 [49.2.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.1...v49.2.2
