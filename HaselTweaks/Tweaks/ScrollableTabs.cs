@@ -204,6 +204,9 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
         if (!_clientState.IsLoggedIn)
             return;
 
+        if (UIInputData.Instance()->CurrentMouseDragButtons != 0)
+            return;
+
         _wheelState = Math.Clamp(UIInputData.Instance()->CursorInputs.MouseWheel, -1, 1);
         if (_wheelState == 0)
             return;
