@@ -1164,6 +1164,14 @@
     "zh": "在PvP区域始终显示PvP系列赛栏",
     "ja": "PvPエリアでは常にPvPシリーズバーを表示"
   },
+  "EnhancedExpBar.Config.HidePvPSeriesBarAfterClaimingAllRewards.Label": {
+    "en": "Hide PvP Series Bar when all meaningful rewards were claimed",
+    "de": "PvP-Serienleiste ausblenden, wenn alle bedeutsamen Belohnungen eingefordert wurden"
+  },
+  "EnhancedExpBar.Config.HidePvPSeriesBarAfterClaimingAllRewards.MaxRankHint": {
+    "en": "This will hide the PvP Series Bar when rank <num(lnum1)> was claimed",
+    "de": "Dadurch wird die PvP-Serienleiste ausgeblendet, wenn Rang <num(lnum1)> eingefordert wurde."
+  },
   "EnhancedExpBar.Config.ForceSanctuaryBar.Label": {
     "en": "Always show Sanctuary Bar on the Island",
     "de": "Immer den Inselparadies-Balken auf der Insel anzeigen",

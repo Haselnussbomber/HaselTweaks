@@ -1,3 +1,5 @@
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
+
 namespace HaselTweaks.Tweaks;
 
 public class EnhancedExpBarConfiguration
@@ -8,6 +10,7 @@ public class EnhancedExpBarConfiguration
     public bool SanctuaryBarHideJob = false;
     public MaxLevelOverrideType MaxLevelOverride = MaxLevelOverrideType.Default;
     public bool DisableColorChanges = false;
+    public bool HidePvPSeriesBarAfterClaimingAllRewards = true;
 }
 
 public enum MaxLevelOverrideType
@@ -32,7 +35,28 @@ public partial class EnhancedExpBar
 
         _configGui.DrawConfigurationHeader();
 
-        _configGui.DrawBool("ForcePvPSeriesBar", ref _config.ForcePvPSeriesBar);
+        _configGui.DrawBool("ForcePvPSeriesBar", ref _config.ForcePvPSeriesBar, drawAfterDescription: () =>
+        {
+            var maxRewardRank = -1;
+
+            unsafe
+            {
+                var pvpProfile = PvPProfile.Instance();
+                if (pvpProfile->IsLoaded && _excelService.TryGetRow<PvPSeries>(pvpProfile->Series, out var pvpSeries))
+                {
+                    maxRewardRank = pvpSeries.LevelRewards
+                        .Index()
+                        .Where(t => t.Item.LevelRewardItem[0].RowId != 0 && t.Item.LevelRewardItem[1].RowId != 36656)
+                        .Max(t => t.Index);
+                }
+            }
+
+            using (ImRaii.Disabled(maxRewardRank == -1))
+                _configGui.DrawBool("HidePvPSeriesBarAfterClaimingAllRewards", ref _config.HidePvPSeriesBarAfterClaimingAllRewards);
+
+            if (maxRewardRank != -1)
+                ImGui.TextColoredWrapped(Color.Text700.ToUInt(), _textService.EvaluateTranslatedSeString("EnhancedExpBar.Config.HidePvPSeriesBarAfterClaimingAllRewards.MaxRankHint", [maxRewardRank]).ToString());
+        });
         _configGui.DrawBool("ForceSanctuaryBar", ref _config.ForceSanctuaryBar);
         _configGui.DrawBool("ForceCompanionBar", ref _config.ForceCompanionBar);
         _configGui.DrawBool("SanctuaryBarHideJob", ref _config.SanctuaryBarHideJob);

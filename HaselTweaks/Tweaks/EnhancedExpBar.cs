@@ -148,12 +148,28 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
     private bool OverwriteWithPvPBar(ClassJob classJob)
     {
         var pvpProfile = PvPProfile.Instance();
-        if (!pvpProfile->IsLoaded || !_excelService.TryGetRow<PvPSeriesLevel>(pvpProfile->GetSeriesCurrentRank(), out var pvpSeriesLevel))
+        if (!pvpProfile->IsLoaded)
             return false;
 
-        var levelText = _textService.GetAddonText(14860, _clientState.ClientLanguage).Trim().Replace(":", ""); // "Series Level: "
-        var claimedRank = pvpProfile->GetSeriesClaimedRank();
         var currentRank = pvpProfile->GetSeriesCurrentRank();
+
+        if (!_excelService.TryGetRow<PvPSeriesLevel>(currentRank, out var pvpSeriesLevel))
+            return false;
+
+        var claimedRank = pvpProfile->GetSeriesClaimedRank();
+
+        if (_config.HidePvPSeriesBarAfterClaimingAllRewards && currentRank == claimedRank && _excelService.TryGetRow<PvPSeries>(pvpProfile->Series, out var pvpSeries))
+        {
+            var maxRewardRank = pvpSeries.LevelRewards
+                .Index()
+                .Where(t => t.Item.LevelRewardItem[0].RowId != 0 && t.Item.LevelRewardItem[1].RowId != 36656)
+                .Max(t => t.Index);
+
+            if (maxRewardRank != 0 && maxRewardRank == claimedRank)
+                return false;
+        }
+
+        var levelText = _textService.GetAddonText(14860, _clientState.ClientLanguage).Trim().Replace(":", ""); // "Series Level: "
         var maxRank = _excelService.GetRowCount<PvPSeriesLevel>() - 1;
         var rank = currentRank > maxRank ? maxRank : currentRank;
         var canClaimReward = currentRank > claimedRank;

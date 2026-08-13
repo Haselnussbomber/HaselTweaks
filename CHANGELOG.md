@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Enhanced Experience Bar
+
+- **Added:** A config option to hide the PvP-Series bar when all meaningful rewards were claimed (default on).
+
 ## [49.3.0] (2026-08-11)
 
 ### Armoire Quick Store
