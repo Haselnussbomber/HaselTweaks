@@ -72,7 +72,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
 
         var gameMain = GameMain.Instance();
         // don't show custom bars when in synced content
-        if (thisPtr->ExpFlags.HasFlag(AgentHudExpFlag.Synced) && gameMain->CurrentContentFinderConditionId != 0 && gameMain->CurrentTerritoryIntendedUseId != TerritoryIntendedUse.IslandSanctuary)
+        if (thisPtr->ExpFlags.HasFlag(AgentHudExpFlag.Synced) && gameMain->CurrentContentFinderConditionId != 0)
             return;
 
         if (_config.ForceCompanionBar && OverwriteWithCompanionBar(classJob))
