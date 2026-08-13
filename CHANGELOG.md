@@ -5,6 +5,7 @@
 ### Enhanced Experience Bar
 
 - **Added:** A config option to hide the PvP-Series bar when all meaningful rewards were claimed (default on).
+- **Changed:** Custom bars (mainly Companion Bar and PvP-Series Bar) no longer show in synced content. I didn't find it particularly helpful not seeing the synced level while doing leveling roulette.
 
 ## [49.3.0] (2026-08-11)
 

@@ -70,10 +70,15 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
         if (thisPtr->ExpFlags.HasFlag(AgentHudExpFlag.InEureka) || thisPtr->ExpFlags.HasFlag(AgentHudExpFlag.InOccultCrescent))
             return;
 
+        var gameMain = GameMain.Instance();
+        // don't show custom bars when in synced content
+        if (thisPtr->ExpFlags.HasFlag(AgentHudExpFlag.Synced) && gameMain->CurrentContentFinderConditionId != 0 && gameMain->CurrentTerritoryIntendedUseId != TerritoryIntendedUse.IslandSanctuary)
+            return;
+
         if (_config.ForceCompanionBar && OverwriteWithCompanionBar(classJob))
             return;
 
-        if (_config.ForcePvPSeriesBar && _excelService.TryGetRow<TerritoryType>(GameMain.Instance()->CurrentTerritoryTypeId, out var territoryType) && territoryType.IsPvpZone && OverwriteWithPvPBar(classJob))
+        if (_config.ForcePvPSeriesBar && _excelService.TryGetRow<TerritoryType>(gameMain->CurrentTerritoryTypeId, out var territoryType) && territoryType.IsPvpZone && OverwriteWithPvPBar(classJob))
             return;
 
         if (_config.ForceSanctuaryBar && OverwriteWithSanctuaryBar(classJob))
