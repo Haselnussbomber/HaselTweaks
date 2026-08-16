@@ -1169,7 +1169,7 @@
     "de": "PvP-Serienleiste ausblenden, wenn alle bedeutsamen Belohnungen eingefordert wurden"
   },
   "EnhancedExpBar.Config.HidePvPSeriesBarAfterClaimingAllRewards.MaxRankHint": {
-    "en": "This will hide the PvP Series Bar when rank <num(lnum1)> was claimed",
+    "en": "This will hide the PvP Series Bar when rank <num(lnum1)> was claimed.",
     "de": "Dadurch wird die PvP-Serienleiste ausgeblendet, wenn Rang <num(lnum1)> eingefordert wurde."
   },
   "EnhancedExpBar.Config.ForceSanctuaryBar.Label": {
