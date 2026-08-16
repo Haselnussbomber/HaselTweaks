@@ -1,5 +1,12 @@
 # Changelog
 
+## [49.4.2] (2026-08-16)
+
+### Commands
+
+- **Changed:** `/reloadui` now uses a different function, changing the game scene to Lobby and back to Game within 10 ticks. Works on my machine.  
+  Fun fact: the Aesthetician also moves you into the Lobby scene, which is why UI mods are applied when you cancel out of it and load back to the Game scene. :)
+
 ## [49.4.1] (2026-08-14)
 
 ### HaselTweaks
@@ -2754,7 +2761,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.4.1...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.4.2...main
+[49.4.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.4.1...v49.4.2
 [49.4.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.4.0...v49.4.1
 [49.4.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.3.0...v49.4.0
 [49.3.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.2.4...v49.3.0
