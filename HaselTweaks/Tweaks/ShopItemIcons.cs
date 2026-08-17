@@ -137,7 +137,7 @@ public unsafe partial class ShopItemIcons : ConfigurableTweak<ShopItemIconsConfi
         if (agent->ItemRetainerBuyback == null)
             return false;
 
-        var offset = EventHandler.StructSize + 8;
+        const int offset = EventHandler.StructSize + 8;
         if (agent->EventReceiver != (AtkEventInterface*)((nint)handler + offset))
             return false;
 

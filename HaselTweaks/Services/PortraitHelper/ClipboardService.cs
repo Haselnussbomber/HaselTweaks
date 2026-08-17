@@ -210,7 +210,7 @@ public partial class ClipboardService : IDisposable
         image.CopyPixelDataTo(pixelSpan);
     }
 
-    private void SetPNG(BgraImage image)
+    private static void SetPNG(BgraImage image)
     {
         var format = PInvoke.RegisterClipboardFormat("PNG");
         if (format == 0)

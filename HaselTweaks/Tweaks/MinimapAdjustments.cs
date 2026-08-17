@@ -72,7 +72,7 @@ public unsafe partial class MinimapAdjustments : ConfigurableTweak<MinimapAdjust
     private void UpdateVisibility(HaselAddonNaviMap* naviMap, bool hovered)
     {
         bool ShouldSetVisibility(bool hide, bool visibleOnHover)
-            => hide && (visibleOnHover || (!visibleOnHover && hovered == false));
+            => hide && (visibleOnHover || (!visibleOnHover && !hovered));
 
         if (ShouldSetVisibility(_config.HideCoords, _config.CoordsVisibleOnHover))
             naviMap->Coords->ToggleVisibility(hovered);

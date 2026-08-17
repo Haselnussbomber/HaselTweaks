@@ -224,7 +224,7 @@ public partial class AutoSorter
                             FontAwesomeIcon.Terminal,
                             disabledReasons.Count > 1
                                 ? "- " + string.Join("\n- ", disabledReasons)
-                                : disabledReasons.First(),
+                                : disabledReasons[0],
                             disabled: true);
                     }
                     else
@@ -239,7 +239,7 @@ public partial class AutoSorter
                                     FontAwesomeIcon.ExclamationTriangle,
                                     errors.Count > 1
                                         ? "- " + string.Join("\n- ", errors)
-                                        : errors.First());
+                                        : errors[0]);
                             }
                         }
                         else if (ImGuiUtils.IconButton(key + "_Execute", FontAwesomeIcon.Terminal, _textService.Translate("AutoSorter.Config.ExecuteButton.Tooltip.Ready")))

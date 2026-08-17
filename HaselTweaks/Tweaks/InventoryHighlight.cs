@@ -324,7 +324,7 @@ public unsafe partial class InventoryHighlight : ConfigurableTweak<InventoryHigh
     private void HighlightRetainerInventoryItem(ItemOrderModuleSorter* sorter, ItemOrderModuleSorterItemEntry* entry, byte brightness)
     {
         var slotIndex = (int)GetSlotIndex(sorter, entry);
-        var adjustedItemsPerPage = 35;
+        const int adjustedItemsPerPage = 35;
         var adjustedPage = slotIndex / adjustedItemsPerPage;
         var adjustedSlotIndex = slotIndex % adjustedItemsPerPage;
 

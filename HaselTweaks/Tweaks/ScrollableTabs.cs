@@ -168,15 +168,15 @@ public unsafe partial class ScrollableTabs : ConfigurableTweak<ScrollableTabsCon
             ["OrnamentNoteBook"] = ptr => UpdateTabController(ptr, &ptr.Cast<AddonOrnamentNoteBook>()->TabController, _config.HandleOrnamentNoteBook)
         };
 
-        RegisterMultiHandler(handlers, BuddyAddons, ptr => UpdateBuddy());
-        RegisterMultiHandler(handlers, CharacterAddons, ptr => UpdateCharacter());
-        RegisterMultiHandler(handlers, InventoryAddons, ptr => UpdateInventory());
-        RegisterMultiHandler(handlers, InventoryLargeAddons, ptr => UpdateInventoryLarge());
-        RegisterMultiHandler(handlers, InventoryExpansionAddons, ptr => UpdateInventoryExpansion());
-        RegisterMultiHandler(handlers, InventoryEventAddons, ptr => UpdateInventoryEvent());
-        RegisterMultiHandler(handlers, InventoryBuddyAddons, ptr => UpdateInventoryBuddy());
-        RegisterMultiHandler(handlers, InventoryRetainerAddons, ptr => UpdateInventoryRetainer());
-        RegisterMultiHandler(handlers, InventoryRetainerLargeAddons, ptr => UpdateInventoryRetainerLarge());
+        RegisterMultiHandler(handlers, BuddyAddons, _ => UpdateBuddy());
+        RegisterMultiHandler(handlers, CharacterAddons, _ => UpdateCharacter());
+        RegisterMultiHandler(handlers, InventoryAddons, _ => UpdateInventory());
+        RegisterMultiHandler(handlers, InventoryLargeAddons, _ => UpdateInventoryLarge());
+        RegisterMultiHandler(handlers, InventoryExpansionAddons, _ => UpdateInventoryExpansion());
+        RegisterMultiHandler(handlers, InventoryEventAddons, _ => UpdateInventoryEvent());
+        RegisterMultiHandler(handlers, InventoryBuddyAddons, _ => UpdateInventoryBuddy());
+        RegisterMultiHandler(handlers, InventoryRetainerAddons, _ => UpdateInventoryRetainer());
+        RegisterMultiHandler(handlers, InventoryRetainerLargeAddons, _ => UpdateInventoryRetainerLarge());
         RegisterMultiHandler(handlers, MountMinionBaseAddons, ptr => UpdateMountMinion(ptr.Cast<AddonMinionMountBase>()));
 
         _handlers = handlers.ToFrozenDictionary();

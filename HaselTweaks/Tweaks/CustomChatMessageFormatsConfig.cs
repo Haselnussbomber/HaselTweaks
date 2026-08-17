@@ -345,7 +345,7 @@ public partial class CustomChatMessageFormats
                             {
                                 if (iconSelectMenu)
                                 {
-                                    var maxLineWidth = 20 * 20;
+                                    const int maxLineWidth = 20 * 20;
                                     var posStart = ImCursor.X;
 
                                     foreach (var selectorGfdEntry in _gfdService.Entries)

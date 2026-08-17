@@ -14,7 +14,7 @@ public class Version6(IDalamudPluginInterface pluginInterface, IPluginLog plugin
         var tweakConfigs = (JsonObject?)config["Tweaks"];
 
         var presets = (JsonArray?)tweakConfigs?["PortraitHelper"]?["Presets"];
-        if (presets == null || presets.Count <= 0)
+        if (presets == null || presets.Count == 0)
             return; // nothing to do
 
         pluginLog.Info("[MigrationV6] Portrait thumbnails now use the preset guid as the name. Renaming files...");

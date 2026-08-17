@@ -117,13 +117,13 @@ public unsafe partial class GlamourDresserAlert : ConfigurableTweak<GlamourDress
             if (_config.IgnoreDuplicates && !isSet && _cabinetService.IsItemCollected(item))
                 continue;
 
-            if (_config.IgnoreDuplicates && isSet && setRow.Items.Where(item => item.RowId != 0 && item.IsValid).Any(item => _cabinetService.IsItemCollected(item)))
+            if (_config.IgnoreDuplicates && isSet && setRow.Items.Any(item => item.RowId != 0 && item.IsValid && _cabinetService.IsItemCollected(item)))
                 continue;
 
             if (ProcessCabinetStorableItem(item, itemRow, isSet, setRow))
                 continue;
 
-            if (ProcessDuplicateItemInExistingSet(itemIds, item, itemRow))
+            if (ProcessDuplicateItemInExistingSet(item, itemRow))
                 continue;
 
             if (ProcessDuplicateItem(itemIds, item, itemRow))
@@ -181,7 +181,7 @@ public unsafe partial class GlamourDresserAlert : ConfigurableTweak<GlamourDress
         return true;
     }
 
-    private bool ProcessDuplicateItemInExistingSet(Span<uint> itemIds, ItemHandle item, Item itemRow)
+    private bool ProcessDuplicateItemInExistingSet(ItemHandle item, Item itemRow)
     {
         if (!_mirageService.IsItemCollectedInSet(item))
             return false;
