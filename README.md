@@ -256,10 +256,6 @@ Configuration options:
 
 Always opens the "Grand Company Delivery Missions" window on the "Expert Delivery" tab.
 
-### Faster Decompression
-
-Replaces the game's `zlib.uncompress` function with an optimized implementation from [libdeflate](https://github.com/ebiggers/libdeflate).
-
 ### Fast Mouse Click Fix
 
 The game does not fire UI events for single mouse clicks whenever a double click is detected.  
