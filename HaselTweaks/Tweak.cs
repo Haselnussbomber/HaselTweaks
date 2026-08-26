@@ -13,6 +13,7 @@ public abstract partial class Tweak : ITweak, IHostedService
 
     public string InternalName { get; private set; }
     public TweakStatus Status { get; set; } = TweakStatus.Disabled;
+    public bool IsObsolete { get; set; }
 
     [AutoPostConstruct]
     private void Initialize(ILoggerFactory loggerFactory)
@@ -67,7 +68,7 @@ public abstract partial class Tweak : ITweak, IHostedService
         return Task.CompletedTask;
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
             return;

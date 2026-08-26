@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Tweak removed: Scrollable Tabs
+
+This is now a standalone plugin on the Dalamud main repository. Please install Scrollable Tabs via the Plugin Installer.
+
 ## [49.4.2] (2026-08-16)
 
 ### Commands

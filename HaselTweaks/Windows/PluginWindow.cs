@@ -56,9 +56,11 @@ public partial class PluginWindow : SimpleWindow
             .Select(tweak => new TweakEntry(tweak, _textService.TryGetTranslation(tweak.InternalName + ".Tweak.Name", out var name) ? name : tweak.InternalName))
             .OrderBy(tuple => tuple.Label);
 
-        _shownTweaks = string.IsNullOrWhiteSpace(_searchInput)
-            ? [.. tweaks]
-            : [.. tweaks.FuzzyMatch(_searchInput, t => t.Label).Select(r => r.Value)];
+        _shownTweaks = (string.IsNullOrWhiteSpace(_searchInput)
+            ? tweaks
+            : tweaks.FuzzyMatch(_searchInput, t => t.Label).Select(r => r.Value))
+            .Where(entry => !entry.Tweak.IsObsolete)
+            .ToArray();
     }
 
     public override void OnOpen()
