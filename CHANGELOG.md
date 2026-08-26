@@ -6,6 +6,10 @@
 
 This is now a standalone plugin on the Dalamud main repository. Please install Scrollable Tabs via the Plugin Installer.
 
+### Tweak removed: Shop Item Icons
+
+This is now a standalone plugin on the Dalamud main repository. Please install Shop Item Icons via the Plugin Installer.
+
 ## [49.4.2] (2026-08-16)
 
 ### Commands
