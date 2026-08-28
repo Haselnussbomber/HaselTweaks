@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [50.0.0] (2026-08-28)
 
 ### Tweak removed: Scrollable Tabs
 
@@ -2771,7 +2771,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.4.2...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v50.0.0...main
+[50.0.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.4.2...v50.0.0
 [49.4.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.4.1...v49.4.2
 [49.4.1]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.4.0...v49.4.1
 [49.4.0]: https://github.com/Haselnussbomber/HaselTweaks/compare/v49.3.0...v49.4.0
