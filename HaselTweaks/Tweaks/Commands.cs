@@ -60,30 +60,21 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
             .WithDisplayOrder(2)
             .WithHandler(OnReloadUICommand));
 
+        _disposables = DisposableBag.Create(
+            _itemLinkCommandHandler,
+            _whatMountCommandCommandHandler,
+            _whatEmoteCommandCommandHandler,
+            _whatBardingCommandCommandHandler,
+            _glamourPlateCommandCommandHandler,
+            _reloadUICommandCommandHandler);
+
         UpdateCommands(true);
     }
 
     public override void OnDisable()
     {
         UpdateCommands(false);
-
-        _itemLinkCommandHandler?.Dispose();
-        _itemLinkCommandHandler = null;
-
-        _whatMountCommandCommandHandler?.Dispose();
-        _whatMountCommandCommandHandler = null;
-
-        _whatEmoteCommandCommandHandler?.Dispose();
-        _whatEmoteCommandCommandHandler = null;
-
-        _whatBardingCommandCommandHandler?.Dispose();
-        _whatBardingCommandCommandHandler = null;
-
-        _glamourPlateCommandCommandHandler?.Dispose();
-        _glamourPlateCommandCommandHandler = null;
-
-        _reloadUICommandCommandHandler?.Dispose();
-        _reloadUICommandCommandHandler = null;
+        DisposeAndNull(ref _disposables);
     }
 
     private void UpdateCommands(bool enable)

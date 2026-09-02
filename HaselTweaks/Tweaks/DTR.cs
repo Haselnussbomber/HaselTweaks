@@ -1,4 +1,3 @@
-using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
@@ -10,58 +9,45 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public unsafe partial class DTR : ConfigurableTweak<DTRConfiguration>
 {
-    private readonly LanguageProvider _languageProvider;
     private readonly TextService _textService;
+    private readonly LanguageProvider _languageProvider;
     private readonly ExcelService _excelService;
-    private readonly IDtrBar _dtrBar;
     private readonly IFramework _framework;
     private readonly IClientState _clientState;
+    private readonly IDtrBar _dtrBar;
     private readonly IDalamudPluginInterface _dalamudPluginInterface;
 
-    private IDtrBarEntry? _dtrInstance;
-    private IDtrBarEntry? _dtrFPS;
-    private IDtrBarEntry? _dtrBusy;
+    private DtrBarEntry? _dtrInstance;
+    private DtrBarEntry? _dtrFPS;
+    private DtrBarEntry? _dtrBusy;
     private int _lastFrameRate;
     private uint _lastInstanceId;
 
     public override void OnEnable()
     {
-        _dtrInstance = _dtrBar.Get("[HaselTweaks] Instance");
-        _dtrInstance.Tooltip = "HaselTweaks";
+        _disposables = DisposableBag.Create(
+            _dtrInstance = _dtrBar.GetDisposable("[HaselTweaks] Instance"),
+            _dtrFPS = _dtrBar.GetDisposable("[HaselTweaks] FPS"),
+            _dtrBusy = _dtrBar.GetDisposable("[HaselTweaks] Busy"),
+            _framework.OnUpdate(OnFrameworkUpdate),
+            _clientState.OnLogout(OnLogout),
+            _languageProvider.OnLanguageChange(OnLanguageChange));
 
-        _dtrFPS = _dtrBar.Get("[HaselTweaks] FPS");
-        _dtrFPS.Tooltip = "HaselTweaks";
-
-        _dtrBusy = _dtrBar.Get("[HaselTweaks] Busy");
-        _dtrBusy.Tooltip = "HaselTweaks";
         UpdateBusyText();
-
-        _dtrInstance.Shown = false;
-        _dtrFPS.Shown = false;
-        _dtrBusy.Shown = false;
-
-        _framework.Update += OnFrameworkUpdate;
-        _clientState.Logout += OnLogout;
-        _languageProvider.LanguageChanged += OnLanguageChanged;
     }
 
     public override void OnDisable()
     {
-        _framework.Update -= OnFrameworkUpdate;
-        _clientState.Logout -= OnLogout;
-        _languageProvider.LanguageChanged -= OnLanguageChanged;
+        DisposeAndNull(ref _disposables);
 
-        _dtrInstance?.Remove();
         _dtrInstance = null;
-        _dtrFPS?.Remove();
         _dtrFPS = null;
-        _dtrBusy?.Remove();
         _dtrBusy = null;
 
         ResetCache();
     }
 
-    private void OnFrameworkUpdate(IFramework framework)
+    private void OnFrameworkUpdate()
     {
         if (!_clientState.IsLoggedIn)
             return;
@@ -82,7 +68,7 @@ public unsafe partial class DTR : ConfigurableTweak<DTRConfiguration>
         _lastInstanceId = 0;
     }
 
-    private void OnLanguageChanged(string langCode)
+    private void OnLanguageChange()
     {
         UpdateBusyText();
     }

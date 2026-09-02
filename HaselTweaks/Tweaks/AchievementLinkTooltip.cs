@@ -11,35 +11,31 @@ public unsafe partial class AchievementLinkTooltip : ConfigurableTweak<Achieveme
 {
     private static readonly string[] ChatPanels = ["ChatLogPanel_0", "ChatLogPanel_1", "ChatLogPanel_2", "ChatLogPanel_3"];
 
-    private readonly IFramework _framework;
     private readonly TextService _textService;
-    private readonly IAddonLifecycle _addonLifecycle;
     private readonly ExcelService _excelService;
+    private readonly IAddonLifecycle _addonLifecycle;
 
     public override void OnEnable()
     {
-        _addonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, ChatPanels, OnChatLogPanelPostReceiveEvent);
+        _disposables = _addonLifecycle.OnPostReceiveEvent(OnChatLogPanelPostReceiveEvent, ChatPanels);
     }
 
     public override void OnDisable()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, ChatPanels, OnChatLogPanelPostReceiveEvent);
+        DisposeAndNull(ref _disposables);
     }
 
-    private void OnChatLogPanelPostReceiveEvent(AddonEvent type, AddonArgs args)
+    private void OnChatLogPanelPostReceiveEvent(AddonReceiveEventArgs args)
     {
         var addon = args.GetAddon<AddonChatLogPanel>();
 
         if (!addon->IsReady || addon->LogViewer.IsSelectingText || addon->IsResizing)
             return;
 
-        if (args is not AddonReceiveEventArgs receiveEventArgs)
+        if (args.EventType != AtkEventType.LinkMouseOver)
             return;
 
-        if (receiveEventArgs.EventType != AtkEventType.LinkMouseOver)
-            return;
-
-        var eventData = receiveEventArgs.GetEventData<AtkEventData>();
+        var eventData = args.GetEventData<AtkEventData>();
         var linkData = eventData->LinkData;
         if (linkData == null)
             return;

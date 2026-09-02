@@ -1,8 +1,7 @@
-using Dalamud.Game.Agent;
 using Dalamud.Game.Agent.AgentArgTypes;
 using Dalamud.Game.ClientState.Keys;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
-using DAgentId = Dalamud.Game.Agent.AgentId;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
 namespace HaselTweaks.Tweaks;
 
@@ -10,25 +9,22 @@ namespace HaselTweaks.Tweaks;
 public unsafe partial class CharacterReputeTeleport : Tweak
 {
     private readonly IAgentLifecycle _agentLifecycle;
+    private readonly IKeyState _keyState;
     private readonly ExcelService _excelService;
     private readonly TeleportService _teleportService;
-    private readonly IKeyState _keyState;
 
     public override void OnEnable()
     {
-        _agentLifecycle.RegisterListener(AgentEvent.PreReceiveEvent, DAgentId.Status, OnStatusReceiveEvent);
+        _disposables = _agentLifecycle.OnPreReceiveEvent(OnStatusReceiveEvent, AgentId.Status);
     }
 
     public override void OnDisable()
     {
-        _agentLifecycle.UnregisterListener(AgentEvent.PreReceiveEvent, DAgentId.Status, OnStatusReceiveEvent);
+        DisposeAndNull(ref _disposables);
     }
 
-    private void OnStatusReceiveEvent(AgentEvent type, AgentArgs eventArgs)
+    private void OnStatusReceiveEvent(AgentReceiveEventArgs args)
     {
-        if (eventArgs is not AgentReceiveEventArgs args)
-            return;
-
         if (args.EventKind != 0)
             return;
 

@@ -22,14 +22,18 @@ public unsafe partial class AutoOpenRecipe : Tweak
 
     public override void OnEnable()
     {
-        _gameInventory.ItemAddedExplicit += OnItemAddedExplicit;
+        _disposables = EventExtensions.Subscribe(
+            handler => _gameInventory.ItemAddedExplicit += handler.Invoke,
+            handler => _gameInventory.ItemAddedExplicit -= handler.Invoke,
+            OnItemAddedExplicit);
     }
 
     public override void OnDisable()
     {
-        _gameInventory.ItemAddedExplicit -= OnItemAddedExplicit;
         _checkCTS?.Cancel();
-        _checkCTS = null;
+
+        DisposeAndNull(ref _disposables);
+        DisposeAndNull(ref _checkCTS);
     }
 
     private void OnItemAddedExplicit(InventoryItemAddedArgs data)
@@ -49,7 +53,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
         _logger.LogDebug("Inventory item added: {item}", data.Item);
 
         _checkCTS?.Cancel();
-        _checkCTS = null;
+        DisposeAndNull(ref _checkCTS);
         _checkCTS = new();
 
         void action()

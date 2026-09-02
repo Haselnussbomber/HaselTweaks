@@ -8,12 +8,10 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Enums.PortraitHelper;
 using HaselTweaks.Records.PortraitHelper;
 using HaselTweaks.Windows.PortraitHelperWindows;
-
-using AgentEvent = Dalamud.Game.Agent.AgentEvent;
-using DAgentId = Dalamud.Game.Agent.AgentId;
 using DSeString = Dalamud.Game.Text.SeStringHandling.SeString;
 
 namespace HaselTweaks.Tweaks;
@@ -52,61 +50,43 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
 
     public override void OnEnable()
     {
-        _onClipboardDataChangedHook = _gameInteropProvider.HookFromAddress<UIClipboard.Delegates.OnClipboardDataChanged>(
-            UIClipboard.MemberFunctionPointers.OnClipboardDataChanged,
-            OnClipboardDataChangedDetour);
+        _disposables = DisposableBag.Create(
+            _menuBar,
 
-        _updateGearsetHook = _gameInteropProvider.HookFromAddress<RaptureGearsetModule.Delegates.UpdateGearset>(
-            RaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
-            UpdateGearsetDetour);
+            _onClipboardDataChangedHook = _gameInteropProvider.EnabledHookFromAddress<UIClipboard.Delegates.OnClipboardDataChanged>(
+                UIClipboard.MemberFunctionPointers.OnClipboardDataChanged,
+                OnClipboardDataChangedDetour),
 
-        _updateGearVisibility = _gameInteropProvider.HookFromSignature<UpdateGearVisibilityDelegate>(
-            "48 89 74 24 ?? 57 48 83 EC ?? 48 8B FA 8B D1",
-            UpdateGearVisibilityDetour);
+            _updateGearsetHook = _gameInteropProvider.EnabledHookFromAddress<RaptureGearsetModule.Delegates.UpdateGearset>(
+                RaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
+                UpdateGearsetDetour),
 
-        _agentLifecycle.RegisterListener(AgentEvent.PreShow, DAgentId.BannerPreview, OnBannerPreviewPreShow);
+            _updateGearVisibility = _gameInteropProvider.EnabledHookFromSignature<UpdateGearVisibilityDelegate>(
+                "48 89 74 24 ?? 57 48 83 EC ?? 48 8B FA 8B D1",
+                UpdateGearVisibilityDetour),
 
-        _onClipboardDataChangedHook.Enable();
-        _updateGearsetHook.Enable();
-        _updateGearVisibility.Enable();
+            _agentLifecycle.OnPreShow(OnBannerPreviewPreShow, AgentId.BannerPreview),
+            _addonObserver.OnShow(OnShow, "BannerEditor"),
+            _addonObserver.OnHide(OnHide, "BannerEditor"),
+
+            _clientState.OnTerritoryChange(OnTerritoryChanged),
+            _clientState.OnClassJobChange(OnClassJobChange));
 
         _openPortraitEditPayload = _chatGui.AddChatLinkHandler(1, OpenPortraitEditChatHandler);
 
         if (IsAddonOpen(AgentId.BannerEditor))
-            OnAddonOpen("BannerEditor");
-
-        _addonObserver.AddonOpen += OnAddonOpen;
-        _addonObserver.AddonClose += OnAddonClose;
-        _clientState.TerritoryChanged += OnTerritoryChanged;
-        _clientState.ClassJobChanged += OnClassJobChange;
+            _menuBar.Open();
     }
 
     public override void OnDisable()
     {
-        _addonObserver.AddonOpen -= OnAddonOpen;
-        _addonObserver.AddonClose -= OnAddonClose;
-        _clientState.TerritoryChanged -= OnTerritoryChanged;
-        _clientState.ClassJobChanged -= OnClassJobChange;
+        DisposeAndNull(ref _disposables);
 
         if (_openPortraitEditPayload != null)
             _chatGui.RemoveChatLinkHandler(_openPortraitEditPayload.CommandId);
 
-        _menuBar.Close();
-
-        _onClipboardDataChangedHook?.Dispose();
-        _onClipboardDataChangedHook = null;
-
-        _updateGearsetHook?.Dispose();
-        _updateGearsetHook = null;
-
-        _updateGearVisibility?.Dispose();
-        _updateGearVisibility = null;
-
         _mismatchCheckCTS?.Cancel();
-        _mismatchCheckCTS?.Dispose();
-        _mismatchCheckCTS = null;
-
-        _agentLifecycle.UnregisterListener(AgentEvent.PreShow, DAgentId.BannerPreview, OnBannerPreviewPreShow);
+        DisposeAndNull(ref _mismatchCheckCTS);
     }
 
     private void OpenPortraitEditChatHandler(uint commandId, DSeString message)
@@ -119,16 +99,14 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
         AgentGearSet.Instance()->OpenBannerEditorForGearset(gearsetId);
     }
 
-    private void OnAddonOpen(string addonName)
+    private void OnShow(AtkUnitBase* addon)
     {
-        if (addonName == "BannerEditor")
-            _menuBar.Open();
+        _menuBar.Open();
     }
 
-    private void OnAddonClose(string addonName)
+    private void OnHide(AtkUnitBase* addon)
     {
-        if (addonName == "BannerEditor")
-            _menuBar.Close();
+        _menuBar.Close();
     }
 
     private void RestartCheck()
@@ -193,7 +171,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
         RestartCheck();
     }
 
-    private void OnBannerPreviewPreShow(AgentEvent type, AgentArgs args)
+    private void OnBannerPreviewPreShow(AgentArgs args)
     {
         var blockBannerPreview = _blockBannerPreview;
         _blockBannerPreview = false;

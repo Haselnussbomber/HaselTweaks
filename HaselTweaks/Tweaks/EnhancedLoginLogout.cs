@@ -15,14 +15,14 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLoginLogoutConfiguration>
 {
-    private readonly TextService _textService;
-    private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IGameConfig _gameConfig;
     private readonly IClientState _clientState;
+    private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly ITextureProvider _textureProvider;
-    private readonly ExcelService _excelService;
     private readonly IFramework _framework;
+    private readonly TextService _textService;
+    private readonly ExcelService _excelService;
 
     private Hook<AgentLobby.Delegates.UpdateCharaSelectDisplay>? _updateCharaSelectDisplayHook;
     private Hook<CharaSelectCharacterList.Delegates.CleanupCharacters>? _cleanupCharactersHook;
@@ -38,62 +38,37 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
 
     public override void OnEnable()
     {
-        _updateCharaSelectDisplayHook = _gameInteropProvider.HookFromAddress<AgentLobby.Delegates.UpdateCharaSelectDisplay>(
-            AgentLobby.MemberFunctionPointers.UpdateCharaSelectDisplay,
-            UpdateCharaSelectDisplayDetour);
+        _disposables = DisposableBag.Create(
+            _updateCharaSelectDisplayHook = _gameInteropProvider.EnabledHookFromAddress<AgentLobby.Delegates.UpdateCharaSelectDisplay>(
+                AgentLobby.MemberFunctionPointers.UpdateCharaSelectDisplay,
+                UpdateCharaSelectDisplayDetour),
 
-        _cleanupCharactersHook = _gameInteropProvider.HookFromAddress<CharaSelectCharacterList.Delegates.CleanupCharacters>(
-            CharaSelectCharacterList.MemberFunctionPointers.CleanupCharacters,
-            CleanupCharactersDetour);
+            _cleanupCharactersHook = _gameInteropProvider.EnabledHookFromAddress<CharaSelectCharacterList.Delegates.CleanupCharacters>(
+                CharaSelectCharacterList.MemberFunctionPointers.CleanupCharacters,
+                CleanupCharactersDetour),
 
-        _executeEmoteHook = _gameInteropProvider.HookFromAddress<EmoteManager.Delegates.ExecuteEmote>(
-            EmoteManager.MemberFunctionPointers.ExecuteEmote,
-            ExecuteEmoteDetour);
+            _executeEmoteHook = _gameInteropProvider.EnabledHookFromAddress<EmoteManager.Delegates.ExecuteEmote>(
+                EmoteManager.MemberFunctionPointers.ExecuteEmote,
+                ExecuteEmoteDetour),
 
-        _openLoginWaitDialogHook = _gameInteropProvider.HookFromAddress<AgentLobby.Delegates.OpenLoginWaitDialog>(
-            AgentLobby.MemberFunctionPointers.OpenLoginWaitDialog,
-            OpenLoginWaitDialogDetour);
+            _openLoginWaitDialogHook = _gameInteropProvider.EnabledHookFromAddress<AgentLobby.Delegates.OpenLoginWaitDialog>(
+                AgentLobby.MemberFunctionPointers.OpenLoginWaitDialog,
+                OpenLoginWaitDialogDetour),
 
-        _updateCharaSelectDisplayHook.Enable();
-        _cleanupCharactersHook.Enable();
-        _executeEmoteHook.Enable();
-
-        _gameConfig.Changed += OnGameConfigChanged;
-        _clientState.Login += OnLogin;
-        _clientState.Logout += OnLogout;
-        _framework.Update += OnUpdate;
+            _addonLifecycle.OnPostSetup(OnLogoPostSetup, "Logo"),
+            _clientState.OnLogin(OnLogin),
+            _clientState.OnLogout(OnLogout),
+            _framework.OnUpdate(OnUpdate),
+            _gameConfig.OnGameConfigChange(OnGameConfigChanged));
 
         UpdateCharacterSettings();
         PreloadEmotes();
-
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "Logo", OnLogoPostSetup);
-
-        if (_config.PreloadTerritory)
-            _openLoginWaitDialogHook?.Enable();
     }
 
     public override void OnDisable()
     {
-        _gameConfig.Changed -= OnGameConfigChanged;
-        _clientState.Login -= OnLogin;
-        _clientState.Logout -= OnLogout;
-        _framework.Update -= OnUpdate;
-
-        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Logo", OnLogoPostSetup);
-
+        DisposeAndNull(ref _disposables);
         CleanupCharaSelect();
-
-        _updateCharaSelectDisplayHook?.Dispose();
-        _updateCharaSelectDisplayHook = null;
-
-        _cleanupCharactersHook?.Dispose();
-        _cleanupCharactersHook = null;
-
-        _executeEmoteHook?.Dispose();
-        _executeEmoteHook = null;
-
-        _openLoginWaitDialogHook?.Dispose();
-        _openLoginWaitDialogHook = null;
     }
 
     private void OnLogin()
@@ -109,13 +84,13 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
             AcquaintanceModule.Instance()->ClearTellHistory();
     }
 
-    private void OnGameConfigChanged(object? sender, ConfigChangeEvent change)
+    private void OnGameConfigChanged(ConfigChangeEvent change)
     {
         if (change.Option is UiConfigOption.PetMirageTypeCarbuncleSupport or UiConfigOption.PetMirageTypeFairy && AgentLobby.Instance()->IsLoggedIn)
             UpdatePetMirageSettings();
     }
 
-    private void OnUpdate(IFramework framework)
+    private void OnUpdate()
     {
         if (_currentEntry?.IsEmotePlayed != false)
             return;
@@ -152,7 +127,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
 
     private bool UpdateCharaSelectDisplayDetour(AgentLobby* agent, sbyte index, bool a2)
     {
-        var retVal = _updateCharaSelectDisplayHook!.Original(agent, index, a2);
+        var retVal = _updateCharaSelectDisplayHook!.OriginalDisposeSafe(agent, index, a2);
 
         if (index < 0)
         {
@@ -192,14 +167,14 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
     private void CleanupCharactersDetour()
     {
         CleanupCharaSelect();
-        _cleanupCharactersHook!.Original();
+        _cleanupCharactersHook!.OriginalDisposeSafe();
     }
 
     #endregion
 
     #region Login: Skip Logo
 
-    private void OnLogoPostSetup(AddonEvent type, AddonArgs args)
+    private void OnLogoPostSetup(AddonArgs args)
     {
         if (_config.SkipLogo)
         {
@@ -480,7 +455,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
     private bool ExecuteEmoteDetour(EmoteManager* handler, ushort emoteId, EmoteController.PlayEmoteOption* playEmoteOption)
     {
         var changePoseIndexBefore = PlayerState.Instance()->SelectedPoses[0];
-        var success = _executeEmoteHook!.Original(handler, emoteId, playEmoteOption);
+        var success = _executeEmoteHook!.OriginalDisposeSafe(handler, emoteId, playEmoteOption);
 
         if (_excludedEmotes == null)
         {
@@ -531,7 +506,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
 
     private void OpenLoginWaitDialogDetour(AgentLobby* agent, int position)
     {
-        _openLoginWaitDialogHook!.Original(agent, position);
+        _openLoginWaitDialogHook!.OriginalDisposeSafe(agent, position);
 
         if (!_config.PreloadTerritory || _currentEntry == null)
             return;

@@ -11,10 +11,10 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarConfiguration>
 {
-    private readonly TextService _textService;
     private readonly IClientState _clientState;
-    private readonly IAddonLifecycle _addonLifecycle;
     private readonly IGameInteropProvider _gameInteropProvider;
+    private readonly IAddonLifecycle _addonLifecycle;
+    private readonly TextService _textService;
     private readonly ExcelService _excelService;
 
     private Hook<AgentHUD.Delegates.UpdateExp>? _updateExpHook;
@@ -24,28 +24,21 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
 
     public override void OnEnable()
     {
-        _updateExpHook = _gameInteropProvider.HookFromAddress<AgentHUD.Delegates.UpdateExp>(
-            AgentHUD.MemberFunctionPointers.UpdateExp,
-            UpdateExpDetour);
-        _updateExpHook?.Enable();
+        _disposables = DisposableBag.Create(
+            _updateExpHook = _gameInteropProvider.EnabledHookFromAddress<AgentHUD.Delegates.UpdateExp>(
+                AgentHUD.MemberFunctionPointers.UpdateExp,
+                UpdateExpDetour),
 
-        _clientState.LeavePvP += OnLeavePvP;
-        _clientState.TerritoryChanged += OnTerritoryChanged;
-
-        _addonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_Exp", OnAddonExpPostRequestedUpdate);
+            _addonLifecycle.OnPostRequestedUpdate(OnAddonExpPostRequestedUpdate, "_Exp"),
+            _clientState.OnLeavePvP(OnLeavePvP),
+            _clientState.OnTerritoryChange(OnTerritoryChanged));
 
         TriggerReset();
     }
 
     public override void OnDisable()
     {
-        _clientState.LeavePvP -= OnLeavePvP;
-        _clientState.TerritoryChanged -= OnTerritoryChanged;
-
-        _addonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "_Exp", OnAddonExpPostRequestedUpdate);
-
-        _updateExpHook?.Dispose();
-        _updateExpHook = null;
+        DisposeAndNull(ref _disposables);
 
         if (Status is TweakStatus.Enabled)
             TriggerReset();
@@ -59,7 +52,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
 
     private void UpdateExpDetour(AgentHUD* thisPtr, NumberArrayData* expNumberArray, StringArrayData* expStringArray, StringArrayData* characterStringArray)
     {
-        _updateExpHook!.Original(thisPtr, expNumberArray, expStringArray, characterStringArray);
+        _updateExpHook!.OriginalDisposeSafe(thisPtr, expNumberArray, expStringArray, characterStringArray);
 
         if (!PlayerState.Instance()->IsLoaded || !_excelService.TryGetRow<ClassJob>(PlayerState.Instance()->CurrentClassJobId, out var classJob))
             return;
@@ -99,7 +92,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
         }
     }
 
-    private void OnAddonExpPostRequestedUpdate(AddonEvent type, AddonArgs args)
+    private void OnAddonExpPostRequestedUpdate(AddonArgs args)
     {
         var addon = args.GetAddon<AtkUnitBase>();
 

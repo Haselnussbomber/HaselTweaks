@@ -5,40 +5,34 @@ public partial class DisableRewardPopups : ConfigurableTweak<DisableRewardPopups
 {
     private readonly IAddonLifecycle _addonLifecycle;
 
-    private static string[] AddonNames => [
-        "FateReward",
-        "GoldSaucerReward",
-        "WKSReward"
-    ];
-
     public override void OnEnable()
     {
-        _addonLifecycle.RegisterListener(AddonEvent.PreShow, AddonNames, OnPreShow);
+        _disposables = DisposableBag.Create(
+            _addonLifecycle.OnPreShow(OnFateReward, "FateReward"),
+            _addonLifecycle.OnPreShow(OnGoldSaucerReward, "GoldSaucerReward"),
+            _addonLifecycle.OnPreShow(OnWKSReward, "WKSReward"));
     }
 
     public override void OnDisable()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PreShow, AddonNames, OnPreShow);
+        DisposeAndNull(ref _disposables);
     }
 
-    private void OnPreShow(AddonEvent type, AddonArgs args)
+    private void OnFateReward(AddonArgs args)
     {
-        switch (args.AddonName)
-        {
-            case "FateReward":
-                if (_config.DisableFateReward)
-                    args.PreventOriginal();
-                break;
+        if (_config.DisableFateReward)
+            args.PreventOriginal();
+    }
 
-            case "GoldSaucerReward":
-                if (_config.DisableGoldSaucerReward)
-                    args.PreventOriginal();
-                break;
+    private void OnGoldSaucerReward(AddonArgs args)
+    {
+        if (_config.DisableGoldSaucerReward)
+            args.PreventOriginal();
+    }
 
-            case "WKSReward":
-                if (_config.DisableWKSReward)
-                    args.PreventOriginal();
-                break;
-        }
+    private void OnWKSReward(AddonArgs args)
+    {
+        if (_config.DisableWKSReward)
+            args.PreventOriginal();
     }
 }

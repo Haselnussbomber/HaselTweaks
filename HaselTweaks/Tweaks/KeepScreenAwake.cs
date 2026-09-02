@@ -7,14 +7,15 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public partial class KeepScreenAwake : Tweak
 {
-    private Timer? _timer;
-
     public override void OnEnable()
     {
-        _timer = new();
-        _timer.Elapsed += Timer_Elapsed;
-        _timer.Interval = 10000; // every 10 seconds
-        _timer.Start();
+        var timer = new Timer();
+
+        timer.Elapsed += Timer_Elapsed;
+        timer.Interval = 10000; // every 10 seconds
+        timer.Start();
+
+        _disposables = timer;
     }
 
     public override void OnDisable()
@@ -24,8 +25,7 @@ public partial class KeepScreenAwake : Tweak
 
         PInvoke.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
 
-        _timer?.Dispose();
-        _timer = null;
+        DisposeAndNull(ref _disposables);
     }
 
     private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)

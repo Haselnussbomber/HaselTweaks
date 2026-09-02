@@ -6,39 +6,36 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public unsafe partial class CustomChatMessageFormats : ConfigurableTweak<CustomChatMessageFormatsConfiguration>
 {
-    private readonly LanguageProvider _languageProvider;
-    private readonly TextService _textService;
     private readonly IGameInteropProvider _gameInteropProvider;
+    private readonly ISeStringEvaluator _seStringEvaluator;
+    private readonly TextService _textService;
+    private readonly LanguageProvider _languageProvider;
     private readonly ExcelService _excelService;
     private readonly GfdService _gfdService;
-    private readonly ISeStringEvaluator _seStringEvaluator;
 
     private Hook<RaptureLogModule.Delegates.FormatLogMessage>? _formatLogMessageHook;
 
     public override void OnEnable()
     {
-        _formatLogMessageHook = _gameInteropProvider.HookFromAddress<RaptureLogModule.Delegates.FormatLogMessage>(
-            RaptureLogModule.MemberFunctionPointers.FormatLogMessage,
-            FormatLogMessageDetour);
-        _formatLogMessageHook.Enable();
+        _disposables = DisposableBag.Create(
+            _formatLogMessageHook = _gameInteropProvider.EnabledHookFromAddress<RaptureLogModule.Delegates.FormatLogMessage>(
+                RaptureLogModule.MemberFunctionPointers.FormatLogMessage,
+                FormatLogMessageDetour),
 
-        _languageProvider.LanguageChanged += OnLanguageChange;
+            _languageProvider.OnLanguageChange(OnLanguageChanged));
 
         ReloadChat();
     }
 
     public override void OnDisable()
     {
-        _languageProvider.LanguageChanged -= OnLanguageChange;
-
-        _formatLogMessageHook?.Dispose();
-        _formatLogMessageHook = null;
+        DisposeAndNull(ref _disposables);
 
         if (Status is TweakStatus.Enabled)
             ReloadChat();
     }
 
-    private void OnLanguageChange(string langCode)
+    private void OnLanguageChanged()
     {
         if (_isConfigWindowOpen)
         {
@@ -60,7 +57,7 @@ public unsafe partial class CustomChatMessageFormats : ConfigurableTweak<CustomC
             return 0;
 
         if (!_config.FormatOverrides.TryGetValue(logKindId, out var logKindOverride) || !logKindOverride.Enabled || !logKindOverride.IsValid())
-            return _formatLogMessageHook!.Original(thisPtr, logKindId, sender, message, timestamp, a6, a7, chatTabIndex);
+            return _formatLogMessageHook!.OriginalDisposeSafe(thisPtr, logKindId, sender, message, timestamp, a6, a7, chatTabIndex);
 
         var tempParseMessage1 = thisPtr->TempParseMessage.GetPointer(1);
         tempParseMessage1->Clear();

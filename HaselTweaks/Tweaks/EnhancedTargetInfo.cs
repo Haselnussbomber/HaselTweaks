@@ -42,25 +42,19 @@ public unsafe partial class EnhancedTargetInfo : ConfigurableTweak<EnhancedTarge
             _rewrittenHealthPercentageText = rssb.Builder.ToReadOnlySeString();
         }
 
-        _updateTargetInfoHook = _gameInteropProvider.HookFromAddress<AgentHUD.Delegates.UpdateTargetInfo>(
-            AgentHUD.MemberFunctionPointers.UpdateTargetInfo,
-            UpdateTargetInfoDetour);
+        _disposables = DisposableBag.Create(
+            _updateTargetInfoHook = _gameInteropProvider.EnabledHookFromAddress<AgentHUD.Delegates.UpdateTargetInfo>(
+                AgentHUD.MemberFunctionPointers.UpdateTargetInfo,
+                UpdateTargetInfoDetour),
 
-        _formatAddonText2IntIntUIntHook = _gameInteropProvider.HookFromAddress<RaptureTextModule.Delegates.FormatAddonText2IntIntUInt>(
-            RaptureTextModule.MemberFunctionPointers.FormatAddonText2IntIntUInt,
-            FormatAddonText2IntIntUIntDetour);
-
-        _updateTargetInfoHook.Enable();
-        _formatAddonText2IntIntUIntHook.Enable();
+            _formatAddonText2IntIntUIntHook = _gameInteropProvider.EnabledHookFromAddress<RaptureTextModule.Delegates.FormatAddonText2IntIntUInt>(
+                RaptureTextModule.MemberFunctionPointers.FormatAddonText2IntIntUInt,
+                FormatAddonText2IntIntUIntDetour));
     }
 
     public override void OnDisable()
     {
-        _updateTargetInfoHook?.Dispose();
-        _updateTargetInfoHook = null;
-
-        _formatAddonText2IntIntUIntHook?.Dispose();
-        _formatAddonText2IntIntUIntHook = null;
+        DisposeAndNull(ref _disposables);
     }
 
     private void UpdateTargetInfoDetour(AgentHUD* thisPtr)

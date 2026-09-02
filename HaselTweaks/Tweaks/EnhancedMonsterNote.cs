@@ -2,48 +2,38 @@ using Dalamud.Game.Agent.AgentArgTypes;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using DAgentEvent = Dalamud.Game.Agent.AgentEvent;
-using DAgentId = Dalamud.Game.Agent.AgentId;
 
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public unsafe partial class EnhancedMonsterNote : ConfigurableTweak<EnhancedMonsterNoteConfiguration>
 {
+    private static readonly byte[] ClassIds = [1, 2, 3, 4, 5, 29, 6, 7, 26];
+
     private readonly IClientState _clientState;
+    private readonly IAddonLifecycle _addonLifecycle;
     private readonly IAgentLifecycle _agentLifecycle;
     private readonly IGameInteropProvider _gameInteropProvider;
-    private readonly AddonObserver _addonObserver;
     private readonly ExcelService _excelService;
 
-    private Hook<AgentMonsterNote.Delegates.OpenWithData>? _openWithDataHook;
-
+    private Hook<AgentMonsterNote.Delegates.OpenWithData> _openWithDataHook;
     private bool _isShowCall;
-    private static readonly byte[] ClassIds = [1, 2, 3, 4, 5, 29, 6, 7, 26];
 
     public override void OnEnable()
     {
-        _agentLifecycle.RegisterListener(DAgentEvent.PreShow, DAgentId.MonsterNote, OnMonsterNotePreShow);
+        _disposables = DisposableBag.Create(
+            _openWithDataHook = _gameInteropProvider.EnabledHookFromAddress<AgentMonsterNote.Delegates.OpenWithData>(
+                AgentMonsterNote.MemberFunctionPointers.OpenWithData,
+                OpenWithDataDetour),
 
-        _openWithDataHook = _gameInteropProvider.HookFromAddress<AgentMonsterNote.Delegates.OpenWithData>(
-            AgentMonsterNote.MemberFunctionPointers.OpenWithData,
-            OpenWithDataDetour);
-
-        _openWithDataHook.Enable();
-
-        _clientState.Logout += OnLogout;
-        _addonObserver.AddonOpen += OnAddonOpen;
+            _agentLifecycle.OnPreShow(OnMonsterNotePreShow, AgentId.MonsterNote),
+            _addonLifecycle.OnPostShow(OnMonsterNotePostShow, "MonsterNote"),
+            _clientState.OnLogout(OnLogout));
     }
 
     public override void OnDisable()
     {
-        _agentLifecycle.UnregisterListener(DAgentEvent.PreShow, DAgentId.MonsterNote, OnMonsterNotePreShow);
-
-        _openWithDataHook?.Dispose();
-        _openWithDataHook = null;
-
-        _clientState.Logout -= OnLogout;
-        _addonObserver.AddonOpen -= OnAddonOpen;
+        DisposeAndNull(ref _disposables);
         _isShowCall = false;
     }
 
@@ -52,9 +42,9 @@ public unsafe partial class EnhancedMonsterNote : ConfigurableTweak<EnhancedMons
         _isShowCall = false; // just for safety
     }
 
-    private void OnAddonOpen(string addonName)
+    private void OnMonsterNotePostShow(AddonShowArgs args)
     {
-        if (!_config.OpenWithIncompleteFilter || addonName != "MonsterNote")
+        if (!_config.OpenWithIncompleteFilter)
             return;
 
         _logger.LogDebug("Changing filter to Incomplete.");
@@ -70,9 +60,9 @@ public unsafe partial class EnhancedMonsterNote : ConfigurableTweak<EnhancedMons
         AgentMonsterNote.Instance()->ReceiveEvent(retVal, values.GetPointer(0), 2, 0);
     }
 
-    private void OnMonsterNotePreShow(DAgentEvent type, AgentArgs args)
+    private void OnMonsterNotePreShow(AgentArgs args)
     {
-        var agent = args.GetAgentPointer<AgentMonsterNote>();
+        var agent = args.GetAgent<AgentMonsterNote>();
         if (!agent->IsAgentActive())
             _isShowCall = true;
     }

@@ -33,7 +33,6 @@ public partial class RevealDutyRequirements : Tweak
 
     public override void OnDisable()
     {
-        _patch?.Dispose();
-        _patch = null;
+        DisposeAndNull(ref _patch);
     }
 }

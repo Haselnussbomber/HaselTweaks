@@ -9,45 +9,33 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<CharacterClassSwitcherConfiguration>
 {
-    private readonly TextService _textService;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IAddonLifecycle _addonLifecycle;
+    private readonly TextService _textService;
 
-    private Hook<AtkTooltipManager.Delegates.ShowTooltip>? _atkTooltipManagerShowTooltipHook;
+    private Hook<AtkTooltipManager.Delegates.ShowTooltip>? _showTooltipHook;
 
     public override void OnEnable()
     {
-        _atkTooltipManagerShowTooltipHook = _gameInteropProvider.HookFromAddress<AtkTooltipManager.Delegates.ShowTooltip>(
-            AtkTooltipManager.Addresses.ShowTooltip.Value,
-            AtkTooltipManagerShowTooltipDetour);
+        _disposables = DisposableBag.Create(
+            _showTooltipHook = _gameInteropProvider.EnabledHookFromAddress<AtkTooltipManager.Delegates.ShowTooltip>(
+                AtkTooltipManager.MemberFunctionPointers.ShowTooltip,
+                AtkTooltipManagerShowTooltipDetour),
 
-        _atkTooltipManagerShowTooltipHook.Enable();
+            _addonLifecycle.OnPreSetup(OnCharacterPreSetup, "Character"),
+            _addonLifecycle.OnPostSetup(OnCharacterClassPostSetup, "CharacterClass"),
+            _addonLifecycle.OnPostRequestedUpdate(OnCharacterClassPostRequestedUpdate, "CharacterClass"),
+            _addonLifecycle.OnPreReceiveEvent(OnCharacterClassPreReceiveEvent, "CharacterClass"),
 
-        _addonLifecycle.RegisterListener(AddonEvent.PreSetup, "Character", OnCharacterPreSetup);
-
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "CharacterClass", OnCharacterClassPostSetup);
-        _addonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "CharacterClass", OnCharacterClassPostRequestedUpdate);
-        _addonLifecycle.RegisterListener(AddonEvent.PreReceiveEvent, "CharacterClass", OnCharacterClassPreReceiveEvent);
-
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "PvPCharacter", OnPvPCharacterPostSetup);
-        _addonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "PvPCharacter", OnPvPCharacterPostRequestedUpdate);
-        _addonLifecycle.RegisterListener(AddonEvent.PreReceiveEvent, "PvPCharacter", OnPvPCharacterPreReceiveEvent);
+            _addonLifecycle.OnPostSetup(OnPvPCharacterPostSetup, "PvPCharacter"),
+            _addonLifecycle.OnPostRequestedUpdate(OnPvPCharacterPostRequestedUpdate, "PvPCharacter"),
+            _addonLifecycle.OnPreReceiveEvent(OnPvPCharacterPreReceiveEvent, "PvPCharacter")
+        );
     }
 
     public override void OnDisable()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PreSetup, "Character", OnCharacterPreSetup);
-
-        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "CharacterClass", OnCharacterClassPostSetup);
-        _addonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "CharacterClass", OnCharacterClassPostRequestedUpdate);
-        _addonLifecycle.UnregisterListener(AddonEvent.PreReceiveEvent, "CharacterClass", OnCharacterClassPreReceiveEvent);
-
-        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "PvPCharacter", OnPvPCharacterPostSetup);
-        _addonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "PvPCharacter", OnPvPCharacterPostRequestedUpdate);
-        _addonLifecycle.UnregisterListener(AddonEvent.PreReceiveEvent, "PvPCharacter", OnPvPCharacterPreReceiveEvent);
-
-        _atkTooltipManagerShowTooltipHook?.Dispose();
-        _atkTooltipManagerShowTooltipHook = null;
+        DisposeAndNull(ref _disposables);
     }
 
     private void AtkTooltipManagerShowTooltipDetour(
@@ -67,12 +55,12 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
             return;
         }
 
-        _atkTooltipManagerShowTooltipHook!.Original(thisPtr, type, parentId, targetNode, tooltipArgs, unkDelegate, unk7, unk8);
+        _showTooltipHook!.OriginalDisposeSafe(thisPtr, type, parentId, targetNode, tooltipArgs, unkDelegate, unk7, unk8);
     }
 
     #region Character
 
-    private void OnCharacterPreSetup(AddonEvent type, AddonArgs addonArgs)
+    private void OnCharacterPreSetup(AddonArgs addonArgs)
     {
         if (!_config.AlwaysOpenOnClassesJobsTab || addonArgs is not AddonSetupArgs args)
             return;
@@ -92,7 +80,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
 
     #region CharacterClass
 
-    private void OnCharacterClassPostSetup(AddonEvent type, AddonArgs args)
+    private void OnCharacterClassPostSetup(AddonArgs args)
     {
         var addon = args.GetAddon<AddonCharacterClass>();
 
@@ -124,7 +112,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         }
     }
 
-    private void OnCharacterClassPostRequestedUpdate(AddonEvent type, AddonArgs args)
+    private void OnCharacterClassPostRequestedUpdate(AddonArgs args)
     {
         var addon = args.GetAddon<AddonCharacterClass>();
 
@@ -154,7 +142,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         }
     }
 
-    private void OnCharacterClassPreReceiveEvent(AddonEvent type, AddonArgs addonArgs)
+    private void OnCharacterClassPreReceiveEvent(AddonArgs addonArgs)
     {
         if (addonArgs is not AddonReceiveEventArgs args)
             return;
@@ -208,7 +196,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
 
     #region PvPCharacter
 
-    private void OnPvPCharacterPostSetup(AddonEvent type, AddonArgs args)
+    private void OnPvPCharacterPostSetup(AddonArgs args)
     {
         var addon = args.GetAddon<AddonPvPCharacter>();
 
@@ -227,7 +215,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         }
     }
 
-    private void OnPvPCharacterPostRequestedUpdate(AddonEvent type, AddonArgs args)
+    private void OnPvPCharacterPostRequestedUpdate(AddonArgs args)
     {
         var addon = args.GetAddon<AddonPvPCharacter>();
 
@@ -245,7 +233,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         }
     }
 
-    private void OnPvPCharacterPreReceiveEvent(AddonEvent type, AddonArgs addonArgs)
+    private void OnPvPCharacterPreReceiveEvent(AddonArgs addonArgs)
     {
         if (addonArgs is not AddonReceiveEventArgs args)
             return;

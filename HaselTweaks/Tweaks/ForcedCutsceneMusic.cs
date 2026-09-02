@@ -32,42 +32,27 @@ public unsafe partial class ForcedCutsceneMusic : ConfigurableTweak<ForcedCutsce
 
     public override void OnEnable()
     {
-        _createCutSceneControllerHook = _gameInteropProvider.HookFromAddress<ScheduleManagement.Delegates.CreateCutSceneController>(
-            ScheduleManagement.MemberFunctionPointers.CreateCutSceneController,
-            CreateCutSceneControllerDetour);
+        _disposables = DisposableBag.Create(
+            _createCutSceneControllerHook = _gameInteropProvider.EnabledHookFromAddress<ScheduleManagement.Delegates.CreateCutSceneController>(
+                ScheduleManagement.MemberFunctionPointers.CreateCutSceneController,
+                CreateCutSceneControllerDetour),
 
-        _cutSceneControllerDtorHook = _gameInteropProvider.HookFromAddress<CutSceneController.Delegates.Dtor>(
-            (nint)CutSceneController.StaticVirtualTablePointer->Dtor,
-            CutSceneControllerDtorDetour);
+            _cutSceneControllerDtorHook = _gameInteropProvider.EnabledHookFromAddress<CutSceneController.Delegates.Dtor>(
+                (nint)CutSceneController.StaticVirtualTablePointer->Dtor,
+                CutSceneControllerDtorDetour),
 
-        _createCutSceneControllerHook.Enable();
-        _cutSceneControllerDtorHook.Enable();
-
-        _unmuteDebouncer = _framework.CreateDebouncer(TimeSpan.FromMilliseconds(100), Unmute);
-        _restoreDebouncer = _framework.CreateDebouncer(TimeSpan.FromMilliseconds(100), Restore);
-
-        _framework.Update += OnUpdate;
+            _unmuteDebouncer = _framework.CreateDebouncer(TimeSpan.FromMilliseconds(100), Unmute),
+            _restoreDebouncer = _framework.CreateDebouncer(TimeSpan.FromMilliseconds(100), Restore),
+            _framework.OnUpdate(OnUpdate));
     }
+
     public override void OnDisable()
     {
-        _framework.Update -= OnUpdate;
-
-        _createCutSceneControllerHook?.Dispose();
-        _createCutSceneControllerHook = null;
-
-        _cutSceneControllerDtorHook?.Dispose();
-        _cutSceneControllerDtorHook = null;
-
-        _unmuteDebouncer?.Dispose();
-        _unmuteDebouncer = null;
-
-        _restoreDebouncer?.Dispose();
-        _restoreDebouncer = null;
-
+        DisposeAndNull(ref _disposables);
         _hasTask = false;
     }
 
-    private void OnUpdate(IFramework framework)
+    private void OnUpdate()
     {
         var hasTask = EventFramework.Instance()->EventSceneModule.TaskManager.Tasks.Any(IsCutsceneTask);
 

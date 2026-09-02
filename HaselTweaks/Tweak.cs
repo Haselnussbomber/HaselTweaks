@@ -9,7 +9,9 @@ public abstract partial class Tweak : ITweak, IHostedService
 {
     protected readonly PluginConfig _pluginConfig;
 
+    protected readonly IServiceProvider _serviceProvider;
     protected ILogger _logger;
+    protected IDisposable? _disposables;
 
     public string InternalName { get; private set; }
     public TweakStatus Status { get; set; } = TweakStatus.Disabled;
@@ -57,7 +59,15 @@ public abstract partial class Tweak : ITweak, IHostedService
         try
         {
             _logger.LogInformation("Disabling tweak");
+
             OnDisable();
+
+            if (_disposables != null)
+            {
+                _logger.LogWarning("Disposables not disposed in OnDisable!");
+                DisposeAndNull(ref _disposables);
+            }
+
             Status = TweakStatus.Disabled;
         }
         catch (Exception ex)
@@ -77,6 +87,7 @@ public abstract partial class Tweak : ITweak, IHostedService
         {
             _logger.LogInformation("Disposing tweak");
             OnDisable();
+            DisposeAndNull(ref _disposables);
         }
         catch (Exception ex)
         {

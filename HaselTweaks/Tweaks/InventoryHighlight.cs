@@ -24,29 +24,31 @@ public unsafe partial class InventoryHighlight : ConfigurableTweak<InventoryHigh
 
     public override void OnEnable()
     {
-        _framework.Update += OnFrameworkUpdate;
-        _clientState.Login += UpdateItemInventryWindowSizeTypes;
-        _gameConfig.UiConfigChanged += GameConfig_UiConfigChanged;
+        _disposables = DisposableBag.Create(
+            _clientState.OnLogin(OnLogin),
+            _gameConfig.OnGameConfigChange(OnGameConfigChange),
+            _framework.OnUpdate(OnFrameworkUpdate),
+            _addonLifecycle.OnPostRequestedUpdate(OnItemDetailPostRequestedUpdate, "ItemDetail"));
 
-        _addonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "ItemDetail", OnItemDetailPostRequestedUpdate);
         UpdateItemInventryWindowSizeTypes();
     }
 
     public override void OnDisable()
     {
-        _framework.Update -= OnFrameworkUpdate;
-        _clientState.Login -= UpdateItemInventryWindowSizeTypes;
-        _gameConfig.UiConfigChanged -= GameConfig_UiConfigChanged;
-
-        _addonLifecycle.UnregisterListener(AddonEvent.PostRequestedUpdate, "ItemDetail", OnItemDetailPostRequestedUpdate);
+        DisposeAndNull(ref _disposables);
 
         if (Status is TweakStatus.Enabled)
             ResetGrids();
     }
 
-    private void GameConfig_UiConfigChanged(object? sender, ConfigChangeEvent evt)
+    private void OnLogin()
     {
-        if (evt.Option is UiConfigOption uiConfigOption && uiConfigOption is UiConfigOption.ItemInventryWindowSizeType or UiConfigOption.ItemInventryRetainerWindowSizeType)
+        UpdateItemInventryWindowSizeTypes();
+    }
+
+    private void OnGameConfigChange(ConfigChangeEvent change)
+    {
+        if (change.Option is UiConfigOption uiConfigOption && uiConfigOption is UiConfigOption.ItemInventryWindowSizeType or UiConfigOption.ItemInventryRetainerWindowSizeType)
         {
             UpdateItemInventryWindowSizeTypes();
             ResetGrids();
@@ -59,7 +61,7 @@ public unsafe partial class InventoryHighlight : ConfigurableTweak<InventoryHigh
         _gameConfig.TryGet(UiConfigOption.ItemInventryRetainerWindowSizeType, out _itemInventryRetainerWindowSizeType);
     }
 
-    private void OnItemDetailPostRequestedUpdate(AddonEvent type, AddonArgs args)
+    private void OnItemDetailPostRequestedUpdate(AddonArgs args)
     {
         if (IsHighlightActive())
         {
@@ -69,7 +71,7 @@ public unsafe partial class InventoryHighlight : ConfigurableTweak<InventoryHigh
         }
     }
 
-    private void OnFrameworkUpdate(IFramework framework)
+    private void OnFrameworkUpdate()
     {
         _hoveredItemId = NormalizeItemId((uint)_gameGui.HoveredItem);
 

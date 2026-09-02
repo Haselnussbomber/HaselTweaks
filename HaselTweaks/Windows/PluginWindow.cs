@@ -42,9 +42,9 @@ public partial class PluginWindow : SimpleWindow
         AllowClickthrough = false;
     }
 
-    public override void OnLanguageChanged(string langCode)
+    public override void OnLanguageChanged()
     {
-        base.OnLanguageChanged(langCode);
+        base.OnLanguageChanged();
 
         if (IsOpen)
             UpdateShownTweaks();

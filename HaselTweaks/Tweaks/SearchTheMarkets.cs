@@ -29,19 +29,25 @@ public unsafe partial class SearchTheMarkets : Tweak
             }
         };
 
-        _contextMenu.OnMenuOpened += ContextMenu_OnMenuOpened;
-        _languageProvider.LanguageChanged += OnLanguageChange;
+        _disposables = DisposableBag.Create(
+            EventExtensions.Subscribe(
+                handler => _contextMenu.OnMenuOpened += handler.Invoke,
+                handler => _contextMenu.OnMenuOpened -= handler.Invoke,
+                ContextMenu_OnMenuOpened),
+
+            EventExtensions.Subscribe(
+                handler => _languageProvider.LanguageChanged += handler.Invoke,
+                handler => _languageProvider.LanguageChanged -= handler.Invoke,
+                OnLanguageChange));
     }
 
     public override void OnDisable()
     {
-        _contextMenu.OnMenuOpened -= ContextMenu_OnMenuOpened;
-        _languageProvider.LanguageChanged -= OnLanguageChange;
-
+        DisposeAndNull(ref _disposables);
         _menuItem = null;
     }
 
-    private void OnLanguageChange(string langCode)
+    private void OnLanguageChange()
     {
         _menuItem?.Name = _textService.Translate("ItemContextMenu.SearchTheMarkets");
     }

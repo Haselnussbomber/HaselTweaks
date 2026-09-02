@@ -10,17 +10,14 @@ public unsafe partial class PreventMovementReelIn : Tweak
 
     public override void OnEnable()
     {
-        _hook = _gameInteropProvider.HookFromAddress<FishingEventHandler.Delegates.CancelByPlayerMovement>(
+        _hook = _gameInteropProvider.EnabledHookFromAddress<FishingEventHandler.Delegates.CancelByPlayerMovement>(
             (nint)FishingEventHandler.StaticVirtualTablePointer->CancelByPlayerMovement,
             CancelByPlayerMovementDetour);
-
-        _hook.Enable();
     }
 
     public override void OnDisable()
     {
-        _hook?.Dispose();
-        _hook = null;
+        DisposeAndNull(ref _hook);
     }
 
     private void CancelByPlayerMovementDetour(FishingEventHandler* thisPtr, bool a2, bool a3)

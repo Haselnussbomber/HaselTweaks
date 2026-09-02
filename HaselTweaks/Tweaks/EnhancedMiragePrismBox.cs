@@ -11,15 +11,15 @@ public unsafe partial class EnhancedMiragePrismBox : ConfigurableTweak<EnhancedM
 
     public override void OnEnable()
     {
-        _addonLifecycle.RegisterListener(AddonEvent.PostRefresh, "MiragePrismPrismSetConvert", OnPostRefresh);
+        _disposables = _addonLifecycle.OnPostRefresh(OnPostRefresh, "MiragePrismPrismSetConvert");
     }
 
     public override void OnDisable()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PostRefresh, "MiragePrismPrismSetConvert", OnPostRefresh);
+        DisposeAndNull(ref _disposables);
     }
 
-    private void OnPostRefresh(AddonEvent type, AddonArgs args)
+    private void OnPostRefresh(AddonArgs args)
     {
         if (!_config.EnableAutoFillHandIn)
             return;

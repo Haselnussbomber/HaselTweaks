@@ -14,13 +14,12 @@ public unsafe partial class MinimapAdjustments : ConfigurableTweak<MinimapAdjust
     public override void OnEnable()
     {
         _targetAlpha = _config.DefaultOpacity;
-
-        _framework.Update += OnFrameworkUpdate;
+        _disposables = _framework.OnUpdate(OnFrameworkUpdate);
     }
 
     public override void OnDisable()
     {
-        _framework.Update -= OnFrameworkUpdate;
+        DisposeAndNull(ref _disposables);
 
         if (Status is not TweakStatus.Enabled)
             return;
@@ -41,7 +40,7 @@ public unsafe partial class MinimapAdjustments : ConfigurableTweak<MinimapAdjust
         naviMap->Collision->DrawFlags |= 1 << 23;
     }
 
-    private void OnFrameworkUpdate(IFramework framework)
+    private void OnFrameworkUpdate()
     {
         if (!_clientState.IsLoggedIn)
             return;

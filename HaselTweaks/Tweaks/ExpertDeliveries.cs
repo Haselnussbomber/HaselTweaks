@@ -6,26 +6,22 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public unsafe partial class ExpertDeliveries : Tweak
 {
+    private readonly IAddonLifecycle _addonLifecycle;
+    private readonly IGameInteropProvider _gameInteropProvider;
     private readonly AddonObserver _addonObserver;
 
     public override void OnEnable()
     {
-        _addonObserver.AddonOpen += OnAddonOpen;
+        _disposables = _addonObserver.OnShow(OnShow, "GrandCompanySupplyList");
     }
 
     public override void OnDisable()
     {
-        _addonObserver.AddonOpen -= OnAddonOpen;
+        DisposeAndNull(ref _disposables);
     }
 
-    public void OnAddonOpen(string addonName)
+    private void OnShow(AtkUnitBase* addon)
     {
-        if (addonName != "GrandCompanySupplyList")
-            return;
-
-        if (!TryGetAddon<AtkUnitBase>(addonName, out var addon))
-            return;
-
         // prevent item selection for controller users to reset to the first entry
         if (AgentGrandCompanySupply.Instance()->SelectedTab == 2)
             return;

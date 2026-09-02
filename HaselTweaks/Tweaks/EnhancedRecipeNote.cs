@@ -12,14 +12,14 @@ public unsafe partial class EnhancedRecipeNote : ConfigurableTweak<EnhancedRecip
 
     public override void OnEnable()
     {
-        _addonLifecycle.RegisterListener(AddonEvent.PreFinalize, "RecipeNote", OnRecipeNotePreFinalize);
-        _clientState.Login += OnLogin;
+        _disposables = DisposableBag.Create(
+            _addonLifecycle.OnPreFinalize(OnRecipeNotePreFinalize, "RecipeNote"),
+            _clientState.OnLogin(OnLogin));
     }
 
     public override void OnDisable()
     {
-        _clientState.Login -= OnLogin;
-        _addonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "RecipeNote", OnRecipeNotePreFinalize);
+        DisposeAndNull(ref _disposables);
     }
 
     private void OnLogin()
@@ -39,7 +39,7 @@ public unsafe partial class EnhancedRecipeNote : ConfigurableTweak<EnhancedRecip
         }
     }
 
-    private void OnRecipeNotePreFinalize(AddonEvent type, AddonArgs args)
+    private void OnRecipeNotePreFinalize(AddonArgs args)
     {
         var agent = AgentRecipeNote.Instance();
 

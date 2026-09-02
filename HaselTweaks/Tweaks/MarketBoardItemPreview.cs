@@ -11,20 +11,20 @@ public unsafe partial class MarketBoardItemPreview : Tweak
 
     public override void OnEnable()
     {
-        _addonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "ItemSearch", ItemSearch_PostReceiveEvent);
+        _disposables = _addonLifecycle.OnPostReceiveEvent(OnPostReceiveEvent, "ItemSearch");
     }
 
     public override void OnDisable()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PostReceiveEvent, "ItemSearch", ItemSearch_PostReceiveEvent);
+        DisposeAndNull(ref _disposables);
     }
 
-    private void ItemSearch_PostReceiveEvent(AddonEvent type, AddonArgs args)
+    private void OnPostReceiveEvent(AddonReceiveEventArgs args)
     {
-        if (args is not AddonReceiveEventArgs receiveEventArgs || receiveEventArgs.EventType != AtkEventType.ListItemRollOver)
+        if (args.EventType != AtkEventType.ListItemRollOver)
             return;
 
-        var eventData = receiveEventArgs.GetEventData<AtkEventData.AtkListItemData>();
+        var eventData = args.GetEventData<AtkEventData.AtkListItemData>();
         var itemIndex = eventData->SelectedIndex;
         var itemId = AgentItemSearch.Instance()->ListingPageItemIds[itemIndex];
 

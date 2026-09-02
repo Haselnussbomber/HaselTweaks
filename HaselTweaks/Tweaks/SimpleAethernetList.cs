@@ -11,19 +11,16 @@ public unsafe partial class SimpleAethernetList : Tweak
 
     public override void OnEnable()
     {
-        _addonLifecycle.RegisterListener(AddonEvent.PreReceiveEvent, "TelepotTown", OnPreReceiveEvent);
+        _disposables = _addonLifecycle.OnPreReceiveEvent(OnPreReceiveEvent, "TelepotTown");
     }
 
     public override void OnDisable()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PreReceiveEvent, "TelepotTown", OnPreReceiveEvent);
+        DisposeAndNull(ref _disposables);
     }
 
-    private void OnPreReceiveEvent(AddonEvent type, AddonArgs addonArgs)
+    private void OnPreReceiveEvent(AddonReceiveEventArgs args)
     {
-        if (addonArgs is not AddonReceiveEventArgs args)
-            return;
-
         if (args.EventType != AtkEventType.ListItemRollOver)
             return;
 

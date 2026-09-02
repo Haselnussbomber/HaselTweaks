@@ -12,27 +12,22 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
 
     public override void OnEnable()
     {
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "Character", OnCharacterPostSetup);
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "CharacterInspect", OnCharacterInspectPostSetup);
-        _addonLifecycle.RegisterListener(AddonEvent.PostDraw, "CharacterInspect", OnCharacterInspectPostDraw);
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "ColorantColoring", OnColorantColoringPostSetup);
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "Tryon", OnTryonPostSetup);
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, AddonNames, OnPostSetupOrRefresh);
-        _addonLifecycle.RegisterListener(AddonEvent.PostRefresh, AddonNames, OnPostSetupOrRefresh);
+        _disposables = DisposableBag.Create(
+            _addonLifecycle.OnPostSetup(OnCharacterPostSetup, "Character"),
+            _addonLifecycle.OnPostSetup(OnCharacterInspectPostSetup, "CharacterInspect"),
+            _addonLifecycle.OnPostDraw(OnCharacterInspectPostDraw, "CharacterInspect"),
+            _addonLifecycle.OnPostSetup(OnColorantColoringPostSetup, "ColorantColoring"),
+            _addonLifecycle.OnPostSetup(OnTryonPostSetup, "Tryon"),
+            _addonLifecycle.OnPostSetup(OnPostSetupOrRefresh, AddonNames),
+            _addonLifecycle.OnPostRefresh(OnPostSetupOrRefresh, AddonNames));
     }
 
     public override void OnDisable()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Character", OnCharacterPostSetup);
-        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "CharacterInspect", OnCharacterInspectPostSetup);
-        _addonLifecycle.UnregisterListener(AddonEvent.PostDraw, "CharacterInspect", OnCharacterInspectPostDraw);
-        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "ColorantColoring", OnColorantColoringPostSetup);
-        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Tryon", OnTryonPostSetup);
-        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, AddonNames, OnPostSetupOrRefresh);
-        _addonLifecycle.UnregisterListener(AddonEvent.PostRefresh, AddonNames, OnPostSetupOrRefresh);
+        DisposeAndNull(ref _disposables);
     }
 
-    private void OnCharacterPostSetup(AddonEvent type, AddonArgs args)
+    private void OnCharacterPostSetup(AddonArgs args)
     {
         if (!_config.EnableCharacter)
             return;
@@ -104,7 +99,7 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
             MoveNode(addon->GetNodeById(73 + i), new Vector2(20, 70));
     }
 
-    private void OnCharacterInspectPostSetup(AddonEvent type, AddonArgs args)
+    private void OnCharacterInspectPostSetup(AddonArgs args)
     {
         if (!_config.EnableCharacterInspect)
             return;
@@ -153,7 +148,7 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
     }
 
     // support for Simple Tweaks "Item Level in Examine" tweak
-    private void OnCharacterInspectPostDraw(AddonEvent type, AddonArgs args)
+    private void OnCharacterInspectPostDraw(AddonArgs args)
     {
         if (!_config.EnableCharacterInspect)
             return;
@@ -186,7 +181,7 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
         itemLevelTextImage->AtkResNode.Position = new Vector2(newTextPos.X, itemLevelTextImage->Y);
     }
 
-    private void OnColorantColoringPostSetup(AddonEvent type, AddonArgs args)
+    private void OnColorantColoringPostSetup(AddonArgs args)
     {
         if (!_config.EnableColorantColoring)
             return;
@@ -218,7 +213,7 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
             MoveNode(addon->GetNodeById(72 + i), new Vector2(50, 228));
     }
 
-    private void OnTryonPostSetup(AddonEvent type, AddonArgs args)
+    private void OnTryonPostSetup(AddonArgs args)
     {
         if (!_config.EnableTryon)
             return;
@@ -266,7 +261,7 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
             node->Position += size;
     }
 
-    private void OnPostSetupOrRefresh(AddonEvent type, AddonArgs args)
+    private void OnPostSetupOrRefresh(AddonArgs args)
     {
         UpdatePreviewSharpening(args.GetAddon<AtkUnitBase>());
     }

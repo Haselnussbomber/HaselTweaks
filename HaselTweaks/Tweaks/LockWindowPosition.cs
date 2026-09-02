@@ -31,69 +31,45 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak<LockWindowPos
     private Vector2 _hoveredWindowSize;
     private int _eventIndexToDisable = 0;
 
-    private delegate bool RaptureAtkUnitManagerVf6Delegate(RaptureAtkUnitManager* self, nint a2);
+    private delegate byte RaptureAtkUnitManagerVf6Delegate(RaptureAtkUnitManager* self, nint a2);
 
     public override void OnEnable()
     {
-        _moveDeltaHook = _gameInteropProvider.HookFromAddress<AtkUnitBase.Delegates.MoveDelta>(
-            AtkUnitBase.MemberFunctionPointers.MoveDelta,
-            MoveDeltaDetour);
+        _disposables = DisposableBag.Create(
+            _moveDeltaHook = _gameInteropProvider.EnabledHookFromAddress<AtkUnitBase.Delegates.MoveDelta>(
+                AtkUnitBase.MemberFunctionPointers.MoveDelta,
+                MoveDeltaDetour),
 
-        _raptureAtkUnitManagerVf6Hook = _gameInteropProvider.HookFromVTable<RaptureAtkUnitManagerVf6Delegate>(
-            RaptureAtkUnitManager.StaticVirtualTablePointer, 6,
-            RaptureAtkUnitManagerVf6Detour);
+            _raptureAtkUnitManagerVf6Hook = _gameInteropProvider.EnabledHookFromVTable<RaptureAtkUnitManagerVf6Delegate>(
+                RaptureAtkUnitManager.StaticVirtualTablePointer, 6,
+                RaptureAtkUnitManagerVf6Detour),
 
-        _clearMenuHook = _gameInteropProvider.HookFromAddress<AgentContext.Delegates.ClearMenu>(
-            AgentContext.MemberFunctionPointers.ClearMenu,
-            ClearMenuDetour);
+            _clearMenuHook = _gameInteropProvider.EnabledHookFromAddress<AgentContext.Delegates.ClearMenu>(
+                AgentContext.MemberFunctionPointers.ClearMenu,
+                ClearMenuDetour),
 
-        _addMenuItem2Hook = _gameInteropProvider.HookFromAddress<AgentContext.Delegates.AddMenuItem2>(
-            AgentContext.MemberFunctionPointers.AddMenuItem2,
-            AddMenuItem2Detour);
+            _addMenuItem2Hook = _gameInteropProvider.EnabledHookFromAddress<AgentContext.Delegates.AddMenuItem2>(
+                AgentContext.MemberFunctionPointers.AddMenuItem2,
+                AddMenuItem2Detour),
 
-        _openContextMenuForAddonHook = _gameInteropProvider.HookFromAddress<AgentContext.Delegates.OpenContextMenuForAddon>(
-            AgentContext.MemberFunctionPointers.OpenContextMenuForAddon,
-            OpenContextMenuForAddonDetour);
+            _openContextMenuForAddonHook = _gameInteropProvider.EnabledHookFromAddress<AgentContext.Delegates.OpenContextMenuForAddon>(
+                AgentContext.MemberFunctionPointers.OpenContextMenuForAddon,
+                OpenContextMenuForAddonDetour),
 
-        _windowContextMenuHandlerReceiveEventHook = _gameInteropProvider.HookFromAddress<AtkEventInterface.Delegates.ReceiveEvent>(
-            RaptureAtkUnitManager.Instance()->WindowContextMenuHandler.VirtualTable->ReceiveEvent,
-            WindowContextMenuHandlerReceiveEventDetour);
+            _windowContextMenuHandlerReceiveEventHook = _gameInteropProvider.EnabledHookFromAddress<AtkEventInterface.Delegates.ReceiveEvent>(
+                RaptureAtkUnitManager.Instance()->WindowContextMenuHandler.VirtualTable->ReceiveEvent,
+                WindowContextMenuHandlerReceiveEventDetour),
 
-        _moveDeltaHook?.Enable();
-        _raptureAtkUnitManagerVf6Hook?.Enable();
-        _clearMenuHook?.Enable();
-        _addMenuItem2Hook?.Enable();
-        _openContextMenuForAddonHook?.Enable();
-        _windowContextMenuHandlerReceiveEventHook?.Enable();
-
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "GearSetList", OnGearSetListPostSetup);
+            _addonLifecycle.OnPostSetup(OnGearSetListPostSetup, "GearSetList"));
     }
 
     public override void OnDisable()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "GearSetList", OnGearSetListPostSetup);
-
-        _moveDeltaHook?.Dispose();
-        _moveDeltaHook = null;
-
-        _raptureAtkUnitManagerVf6Hook?.Dispose();
-        _raptureAtkUnitManagerVf6Hook = null;
-
-        _clearMenuHook?.Dispose();
-        _clearMenuHook = null;
-
-        _addMenuItem2Hook?.Dispose();
-        _addMenuItem2Hook = null;
-
-        _openContextMenuForAddonHook?.Dispose();
-        _openContextMenuForAddonHook = null;
-
-        _windowContextMenuHandlerReceiveEventHook?.Dispose();
-        _windowContextMenuHandlerReceiveEventHook = null;
+        DisposeAndNull(ref _disposables);
     }
 
     // block GearSetList from moving when opened by Character
-    private void OnGearSetListPostSetup(AddonEvent type, AddonArgs args)
+    private void OnGearSetListPostSetup(AddonArgs args)
     {
         var addon = args.GetAddon<AddonGearSetList>();
 
@@ -123,7 +99,7 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak<LockWindowPos
         return _moveDeltaHook!.Original(atkUnitBase, xDelta, yDelta);
     }
 
-    private bool RaptureAtkUnitManagerVf6Detour(RaptureAtkUnitManager* self, nint a2)
+    private byte RaptureAtkUnitManagerVf6Detour(RaptureAtkUnitManager* self, nint a2)
     {
         if (_showPicker)
         {
@@ -158,7 +134,7 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak<LockWindowPos
                 _showPicker = false;
             }
 
-            return false;
+            return 0;
         }
 
         return _raptureAtkUnitManagerVf6Hook!.Original(self, a2);

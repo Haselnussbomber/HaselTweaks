@@ -9,16 +9,16 @@ public unsafe partial class AlwaysFaceCamera : Tweak
 
     public override void OnEnable()
     {
-        _framework.Update += OnUpdate;
+        _disposables = _framework.OnUpdate(OnUpdate);
     }
 
     public override void OnDisable()
     {
-        _framework.Update -= OnUpdate;
+        DisposeAndNull(ref _disposables);
         DisableFaceCamera();
     }
 
-    private void OnUpdate(IFramework framework)
+    private void OnUpdate()
     {
         var localPlayer = Control.GetLocalPlayer();
         if (localPlayer == null || localPlayer->InCombat || localPlayer->GetTargetId() != 0xE0000000)

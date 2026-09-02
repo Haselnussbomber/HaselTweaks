@@ -10,32 +10,31 @@ public unsafe partial class AutoSelectSoilAndSeed : Tweak
 {
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly ExcelService _excelService;
-    private readonly IFramework _framework;
+
+    private bool _handled;
 
     public override void OnEnable()
     {
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "HousingGardening", OnPostSetup);
-        _addonLifecycle.RegisterListener(AddonEvent.PreFinalize, "HousingGardening", OnPreFinalize);
+        _disposables = DisposableBag.Create(
+            _addonLifecycle.OnPostSetup(OnHousingGardeningSetup, "HousingGardening"),
+            _addonLifecycle.OnPreUpdate(OnHousingGardeningUpdate, "HousingGardening"));
     }
 
     public override void OnDisable()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "HousingGardening", OnPostSetup);
-        _addonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "HousingGardening", OnPreFinalize);
+        DisposeAndNull(ref _disposables);
     }
 
-    private void OnPostSetup(AddonEvent type, AddonArgs args)
+    private void OnHousingGardeningSetup(AddonSetupArgs args)
     {
-        _framework.Update += OnUpdate;
+        _handled = false;
     }
 
-    private void OnPreFinalize(AddonEvent type, AddonArgs args)
+    private void OnHousingGardeningUpdate(AddonArgs args)
     {
-        _framework.Update -= OnUpdate;
-    }
+        if (_handled || !args.Addon.IsReady)
+            return;
 
-    private void OnUpdate(IFramework framework)
-    {
         var agent = AgentHousingPlant.Instance();
         if (!agent->IsAgentActive())
             return;
@@ -93,7 +92,7 @@ public unsafe partial class AutoSelectSoilAndSeed : Tweak
             }
         }
 
-        _framework.Update -= OnUpdate;
+        _handled = true;
     }
 
     public void SelectItem(int index, uint itemId, int iconId, InventoryType inventoryType, ushort inventorySlot)

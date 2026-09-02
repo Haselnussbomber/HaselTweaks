@@ -51,8 +51,7 @@ public partial class ThumbnailService : IDisposable
     public void Clear()
     {
         _disposeCTS?.Cancel();
-        _disposeCTS?.Dispose();
-        _disposeCTS = null;
+        DisposeAndNull(ref _disposeCTS);
         _images.Dispose();
         _thumbnails.Dispose();
     }

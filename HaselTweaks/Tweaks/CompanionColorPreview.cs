@@ -1,43 +1,37 @@
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Windows;
 
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public partial class CompanionColorPreview : Tweak
+public unsafe partial class CompanionColorPreview : Tweak
 {
     private readonly AddonObserver _addonObserver;
     private readonly WindowManager _windowManager;
 
     public override void OnEnable()
     {
-        _addonObserver.AddonOpen += OnAddonOpen;
-        _addonObserver.AddonClose += OnAddonClose;
+        _disposables = DisposableBag.Create(
+            _addonObserver.OnShow(OnShow, "Buddy"),
+            _addonObserver.OnHide(OnHide, "Buddy"));
 
-        if (_addonObserver.IsAddonVisible("Buddy"))
+        if (IsAddonOpen("Buddy"))
             _windowManager.CreateOrOpen<CompanionColorPreviewWindow>();
     }
 
     public override void OnDisable()
     {
-        _addonObserver.AddonOpen -= OnAddonOpen;
-        _addonObserver.AddonClose -= OnAddonClose;
-
+        DisposeAndNull(ref _disposables);
         _windowManager.Close<CompanionColorPreviewWindow>();
     }
 
-    private void OnAddonOpen(string addonName)
+    private void OnShow(AtkUnitBase* addon)
     {
-        if (addonName != "Buddy")
-            return;
-
         _windowManager.CreateOrOpen<CompanionColorPreviewWindow>();
     }
 
-    private void OnAddonClose(string addonName)
+    private void OnHide(AtkUnitBase* addon)
     {
-        if (addonName != "Buddy")
-            return;
-
         _windowManager.Close<CompanionColorPreviewWindow>();
     }
 }

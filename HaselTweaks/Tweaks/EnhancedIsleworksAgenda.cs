@@ -8,13 +8,15 @@ namespace HaselTweaks.Tweaks;
 public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak<EnhancedIsleworksAgendaConfiguration>
 {
     private readonly IAddonLifecycle _addonLifecycle;
+    private readonly AddonObserver _addonObserver;
     private readonly MJICraftScheduleSettingSearchBar _window;
 
     public override void OnEnable()
     {
-        _addonLifecycle.RegisterListener(AddonEvent.PreReceiveEvent, "MJICraftScheduleSetting", OnPreReceiveEvent);
-        _addonLifecycle.RegisterListener(AddonEvent.PostShow, "MJICraftScheduleSetting", OnPostShow);
-        _addonLifecycle.RegisterListener(AddonEvent.PreHide, "MJICraftScheduleSetting", OnPreHide);
+        _disposables = DisposableBag.Create(
+            _addonLifecycle.OnPreReceiveEvent(OnPreReceiveEvent, "MJICraftScheduleSetting"),
+            _addonObserver.OnShow(OnShow, "MJICraftScheduleSetting"),
+            _addonObserver.OnHide(OnHide, "MJICraftScheduleSetting"));
 
         if (_config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"u8))
             _window.Open();
@@ -22,24 +24,11 @@ public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak<Enhanced
 
     public override void OnDisable()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PreReceiveEvent, "MJICraftScheduleSetting", OnPreReceiveEvent);
-        _addonLifecycle.UnregisterListener(AddonEvent.PostShow, "MJICraftScheduleSetting", OnPostShow);
-        _addonLifecycle.UnregisterListener(AddonEvent.PreHide, "MJICraftScheduleSetting", OnPreHide);
+        DisposeAndNull(ref _disposables);
         _window.Close();
     }
 
-    private void OnPostShow(AddonEvent type, AddonArgs args)
-    {
-        if (_config.EnableSearchBar)
-            _window.Open();
-    }
-
-    private void OnPreHide(AddonEvent type, AddonArgs args)
-    {
-        _window.Close();
-    }
-
-    private void OnPreReceiveEvent(AddonEvent type, AddonArgs addonArgs)
+    private void OnPreReceiveEvent(AddonArgs addonArgs)
     {
         if (!_config.DisableTreeListTooltips || addonArgs is not AddonReceiveEventArgs args)
             return;
@@ -55,5 +44,16 @@ public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak<Enhanced
             return;
 
         args.PreventOriginal();
+    }
+
+    private void OnShow(AtkUnitBase* addon)
+    {
+        if (_config.EnableSearchBar)
+            _window.Open();
+    }
+
+    private void OnHide(AtkUnitBase* addon)
+    {
+        _window.Close();
     }
 }

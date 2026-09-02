@@ -16,15 +16,15 @@ public unsafe partial class GlamourDresserKeyboardNavigation : Tweak
 
     public override void OnEnable()
     {
-        _framework.Update += OnFrameworkUpdate;
+        _disposables = _framework.OnUpdate(OnFrameworkUpdate);
     }
 
     public override void OnDisable()
     {
-        _framework.Update -= OnFrameworkUpdate;
+        DisposeAndNull(ref _disposables);
     }
 
-    private void OnFrameworkUpdate(IFramework framework)
+    private void OnFrameworkUpdate()
     {
         if (!TryGetAddon<AddonMiragePrismPrismBox>(AgentId.MiragePrismPrismBox, out var addonPrismBox))
             return;

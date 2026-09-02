@@ -11,40 +11,33 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public unsafe partial class CosmicResearchTodo : ConfigurableTweak<CosmicResearchTodoConfiguration>
 {
-    private readonly ExcelService _excelService;
-    private readonly LanguageProvider _languageProvider;
-    private readonly TextService _textService;
-    private readonly IAddonLifecycle _addonLifecycle;
-    private readonly IClientState _clientState;
     private readonly IFramework _framework;
+    private readonly IClientState _clientState;
     private readonly IGameInteropProvider _gameInteropProvider;
+    private readonly IAddonLifecycle _addonLifecycle;
     private readonly ISeStringEvaluator _seStringEvaluator;
+    private readonly LanguageProvider _languageProvider;
+    private readonly ExcelService _excelService;
 
     private Hook<WKSModuleBase.Delegates.SetIntData>? _setIntDataHook;
 
     public override void OnEnable()
     {
-        _addonLifecycle.RegisterListener(AddonEvent.PreRequestedUpdate, "_ToDoList", OnPreRequestedUpdate);
+        _disposables = DisposableBag.Create(
+            _setIntDataHook = _gameInteropProvider.EnabledHookFromSignature<WKSModuleBase.Delegates.SetIntData>(
+                "40 53 48 83 EC ?? 48 8B D9 81 EA",
+                SetIntDataDetour),
 
-        _setIntDataHook = _gameInteropProvider.HookFromSignature<WKSModuleBase.Delegates.SetIntData>("40 53 48 83 EC ?? 48 8B D9 81 EA", SetIntDataDetour);
-        _setIntDataHook.Enable();
-
-        _clientState.ClassJobChanged += OnClassJobChanged;
-        _languageProvider.LanguageChanged += OnLanguageChanged;
+            _addonLifecycle.OnPreRequestedUpdate(OnPreRequestedUpdate, "_ToDoList"),
+            _clientState.OnClassJobChange(OnClassJobChanged),
+            _languageProvider.OnLanguageChange(OnLanguageChanged));
 
         _ = _framework.RunOnTick(RequestUpdate, delayTicks: 1);
     }
 
     public override void OnDisable()
     {
-        _languageProvider.LanguageChanged -= OnLanguageChanged;
-        _clientState.ClassJobChanged -= OnClassJobChanged;
-
-        _setIntDataHook?.Dispose();
-        _setIntDataHook = null;
-
-        _addonLifecycle.UnregisterListener(AddonEvent.PreRequestedUpdate, "_ToDoList", OnPreRequestedUpdate);
-
+        DisposeAndNull(ref _disposables);
         RequestUpdate();
     }
 
@@ -54,7 +47,7 @@ public unsafe partial class CosmicResearchTodo : ConfigurableTweak<CosmicResearc
         RequestUpdate();
     }
 
-    private void OnLanguageChanged(string obj)
+    private void OnLanguageChanged()
     {
         _logger.LogTrace("LanguageChanged -> RequestUpdate");
         RequestUpdate();
@@ -62,7 +55,7 @@ public unsafe partial class CosmicResearchTodo : ConfigurableTweak<CosmicResearc
 
     private bool SetIntDataDetour(WKSModuleBase* thisPtr, int a2, int a3, int a4, int a5, int a6, int a7)
     {
-        var retVal = _setIntDataHook!.Original(thisPtr, a2, a3, a4, a5, a6, a7);
+        var retVal = _setIntDataHook!.OriginalDisposeSafe(thisPtr, a2, a3, a4, a5, a6, a7);
         _logger.LogTrace("SetIntDataDetour -> RequestUpdate");
         RequestUpdate();
         return retVal;
@@ -73,7 +66,7 @@ public unsafe partial class CosmicResearchTodo : ConfigurableTweak<CosmicResearc
         UIState.Instance()->MassivePcContentTodo.FullUpdatePending = true;
     }
 
-    private void OnPreRequestedUpdate(AddonEvent type, AddonArgs args)
+    private void OnPreRequestedUpdate(AddonArgs args)
     {
         if (GameMain.Instance()->CurrentTerritoryIntendedUseId != TerritoryIntendedUse.CosmicExploration)
             return;

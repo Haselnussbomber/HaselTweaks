@@ -10,15 +10,15 @@ public unsafe partial class FixInventoryOpenTab : Tweak
 
     public override void OnEnable()
     {
-        _addonLifecycle.RegisterListener(AddonEvent.PreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"], OnPreRefresh);
+        _disposables = _addonLifecycle.OnPreRefresh(OnPreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"]);
     }
 
     public override void OnDisable()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"], OnPreRefresh);
+        DisposeAndNull(ref _disposables);
     }
 
-    private void OnPreRefresh(AddonEvent type, AddonArgs args)
+    private void OnPreRefresh(AddonArgs args)
     {
         if (args is not AddonRefreshArgs refreshArgs || refreshArgs.AtkValues == 0 || refreshArgs.AtkValueCount == 0)
             return;

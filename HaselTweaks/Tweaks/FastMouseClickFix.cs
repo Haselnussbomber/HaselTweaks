@@ -7,8 +7,6 @@ public partial class FastMouseClickFix : Tweak
 {
     private readonly IGameInteropProvider _gameInteropProvider;
 
-    private MemoryReplacement? _patch;
-
     [Signature("EB 3F B8 ?? ?? ?? ?? 48 8B D7"), AutoConstructIgnore]
     private nint Address { get; set; }
 
@@ -17,13 +15,14 @@ public partial class FastMouseClickFix : Tweak
         if (Address == nint.Zero)
             _gameInteropProvider.InitializeFromAttributes(this);
 
-        _patch = new(Address, [0x90, 0x90]); // skip jump
-        _patch.Enable();
+        var patch = new MemoryReplacement(Address, [0x90, 0x90]); // skip jump
+        patch.Enable();
+
+        _disposables = patch;
     }
 
     public override void OnDisable()
     {
-        _patch?.Dispose();
-        _patch = null;
+        DisposeAndNull(ref _disposables);
     }
 }

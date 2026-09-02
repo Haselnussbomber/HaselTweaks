@@ -10,19 +10,19 @@ public unsafe partial class HideMSQComplete : Tweak
 
     public override void OnEnable()
     {
-        _addonLifecycle.RegisterListener(AddonEvent.PostRefresh, "ScenarioTree", ScenarioTree_PostRefresh);
+        _disposables = _addonLifecycle.OnPostRefresh(ScenarioTree_PostRefresh, "ScenarioTree");
         Update();
     }
 
     public override void OnDisable()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PostRefresh, "ScenarioTree", ScenarioTree_PostRefresh);
+        DisposeAndNull(ref _disposables);
 
         if (Status is TweakStatus.Enabled)
             UpdateVisibility(true, true);
     }
 
-    private void ScenarioTree_PostRefresh(AddonEvent type, AddonArgs args)
+    private void ScenarioTree_PostRefresh(AddonArgs args)
     {
         Update();
     }
