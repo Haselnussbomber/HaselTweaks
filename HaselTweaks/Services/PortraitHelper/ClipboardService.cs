@@ -13,10 +13,11 @@ using Windows.Win32.System.Ole;
 namespace HaselTweaks.Services.PortraitHelper;
 
 [RegisterSingleton, AutoConstruct]
-public partial class ClipboardService : IDisposable
+public partial class ClipboardService : IAsyncDisposable
 {
     private readonly ILogger<ClipboardService> _logger;
     private readonly IGameInteropProvider _gameInteropProvider;
+    private readonly IFramework _framework;
 
     private Hook<UIClipboard.Delegates.OnClipboardDataChanged>? _onClipboardDataChangedHook;
 
@@ -26,16 +27,17 @@ public partial class ClipboardService : IDisposable
     [AutoPostConstruct]
     private unsafe void Initialize()
     {
-        _onClipboardDataChangedHook = _gameInteropProvider.HookFromAddress<UIClipboard.Delegates.OnClipboardDataChanged>(
-            UIClipboard.MemberFunctionPointers.OnClipboardDataChanged,
-            OnClipboardDataChangedDetour);
-
-        _onClipboardDataChangedHook?.Enable();
+        _framework.Run(() =>
+        {
+            _onClipboardDataChangedHook = _gameInteropProvider.EnabledHookFromAddress<UIClipboard.Delegates.OnClipboardDataChanged>(
+                UIClipboard.MemberFunctionPointers.OnClipboardDataChanged,
+                OnClipboardDataChangedDetour);
+        });
     }
 
-    void IDisposable.Dispose()
+    public ValueTask DisposeAsync()
     {
-        _onClipboardDataChangedHook?.Dispose();
+        return new ValueTask(_framework.Run(() => DisposeAndNull(ref _onClipboardDataChangedHook)));
     }
 
     private unsafe void OnClipboardDataChangedDetour(UIClipboard* uiClipboard)

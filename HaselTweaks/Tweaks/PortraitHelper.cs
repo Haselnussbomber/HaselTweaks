@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 using Dalamud.Game.Agent.AgentArgTypes;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using FFXIVClientStructs.FFXIV.Client.Game;
@@ -48,45 +49,51 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
 
     private delegate void UpdateGearVisibilityDelegate(uint entityId, nint packet);
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
-            _menuBar,
+        return new ValueTask(_framework.Run(() =>
+        {
+            _disposables = DisposableBag.Create(
+                _menuBar,
 
-            _onClipboardDataChangedHook = _gameInteropProvider.EnabledHookFromAddress<UIClipboard.Delegates.OnClipboardDataChanged>(
-                UIClipboard.MemberFunctionPointers.OnClipboardDataChanged,
-                OnClipboardDataChangedDetour),
+                _onClipboardDataChangedHook = _gameInteropProvider.EnabledHookFromAddress<UIClipboard.Delegates.OnClipboardDataChanged>(
+                    UIClipboard.MemberFunctionPointers.OnClipboardDataChanged,
+                    OnClipboardDataChangedDetour),
 
-            _updateGearsetHook = _gameInteropProvider.EnabledHookFromAddress<RaptureGearsetModule.Delegates.UpdateGearset>(
-                RaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
-                UpdateGearsetDetour),
+                _updateGearsetHook = _gameInteropProvider.EnabledHookFromAddress<RaptureGearsetModule.Delegates.UpdateGearset>(
+                    RaptureGearsetModule.MemberFunctionPointers.UpdateGearset,
+                    UpdateGearsetDetour),
 
-            _updateGearVisibility = _gameInteropProvider.EnabledHookFromSignature<UpdateGearVisibilityDelegate>(
-                "48 89 74 24 ?? 57 48 83 EC ?? 48 8B FA 8B D1",
-                UpdateGearVisibilityDetour),
+                _updateGearVisibility = _gameInteropProvider.EnabledHookFromSignature<UpdateGearVisibilityDelegate>(
+                    "48 89 74 24 ?? 57 48 83 EC ?? 48 8B FA 8B D1",
+                    UpdateGearVisibilityDetour),
 
-            _agentLifecycle.OnPreShow(OnBannerPreviewPreShow, AgentId.BannerPreview),
-            _addonObserver.OnShow(OnShow, "BannerEditor"),
-            _addonObserver.OnHide(OnHide, "BannerEditor"),
+                _agentLifecycle.OnPreShow(OnBannerPreviewPreShow, AgentId.BannerPreview),
+                _addonObserver.OnShow(OnShow, "BannerEditor"),
+                _addonObserver.OnHide(OnHide, "BannerEditor"),
 
-            _clientState.OnTerritoryChange(OnTerritoryChanged),
-            _clientState.OnClassJobChange(OnClassJobChange));
+                _clientState.OnTerritoryChange(OnTerritoryChanged),
+                _clientState.OnClassJobChange(OnClassJobChange));
 
-        _openPortraitEditPayload = _chatGui.AddChatLinkHandler(1, OpenPortraitEditChatHandler);
+            _openPortraitEditPayload = _chatGui.AddChatLinkHandler(1, OpenPortraitEditChatHandler);
 
-        if (IsAddonOpen(AgentId.BannerEditor))
-            _menuBar.Open();
+            if (IsAddonOpen(AgentId.BannerEditor))
+                _menuBar.Open();
+        }));
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
-        DisposeAndNull(ref _disposables);
+        return new ValueTask(_framework.Run(() =>
+        {
+            DisposeAndNull(ref _disposables);
 
-        if (_openPortraitEditPayload != null)
-            _chatGui.RemoveChatLinkHandler(_openPortraitEditPayload.CommandId);
+            if (_openPortraitEditPayload != null)
+                _chatGui.RemoveChatLinkHandler(_openPortraitEditPayload.CommandId);
 
-        _mismatchCheckCTS?.Cancel();
-        DisposeAndNull(ref _mismatchCheckCTS);
+            _mismatchCheckCTS?.Cancel();
+            DisposeAndNull(ref _mismatchCheckCTS);
+        }));
     }
 
     private void OpenPortraitEditChatHandler(uint commandId, DSeString message)

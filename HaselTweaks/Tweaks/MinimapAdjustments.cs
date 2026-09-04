@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
@@ -11,33 +12,38 @@ public unsafe partial class MinimapAdjustments : ConfigurableTweak<MinimapAdjust
 
     private float _targetAlpha;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _targetAlpha = _config.DefaultOpacity;
         _disposables = _framework.OnUpdate(OnFrameworkUpdate);
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
 
         if (Status is not TweakStatus.Enabled)
-            return;
+            return ValueTask.CompletedTask;
 
-        if (!TryGetAddon<HaselAddonNaviMap>("_NaviMap"u8, out var naviMap))
-            return;
+        return new ValueTask(_framework.Run(() =>
+        {
+            if (!TryGetAddon<HaselAddonNaviMap>("_NaviMap"u8, out var naviMap))
+                return;
 
-        // reset alpha
-        naviMap->Mask->Color.A = 255;
+            // reset alpha
+            naviMap->Mask->Color.A = 255;
 
-        // reset visibility
-        naviMap->Coords->ToggleVisibility(true);
-        naviMap->Weather->ToggleVisibility(true);
-        naviMap->Sun->ToggleVisibility(true);
-        naviMap->CardinalDirections->ToggleVisibility(true);
+            // reset visibility
+            naviMap->Coords->ToggleVisibility(true);
+            naviMap->Weather->ToggleVisibility(true);
+            naviMap->Sun->ToggleVisibility(true);
+            naviMap->CardinalDirections->ToggleVisibility(true);
 
-        // add back circular collision flag
-        naviMap->Collision->DrawFlags |= 1 << 23;
+            // add back circular collision flag
+            naviMap->Collision->DrawFlags |= 1 << 23;
+        }));
     }
 
     private void OnFrameworkUpdate()

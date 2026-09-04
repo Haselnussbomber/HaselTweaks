@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.Agent.AgentArgTypes;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -10,16 +11,20 @@ public unsafe partial class EnhancedTryon : ConfigurableTweak<EnhancedTryonConfi
     private readonly IAgentLifecycle _agentLifecycle;
     private bool _doUpdate;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = DisposableBag.Create(
             _agentLifecycle.OnPreUpdate(OnPreUpdate, AgentId.Tryon),
             _agentLifecycle.OnPostUpdate(OnPostUpdate, AgentId.Tryon));
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnPreUpdate(AgentArgs args)

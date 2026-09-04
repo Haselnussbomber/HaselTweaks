@@ -1,4 +1,8 @@
+using System.Threading.Tasks;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -7,38 +11,42 @@ using SeVirtualKey = FFXIVClientStructs.FFXIV.Client.System.Input.SeVirtualKey;
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
-public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<CharacterClassSwitcherConfiguration>
+public partial class CharacterClassSwitcher : ConfigurableTweak<CharacterClassSwitcherConfiguration>
 {
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly TextService _textService;
+    private readonly IFramework _framework;
 
     private Hook<AtkTooltipManager.Delegates.ShowTooltip>? _showTooltipHook;
 
-    public override void OnEnable()
+    public override unsafe ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
-            _showTooltipHook = _gameInteropProvider.EnabledHookFromAddress<AtkTooltipManager.Delegates.ShowTooltip>(
-                AtkTooltipManager.MemberFunctionPointers.ShowTooltip,
-                AtkTooltipManagerShowTooltipDetour),
+        return new ValueTask(_framework.Run(() =>
+        {
+            _disposables = DisposableBag.Create(
+                _showTooltipHook = _gameInteropProvider.EnabledHookFromAddress<AtkTooltipManager.Delegates.ShowTooltip>(
+                    AtkTooltipManager.MemberFunctionPointers.ShowTooltip,
+                    AtkTooltipManagerShowTooltipDetour),
 
-            _addonLifecycle.OnPreSetup(OnCharacterPreSetup, "Character"),
-            _addonLifecycle.OnPostSetup(OnCharacterClassPostSetup, "CharacterClass"),
-            _addonLifecycle.OnPostRequestedUpdate(OnCharacterClassPostRequestedUpdate, "CharacterClass"),
-            _addonLifecycle.OnPreReceiveEvent(OnCharacterClassPreReceiveEvent, "CharacterClass"),
+                _addonLifecycle.OnPreSetup(OnCharacterPreSetup, "Character"),
+                _addonLifecycle.OnPostSetup(OnCharacterClassPostSetup, "CharacterClass"),
+                _addonLifecycle.OnPostRequestedUpdate(OnCharacterClassPostRequestedUpdate, "CharacterClass"),
+                _addonLifecycle.OnPreReceiveEvent(OnCharacterClassPreReceiveEvent, "CharacterClass"),
 
-            _addonLifecycle.OnPostSetup(OnPvPCharacterPostSetup, "PvPCharacter"),
-            _addonLifecycle.OnPostRequestedUpdate(OnPvPCharacterPostRequestedUpdate, "PvPCharacter"),
-            _addonLifecycle.OnPreReceiveEvent(OnPvPCharacterPreReceiveEvent, "PvPCharacter")
-        );
+                _addonLifecycle.OnPostSetup(OnPvPCharacterPostSetup, "PvPCharacter"),
+                _addonLifecycle.OnPostRequestedUpdate(OnPvPCharacterPostRequestedUpdate, "PvPCharacter"),
+                _addonLifecycle.OnPreReceiveEvent(OnPvPCharacterPreReceiveEvent, "PvPCharacter"));
+
+        }));
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
-        DisposeAndNull(ref _disposables);
+        return new ValueTask(_framework.Run(() => DisposeAndNull(ref _disposables)));
     }
 
-    private void AtkTooltipManagerShowTooltipDetour(
+    private unsafe void AtkTooltipManagerShowTooltipDetour(
         AtkTooltipManager* thisPtr,
         AtkTooltipType type,
         ushort parentId,
@@ -80,7 +88,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
 
     #region CharacterClass
 
-    private void OnCharacterClassPostSetup(AddonArgs args)
+    private unsafe void OnCharacterClassPostSetup(AddonArgs args)
     {
         var addon = args.GetAddon<AddonCharacterClass>();
 
@@ -112,7 +120,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         }
     }
 
-    private void OnCharacterClassPostRequestedUpdate(AddonArgs args)
+    private unsafe void OnCharacterClassPostRequestedUpdate(AddonArgs args)
     {
         var addon = args.GetAddon<AddonCharacterClass>();
 
@@ -142,7 +150,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         }
     }
 
-    private void OnCharacterClassPreReceiveEvent(AddonArgs addonArgs)
+    private unsafe void OnCharacterClassPreReceiveEvent(AddonArgs addonArgs)
     {
         if (addonArgs is not AddonReceiveEventArgs args)
             return;
@@ -196,7 +204,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
 
     #region PvPCharacter
 
-    private void OnPvPCharacterPostSetup(AddonArgs args)
+    private unsafe void OnPvPCharacterPostSetup(AddonArgs args)
     {
         var addon = args.GetAddon<AddonPvPCharacter>();
 
@@ -215,7 +223,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         }
     }
 
-    private void OnPvPCharacterPostRequestedUpdate(AddonArgs args)
+    private unsafe void OnPvPCharacterPostRequestedUpdate(AddonArgs args)
     {
         var addon = args.GetAddon<AddonPvPCharacter>();
 
@@ -233,7 +241,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         }
     }
 
-    private void OnPvPCharacterPreReceiveEvent(AddonArgs addonArgs)
+    private unsafe void OnPvPCharacterPreReceiveEvent(AddonArgs addonArgs)
     {
         if (addonArgs is not AddonReceiveEventArgs args)
             return;
@@ -263,7 +271,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
 
     #endregion
 
-    private bool ProcessEvents(AtkComponentNode* componentNode, AtkImageNode* imageNode, AtkEventType eventType, AtkEventData* atkEventData)
+    private unsafe bool ProcessEvents(AtkComponentNode* componentNode, AtkImageNode* imageNode, AtkEventType eventType, AtkEventData* atkEventData)
     {
         var isClick =
             eventType == AtkEventType.MouseClick ||
@@ -293,7 +301,7 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         return false;
     }
 
-    private void SwitchClassJob(uint classJobId)
+    private unsafe void SwitchClassJob(uint classJobId)
     {
         var gearsetModule = RaptureGearsetModule.Instance();
         if (gearsetModule == null)
@@ -334,17 +342,17 @@ public unsafe partial class CharacterClassSwitcher : ConfigurableTweak<Character
         gearsetModule->EquipGearset(selectedGearset.Id - 1);
     }
 
-    private static bool IsClassUnlocked(AddonCharacterClass* addon, int index)
+    private static unsafe bool IsClassUnlocked(AddonCharacterClass* addon, int index)
     {
         return addon->ClassEntries[index].Level != 0;
     }
 
-    private static bool IsClassUnlocked(AddonPvPCharacter* addon, int index)
+    private static unsafe bool IsClassUnlocked(AddonPvPCharacter* addon, int index)
     {
         return addon->ClassData[index].Level != 0;
     }
 
-    private static bool TryGetClassJobId(AtkImageNode* imageNode, out uint classJobId)
+    private static unsafe bool TryGetClassJobId(AtkImageNode* imageNode, out uint classJobId)
     {
         if (imageNode == null || imageNode->PartsList == null || imageNode->PartsList->Parts == null || imageNode->PartsList->PartCount < imageNode->PartId)
         {

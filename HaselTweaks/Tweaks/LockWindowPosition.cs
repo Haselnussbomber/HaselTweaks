@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -17,6 +18,7 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak<LockWindowPos
     private readonly TextService _textService;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly IAddonLifecycle _addonLifecycle;
+    private readonly IFramework _framework;
 
     private Hook<AtkUnitBase.Delegates.MoveDelta>? _moveDeltaHook;
     private Hook<RaptureAtkUnitManagerVf6Delegate>? _raptureAtkUnitManagerVf6Hook;
@@ -33,39 +35,42 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak<LockWindowPos
 
     private delegate byte RaptureAtkUnitManagerVf6Delegate(RaptureAtkUnitManager* self, nint a2);
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
-            _moveDeltaHook = _gameInteropProvider.EnabledHookFromAddress<AtkUnitBase.Delegates.MoveDelta>(
-                AtkUnitBase.MemberFunctionPointers.MoveDelta,
-                MoveDeltaDetour),
+        return new ValueTask(_framework.Run(() =>
+        {
+            _disposables = DisposableBag.Create(
+                _moveDeltaHook = _gameInteropProvider.EnabledHookFromAddress<AtkUnitBase.Delegates.MoveDelta>(
+                    AtkUnitBase.MemberFunctionPointers.MoveDelta,
+                    MoveDeltaDetour),
 
-            _raptureAtkUnitManagerVf6Hook = _gameInteropProvider.EnabledHookFromVTable<RaptureAtkUnitManagerVf6Delegate>(
-                RaptureAtkUnitManager.StaticVirtualTablePointer, 6,
-                RaptureAtkUnitManagerVf6Detour),
+                _raptureAtkUnitManagerVf6Hook = _gameInteropProvider.EnabledHookFromVTable<RaptureAtkUnitManagerVf6Delegate>(
+                    RaptureAtkUnitManager.StaticVirtualTablePointer, 6,
+                    RaptureAtkUnitManagerVf6Detour),
 
-            _clearMenuHook = _gameInteropProvider.EnabledHookFromAddress<AgentContext.Delegates.ClearMenu>(
-                AgentContext.MemberFunctionPointers.ClearMenu,
-                ClearMenuDetour),
+                _clearMenuHook = _gameInteropProvider.EnabledHookFromAddress<AgentContext.Delegates.ClearMenu>(
+                    AgentContext.MemberFunctionPointers.ClearMenu,
+                    ClearMenuDetour),
 
-            _addMenuItem2Hook = _gameInteropProvider.EnabledHookFromAddress<AgentContext.Delegates.AddMenuItem2>(
-                AgentContext.MemberFunctionPointers.AddMenuItem2,
-                AddMenuItem2Detour),
+                _addMenuItem2Hook = _gameInteropProvider.EnabledHookFromAddress<AgentContext.Delegates.AddMenuItem2>(
+                    AgentContext.MemberFunctionPointers.AddMenuItem2,
+                    AddMenuItem2Detour),
 
-            _openContextMenuForAddonHook = _gameInteropProvider.EnabledHookFromAddress<AgentContext.Delegates.OpenContextMenuForAddon>(
-                AgentContext.MemberFunctionPointers.OpenContextMenuForAddon,
-                OpenContextMenuForAddonDetour),
+                _openContextMenuForAddonHook = _gameInteropProvider.EnabledHookFromAddress<AgentContext.Delegates.OpenContextMenuForAddon>(
+                    AgentContext.MemberFunctionPointers.OpenContextMenuForAddon,
+                    OpenContextMenuForAddonDetour),
 
-            _windowContextMenuHandlerReceiveEventHook = _gameInteropProvider.EnabledHookFromAddress<AtkEventInterface.Delegates.ReceiveEvent>(
-                RaptureAtkUnitManager.Instance()->WindowContextMenuHandler.VirtualTable->ReceiveEvent,
-                WindowContextMenuHandlerReceiveEventDetour),
+                _windowContextMenuHandlerReceiveEventHook = _gameInteropProvider.EnabledHookFromAddress<AtkEventInterface.Delegates.ReceiveEvent>(
+                    RaptureAtkUnitManager.Instance()->WindowContextMenuHandler.VirtualTable->ReceiveEvent,
+                    WindowContextMenuHandlerReceiveEventDetour),
 
-            _addonLifecycle.OnPostSetup(OnGearSetListPostSetup, "GearSetList"));
+                _addonLifecycle.OnPostSetup(OnGearSetListPostSetup, "GearSetList"));
+        }));
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
-        DisposeAndNull(ref _disposables);
+        return new ValueTask(_framework.Run(() => DisposeAndNull(ref _disposables)));
     }
 
     // block GearSetList from moving when opened by Character

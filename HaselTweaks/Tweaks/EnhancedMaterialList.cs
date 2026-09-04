@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.Agent.AgentArgTypes;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
 using FFXIVClientStructs.FFXIV.Client.Game;
@@ -38,40 +39,46 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
     private DateTime _timeOfRecipeTreeRefresh;
     private bool _handleRecipeResultItemContextMenu;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
-            _addonRecipeMaterialListSetupRowHook = _gameInteropProvider.EnabledHookFromSignature<AtkComponentListItemPopulator.PopulateDelegate>(
-                "48 89 5C 24 ?? 48 89 54 24 ?? 48 89 4C 24 ?? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 50 49 8B 08",
-                AddonRecipeMaterialListPopulateRowDetour),
+        return new ValueTask(_framework.Run(() =>
+        {
+            _disposables = DisposableBag.Create(
+                _addonRecipeMaterialListSetupRowHook = _gameInteropProvider.EnabledHookFromSignature<AtkComponentListItemPopulator.PopulateDelegate>(
+                    "48 89 5C 24 ?? 48 89 54 24 ?? 48 89 4C 24 ?? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 50 49 8B 08",
+                    AddonRecipeMaterialListPopulateRowDetour),
 
-            _addItemContextMenuEntriesHook = _gameInteropProvider.EnabledHookFromAddress<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>(
-                AgentRecipeItemContext.MemberFunctionPointers.AddItemContextMenuEntries,
-                AddItemContextMenuEntriesDetour),
+                _addItemContextMenuEntriesHook = _gameInteropProvider.EnabledHookFromAddress<AgentRecipeItemContext.Delegates.AddItemContextMenuEntries>(
+                    AgentRecipeItemContext.MemberFunctionPointers.AddItemContextMenuEntries,
+                    AddItemContextMenuEntriesDetour),
 
-            _agentLifecycle.OnPreReceiveEvent(OnPreRecipeMaterialListReceiveEvent, AgentId.RecipeMaterialList),
-            _addonLifecycle.OnPostReceiveEvent(RecipeMaterialList_PostReceiveEvent, "RecipeMaterialList"),
-            _addonLifecycle.OnPostReceiveEvent(RecipeTree_PostReceiveEvent, "RecipeTree"),
-            _addonObserver.OnShow(_ => _canRefreshMaterialList = true, "RecipeMaterialList"),
-            _addonObserver.OnShow(_ => _canRefreshRecipeTree = true, "RecipeTree"),
-            _framework.OnUpdate(OnFrameworkUpdate),
-            _clientState.OnLogin(OnLogin),
-            
-            EventExtensions.Subscribe(
-                handler => _gameInventory.InventoryChangedRaw += handler.Invoke,
-                handler => _gameInventory.InventoryChangedRaw -= handler.Invoke,
-                OnInventoryUpdate));
+                _agentLifecycle.OnPreReceiveEvent(OnPreRecipeMaterialListReceiveEvent, AgentId.RecipeMaterialList),
+                _addonLifecycle.OnPostReceiveEvent(RecipeMaterialList_PostReceiveEvent, "RecipeMaterialList"),
+                _addonLifecycle.OnPostReceiveEvent(RecipeTree_PostReceiveEvent, "RecipeTree"),
+                _addonObserver.OnShow(_ => _canRefreshMaterialList = true, "RecipeMaterialList"),
+                _addonObserver.OnShow(_ => _canRefreshRecipeTree = true, "RecipeTree"),
+                _framework.OnUpdate(OnFrameworkUpdate),
+                _clientState.OnLogin(OnLogin),
 
-        if (_clientState.IsLoggedIn)
-            OnLogin();
+                EventExtensions.Subscribe(
+                    handler => _gameInventory.InventoryChangedRaw += handler.Invoke,
+                    handler => _gameInventory.InventoryChangedRaw -= handler.Invoke,
+                    OnInventoryUpdate));
+
+            if (_clientState.IsLoggedIn)
+                OnLogin();
+        }));
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
-        DisposeAndNull(ref _disposables);
+        return new ValueTask(_framework.Run(() =>
+        {
+            DisposeAndNull(ref _disposables);
 
-        if (Status is TweakStatus.Enabled && TryGetAddon<AtkUnitBase>("RecipeMaterialList"u8, out var addon))
-            addon->Close(true);
+            if (Status is TweakStatus.Enabled && TryGetAddon<AtkUnitBase>("RecipeMaterialList"u8, out var addon))
+                addon->Close(true);
+        }));
     }
 
     private void OnInventoryUpdate(IReadOnlyCollection<InventoryEventArgs> events)

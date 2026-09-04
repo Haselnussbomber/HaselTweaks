@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.Config;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
@@ -22,7 +23,7 @@ public unsafe partial class InventoryHighlight : ConfigurableTweak<InventoryHigh
     private uint _hoveredItemId;
     private bool _wasHighlighting;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = DisposableBag.Create(
             _clientState.OnLogin(OnLogin),
@@ -31,14 +32,18 @@ public unsafe partial class InventoryHighlight : ConfigurableTweak<InventoryHigh
             _addonLifecycle.OnPostRequestedUpdate(OnItemDetailPostRequestedUpdate, "ItemDetail"));
 
         UpdateItemInventryWindowSizeTypes();
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
 
         if (Status is TweakStatus.Enabled)
-            ResetGrids();
+            return new ValueTask(_framework.Run(ResetGrids));
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnLogin()

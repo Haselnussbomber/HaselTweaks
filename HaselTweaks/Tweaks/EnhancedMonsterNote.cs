@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.Agent.AgentArgTypes;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -15,26 +16,33 @@ public unsafe partial class EnhancedMonsterNote : ConfigurableTweak<EnhancedMons
     private readonly IAgentLifecycle _agentLifecycle;
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly ExcelService _excelService;
+    private readonly IFramework _framework;
 
     private Hook<AgentMonsterNote.Delegates.OpenWithData> _openWithDataHook;
     private bool _isShowCall;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
-            _openWithDataHook = _gameInteropProvider.EnabledHookFromAddress<AgentMonsterNote.Delegates.OpenWithData>(
-                AgentMonsterNote.MemberFunctionPointers.OpenWithData,
-                OpenWithDataDetour),
+        return new ValueTask(_framework.Run(() =>
+        {
+            _disposables = DisposableBag.Create(
+                _openWithDataHook = _gameInteropProvider.EnabledHookFromAddress<AgentMonsterNote.Delegates.OpenWithData>(
+                    AgentMonsterNote.MemberFunctionPointers.OpenWithData,
+                    OpenWithDataDetour),
 
-            _agentLifecycle.OnPreShow(OnMonsterNotePreShow, AgentId.MonsterNote),
-            _addonLifecycle.OnPostShow(OnMonsterNotePostShow, "MonsterNote"),
-            _clientState.OnLogout(OnLogout));
+                _agentLifecycle.OnPreShow(OnMonsterNotePreShow, AgentId.MonsterNote),
+                _addonLifecycle.OnPostShow(OnMonsterNotePostShow, "MonsterNote"),
+                _clientState.OnLogout(OnLogout));
+        }));
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
-        DisposeAndNull(ref _disposables);
-        _isShowCall = false;
+        return new ValueTask(_framework.Run(() =>
+        {
+            DisposeAndNull(ref _disposables);
+            _isShowCall = false;
+        }));
     }
 
     private void OnLogout(int type, int code)

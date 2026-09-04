@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.System.Scheduler;
@@ -30,26 +31,32 @@ public unsafe partial class ForcedCutsceneMusic : ConfigurableTweak<ForcedCutsce
     private IDebouncer? _restoreDebouncer;
     private bool _hasTask;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
-            _createCutSceneControllerHook = _gameInteropProvider.EnabledHookFromAddress<ScheduleManagement.Delegates.CreateCutSceneController>(
-                ScheduleManagement.MemberFunctionPointers.CreateCutSceneController,
-                CreateCutSceneControllerDetour),
+        return new ValueTask(_framework.Run(() =>
+        {
+            _disposables = DisposableBag.Create(
+                _createCutSceneControllerHook = _gameInteropProvider.EnabledHookFromAddress<ScheduleManagement.Delegates.CreateCutSceneController>(
+                    ScheduleManagement.MemberFunctionPointers.CreateCutSceneController,
+                    CreateCutSceneControllerDetour),
 
-            _cutSceneControllerDtorHook = _gameInteropProvider.EnabledHookFromAddress<CutSceneController.Delegates.Dtor>(
-                (nint)CutSceneController.StaticVirtualTablePointer->Dtor,
-                CutSceneControllerDtorDetour),
+                _cutSceneControllerDtorHook = _gameInteropProvider.EnabledHookFromAddress<CutSceneController.Delegates.Dtor>(
+                    (nint)CutSceneController.StaticVirtualTablePointer->Dtor,
+                    CutSceneControllerDtorDetour),
 
-            _unmuteDebouncer = _framework.CreateDebouncer(TimeSpan.FromMilliseconds(100), Unmute),
-            _restoreDebouncer = _framework.CreateDebouncer(TimeSpan.FromMilliseconds(100), Restore),
-            _framework.OnUpdate(OnUpdate));
+                _unmuteDebouncer = _framework.CreateDebouncer(TimeSpan.FromMilliseconds(100), Unmute),
+                _restoreDebouncer = _framework.CreateDebouncer(TimeSpan.FromMilliseconds(100), Restore),
+                _framework.OnUpdate(OnUpdate));
+        }));
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
-        DisposeAndNull(ref _disposables);
-        _hasTask = false;
+        return new ValueTask(_framework.Run(() =>
+        {
+            DisposeAndNull(ref _disposables);
+            _hasTask = false;
+        }));
     }
 
     private void OnUpdate()

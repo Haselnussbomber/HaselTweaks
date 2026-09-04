@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.Network.Structures;
 using FFXIVClientStructs.FFXIV.Client.UI;
 
@@ -11,7 +12,7 @@ public unsafe partial class SaferItemSearch : Tweak
 
     private bool _isSearching;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = DisposableBag.Create(
             _addonLifecycle.OnPostRequestedUpdate(ItemSearch_PostRequestedUpdate, "ItemSearch"),
@@ -26,11 +27,15 @@ public unsafe partial class SaferItemSearch : Tweak
                 handler => _marketBoardService.ListingsEnd += handler.Invoke,
                 handler => _marketBoardService.ListingsEnd -= handler.Invoke,
                 OnListingsEnd));
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
+
+        return ValueTask.CompletedTask;
     }
 
     private void ItemSearch_PostRequestedUpdate(AddonArgs args)

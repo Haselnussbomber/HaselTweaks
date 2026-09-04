@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.ClientState.Keys;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -14,14 +15,16 @@ public unsafe partial class GlamourDresserKeyboardNavigation : Tweak
     private readonly IFramework _framework;
     private readonly IKeyState _keyState;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = _framework.OnUpdate(OnFrameworkUpdate);
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
+        return ValueTask.CompletedTask;
     }
 
     private void OnFrameworkUpdate()

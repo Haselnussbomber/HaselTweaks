@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace HaselTweaks.Tweaks;
 
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
@@ -5,17 +7,21 @@ public partial class DisableRewardPopups : ConfigurableTweak<DisableRewardPopups
 {
     private readonly IAddonLifecycle _addonLifecycle;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = DisposableBag.Create(
             _addonLifecycle.OnPreShow(OnFateReward, "FateReward"),
             _addonLifecycle.OnPreShow(OnGoldSaucerReward, "GoldSaucerReward"),
             _addonLifecycle.OnPreShow(OnWKSReward, "WKSReward"));
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnFateReward(AddonArgs args)

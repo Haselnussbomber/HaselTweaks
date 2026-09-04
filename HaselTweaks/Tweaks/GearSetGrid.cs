@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselCommon.Services.Commands;
 using HaselTweaks.Windows;
@@ -13,7 +14,7 @@ public unsafe partial class GearSetGrid : ConfigurableTweak<GearSetGridConfigura
 
     private CommandHandler _gsgCommand;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = DisposableBag.Create(
             _gsgCommand = _commandService.AddCommand("gsg", cmd => cmd
@@ -27,12 +28,15 @@ public unsafe partial class GearSetGrid : ConfigurableTweak<GearSetGridConfigura
 
         if (_config.AutoOpenWithGearSetList && IsAddonOpen("GearSetList"u8))
             _window.Open();
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
         _window.Close();
+        return ValueTask.CompletedTask;
     }
 
     private void OnGsgCommand(CommandContext ctx)

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -95,7 +96,7 @@ public unsafe partial class AutoSorter : ConfigurableTweak<AutoSorterConfigurati
     private static bool IsRetainerInventoryOpen => IsAddonOpen("InventoryRetainer") || IsAddonOpen("InventoryRetainerLarge");
     private static bool IsInventoryOpen => IsAddonOpen("Inventory") || IsAddonOpen("InventoryLarge") || IsAddonOpen("InventoryExpansion");
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _queue.Clear();
 
@@ -109,23 +110,28 @@ public unsafe partial class AutoSorter : ConfigurableTweak<AutoSorterConfigurati
             _addonObserver.OnShow(_ => OnOpenRetainer(), ["InventoryRetainer", "InventoryRetainerLarge"]),
             _addonObserver.OnShow(_ => OnOpenInventory(), ["Inventory", "InventoryLarge", "InventoryExpansion"]));
 
-        if (IsArmouryBoardOpen)
-            OnOpenArmoury();
+        return new ValueTask(_framework.Run(() =>
+        {
+            if (IsArmouryBoardOpen)
+                OnOpenArmoury();
 
-        if (IsInventoryBuddyOpen)
-            OnOpenInventoryBuddy();
+            if (IsInventoryBuddyOpen)
+                OnOpenInventoryBuddy();
 
-        if (IsRetainerInventoryOpen)
-            OnOpenRetainer();
+            if (IsRetainerInventoryOpen)
+                OnOpenRetainer();
 
-        if (IsInventoryOpen)
-            OnOpenInventory();
+            if (IsInventoryOpen)
+                OnOpenInventory();
+        }));
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
         _queue.Clear();
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnClassJobChange(uint classJobId)

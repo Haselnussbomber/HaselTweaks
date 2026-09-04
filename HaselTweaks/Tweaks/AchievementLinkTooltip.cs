@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -15,14 +16,18 @@ public unsafe partial class AchievementLinkTooltip : ConfigurableTweak<Achieveme
     private readonly ExcelService _excelService;
     private readonly IAddonLifecycle _addonLifecycle;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = _addonLifecycle.OnPostReceiveEvent(OnChatLogPanelPostReceiveEvent, ChatPanels);
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnChatLogPanelPostReceiveEvent(AddonReceiveEventArgs args)

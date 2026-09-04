@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
 using Dalamud.Game.Text.Evaluator;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using TerritoryIntendedUse = FFXIVClientStructs.FFXIV.Client.Enums.TerritoryIntendedUse;
@@ -16,32 +18,39 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly TextService _textService;
     private readonly ExcelService _excelService;
+    private readonly IFramework _framework;
 
     private Hook<AgentHUD.Delegates.UpdateExp>? _updateExpHook;
     private byte _colorMultiplyRed = 100;
     private byte _colorMultiplyGreen = 100;
     private byte _colorMultiplyBlue = 100;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
-            _updateExpHook = _gameInteropProvider.EnabledHookFromAddress<AgentHUD.Delegates.UpdateExp>(
-                AgentHUD.MemberFunctionPointers.UpdateExp,
-                UpdateExpDetour),
+        return new ValueTask(_framework.Run(() =>
+        {
+            _disposables = DisposableBag.Create(
+                _updateExpHook = _gameInteropProvider.EnabledHookFromAddress<AgentHUD.Delegates.UpdateExp>(
+                    AgentHUD.MemberFunctionPointers.UpdateExp,
+                    UpdateExpDetour),
 
-            _addonLifecycle.OnPostRequestedUpdate(OnAddonExpPostRequestedUpdate, "_Exp"),
-            _clientState.OnLeavePvP(OnLeavePvP),
-            _clientState.OnTerritoryChange(OnTerritoryChanged));
+                _addonLifecycle.OnPostRequestedUpdate(OnAddonExpPostRequestedUpdate, "_Exp"),
+                _clientState.OnLeavePvP(OnLeavePvP),
+                _clientState.OnTerritoryChange(OnTerritoryChanged));
 
-        TriggerReset();
+            TriggerReset();
+        }));
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
-        DisposeAndNull(ref _disposables);
+        return new ValueTask(_framework.Run(() =>
+        {
+            DisposeAndNull(ref _disposables);
 
-        if (Status is TweakStatus.Enabled)
-            TriggerReset();
+            if (Status is TweakStatus.Enabled)
+                TriggerReset();
+        }));
     }
 
     private void OnLeavePvP()

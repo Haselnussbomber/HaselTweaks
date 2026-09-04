@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
@@ -21,24 +22,30 @@ public unsafe partial class CosmicResearchTodo : ConfigurableTweak<CosmicResearc
 
     private Hook<WKSModuleBase.Delegates.SetIntData>? _setIntDataHook;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
-            _setIntDataHook = _gameInteropProvider.EnabledHookFromSignature<WKSModuleBase.Delegates.SetIntData>(
-                "40 53 48 83 EC ?? 48 8B D9 81 EA",
-                SetIntDataDetour),
+        return new ValueTask(_framework.Run(() =>
+        {
+            _disposables = DisposableBag.Create(
+                _setIntDataHook = _gameInteropProvider.EnabledHookFromSignature<WKSModuleBase.Delegates.SetIntData>(
+                    "40 53 48 83 EC ?? 48 8B D9 81 EA",
+                    SetIntDataDetour),
 
-            _addonLifecycle.OnPreRequestedUpdate(OnPreRequestedUpdate, "_ToDoList"),
-            _clientState.OnClassJobChange(OnClassJobChanged),
-            _languageProvider.OnLanguageChange(OnLanguageChanged));
+                _addonLifecycle.OnPreRequestedUpdate(OnPreRequestedUpdate, "_ToDoList"),
+                _clientState.OnClassJobChange(OnClassJobChanged),
+                _languageProvider.OnLanguageChange(OnLanguageChanged));
 
-        _ = _framework.RunOnTick(RequestUpdate, delayTicks: 1);
+            _ = _framework.RunOnTick(RequestUpdate, delayTicks: 1);
+        }));
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
-        DisposeAndNull(ref _disposables);
-        RequestUpdate();
+        return new ValueTask(_framework.Run(() =>
+        {
+            DisposeAndNull(ref _disposables);
+            RequestUpdate();
+        }));
     }
 
     private void OnClassJobChanged(uint classJobId)

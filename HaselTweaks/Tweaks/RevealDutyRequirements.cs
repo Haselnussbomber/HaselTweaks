@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Utility.Signatures;
 
 namespace HaselTweaks.Tweaks;
@@ -6,6 +7,7 @@ namespace HaselTweaks.Tweaks;
 public partial class RevealDutyRequirements : Tweak
 {
     private readonly IGameInteropProvider _gameInteropProvider;
+    private readonly IFramework _framework;
 
     private MemoryReplacement? _patch;
 
@@ -22,17 +24,18 @@ public partial class RevealDutyRequirements : Tweak
     [Signature("48 8B C8 48 8B D8 48 8B 10 FF 52 70 84 C0 74 1B"), AutoConstructIgnore]
     private nint Address { get; init; }
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         if (Address == nint.Zero)
             _gameInteropProvider.InitializeFromAttributes(this);
 
         _patch = new(Address + 14, [0x90, 0x90]);
-        _patch?.Enable();
+
+        return new ValueTask(_framework.Run(_patch.Enable));
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
-        DisposeAndNull(ref _patch);
+        return new ValueTask(_framework.Run(() => DisposeAndNull(ref _patch)));
     }
 }

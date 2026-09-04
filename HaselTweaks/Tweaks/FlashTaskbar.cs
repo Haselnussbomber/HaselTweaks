@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.Chat;
 using Dalamud.Game.ClientState.Conditions;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
@@ -15,24 +16,27 @@ public unsafe partial class FlashTaskbar : ConfigurableTweak<FlashTaskbarConfigu
     private readonly IChatGui _chatGui;
     private readonly ICondition _condition;
     private readonly IAddonLifecycle _addonLifecycle;
+    private readonly IFramework _framework;
 
     private Hook<AtkModuleInterface.AtkEventInterface.Delegates.ReceiveEvent>? _normalCraftCallbackHook;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
-            // Client::Game::Event::NormalCraftCallback.ReceiveEvent
-            _normalCraftCallbackHook = _gameInteropProvider.EnabledHookFromSignature<AtkModuleInterface.AtkEventInterface.Delegates.ReceiveEvent>(
-                "48 89 5C 24 ?? 48 89 74 24 ?? 48 89 7C 24 ?? 41 56 48 83 EC ?? 49 8B F0 48 8B FA 4C 8B F1 45 85 C9",
-                NormalCraftCallbackDetour),
-            _chatGui.OnLogMessage(OnLogMessage),
-            _condition.OnConditionChange(OnConditionChange),
-            _addonLifecycle.OnPostRefresh(OnSynthesisSimplePostRefresh, "SynthesisSimple"));
+        return new ValueTask(_framework.Run(() => {
+            _disposables = DisposableBag.Create(
+                // Client::Game::Event::NormalCraftCallback.ReceiveEvent
+                _normalCraftCallbackHook = _gameInteropProvider.EnabledHookFromSignature<AtkModuleInterface.AtkEventInterface.Delegates.ReceiveEvent>(
+                    "48 89 5C 24 ?? 48 89 74 24 ?? 48 89 7C 24 ?? 41 56 48 83 EC ?? 49 8B F0 48 8B FA 4C 8B F1 45 85 C9",
+                    NormalCraftCallbackDetour),
+                _chatGui.OnLogMessage(OnLogMessage),
+                _condition.OnConditionChange(OnConditionChange),
+                _addonLifecycle.OnPostRefresh(OnSynthesisSimplePostRefresh, "SynthesisSimple"));
+        }));
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
-        DisposeAndNull(ref _disposables);
+        return new ValueTask(_framework.Run(() => DisposeAndNull(ref _disposables)));
     }
 
     private void OnLogMessage(ILogMessage message)

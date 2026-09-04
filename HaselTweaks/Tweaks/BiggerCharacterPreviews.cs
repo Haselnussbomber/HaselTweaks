@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;
@@ -10,7 +11,7 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
 
     private readonly IAddonLifecycle _addonLifecycle;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = DisposableBag.Create(
             _addonLifecycle.OnPostSetup(OnCharacterPostSetup, "Character"),
@@ -20,11 +21,15 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
             _addonLifecycle.OnPostSetup(OnTryonPostSetup, "Tryon"),
             _addonLifecycle.OnPostSetup(OnPostSetupOrRefresh, AddonNames),
             _addonLifecycle.OnPostRefresh(OnPostSetupOrRefresh, AddonNames));
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnCharacterPostSetup(AddonArgs args)

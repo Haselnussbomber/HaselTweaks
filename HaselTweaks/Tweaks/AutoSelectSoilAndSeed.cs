@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -13,16 +14,20 @@ public unsafe partial class AutoSelectSoilAndSeed : Tweak
 
     private bool _handled;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = DisposableBag.Create(
             _addonLifecycle.OnPostSetup(OnHousingGardeningSetup, "HousingGardening"),
             _addonLifecycle.OnPreUpdate(OnHousingGardeningUpdate, "HousingGardening"));
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnHousingGardeningSetup(AddonSetupArgs args)

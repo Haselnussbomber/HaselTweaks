@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
@@ -15,13 +16,14 @@ public unsafe partial class EnhancedTargetInfo : ConfigurableTweak<EnhancedTarge
     private readonly TextService _textService;
     private readonly ExcelService _excelService;
     private readonly ISeStringEvaluator _seStringEvaluator;
+    private readonly IFramework _framework;
 
     private Hook<AgentHUD.Delegates.UpdateTargetInfo>? _updateTargetInfoHook;
     private Hook<RaptureTextModule.Delegates.FormatAddonText2IntIntUInt>? _formatAddonText2IntIntUIntHook;
 
     private ReadOnlySeString? _rewrittenHealthPercentageText;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         if (_rewrittenHealthPercentageText == null && _excelService.TryGetRow<Addon>(2057, _clientState.ClientLanguage, out var row))
         {
@@ -42,19 +44,22 @@ public unsafe partial class EnhancedTargetInfo : ConfigurableTweak<EnhancedTarge
             _rewrittenHealthPercentageText = rssb.Builder.ToReadOnlySeString();
         }
 
-        _disposables = DisposableBag.Create(
-            _updateTargetInfoHook = _gameInteropProvider.EnabledHookFromAddress<AgentHUD.Delegates.UpdateTargetInfo>(
-                AgentHUD.MemberFunctionPointers.UpdateTargetInfo,
-                UpdateTargetInfoDetour),
+        return new ValueTask(_framework.Run(() =>
+        {
+            _disposables = DisposableBag.Create(
+                _updateTargetInfoHook = _gameInteropProvider.EnabledHookFromAddress<AgentHUD.Delegates.UpdateTargetInfo>(
+                    AgentHUD.MemberFunctionPointers.UpdateTargetInfo,
+                    UpdateTargetInfoDetour),
 
-            _formatAddonText2IntIntUIntHook = _gameInteropProvider.EnabledHookFromAddress<RaptureTextModule.Delegates.FormatAddonText2IntIntUInt>(
-                RaptureTextModule.MemberFunctionPointers.FormatAddonText2IntIntUInt,
-                FormatAddonText2IntIntUIntDetour));
+                _formatAddonText2IntIntUIntHook = _gameInteropProvider.EnabledHookFromAddress<RaptureTextModule.Delegates.FormatAddonText2IntIntUInt>(
+                    RaptureTextModule.MemberFunctionPointers.FormatAddonText2IntIntUInt,
+                    FormatAddonText2IntIntUIntDetour));
+        }));
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
-        DisposeAndNull(ref _disposables);
+        return new ValueTask(_framework.Run(() => DisposeAndNull(ref _disposables)));
     }
 
     private void UpdateTargetInfoDetour(AgentHUD* thisPtr)

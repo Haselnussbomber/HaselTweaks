@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
@@ -9,14 +10,18 @@ public unsafe partial class MarketBoardItemPreview : Tweak
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly ItemService _itemService;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = _addonLifecycle.OnPostReceiveEvent(OnPostReceiveEvent, "ItemSearch");
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnPostReceiveEvent(AddonReceiveEventArgs args)

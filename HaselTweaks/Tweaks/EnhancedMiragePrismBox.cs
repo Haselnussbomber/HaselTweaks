@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
@@ -9,14 +10,16 @@ public unsafe partial class EnhancedMiragePrismBox : ConfigurableTweak<EnhancedM
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly MirageService _mirageService;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = _addonLifecycle.OnPostRefresh(OnPostRefresh, "MiragePrismPrismSetConvert");
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
+        return ValueTask.CompletedTask;
     }
 
     private void OnPostRefresh(AddonArgs args)

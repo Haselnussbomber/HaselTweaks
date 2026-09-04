@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 
 namespace HaselTweaks.Tweaks;
@@ -19,7 +20,7 @@ public partial class ShopItemIcons : Tweak
         _linkHandler ??= _chatGui.AddChatLinkHandler(3, OnLinkClick);
     }
 
-    public override void Dispose()
+    public override ValueTask DisposeAsync()
     {
         if (_linkHandler != null)
         {
@@ -27,20 +28,24 @@ public partial class ShopItemIcons : Tweak
             _linkHandler = null;
         }
 
-        base.Dispose();
+        return base.DisposeAsync();
     }
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _clientState.Login += OnLogin;
 
         if (_clientState.IsLoggedIn)
             _framework.RunOnTick(OnLogin, delayTicks: 1);
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         _clientState.Login -= OnLogin;
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnLogin()

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
@@ -10,14 +11,18 @@ public unsafe partial class ExpertDeliveries : Tweak
     private readonly IGameInteropProvider _gameInteropProvider;
     private readonly AddonObserver _addonObserver;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = _addonObserver.OnShow(OnShow, "GrandCompanySupplyList");
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnShow(AtkUnitBase* addon)

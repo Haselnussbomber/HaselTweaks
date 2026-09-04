@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
@@ -10,16 +11,20 @@ public unsafe partial class EnhancedRecipeNote : ConfigurableTweak<EnhancedRecip
     private readonly IClientState _clientState;
     private readonly TextService _textService;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = DisposableBag.Create(
             _addonLifecycle.OnPreFinalize(OnRecipeNotePreFinalize, "RecipeNote"),
             _clientState.OnLogin(OnLogin));
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnLogin()

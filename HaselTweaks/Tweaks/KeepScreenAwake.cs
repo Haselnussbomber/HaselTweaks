@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using System.Timers;
 using Windows.Win32;
 using Windows.Win32.System.Power;
@@ -7,7 +8,7 @@ namespace HaselTweaks.Tweaks;
 [RegisterSingleton<IHostedService>(Duplicate = DuplicateStrategy.Append), AutoConstruct]
 public partial class KeepScreenAwake : Tweak
 {
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         var timer = new Timer();
 
@@ -16,16 +17,20 @@ public partial class KeepScreenAwake : Tweak
         timer.Start();
 
         _disposables = timer;
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         if (Status is not TweakStatus.Enabled)
-            return;
+            return ValueTask.CompletedTask;
 
         PInvoke.SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
 
         DisposeAndNull(ref _disposables);
+
+        return ValueTask.CompletedTask;
     }
 
     private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)

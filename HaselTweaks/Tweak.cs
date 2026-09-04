@@ -24,15 +24,15 @@ public abstract partial class Tweak : ITweak, IHostedService
         _logger = loggerFactory.CreateLogger(InternalName);
     }
 
-    public Task StartAsync(CancellationToken _)
+    public async Task StartAsync(CancellationToken _)
     {
         if (!_pluginConfig.EnabledTweaks.Contains(InternalName))
-            return Task.CompletedTask;
+            return;
 
         try
         {
             _logger.LogInformation("Enabling tweak");
-            OnEnable();
+            await OnEnable().ConfigureAwait(false);
             Status = TweakStatus.Enabled;
         }
         catch (SignatureException ex)
@@ -50,17 +50,15 @@ public abstract partial class Tweak : ITweak, IHostedService
             Status = TweakStatus.Error;
             _logger.LogError(ex, "Error while enabling tweak");
         }
-
-        return Task.CompletedTask;
     }
 
-    public Task StopAsync(CancellationToken _)
+    public async Task StopAsync(CancellationToken _)
     {
         try
         {
             _logger.LogInformation("Disabling tweak");
 
-            OnDisable();
+            await OnDisable().ConfigureAwait(false);
 
             if (_disposables != null)
             {
@@ -74,19 +72,17 @@ public abstract partial class Tweak : ITweak, IHostedService
         {
             _logger.LogError(ex, "Error while disabling tweak");
         }
-
-        return Task.CompletedTask;
     }
 
-    public virtual void Dispose()
+    public virtual async ValueTask DisposeAsync()
     {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated)
+        if (Status is TweakStatus.Disposed or TweakStatus.Outdated or TweakStatus.Disabled)
             return;
 
         try
         {
             _logger.LogInformation("Disposing tweak");
-            OnDisable();
+            await OnDisable();
             DisposeAndNull(ref _disposables);
         }
         catch (Exception ex)
@@ -97,11 +93,13 @@ public abstract partial class Tweak : ITweak, IHostedService
         Status = TweakStatus.Disposed;
     }
 
-    public virtual void OnEnable()
+    public virtual ValueTask OnEnable()
     {
+        return ValueTask.CompletedTask;
     }
 
-    public virtual void OnDisable()
+    public virtual ValueTask OnDisable()
     {
+        return ValueTask.CompletedTask;
     }
 }

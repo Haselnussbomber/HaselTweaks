@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.Gui;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -31,20 +32,23 @@ public unsafe partial class GlamourDresserAlert : ConfigurableTweak<GlamourDress
         || DuplicateItemsInExistingSets.Count != 0
         || DuplicateItems.Count != 0;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = DisposableBag.Create(
             _addonObserver.OnShow(OnShow, "MiragePrismPrismBox"),
             _addonObserver.OnHide(OnHide, "MiragePrismPrismBox"),
             _framework.OnUpdate(OnFrameworkUpdate),
             _gameGui.OnAgentUpdate(OnAgentUpdate));
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
         DisposeAndNull(ref _window);
         _isPendingUpdate = false;
+        return ValueTask.CompletedTask;
     }
 
     private void OnShow(AtkUnitBase* addon)

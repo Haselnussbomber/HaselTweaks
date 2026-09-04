@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Windows;
 
@@ -9,7 +10,7 @@ public unsafe partial class CompanionColorPreview : Tweak
     private readonly AddonObserver _addonObserver;
     private readonly WindowManager _windowManager;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = DisposableBag.Create(
             _addonObserver.OnShow(OnShow, "Buddy"),
@@ -17,12 +18,16 @@ public unsafe partial class CompanionColorPreview : Tweak
 
         if (IsAddonOpen("Buddy"))
             _windowManager.CreateOrOpen<CompanionColorPreviewWindow>();
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
         _windowManager.Close<CompanionColorPreviewWindow>();
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnShow(AtkUnitBase* addon)

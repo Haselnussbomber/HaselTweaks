@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using HaselTweaks.Windows;
@@ -11,7 +12,7 @@ public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak<Enhanced
     private readonly AddonObserver _addonObserver;
     private readonly MJICraftScheduleSettingSearchBar _window;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = DisposableBag.Create(
             _addonLifecycle.OnPreReceiveEvent(OnPreReceiveEvent, "MJICraftScheduleSetting"),
@@ -20,12 +21,15 @@ public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak<Enhanced
 
         if (_config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"u8))
             _window.Open();
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
         _window.Close();
+        return ValueTask.CompletedTask;
     }
 
     private void OnPreReceiveEvent(AddonArgs addonArgs)

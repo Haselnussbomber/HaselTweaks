@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.ClientState.Conditions;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
@@ -26,7 +27,7 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
     private CommandHandler? _glamourPlateCommandCommandHandler;
     private CommandHandler? _reloadUICommandCommandHandler;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _itemLinkCommandHandler = _commandService.AddCommand("itemlink", cmd => cmd
             .WithHelpTextKey("Commands.Config.EnableItemLinkCommand.Description")
@@ -69,12 +70,14 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
             _reloadUICommandCommandHandler);
 
         UpdateCommands(true);
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         UpdateCommands(false);
         DisposeAndNull(ref _disposables);
+        return ValueTask.CompletedTask;
     }
 
     private void UpdateCommands(bool enable)

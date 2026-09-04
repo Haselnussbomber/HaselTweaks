@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
@@ -8,14 +9,18 @@ public unsafe partial class FixInventoryOpenTab : Tweak
 {
     private readonly IAddonLifecycle _addonLifecycle;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = _addonLifecycle.OnPreRefresh(OnPreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"]);
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnPreRefresh(AddonArgs args)

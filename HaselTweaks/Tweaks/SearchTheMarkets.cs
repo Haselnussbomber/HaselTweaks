@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.Gui.ContextMenu;
 using Dalamud.Game.Text;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -15,7 +16,7 @@ public unsafe partial class SearchTheMarkets : Tweak
     private MenuItem? _menuItem;
     private ItemHandle _item;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _menuItem ??= new()
         {
@@ -39,12 +40,16 @@ public unsafe partial class SearchTheMarkets : Tweak
                 handler => _languageProvider.LanguageChanged += handler.Invoke,
                 handler => _languageProvider.LanguageChanged -= handler.Invoke,
                 OnLanguageChange));
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
         _menuItem = null;
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnLanguageChange()

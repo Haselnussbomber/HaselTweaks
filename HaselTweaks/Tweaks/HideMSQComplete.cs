@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
@@ -7,19 +9,25 @@ namespace HaselTweaks.Tweaks;
 public unsafe partial class HideMSQComplete : Tweak
 {
     private readonly IAddonLifecycle _addonLifecycle;
+    private readonly IFramework _framework;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = _addonLifecycle.OnPostRefresh(ScenarioTree_PostRefresh, "ScenarioTree");
-        Update();
+
+        return new ValueTask(_framework.Run(Update));
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
 
         if (Status is TweakStatus.Enabled)
-            UpdateVisibility(true, true);
+        {
+            return new ValueTask(_framework.Run(() => UpdateVisibility(true, true)));
+        }
+
+        return ValueTask.CompletedTask;
     }
 
     private void ScenarioTree_PostRefresh(AddonArgs args)

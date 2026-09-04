@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.Config;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
@@ -36,39 +37,45 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
 
     #region Core
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
-            _updateCharaSelectDisplayHook = _gameInteropProvider.EnabledHookFromAddress<AgentLobby.Delegates.UpdateCharaSelectDisplay>(
-                AgentLobby.MemberFunctionPointers.UpdateCharaSelectDisplay,
-                UpdateCharaSelectDisplayDetour),
+        return new ValueTask(_framework.Run(() =>
+        {
+            _disposables = DisposableBag.Create(
+                _updateCharaSelectDisplayHook = _gameInteropProvider.EnabledHookFromAddress<AgentLobby.Delegates.UpdateCharaSelectDisplay>(
+                    AgentLobby.MemberFunctionPointers.UpdateCharaSelectDisplay,
+                    UpdateCharaSelectDisplayDetour),
 
-            _cleanupCharactersHook = _gameInteropProvider.EnabledHookFromAddress<CharaSelectCharacterList.Delegates.CleanupCharacters>(
-                CharaSelectCharacterList.MemberFunctionPointers.CleanupCharacters,
-                CleanupCharactersDetour),
+                _cleanupCharactersHook = _gameInteropProvider.EnabledHookFromAddress<CharaSelectCharacterList.Delegates.CleanupCharacters>(
+                    CharaSelectCharacterList.MemberFunctionPointers.CleanupCharacters,
+                    CleanupCharactersDetour),
 
-            _executeEmoteHook = _gameInteropProvider.EnabledHookFromAddress<EmoteManager.Delegates.ExecuteEmote>(
-                EmoteManager.MemberFunctionPointers.ExecuteEmote,
-                ExecuteEmoteDetour),
+                _executeEmoteHook = _gameInteropProvider.EnabledHookFromAddress<EmoteManager.Delegates.ExecuteEmote>(
+                    EmoteManager.MemberFunctionPointers.ExecuteEmote,
+                    ExecuteEmoteDetour),
 
-            _openLoginWaitDialogHook = _gameInteropProvider.EnabledHookFromAddress<AgentLobby.Delegates.OpenLoginWaitDialog>(
-                AgentLobby.MemberFunctionPointers.OpenLoginWaitDialog,
-                OpenLoginWaitDialogDetour),
+                _openLoginWaitDialogHook = _gameInteropProvider.EnabledHookFromAddress<AgentLobby.Delegates.OpenLoginWaitDialog>(
+                    AgentLobby.MemberFunctionPointers.OpenLoginWaitDialog,
+                    OpenLoginWaitDialogDetour),
 
-            _addonLifecycle.OnPostSetup(OnLogoPostSetup, "Logo"),
-            _clientState.OnLogin(OnLogin),
-            _clientState.OnLogout(OnLogout),
-            _framework.OnUpdate(OnUpdate),
-            _gameConfig.OnGameConfigChange(OnGameConfigChanged));
+                _addonLifecycle.OnPostSetup(OnLogoPostSetup, "Logo"),
+                _clientState.OnLogin(OnLogin),
+                _clientState.OnLogout(OnLogout),
+                _framework.OnUpdate(OnUpdate),
+                _gameConfig.OnGameConfigChange(OnGameConfigChanged));
 
-        UpdateCharacterSettings();
-        PreloadEmotes();
+            UpdateCharacterSettings();
+            PreloadEmotes();
+        }));
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
-        DisposeAndNull(ref _disposables);
-        CleanupCharaSelect();
+        return new ValueTask(_framework.Run(() =>
+        {
+            DisposeAndNull(ref _disposables);
+            CleanupCharaSelect();
+        }));
     }
 
     private void OnLogin()

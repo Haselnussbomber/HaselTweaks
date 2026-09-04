@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.Agent.AgentArgTypes;
 using FFXIVClientStructs.FFXIV.Client.System.Input;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -15,15 +16,19 @@ public unsafe partial class AetherCurrentHelper : ConfigurableTweak<AetherCurren
 
     private AetherCurrentHelperWindow? _window;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = _agentLifecycle.OnPreReceiveEvent(OnPreReceiveEvent, AgentId.AetherCurrent);
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
         DisposeAndNull(ref _window);
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnPreReceiveEvent(AgentReceiveEventArgs args)

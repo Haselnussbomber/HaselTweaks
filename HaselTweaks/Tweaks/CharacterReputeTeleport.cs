@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.Agent.AgentArgTypes;
 using Dalamud.Game.ClientState.Keys;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
@@ -13,14 +14,18 @@ public unsafe partial class CharacterReputeTeleport : Tweak
     private readonly ExcelService _excelService;
     private readonly TeleportService _teleportService;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = _agentLifecycle.OnPreReceiveEvent(OnStatusReceiveEvent, AgentId.Status);
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnStatusReceiveEvent(AgentReceiveEventArgs args)

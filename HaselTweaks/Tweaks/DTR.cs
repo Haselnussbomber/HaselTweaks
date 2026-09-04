@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Dalamud.Game.Text;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
@@ -23,7 +24,7 @@ public unsafe partial class DTR : ConfigurableTweak<DTRConfiguration>
     private int _lastFrameRate;
     private uint _lastInstanceId;
 
-    public override void OnEnable()
+    public override ValueTask OnEnable()
     {
         _disposables = DisposableBag.Create(
             _dtrInstance = _dtrBar.GetDisposable("[HaselTweaks] Instance"),
@@ -34,9 +35,11 @@ public unsafe partial class DTR : ConfigurableTweak<DTRConfiguration>
             _languageProvider.OnLanguageChange(OnLanguageChange));
 
         UpdateBusyText();
+
+        return ValueTask.CompletedTask;
     }
 
-    public override void OnDisable()
+    public override ValueTask OnDisable()
     {
         DisposeAndNull(ref _disposables);
 
@@ -45,6 +48,8 @@ public unsafe partial class DTR : ConfigurableTweak<DTRConfiguration>
         _dtrBusy = null;
 
         ResetCache();
+
+        return ValueTask.CompletedTask;
     }
 
     private void OnFrameworkUpdate()
