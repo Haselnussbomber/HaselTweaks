@@ -361,11 +361,15 @@
         "type": "Project",
         "dependencies": {
           "FFXIVClientStructs": "[1.0.0, )",
+          "HaselCommon.Generator": "[1.0.0, )",
           "InteropGenerator.Runtime": "[1.0.0, )",
           "Microsoft.Extensions.DependencyInjection": "[10.0.10, )",
           "Microsoft.Extensions.Hosting": "[10.0.10, )",
           "Microsoft.Extensions.Logging": "[10.0.10, )"
         }
+      },
+      "haselcommon.generator": {
+        "type": "Project"
       },
       "interopgenerator.runtime": {
         "type": "Project"

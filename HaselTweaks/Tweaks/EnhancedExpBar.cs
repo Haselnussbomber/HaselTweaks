@@ -36,7 +36,7 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
 
                 _addonLifecycle.OnPostRequestedUpdate(OnAddonExpPostRequestedUpdate, "_Exp"),
                 _clientState.OnLeavePvP(OnLeavePvP),
-                _clientState.OnTerritoryChange(OnTerritoryChanged));
+                _clientState.OnTerritoryChanged(OnTerritoryChanged));
 
             TriggerReset();
         }));

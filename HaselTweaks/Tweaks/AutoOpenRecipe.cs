@@ -23,10 +23,7 @@ public unsafe partial class AutoOpenRecipe : Tweak
 
     public override ValueTask OnEnable()
     {
-        _disposables = EventExtensions.Subscribe(
-            handler => _gameInventory.ItemAddedExplicit += handler.Invoke,
-            handler => _gameInventory.ItemAddedExplicit -= handler.Invoke,
-            OnItemAddedExplicit);
+        _disposables = _gameInventory.OnItemAddedExplicit(OnItemAddedExplicit);
 
         return ValueTask.CompletedTask;
     }

@@ -104,7 +104,7 @@ public unsafe partial class AutoSorter : ConfigurableTweak<AutoSorterConfigurati
             _framework.OnUpdate(OnFrameworkUpdate),
             _clientState.OnLogin(_queue.Clear),
             _clientState.OnLogout(_queue.Clear),
-            _clientState.OnClassJobChange(OnClassJobChange),
+            _clientState.OnClassJobChanged(OnClassJobChange),
             _addonObserver.OnShow(_ => OnOpenArmoury(), "ArmouryBoard"),
             _addonObserver.OnShow(_ => OnOpenInventoryBuddy(), "InventoryBuddy"),
             _addonObserver.OnShow(_ => OnOpenRetainer(), ["InventoryRetainer", "InventoryRetainerLarge"]),

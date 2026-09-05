@@ -32,7 +32,7 @@ public unsafe partial class CosmicResearchTodo : ConfigurableTweak<CosmicResearc
                     SetIntDataDetour),
 
                 _addonLifecycle.OnPreRequestedUpdate(OnPreRequestedUpdate, "_ToDoList"),
-                _clientState.OnClassJobChange(OnClassJobChanged),
+                _clientState.OnClassJobChanged(OnClassJobChanged),
                 _languageProvider.OnLanguageChange(OnLanguageChanged));
 
             _ = _framework.RunOnTick(RequestUpdate, delayTicks: 1);

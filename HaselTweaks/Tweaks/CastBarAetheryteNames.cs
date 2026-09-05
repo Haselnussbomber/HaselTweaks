@@ -39,7 +39,7 @@ public partial class CastBarAetheryteNames : Tweak
                     TeleportDetour),
 
                 _addonLifecycle.OnPreRefresh(OnCastBarPreRefresh, "_CastBar"),
-                _clientState.OnTerritoryChange(OnTerritoryChanged));
+                _clientState.OnTerritoryChanged(OnTerritoryChanged));
 
         }));
     }

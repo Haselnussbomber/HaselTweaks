@@ -72,8 +72,8 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
                 _addonObserver.OnShow(OnShow, "BannerEditor"),
                 _addonObserver.OnHide(OnHide, "BannerEditor"),
 
-                _clientState.OnTerritoryChange(OnTerritoryChanged),
-                _clientState.OnClassJobChange(OnClassJobChange));
+                _clientState.OnTerritoryChanged(OnTerritoryChanged),
+                _clientState.OnClassJobChanged(OnClassJobChange));
 
             _openPortraitEditPayload = _chatGui.AddChatLinkHandler(1, OpenPortraitEditChatHandler);
 

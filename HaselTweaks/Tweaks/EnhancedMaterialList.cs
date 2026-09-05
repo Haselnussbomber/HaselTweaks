@@ -59,11 +59,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
                 _addonObserver.OnShow(_ => _canRefreshRecipeTree = true, "RecipeTree"),
                 _framework.OnUpdate(OnFrameworkUpdate),
                 _clientState.OnLogin(OnLogin),
-
-                EventExtensions.Subscribe(
-                    handler => _gameInventory.InventoryChangedRaw += handler.Invoke,
-                    handler => _gameInventory.InventoryChangedRaw -= handler.Invoke,
-                    OnInventoryUpdate));
+                _gameInventory.OnInventoryChangedRaw(OnInventoryUpdate));
 
             if (_clientState.IsLoggedIn)
                 OnLogin();
