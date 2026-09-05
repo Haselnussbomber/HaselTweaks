@@ -66,12 +66,12 @@ public unsafe partial class MinimapAdjustments : ConfigurableTweak<MinimapAdjust
     private void UpdateAlpha(HaselAddonNaviMap* naviMap)
     {
         var maskNode = naviMap->Mask;
-        var targetAlphaByte = _targetAlpha * 255;
+        var targetAlphaByte = (byte)(_targetAlpha * 255);
 
         if (maskNode->Color.A == targetAlphaByte)
             return;
 
-        maskNode->Color.A = (byte)MathUtils.DeltaLerp(maskNode->Color.A, targetAlphaByte, 0.16f);
+        maskNode->Color.A = maskNode->Color.A.DeltaLerp(targetAlphaByte, 0.16f);
     }
 
     private void UpdateVisibility(HaselAddonNaviMap* naviMap, bool hovered)
