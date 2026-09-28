@@ -1,4 +1,5 @@
 using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -9,6 +10,7 @@ using HaselTweaks.JsonConverters;
 
 namespace HaselTweaks.Config;
 
+[RegisterSingleton(Factory = nameof(ServiceFactory))]
 public partial class PluginConfig : IPluginConfiguration
 {
     [JsonIgnore]
@@ -26,12 +28,10 @@ public partial class PluginConfig : IPluginConfiguration
     [JsonIgnore]
     private static IPluginLog? PluginLog;
 
-    public static PluginConfig Load(IDalamudPluginInterface pluginInterface)
+    public static PluginConfig ServiceFactory(IServiceProvider serviceProvider)
     {
-        PluginInterface = pluginInterface;
-
-        var pluginLog = pluginInterface.GetRequiredService<IPluginLog>();
-        PluginLog = pluginLog;
+        PluginInterface = serviceProvider.GetRequiredService<IDalamudPluginInterface>();
+        PluginLog = serviceProvider.GetRequiredService<IPluginLog>();
 
         SerializerOptions = new JsonSerializerOptions()
         {
@@ -61,7 +61,7 @@ public partial class PluginConfig : IPluginConfiguration
         IConfigMigration[] migrations = [
             new Version2(),
             new Version5(),
-            new Version6(PluginInterface, pluginLog),
+            new Version6(PluginInterface, PluginLog),
             new Version7(),
             new Version8(),
             new Version9()
@@ -71,7 +71,7 @@ public partial class PluginConfig : IPluginConfiguration
         {
             if (version < migration.Version)
             {
-                pluginLog.Information("Migrating from version {version} to {migrationVersion}...", version, migration.Version);
+                PluginLog.Information("Migrating from version {version} to {migrationVersion}...", version, migration.Version);
 
                 migration.Migrate(ref config);
                 version = migration.Version;
@@ -84,7 +84,7 @@ public partial class PluginConfig : IPluginConfiguration
 
         if (migrated)
         {
-            pluginLog.Information("Configuration migrated successfully.");
+            PluginLog.Information("Configuration migrated successfully.");
             obj.Save();
         }
 
@@ -152,43 +152,14 @@ public class TweakConfigs
     public MaterialAllocationConfiguration MaterialAllocation { get; init; } = new();
     public MinimapAdjustmentsConfiguration MinimapAdjustments { get; init; } = new();
     public PortraitHelperConfiguration PortraitHelper { get; init; } = new();
-}
 
-public static class PluginConfigExtension
-{
-    public static void AddConfig(this IServiceCollection services, PluginConfig pluginConfig)
+    [RegisterServices]
+    public static void Register(IServiceCollection services)
     {
-        services.AddSingleton(pluginConfig);
-        services.AddSingleton(pluginConfig.Tweaks.AchievementLinkTooltip);
-        services.AddSingleton(pluginConfig.Tweaks.AetherCurrentHelper);
-        services.AddSingleton(pluginConfig.Tweaks.AutoSorter);
-        services.AddSingleton(pluginConfig.Tweaks.BackgroundMusicKeybind);
-        services.AddSingleton(pluginConfig.Tweaks.BiggerCharacterPreviews);
-        services.AddSingleton(pluginConfig.Tweaks.CabinetQuickStore);
-        services.AddSingleton(pluginConfig.Tweaks.CharacterClassSwitcher);
-        services.AddSingleton(pluginConfig.Tweaks.Commands);
-        services.AddSingleton(pluginConfig.Tweaks.CosmicResearchTodo);
-        services.AddSingleton(pluginConfig.Tweaks.CustomChatMessageFormats);
-        services.AddSingleton(pluginConfig.Tweaks.CustomChatTimestamp);
-        services.AddSingleton(pluginConfig.Tweaks.DTR);
-        services.AddSingleton(pluginConfig.Tweaks.DisableRewardPopups);
-        services.AddSingleton(pluginConfig.Tweaks.EnhancedExpBar);
-        services.AddSingleton(pluginConfig.Tweaks.EnhancedIsleworksAgenda);
-        services.AddSingleton(pluginConfig.Tweaks.EnhancedLoginLogout);
-        services.AddSingleton(pluginConfig.Tweaks.EnhancedMaterialList);
-        services.AddSingleton(pluginConfig.Tweaks.EnhancedMiragePrismBox);
-        services.AddSingleton(pluginConfig.Tweaks.EnhancedMonsterNote);
-        services.AddSingleton(pluginConfig.Tweaks.EnhancedRecipeNote);
-        services.AddSingleton(pluginConfig.Tweaks.EnhancedTargetInfo);
-        services.AddSingleton(pluginConfig.Tweaks.EnhancedTryon);
-        services.AddSingleton(pluginConfig.Tweaks.FlashTaskbar);
-        services.AddSingleton(pluginConfig.Tweaks.ForcedCutsceneMusic);
-        services.AddSingleton(pluginConfig.Tweaks.GearSetGrid);
-        services.AddSingleton(pluginConfig.Tweaks.GlamourDresserAlert);
-        services.AddSingleton(pluginConfig.Tweaks.InventoryHighlight);
-        services.AddSingleton(pluginConfig.Tweaks.LockWindowPosition);
-        services.AddSingleton(pluginConfig.Tweaks.MaterialAllocation);
-        services.AddSingleton(pluginConfig.Tweaks.MinimapAdjustments);
-        services.AddSingleton(pluginConfig.Tweaks.PortraitHelper);
+        foreach (var prop in typeof(TweakConfigs).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        {
+            services.AddSingleton(prop.PropertyType, provider
+                => prop.GetValue(provider.GetRequiredService<PluginConfig>().Tweaks)!);
+        }
     }
 }
