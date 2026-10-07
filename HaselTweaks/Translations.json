@@ -483,8 +483,8 @@
     "en": "Shift"
   },
   "BackgroundMusicKeybind.Config.ControlKeyCheckbox.Label": {
-    "en": "Control",
-    "de": "Steuerung"
+    "en": "Ctrl",
+    "de": "Strg"
   },
   "BackgroundMusicKeybind.Config.AltKeyCheckbox.Label": {
     "en": "Alt"
