@@ -4,9 +4,9 @@
     "net10.0-windows7.0": {
       "AutoCtor": {
         "type": "Direct",
-        "requested": "[3.1.0, )",
-        "resolved": "3.1.0",
-        "contentHash": "Wc7TNqq/tQEqHvWPeIdyD4kbrNFhC+2hAjxLqN47QB3aE7z6dWZaE0UnV4JsZzfBGocPP2efchY1tmLvu3tx7Q=="
+        "requested": "[4.0.0, )",
+        "resolved": "4.0.0",
+        "contentHash": "q5BTN6TTBG1+EZL6AEIbLCo/BQFRJ3+u1hrNxqSVwbaO/EXki8/fT1o16ds9hitie8tdeTb2+Tizug5X0DUGLA=="
       },
       "DalamudPackager": {
         "type": "Direct",
@@ -22,9 +22,9 @@
       },
       "Injectio": {
         "type": "Direct",
-        "requested": "[6.1.0, )",
-        "resolved": "6.1.0",
-        "contentHash": "UrLWKpGTIliUPzKd0WnBAeXH3haZt7f13DESaWTUnTnpld5wAizlsJ9wwC5H8rs5APlmXIYDxfiDKIjnNpHdcw=="
+        "requested": "[6.2.0, )",
+        "resolved": "6.2.0",
+        "contentHash": "MgtjdaL1LJojuOTG5Wak9/zrQWnk1o2NYFZZlOLX1AMqcvZj7DCIot31N/e7e9e81iEsQRyEV0ClKIdkozqkqA=="
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
         "type": "Direct",
@@ -34,20 +34,20 @@
       },
       "Microsoft.Windows.CsWin32": {
         "type": "Direct",
-        "requested": "[0.3.298, )",
-        "resolved": "0.3.298",
-        "contentHash": "moz/CojV5HSeJYV9pNVE6mWMKnJGvPgdD31EhBLyUJ8Ui06PBrH9oPFK1ljXbJJMM4EzKnkE1a0AtBbH1BHDGA==",
+        "requested": "[0.3.360, )",
+        "resolved": "0.3.360",
+        "contentHash": "hz2kh3RP3CaQWSfOYx8Oy5fyZQvQtjR7DERp0cH6YO/CKoV8tuFhVaWWHA51OHDqIFmas65uJuas1zHSaWZojw==",
         "dependencies": {
           "Microsoft.Windows.SDK.Win32Docs": "0.1.42-alpha",
-          "Microsoft.Windows.SDK.Win32Metadata": "70.0.11-preview",
+          "Microsoft.Windows.SDK.Win32Metadata": "71.0.30-preview",
           "Microsoft.Windows.WDK.Win32Metadata": "0.13.25-experimental"
         }
       },
       "Roslynator.Analyzers": {
         "type": "Direct",
-        "requested": "[4.15.0, )",
-        "resolved": "4.15.0",
-        "contentHash": "E8fu71Y+vzhniJKy1K13Rzwm8Vjcj7CDFBpflqncKUZfc3SzuF0kMBiyMmgXNPkjWTdE3Z+30HlGgYjHONZY/Q=="
+        "requested": "[4.16.1, )",
+        "resolved": "4.16.1",
+        "contentHash": "AGzq3UZvIwTGSh9xyIna+Q9F666S8UaLlX/Pk3Iz21qIAWjL8iYporVCcX1k/oi5chrRZ8VJRahup4me4HZptw=="
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",
@@ -335,8 +335,8 @@
       },
       "Microsoft.Windows.SDK.Win32Metadata": {
         "type": "Transitive",
-        "resolved": "70.0.11-preview",
-        "contentHash": "i8Dv2KCKzH8MQAsgLeUa5zFGyQOoz+TlvnbkFUkjsUtqhj4oguVj9rDpVACs5fLayZbwItOSllf+bhwr+z2yeg=="
+        "resolved": "71.0.30-preview",
+        "contentHash": "h/FD+SrIlxgr+HD/WrJnLvpTdyWFAX7F0FCMPRxPJFTt4Qz70wGXKEBZvvIDX7om4hP0Tb7O0s1ND3aUvigL8g=="
       },
       "Microsoft.Windows.WDK.Win32Metadata": {
         "type": "Transitive",
