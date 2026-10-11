@@ -71,6 +71,10 @@ For a detailed description please visit the plugins repository or open /haseltwe
     <ProjectReference Include="..\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" Private="True" />
   </ItemGroup>
 
+   <Target Name="DeleteCSXmlDocs" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' and Exists('$(TargetDir)FFXIVClientStructs.xml')">
+      <Delete Files="$(TargetDir)FFXIVClientStructs.xml" />
+   </Target>
+
   <!-- HaselCommon -->
   <ItemGroup>
     <ProjectReference Include="..\HaselCommon\HaselCommon\HaselCommon.csproj" />
