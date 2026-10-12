@@ -31,19 +31,11 @@ For a detailed description please visit the plugins repository or open /haseltwe
 
   <!-- Assets -->
   <ItemGroup>
-    <EmbeddedResource Include="Assets\Logo.png" />
+    <None Include="Assets\Logo.png" Link="Logo.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Translations.json" Link="$(AssemblyName).Translations.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="LICENSES.md" Link="LICENSES.md" CopyToOutputDirectory="PreserveNewest" />
+
     <None Condition="'$(Configuration)' == 'Debug'" Include="Assets\Icon.png" Link="images\icon.png" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <!-- Translations -->
-  <ItemGroup Condition="Exists('Translations.json')">
-    <EmbeddedResource Include="Translations.json" />
-  </ItemGroup>
-
-  <!-- Licenses -->
-  <ItemGroup Condition="Exists('LICENSES.md')">
-    <EmbeddedResource Include="LICENSES.md" />
-    <None Include="LICENSES.md" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- References to Dalamud dependencies -->

@@ -1,3 +1,4 @@
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -10,6 +11,7 @@ public partial class PluginWindow : SimpleWindow
     private const bool ShowDebugBorders = false;
 
     private readonly ILogger<PluginWindow> _logger;
+    private readonly IDalamudPluginInterface _pluginInterface;
     private readonly IServiceProvider _serviceProvider;
     private readonly TextService _textService;
     private readonly ITextureProvider _textureProvider;
@@ -21,6 +23,7 @@ public partial class PluginWindow : SimpleWindow
     private ITweak? _selectedTweak;
     private bool _scrollIntoView;
     private string _searchInput = string.Empty;
+    private string _logoFilePath;
 
     private readonly record struct TweakEntry(ITweak Tweak, string Label);
 
@@ -28,6 +31,7 @@ public partial class PluginWindow : SimpleWindow
     private void Initialize(IEnumerable<IHostedService> services)
     {
         _tweaks = [.. services.OfType<ITweak>()];
+        _logoFilePath = Path.Join(_pluginInterface.AssemblyLocation.Directory!.FullName, "Logo.png");
 
         Size = new Vector2(900, 630);
         SizeCondition = ImGuiCond.Always;
@@ -417,7 +421,7 @@ public partial class PluginWindow : SimpleWindow
         var cursorPos = ImGui.GetCursorPos();
         var contentAvail = ImStyle.ContentRegionAvail;
 
-        if (_textureProvider.GetFromManifestResource(Assembly.GetExecutingAssembly(), "HaselTweaks.Assets.Logo.png").TryGetWrap(out var logo, out var _))
+        if (_textureProvider.GetFromFile(_logoFilePath).TryGetWrap(out var logo, out var _))
         {
             var logoSize = ImGuiHelpers.ScaledVector2(256, 128);
             ImCursor.Position = contentAvail / 2 - logoSize / 2 + ImStyle.ItemSpacing.XOnly();
