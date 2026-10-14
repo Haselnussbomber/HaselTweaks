@@ -7,18 +7,12 @@ namespace HaselTweaks;
 public partial class Plugin : IAsyncDalamudPlugin
 {
     private readonly IDalamudPluginInterface _pluginInterface;
-    private IHost _host;
+    private Host _host;
 
     [AutoPostConstruct]
     private void Initialize()
     {
         _host = new HostBuilder()
-            .UseContentRoot(_pluginInterface.AssemblyLocation.Directory!.FullName)
-            .ConfigureHostOptions(options =>
-            {
-                options.ServicesStartConcurrently = true;
-                options.ServicesStopConcurrently = true;
-            })
             .ConfigureServices(services =>
             {
                 services.AddSingleton(_pluginInterface);
@@ -42,7 +36,7 @@ public partial class Plugin : IAsyncDalamudPlugin
         }
         finally
         {
-            _host.Dispose();
+            await _host.DisposeAsync().ConfigureAwait(false);
         }
     }
 }
