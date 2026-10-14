@@ -22,7 +22,8 @@ public unsafe partial class FlashTaskbar : ConfigurableTweak<FlashTaskbarConfigu
 
     public override ValueTask OnEnable()
     {
-        return new ValueTask(_framework.Run(() => {
+        return new ValueTask(_framework.Run(() =>
+        {
             _disposables = DisposableBag.Create(
                 // Client::Game::Event::NormalCraftCallback.ReceiveEvent
                 _normalCraftCallbackHook = _gameInteropProvider.EnabledHookFromSignature<AtkModuleInterface.AtkEventInterface.Delegates.ReceiveEvent>(

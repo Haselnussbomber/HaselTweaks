@@ -453,13 +453,13 @@ public partial class PluginWindow : SimpleWindow
         ImCursor.Position = cursorPos + contentAvail - ImGui.CalcTextSize("dev");
         ImGuiUtils.DrawLink("dev", _textService.Translate("HaselTweaks.Config.DevGitHubLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/compare/main...dev");
 #else
-            var version = Assembly.GetExecutingAssembly().GetName().Version;
-            if (version != null)
-            {
-                var versionString = "v" + version.ToString(3);
-                ImCursor.Position = cursorPos + contentAvail - ImGui.CalcTextSize(versionString);
-                ImGuiUtils.DrawLink(versionString, _textService.Translate("HaselTweaks.Config.ReleaseNotesLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/releases/tag/{versionString}");
-            }
+        var version = Assembly.GetExecutingAssembly().GetName().Version;
+        if (version != null)
+        {
+            var versionString = "v" + version.ToString(3);
+            ImCursor.Position = cursorPos + contentAvail - ImGui.CalcTextSize(versionString);
+            ImGuiUtils.DrawLink(versionString, _textService.Translate("HaselTweaks.Config.ReleaseNotesLink.Tooltip"), $"https://github.com/Haselnussbomber/HaselTweaks/releases/tag/{versionString}");
+        }
 #endif
     }
 

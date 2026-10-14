@@ -72,7 +72,8 @@ public unsafe partial class CabinetQuickStoreWindow : SimpleWindow
             UIState.Instance()->Cabinet.StoreCabinetItem(cabinetItemId);
         }
 
-        if (_excelService.TryGetRow<CabinetSheet>(cabinetItemId, out var row)) {
+        if (_excelService.TryGetRow<CabinetSheet>(cabinetItemId, out var row))
+        {
             ImGui.SameLine();
             _textureProvider.DrawIcon(_itemService.GetItemIcon(row.Item.RowId), ImGui.GetFrameHeight());
             ImGui.SameLine();
@@ -138,7 +139,7 @@ public unsafe partial class CabinetQuickStoreWindow : SimpleWindow
             {
                 ref var item = ref gearset->Items[i];
                 if (item.ItemId == rowId)
-                return true;
+                    return true;
             }
         }
 
