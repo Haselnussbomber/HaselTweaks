@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
@@ -9,6 +10,7 @@ public unsafe partial class HideMSQComplete : Tweak
 {
     private readonly IAddonLifecycle _addonLifecycle;
     private readonly IFramework _framework;
+    private readonly ExcelService _excelService;
 
     public override ValueTask OnEnable()
     {
@@ -34,16 +36,24 @@ public unsafe partial class HideMSQComplete : Tweak
         Update();
     }
 
-    private static void Update()
+    private void Update()
     {
         var agent = AgentScenarioTree.Instance();
         if (agent->Data == null)
             return;
 
         var data = agent->Data;
-        var hasMainQuest = data->MainScenarioQuestIds[data->MSQPathIndex] != 0;
+        var mainQuest = data->MainScenarioQuestIds[data->MSQPathIndex];
+        var hasMainQuest = mainQuest != 0 && HasExpansionForQuest(mainQuest | 0x10000u);
         var hasJobQuest = data->JobQuestIds[data->JobQuestIndex] != 0;
         UpdateVisibility(hasMainQuest, hasJobQuest);
+    }
+
+    private bool HasExpansionForQuest(uint questId)
+    {
+        return _excelService.GetSheet<ScenarioTree>().HasRow(questId)
+            && _excelService.TryGetRow<Quest>(questId, out var quest)
+            && quest.Expansion.RowId <= PlayerState.Instance()->MaxExpansion;
     }
 
     private static void UpdateVisibility(bool hasMainQuest, bool hasJobQuest)
