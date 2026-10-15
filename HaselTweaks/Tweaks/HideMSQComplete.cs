@@ -14,7 +14,7 @@ public unsafe partial class HideMSQComplete : Tweak
 
     public override ValueTask OnEnable()
     {
-        _disposables = _addonLifecycle.OnPostRefresh(ScenarioTree_PostRefresh, "ScenarioTree");
+        _disposables = _addonLifecycle.OnPostRefresh(OnPostRefresh, "ScenarioTree");
 
         return new ValueTask(_framework.Run(Update));
     }
@@ -31,7 +31,7 @@ public unsafe partial class HideMSQComplete : Tweak
         return ValueTask.CompletedTask;
     }
 
-    private void ScenarioTree_PostRefresh(AddonArgs args)
+    private void OnPostRefresh(AddonArgs args)
     {
         Update();
     }
@@ -69,9 +69,6 @@ public unsafe partial class HideMSQComplete : Tweak
         var isInputHintShown = !hasMainQuest && lowerBox != null && lowerBox->Timeline != null && lowerBox->Timeline->ActiveLabelId == 102;
         addon->GetNodeById(9)->ToggleVisibility(!isInputHintShown); // AtkResNode (hide input hint)
 
-        if (!hasMainQuest && !hasJobQuest)
-            addon->Flags1A0 |= 0b1000_0000; // disable focusability
-        else
-            addon->Flags1A0 &= unchecked((byte)~0b1000_0000); // enable focusability
+        addon->DisableFocusability = !hasMainQuest && !hasJobQuest;
     }
 }
