@@ -76,7 +76,7 @@ public unsafe partial class InventoryHighlight : ConfigurableTweak<InventoryHigh
         }
     }
 
-    private void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework _)
     {
         _hoveredItemId = NormalizeItemId((uint)_gameGui.HoveredItem);
 

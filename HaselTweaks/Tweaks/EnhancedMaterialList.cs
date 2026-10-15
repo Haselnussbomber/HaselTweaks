@@ -85,7 +85,7 @@ public unsafe partial class EnhancedMaterialList : ConfigurableTweak<EnhancedMat
         _timeOfRecipeTreeRefresh = DateTime.UtcNow;
     }
 
-    private void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework _)
     {
         if (!_clientState.IsLoggedIn)
             return;

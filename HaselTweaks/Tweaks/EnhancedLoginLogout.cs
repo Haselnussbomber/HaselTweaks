@@ -97,7 +97,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
             UpdatePetMirageSettings();
     }
 
-    private void OnUpdate()
+    private void OnUpdate(IFramework _)
     {
         if (_currentEntry?.IsEmotePlayed != false)
             return;

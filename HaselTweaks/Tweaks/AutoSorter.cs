@@ -193,7 +193,7 @@ public unsafe partial class AutoSorter : ConfigurableTweak<AutoSorterConfigurati
         }
     }
 
-    private void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework _)
     {
         if (!_clientState.IsLoggedIn || _isBusy || _queue.Count == 0)
             return;

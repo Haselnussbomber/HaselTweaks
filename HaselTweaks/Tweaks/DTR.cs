@@ -52,7 +52,7 @@ public unsafe partial class DTR : ConfigurableTweak<DTRConfiguration>
         return ValueTask.CompletedTask;
     }
 
-    private void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework _)
     {
         if (!_clientState.IsLoggedIn)
             return;

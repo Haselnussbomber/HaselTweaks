@@ -59,7 +59,7 @@ public unsafe partial class ForcedCutsceneMusic : ConfigurableTweak<ForcedCutsce
         }));
     }
 
-    private void OnUpdate()
+    private void OnUpdate(IFramework _)
     {
         var hasTask = EventFramework.Instance()->EventSceneModule.TaskManager.Tasks.Any(IsCutsceneTask);
 

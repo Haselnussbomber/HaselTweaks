@@ -68,7 +68,7 @@ public unsafe partial class GlamourDresserAlert : ConfigurableTweak<GlamourDress
         _isPendingUpdate |= flag.HasFlag(AgentUpdateFlag.InventoryUpdate);
     }
 
-    private void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework _)
     {
         var mirageManager = MirageManager.Instance();
         if (!mirageManager->PrismBoxLoaded)

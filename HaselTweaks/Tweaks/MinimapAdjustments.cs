@@ -46,7 +46,7 @@ public unsafe partial class MinimapAdjustments : ConfigurableTweak<MinimapAdjust
         }));
     }
 
-    private void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework _)
     {
         if (!_clientState.IsLoggedIn)
             return;

@@ -27,7 +27,7 @@ public unsafe partial class GlamourDresserKeyboardNavigation : Tweak
         return ValueTask.CompletedTask;
     }
 
-    private void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework _)
     {
         if (!TryGetAddon<AddonMiragePrismPrismBox>(AgentId.MiragePrismPrismBox, out var addonPrismBox))
             return;

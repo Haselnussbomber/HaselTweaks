@@ -34,7 +34,7 @@ public unsafe partial class BackgroundMusicKeybind : ConfigurableTweak<Backgroun
         return ValueTask.CompletedTask;
     }
 
-    private void OnFrameworkUpdate()
+    private void OnFrameworkUpdate(IFramework _)
     {
         var allKeybindsPressed = true;
 
