@@ -4,7 +4,7 @@
 
 ### Hide MSQ Complete
 
-- **Added:** The tweak now also checks if you have access to the expansion required for the next Main Scenario Quest. (Thanks to @alydev)
+- **Added:** The tweak now also checks if you have access to the expansion required for the next Main Scenario Quest. (Thanks to @alydevs)
 
 ## [50.0.2] (2026-09-17)
 
