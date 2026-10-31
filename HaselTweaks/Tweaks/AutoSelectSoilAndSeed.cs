@@ -44,8 +44,7 @@ public unsafe partial class AutoSelectSoilAndSeed : Tweak
         if (!agent->IsAgentActive())
             return;
 
-        var agentEx = (HaselAgentHousingPlant*)agent;
-        if (agentEx->State != 0) // not 0 when item rows are loading
+        if (agent->State != 0) // not 0 when item rows are loading
             return;
 
         if (agent->SelectedItems[0].InventoryType != InventoryType.Invalid && agent->SelectedItems[1].InventoryType != InventoryType.Invalid)

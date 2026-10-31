@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace HaselTweaks.Tweaks;
 
@@ -14,11 +15,18 @@ public unsafe partial class CustomChatMessageFormats : ConfigurableTweak<CustomC
     private readonly ExcelService _excelService;
     private readonly GfdService _gfdService;
     private readonly IFramework _framework;
+    private readonly ISigScanner _sigScanner;
 
     private Hook<RaptureLogModule.Delegates.FormatLogMessage>? _formatLogMessageHook;
+    private CalculateLogLines _calculateLogLine;
+
+    public delegate uint CalculateLogLines(AtkFontCodeModule* thisPtr, Utf8String* a2, Utf8String* a3, nint a4, bool a5);
 
     public override ValueTask OnEnable()
     {
+        var calculateLogLinesAddress = _sigScanner.ScanText("E8 ?? ?? ?? ?? 85 C0 45 0F B6 C7");
+        _calculateLogLine = Marshal.GetDelegateForFunctionPointer<CalculateLogLines>(calculateLogLinesAddress);
+
         return new ValueTask(_framework.Run(() =>
         {
             _disposables = DisposableBag.Create(
@@ -91,6 +99,6 @@ public unsafe partial class CustomChatMessageFormats : ConfigurableTweak<CustomC
             tempParseMessage0->Copy(Utf8String.Concat(tempParseMessage3, &buffer, tempParseMessage0));
         }
 
-        return ((HaselAtkFontCodeModule*)thisPtr->AtkFontCodeModule)->CalculateLogLines(a7, tempParseMessage0, (nint)a6, false);
+        return _calculateLogLine.Invoke(thisPtr->AtkFontCodeModule, a7, tempParseMessage0, (nint)a6, false);
     }
 }

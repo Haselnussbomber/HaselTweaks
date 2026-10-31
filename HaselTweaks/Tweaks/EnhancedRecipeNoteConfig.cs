@@ -31,7 +31,7 @@ public unsafe partial class EnhancedRecipeNote
                 _config.SearchHistory.Clear();
                 _pluginConfig.Save();
 
-                HaselAgentRecipeNote.ClearHistory(&agent->RecipeSearchHistory);
+                AgentRecipeNote.ClearStdDequeUtf8String(&agent->RecipeSearchHistory);
             }
         }
 

@@ -57,8 +57,7 @@ public unsafe partial class EnhancedMiragePrismBox : ConfigurableTweak<EnhancedM
         if (!hasHandInItems)
             return;
 
-        var haselAgent = (HaselAgentMiragePrismPrismSetConvert*)agent;
-        haselAgent->UpdateAddon(4 | 0x100000); // imaginary 0x100000 flag, for our safety guard above
+        agent->UpdateAddon(4 | 0x100000); // imaginary 0x100000 flag, for our safety guard above
     }
 
     private static bool TryFindItem(ref AgentMiragePrismPrismSetConvert.AgentData.ItemSetItem item)

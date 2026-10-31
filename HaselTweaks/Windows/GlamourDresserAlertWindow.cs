@@ -131,7 +131,7 @@ public unsafe partial class GlamourDresserAlertWindow : SimpleWindow
 
                 if (_excelService.TryGetRow<MirageStoreSetItem>(item, out var set))
                 {
-                    HaselExdModule.GetMirageStoreSetItemRowById(item);
+                    ExdModule.GetMirageStoreSetItemRowByItemId(item);
 
                     foreach (var setItem in set.Items.Where(item => item.RowId != 0))
                         ExdModule.GetItemRowById(setItem.RowId);
