@@ -82,7 +82,7 @@ public abstract partial class Tweak : ITweak, IHostedService
         try
         {
             _logger.LogInformation("Disposing tweak");
-            await OnDisable();
+            await OnDisable().ConfigureAwait(false);
             DisposeAndNull(ref _disposables);
         }
         catch (Exception ex)

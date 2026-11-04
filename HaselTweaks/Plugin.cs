@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using HaselCommon;
 
 namespace HaselTweaks;
 
@@ -15,6 +16,7 @@ public partial class Plugin : IAsyncDalamudPlugin
         _host = new HostBuilder()
             .ConfigureServices(services =>
             {
+                services.AddFallbackProvider(_pluginInterface);
                 services.AddSingleton(_pluginInterface);
                 services.AddHaselCommon();
                 services.AddHaselTweaks();

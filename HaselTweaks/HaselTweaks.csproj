@@ -21,6 +21,7 @@ For a detailed description please visit the plugins repository or open /haseltwe
     <OutputPath>..\bin\</OutputPath>
     <DefineConstants>$(DefineConstants);AUTOCTOR_EMBED_ATTRIBUTES</DefineConstants>
     <NoWarn>$(NoWarn);Dalamud001;CA1873</NoWarn>
+
   </PropertyGroup>
 
   <!-- Dalamud.NET.Sdk settings -->
@@ -47,7 +48,7 @@ For a detailed description please visit the plugins repository or open /haseltwe
   <!-- NuGet dependencies -->
   <ItemGroup>
     <PackageReference Include="AutoCtor" Version="4.0.2" PrivateAssets="all" ExcludeAssets="compile;runtime" />
-    <PackageReference Include="Injectio" Version="6.3.0" PrivateAssets="all" />
+    
     <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="5.6.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.367" PrivateAssets="All" />
     <PackageReference Include="Roslynator.Analyzers" Version="5.0.1" PrivateAssets="all" />
@@ -72,6 +73,7 @@ For a detailed description please visit the plugins repository or open /haseltwe
   <!-- HaselCommon -->
   <ItemGroup>
     <ProjectReference Include="..\HaselCommon\HaselCommon\HaselCommon.csproj" />
+    <ProjectReference Include="..\HaselCommon\HaselCommon.Generators\HaselCommon.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <!-- BannedApiAnalyzers -->
