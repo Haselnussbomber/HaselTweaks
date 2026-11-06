@@ -14,7 +14,7 @@ public unsafe partial class HideMSQComplete : Tweak
 
     public override ValueTask OnEnable()
     {
-        _disposables = _addonLifecycle.OnPostRefresh(OnPostRefresh, "ScenarioTree");
+        _disposables = [_addonLifecycle.OnPostRefresh(OnPostRefresh, "ScenarioTree")];
 
         return new ValueTask(_framework.Run(Update));
     }

@@ -24,14 +24,15 @@ public unsafe partial class FlashTaskbar : ConfigurableTweak<FlashTaskbarConfigu
     {
         return new ValueTask(_framework.Run(() =>
         {
-            _disposables = DisposableBag.Create(
+            _disposables = [
                 // Client::Game::Event::NormalCraftCallback.ReceiveEvent
                 _normalCraftCallbackHook = _gameInteropProvider.EnabledHookFromSignature<AtkModuleInterface.AtkEventInterface.Delegates.ReceiveEvent>(
                     "48 89 5C 24 ?? 48 89 74 24 ?? 48 89 7C 24 ?? 41 56 48 83 EC ?? 49 8B F0 48 8B FA 4C 8B F1 45 85 C9",
                     NormalCraftCallbackDetour),
                 _chatGui.OnLogMessage(OnLogMessage),
                 _condition.OnConditionChange(OnConditionChange),
-                _addonLifecycle.OnPostRefresh(OnSynthesisSimplePostRefresh, "SynthesisSimple"));
+                _addonLifecycle.OnPostRefresh(OnSynthesisSimplePostRefresh, "SynthesisSimple"),
+            ];
         }));
     }
 

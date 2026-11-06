@@ -25,14 +25,15 @@ public unsafe partial class EnhancedMonsterNote : ConfigurableTweak<EnhancedMons
     {
         return new ValueTask(_framework.Run(() =>
         {
-            _disposables = DisposableBag.Create(
+            _disposables = [
                 _openWithDataHook = _gameInteropProvider.EnabledHookFromAddress<AgentMonsterNote.Delegates.OpenWithData>(
                     AgentMonsterNote.MemberFunctionPointers.OpenWithData,
                     OpenWithDataDetour),
 
                 _agentLifecycle.OnPreShow(OnMonsterNotePreShow, AgentId.MonsterNote),
                 _addonLifecycle.OnPostShow(OnMonsterNotePostShow, "MonsterNote"),
-                _clientState.OnLogout(OnLogout));
+                _clientState.OnLogout(OnLogout),
+            ];
         }));
     }
 

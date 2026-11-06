@@ -41,7 +41,7 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
     {
         return new ValueTask(_framework.Run(() =>
         {
-            _disposables = DisposableBag.Create(
+            _disposables = [
                 _updateCharaSelectDisplayHook = _gameInteropProvider.EnabledHookFromAddress<AgentLobby.Delegates.UpdateCharaSelectDisplay>(
                     AgentLobby.MemberFunctionPointers.UpdateCharaSelectDisplay,
                     UpdateCharaSelectDisplayDetour),
@@ -62,7 +62,8 @@ public unsafe partial class EnhancedLoginLogout : ConfigurableTweak<EnhancedLogi
                 _clientState.OnLogin(OnLogin),
                 _clientState.OnLogout(OnLogout),
                 _framework.OnUpdate(OnUpdate),
-                _gameConfig.OnGameConfigChange(OnGameConfigChanged));
+                _gameConfig.OnGameConfigChange(OnGameConfigChanged),
+            ];
 
             UpdateCharacterSettings();
             PreloadEmotes();

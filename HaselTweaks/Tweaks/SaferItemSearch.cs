@@ -14,7 +14,7 @@ public unsafe partial class SaferItemSearch : Tweak
 
     public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _addonLifecycle.OnPostRequestedUpdate(ItemSearch_PostRequestedUpdate, "ItemSearch"),
             _addonLifecycle.OnPostSetup(RetainerSell_PostSetup, "RetainerSell"),
 
@@ -26,7 +26,8 @@ public unsafe partial class SaferItemSearch : Tweak
             EventExtensions.Subscribe(
                 handler => _marketBoardService.ListingsEnd += handler.Invoke,
                 handler => _marketBoardService.ListingsEnd -= handler.Invoke,
-                OnListingsEnd));
+                OnListingsEnd),
+        ];
 
         return ValueTask.CompletedTask;
     }

@@ -26,14 +26,15 @@ public unsafe partial class CosmicResearchTodo : ConfigurableTweak<CosmicResearc
     {
         return new ValueTask(_framework.Run(() =>
         {
-            _disposables = DisposableBag.Create(
+            _disposables = [
                 _setIntDataHook = _gameInteropProvider.EnabledHookFromSignature<WKSModuleBase.Delegates.SetIntData>(
                     "40 53 48 83 EC ?? 48 8B D9 81 EA",
                     SetIntDataDetour),
 
                 _addonLifecycle.OnPreRequestedUpdate(OnPreRequestedUpdate, "_ToDoList"),
                 _clientState.OnClassJobChanged(OnClassJobChanged),
-                _languageProvider.OnLanguageChange(OnLanguageChanged));
+                _languageProvider.OnLanguageChange(OnLanguageChanged),
+            ];
 
             _ = _framework.RunOnTick(RequestUpdate, delayTicks: 1);
         }));

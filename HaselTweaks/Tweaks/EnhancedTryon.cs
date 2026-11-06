@@ -13,9 +13,10 @@ public unsafe partial class EnhancedTryon : ConfigurableTweak<EnhancedTryonConfi
 
     public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _agentLifecycle.OnPreUpdate(OnPreUpdate, AgentId.Tryon),
-            _agentLifecycle.OnPostUpdate(OnPostUpdate, AgentId.Tryon));
+            _agentLifecycle.OnPostUpdate(OnPostUpdate, AgentId.Tryon),
+        ];
 
         return ValueTask.CompletedTask;
     }

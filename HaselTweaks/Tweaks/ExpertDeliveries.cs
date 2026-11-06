@@ -13,7 +13,7 @@ public unsafe partial class ExpertDeliveries : Tweak
 
     public override ValueTask OnEnable()
     {
-        _disposables = _addonObserver.OnShow(OnShow, "GrandCompanySupplyList");
+        _disposables = [_addonObserver.OnShow(OnShow, "GrandCompanySupplyList")];
 
         return ValueTask.CompletedTask;
     }

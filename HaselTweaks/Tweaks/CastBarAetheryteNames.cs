@@ -29,7 +29,7 @@ public partial class CastBarAetheryteNames : Tweak
     {
         return new ValueTask(_framework.Run(() =>
         {
-            _disposables = DisposableBag.Create(
+            _disposables = [
                 _openCastBarHook = _gameInteropProvider.EnabledHookFromAddress<ActionManager.Delegates.OpenCastBar>(
                     ActionManager.MemberFunctionPointers.OpenCastBar,
                     OpenCastBarDetour),
@@ -39,8 +39,8 @@ public partial class CastBarAetheryteNames : Tweak
                     TeleportDetour),
 
                 _addonLifecycle.OnPreRefresh(OnCastBarPreRefresh, "_CastBar"),
-                _clientState.OnTerritoryChanged(OnTerritoryChanged));
-
+                _clientState.OnTerritoryChanged(OnTerritoryChanged),
+            ];
         }));
     }
 

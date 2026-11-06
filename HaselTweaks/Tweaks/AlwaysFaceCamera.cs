@@ -10,7 +10,7 @@ public unsafe partial class AlwaysFaceCamera : Tweak
 
     public override ValueTask OnEnable()
     {
-        _disposables = _framework.OnUpdate(OnUpdate);
+        _disposables = [_framework.OnUpdate(OnUpdate)];
 
         return ValueTask.CompletedTask;
     }

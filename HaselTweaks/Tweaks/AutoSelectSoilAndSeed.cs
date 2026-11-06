@@ -16,9 +16,10 @@ public unsafe partial class AutoSelectSoilAndSeed : Tweak
 
     public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _addonLifecycle.OnPostSetup(OnHousingGardeningSetup, "HousingGardening"),
-            _addonLifecycle.OnPreUpdate(OnHousingGardeningUpdate, "HousingGardening"));
+            _addonLifecycle.OnPreUpdate(OnHousingGardeningUpdate, "HousingGardening"),
+        ];
 
         return ValueTask.CompletedTask;
     }

@@ -30,7 +30,7 @@ public unsafe partial class SearchTheMarkets : Tweak
             }
         };
 
-        _disposables = DisposableBag.Create(
+        _disposables = [
             EventExtensions.Subscribe(
                 handler => _contextMenu.OnMenuOpened += handler.Invoke,
                 handler => _contextMenu.OnMenuOpened -= handler.Invoke,
@@ -39,7 +39,8 @@ public unsafe partial class SearchTheMarkets : Tweak
             EventExtensions.Subscribe(
                 handler => _languageProvider.LanguageChanged += handler.Invoke,
                 handler => _languageProvider.LanguageChanged -= handler.Invoke,
-                OnLanguageChange));
+                OnLanguageChange),
+        ];
 
         return ValueTask.CompletedTask;
     }

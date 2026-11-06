@@ -12,9 +12,10 @@ public unsafe partial class CabinetQuickStore : ConfigurableTweak<CabinetQuickSt
 
     public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _addonObserver.OnShow(OnShow, "Cabinet"),
-            _addonObserver.OnHide(OnHide, "Cabinet"));
+            _addonObserver.OnHide(OnHide, "Cabinet")
+        ];
 
         if (IsAddonOpen("Cabinet"))
             _windowManager.CreateOrOpen<CabinetQuickStoreWindow>();

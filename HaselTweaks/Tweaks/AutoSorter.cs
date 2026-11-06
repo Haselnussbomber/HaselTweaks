@@ -100,7 +100,7 @@ public unsafe partial class AutoSorter : ConfigurableTweak<AutoSorterConfigurati
     {
         _queue.Clear();
 
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _framework.OnUpdate(OnFrameworkUpdate),
             _clientState.OnLogin(_queue.Clear),
             _clientState.OnLogout(_queue.Clear),
@@ -108,7 +108,8 @@ public unsafe partial class AutoSorter : ConfigurableTweak<AutoSorterConfigurati
             _addonObserver.OnShow(_ => OnOpenArmoury(), "ArmouryBoard"),
             _addonObserver.OnShow(_ => OnOpenInventoryBuddy(), "InventoryBuddy"),
             _addonObserver.OnShow(_ => OnOpenRetainer(), ["InventoryRetainer", "InventoryRetainerLarge"]),
-            _addonObserver.OnShow(_ => OnOpenInventory(), ["Inventory", "InventoryLarge", "InventoryExpansion"]));
+            _addonObserver.OnShow(_ => OnOpenInventory(), ["Inventory", "InventoryLarge", "InventoryExpansion"]),
+        ];
 
         return new ValueTask(_framework.Run(() =>
         {

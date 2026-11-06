@@ -53,7 +53,7 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
     {
         return new ValueTask(_framework.Run(() =>
         {
-            _disposables = DisposableBag.Create(
+            _disposables = [
                 _menuBar,
 
                 _onClipboardDataChangedHook = _gameInteropProvider.EnabledHookFromAddress<UIClipboard.Delegates.OnClipboardDataChanged>(
@@ -73,7 +73,8 @@ public unsafe partial class PortraitHelper : ConfigurableTweak<PortraitHelperCon
                 _addonObserver.OnHide(OnHide, "BannerEditor"),
 
                 _clientState.OnTerritoryChanged(OnTerritoryChanged),
-                _clientState.OnClassJobChanged(OnClassJobChange));
+                _clientState.OnClassJobChanged(OnClassJobChange),
+            ];
 
             _openPortraitEditPayload = _chatGui.AddChatLinkHandler(1, OpenPortraitEditChatHandler);
 

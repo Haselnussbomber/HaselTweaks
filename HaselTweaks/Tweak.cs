@@ -11,7 +11,7 @@ public abstract partial class Tweak : ITweak, IHostedService
 
     protected readonly IServiceProvider _serviceProvider;
     protected ILogger _logger;
-    protected IDisposable? _disposables;
+    protected DisposableBag? _disposables;
 
     public string InternalName { get; private set; }
     public TweakStatus Status { get; set; } = TweakStatus.Disabled;
@@ -60,11 +60,8 @@ public abstract partial class Tweak : ITweak, IHostedService
 
             await OnDisable().ConfigureAwait(false);
 
-            if (_disposables != null)
-            {
-                _logger.LogWarning("Disposables not disposed in OnDisable!");
-                DisposeAndNull(ref _disposables);
-            }
+            if (_disposables?.IsDisposed == false)
+                await _disposables.DisposeAsync().ConfigureAwait(false);
 
             Status = TweakStatus.Disabled;
         }
@@ -76,14 +73,19 @@ public abstract partial class Tweak : ITweak, IHostedService
 
     public virtual async ValueTask DisposeAsync()
     {
-        if (Status is TweakStatus.Disposed or TweakStatus.Outdated or TweakStatus.Disabled)
-            return;
-
         try
         {
-            _logger.LogInformation("Disposing tweak");
-            await OnDisable().ConfigureAwait(false);
-            DisposeAndNull(ref _disposables);
+            if (Status is not (TweakStatus.Disposed or TweakStatus.Outdated or TweakStatus.Disabled))
+            {
+                _logger.LogWarning("Disabling tweak in DisposeAsync");
+                await OnDisable().ConfigureAwait(false);
+            }
+
+            if (_disposables?.IsDisposed == false)
+            {
+                _logger.LogInformation("Disposing tweak");
+                await _disposables.DisposeAsync().ConfigureAwait(false);
+            }
         }
         catch (Exception ex)
         {

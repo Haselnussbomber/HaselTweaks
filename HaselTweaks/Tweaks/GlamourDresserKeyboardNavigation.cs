@@ -17,7 +17,7 @@ public unsafe partial class GlamourDresserKeyboardNavigation : Tweak
 
     public override ValueTask OnEnable()
     {
-        _disposables = _framework.OnUpdate(OnFrameworkUpdate);
+        _disposables = [_framework.OnUpdate(OnFrameworkUpdate)];
         return ValueTask.CompletedTask;
     }
 

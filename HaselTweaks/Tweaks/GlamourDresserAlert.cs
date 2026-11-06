@@ -34,11 +34,12 @@ public unsafe partial class GlamourDresserAlert : ConfigurableTweak<GlamourDress
 
     public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _addonObserver.OnShow(OnShow, "MiragePrismPrismBox"),
             _addonObserver.OnHide(OnHide, "MiragePrismPrismBox"),
             _framework.OnUpdate(OnFrameworkUpdate),
-            _gameGui.OnAgentUpdate(OnAgentUpdate));
+            _gameGui.OnAgentUpdate(OnAgentUpdate),
+        ];
 
         return ValueTask.CompletedTask;
     }

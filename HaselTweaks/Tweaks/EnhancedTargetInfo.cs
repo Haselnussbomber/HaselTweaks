@@ -46,14 +46,15 @@ public unsafe partial class EnhancedTargetInfo : ConfigurableTweak<EnhancedTarge
 
         return new ValueTask(_framework.Run(() =>
         {
-            _disposables = DisposableBag.Create(
+            _disposables = [
                 _updateTargetInfoHook = _gameInteropProvider.EnabledHookFromAddress<AgentHUD.Delegates.UpdateTargetInfo>(
                     AgentHUD.MemberFunctionPointers.UpdateTargetInfo,
                     UpdateTargetInfoDetour),
 
                 _formatAddonText2IntIntUIntHook = _gameInteropProvider.EnabledHookFromAddress<RaptureTextModule.Delegates.FormatAddonText2IntIntUInt>(
                     RaptureTextModule.MemberFunctionPointers.FormatAddonText2IntIntUInt,
-                    FormatAddonText2IntIntUIntDetour));
+                    FormatAddonText2IntIntUIntDetour),
+            ];
         }));
     }
 

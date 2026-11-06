@@ -18,7 +18,7 @@ public unsafe partial class AetherCurrentHelper : ConfigurableTweak<AetherCurren
 
     public override ValueTask OnEnable()
     {
-        _disposables = _agentLifecycle.OnPreReceiveEvent(OnPreReceiveEvent, AgentId.AetherCurrent);
+        _disposables = [_agentLifecycle.OnPreReceiveEvent(OnPreReceiveEvent, AgentId.AetherCurrent)];
 
         return ValueTask.CompletedTask;
     }

@@ -13,9 +13,10 @@ public unsafe partial class EnhancedRecipeNote : ConfigurableTweak<EnhancedRecip
 
     public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _addonLifecycle.OnPreFinalize(OnRecipeNotePreFinalize, "RecipeNote"),
-            _clientState.OnLogin(OnLogin));
+            _clientState.OnLogin(OnLogin),
+        ];
 
         return ValueTask.CompletedTask;
     }

@@ -9,10 +9,11 @@ public partial class DisableRewardPopups : ConfigurableTweak<DisableRewardPopups
 
     public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _addonLifecycle.OnPreShow(OnFateReward, "FateReward"),
             _addonLifecycle.OnPreShow(OnGoldSaucerReward, "GoldSaucerReward"),
-            _addonLifecycle.OnPreShow(OnWKSReward, "WKSReward"));
+            _addonLifecycle.OnPreShow(OnWKSReward, "WKSReward"),
+        ];
 
         return ValueTask.CompletedTask;
     }

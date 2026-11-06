@@ -16,7 +16,7 @@ public unsafe partial class CharacterReputeTeleport : Tweak
 
     public override ValueTask OnEnable()
     {
-        _disposables = _agentLifecycle.OnPreReceiveEvent(OnStatusReceiveEvent, AgentId.Status);
+        _disposables = [_agentLifecycle.OnPreReceiveEvent(OnStatusReceiveEvent, AgentId.Status)];
 
         return ValueTask.CompletedTask;
     }

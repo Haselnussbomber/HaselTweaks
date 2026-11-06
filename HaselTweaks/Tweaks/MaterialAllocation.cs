@@ -11,9 +11,10 @@ public unsafe partial class MaterialAllocation : ConfigurableTweak<MaterialAlloc
 
     public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _addonLifecycle.OnPostReceiveEvent(OnPostReceiveEvent, "MJICraftMaterialConfirmation"),
-            _addonLifecycle.OnPreSetup(OnPreSetup, "MJICraftMaterialConfirmation"));
+            _addonLifecycle.OnPreSetup(OnPreSetup, "MJICraftMaterialConfirmation"),
+        ];
 
         return ValueTask.CompletedTask;
     }

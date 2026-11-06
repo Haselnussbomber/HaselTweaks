@@ -13,14 +13,15 @@ public unsafe partial class BiggerCharacterPreviews : ConfigurableTweak<BiggerCh
 
     public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _addonLifecycle.OnPostSetup(OnCharacterPostSetup, "Character"),
             _addonLifecycle.OnPostSetup(OnCharacterInspectPostSetup, "CharacterInspect"),
             _addonLifecycle.OnPostDraw(OnCharacterInspectPostDraw, "CharacterInspect"),
             _addonLifecycle.OnPostSetup(OnColorantColoringPostSetup, "ColorantColoring"),
             _addonLifecycle.OnPostSetup(OnTryonPostSetup, "Tryon"),
             _addonLifecycle.OnPostSetup(OnPostSetupOrRefresh, AddonNames),
-            _addonLifecycle.OnPostRefresh(OnPostSetupOrRefresh, AddonNames));
+            _addonLifecycle.OnPostRefresh(OnPostSetupOrRefresh, AddonNames),
+        ];
 
         return ValueTask.CompletedTask;
     }

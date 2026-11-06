@@ -12,7 +12,7 @@ public unsafe partial class EnhancedMiragePrismBox : ConfigurableTweak<EnhancedM
 
     public override ValueTask OnEnable()
     {
-        _disposables = _addonLifecycle.OnPostRefresh(OnPostRefresh, "MiragePrismPrismSetConvert");
+        _disposables = [_addonLifecycle.OnPostRefresh(OnPostRefresh, "MiragePrismPrismSetConvert")];
         return ValueTask.CompletedTask;
     }
 

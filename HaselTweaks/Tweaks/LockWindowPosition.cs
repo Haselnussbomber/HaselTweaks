@@ -39,7 +39,7 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak<LockWindowPos
     {
         return new ValueTask(_framework.Run(() =>
         {
-            _disposables = DisposableBag.Create(
+            _disposables = [
                 _moveDeltaHook = _gameInteropProvider.EnabledHookFromAddress<AtkUnitBase.Delegates.MoveDelta>(
                     AtkUnitBase.MemberFunctionPointers.MoveDelta,
                     MoveDeltaDetour),
@@ -64,7 +64,8 @@ public unsafe partial class LockWindowPosition : ConfigurableTweak<LockWindowPos
                     RaptureAtkUnitManager.Instance()->WindowContextMenuHandler.VirtualTable->ReceiveEvent,
                     WindowContextMenuHandlerReceiveEventDetour),
 
-                _addonLifecycle.OnPostSetup(OnGearSetListPostSetup, "GearSetList"));
+                _addonLifecycle.OnPostSetup(OnGearSetListPostSetup, "GearSetList"),
+            ];
         }));
     }
 

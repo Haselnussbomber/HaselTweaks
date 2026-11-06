@@ -14,10 +14,11 @@ public unsafe partial class EnhancedIsleworksAgenda : ConfigurableTweak<Enhanced
 
     public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _addonLifecycle.OnPreReceiveEvent(OnPreReceiveEvent, "MJICraftScheduleSetting"),
             _addonObserver.OnShow(OnShow, "MJICraftScheduleSetting"),
-            _addonObserver.OnHide(OnHide, "MJICraftScheduleSetting"));
+            _addonObserver.OnHide(OnHide, "MJICraftScheduleSetting"),
+        ];
 
         if (_config.EnableSearchBar && IsAddonOpen("MJICraftScheduleSetting"u8))
             _window.Open();

@@ -12,9 +12,10 @@ public unsafe partial class CompanionColorPreview : Tweak
 
     public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _addonObserver.OnShow(OnShow, "Buddy"),
-            _addonObserver.OnHide(OnHide, "Buddy"));
+            _addonObserver.OnHide(OnHide, "Buddy"),
+        ];
 
         if (IsAddonOpen("Buddy"))
             _windowManager.CreateOrOpen<CompanionColorPreviewWindow>();

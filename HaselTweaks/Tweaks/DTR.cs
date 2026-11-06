@@ -26,13 +26,14 @@ public unsafe partial class DTR : ConfigurableTweak<DTRConfiguration>
 
     public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _dtrInstance = _dtrBar.GetDisposable("[HaselTweaks] Instance"),
             _dtrFPS = _dtrBar.GetDisposable("[HaselTweaks] FPS"),
             _dtrBusy = _dtrBar.GetDisposable("[HaselTweaks] Busy"),
             _framework.OnUpdate(OnFrameworkUpdate),
             _clientState.OnLogout(OnLogout),
-            _languageProvider.OnLanguageChange(OnLanguageChange));
+            _languageProvider.OnLanguageChange(OnLanguageChange),
+        ];
 
         UpdateBusyText();
 

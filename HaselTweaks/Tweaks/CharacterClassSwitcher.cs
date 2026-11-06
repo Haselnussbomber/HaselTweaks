@@ -21,7 +21,7 @@ public partial class CharacterClassSwitcher : ConfigurableTweak<CharacterClassSw
     {
         return new ValueTask(_framework.Run(() =>
         {
-            _disposables = DisposableBag.Create(
+            _disposables = [
                 _showTooltipHook = _gameInteropProvider.EnabledHookFromAddress<AtkTooltipManager.Delegates.ShowTooltip>(
                     AtkTooltipManager.MemberFunctionPointers.ShowTooltip,
                     AtkTooltipManagerShowTooltipDetour),
@@ -33,8 +33,8 @@ public partial class CharacterClassSwitcher : ConfigurableTweak<CharacterClassSw
 
                 _addonLifecycle.OnPostSetup(OnPvPCharacterPostSetup, "PvPCharacter"),
                 _addonLifecycle.OnPostRequestedUpdate(OnPvPCharacterPostRequestedUpdate, "PvPCharacter"),
-                _addonLifecycle.OnPreReceiveEvent(OnPvPCharacterPreReceiveEvent, "PvPCharacter"));
-
+                _addonLifecycle.OnPreReceiveEvent(OnPvPCharacterPreReceiveEvent, "PvPCharacter"),
+            ];
         }));
     }
 

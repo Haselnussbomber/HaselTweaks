@@ -12,7 +12,7 @@ public unsafe partial class MarketBoardItemPreview : Tweak
 
     public override ValueTask OnEnable()
     {
-        _disposables = _addonLifecycle.OnPostReceiveEvent(OnPostReceiveEvent, "ItemSearch");
+        _disposables = [_addonLifecycle.OnPostReceiveEvent(OnPostReceiveEvent, "ItemSearch")];
 
         return ValueTask.CompletedTask;
     }

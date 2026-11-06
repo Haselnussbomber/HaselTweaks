@@ -28,14 +28,15 @@ public unsafe partial class EnhancedExpBar : ConfigurableTweak<EnhancedExpBarCon
     {
         return new ValueTask(_framework.Run(() =>
         {
-            _disposables = DisposableBag.Create(
+            _disposables = [
                 _updateExpHook = _gameInteropProvider.EnabledHookFromAddress<AgentHUD.Delegates.UpdateExp>(
                     AgentHUD.MemberFunctionPointers.UpdateExp,
                     UpdateExpDetour),
 
                 _addonLifecycle.OnPostRequestedUpdate(OnAddonExpPostRequestedUpdate, "_Exp"),
                 _clientState.OnLeavePvP(OnLeavePvP),
-                _clientState.OnTerritoryChanged(OnTerritoryChanged));
+                _clientState.OnTerritoryChanged(OnTerritoryChanged),
+            ];
 
             TriggerReset();
         }));

@@ -61,13 +61,14 @@ public unsafe partial class Commands : ConfigurableTweak<CommandsConfiguration>
             .WithDisplayOrder(2)
             .WithHandler(OnReloadUICommand));
 
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _itemLinkCommandHandler,
             _whatMountCommandCommandHandler,
             _whatEmoteCommandCommandHandler,
             _whatBardingCommandCommandHandler,
             _glamourPlateCommandCommandHandler,
-            _reloadUICommandCommandHandler);
+            _reloadUICommandCommandHandler,
+        ];
 
         UpdateCommands(true);
         return ValueTask.CompletedTask;

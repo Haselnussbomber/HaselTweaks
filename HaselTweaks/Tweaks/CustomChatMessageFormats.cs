@@ -29,12 +29,13 @@ public unsafe partial class CustomChatMessageFormats : ConfigurableTweak<CustomC
 
         return new ValueTask(_framework.Run(() =>
         {
-            _disposables = DisposableBag.Create(
+            _disposables = [
                 _formatLogMessageHook = _gameInteropProvider.EnabledHookFromAddress<RaptureLogModule.Delegates.FormatLogMessage>(
                     RaptureLogModule.MemberFunctionPointers.FormatLogMessage,
                     FormatLogMessageDetour),
 
-                _languageProvider.OnLanguageChange(OnLanguageChanged));
+                _languageProvider.OnLanguageChange(OnLanguageChanged),
+            ];
 
             ReloadChat();
         }));

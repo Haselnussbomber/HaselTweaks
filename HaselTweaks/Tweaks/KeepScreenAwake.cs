@@ -16,7 +16,7 @@ public partial class KeepScreenAwake : Tweak
         timer.Interval = 10000; // every 10 seconds
         timer.Start();
 
-        _disposables = timer;
+        _disposables = [timer];
 
         return ValueTask.CompletedTask;
     }

@@ -17,9 +17,11 @@ public unsafe partial class CustomChatTimestamp : ConfigurableTweak<CustomChatTi
     {
         return new ValueTask(_framework.Run(() =>
         {
-            _disposables = _formatAddonText2IntHook = _gameInteropProvider.EnabledHookFromAddress<RaptureTextModule.Delegates.FormatAddonText2Int>(
-                RaptureTextModule.MemberFunctionPointers.FormatAddonText2Int,
-                FormatAddonText2IntDetour);
+            _disposables = [
+                _formatAddonText2IntHook = _gameInteropProvider.EnabledHookFromAddress<RaptureTextModule.Delegates.FormatAddonText2Int>(
+                    RaptureTextModule.MemberFunctionPointers.FormatAddonText2Int,
+                    FormatAddonText2IntDetour)
+            ];
 
             ReloadChat();
         }));

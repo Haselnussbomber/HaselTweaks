@@ -11,7 +11,7 @@ public unsafe partial class FixInventoryOpenTab : Tweak
 
     public override ValueTask OnEnable()
     {
-        _disposables = _addonLifecycle.OnPreRefresh(OnPreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"]);
+        _disposables = [_addonLifecycle.OnPreRefresh(OnPreRefresh, ["Inventory", "InventoryLarge", "InventoryExpansion"])];
 
         return ValueTask.CompletedTask;
     }

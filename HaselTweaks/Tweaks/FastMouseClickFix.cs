@@ -18,7 +18,7 @@ public partial class FastMouseClickFix : Tweak
             _gameInteropProvider.InitializeFromAttributes(this);
 
         var patch = new MemoryReplacement(Address, [0x90, 0x90]); // skip jump
-        _disposables = patch;
+        _disposables = [patch];
 
         return new ValueTask(_framework.Run(patch.Enable));
     }

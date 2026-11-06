@@ -12,7 +12,7 @@ public unsafe partial class SimpleAethernetList : Tweak
 
     public override ValueTask OnEnable()
     {
-        _disposables = _addonLifecycle.OnPreReceiveEvent(OnPreReceiveEvent, "TelepotTown");
+        _disposables = [_addonLifecycle.OnPreReceiveEvent(OnPreReceiveEvent, "TelepotTown")];
 
         return ValueTask.CompletedTask;
     }

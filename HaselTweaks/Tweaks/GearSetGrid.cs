@@ -16,7 +16,7 @@ public unsafe partial class GearSetGrid : ConfigurableTweak<GearSetGridConfigura
 
     public override ValueTask OnEnable()
     {
-        _disposables = DisposableBag.Create(
+        _disposables = [
             _gsgCommand = _commandService.AddCommand("gsg", cmd => cmd
                 .WithHelpTextKey("GearSetGrid.CommandHandlerHelpMessage")
                 .WithDisplayOrder(2)
@@ -24,7 +24,8 @@ public unsafe partial class GearSetGrid : ConfigurableTweak<GearSetGridConfigura
                 .SetEnabled(_config.RegisterCommand)),
 
             _addonObserver.OnShow(OnShow, "GearSetList"),
-            _addonObserver.OnHide(OnHide, "GearSetList"));
+            _addonObserver.OnHide(OnHide, "GearSetList"),
+        ];
 
         if (_config.AutoOpenWithGearSetList && IsAddonOpen("GearSetList"u8))
             _window.Open();

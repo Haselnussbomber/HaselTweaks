@@ -18,7 +18,7 @@ public unsafe partial class AchievementLinkTooltip : ConfigurableTweak<Achieveme
 
     public override ValueTask OnEnable()
     {
-        _disposables = _addonLifecycle.OnPostReceiveEvent(OnChatLogPanelPostReceiveEvent, ChatPanels);
+        _disposables = [_addonLifecycle.OnPostReceiveEvent(OnChatLogPanelPostReceiveEvent, ChatPanels)];
 
         return ValueTask.CompletedTask;
     }

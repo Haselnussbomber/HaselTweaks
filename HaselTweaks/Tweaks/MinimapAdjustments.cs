@@ -15,7 +15,7 @@ public unsafe partial class MinimapAdjustments : ConfigurableTweak<MinimapAdjust
     public override ValueTask OnEnable()
     {
         _targetAlpha = _config.DefaultOpacity;
-        _disposables = _framework.OnUpdate(OnFrameworkUpdate);
+        _disposables = [_framework.OnUpdate(OnFrameworkUpdate)];
 
         return ValueTask.CompletedTask;
     }
