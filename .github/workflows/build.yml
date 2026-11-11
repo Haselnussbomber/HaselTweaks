@@ -73,6 +73,19 @@ jobs:
         with:
           path: bin/${{ env.plugin_name }}/*
 
+      - name: Check if tag is on main branch
+        if: success() && env.is_release == 'true'
+        run: |
+          git fetch origin main
+
+          MAIN_SHA=$(git rev-parse origin/main)
+          TAG_SHA=$(git rev-parse "${GITHUB_REF}^{commit}")
+
+          if [ "$MAIN_SHA" != "$TAG_SHA" ]; then
+            echo "::error::Tag is not on the main branch. Aborting release."
+            exit 1
+          fi
+
       - name: Extract release notes
         if: success() && env.is_release == 'true'
         id: extract-release-notes
