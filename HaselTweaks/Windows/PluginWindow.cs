@@ -1,6 +1,10 @@
 using System.IO;
 using System.Threading.Tasks;
 
+#if RELEASE
+using System.Reflection;
+#endif
+
 namespace HaselTweaks.Windows;
 
 [RegisterSingleton, AutoConstruct]
