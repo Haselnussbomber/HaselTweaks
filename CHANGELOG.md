@@ -1,5 +1,11 @@
 # Changelog
 
+## [50.0.5] (2026-11-23)
+
+### Enhanced Login/Logout
+
+- **Fixed:** When playing an emote, an incorrect voice may be used. This was caused by an outdated field offset in ClientStructs.
+
 ## [50.0.4] (2026-11-11)
 
 ### HaselTweaks
@@ -2796,7 +2802,8 @@ Refreshes the material list and recipe tree when you've crafted or gathered an i
 
 Opens duty finder for the duty you clicked on in the Wondrous Tails Journal.
 
-[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v50.0.4...main
+[unreleased]: https://github.com/Haselnussbomber/HaselTweaks/compare/v50.0.5...main
+[50.0.5]: https://github.com/Haselnussbomber/HaselTweaks/compare/v50.0.4...v50.0.5
 [50.0.4]: https://github.com/Haselnussbomber/HaselTweaks/compare/v50.0.3...v50.0.4
 [50.0.3]: https://github.com/Haselnussbomber/HaselTweaks/compare/v50.0.2...v50.0.3
 [50.0.2]: https://github.com/Haselnussbomber/HaselTweaks/compare/v50.0.1...v50.0.2
