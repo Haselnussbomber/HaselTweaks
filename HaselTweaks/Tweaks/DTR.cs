@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
@@ -18,18 +19,18 @@ public unsafe partial class DTR : ConfigurableTweak<DTRConfiguration>
     private readonly IDtrBar _dtrBar;
     private readonly IDalamudPluginInterface _dalamudPluginInterface;
 
-    private DtrBarEntry? _dtrInstance;
-    private DtrBarEntry? _dtrFPS;
-    private DtrBarEntry? _dtrBusy;
+    private IDtrBarEntry? _dtrInstance;
+    private IDtrBarEntry? _dtrFPS;
+    private IDtrBarEntry? _dtrBusy;
     private int _lastFrameRate;
     private uint _lastInstanceId;
 
     public override ValueTask OnEnable()
     {
         _disposables = [
-            _dtrInstance = _dtrBar.GetDisposable("[HaselTweaks] Instance"),
-            _dtrFPS = _dtrBar.GetDisposable("[HaselTweaks] FPS"),
-            _dtrBusy = _dtrBar.GetDisposable("[HaselTweaks] Busy"),
+            _dtrInstance = _dtrBar.Get("[HaselTweaks] Instance"),
+            _dtrFPS = _dtrBar.Get("[HaselTweaks] FPS"),
+            _dtrBusy = _dtrBar.Get("[HaselTweaks] Busy"),
             _framework.OnUpdate(OnFrameworkUpdate),
             _clientState.OnLogout(OnLogout),
             _languageProvider.OnLanguageChange(OnLanguageChange),
